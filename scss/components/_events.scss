@@ -1,0 +1,196 @@
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.event-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .event-info {
+    padding: 1rem;
+
+    h3 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #222;
+    }
+
+    p {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-small {
+      display: inline-block;
+      margin-top: 1rem;
+      background-color: #3e64ff;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 0.9rem;
+
+      &:hover {
+        background-color: darken(#3e64ff, 10%);
+      }
+    }
+  }
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  input,
+  select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    min-width: 250px;
+  }
+}
+
+.event-detail-container {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 1rem;
+}
+
+.event-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+
+  img {
+    max-width: 100%;
+    width: 300px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .event-detail-info {
+    flex: 1;
+
+    h1 {
+      margin-top: 0;
+      font-size: 2rem;
+      color: #111;
+    }
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      color: #444;
+    }
+
+    .btn {
+      margin-top: 1rem;
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: #3e64ff;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        background-color: darken(#3e64ff, 10%);
+      }
+    }
+  }
+}
+
+// 🔵 CTA tlačítka (v detailu události)
+.cta-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-small {
+  background-color: #eee;
+  color: #333;
+  padding: 0.4rem 1rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #ddd;
+  }
+}
+
+// 🟣 Kategorie badge
+.category-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: white;
+  background-color: #777;
+
+  &.hudba {
+    background-color: #3e64ff;
+  }
+
+  &.sport {
+    background-color: #00c896;
+  }
+
+  &.kultura {
+    background-color: #e96b56;
+  }
+}
+
+// 📱 Responzivní detail události
+@media (max-width: 768px) {
+  .event-detail {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    img {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .event-detail-info {
+      h1 {
+        font-size: 1.6rem;
+      }
+      p {
+        font-size: 0.95rem;
+      }
+    }
+  }
+}

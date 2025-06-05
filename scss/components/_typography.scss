@@ -1,0 +1,77 @@
+// === typography.scss ===
+@use '../variables' as v;
+
+body {
+  font-family: v.$font-main;
+  font-size: v.$base-font-size;
+  color: v.$text-color;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: v.$font-main;
+  font-weight: 600;
+  line-height: 1.2;
+  color: v.$primary-color;
+  margin-bottom: 1rem;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.875rem; }
+
+p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: v.$text-light;
+}
+
+a {
+  color: v.$primary-color;
+  text-decoration: none;
+  transition: 0.2s;
+
+  &:hover {
+    text-decoration: underline;
+  }
+} 
+
+small {
+  font-size: 0.875rem;
+  color: v.$gray;
+} 
+
+strong {
+  font-weight: 600;
+} 
+
+ul, ol {
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+blockquote {
+  padding: 1rem;
+  background: v.$light-bg;
+  border-left: 4px solid v.$primary-color;
+  font-style: italic;
+  margin: 1.5rem 0;
+} 
+
+code {
+  background: #f1f1f1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.95rem;
+} 
+
+pre {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+} 

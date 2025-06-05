@@ -1,0 +1,43 @@
+section {
+  background-color: var(--section-bg);
+  padding: var(--section-padding);
+  text-align: center;
+  margin: 2rem auto;
+  max-width: 960px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+
+  h2 {
+    color: var(--main-blue);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.section-alt {
+  background-color: #eaf4ff;
+}
+.event-card {
+  background-color: #fff;
+  padding: 1.5rem;
+  margin: 1rem auto;
+  border-radius: 10px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
+  max-width: 600px;
+  text-align: left;
+
+  h3 {
+    color: var(--main-blue);
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: var(--accent-yellow);
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

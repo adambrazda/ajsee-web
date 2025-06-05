@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Spolupracujte s AJSEE – českou platformou pro prodej vstupenek na světové akce. Snadná integrace, provizní model, lokální podpora.">
+  <title>Spolupráce | AJSEE</title>
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+</head>
+<body>
+
+  <a href="index.html" class="back-home" aria-label="Zpět na homepage">&larr; Zpět na homepage</a>
+
+  <header class="hero" data-aos="fade-in">
+    <h1>Propojte své akce s AJSEE</h1>
+    <p>Oslovte české publikum a získejte nové zákazníky díky integraci přes API.</p>
+    <a href="#contact" class="btn">Chci spolupracovat</a>
+  </header>
+
+  <section id="partners" class="partner-section" data-aos="fade-up">
+    <h2>Staňte se naším partnerem</h2>
+    <p>
+      AJSEE je nový český projekt, který propojuje fanoušky se světovými kulturními, sportovními a hudebními událostmi.
+      Nabízíme plně lokalizovaný prodej vstupenek v českém jazyce – bez bariér, bez nutnosti orientovat se na zahraničních portálech.
+    </p>
+    <p>
+      Hledáme partnery – poskytovatele vstupenek a událostí – kteří nám umožní jejich nabídku integrovat skrze API nebo partnerský program.
+      Naší vizí je stát se bránou ke světovým zážitkům pro české publikum.
+    </p>
+    <ul class="partner-benefits">
+      <li>🎯 Zvýšení dosahu na českém trhu</li>
+      <li>📊 Lokální propagace vašich událostí</li>
+      <li>🤝 Model provizního partnerství</li>
+      <li>🧩 Rychlá a technicky jednoduchá integrace</li>
+    </ul>
+    <a href="#contact" class="partner-button">Chci navázat spolupráci</a>
+  </section>
+
+  <section class="how-it-works" data-aos="fade-up">
+    <h2>Jak spolupráce funguje</h2>
+    <ol>
+      <li>Vyplníte krátký formulář.</li>
+      <li>Do 2 pracovních dnů se vám ozveme.</li>
+      <li>Dostanete přístup do API sandboxu.</li>
+      <li>Po úspěšném napojení spustíme veřejný prodej.</li>
+    </ol>
+  </section>
+
+  <section id="contact" class="contact-section" data-aos="fade-up">
+    <h2>Máte zájem? Ozvěte se nám</h2>
+    <form id="contact-form" action="https://formspree.io/f/xeogbvqo" method="POST">
+      <label>
+        Název firmy:
+        <input type="text" name="firma" required />
+      </label>
+      <label>
+        Kontaktní e-mail:
+        <input type="email" name="email" required />
+      </label>
+      <label>
+        Krátce o vás:
+        <textarea name="zprava" rows="5" required></textarea>
+      </label>
+      <button type="submit">Odeslat</button>
+      <p id="form-status" style="margin-top: 1rem;"></p>
+    </form>
+  </section>
+
+  <footer>
+    <p>© AJSEE 2025. Všechna práva vyhrazena.</p>
+  </footer>
+
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true
+    });
+
+    document.getElementById("contact-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const status = document.getElementById("form-status");
+      const data = new FormData(form);
+      const action = form.action;
+
+      try {
+        const response = await fetch(action, {
+          method: "POST",
+          body: data,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          status.innerHTML = "✅ Děkujeme! Vaše zpráva byla odeslána.";
+          form.reset();
+        } else {
+          status.innerHTML = "⚠️ Došlo k chybě při odesílání. Zkuste to prosím znovu.";
+        }
+      } catch (error) {
+        status.innerHTML = "❌ Nepodařilo se navázat spojení se serverem.";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+// === buttons.scss ===
+@use '../variables' as v;
+@use '../mixins' as *;
+
+.btn {
+  @include btn-base(v.$primary-color);
+
+  &--secondary {
+    @include btn-base(#e0e0e0, #333);
+  }
+
+  &--outline {
+    background-color: transparent;
+    border: 2px solid v.$primary-color;
+    color: v.$primary-color;
+
+    &:hover {
+      background-color: v.$primary-color;
+      color: white;
+    }
+  }
+
+  &--small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  &--block {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+  &--disabled,
+  &:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+} 
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+// Aplikace na tlačítka formulářů
+button,
+input[type="submit"] {
+  @extend .btn;
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Coldplay – Praha",
+    "date": "2025-06-20",
+    "location": "Praha, Letňany",
+    "category": "Hudba",
+    "description": "Koncert světové kapely Coldplay v rámci evropského turné.",
+    "image": "https://picsum.photos/seed/coldplay/600/400",
+    "link": "https://example.com/coldplay"
+  },
+  {
+    "id": 2,
+    "name": "Spartan Race – Liberec",
+    "date": "2025-07-10",
+    "location": "Liberec",
+    "category": "Sport",
+    "description": "Extrémní překážkový závod pro všechny milovníky výzev.",
+    "image": "https://picsum.photos/seed/spartan/600/400",
+    "link": "https://example.com/spartan"
+  },
+  {
+    "id": 3,
+    "name": "Letní filmový festival",
+    "date": "2025-08-05",
+    "location": "Brno",
+    "category": "Kultura",
+    "description": "Filmový festival pod širým nebem s českými i zahraničními snímky.",
+    "image": "https://picsum.photos/seed/filmfest/600/400",
+    "link": "https://example.com/filmfest"
+  },
+  {
+    "id": 4,
+    "name": "Ed Sheeran – Ostrava",
+    "date": "2025-09-12",
+    "location": "Ostrava, Vítkovice Arena",
+    "category": "Hudba",
+    "description": "Jeden z největších koncertů roku s Edem Sheeranem v Ostravě.",
+    "image": "https://picsum.photos/seed/edsheeran/600/400",
+    "link": "https://example.com/edsheeran"
+  },
+  {
+    "id": 5,
+    "name": "Maraton Praha",
+    "date": "2025-05-01",
+    "location": "Praha, centrum",
+    "category": "Sport",
+    "description": "Mezinárodní městský maraton pro běžce všech úrovní.",
+    "image": "https://picsum.photos/seed/maraton/600/400",
+    "link": "https://example.com/maraton"
+  },
+  {
+    "id": 6,
+    "name": "Divadelní večery",
+    "date": "2025-10-15",
+    "location": "Plzeň",
+    "category": "Kultura",
+    "description": "Týdenní přehlídka činohry i alternativního divadla.",
+    "image": "https://picsum.photos/seed/divadlo/600/400",
+    "link": "https://example.com/divadlo"
+  }
+]

@@ -1,0 +1,58 @@
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+  @include center-flex;
+  gap: 30px;
+  flex-wrap: wrap;
+
+  &.active {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--main-blue);
+    width: 100%;
+    padding: 1rem 0;
+  }
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--white);
+  font-weight: bold;
+  transition: color 0.3s;
+
+  &:hover {
+    color: var(--accent-yellow);
+  }
+}
+
+// Podpora pro hamburger menu
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  cursor: pointer;
+  margin-left: auto;
+
+  span {
+    display: block;
+    height: 3px;
+    background: var(--white);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  &.active span:nth-child(1) {
+    transform: rotate(45deg) translateY(7px);
+  }
+
+  &.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  &.active span:nth-child(3) {
+    transform: rotate(-45deg) translateY(-7px);
+  }
+}

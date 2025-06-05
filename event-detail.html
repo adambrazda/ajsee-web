@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail události | AJSEE</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <a href="events.html" class="back-home" aria-label="Zpět na události">&larr; Zpět na události</a>
+
+  <main class="event-detail-container">
+    <div id="event-detail"></div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get("id");
+
+    fetch("/data/events.json")
+      .then((res) => res.json())
+      .then((events) => {
+        const event = events.find((e) => e.id === Number(eventId));
+
+        if (!event) {
+          document.getElementById("event-detail").innerHTML = "<p>Událost nebyla nalezena.</p>";
+          return;
+        }
+
+        // Formátování času pro kalendář
+        function formatDateTimeForCalendar(dateStr) {
+          const date = new Date(dateStr);
+          const start = date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+          const endDate = new Date(date.getTime() + 2 * 60 * 60 * 1000);
+          const end = endDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+          return { start, end };
+        }
+
+        const { start, end } = formatDateTimeForCalendar(event.date);
+        const calendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.name)}&dates=${start}/${end}&details=${encodeURIComponent(event.description)}&location=${encodeURIComponent(event.location)}`;
+
+        document.getElementById("event-detail").innerHTML = `
+          <div class="event-detail">
+            <img src="${event.image}" alt="${event.name}" onerror="this.onerror=null; this.src='https://picsum.photos/600/400?grayscale&blur';" />
+            <div class="event-detail-info">
+              <h1>${event.name}</h1>
+              <p><strong>Datum:</strong> ${event.date}</p>
+              <p><strong>Místo:</strong> ${event.location}</p>
+              <p><strong>Kategorie:</strong> ${event.category}</p>
+              <p>${event.description}</p>
+              <div class="cta-buttons">
+                <a href="${event.link}" target="_blank" class="btn">Přejít na oficiální stránku</a>
+                <a id="google-calendar-link" class="btn" href="${calendarUrl}" target="_blank">Přidat do Google Kalendáře</a>
+                <button id="copy-link-btn" class="btn-small">📋 Zkopírovat odkaz</button>
+                <span id="copy-status" style="margin-left: 0.5rem; font-size: 0.9rem;"></span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("copy-link-btn")?.addEventListener("click", () => {
+          const url = window.location.href;
+          navigator.clipboard.writeText(url).then(() => {
+            document.getElementById("copy-status").textContent = "Odkaz zkopírován ✅";
+          });
+        });
+      })
+      .catch((err) => {
+        console.error("Chyba při načítání detailu:", err);
+        document.getElementById("event-detail").innerHTML = "<p>Chyba při načítání dat.</p>";
+      });
+  </script>
+</body>
+</html>

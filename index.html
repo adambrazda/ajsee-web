@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AJSEE® – Refine culture. Zjednodušujeme přístup ke světovým kulturním zážitkům." />
+  <title>AJSEE® – Refine culture.</title>
+
+  <!-- ✅ OPRAVA: CSS musí být zkompilované z SCSS -->
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon" type="image/png" href="/images/favicon.png" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="/" class="logo-link">
+        <img src="/images/logo.png" alt="AJSEE Logo" class="logo" />
+      </a>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#">Domů</a></li>
+          <li><a href="#about">O nás</a></li>
+          <li><a href="#upcoming-events">Události</a></li>
+          <li><a href="#contact">Kontakt</a></li>
+          <li><a href="/partners.html" class="partner-button">Pro partnery</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="hero" class="hero-section" data-aos="fade-up">
+      <div class="hero-content">
+        <h1>Vstupenky na světové akce. Česky, přehledně, na pár kliknutí.</h1>
+        <p>
+          S ajsee už nemusíte složitě hledat a kupovat lístky na zahraničních webech.
+          Chystáme platformu, která zpřístupní koncerty, festivaly i sportovní události z celého světa – v češtině a bez překážek.
+        </p>
+        <div class="hero-buttons">
+          <a href="#partners" class="btn-primary">Chci spolupracovat</a>
+          <a href="#info" class="btn-secondary">Zjistit víc o ajsee</a>
+        </div>
+        <ul class="hero-benefits">
+          <li>🌍 Přístup k tisícům akcí po celém světě</li>
+          <li>🇨🇿 Kompletní lokalizace do češtiny</li>
+          <li>🔗 Jednoduchá integrace přes API pro partnery</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="about" class="section-alt">
+      <h2>O nás</h2>
+      <p>Budujeme platformu, která ti v češtině nabídne vstupenky na výstavy, divadla a koncerty v zahraničí.</p>
+    </section>
+
+    <!-- ✅ SEKCE, kde se vykreslují události přes events.js -->
+    <section id="upcoming-events" class="event-preview">
+      <h2>Nejbližší události</h2>
+      <div id="preview-events" class="events-grid"></div>
+      <a href="events.html" class="btn">Zobrazit všechny události</a>
+    </section>
+
+    <section id="contact" class="section-alt">
+      <h2>Kontaktujte nás</h2>
+      <form id="contact-form">
+        <label for="name">Jméno</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">Zpráva</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+
+        <button type="submit">Odeslat</button>
+      </form>
+    </section>
+
+    <section id="partners">
+      <h2>Naši partneři</h2>
+      <div class="partners-logos">
+        <!-- ✅ OPRAVA: cesta musí být relativní vůči /public -->
+        <img src="/images/logo.png" alt="Partner 1" />
+        <img src="/images/vite.svg" alt="Partner 2" />
+      </div>
+    </section>
+
+    <section id="faq" class="section-alt">
+      <h2>Časté dotazy</h2>
+      <div class="faq">
+        <div class="faq-item">
+          <button class="faq-question">Jak funguje překlad?</button>
+          <div class="faq-answer">
+            <p>U každé události je dostupný stručný popis, informace a možnost české lokalizace.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">Mohu platit v korunách?</button>
+          <div class="faq-answer">
+            <p>Ano, platby probíhají přes bezpečného českého zprostředkovatele a lze platit v české měně.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
+  </footer>
+
+  <!-- AOS animace -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init({ duration: 800, once: true });</script>
+
+  <!-- ✅ Vite buildovaný hlavní modul -->
+  <script type="module" src="/src/main.js"></script>
+  <!-- ✅ Vykreslení událostí z JSON -->
+  <script src="/events.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Události | AJSEE</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a href="index.html" class="back-home" aria-label="Zpět na homepage">&larr; Zpět na homepage</a>
+
+  <main class="event-listing">
+    <h1>Všechny nadcházející události</h1>
+
+    <!-- 🔍 FILTRAČNÍ BAR -->
+    <section class="filter-bar">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Hledat událost podle názvu, místa nebo popisu..."
+      />
+      <select id="categoryFilter">
+        <option value="">Všechny kategorie</option>
+        <option value="Hudba">Hudba</option>
+        <option value="Sport">Sport</option>
+        <option value="Kultura">Kultura</option>
+      </select>
+    </section>
+
+    <!-- 📋 SEZNAM UDÁLOSTÍ -->
+    <div id="all-events" class="events-grid"></div>
+  </main>
+
+  <script src="./events.js"></script>
+</body>
+</html>

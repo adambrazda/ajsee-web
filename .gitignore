@@ -1,4 +1,4 @@
-# Logs
+# --- LOGY A TEMP ---
 logs
 *.log
 npm-debug.log*
@@ -7,18 +7,32 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# --- NODE ---
+node_modules/
 *.local
 
-# Editor directories and files
+# --- BUILD ---
+dist/
+dist-ssr/
+.vite/
+
+# --- ENV ---
+.env
+.env.*.local
+
+# --- EDITORY ---
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# --- NETLIFY ---
+.netlify/
+
+# --- TESTING ---
+coverage/

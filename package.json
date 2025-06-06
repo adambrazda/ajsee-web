@@ -16,8 +16,8 @@
     "eslint": "^8.0.0",
     "netlify-plugin-cache": "^1.0.3",
     "vitest": "^3.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
-"engines": {
-  "node": ">=18.0.0"
-},

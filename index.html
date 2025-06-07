@@ -1,36 +1,33 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- SEO -->
   <meta name="description" content="Vstupenky na koncerty, festivaly a sportovní události z celého světa – česky, přehledně a bez překážek.">
-  <link rel="canonical" href="https://ajsee.cz/" />
+  <link rel="canonical" href="https://ajsee.cz">
 
-  <!-- Open Graph (Facebook, LinkedIn) -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="AJSEE® – Refine culture.">
   <meta property="og:description" content="Zjednodušujeme přístup ke světovým kulturním zážitkům.">
   <meta property="og:url" content="https://ajsee.cz">
   <meta property="og:image" content="https://ajsee.cz/images/og-image.jpg">
 
-  <!-- Twitter Cards -->
+  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="AJSEE® – Refine culture.">
   <meta name="twitter:description" content="Vstupenky na koncerty, festivaly a sportovní události z celého světa.">
   <meta name="twitter:image" content="https://ajsee.cz/images/og-image.jpg">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/images/favicon.png" />
-  <link rel="apple-touch-icon" href="/images/favicon.png" />
-  <meta name="theme-color" content="#007bff" />
+  <!-- Favicon & manifest -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <link rel="apple-touch-icon" href="/images/favicon.png">
+  <meta name="theme-color" content="#007bff">
+  <link rel="manifest" href="/manifest.webmanifest">
 
-  <!-- PWA manifest (volitelně doplnit později) -->
-<link rel="manifest" href="/manifest.webmanifest" />
-  <!-- <link rel="manifest" href="/manifest.json"> -->
-
-  <!-- Google Analytics (GA4) -->
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -40,16 +37,14 @@
   </script>
 
   <title>AJSEE® – Refine culture.</title>
-
-  <!-- Vite CSS build -->
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
   <header class="site-header">
     <div class="container">
       <a href="/" class="logo-link">
-        <img src="/images/logo.png" alt="AJSEE Logo" class="logo" />
+        <img src="/images/logo.png" alt="AJSEE Logo" class="logo">
       </a>
       <nav class="main-nav">
         <ul>
@@ -67,10 +62,7 @@
     <section id="hero" class="hero-section" data-aos="fade-up">
       <div class="hero-content">
         <h1>Vstupenky na světové akce. Česky, přehledně, na pár kliknutí.</h1>
-        <p>
-          S ajsee už nemusíte složitě hledat a kupovat lístky na zahraničních webech.
-          Chystáme platformu, která zpřístupní koncerty, festivaly i sportovní události z celého světa – v češtině a bez překážek.
-        </p>
+        <p>S ajsee už nemusíte složitě hledat a kupovat lístky na zahraničních webech. Chystáme platformu, která zpřístupní koncerty, festivaly i sportovní události z celého světa – v češtině a bez překážek.</p>
         <div class="hero-buttons">
           <a href="#partners" class="btn-primary">Chci spolupracovat</a>
           <a href="#info" class="btn-secondary">Zjistit víc o ajsee</a>
@@ -88,7 +80,6 @@
       <p>Budujeme platformu, která ti v češtině nabídne vstupenky na výstavy, divadla a koncerty v zahraničí.</p>
     </section>
 
-    <!-- ✅ SEKCE, kde se vykreslují události přes events.js -->
     <section id="upcoming-events" class="event-preview">
       <h2>Nejbližší události</h2>
       <div id="preview-events" class="events-grid"></div>
@@ -97,16 +88,14 @@
 
     <section id="contact" class="section-alt">
       <h2>Kontaktujte nás</h2>
-      <form id="contact-form">
+      <form id="contact-form" name="contact" method="POST" data-netlify="true">
+        <input type="hidden" name="form-name" value="contact">
         <label for="name">Jméno</label>
         <input type="text" id="name" name="name" required>
-
         <label for="email">E-mail</label>
         <input type="email" id="email" name="email" required>
-
         <label for="message">Zpráva</label>
         <textarea id="message" name="message" rows="5" required></textarea>
-
         <button type="submit">Odeslat</button>
       </form>
     </section>
@@ -114,9 +103,8 @@
     <section id="partners">
       <h2>Naši partneři</h2>
       <div class="partners-logos">
-        <!-- ✅ OPRAVA: cesta musí být relativní vůči /public -->
-        <img src="/images/logo.png" alt="Partner 1" />
-        <img src="/images/vite.svg" alt="Partner 2" />
+        <img src="/images/logo.png" alt="Partner 1">
+        <img src="/images/vite.svg" alt="Partner 2">
       </div>
     </section>
 
@@ -124,13 +112,13 @@
       <h2>Časté dotazy</h2>
       <div class="faq">
         <div class="faq-item">
-          <button class="faq-question">Jak funguje překlad?</button>
+          <button class="faq-question" type="button">Jak funguje překlad?</button>
           <div class="faq-answer">
             <p>U každé události je dostupný stručný popis, informace a možnost české lokalizace.</p>
           </div>
         </div>
         <div class="faq-item">
-          <button class="faq-question">Mohu platit v korunách?</button>
+          <button class="faq-question" type="button">Mohu platit v korunách?</button>
           <div class="faq-answer">
             <p>Ano, platby probíhají přes bezpečného českého zprostředkovatele a lze platit v české měně.</p>
           </div>
@@ -143,14 +131,20 @@
     <p>&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
   </footer>
 
-  <!-- AOS animace -->
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
   <script>AOS.init({ duration: 800, once: true });</script>
 
-  <!-- ✅ Vite buildovaný hlavní modul -->
   <script type="module" src="/src/main.js"></script>
-  <!-- ✅ Vykreslení událostí z JSON -->
   <script src="/events.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log("✅ Service Worker registered:", reg))
+          .catch(err => console.error("❌ SW registration failed:", err));
+      });
+    }
+  </script>
 </body>
 </html>

@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Události | AJSEE</title>
-  <link rel="stylesheet" href="./style.css" />
+
+  <!-- SEO a styl -->
+  <link rel="canonical" href="https://ajsee.cz/events.html">
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
 </head>
+
 <body>
   <a href="index.html" class="back-home" aria-label="Zpět na homepage">&larr; Zpět na homepage</a>
 
@@ -14,12 +21,15 @@
 
     <!-- 🔍 FILTRAČNÍ BAR -->
     <section class="filter-bar">
+      <label for="searchInput" class="visually-hidden">Hledat</label>
       <input
         type="text"
         id="searchInput"
-        placeholder="Hledat událost podle názvu, místa nebo popisu..."
-      />
-      <select id="categoryFilter">
+        name="search"
+        placeholder="Hledat událost podle názvu, místa nebo popisu...">
+
+      <label for="categoryFilter" class="visually-hidden">Kategorie</label>
+      <select id="categoryFilter" name="category">
         <option value="">Všechny kategorie</option>
         <option value="Hudba">Hudba</option>
         <option value="Sport">Sport</option>

@@ -7,15 +7,22 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build-sw": "workbox generateSW workbox-config.js",
+    "lhci": "lhci autorun",
+    "validate:html": "html-validate **/*.html"
   },
   "dependencies": {
     "vite": "^6.3.5"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.14.0",
     "eslint": "^8.0.0",
+    "html-validate": "^9.5.5",
     "netlify-plugin-cache": "^1.0.3",
-    "vitest": "^3.2.1"
+    "vite-plugin-inspect": "^11.1.0",
+    "vitest": "^3.2.1",
+    "workbox-cli": "^7.3.0"
   },
   "engines": {
     "node": ">=18.0.0"

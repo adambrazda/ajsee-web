@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detail události | AJSEE</title>
-  <link rel="stylesheet" href="/style.css" />
+
+  <!-- SEO -->
+  <meta name="description" content="Detail události v rámci AJSEE platformy – kulturní akce a přehledné informace.">
+  <link rel="canonical" href="https://ajsee.cz/event-detail.html">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Detail události | AJSEE">
+  <meta property="og:description" content="Detailní informace o události z kulturního světa.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://ajsee.cz/images/og-image.jpg">
+  <meta property="og:url" content="https://ajsee.cz/event-detail.html">
+
+  <!-- Favicon + PWA -->
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+
+  <!-- Styl -->
+  <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
   <a href="events.html" class="back-home" aria-label="Zpět na události">&larr; Zpět na události</a>
 
@@ -18,21 +36,18 @@
     const eventId = params.get("id");
 
     fetch("/data/events.json")
-      .then((res) => res.json())
-      .then((events) => {
-        const event = events.find((e) => e.id === Number(eventId));
-
+      .then(res => res.json())
+      .then(events => {
+        const event = events.find(e => e.id === Number(eventId));
         if (!event) {
           document.getElementById("event-detail").innerHTML = "<p>Událost nebyla nalezena.</p>";
           return;
         }
 
-        // Formátování času pro kalendář
         function formatDateTimeForCalendar(dateStr) {
           const date = new Date(dateStr);
           const start = date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-          const endDate = new Date(date.getTime() + 2 * 60 * 60 * 1000);
-          const end = endDate.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+          const end = new Date(date.getTime() + 2 * 60 * 60 * 1000).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
           return { start, end };
         }
 
@@ -41,7 +56,7 @@
 
         document.getElementById("event-detail").innerHTML = `
           <div class="event-detail">
-            <img src="${event.image}" alt="${event.name}" onerror="this.onerror=null; this.src='https://picsum.photos/600/400?grayscale&blur';" />
+            <img src="${event.image}" alt="${event.name}" onerror="this.onerror=null; this.src='https://picsum.photos/600/400?grayscale&blur'">
             <div class="event-detail-info">
               <h1>${event.name}</h1>
               <p><strong>Datum:</strong> ${event.date}</p>
@@ -49,9 +64,9 @@
               <p><strong>Kategorie:</strong> ${event.category}</p>
               <p>${event.description}</p>
               <div class="cta-buttons">
-                <a href="${event.link}" target="_blank" class="btn">Přejít na oficiální stránku</a>
-                <a id="google-calendar-link" class="btn" href="${calendarUrl}" target="_blank">Přidat do Google Kalendáře</a>
-                <button id="copy-link-btn" class="btn-small">📋 Zkopírovat odkaz</button>
+                <a href="${event.link}" target="_blank" rel="noopener" class="btn">Přejít na oficiální stránku</a>
+                <a href="${calendarUrl}" target="_blank" rel="noopener" class="btn">Přidat do Google Kalendáře</a>
+                <button id="copy-link-btn" class="btn-small" type="button">📋 Zkopírovat odkaz</button>
                 <span id="copy-status" style="margin-left: 0.5rem; font-size: 0.9rem;"></span>
               </div>
             </div>
@@ -65,7 +80,7 @@
           });
         });
       })
-      .catch((err) => {
+      .catch(err => {
         console.error("Chyba při načítání detailu:", err);
         document.getElementById("event-detail").innerHTML = "<p>Chyba při načítání dat.</p>";
       });

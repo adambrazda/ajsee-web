@@ -25,22 +25,31 @@
 </head>
 
 <body>
-  <a href="events.html" class="back-home" aria-label="Zpět na události">&larr; Zpět na události</a>
+  <a href="events.html" class="back-home" aria-label="Back to events" id="back-link">&larr; Zpět na události</a>
 
   <main class="event-detail-container">
     <div id="event-detail"></div>
   </main>
 
-  <script>
+  <script type="module">
+    import { translations } from "./src/i18n/translations.js";
+
+    function getLang() {
+      return document.getElementById("lang-switcher")?.value || "cs";
+    }
+
     const params = new URLSearchParams(window.location.search);
     const eventId = params.get("id");
 
     fetch("/data/events.json")
       .then(res => res.json())
       .then(events => {
+        const lang = getLang();
+        const t = translations[lang] || translations["cs"];
+
         const event = events.find(e => e.id === Number(eventId));
         if (!event) {
-          document.getElementById("event-detail").innerHTML = "<p>Událost nebyla nalezena.</p>";
+          document.getElementById("event-detail").innerHTML = `<p>${t.eventNotFound || "Událost nebyla nalezena."}</p>`;
           return;
         }
 
@@ -59,14 +68,14 @@
             <img src="${event.image}" alt="${event.name}" onerror="this.onerror=null; this.src='https://picsum.photos/600/400?grayscale&blur'">
             <div class="event-detail-info">
               <h1>${event.name}</h1>
-              <p><strong>Datum:</strong> ${event.date}</p>
-              <p><strong>Místo:</strong> ${event.location}</p>
-              <p><strong>Kategorie:</strong> ${event.category}</p>
+              <p><strong>${t.eventDate || "Datum"}:</strong> ${event.date}</p>
+              <p><strong>${t.eventLocation || "Místo"}:</strong> ${event.location}</p>
+              <p><strong>${t.eventCategory || "Kategorie"}:</strong> ${event.category}</p>
               <p>${event.description}</p>
               <div class="cta-buttons">
-                <a href="${event.link}" target="_blank" rel="noopener" class="btn">Přejít na oficiální stránku</a>
-                <a href="${calendarUrl}" target="_blank" rel="noopener" class="btn">Přidat do Google Kalendáře</a>
-                <button id="copy-link-btn" class="btn-small" type="button">📋 Zkopírovat odkaz</button>
+                <a href="${event.link}" target="_blank" rel="noopener" class="btn">${t.eventOfficial || "Přejít na oficiální stránku"}</a>
+                <a href="${calendarUrl}" target="_blank" rel="noopener" class="btn">${t.eventAddCalendar || "Přidat do Google Kalendáře"}</a>
+                <button id="copy-link-btn" class="btn-small" type="button">📋 ${t.copyLink || "Zkopírovat odkaz"}</button>
                 <span id="copy-status" style="margin-left: 0.5rem; font-size: 0.9rem;"></span>
               </div>
             </div>
@@ -74,9 +83,8 @@
         `;
 
         document.getElementById("copy-link-btn")?.addEventListener("click", () => {
-          const url = window.location.href;
-          navigator.clipboard.writeText(url).then(() => {
-            document.getElementById("copy-status").textContent = "Odkaz zkopírován ✅";
+          navigator.clipboard.writeText(window.location.href).then(() => {
+            document.getElementById("copy-status").textContent = `${t.copySuccess || "Odkaz zkopírován ✅"}`;
           });
         });
       })

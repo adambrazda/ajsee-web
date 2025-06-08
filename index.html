@@ -56,16 +56,20 @@
         </ul>
       </nav>
     </div>
+    <select id="lang-switcher">
+      <option value="cs">Čeština</option>
+      <option value="en">English</option>
+    </select>
   </header>
 
   <main>
     <section id="hero" class="hero-section" data-aos="fade-up">
       <div class="hero-content">
-        <h1>Vstupenky na světové akce. Česky, přehledně, na pár kliknutí.</h1>
-        <p>S ajsee už nemusíte složitě hledat a kupovat lístky na zahraničních webech. Chystáme platformu, která zpřístupní koncerty, festivaly i sportovní události z celého světa – v češtině a bez překážek.</p>
+        <h1 id="headline">Vstupenky na světové akce. Česky, přehledně, na pár kliknutí.</h1>
+        <p id="intro-text">S ajsee už nemusíte složitě hledat a kupovat lístky na zahraničních webech. Chystáme platformu, která zpřístupní koncerty, festivaly i sportovní události z celého světa – v češtině a bez překážek.</p>
         <div class="hero-buttons">
-          <a href="#partners" class="btn-primary">Chci spolupracovat</a>
-          <a href="#info" class="btn-secondary">Zjistit víc o ajsee</a>
+          <a href="#partners" class="btn-primary" id="cta-collab">Chci spolupracovat</a>
+          <a href="#info" class="btn-secondary" id="cta-info">Zjistit víc o ajsee</a>
         </div>
         <ul class="hero-benefits">
           <li>🌍 Přístup k tisícům akcí po celém světě</li>
@@ -76,32 +80,32 @@
     </section>
 
     <section id="about" class="section-alt">
-      <h2>O nás</h2>
-      <p>Budujeme platformu, která ti v češtině nabídne vstupenky na výstavy, divadla a koncerty v zahraničí.</p>
+      <h2 id="about-heading">O nás</h2>
+      <p id="about-text">Budujeme platformu, která ti v češtině nabídne vstupenky na výstavy, divadla a koncerty v zahraničí.</p>
     </section>
 
     <section id="upcoming-events" class="event-preview">
-      <h2>Nejbližší události</h2>
+      <h2 id="events-heading">Nejbližší události</h2>
       <div id="preview-events" class="events-grid"></div>
-      <a href="events.html" class="btn">Zobrazit všechny události</a>
+      <a href="events.html" class="btn" id="view-all-events">Zobrazit všechny události</a>
     </section>
 
     <section id="contact" class="section-alt">
-      <h2>Kontaktujte nás</h2>
+      <h2 id="contact-heading">Kontaktujte nás</h2>
       <form id="contact-form" name="contact" method="POST" data-netlify="true">
         <input type="hidden" name="form-name" value="contact">
-        <label for="name">Jméno</label>
+        <label for="name" id="label-name">Jméno</label>
         <input type="text" id="name" name="name" required>
-        <label for="email">E-mail</label>
+        <label for="email" id="label-email">E-mail</label>
         <input type="email" id="email" name="email" required>
-        <label for="message">Zpráva</label>
+        <label for="message" id="label-message">Zpráva</label>
         <textarea id="message" name="message" rows="5" required></textarea>
-        <button type="submit">Odeslat</button>
+        <button type="submit" id="send-button">Odeslat</button>
       </form>
     </section>
 
     <section id="partners">
-      <h2>Naši partneři</h2>
+      <h2 id="partners-heading">Naši partneři</h2>
       <div class="partners-logos">
         <img src="/images/logo.png" alt="Partner 1">
         <img src="/images/vite.svg" alt="Partner 2">
@@ -109,7 +113,7 @@
     </section>
 
     <section id="faq" class="section-alt">
-      <h2>Časté dotazy</h2>
+      <h2 id="faq-heading">Časté dotazy</h2>
       <div class="faq">
         <div class="faq-item">
           <button class="faq-question" type="button">Jak funguje překlad?</button>
@@ -137,6 +141,7 @@
 
   <script type="module" src="/src/main.js"></script>
   <script src="/events.js"></script>
+  <script type="module" src="/src/i18n/i18n.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

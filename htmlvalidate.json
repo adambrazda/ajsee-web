@@ -6,10 +6,6 @@
     "node_modules",
     "coverage",
     "dist/**/*.html"
-  ]
-}
-{
-  "elements": ["html5"],
-  "extends": ["html-validate:recommended"],
+  ],
   "exclude": ["node_modules", "dist/**/*.map", "**/*.map"]
 }

@@ -1,0 +1,33 @@
+// ------------------------------------------------------
+// AJSEE – MAIN SCSS ENTRY POINT (Modular Architecture)
+// ------------------------------------------------------
+
+// 🔁 UTILITIES
+@import './utils/variables';
+@import './utils/mixins';
+@import './utils/reset';
+
+// 🔁 LAYOUT
+@import './partials/layout';
+
+// 🔁 SECTIONS
+@import './partials/header.scss';
+@import './partials/hero.scss';
+@import './partials/events.scss';
+@import './partials/partners.scss';
+@import './partials/blog.scss';
+@import './partials/contact.scss';
+@import './partials/about.scss';
+@import './partials/footer.scss';
+@import './partials/events-page.scss';
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  background: white;
+}
+

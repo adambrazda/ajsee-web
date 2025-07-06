@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title data-i18n-key="events-page-title">Události</title>
+  <link rel="stylesheet" href="/src/styles/main.scss" />
+</head>
+<body>
+  <!-- Header a navigace -->
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- Logo -->
+    <a href="/" class="logo-link" aria-label="Domů">
+      <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
+    </a>
+
+    <!-- Hamburger menu (pouze mobil) -->
+    <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Navigace (hlavní menu) -->
+    <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+      <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+      <ul>
+        <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+        <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
+        <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
+        <li><a href="#blog" data-i18n-key="nav-blog">Blog</a></li>
+        <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+      </ul>
+
+      <!-- Jazykové přepínače v mobilním menu -->
+      <div class="language-switcher mobile-switcher">
+        <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+      </div>
+    </nav>
+
+    <!-- Jazykové přepínače – desktop -->
+    <div class="language-switcher desktop-switcher">
+      <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+    </div>
+
+    <!-- Overlay pozadí menu -->
+    <div class="menu-overlay-bg"></div>
+
+  </div>
+</header>
+
+  <main>
+    <!-- Hero sekce -->
+    <section class="events-hero">
+  <div class="container events-hero-content">
+    <div class="events-hero-text">
+      <h1 class="events-hero-title" data-i18n-key="events-hero-title">
+        Nejlepší zážitky na dosah
+      </h1>
+      <p class="events-hero-desc" data-i18n-key="events-hero-desc">
+        Objevte koncerty, festivaly, divadlo i sportovní akce v jednom přehledném katalogu.
+      </p>
+      <a href="#upcoming-events" class="events-cta-btn" data-i18n-key="events-hero-cta">
+        Zjistit nejbližší události
+      </a>
+    </div>
+    <div class="events-hero-image">
+      <img src="/images/hero-events.svg" alt="Ilustrace událostí" loading="lazy" />
+    </div>
+  </div>
+</section>
+    <!-- Sekce: Nejbližší události -->
+    <section id="upcoming-events" class="events-upcoming-section">
+      <div class="container">
+        <div class="events-filters">
+          <label>
+            <span data-i18n-key="events-filter-category"></span>
+            <select id="events-category-filter">
+              <option value="all" data-i18n-key="events-category-all"></option>
+              <option value="concert" data-i18n-key="events-category-concert"></option>
+              <option value="festival" data-i18n-key="events-category-festival"></option>
+              <option value="theatre" data-i18n-key="events-category-theatre"></option>
+              <option value="sport" data-i18n-key="events-category-sport"></option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n-key="events-filter-sort"></span>
+            <select id="events-sort-filter">
+              <option value="nearest" data-i18n-key="events-sort-nearest"></option>
+              <option value="latest" data-i18n-key="events-sort-latest"></option>
+            </select>
+          </label>
+        </div>
+        <h2 class="events-upcoming-title" data-i18n-key="events-upcoming-title">Nejbližší události</h2>
+        <div id="eventsList" class="events-grid"></div>
+      </div>
+    </section>
+
+    <!-- Kategorie událostí -->
+    <section class="events-categories">
+      <div class="container">
+        <h3 data-i18n-key="events-categories-title">Kategorie</h3>
+        <div class="events-categories-list" id="eventsCategories">
+          <div class="category-card" data-category="concert">
+            <span class="category-icon icon-concert"></span>
+            <span data-i18n-key="events-category-concert"></span>
+          </div>
+          <div class="category-card" data-category="festival">
+            <span class="category-icon icon-festival"></span>
+            <span data-i18n-key="events-category-festival"></span>
+          </div>
+          <div class="category-card" data-category="theatre">
+            <span class="category-icon icon-theatre"></span>
+            <span data-i18n-key="events-category-theatre"></span>
+          </div>
+          <div class="category-card" data-category="sport">
+            <span class="category-icon icon-sport"></span>
+            <span data-i18n-key="events-category-sport"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Výhody -->
+    <section class="events-benefits">
+      <div class="container">
+        <h3 data-i18n-key="events-benefits-title">Proč s námi?</h3>
+        <div class="benefits-list">
+          <div class="benefit">
+            <span class="benefit-icon">🎫</span>
+            <span data-i18n-key="events-benefit-1"></span>
+          </div>
+          <div class="benefit">
+            <span class="benefit-icon">🤝</span>
+            <span data-i18n-key="events-benefit-2"></span>
+          </div>
+          <div class="benefit">
+            <span class="benefit-icon">⭐</span>
+            <span data-i18n-key="events-benefit-3"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL: Detail události -->
+    <div id="eventModal" class="event-modal hidden">
+      <div class="event-modal-content">
+        <button id="modalClose" class="event-modal-close" aria-label="Zavřít" tabindex="0">
+          <!-- SVG nebo křížek -->
+        </button>
+        <img id="modalImage" class="modal-image" alt="" />
+        <div class="modal-details">
+          <h2 id="modalTitle" class="modal-title"></h2>
+          <p class="modal-meta">
+            <span id="modalDate" class="modal-date"></span> |
+            <span id="modalLocation" class="modal-location"></span>
+          </p>
+          <p id="modalDescription" class="modal-description"></p>
+          <p class="modal-category" data-i18n-key="event-category">
+            <span id="modalCategory"></span>
+          </p>
+          <div class="calendar-buttons">
+            <span class="calendar-label" data-i18n-key="add-to-calendar"></span>
+            <div class="calendar-btns-wrap">
+              <a href="#" id="googleCalendarLink" class="calendar-btn calendar-btn--google" target="_blank" rel="noopener">
+                <span class="calendar-btn-icon"></span>
+                <span class="calendar-btn-label" data-i18n-key="calendar-google"></span>
+              </a>
+              <a href="#" id="outlookCalendarLink" class="calendar-btn calendar-btn--outlook" target="_blank" rel="noopener">
+                <span class="calendar-btn-icon"></span>
+                <span class="calendar-btn-label" data-i18n-key="calendar-outlook"></span>
+              </a>
+              <a href="#" id="appleCalendarLink" class="calendar-btn calendar-btn--apple" download="event.ics">
+                <span class="calendar-btn-icon"></span>
+                <span class="calendar-btn-label" data-i18n-key="calendar-apple"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>&copy; 2025 AJSEE</p>
+  </footer>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "hero"
+    label: "Hero sekce"
+    files:
+      - file: "content/hero.json"
+        label: "Hero obsah"
+        name: "hero"
+        fields:
+          - { label: "Nadpis", name: "headline", widget: "string" }
+          - { label: "Popis", name: "intro", widget: "text" }
+          - { label: "Obrázek", name: "image", widget: "image" }
+          - { label: "CTA (spolupráce)", name: "cta_collab", widget: "string" }
+          - { label: "CTA (víc info)", name: "cta_info", widget: "string" }
+  - name: "events"
+    label: "Události"
+    file: "content/events.json"
+    fields:
+      - { label: "Eventy", name: "events", widget: "list", fields: [
+        {label: "Název", name: "title", widget: "string"},
+        {label: "Datum", name: "date", widget: "string"},
+        {label: "Místo", name: "location", widget: "string"},
+        {label: "Obrázek", name: "image", widget: "image"},
+        {label: "Odkaz", name: "url", widget: "string"}
+      ] }
+  - name: "partners"
+    label: "Partneři"
+    file: "content/partners.json"
+    fields:
+      - { label: "Nadpis sekce", name: "headline", widget: "string" }
+      - { label: "Popis", name: "description", widget: "text" }
+      - label: "Partneři"
+        name: "items"
+        widget: "list"
+        fields:
+          - { label: "Jméno partnera", name: "name", widget: "string" }
+          - { label: "Popis", name: "bio", widget: "text" }
+          - { label: "Logo", name: "logo", widget: "image" }
+          - { label: "Odkaz", name: "url", widget: "string" }
+  - name: "blog"
+    label: "Blog & Reference"
+    folder: "content/blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Titulek", name: "title", widget: "string" }
+      - { label: "Datum", name: "date", widget: "datetime" }
+      - { label: "Perex", name: "excerpt", widget: "text" }
+      - { label: "Obrázek", name: "image", widget: "image", required: false }
+      - { label: "Obsah", name: "body", widget: "markdown" }

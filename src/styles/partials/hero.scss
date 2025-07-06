@@ -1,0 +1,203 @@
+// =============================================
+// HERO SECTION – full viewport, responsive
+// =============================================
+
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(133deg, #0077cc 80%, #004080 100%);
+  color: #fff;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  z-index: 0; // ✅ DŮLEŽITÉ – zajistí, že header bude navrchu
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, #0077cc 70%, #00325cee 100%);
+    opacity: 0.92;
+    z-index: -1; // ✅ DŮLEŽITÉ – pozadí půjde pod obsah i header
+    pointer-events: none;
+  }
+}
+
+.hero-flex {
+  position: relative;
+  z-index: 2;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  height: 100vh;
+  min-height: 540px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4vw;
+  padding: 0 4vw;
+}
+
+.hero-content {
+  flex: 1 1 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 300px;
+
+  h1 {
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    margin-bottom: 1.1rem;
+    color: #fff;
+    line-height: 1.13;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 22px #00396e44;
+  }
+
+  p {
+    color: #eaf6fb;
+    font-size: clamp(1.1rem, 1.7vw, 1.29rem);
+    margin-bottom: 2rem;
+    max-width: 90%;
+    text-shadow: 0 1px 8px #00396e33;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 0.2rem;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.99em 2.4em;
+    font-size: 1.13rem;
+    font-weight: 700;
+    border-radius: 2.2em;
+    border: none;
+    cursor: pointer;
+    transition: background 0.16s, color 0.16s, box-shadow 0.15s, transform 0.18s;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 2px 12px #00396e22;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(90deg, #fff 40%, #e6f4ff 100%);
+    color: #0077cc;
+    border: 2px solid #fff;
+
+    &:hover,
+    &:focus {
+      background: #0077cc;
+      color: #fff;
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 4px 18px #0051a633;
+    }
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+
+    &:hover,
+    &:focus {
+      background: #fff;
+      color: #0077cc;
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 4px 18px #0051a633;
+    }
+  }
+}
+
+.hero-image-wrapper {
+  flex: 1 1 500px;
+  min-width: 260px;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  .hero-image {
+    width: 100%;
+    max-width: 520px;
+    min-width: 180px;
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 28px #00396e33;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 40px #00396e22);
+    background: #eaf6fb;
+  }
+}
+
+// ------------------------
+// Responsive breakpoints
+// ------------------------
+
+@media (max-width: 1100px) {
+  .hero-flex {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    padding: 3vw 2vw;
+    gap: 2.3rem;
+    min-height: 440px;
+  }
+
+  .hero-image-wrapper {
+    justify-content: center;
+    margin-top: 1.4rem;
+  }
+
+  .hero-content {
+    align-items: center;
+    text-align: center;
+
+    h1 {
+      font-size: clamp(1.4rem, 6vw, 2.2rem);
+    }
+
+    .hero-buttons {
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 700px) {
+  .hero-section {
+    min-height: 90vh;
+  }
+
+  .hero-flex {
+    gap: 1.3rem;
+    min-height: 350px;
+    height: auto;
+    padding: 1.2rem 0.2rem;
+  }
+
+  .hero-image-wrapper .hero-image {
+    width: 88vw;
+    max-width: 97vw;
+  }
+
+  .hero-content h1 {
+    font-size: 1.21rem;
+  }
+
+  .hero-content p {
+    font-size: 0.99rem;
+  }
+
+  .hero-buttons {
+    gap: 0.8rem;
+  }
+}

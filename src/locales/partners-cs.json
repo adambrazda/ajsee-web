@@ -1,0 +1,26 @@
+{
+   "nav-home": "Domů",
+    "nav-events": "Události",
+  "nav-partners": "Pro partnery",
+  "nav-blog": "Blog",
+  "nav-contact": "Kontakt",
+
+    "partner-headline": "Staňte se partnerem AJSEE®",
+  "partner-intro": "Spolupracujte s námi na tvorbě moderní, bezpečné a uživatelsky přívětivé platformy pro kulturu, koncerty, divadlo a sport. Pomůžeme vám oslovit nové publikum a zviditelnit vaši značku.",
+  "partner-benefit1": "Získáte nové zákazníky bez starostí",
+  "partner-benefit2": "Rychlá komunikace, osobní přístup",
+  "partner-benefit3": "Zviditelnění v rámci české i evropské komunity",
+  "partner-benefit4": "Jednoduché zapojení bez složitého IT",
+  "partner-cta": "Chci být partnerem",
+  "partner-contact-headline": "Ozvěte se nám",
+  "partner-label-company": "Název firmy / instituce",
+  "partner-placeholder-company": "Název firmy / instituce",
+  "partner-label-name": "Jméno",
+  "partner-placeholder-name": "Vaše jméno",
+  "partner-label-email": "E-mail",
+  "partner-placeholder-email": "Váš e-mail",
+  "partner-label-message": "Vzkaz",
+  "partner-placeholder-message": "Vaše zpráva",
+  "partner-send": "Odeslat",
+  "partner-success-msg": "Děkujeme za zájem o partnerství! Ozveme se vám co nejdříve."
+}

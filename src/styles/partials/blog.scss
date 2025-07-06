@@ -1,0 +1,71 @@
+// =============================================
+// BLOG SECTION – grid, card, image, hover
+// =============================================
+
+.blog-section {
+  padding: 4rem 1rem;
+  background: #fff;
+  text-align: center;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+// ------------------------
+// BLOG CARD
+// ------------------------
+
+.blog-card {
+  background: $brand-grey-bg;
+  border-radius: $radius-md;
+  padding: 1.5rem;
+  box-shadow: $shadow-light;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 8px 28px rgba($brand-blue, 0.1);
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 0.5rem;
+  }
+}
+
+// ------------------------
+// IMAGE
+// ------------------------
+
+.blog-image {
+  max-width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: $radius-sm;
+  margin-bottom: 1rem;
+}
+
+// ------------------------
+// META INFO
+// ------------------------
+
+.blog-meta {
+  font-size: 0.92rem;
+  color: $brand-blue;
+  margin-bottom: 0.4rem;
+}

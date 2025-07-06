@@ -1,0 +1,18 @@
+{
+  "headline": "Naši partneři",
+  "description": "Spolupracujeme s nejlepšími firmami, institucemi a agenturami z celého světa.",
+  "items": [
+    {
+      "name": "Ticketmaster",
+      "bio": "Globální lídr v prodeji vstupenek.",
+      "logo": "/images/uploads/ticketmaster.png",
+      "url": "https://www.ticketmaster.com/"
+    },
+    {
+      "name": "GoOut.cz",
+      "bio": "Největší kulturní portál v Česku.",
+      "logo": "/images/uploads/goout.png",
+      "url": "https://goout.net/"
+    }
+  ]
+}

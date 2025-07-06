@@ -1,0 +1,35 @@
+// =============================================
+// SCSS VARIABLES – AJSEE Brand
+// =============================================
+
+// Brand colors
+$brand-blue: #0077cc;
+$brand-blue-light: #4bb7fa;
+$brand-blue-dark: #00325c;
+$brand-white: #ffffff;
+
+// Greys / Backgrounds
+$brand-grey-bg: #f8fafd;
+$brand-grey: #eaeaea;
+$brand-grey-dark: #999;
+$brand-dark: #22223b;
+
+// Typography
+$font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$font-size-base: 16px;
+$font-size-sm: 0.95rem;
+$font-size-md: 1.12rem;
+$font-size-lg: 1.4rem;
+
+// Shadows
+$shadow-light: 0 2px 10px rgba(0, 0, 0, 0.05);
+$shadow-card: 0 4px 36px rgba($brand-blue, 0.09);
+
+// Border radius
+$radius-sm: 6px;
+$radius-md: 12px;
+$radius-lg: 22px;
+$radius-xl: 999px;
+
+// Transitions
+$transition-default: 0.2s ease;

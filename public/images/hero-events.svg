@@ -1,0 +1,74 @@
+<svg viewBox="0 0 1440 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E9F7FF"/>
+      <stop offset="100%" stop-color="#B2E5FC"/>
+    </linearGradient>
+    <linearGradient id="stage" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFE066"/>
+      <stop offset="100%" stop-color="#FFD23F"/>
+    </linearGradient>
+    <radialGradient id="spotlight1" cx="0.5" cy="1" r="1">
+      <stop offset="0%" stop-color="#FFFDE4" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="spotlight2" cx="0.5" cy="1" r="1">
+      <stop offset="0%" stop-color="#B3E7FB" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1440" height="480" fill="url(#bg)"/>
+
+  <!-- City Silhouette -->
+  <g opacity="0.55">
+    <rect x="80" y="260" width="100" height="110" rx="10" fill="#70C1E8"/>
+    <rect x="200" y="280" width="60" height="90" rx="8" fill="#47B3E7"/>
+    <rect x="280" y="240" width="120" height="130" rx="10" fill="#66C5EC"/>
+    <rect x="430" y="300" width="80" height="70" rx="8" fill="#96E6C8"/>
+    <rect x="600" y="260" width="110" height="110" rx="10" fill="#A7E0F2"/>
+    <rect x="900" y="260" width="110" height="110" rx="10" fill="#62C2B3"/>
+    <rect x="1060" y="320" width="90" height="50" rx="8" fill="#A2E2F4"/>
+    <rect x="1200" y="250" width="80" height="120" rx="10" fill="#70C1E8"/>
+    <rect x="1300" y="320" width="60" height="50" rx="8" fill="#FFD23F"/>
+    <!-- Decorative "music notes", "mask", "ticket" icons as background elements -->
+    <ellipse cx="210" cy="350" rx="10" ry="6" fill="#FFD23F" opacity="0.65"/>
+    <ellipse cx="350" cy="290" rx="7" ry="5" fill="#20C997" opacity="0.65"/>
+    <ellipse cx="980" cy="340" rx="11" ry="7" fill="#FFE066" opacity="0.5"/>
+    <!-- Music note (left) -->
+    <path d="M150 350 l20 -7 v25 a10 10 0 1 1 -6 -8 z" fill="#66C5EC"/>
+    <!-- Theatre mask (right) -->
+    <path d="M1260 330 q18 8 18 24 t-18 24 q-18-8-18-24 t18-24" fill="#FFD23F" opacity="0.45"/>
+    <!-- Ticket (middle) -->
+    <rect x="720" y="360" width="38" height="18" rx="3" fill="#FFE066" stroke="#FFD23F" stroke-width="2"/>
+    <circle cx="735" cy="369" r="2" fill="#FFD23F"/>
+    <circle cx="745" cy="369" r="2" fill="#FFD23F"/>
+    <circle cx="755" cy="369" r="2" fill="#FFD23F"/>
+  </g>
+
+  <!-- Stage (center) -->
+  <ellipse cx="720" cy="390" rx="120" ry="36" fill="url(#stage)" opacity="0.98"/>
+  <rect x="640" y="390" width="160" height="22" rx="10" fill="#FFF9DB" opacity="0.98"/>
+
+  <!-- Spotlights -->
+  <polygon points="720,390 620,170 670,170" fill="url(#spotlight1)" opacity="0.34"/>
+  <polygon points="720,390 770,170 820,170" fill="url(#spotlight2)" opacity="0.34"/>
+  <polygon points="720,390 700,190 740,190" fill="#FFE066" opacity="0.1"/>
+
+  <!-- Crowd -->
+  <ellipse cx="720" cy="440" rx="140" ry="30" fill="#B2E5FC" opacity="0.6"/>
+  <ellipse cx="680" cy="445" rx="15" ry="9" fill="#66C5EC"/>
+  <ellipse cx="710" cy="450" rx="11" ry="7" fill="#FFD23F"/>
+  <ellipse cx="740" cy="445" rx="13" ry="8" fill="#20C997"/>
+  <ellipse cx="770" cy="450" rx="10" ry="6" fill="#A2E2F4"/>
+
+  <!-- Confetti and flags -->
+  <rect x="320" y="240" width="12" height="2" fill="#FFD23F" rx="1" transform="rotate(-10 320 240)"/>
+  <rect x="1100" y="250" width="16" height="2" fill="#20C997" rx="1" transform="rotate(7 1100 250)"/>
+  <circle cx="360" cy="320" r="3" fill="#FFD23F"/>
+  <circle cx="1230" cy="340" r="2" fill="#20C997"/>
+  <circle cx="800" cy="370" r="3" fill="#FFD23F"/>
+  <circle cx="650" cy="380" r="2" fill="#20C997"/>
+
+  <!-- Volný prostor nahoře pro headline -->
+</svg>

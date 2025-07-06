@@ -1,0 +1,19 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shadow for depth -->
+  <ellipse cx="64" cy="110" rx="32" ry="8" fill="#B3D0F5" opacity="0.24"/>
+  <!-- Shield main body -->
+  <path d="M64 24L102 42V66c0 22-16 36-38 42-22-6-38-20-38-42V42L64 24z" fill="#E7F3FD" stroke="#2874B2" stroke-width="2"/>
+  <!-- Check mark for reliability -->
+  <path d="M53 71l11 11 18-19" stroke="#2874B2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Star (quality mark) -->
+  <g>
+    <circle cx="94" cy="88" r="12" fill="url(#starGrad)" stroke="#19598A" stroke-width="2"/>
+    <path d="M94 82l2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5l2-5z" fill="#2874B2"/>
+  </g>
+  <defs>
+    <linearGradient id="starGrad" x1="94" y1="76" x2="94" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E4F1FD"/>
+      <stop offset="1" stop-color="#7DC3FF"/>
+    </linearGradient>
+  </defs>
+</svg>

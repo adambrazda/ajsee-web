@@ -1,0 +1,64 @@
+// ==============================
+// FOOTER STYLES
+// ==============================
+
+footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.93rem;
+  color: #666;
+  background: #fafafa;
+  border-top: 1px solid $brand-grey;
+  margin-top: 0;
+}
+
+.footer-social {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.1rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: $brand-blue;
+    color: #fff;
+    font-size: 1rem;
+    transition: background 0.2s;
+
+    &:hover {
+      background: $brand-blue-light;
+    }
+  }
+}
+
+// Pokud má být jazykový přepínač i dole:
+.footer-language-switcher {
+  margin-top: 1.4rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+
+  .lang-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0.3em 0.6em;
+    font-size: 1rem;
+
+    img {
+      width: 22px;
+      height: 16px;
+      display: block;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}

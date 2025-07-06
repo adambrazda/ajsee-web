@@ -1,0 +1,124 @@
+// =============================================
+// CONTACT SECTION – form, success, illustration
+// =============================================
+
+.contact-section {
+  background: $brand-grey-bg;
+  padding: 4rem 0;
+}
+
+.contact-section .container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contact-section h2 {
+  margin-bottom: 2rem;
+  color: $brand-blue;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+// ------------------------
+// FORM LAYOUT
+// ------------------------
+
+.contact-content {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.contact-form {
+  background: #fff;
+  padding: 2rem;
+  border-radius: $radius-md;
+  box-shadow: $shadow-light;
+  min-width: 280px;
+  flex: 1 1 340px;
+}
+
+.contact-form .form-group {
+  margin-bottom: 1.3rem;
+
+  label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 1rem;
+    color: $brand-dark;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border-radius: $radius-sm;
+    border: 1px solid $brand-grey;
+    font-size: 1rem;
+    background: #f7fbff;
+    resize: vertical;
+    font-family: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: $brand-blue-light;
+      background: #fff;
+    }
+  }
+
+  textarea {
+    min-height: 90px;
+  }
+}
+
+.contact-form button[type="submit"] {
+  background: $brand-blue;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: $radius-xl;
+  padding: 0.9em 2.4em;
+  font-size: 1.05rem;
+  cursor: pointer;
+  margin-top: 0.8rem;
+  box-shadow: 0 1px 8px rgba($brand-blue, 0.07);
+  transition: background $transition-default;
+
+  &:hover {
+    background: $brand-blue-light;
+  }
+}
+
+// ------------------------
+// ILLUSTRATION (optional)
+// ------------------------
+
+.contact-illustration img {
+  width: 220px;
+  max-width: 100%;
+  margin-top: 1rem;
+  border-radius: $radius-sm;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+}
+
+// ------------------------
+// SUCCESS MESSAGE
+// ------------------------
+
+#contact-success {
+  display: none;
+  margin-top: 2rem;
+  text-align: center;
+  color: $brand-blue;
+  font-weight: 600;
+  font-size: 1.18rem;
+  background: #eaf7ff;
+  border-radius: $radius-md;
+  padding: 1.2rem 1.5rem;
+}

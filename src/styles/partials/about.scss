@@ -1,0 +1,186 @@
+// =============================================
+// ABOUT SECTION – příběh, hodnoty, founder
+// =============================================
+
+.about-section {
+  padding: 4rem 1rem 3rem 1rem;
+  background: $brand-grey-bg;
+  text-align: center;
+
+  .btn-secondary {
+    margin-top: 1.8rem;
+    font-size: 1.1rem;
+  }
+}
+
+// ------------------------
+// HERO: příběh zakladatele
+// ------------------------
+
+.about-hero {
+  background: linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%);
+  padding: 3rem 1rem 2rem;
+
+  .about-hero-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 2.5rem;
+    max-width: 1080px;
+    margin: 0 auto;
+
+    @include respond(md) {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  }
+
+  .about-hero-image {
+    max-width: 340px;
+    width: 100%;
+    border-radius: 1.2rem;
+    box-shadow: 0 8px 24px rgba($brand-blue, 0.1);
+
+    @include respond(sm) {
+      max-width: 240px;
+    }
+  }
+
+  h1 {
+    font-size: 2.3rem;
+    margin-bottom: 1.4rem;
+    color: $brand-blue;
+    text-align: left;
+
+    @include respond(md) {
+      text-align: center;
+    }
+  }
+
+  p {
+    font-size: 1.15rem;
+    color: #224;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+}
+
+// ------------------------
+// HODNOTY firmy
+// ------------------------
+
+.about-values {
+  background: #fff;
+  padding: 3rem 1rem 2rem;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    color: $brand-blue;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    text-align: center;
+
+    @include respond(sm) {
+      text-align: center;
+    }
+  }
+
+  .about-values-grid {
+    display: flex;
+    gap: 2.2rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+    @include respond(sm) {
+      justify-content: center;
+    }
+  }
+
+  .about-value {
+    background: #f6faff;
+    border-radius: 1.1rem;
+    box-shadow: 0 2px 12px rgba($brand-blue, 0.1);
+    padding: 1.4rem 2.2rem;
+    min-width: 220px;
+    max-width: 340px;
+    text-align: center;
+    transition: transform 0.18s;
+
+    .about-value-icon {
+      width: 54px;
+      height: 54px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 2px 8px rgba($brand-blue, 0.2));
+      transition: filter 0.18s;
+      display: inline-block;
+    }
+
+    &:hover {
+      transform: translateY(-4px) scale(1.03);
+
+      .about-value-icon {
+        filter: drop-shadow(0 6px 16px rgba($brand-blue, 0.3));
+      }
+    }
+
+    div {
+      font-size: 1.13rem;
+      color: #184469;
+    }
+  }
+}
+
+// ------------------------
+// MOTTTO & podpis
+// ------------------------
+
+.about-motto {
+  background: none;
+  padding: 1.5rem 0 2.4rem;
+
+  blockquote {
+    font-size: 1.5rem;
+    color: $brand-blue;
+    font-style: italic;
+    text-align: center;
+    margin: 0;
+  }
+}
+
+.about-signature {
+  font-weight: 600;
+  margin-top: 1rem;
+  color: $brand-dark;
+  font-size: 1.08rem;
+  line-height: 1.5;
+}
+
+.about-founder-photo {
+  border-radius: 50%;
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  box-shadow: 0 4px 32px rgba($brand-blue, 0.12);
+  border: 4px solid #fff;
+}
+
+// ------------------------
+// ZPĚT / CTA
+// ------------------------
+
+.about-back-link {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  .btn-secondary {
+    display: inline-block;
+    margin: 1rem auto 0;
+    font-size: 1rem;
+    padding: 0.7rem 1.7rem;
+  }
+}

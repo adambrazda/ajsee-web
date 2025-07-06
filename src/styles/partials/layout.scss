@@ -1,0 +1,82 @@
+// ==============================
+// LAYOUT – Container & Grids
+// ==============================
+
+// Kontejner pro obsah
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.2rem;
+}
+
+// Flex layout helper (volitelný)
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  &.center {
+    justify-content: center;
+  }
+
+  &.between {
+    justify-content: space-between;
+  }
+
+  &.around {
+    justify-content: space-around;
+  }
+
+  &.evenly {
+    justify-content: space-evenly;
+  }
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
+
+  &.gap {
+    gap: 1rem;
+  }
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+
+  &.center {
+    align-items: center;
+    justify-content: center;
+  }
+
+  &.gap {
+    gap: 1rem;
+  }
+}
+
+// Grid helper
+.grid {
+  display: grid;
+  gap: 2rem;
+
+  &.two {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  &.three {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &.auto {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  @include respond(sm) {
+    grid-template-columns: 1fr !important;
+  }
+}
+body {
+  position: relative;
+  z-index: 0;
+}

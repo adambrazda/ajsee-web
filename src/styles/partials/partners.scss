@@ -1,0 +1,187 @@
+// =============================================
+// PARTNERS PAGE – hero, kontakt, výhody
+// =============================================
+
+
+.partners-hero {
+  background: linear-gradient(90deg, $brand-blue 0%, $brand-blue-light 100%);
+  color: #fff;
+  padding: 3rem 0 2rem;
+
+  .hero-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+
+    @include respond(sm) {
+      flex-direction: column;
+      gap: 2rem;
+      text-align: center;
+    }
+  }
+
+  .partners-hero-content {
+    flex: 1;
+
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+
+    p {
+      font-size: 1.22rem;
+      margin-bottom: 1.3rem;
+      max-width: 600px;
+    }
+
+    .partner-benefits {
+      margin-bottom: 1.5rem;
+
+      li {
+        font-size: 1.05rem;
+        margin: .35rem 0;
+        list-style: none;
+
+        &::before {
+          content: '✔️ ';
+          color: #fff;
+          font-size: 1.1rem;
+        }
+      }
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: $brand-blue;
+      padding: 0.85em 2em;
+      font-weight: 600;
+      border-radius: 999px;
+      text-decoration: none;
+      border: none;
+      box-shadow: 0 2px 12px rgba($brand-blue, 0.11);
+      transition: background 0.2s, color 0.2s;
+
+      &:hover {
+        background: $brand-blue-light;
+        color: #fff;
+      }
+    }
+  }
+
+  .partners-hero-image {
+    flex-shrink: 0;
+
+    img {
+      max-width: 340px;
+      border-radius: 1.5rem;
+      box-shadow: 0 2px 20px rgba($brand-blue, 0.08);
+
+      @include respond(sm) {
+        max-width: 90vw;
+      }
+    }
+  }
+}
+
+// ------------------------
+// Partner Contact Form
+// ------------------------
+
+.partner-contact-section {
+  background: $brand-grey-bg;
+  padding: 2.5rem 0 3rem;
+
+  .container {
+    max-width: 540px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 1.2rem;
+    box-shadow: 0 4px 36px 0 rgba($brand-blue, 0.09);
+    padding: 2.2rem;
+
+    @include respond(sm) {
+      padding: 1.5rem 0.7rem 1.3rem;
+    }
+  }
+
+  h2 {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: $brand-blue;
+    letter-spacing: -0.5px;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        font-size: 1rem;
+        color: $brand-dark;
+        margin-bottom: 0.3rem;
+        font-weight: 500;
+      }
+
+      input,
+      textarea {
+        padding: 0.7em 1em;
+        border: 1px solid $brand-grey;
+        border-radius: 0.7em;
+        font-size: 1rem;
+        background: $brand-grey-bg;
+        resize: none;
+
+        &:focus {
+          border-color: $brand-blue-light;
+          background: #fff;
+          outline: none;
+        }
+      }
+
+      textarea {
+        min-height: 92px;
+      }
+    }
+
+    .btn-primary {
+      background: $brand-blue;
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-weight: 600;
+      padding: 0.9em 2.3em;
+      font-size: 1.05rem;
+      cursor: pointer;
+      align-self: flex-end;
+      margin-top: 0.5rem;
+      box-shadow: 0 1px 8px rgba($brand-blue, 0.07);
+      transition: background 0.18s;
+
+      &:hover {
+        background: $brand-blue-light;
+      }
+    }
+  }
+
+  .contact-success {
+    margin-top: 2rem;
+    text-align: center;
+    color: $brand-blue;
+    font-weight: 600;
+    font-size: 1.18rem;
+    background: #eaf7ff;
+    border-radius: 0.8em;
+    padding: 1em;
+    display: none;
+  }
+}

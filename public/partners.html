@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n-key="partner-headline">Staňte se partnerem AJSEE®</title>
+  <meta name="description" content="Staňte se partnerem AJSEE® – moderní platforma pro kulturu, koncerty, divadlo a sport.">
+  <link rel="icon" href="/images/logo-ajsee.png" />
+  <meta name="theme-color" content="#0077cc" />
+  <link rel="stylesheet" href="/src/styles/main.scss" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-top">
+      <a href="/" class="logo-link">
+        <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo"/>
+      </a>
+      <nav class="main-nav">
+        <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+        <ul>
+          <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+          <!-- Neodkazuj na partners z partners, zabráníš cyklu -->
+          <li><a href="/#events" data-i18n-key="nav-events">Události</a></li>
+          <li><a href="/#blog" data-i18n-key="nav-blog">Blog</a></li>
+          <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+        </ul>
+      </nav>
+      <div class="language-switcher">
+        <button class="lang-btn" data-lang="cs"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="en"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="de"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="sk"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="pl"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="hu"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="partners-hero">
+      <div class="container hero-flex">
+        <div class="partners-hero-content">
+          <h1 data-i18n-key="partner-headline">Staňte se partnerem AJSEE®</h1>
+          <p data-i18n-key="partner-intro">Spolupracujte s námi na tvorbě moderní, bezpečné a uživatelsky přívětivé platformy pro kulturu, koncerty, divadlo a sport. Pomůžeme vám oslovit nové publikum a zviditelnit vaši značku.</p>
+          <ul class="partner-benefits">
+            <li data-i18n-key="partner-benefit1">Získáte nové zákazníky bez starostí</li>
+            <li data-i18n-key="partner-benefit2">Rychlá komunikace, osobní přístup</li>
+            <li data-i18n-key="partner-benefit3">Zviditelnění v rámci české i evropské komunity</li>
+            <li data-i18n-key="partner-benefit4">Jednoduché zapojení bez složitého IT</li>
+          </ul>
+          <a href="#partner-contact" class="btn-primary" data-i18n-key="partner-cta">Chci být partnerem</a>
+        </div>
+        <div class="partners-hero-image">
+          <img src="/images/partners-illustration.png" alt="AJSEE Partners" style="width:340px;max-width:100%;" />
+        </div>
+      </div>
+    </section>
+
+    <section id="partner-contact" class="partner-contact-section">
+      <div class="container">
+        <h2 data-i18n-key="partner-contact-headline">Ozvěte se nám</h2>
+        <form name="partner-contact" method="POST" data-netlify="true" class="contact-form" id="partner-contact-form">
+          <input type="hidden" name="form-name" value="partner-contact" />
+          <div class="form-group">
+            <label for="company" data-i18n-key="partner-label-company">Název firmy / instituce</label>
+            <input type="text" id="company" name="company" required data-i18n-placeholder="partner-placeholder-company" placeholder="Název firmy / instituce" />
+          </div>
+          <div class="form-group">
+            <label for="name" data-i18n-key="partner-label-name">Jméno</label>
+            <input type="text" id="name" name="name" required data-i18n-placeholder="partner-placeholder-name" placeholder="Vaše jméno" />
+          </div>
+          <div class="form-group">
+            <label for="email" data-i18n-key="partner-label-email">E-mail</label>
+            <input type="email" id="email" name="email" required data-i18n-placeholder="partner-placeholder-email" placeholder="Váš e-mail" />
+          </div>
+          <div class="form-group">
+            <label for="message" data-i18n-key="partner-label-message">Vzkaz</label>
+            <textarea id="message" name="message" required data-i18n-placeholder="partner-placeholder-message" placeholder="Vaše zpráva"></textarea>
+          </div>
+          <button type="submit" class="btn-primary" data-i18n-key="partner-send">Odeslat</button>
+        </form>
+        <div class="contact-success" style="display:none;" id="partner-contact-success">
+          <p data-i18n-key="partner-success-msg">Děkujeme za zájem o partnerství! Ozveme se vám co nejdříve.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+<footer>
+    <div class="footer-social">
+      <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
+        <img src="/images/icons/instagram.svg" alt="Instagram" />
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
+        <img src="/images/icons/facebook.svg" alt="Facebook" />
+      </a>
+      <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
+        <img src="/images/icons/twitter.svg" alt="Twitter" />
+      </a>
+      <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
+        <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
+      </a>
+    </div>
+    <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
+  </footer>
+  <script type="module" src="/src/partners.js"></script>
+</body>
+</html>

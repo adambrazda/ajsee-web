@@ -1,0 +1,335 @@
+// =====================================
+// EVENTS PAGE – Události (samostatná stránka)
+// =====================================
+
+// Hero sekce
+.events-hero {
+  background: linear-gradient(120deg, #e9f3ff 0%, #eaf8fa 100%);
+  padding: 4.5rem 0 2.7rem 0;
+  min-height: 340px;
+
+  .events-hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+  }
+
+  .events-hero-text {
+    flex: 1 1 340px;
+    max-width: 520px;
+  }
+
+  .events-hero-title {
+    font-size: 2.7rem;
+    font-weight: 900;
+    color: #0d2235;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .events-hero-desc {
+    font-size: 1.25rem;
+    color: #37567a;
+    margin-bottom: 2.2rem;
+    font-weight: 500;
+    max-width: 430px;
+  }
+
+  .events-cta-btn {
+    display: inline-block;
+    background: #0572dd;
+    color: #fff;
+    font-weight: 700;
+    padding: 1.05rem 2.5rem;
+    border-radius: 999px;
+    font-size: 1.18rem;
+    box-shadow: 0 3px 15px #0572dd23;
+    text-decoration: none;
+    transition: background 0.16s, transform 0.15s, box-shadow 0.14s;
+    &:hover, &:focus {
+      background: #005fad;
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 8px 20px #0572dd35;
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+
+  .events-hero-image {
+    flex: 1 1 360px;
+    min-width: 270px;
+    max-width: 480px;
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 1.4rem;
+      box-shadow: 0 4px 30px #abc1ee30;
+      display: block;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .events-hero-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2.5rem;
+    }
+    .events-hero-text,
+    .events-hero-image {
+      max-width: 100%;
+      flex: 1 1 100%;
+      text-align: left;
+    }
+  }
+}
+// Nejbližší události – filtrování
+.events-upcoming {
+  background: #f8fbfe;
+  padding: 3.2rem 0 2.5rem 0;
+
+  .section-header {
+    max-width: 1200px;
+    margin: 0 auto 2rem auto;
+    padding: 0 1.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.2rem;
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #003366;
+    }
+  }
+  .events-filters {
+    display: flex;
+    gap: 1.4rem;
+
+    select {
+      min-width: 170px;
+      border-radius: 9px;
+      padding: 0.7em 1.2em;
+      border: 1px solid #c2d9ea;
+      background: #fff;
+      color: #003366;
+      font-size: 1.06rem;
+      font-weight: 600;
+      transition: border 0.18s, background 0.15s;
+      &:hover, &:focus {
+        border: 1.5px solid #0077cc;
+        background: #f0f8ff;
+        outline: none;
+      }
+    }
+  }
+}
+
+// Výpis eventů (viz event cards – inspirace z Ticketmaster)
+.events-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.3rem;
+  margin-top: 2rem;
+  padding: 0 1.4rem;
+}
+
+.event-card {
+  background: #fff;
+  border-radius: 1.15rem;
+  box-shadow: 0 2px 12px #0077cc17;
+  transition: transform 0.16s, box-shadow 0.16s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 2rem 1.4rem 1.7rem 1.4rem;
+  min-height: 420px;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 8px 30px #0077cc23;
+  }
+
+  .event-img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 0.95rem;
+    margin-bottom: 1rem;
+    background: #eaf6fb;
+  }
+  .event-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #002752;
+    margin-bottom: 0.6rem;
+  }
+  .event-date {
+    font-size: 1rem;
+    color: #0077cc;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .event-description {
+    color: #4e5a66;
+    font-size: 1rem;
+    margin-bottom: 0.9rem;
+    min-height: 3.3em;
+    line-height: 1.4;
+  }
+
+  .event-buttons-group {
+    margin-top: auto;
+    display: flex;
+    gap: 0.8em;
+    width: 100%;
+    flex-wrap: wrap;
+
+    .btn-event {
+      display: inline-block;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.7em 1.8em;
+      text-decoration: none;
+      transition: background 0.16s, color 0.16s, box-shadow 0.13s;
+      cursor: pointer;
+      border: none;
+      outline: none;
+
+      &.detail {
+        background: #0077cc;
+        color: #fff;
+        &:hover { background: #004a88; }
+      }
+      &.ticket {
+        background: #ffd400;
+        color: #0d2235;
+        &:hover { background: #f5c200; }
+      }
+      &.demo {
+        background: #e4e4e4;
+        color: #888;
+        border: 1px dashed #bbb;
+        &:hover { background: #d5e6f8; }
+      }
+    }
+  }
+}
+
+// Kategorie – vizuální boxy
+.events-categories {
+  background: #fff;
+  padding: 3.5rem 1rem 2.7rem 1rem;
+  h3 {
+    font-size: 1.38rem;
+    font-weight: 700;
+    color: #0d2235;
+    text-align: center;
+    margin-bottom: 2.2rem;
+  }
+  .events-categories-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 2.1rem;
+    max-width: 860px;
+    margin: 0 auto;
+
+    .category-card {
+      background: #f8fbfe;
+      border-radius: 1.2rem;
+      padding: 2rem 1rem;
+      box-shadow: 0 1px 7px #0077cc10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.18s, box-shadow 0.19s, transform 0.13s;
+
+      &:hover, &:focus {
+        background: #eaf6ff;
+        box-shadow: 0 8px 28px #0077cc24;
+        transform: translateY(-2px) scale(1.04);
+      }
+
+      .category-icon {
+        width: 45px; height: 45px; margin-bottom: 1.1rem;
+        // zde můžeš doplnit vlastní SVG nebo font ikonu
+      }
+      span {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #003366;
+      }
+    }
+  }
+}
+
+// Výhody – inspirace TodayTix
+.events-benefits {
+  background: linear-gradient(110deg, #f8fbfe 75%, #fff 100%);
+  padding: 3rem 1.3rem 2.5rem 1.3rem;
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #003366;
+    margin-bottom: 1.8rem;
+    text-align: center;
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.8rem;
+    justify-content: center;
+    max-width: 920px;
+    margin: 0 auto;
+    list-style: none;
+    padding: 0;
+    li {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 1.1rem;
+      box-shadow: 0 1px 8px #0077cc13;
+      padding: 1.2rem 1.8rem;
+      font-size: 1.08rem;
+      color: #003366;
+      min-width: 220px;
+      font-weight: 600;
+
+      .icon-ticket, .icon-support, .icon-star {
+        display: inline-block;
+        width: 30px; height: 30px; margin-right: 1em;
+        // zde doplnit SVG/fonťák
+      }
+    }
+  }
+}
+
+// MODAL detail události – použij stávající styly nebo customizuj podle potřeby
+
+// --------------------
+// RESPONSIVE
+// --------------------
+
+@media (max-width: 900px) {
+  .events-hero { padding: 2.4rem 0.5rem 2rem 0.5rem; }
+  .events-upcoming { padding: 1.6rem 0 1.5rem 0; }
+  .events-categories { padding: 2rem 0.7rem 1.3rem 0.7rem; }
+  .events-benefits { padding: 1.4rem 0.4rem 1.4rem 0.4rem; }
+  .events-list { grid-template-columns: 1fr; gap: 1.3rem; }
+}
+
+@media (max-width: 600px) {
+  .events-hero-content h1 { font-size: 2rem; }
+  .events-list { padding: 0 0.3rem; }
+  .events-categories-list { grid-template-columns: 1fr 1fr; }
+  .events-benefits ul { flex-direction: column; gap: 1rem; }
+}

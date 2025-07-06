@@ -1,0 +1,27 @@
+// =============================================
+// SCSS MIXINS – Breakpoints & Utilities
+// =============================================
+
+// Responsive breakpoints
+@mixin respond($breakpoint) {
+  @if $breakpoint == xs {
+    @media (max-width: 480px) { @content; }
+  }
+  @else if $breakpoint == sm {
+    @media (max-width: 768px) { @content; }
+  }
+  @else if $breakpoint == md {
+    @media (max-width: 992px) { @content; }
+  }
+  @else if $breakpoint == lg {
+    @media (max-width: 1200px) { @content; }
+  }
+  @else if $breakpoint == xl {
+    @media (min-width: 1400px) { @content; }
+  }
+}
+
+// Custom clamp font-size
+@mixin fluid-type($minSize, $maxSize) {
+  font-size: clamp(#{$minSize}, 2.5vw, #{$maxSize});
+}

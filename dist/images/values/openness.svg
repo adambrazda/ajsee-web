@@ -1,0 +1,24 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shadow for depth -->
+  <ellipse cx="64" cy="110" rx="32" ry="8" fill="#B3D0F5" opacity="0.24"/>
+  <!-- Globe (thin, modern lines) -->
+  <circle cx="64" cy="66" r="44" fill="#E7F3FD" stroke="#2874B2" stroke-width="2"/>
+  <path d="M64 22C79 22 91 41 91 66C91 91 79 110 64 110" stroke="#2874B2" stroke-width="1.6"/>
+  <path d="M64 22C49 22 37 41 37 66C37 91 49 110 64 110" stroke="#2874B2" stroke-width="1.6"/>
+  <ellipse cx="64" cy="66" rx="44" ry="13" stroke="#2874B2" stroke-width="1"/>
+  <!-- Door, modern neumorph soft shadow -->
+  <g filter="url(#shadow)">
+    <rect x="83" y="60" width="23" height="40" rx="3.5" fill="url(#doorGrad)" stroke="#19598A" stroke-width="2"/>
+    <!-- Knob -->
+    <circle cx="100" cy="82" r="2.2" fill="#19598A"/>
+  </g>
+  <defs>
+    <filter id="shadow" x="78" y="58" width="33" height="50" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#5ab4ff" flood-opacity="0.13"/>
+    </filter>
+    <linearGradient id="doorGrad" x1="83" y1="60" x2="106" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7DC3FF"/>
+      <stop offset="1" stop-color="#E4F1FD"/>
+    </linearGradient>
+  </defs>
+</svg>

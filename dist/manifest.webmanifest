@@ -1,0 +1,20 @@
+{
+  "name": "AJSEE",
+  "short_name": "AJSEE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0077cc",
+  "theme_color": "#0077cc",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180"
+    }
+  ]
+}

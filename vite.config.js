@@ -1,16 +1,16 @@
 import { defineConfig } from 'vite';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
-  plugins: [
-    viteStaticCopy({
-      targets: [
-        { src: 'about.html', dest: '' },
-        { src: 'events.html', dest: '' },
-        { src: 'partners.html', dest: '' }
-      ]
-    })
-  ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        about: 'about.html',
+        events: 'events.html',
+        partners: 'partners.html',
+      }
+    }
+  },
   css: {
     preprocessorOptions: {
       scss: {}

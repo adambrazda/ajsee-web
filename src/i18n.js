@@ -17,10 +17,12 @@ export async function applyTranslations(lang) {
   document.querySelectorAll("[data-i18n-key]").forEach(el => {
     const key = el.getAttribute("data-i18n-key");
     if (translations[key]) {
-      // Pokud je překlad HTML, použij innerHTML. Pokud chceš jen text, použij textContent.
-      el.textContent = translations[key];
+      // Pokud je překlad HTML, použij innerHTML. Jinak textContent.
+      if (/<[a-z][\s\S]*>/i.test(translations[key])) {
+        el.innerHTML = translations[key];
+      } else {
+        el.textContent = translations[key];
+      }
     }
   });
 }
-if (/<[a-z][\s\S]*>/i.test(translations[key])) el.innerHTML = translations[key];
-else el.textContent = translations[key];

@@ -1,0 +1,26 @@
+{
+  "nav-home": "Home",
+  "nav-events": "Events",
+  "nav-partners": "For partners",
+  "nav-blog": "Blog",
+  "nav-contact": "Contact",
+  
+    "partner-headline": "Become an AJSEE® Partner",
+  "partner-intro": "Collaborate with us to create a modern, safe, and user-friendly platform for culture, concerts, theatre, and sports. We'll help you reach new audiences and promote your brand.",
+  "partner-benefit1": "Gain new customers easily",
+  "partner-benefit2": "Fast communication, personal approach",
+  "partner-benefit3": "Visibility in the Czech and European community",
+  "partner-benefit4": "Easy onboarding, no complex IT",
+  "partner-cta": "I want to be a partner",
+  "partner-contact-headline": "Contact Us",
+  "partner-label-company": "Company / Institution Name",
+  "partner-placeholder-company": "Your company / institution",
+  "partner-label-name": "Name",
+  "partner-placeholder-name": "Your name",
+  "partner-label-email": "Email",
+  "partner-placeholder-email": "Your email",
+  "partner-label-message": "Message",
+  "partner-placeholder-message": "Your message",
+  "partner-send": "Send",
+  "partner-success-msg": "Thank you for your interest in partnership! We will contact you soon."
+}

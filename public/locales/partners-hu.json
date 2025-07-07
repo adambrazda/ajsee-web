@@ -1,0 +1,26 @@
+{
+  "nav-home": "Főoldal",
+  "nav-events": "Események",
+  "nav-partners": "Partnereknek",
+  "nav-blog": "Blog",
+  "nav-contact": "Kapcsolat",
+  
+    "partner-headline": "Legyen AJSEE® partner",
+  "partner-intro": "Dolgozzon velünk egy modern, biztonságos és felhasználóbarát platform létrehozásán kultúra, koncertek, színház és sport területén. Segítünk új közönséget elérni és márkáját népszerűsíteni.",
+  "partner-benefit1": "Új ügyfeleket szerezhet könnyedén",
+  "partner-benefit2": "Gyors kommunikáció, személyes hozzáállás",
+  "partner-benefit3": "Láthatóság a cseh és európai közösségben",
+  "partner-benefit4": "Egyszerű csatlakozás, bonyolult IT nélkül",
+  "partner-cta": "Partner szeretnék lenni",
+  "partner-contact-headline": "Lépjen kapcsolatba velünk",
+  "partner-label-company": "Cég / intézmény neve",
+  "partner-placeholder-company": "Cég / intézmény neve",
+  "partner-label-name": "Név",
+  "partner-placeholder-name": "Az ön neve",
+  "partner-label-email": "E-mail",
+  "partner-placeholder-email": "Az ön e-mail címe",
+  "partner-label-message": "Üzenet",
+  "partner-placeholder-message": "Az ön üzenete",
+  "partner-send": "Küldés",
+  "partner-success-msg": "Köszönjük érdeklődését a partnerség iránt! Hamarosan felvesszük önnel a kapcsolatot."
+}

@@ -14,7 +14,7 @@ function detectLang() {
 }
 
 async function loadTranslations(lang) {
-  const resp = await fetch(`/src/locales/${lang}.json`);
+  const resp = await fetch(`/locales/${lang}.json`);
   return await resp.json();
 }
 

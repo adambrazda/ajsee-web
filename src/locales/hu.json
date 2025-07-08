@@ -84,5 +84,8 @@
   "events-benefits-title": "Miért velünk?",
   "events-benefit-1": "Eredeti jegyek közvetlenül a szervezőktől",
   "events-benefit-2": "Helyi ügyfélszolgálat",
-  "events-benefit-3": "Gondosan válogatott események"
+  "events-benefit-3": "Gondosan válogatott események",
+  "contact-error-msg": "A küldés nem sikerült. Kérjük, próbálja meg később.",
+  "contact-error-email": "Kérjük, adjon meg érvényes e-mail címet.",
+  "contact-honeypot-label": "Ne töltse ki ezt a mezőt:"
 }

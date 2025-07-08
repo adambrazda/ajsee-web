@@ -15,9 +15,9 @@
     gtag('js', new Date());
     gtag('config', 'G-KOZS0D9JLK');
   </script>
-  <script type="module" crossorigin src="/assets/main-BF2EYqnc.js"></script>
-  <script type="module" crossorigin src="/assets/main-B-pZXAUu.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-BEJhS7jk.css">
+  <script type="module" crossorigin src="/assets/main-WMXYTrox.js"></script>
+  <script type="module" crossorigin src="/assets/main-D_DvBDuR.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-58-l3rEq.css">
 </head>
 <body>
 <header class="site-header">
@@ -161,36 +161,81 @@
     </div>
   </section>
 
-  <!-- SEKCE KONTAKT -->
   <section id="contact" class="contact-section">
-    <div class="container">
-      <h2 data-i18n-key="contact-headline">Kontaktujte nás</h2>
-      <div class="contact-content">
-        <form name="contact" method="POST" data-netlify="true" class="contact-form" id="contact-form">
-          <input type="hidden" name="form-name" value="contact" />
-          <div class="form-group">
-            <label for="name" data-i18n-key="contact-label-name">Jméno</label>
-            <input type="text" id="name" name="name" required placeholder="Vaše jméno" data-i18n-placeholder="contact-placeholder-name" />
-          </div>
-          <div class="form-group">
-            <label for="email" data-i18n-key="contact-label-email">E-mail</label>
-            <input type="email" id="email" name="email" required placeholder="Váš e-mail" data-i18n-placeholder="contact-placeholder-email" />
-          </div>
-          <div class="form-group">
-            <label for="message" data-i18n-key="contact-label-message">Zpráva</label>
-            <textarea id="message" name="message" required placeholder="Vaše zpráva" data-i18n-placeholder="contact-placeholder-message"></textarea>
-          </div>
-          <button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
-        </form>
-        <div class="contact-illustration">
-          <img src="/images/contact-illustration.png" alt="Kontaktujte AJSEE" />
+  <div class="container">
+    <h2 data-i18n-key="contact-headline">Kontaktujte nás</h2>
+    <div class="contact-content">
+      <form
+        name="contact"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        class="contact-form"
+        id="contact-form"
+        autocomplete="on"
+      >
+        <input type="hidden" name="form-name" value="contact" />
+        <!-- Honeypot antispam (skryté pole pro roboty) -->
+        <div style="display:none">
+          <label>Don’t fill this out: <input name="bot-field" /></label>
         </div>
+
+        <div class="form-group">
+          <label for="name" data-i18n-key="contact-label-name">Jméno</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            placeholder="Vaše jméno"
+            data-i18n-placeholder="contact-placeholder-name"
+            autocomplete="name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="email" data-i18n-key="contact-label-email">E-mail</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="Váš e-mail"
+            data-i18n-placeholder="contact-placeholder-email"
+            autocomplete="email"
+          />
+        </div>
+        <div class="form-group">
+          <label for="message" data-i18n-key="contact-label-message">Zpráva</label>
+          <textarea
+            id="message"
+            name="message"
+            required
+            placeholder="Vaše zpráva"
+            data-i18n-placeholder="contact-placeholder-message"
+            rows="5"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
+
+        <!-- Dynamické error hlášky -->
+        <div class="contact-error" id="contact-error" style="display:none;">
+          <p data-i18n-key="contact-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
+        </div>
+        <!-- reCAPTCHA widget, pokud budeš chtít (volitelně) -->
+        <!-- <div data-netlify-recaptcha="true"></div> -->
+      </form>
+      <!--
+      <div class="contact-illustration">
+        <img src="/images/contact-illustration.png" alt="Kontaktujte AJSEE" />
       </div>
-      <div class="contact-success" style="display:none;" id="contact-success">
-        <p data-i18n-key="contact-success-msg">Děkujeme za zprávu! Ozveme se vám co nejdříve.</p>
-      </div>
+      !-->
     </div>
-  </section>
+    <div class="contact-success" style="display:none;" id="contact-success">
+      <p data-i18n-key="contact-success-msg">Děkujeme za zprávu! Ozveme se vám co nejdříve.</p>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>

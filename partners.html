@@ -56,36 +56,53 @@
         </div>
       </div>
     </section>
-
-    <section id="partner-contact" class="partner-contact-section">
-      <div class="container">
-        <h2 data-i18n-key="partner-contact-headline">Ozvěte se nám</h2>
-        <form name="partner-contact" method="POST" data-netlify="true" class="contact-form" id="partner-contact-form">
-          <input type="hidden" name="form-name" value="partner-contact" />
-          <div class="form-group">
-            <label for="company" data-i18n-key="partner-label-company">Název firmy / instituce</label>
-            <input type="text" id="company" name="company" required data-i18n-placeholder="partner-placeholder-company" placeholder="Název firmy / instituce" />
-          </div>
-          <div class="form-group">
-            <label for="name" data-i18n-key="partner-label-name">Jméno</label>
-            <input type="text" id="name" name="name" required data-i18n-placeholder="partner-placeholder-name" placeholder="Vaše jméno" />
-          </div>
-          <div class="form-group">
-            <label for="email" data-i18n-key="partner-label-email">E-mail</label>
-            <input type="email" id="email" name="email" required data-i18n-placeholder="partner-placeholder-email" placeholder="Váš e-mail" />
-          </div>
-          <div class="form-group">
-            <label for="message" data-i18n-key="partner-label-message">Vzkaz</label>
-            <textarea id="message" name="message" required data-i18n-placeholder="partner-placeholder-message" placeholder="Vaše zpráva"></textarea>
-          </div>
-          <button type="submit" class="btn-primary" data-i18n-key="partner-send">Odeslat</button>
-        </form>
-        <div class="contact-success" style="display:none;" id="partner-contact-success">
-          <p data-i18n-key="partner-success-msg">Děkujeme za zájem o partnerství! Ozveme se vám co nejdříve.</p>
-        </div>
-      </div>
-    </section>
-  </main>
+<section id="partner-contact" class="partner-contact-section">
+  <h2 data-i18n-key="partner-contact-headline">Ozvěte se nám</h2>
+  <form
+  name="partner-contact"
+  method="POST"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  class="contact-form"
+  id="partner-contact-form"
+  autocomplete="on"
+>
+  <input type="hidden" name="form-name" value="partner-contact" />
+  <!-- Honeypot antispam -->
+  <div style="display:none">
+    <label data-i18n-key="partner-honeypot-label">Nevyplňujte toto pole: <input name="bot-field" /></label>
+  </div>
+  <div class="form-group">
+    <label for="company" data-i18n-key="partner-label-company">Název firmy / instituce</label>
+    <input type="text" id="company" name="company" required placeholder="Název firmy / instituce" data-i18n-placeholder="partner-placeholder-company" autocomplete="organization" />
+    <div class="form-error" id="error-company"></div>
+  </div>
+  <div class="form-group">
+    <label for="name" data-i18n-key="partner-label-name">Jméno</label>
+    <input type="text" id="name" name="name" required placeholder="Vaše jméno" data-i18n-placeholder="partner-placeholder-name" autocomplete="name" />
+    <div class="form-error" id="error-name"></div>
+  </div>
+  <div class="form-group">
+    <label for="email" data-i18n-key="partner-label-email">E-mail</label>
+    <input type="email" id="email" name="email" required placeholder="Váš e-mail" data-i18n-placeholder="partner-placeholder-email" autocomplete="email" />
+    <div class="form-error" id="error-email"></div>
+  </div>
+  <div class="form-group">
+    <label for="message" data-i18n-key="partner-label-message">Vzkaz</label>
+    <textarea id="message" name="message" required placeholder="Vaše zpráva" data-i18n-placeholder="partner-placeholder-message"></textarea>
+    <div class="form-error" id="error-message"></div>
+  </div>
+  <button type="submit" class="btn-primary" data-i18n-key="partner-send">Odeslat</button>
+  <div class="contact-error" id="partner-contact-error" style="display:none;">
+    <p data-i18n-key="partner-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
+  </div>
+</form>
+<div class="contact-success" style="display:none;" id="partner-contact-success">
+  <p data-i18n-key="partner-success-msg">Děkujeme za zájem o partnerství! Ozveme se vám co nejdříve.</p>
+</div>
+  </div>
+</section>
+     </main>
 <footer>
     <div class="footer-social">
       <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">

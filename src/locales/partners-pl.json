@@ -4,8 +4,7 @@
   "nav-partners": "Dla partnerów",
   "nav-blog": "Blog",
   "nav-contact": "Kontakt",
-  
-    "partner-headline": "Zostań partnerem AJSEE®",
+  "partner-headline": "Zostań partnerem AJSEE®",
   "partner-intro": "Współpracuj z nami przy tworzeniu nowoczesnej, bezpiecznej i przyjaznej platformy dla kultury, koncertów, teatru i sportu. Pomożemy ci dotrzeć do nowych odbiorców i wypromować twoją markę.",
   "partner-benefit1": "Zdobądź nowych klientów bez problemów",
   "partner-benefit2": "Szybka komunikacja, indywidualne podejście",
@@ -22,5 +21,11 @@
   "partner-label-message": "Wiadomość",
   "partner-placeholder-message": "Twoja wiadomość",
   "partner-send": "Wyślij",
-  "partner-success-msg": "Dziękujemy za zainteresowanie partnerstwem! Skontaktujemy się z tobą wkrótce."
+  "partner-success-msg": "Dziękujemy za zainteresowanie partnerstwem! Skontaktujemy się z tobą wkrótce.",
+  "partner-error-email": "Wprowadź poprawny adres e-mail.",
+  "partner-error-msg": "Wysłanie nie powiodło się. Spróbuj ponownie później.",
+  "partner-error-company": "Wpisz nazwę firmy lub instytucji.",
+  "partner-error-name": "Wpisz swoje imię i nazwisko.",
+  "partner-error-message": "Napisz wiadomość.",
+  "partner-honeypot-label": "Nie wypełniaj tego pola (antyspam)"
 }

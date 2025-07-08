@@ -84,5 +84,8 @@
   "events-benefits-title": "Warum bei uns?",
   "events-benefit-1": "Originaltickets direkt vom Veranstalter",
   "events-benefit-2": "Lokaler Kundensupport",
-  "events-benefit-3": "Sorgfältig ausgewählte Events"
+  "events-benefit-3": "Sorgfältig ausgewählte Events",
+  "contact-error-msg": "Das Absenden ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal.",
+  "contact-error-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+  "contact-honeypot-label": "Bitte nicht ausfüllen:"
 }

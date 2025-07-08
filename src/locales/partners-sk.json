@@ -4,8 +4,7 @@
   "nav-partners": "Pre partnerov",
   "nav-blog": "Blog",
   "nav-contact": "Kontakt",
-  
-    "partner-headline": "Staňte sa partnerom AJSEE®",
+  "partner-headline": "Staňte sa partnerom AJSEE®",
   "partner-intro": "Spolupracujte s nami na vytváraní modernej, bezpečnej a používateľsky prívetivej platformy pre kultúru, koncerty, divadlo a šport. Pomôžeme vám osloviť nové publikum a zviditeľniť vašu značku.",
   "partner-benefit1": "Získate nových zákazníkov bez starostí",
   "partner-benefit2": "Rýchla komunikácia, osobný prístup",
@@ -22,5 +21,12 @@
   "partner-label-message": "Správa",
   "partner-placeholder-message": "Vaša správa",
   "partner-send": "Odoslať",
-  "partner-success-msg": "Ďakujeme za záujem o partnerstvo! Ozveme sa vám čo najskôr."
+  "partner-success-msg": "Ďakujeme za záujem o partnerstvo! Ozveme sa vám čo najskôr.",
+  "partner-error-email": "Zadajte platný e-mail.",
+  "partner-error-msg": "Odoslanie sa nepodarilo. Skúste to prosím neskôr.",
+  "partner-error-company": "Vyplňte názov firmy alebo inštitúcie.",
+  "partner-error-name": "Zadajte svoje meno.",
+  "partner-error-message": "Napíšte správu.",
+  "partner-honeypot-label": "Nevyplňujte toto pole (antispam)"
+
 }

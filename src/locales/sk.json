@@ -83,5 +83,8 @@
   "events-benefits-title": "Prečo s nami?",
   "events-benefit-1": "Originálne vstupenky priamo od organizátorov",
   "events-benefit-2": "Lokálna zákaznícka podpora",
-  "events-benefit-3": "Starostlivo vybrané akcie"
+  "events-benefit-3": "Starostlivo vybrané akcie",
+  "contact-error-msg": "Odoslanie sa nepodarilo. Skúste to prosím neskôr.",
+  "contact-error-email": "Zadajte platný e-mail.",
+  "contact-honeypot-label": "Nevyplňujte toto pole:"
 }

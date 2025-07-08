@@ -4,8 +4,7 @@
   "nav-partners": "Partnereknek",
   "nav-blog": "Blog",
   "nav-contact": "Kapcsolat",
-  
-    "partner-headline": "Legyen AJSEE® partner",
+  "partner-headline": "Legyen AJSEE® partner",
   "partner-intro": "Dolgozzon velünk egy modern, biztonságos és felhasználóbarát platform létrehozásán kultúra, koncertek, színház és sport területén. Segítünk új közönséget elérni és márkáját népszerűsíteni.",
   "partner-benefit1": "Új ügyfeleket szerezhet könnyedén",
   "partner-benefit2": "Gyors kommunikáció, személyes hozzáállás",
@@ -22,5 +21,11 @@
   "partner-label-message": "Üzenet",
   "partner-placeholder-message": "Az ön üzenete",
   "partner-send": "Küldés",
-  "partner-success-msg": "Köszönjük érdeklődését a partnerség iránt! Hamarosan felvesszük önnel a kapcsolatot."
+  "partner-success-msg": "Köszönjük érdeklődését a partnerség iránt! Hamarosan felvesszük önnel a kapcsolatot.",
+  "partner-error-email": "Kérjük, adjon meg egy érvényes e-mail címet.",
+  "partner-error-msg": "A küldés nem sikerült. Kérjük, próbálja meg később.",
+  "partner-error-company": "Adja meg a cég vagy intézmény nevét.",
+  "partner-error-name": "Adja meg a nevét.",
+  "partner-error-message": "Írja meg az üzenetét.",
+  "partner-honeypot-label": "Ne töltse ki ezt a mezőt (spam elleni védelem)"
 }

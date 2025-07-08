@@ -84,5 +84,8 @@
   "events-benefits-title": "Dlaczego my?",
   "events-benefit-1": "Oryginalne bilety prosto od organizatorów",
   "events-benefit-2": "Lokalna obsługa klienta",
-  "events-benefit-3": "Starannie wybrane wydarzenia"
+  "events-benefit-3": "Starannie wybrane wydarzenia",
+  "contact-error-msg": "Wysyłka nie powiodła się. Spróbuj ponownie później.",
+  "contact-error-email": "Wprowadź poprawny adres e-mail.",
+  "contact-honeypot-label": "Nie wypełniaj tego pola:"
 }

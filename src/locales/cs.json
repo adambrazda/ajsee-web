@@ -19,7 +19,6 @@
   "blog-headline": "Blog & Reference",
   "contact-headline": "Kontaktujte nás",
   "contact-send": "Odeslat",
-  "contact-success-msg": "Děkujeme za zprávu! Ozveme se vám co nejdříve.",
   "footer-copyright": "© 2025 AJSEE®. Všechna práva vyhrazena.",
   "contact-label-name": "Jméno",
   "contact-label-email": "E-mail",
@@ -84,5 +83,10 @@
   "events-benefits-title": "Proč s námi?",
   "events-benefit-1": "Originální vstupenky přímo od pořadatelů",
   "events-benefit-2": "Lokální zákaznická podpora",
-  "events-benefit-3": "Pečlivě vybírané akce"
+  "events-benefit-3": "Pečlivě vybírané akce",
+  "contact-error-msg": "Odeslání se nezdařilo. Zkuste to prosím později.",
+  "contact-error-email": "Zadejte platný e-mail.",
+  "contact-honeypot-label": "Nevyplňujte toto pole:",
+  "contact-success-msg": "Děkujeme za zprávu! Ozveme se vám co nejdříve."
+
 }

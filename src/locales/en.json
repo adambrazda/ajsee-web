@@ -84,5 +84,8 @@
   "events-benefits-title": "Why with us?",
   "events-benefit-1": "Original tickets directly from organizers",
   "events-benefit-2": "Local customer support",
-  "events-benefit-3": "Carefully selected events"
+  "events-benefit-3": "Carefully selected events",
+  "contact-error-msg": "Submission failed. Please try again later.",
+  "contact-error-email": "Please enter a valid email address.",
+  "contact-honeypot-label": "Don’t fill this out:"
 }

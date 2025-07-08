@@ -32,6 +32,13 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: center;
+  width: 100%;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.6rem;
+  }
 }
 
 .contact-form {
@@ -84,14 +91,15 @@
   border: none;
   border-radius: $radius-xl;
   padding: 0.9em 2.4em;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   cursor: pointer;
   margin-top: 0.8rem;
   box-shadow: 0 1px 8px rgba($brand-blue, 0.07);
-  transition: background $transition-default;
+  transition: background $transition-default, transform 0.12s;
 
-  &:hover {
+  &:hover, &:focus {
     background: $brand-blue-light;
+    transform: translateY(-2px) scale(1.03);
   }
 }
 
@@ -111,7 +119,8 @@
 // SUCCESS MESSAGE
 // ------------------------
 
-#contact-success {
+#contact-success,
+.contact-error {
   display: none;
   margin-top: 2rem;
   text-align: center;
@@ -121,4 +130,17 @@
   background: #eaf7ff;
   border-radius: $radius-md;
   padding: 1.2rem 1.5rem;
+
+  // ERROR
+  &.contact-error {
+    color: $brand-red;
+    background: #ffeced;
+    border: 1px solid #ffc6cc;
+  }
+}
+// Animace pro hlášky (fade in/out)
+.contact-error,
+#contact-success {
+  transition: opacity 0.4s;
+  opacity: 1;
 }

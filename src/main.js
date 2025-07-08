@@ -145,27 +145,49 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderEvents(currentLang, currentFilters);
     });
   }
+const form = document.getElementById('contact-form');
+const successMsg = document.getElementById('contact-success');
+const errorMsg = document.getElementById('contact-error');
 
-  const form = document.getElementById('contact-form');
-  const successMsg = document.getElementById('contact-success');
-  if (form) {
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const formData = new FormData(form);
-      fetch('/', {
-        method: 'POST',
-        headers: { 'Accept': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData).toString()
+if (form) {
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    // Antispam honeypot
+    if (form.querySelector('input[name="bot-field"]').value) return;
+
+    // Extra validace e-mailu
+    const email = form.email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errorMsg.style.display = 'block';
+      errorMsg.querySelector("p").textContent =
+        window.translations?.["contact-error-email"] ||
+        "Zadejte platný e-mail.";
+      setTimeout(() => (errorMsg.style.display = "none"), 4000);
+      return;
+    }
+
+    const formData = new FormData(form);
+
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Accept': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(formData).toString()
+    })
+      .then(() => {
+        form.style.display = 'none';
+        successMsg.style.display = 'block';
       })
-        .then(() => {
-          form.style.display = 'none';
-          successMsg.style.display = 'block';
-        })
-        .catch(() => {
-          alert('Došlo k chybě při odeslání. Zkuste to prosím později.');
-        });
-    });
-  }
+      .catch(() => {
+        errorMsg.style.display = 'block';
+        errorMsg.querySelector("p").textContent =
+          window.translations?.["contact-error-msg"] ||
+          "Odeslání se nezdařilo. Zkuste to prosím později.";
+        setTimeout(() => (errorMsg.style.display = "none"), 4000);
+      });
+  });
+}
+
 
   const pathname = window.location.pathname.split('/').pop();
   if (pathname === 'partners.html') {

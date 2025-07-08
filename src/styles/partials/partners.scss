@@ -185,3 +185,49 @@
     display: none;
   }
 }
+// ----- ERROR HLÁŠKY (form) -----
+
+.contact-form .form-error,
+.partner-contact-section .form-error {
+  color: #df2222;
+  background: #fff6f6;
+  font-size: 0.99rem;
+  border-radius: 0.5em;
+  padding: 0.35em 1em 0.35em 0.7em;
+  margin: 0.2em 0 0.3em 0;
+  border-left: 3px solid #e45a5a;
+  display: none; // Skrývá se JS
+  position: relative;
+  z-index: 1;
+  min-height: 1.4em; // kvůli "mávání" formuláře
+}
+
+// Pokud je chyba aktivní, zobrazit
+.form-error.active {
+  display: block;
+}
+
+// Lepší UX na mobilu
+@media (max-width: 520px) {
+  .partners-hero {
+    padding: 2rem 0 1.2rem;
+  }
+  .partner-contact-section {
+    padding: 1.5rem 0 1.7rem;
+    .container {
+      padding: 0.9rem 0.4rem 1rem;
+    }
+    h2 {
+      font-size: 1.35rem;
+    }
+  }
+}
+
+// Doladění tlačítek
+.partner-contact-section .btn-primary {
+  min-width: 130px;
+  font-size: 1.08rem;
+  padding-left: 2em;
+  padding-right: 2em;
+  margin-top: 0.7rem;
+}

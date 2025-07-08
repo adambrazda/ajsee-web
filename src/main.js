@@ -164,15 +164,13 @@ function showFieldError(form, fieldName, msg) {
 }
 
 if (form) {
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
     hideAllFieldErrors(form);
     errorMsg.style.display = "none";
 
-    // Honeypot antispam
     if (form.querySelector('input[name="bot-field"]')?.value) return;
 
-    // Pole
     const name = form.name.value.trim();
     const email = form.email.value.trim();
     const message = form.message.value.trim();
@@ -193,17 +191,25 @@ if (form) {
     }
     if (!valid) return;
 
-    // Odeslání přes Netlify AJAX
-    const formData = new FormData(form);
+    // Důležité: musí obsahovat i form-name!
+    const data = new FormData(form);
+
+    // Ověř pro jistotu, že obsahuje form-name
+    if (!data.has('form-name')) {
+      data.append('form-name', form.getAttribute('name') || 'contact');
+    }
+for (const pair of data.entries()) {
+  console.log(pair[0]+ ': ' + pair[1]);
+}
+  
     fetch('/', {
       method: 'POST',
       headers: { 'Accept': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(formData).toString()
+      body: new URLSearchParams(data).toString()
     })
       .then(() => {
         form.style.display = 'none';
         successMsg.style.display = 'block';
-        // Posuň na kontakt
         const contactSection = document.getElementById('contact');
         if (contactSection) contactSection.scrollIntoView({ behavior: 'smooth' });
       })

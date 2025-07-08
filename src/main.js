@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 const form = document.getElementById('contact-form');
 const successMsg = document.getElementById('contact-success');
 const errorMsg = document.getElementById('contact-error');
+
 function hideAllFieldErrors(form) {
   form.querySelectorAll('.form-error').forEach(el => {
     el.textContent = '';
@@ -161,13 +162,14 @@ function showFieldError(form, fieldName, msg) {
     errEl.classList.add('active');
   }
 }
+
 if (form) {
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
     hideAllFieldErrors(form);
     errorMsg.style.display = "none";
 
-    // Antispam honeypot
+    // Honeypot antispam
     if (form.querySelector('input[name="bot-field"]').value) return;
 
     // Pole
@@ -177,7 +179,7 @@ if (form) {
 
     let valid = true;
     const t = window.translations || {};
-   if (!name) {
+    if (!name) {
       showFieldError(form, 'name', t['contact-error-name'] || 'Zadejte své jméno.');
       valid = false;
     }
@@ -191,6 +193,7 @@ if (form) {
     }
     if (!valid) return;
 
+    // Odeslání přes Netlify (zůstává na stránce, zobrazí inline hlášku)
     const formData = new FormData(form);
 
     fetch('/', {

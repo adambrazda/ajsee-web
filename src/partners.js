@@ -1,5 +1,6 @@
 // /src/partners.js
 
+// 1. Překlady
 async function loadTranslations(lang) {
   const resp = await fetch(`/src/locales/partners-${lang}.json`);
   return await resp.json();
@@ -7,7 +8,7 @@ async function loadTranslations(lang) {
 
 async function applyTranslations(lang) {
   const translations = await loadTranslations(lang);
-  window.translations = translations; // uchováme pro JS error hlášky
+  window.translations = translations; // Pro error hlášky v JS
   document.querySelectorAll("[data-i18n-key]").forEach(el => {
     const key = el.getAttribute("data-i18n-key");
     if (translations[key]) el.textContent = translations[key];
@@ -18,14 +19,14 @@ async function applyTranslations(lang) {
   });
 }
 
+// 2. Aktivní navigace
 function activateNavLink() {
   const path = window.location.pathname;
   document.querySelectorAll('.main-nav a').forEach(link => {
     const href = link.getAttribute('href');
     if ((path === '/' || path.endsWith('index.html')) && (href === '/' || href === '/index.html')) {
       link.classList.add('active');
-    }
-    else if (path.endsWith('partners.html') && href.includes('partners')) {
+    } else if (path.endsWith('partners.html') && href.includes('partners')) {
       link.classList.add('active');
     } else {
       link.classList.remove('active');
@@ -33,11 +34,14 @@ function activateNavLink() {
   });
 }
 
+// 3. Detekce jazyka
 function detectLang() {
   let lang = (navigator.language || 'cs').slice(0, 2).toLowerCase();
   if (!["cs", "en", "de", "sk", "pl", "hu"].includes(lang)) lang = "cs";
   return lang;
 }
+
+// 4. Error helpery (jen jednou!)
 function hideAllFieldErrors(form) {
   form.querySelectorAll('.form-error').forEach(el => {
     el.textContent = '';
@@ -51,7 +55,10 @@ function showFieldError(form, fieldName, msg) {
     errEl.classList.add('active');
   }
 }
+
+// 5. Hlavní DOMContentLoaded
 document.addEventListener('DOMContentLoaded', async () => {
+  // Překlady a jazyk
   let lang = detectLang();
   await applyTranslations(lang);
 
@@ -61,84 +68,73 @@ document.addEventListener('DOMContentLoaded', async () => {
       await applyTranslations(chosenLang);
     });
   });
-function hideAllFieldErrors(form) {
-  form.querySelectorAll('.form-error').forEach(el => {
-    el.textContent = '';
-    el.classList.remove('active');
-  });
-}
-function showFieldError(form, fieldName, msg) {
-  const errEl = form.querySelector(`#error-${fieldName}`);
-  if (errEl) {
-    errEl.textContent = msg;
-    errEl.classList.add('active');
-  }
-}
 
-// ---- PARTNER FORM ----
-const contactForm = document.getElementById('partner-contact-form');
-const contactSuccess = document.getElementById('partner-contact-success');
-const contactError = document.getElementById('partner-contact-error');
-if (contactForm) {
-  contactForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    hideAllFieldErrors(contactForm);
-    contactError.style.display = "none";
+  // PARTNER FORM LOGIKA
+  const contactForm = document.getElementById('partner-contact-form');
+  const contactSuccess = document.getElementById('partner-contact-success');
+  const contactError = document.getElementById('partner-contact-error');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      hideAllFieldErrors(contactForm);
+      contactError.style.display = "none";
 
-    // Honeypot antispam (skrytý field jménem bot-field)
-    if (contactForm.querySelector('input[name="bot-field"]')?.value) return;
+      // Antispam honeypot
+      if (contactForm.querySelector('input[name="bot-field"]')?.value) return;
 
-    // Pole
-    const company = contactForm.company.value.trim();
-    const name = contactForm.name.value.trim();
-    const email = contactForm.email.value.trim();
-    const message = contactForm.message.value.trim();
+      // Získání hodnot
+      const company = contactForm.company.value.trim();
+      const name = contactForm.name.value.trim();
+      const email = contactForm.email.value.trim();
+      const message = contactForm.message.value.trim();
 
-    let valid = true;
-    const t = window.translations || {};
+      let valid = true;
+      const t = window.translations || {};
 
-    if (!company) {
-      showFieldError(contactForm, 'company', t['partner-error-company'] || 'Vyplňte název firmy nebo instituce.');
-      valid = false;
-    }
-    if (!name) {
-      showFieldError(contactForm, 'name', t['partner-error-name'] || 'Zadejte své jméno.');
-      valid = false;
-    }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showFieldError(contactForm, 'email', t['partner-error-email'] || 'Zadejte platný e-mail.');
-      valid = false;
-    }
-    if (!message) {
-      showFieldError(contactForm, 'message', t['partner-error-message'] || 'Napište vzkaz.');
-      valid = false;
-    }
-    if (!valid) return;
+      if (!company) {
+        showFieldError(contactForm, 'company', t['partner-error-company'] || 'Vyplňte název firmy nebo instituce.');
+        valid = false;
+      }
+      if (!name) {
+        showFieldError(contactForm, 'name', t['partner-error-name'] || 'Zadejte své jméno.');
+        valid = false;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showFieldError(contactForm, 'email', t['partner-error-email'] || 'Zadejte platný e-mail.');
+        valid = false;
+      }
+      if (!message) {
+        showFieldError(contactForm, 'message', t['partner-error-message'] || 'Napište vzkaz.');
+        valid = false;
+      }
+      if (!valid) return;
 
-    const formData = new FormData(contactForm);
+      // Odeslat do Netlify
+      const formData = new FormData(contactForm);
 
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Accept': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(formData).toString()
-    })
-      .then(() => {
-        contactForm.style.display = 'none';
-        contactSuccess.style.display = 'block';
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Accept': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString()
       })
-      .catch(() => {
-        contactError.style.display = "block";
-        contactError.querySelector("p").textContent =
-          t["partner-error-msg"] || "Odeslání se nezdařilo. Zkuste to prosím později.";
-        setTimeout(() => (contactError.style.display = "none"), 4000);
-      });
-  });
-}
-  // Aktivace active linku
+        .then(() => {
+          contactForm.style.display = 'none';
+          contactSuccess.style.display = 'block';
+        })
+        .catch(() => {
+          contactError.style.display = "block";
+          contactError.querySelector("p").textContent =
+            t["partner-error-msg"] || "Odeslání se nezdařilo. Zkuste to prosím později.";
+          setTimeout(() => (contactError.style.display = "none"), 4000);
+        });
+    });
+  }
+
+  // Aktivní link
   activateNavLink();
 });
 
-// Hamburger menu
+// 6. Hamburger menu (jen jednou!)
 document.addEventListener('DOMContentLoaded', () => {
   const hamburger = document.getElementById('hamburger-btn');
   const navUl = document.querySelector('.main-nav ul');
@@ -151,4 +147,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-

@@ -164,8 +164,7 @@ function showFieldError(form, fieldName, msg) {
 }
 
 if (form) {
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
+  form.addEventListener('submit', e => {
     hideAllFieldErrors(form);
     errorMsg.style.display = "none";
 
@@ -180,19 +179,24 @@ if (form) {
     let valid = true;
     const t = window.translations || {};
     if (!name) {
+      e.preventDefault();
       showFieldError(form, 'name', t['contact-error-name'] || 'Zadejte své jméno.');
       valid = false;
     }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            e.preventDefault();
       showFieldError(form, 'email', t['contact-error-email'] || 'Zadejte platný e-mail.');
       valid = false;
     }
     if (!message) {
+      e.preventDefault();
       showFieldError(form, 'message', t['contact-error-message'] || 'Napište zprávu.');
       valid = false;
     }
-    if (!valid) return;
-
+       if (!valid) {
+      e.preventDefault();
+      return;
+}
     // Odeslání přes Netlify (zůstává na stránce, zobrazí inline hlášku)
     const formData = new FormData(form);
 
@@ -213,6 +217,7 @@ if (form) {
       });
   });
 }
+window.location.href = '/?success=1#contact';
 
   const pathname = window.location.pathname.split('/').pop();
   if (pathname === 'partners.html') {

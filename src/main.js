@@ -217,8 +217,6 @@ if (form) {
       });
   });
 }
-window.location.href = '/?success=1#contact';
-
   const pathname = window.location.pathname.split('/').pop();
   if (pathname === 'partners.html') {
     import('./partners.js');

@@ -148,24 +148,48 @@ document.addEventListener('DOMContentLoaded', async () => {
 const form = document.getElementById('contact-form');
 const successMsg = document.getElementById('contact-success');
 const errorMsg = document.getElementById('contact-error');
-
+function hideAllFieldErrors(form) {
+  form.querySelectorAll('.form-error').forEach(el => {
+    el.textContent = '';
+    el.classList.remove('active');
+  });
+}
+function showFieldError(form, fieldName, msg) {
+  const errEl = form.querySelector(`#error-${fieldName}`);
+  if (errEl) {
+    errEl.textContent = msg;
+    errEl.classList.add('active');
+  }
+}
 if (form) {
   form.addEventListener('submit', e => {
     e.preventDefault();
+    hideAllFieldErrors(form);
+    errorMsg.style.display = "none";
 
     // Antispam honeypot
     if (form.querySelector('input[name="bot-field"]').value) return;
 
-    // Extra validace e-mailu
+    // Pole
+    const name = form.name.value.trim();
     const email = form.email.value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errorMsg.style.display = 'block';
-      errorMsg.querySelector("p").textContent =
-        window.translations?.["contact-error-email"] ||
-        "Zadejte platný e-mail.";
-      setTimeout(() => (errorMsg.style.display = "none"), 4000);
-      return;
+    const message = form.message.value.trim();
+
+    let valid = true;
+    const t = window.translations || {};
+   if (!name) {
+      showFieldError(form, 'name', t['contact-error-name'] || 'Zadejte své jméno.');
+      valid = false;
     }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showFieldError(form, 'email', t['contact-error-email'] || 'Zadejte platný e-mail.');
+      valid = false;
+    }
+    if (!message) {
+      showFieldError(form, 'message', t['contact-error-message'] || 'Napište zprávu.');
+      valid = false;
+    }
+    if (!valid) return;
 
     const formData = new FormData(form);
 
@@ -181,13 +205,11 @@ if (form) {
       .catch(() => {
         errorMsg.style.display = 'block';
         errorMsg.querySelector("p").textContent =
-          window.translations?.["contact-error-msg"] ||
-          "Odeslání se nezdařilo. Zkuste to prosím později.";
+          t["contact-error-msg"] || "Odeslání se nezdařilo. Zkuste to prosím později.";
         setTimeout(() => (errorMsg.style.display = "none"), 4000);
       });
   });
 }
-
 
   const pathname = window.location.pathname.split('/').pop();
   if (pathname === 'partners.html') {

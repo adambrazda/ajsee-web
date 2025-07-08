@@ -38,22 +38,19 @@ function detectLang() {
   if (!["cs", "en", "de", "sk", "pl", "hu"].includes(lang)) lang = "cs";
   return lang;
 }
-
-function showFieldError(fieldId, msg) {
-  const errorBox = document.getElementById('error-' + fieldId);
-  if (errorBox) {
-    errorBox.textContent = msg;
-    errorBox.classList.add('active');
-  }
-}
-
-function hideAllFieldErrors() {
-  document.querySelectorAll('.form-error').forEach(el => {
+function hideAllFieldErrors(form) {
+  form.querySelectorAll('.form-error').forEach(el => {
     el.textContent = '';
     el.classList.remove('active');
   });
 }
-
+function showFieldError(form, fieldName, msg) {
+  const errEl = form.querySelector(`#error-${fieldName}`);
+  if (errEl) {
+    errEl.textContent = msg;
+    errEl.classList.add('active');
+  }
+}
 document.addEventListener('DOMContentLoaded', async () => {
   let lang = detectLang();
   await applyTranslations(lang);
@@ -64,68 +61,79 @@ document.addEventListener('DOMContentLoaded', async () => {
       await applyTranslations(chosenLang);
     });
   });
-
-  // ---- PARTNER FORM ----
-  const contactForm = document.getElementById('partner-contact-form');
-  const contactSuccess = document.getElementById('partner-contact-success');
-  const contactError = document.getElementById('partner-contact-error');
-  if (contactForm) {
-    contactForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      hideAllFieldErrors();
-      contactError.style.display = "none";
-
-      // Honeypot antispam (skrytý field jménem bot-field)
-      if (contactForm.querySelector('input[name="bot-field"]')?.value) return;
-
-      // Pole
-      const company = contactForm.company.value.trim();
-      const name = contactForm.name.value.trim();
-      const email = contactForm.email.value.trim();
-      const message = contactForm.message.value.trim();
-
-      let valid = true;
-      const t = window.translations || {};
-
-      if (!company) {
-        showFieldError('company', t['partner-error-company'] || 'Vyplňte název firmy nebo instituce.');
-        valid = false;
-      }
-      if (!name) {
-        showFieldError('name', t['partner-error-name'] || 'Zadejte své jméno.');
-        valid = false;
-      }
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showFieldError('email', t['partner-error-email'] || 'Zadejte platný e-mail.');
-        valid = false;
-      }
-      if (!message) {
-        showFieldError('message', t['partner-error-message'] || 'Napište vzkaz.');
-        valid = false;
-      }
-      if (!valid) return;
-
-      const formData = new FormData(contactForm);
-
-      fetch('/', {
-        method: 'POST',
-        headers: { 'Accept': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData).toString()
-      })
-        .then(() => {
-          contactForm.style.display = 'none';
-          contactSuccess.style.display = 'block';
-        })
-        .catch(() => {
-          contactError.style.display = "block";
-          contactError.querySelector("p").textContent =
-            t["partner-error-msg"] ||
-            "Odeslání se nezdařilo. Zkuste to prosím později.";
-          setTimeout(() => (contactError.style.display = "none"), 4000);
-        });
-    });
+function hideAllFieldErrors(form) {
+  form.querySelectorAll('.form-error').forEach(el => {
+    el.textContent = '';
+    el.classList.remove('active');
+  });
+}
+function showFieldError(form, fieldName, msg) {
+  const errEl = form.querySelector(`#error-${fieldName}`);
+  if (errEl) {
+    errEl.textContent = msg;
+    errEl.classList.add('active');
   }
+}
 
+// ---- PARTNER FORM ----
+const contactForm = document.getElementById('partner-contact-form');
+const contactSuccess = document.getElementById('partner-contact-success');
+const contactError = document.getElementById('partner-contact-error');
+if (contactForm) {
+  contactForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    hideAllFieldErrors(contactForm);
+    contactError.style.display = "none";
+
+    // Honeypot antispam (skrytý field jménem bot-field)
+    if (contactForm.querySelector('input[name="bot-field"]')?.value) return;
+
+    // Pole
+    const company = contactForm.company.value.trim();
+    const name = contactForm.name.value.trim();
+    const email = contactForm.email.value.trim();
+    const message = contactForm.message.value.trim();
+
+    let valid = true;
+    const t = window.translations || {};
+
+    if (!company) {
+      showFieldError(contactForm, 'company', t['partner-error-company'] || 'Vyplňte název firmy nebo instituce.');
+      valid = false;
+    }
+    if (!name) {
+      showFieldError(contactForm, 'name', t['partner-error-name'] || 'Zadejte své jméno.');
+      valid = false;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showFieldError(contactForm, 'email', t['partner-error-email'] || 'Zadejte platný e-mail.');
+      valid = false;
+    }
+    if (!message) {
+      showFieldError(contactForm, 'message', t['partner-error-message'] || 'Napište vzkaz.');
+      valid = false;
+    }
+    if (!valid) return;
+
+    const formData = new FormData(contactForm);
+
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Accept': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(formData).toString()
+    })
+      .then(() => {
+        contactForm.style.display = 'none';
+        contactSuccess.style.display = 'block';
+      })
+      .catch(() => {
+        contactError.style.display = "block";
+        contactError.querySelector("p").textContent =
+          t["partner-error-msg"] || "Odeslání se nezdařilo. Zkuste to prosím později.";
+        setTimeout(() => (contactError.style.display = "none"), 4000);
+      });
+  });
+}
   // Aktivace active linku
   activateNavLink();
 });
@@ -143,3 +151,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+

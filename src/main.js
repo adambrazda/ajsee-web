@@ -165,7 +165,7 @@ function showFieldError(form, fieldName, msg) {
 
 if (form) {
   form.addEventListener('submit', function(e) {
-    //e.preventDefault();
+    e.preventDefault();
     hideAllFieldErrors(form);
     errorMsg.style.display = "none";
 

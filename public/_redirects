@@ -1,1 +1,7 @@
-/*            /index.html   200
+# Netlify Forms: Nech POST požadavky na kořenové adresy zpracovat Netlify
+POST    /contact    /index.html    200
+POST    /           /index.html    200
+
+# SPA fallback pro všechny GET požadavky (vše kromě výše definovaných POST)
+# POZOR! Jen GET požadavky
+/*    /index.html   200

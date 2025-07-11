@@ -1,2 +1,1 @@
-# Toto pravidlo chytí všechny POST requesty (tj. i z AJAX) na root a vrátí vždy index.html (bez 404!)
 /*    /index.html   200

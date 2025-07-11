@@ -1,6 +1,2 @@
-# Povolit Netlify Forms submission na rootu i custom cesty
-POST    /         /index.html    200
-POST    /contact  /index.html    200
-
-# SPA fallback pouze pro GET
-GET     /*        /index.html    200
+# Toto pravidlo chytí všechny POST requesty (tj. i z AJAX) na root a vrátí vždy index.html (bez 404!)
+/*    /index.html   200

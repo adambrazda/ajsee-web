@@ -165,11 +165,14 @@ function showFieldError(form, fieldName, msg) {
 
 if (form) {
   form.addEventListener('submit', function(e) {
-    e.preventDefault();
     hideAllFieldErrors(form);
     errorMsg.style.display = "none";
 
-    if (form.querySelector('input[name="bot-field"]')?.value) return;
+    // honeypot (bot-field)
+    if (form.querySelector('input[name="bot-field"]')?.value) {
+      e.preventDefault();
+      return;
+    }
 
     const name = form.name.value.trim();
     const email = form.email.value.trim();
@@ -189,36 +192,13 @@ if (form) {
       showFieldError(form, 'message', t['contact-error-message'] || 'Napište zprávu.');
       valid = false;
     }
-    if (!valid) return;
-
-    // Důležité: musí obsahovat i form-name!
-    const data = new FormData(form);
-
-    // Ověř pro jistotu, že obsahuje form-name
-    if (!data.has('form-name')) {
-      data.append('form-name', form.getAttribute('name') || 'contact');
+    if (!valid) {
+      e.preventDefault(); // Zastav pouze pokud není validní!
+      return;
     }
-for (const pair of data.entries()) {
-  console.log(pair[0]+ ': ' + pair[1]);
-}
-  
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Accept': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(data).toString()
-    })
-      .then(() => {
-        form.style.display = 'none';
-        successMsg.style.display = 'block';
-        const contactSection = document.getElementById('contact');
-        if (contactSection) contactSection.scrollIntoView({ behavior: 'smooth' });
-      })
-      .catch(() => {
-        errorMsg.style.display = 'block';
-        errorMsg.querySelector("p").textContent =
-          t["contact-error-msg"] || "Odeslání se nezdařilo. Zkuste to prosím později.";
-        setTimeout(() => (errorMsg.style.display = "none"), 4000);
-      });
+
+    // Pokud je vše validní → nenechávej JS submit (žádný fetch) → HTML submit se provede sám a Netlify to zachytí!
+    // Úspěšná zpráva se zobrazí na thanks stránce nebo Netlify success message.
   });
 }
 

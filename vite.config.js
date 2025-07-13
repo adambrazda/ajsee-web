@@ -8,7 +8,8 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         about: resolve(__dirname, 'about.html'),
         events: resolve(__dirname, 'events.html'),
-        partners: resolve(__dirname, 'partners.html')
+        partners: resolve(__dirname, 'partners.html'),
+        thankyou: resolve(__dirname, 'thank-you.html')
       }
     }
   }

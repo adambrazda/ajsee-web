@@ -87,6 +87,9 @@
   "contact-error-msg": "Odeslání se nezdařilo. Zkuste to prosím později.",
   "contact-error-email": "Zadejte platný e-mail.",
   "contact-honeypot-label": "Nevyplňujte toto pole:",
-  "contact-success-msg": "Děkujeme za zprávu! Ozveme se vám co nejdříve."
-
+  "contact-success-msg": "Děkujeme za zprávu! Ozveme se vám co nejdříve.",
+  "thankyou-title": "Děkujeme za zprávu | AJSEE",
+  "thankyou-headline": "Děkujeme!",
+  "thankyou-message": "Vaše zpráva byla úspěšně odeslána.<br>Ozveme se vám co nejdříve.",
+  "thankyou-back": "Zpět na hlavní stránku"
 }

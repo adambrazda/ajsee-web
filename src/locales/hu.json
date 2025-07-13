@@ -87,5 +87,9 @@
   "events-benefit-3": "Gondosan válogatott események",
   "contact-error-msg": "A küldés nem sikerült. Kérjük, próbálja meg később.",
   "contact-error-email": "Kérjük, adjon meg érvényes e-mail címet.",
-  "contact-honeypot-label": "Ne töltse ki ezt a mezőt:"
+  "contact-honeypot-label": "Ne töltse ki ezt a mezőt:",
+  "thankyou-title": "Köszönjük az üzenetét | AJSEE",
+  "thankyou-headline": "Köszönjük!",
+  "thankyou-message": "Üzenetét sikeresen elküldtük.<br>Hamarosan jelentkezünk.",
+  "thankyou-back": "Vissza a főoldalra"
 }

@@ -87,5 +87,9 @@
   "events-benefit-3": "Sorgfältig ausgewählte Events",
   "contact-error-msg": "Das Absenden ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal.",
   "contact-error-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
-  "contact-honeypot-label": "Bitte nicht ausfüllen:"
+  "contact-honeypot-label": "Bitte nicht ausfüllen:",
+  "thankyou-title": "Vielen Dank für Ihre Nachricht | AJSEE",
+  "thankyou-headline": "Vielen Dank!",
+  "thankyou-message": "Ihre Nachricht wurde erfolgreich gesendet.<br>Wir melden uns in Kürze bei Ihnen.",
+  "thankyou-back": "Zurück zur Startseite"
 }

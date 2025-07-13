@@ -86,5 +86,9 @@
   "events-benefit-3": "Starostlivo vybrané akcie",
   "contact-error-msg": "Odoslanie sa nepodarilo. Skúste to prosím neskôr.",
   "contact-error-email": "Zadajte platný e-mail.",
-  "contact-honeypot-label": "Nevyplňujte toto pole:"
+  "contact-honeypot-label": "Nevyplňujte toto pole:",
+  "thankyou-title": "Ďakujeme za správu | AJSEE",
+  "thankyou-headline": "Ďakujeme!",
+  "thankyou-message": "Vaša správa bola úspešne odoslaná.<br>Ozveme sa vám čo najskôr.",
+  "thankyou-back": "Späť na hlavú stránku"
 }

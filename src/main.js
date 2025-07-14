@@ -168,6 +168,19 @@ if (form) {
     hideAllFieldErrors(form);
     errorMsg.style.display = "none";
 
+    // Detekuj aktuální jazyk – vezmi z URL, localStorage nebo jak to děláš v projektu
+  let currentLang = 'cs';
+  // 1. Z URL (pokud používáš ?lang=xx)
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang && ['cs','en','de','sk','pl','hu'].includes(urlLang)) {
+    currentLang = urlLang;
+  }
+  // 2. Nebo z proměnné/volby jazykového switche
+  // Pokud máš někde proměnnou jako currentLang, použij ji raději
+
+  // Nastav akci formuláře dynamicky:
+  form.setAttribute('action', `/thank-you.html?lang=${currentLang}`);
+
     // honeypot (bot-field)
     if (form.querySelector('input[name="bot-field"]')?.value) {
       e.preventDefault();

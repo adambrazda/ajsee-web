@@ -6,19 +6,112 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="/images/logo-ajsee.png" />
   <link rel="stylesheet" href="/assets/main-58-l3rEq.css" />
+  <style>
+    body {
+      background: #f7f7f9;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    }
+    .thankyou-card {
+      max-width: 430px;
+      margin: 32px auto;
+      padding: 2.6rem 2.3rem 2.2rem;
+      background: #fff;
+      border-radius: 2rem;
+      box-shadow: 0 8px 36px #002c4d1a;
+      text-align: center;
+      position: relative;
+      transition: box-shadow 0.2s;
+    }
+    .thankyou-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .thankyou-logo img {
+      width: 64px;
+      margin: 0 auto 0.45rem;
+      display: block;
+    }
+    .thankyou-logo .brand {
+      font-weight: 700;
+      font-size: 1.14rem;
+      letter-spacing: 0.08em;
+      color: #192646;
+      margin-bottom: 0.2rem;
+    }
+    .thankyou-logo .motto {
+      font-size: 0.95rem;
+      color: #0077cc;
+      letter-spacing: 0.03em;
+    }
+    .thankyou-headline {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #192646;
+      margin: 0 0 1rem 0;
+      letter-spacing: -0.02em;
+    }
+    .thankyou-message {
+      font-size: 1.17rem;
+      color: #232c3d;
+      margin-bottom: 2.1em;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+    .btn-main {
+      display: inline-block;
+      background: linear-gradient(90deg,#0077cc,#14c2c5 90%);
+      color: #fff;
+      font-size: 1.12rem;
+      font-weight: 600;
+      padding: 0.75em 2.4em;
+      border-radius: 1.7em;
+      box-shadow: 0 4px 18px #14c2c516;
+      text-decoration: none;
+      transition: background 0.18s, box-shadow 0.18s, transform 0.18s;
+      border: none;
+      outline: none;
+      margin-top: 0.5em;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+    }
+    .btn-main:hover, .btn-main:focus {
+      background: linear-gradient(90deg,#14c2c5 10%,#0077cc 100%);
+      box-shadow: 0 7px 24px #0077cc29;
+      transform: translateY(-2px) scale(1.04);
+      color: #fff;
+    }
+    @media (max-width: 520px) {
+      .thankyou-card {
+        padding: 1.5rem 0.6rem;
+        border-radius: 1.1rem;
+      }
+      .thankyou-headline {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main class="thankyou-main" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
-    <div class="thankyou-card" style="max-width: 420px; margin: 32px auto; padding: 2rem 2.5rem; background: #fff; border-radius: 18px; box-shadow: 0 6px 32px #002c4d18; text-align: center;">
-      <img src="/images/logo-ajsee.png" alt="AJSEE logo" style="width:56px; margin-bottom:1.1rem;">
-      <h1 data-i18n-key="thankyou-headline">Děkujeme!</h1>
-      <p data-i18n-key="thankyou-message" style="font-size:1.15rem; margin-bottom:1.4em; color:#333;">
+  <main>
+    <div class="thankyou-card">
+      <div class="thankyou-logo">
+        <img src="/images/logo-ajsee.png" alt="AJSEE logo" />
+      <h1 class="thankyou-headline" data-i18n-key="thankyou-headline">Děkujeme!</h1>
+      <p class="thankyou-message" data-i18n-key="thankyou-message">
         Vaše zpráva byla úspěšně odeslána.<br>
         Ozveme se vám co nejdříve.
       </p>
-      <a href="/" class="btn-primary" data-i18n-key="thankyou-back">Zpět na hlavní stránku</a>
+      <a href="/" class="btn-main" data-i18n-key="thankyou-back">Zpět na hlavní stránku</a>
     </div>
   </main>
-  <script src="/i18n.js"></script>
+<script type="module" src="/src/thank-you.js"></script>
 </body>
 </html>

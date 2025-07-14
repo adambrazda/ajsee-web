@@ -4,6 +4,7 @@ const supportedLangs = ["cs", "en", "de", "sk", "pl", "hu"];
 export async function loadTranslations(lang) {
   if (!supportedLangs.includes(lang)) lang = "cs";
   let resp = await fetch('/locales/' + lang + '.json'); // relativní cesta!
+  console.log("Loading translations for lang:", lang, resp);
   if (!resp.ok) {
     // Fallback na češtinu
     resp = await fetch('/locales/cs.json');
@@ -26,3 +27,12 @@ export async function applyTranslations(lang) {
     }
   });
 }
+export function detectLang() {
+  const urlLang = new URLSearchParams(window.location.search).get('lang');
+  if (urlLang && supportedLangs.includes(urlLang)) return urlLang;
+  const navLang = (navigator.language || 'cs').slice(0,2).toLowerCase();
+  if (supportedLangs.includes(navLang)) return navLang;
+  return 'cs';
+}
+window.applyTranslations = applyTranslations;
+window.detectLang = detectLang;

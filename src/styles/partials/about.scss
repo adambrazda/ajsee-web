@@ -184,3 +184,117 @@
     padding: 0.7rem 1.7rem;
   }
 }
+.about-section.fancy-bg {
+  background: linear-gradient(180deg, #f7f7f9 80%, #e5f9fb 100%);
+  padding: 54px 0 56px 0;
+  text-align: center;
+
+  .container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+}
+
+.about-headline {
+  font-size: 2.05rem;
+  font-weight: 800;
+  color: #192646;
+  margin-bottom: 0.6em;
+  letter-spacing: -0.01em;
+}
+
+.about-lead {
+  font-size: 1.19rem;
+  color: #232c3d;
+  margin: 0 auto 1.2em auto;
+  font-weight: 500;
+  line-height: 1.5;
+  max-width: 620px;
+}
+
+.about-text {
+  font-size: 1.12rem;
+  color: #232c3d;
+  margin: 0 auto 2.1em auto;
+  max-width: 660px;
+  line-height: 1.67;
+  .brand {
+    font-weight: 700;
+    color: #0077cc;
+    font-size: 1.07em;
+  }
+  sup {
+    font-size: 0.67em;
+    top: -0.7em;
+    left: 0.01em;
+    position: relative;
+  }
+}
+
+.btn-main.btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(90deg,#0077cc,#14c2c5 80%);
+  color: #fff;
+  font-size: 1.11rem;
+  font-weight: 600;
+  padding: 0.82em 2.6em;
+  border-radius: 1.7em;
+  box-shadow: 0 4px 18px #14c2c516;
+  text-decoration: none;
+  transition: background 0.17s, box-shadow 0.19s, transform 0.15s;
+  border: none;
+  outline: none;
+  margin-top: 0.1em;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  gap: 0.38em;
+  span {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    strong {
+      font-weight: 700;
+      margin-left: 0.13em;
+      sup {
+        font-size: 0.6em;
+        top: -0.5em;
+        left: 0.01em;
+        position: relative;
+      }
+    }
+  }
+  svg {
+    margin-left: 0.18em;
+    margin-bottom: 0.03em;
+  }
+}
+
+.btn-main.btn-with-icon:hover, .btn-main.btn-with-icon:focus {
+  background: linear-gradient(90deg,#14c2c5 15%,#0077cc 100%);
+  box-shadow: 0 7px 24px #14c2c529;
+  transform: translateY(-2px) scale(1.035);
+  color: #fff;
+}
+
+@media (max-width: 540px) {
+  .about-section.fancy-bg {
+    padding: 32px 0 35px 0;
+  }
+  .about-headline {
+    font-size: 1.32rem;
+  }
+  .about-lead {
+    font-size: 0.98rem;
+    padding: 0 0.5em;
+  }
+  .about-text {
+    font-size: 0.98rem;
+    padding: 0 0.3em;
+  }
+  .btn-main.btn-with-icon {
+    font-size: 0.96rem;
+    padding: 0.73em 1.55em;
+  }
+}

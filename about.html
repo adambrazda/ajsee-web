@@ -34,28 +34,34 @@
   </div>
 </header>
   <main>
-  <!-- HERO sekce s osobním příběhem zakladatele -->
-  <section class="about-hero">
-    <div class="container about-hero-inner" style="display: flex; flex-wrap: wrap; align-items: center; gap: 3rem; padding-top: 2.5rem;">
-      <!-- Fotka zakladatele -->
-      <div style="flex: 0 0 180px; text-align: center;">
-        <img src="/images/about-founder.jpg" alt="Adam Brázda, zakladatel AJSEE" class="about-founder-photo" style="width: 160px; height: 160px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; box-shadow: 0 4px 32px #0077cc22;">
-        <div class="about-signature" data-i18n-key="about-signature" style="font-weight: 600; margin-top: 1rem;">Adam Brázda<br>zakladatel AJSEE®</div>
-      </div>
-      <!-- Textový blok -->
-      <div style="flex: 1 1 340px;">
-        <h1 data-i18n-key="about-headline-full">Můj příběh, naše vize</h1>
-        <div class="about-hero-text" data-i18n-key="about-hero-text">
-          Jmenuji se Adam Brázda a jsem zakladatelem AJSEE®. Od malička mě fascinoval svět kultury, hudby i cestování. Věřím, že každý má právo zažít jakýkoli koncert, představení nebo sportovní akci – ať už se koná kdekoli na světě, bez zbytečných překážek.<br><br>
-          Myšlenka AJSEE® se zrodila z jednoduché touhy: umožnit lidem z Česka a Slovenska cestovat za zážitky, aniž by je limitoval cizojazyčný web, složité objednávky nebo nejistota kolem vstupenek. Chci, aby bylo jednoduché dostat se na světové akce – srozumitelně, bezpečně a s lidským přístupem.<br><br>
-          Nechceme být jen dalším ticketingovým portálem. S AJSEE® nabízíme širokou jazykovou podporu, prozákaznický servis a hlavně nadšení pro kulturu, které sdílím se svým týmem i s Vámi.<br><br>
-          Věřím, že zážitky nemají hranice. AJSEE® je tu proto, aby Vaše cesta za nimi byla snadná, radostná a inspirující.<br><br>
-          <strong>Kultura patří všem. AJSEE® je tu pro Vás.</strong>
-        </div>
+ <section class="about-hero">
+  <div class="container about-hero-inner">
+    <div class="about-hero-textblock">
+      <h1 data-i18n-key="about-headline-full">Můj příběh, naše vize</h1>
+      <div class="about-hero-text">
+        <p data-i18n-key="about-hero-text">
+          V AJSEE® věříme, že kultura, sport a hudba patří všem. Naším posláním je bourat jazykové bariéry, otevírat světové zážitky a spojovat lidi bez hranic.
+        </p>
+        <p>
+          <strong data-i18n-key="about-hero-claim">
+            Zážitky nemají hranice. AJSEE<sup>®</sup> je tu pro každého, kdo miluje kulturu.
+          </strong>
+        </p>
       </div>
     </div>
-  </section>
-
+    <div class="about-hero-visual">
+      <svg class="hero-globe" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="110" cy="110" r="105" stroke="#0077cc" stroke-width="3" fill="#e6f4fb"/>
+        <circle cx="110" cy="110" r="74" stroke="#14c2c5" stroke-width="2" fill="none"/>
+        <ellipse cx="110" cy="110" rx="55" ry="27" stroke="#0077cc77" stroke-width="1.2" fill="none"/>
+        <circle cx="70" cy="70" r="4" fill="#14c2c5"/>
+        <circle cx="150" cy="80" r="4" fill="#0077cc"/>
+        <circle cx="130" cy="150" r="4" fill="#14c2c5"/>
+        <circle cx="80" cy="140" r="4" fill="#0077cc"/>
+      </svg>
+    </div>
+  </div>
+</section>
   <!-- Hodnoty -->
   <section class="about-values">
     <div class="container">
@@ -77,11 +83,67 @@
     </div>
   </section>
   <!-- Motto -->
-  <section class="about-motto">
-    <div class="container">
-      <blockquote data-i18n-key="about-motto">AJSEE® – Refine culture.</blockquote>
+<!-- Timeline sekce (Milníky AJSEE®) -->
+<section class="about-timeline">
+  <div class="container">
+    <h2 data-i18n-key="about-timeline-headline">Naše cesta</h2>
+    <div class="timeline-list">
+      <div class="timeline-item">
+        <div class="timeline-year" data-i18n-key="about-timeline-2024-year">2024</div>
+        <div class="timeline-content" data-i18n-key="about-timeline-2024">
+          První nápady na vytvoření platformy AJSEE®. Začíná se rodit vize propojit kulturní svět bez jazykových bariér.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year" data-i18n-key="about-timeline-2025-year">2025</div>
+        <div class="timeline-content" data-i18n-key="about-timeline-2025">
+          Zahájení programování a vývoje multijazyčného webu AJSEE®.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year" data-i18n-key="about-timeline-2025-07-01-year">1. 7. 2025</div>
+        <div class="timeline-content" data-i18n-key="about-timeline-2025-07-01">
+          Spuštění testovacího provozu webu AJSEE®. Web je poprvé otevřen veřejnosti a sbíráme první podněty od návštěvníků.
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
+<!-- Sekce TÝM -->
+<section class="about-team">
+  <div class="container">
+    <h2 data-i18n-key="about-team-headline">Kdo za tím stojí?</h2>
+    <div class="team-list">
+      <div class="team-member">
+        <img src="/images/team/placeholder.svg" alt="Adam Brázda" class="team-photo" />
+        <div class="team-info">
+          <div class="team-name" data-i18n-key="about-team-adam-name">Adam Brázda</div>
+          <div class="team-role" data-i18n-key="about-team-adam-role">Zakladatel & CEO</div>
+          <div class="team-claim" data-i18n-key="about-team-adam-claim">
+            Za platformou AJSEE® stojí Adam Brázda. Od prvních nápadů až po realizaci webu vede projekt s vizí propojit světový kulturní svět bez bariér.
+          </div>
+          <a href="https://www.linkedin.com/in/adam-brazda-604179a0?/" class="team-linkedin" target="_blank" rel="noopener" aria-label="LinkedIn Adam Brázda">
+            <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
+            <span data-i18n-key="about-team-adam-linkedin" class="sr-only">LinkedIn profil</span>
+          </a>
+        </div>
+      </div>
+      <!-- Další členy lze snadno přidat zde stejným patternem -->
+    </div>
+  </div>
+</section>
+<section class="about-cta">
+  <div class="container">
+    <h2 data-i18n-key="about-cta-headline">Chceš být u toho?</h2>
+    <div class="about-cta-text" data-i18n-key="about-cta-text">
+      AJSEE® je otevřená spolupráci, nápadům i novým partnerstvím. Pokud tě naše mise zaujala, napiš nám – těšíme se na zprávu!
+    </div>
+    <div class="about-cta-actions">
+      <a href="/#contact" class="btn-primary" data-i18n-key="about-cta-contact">Kontaktovat AJSEE®</a>
+    </div>
+  </div>
+</section>
+
   <div class="about-back-link" style="text-align:center; margin:2.5rem 0 1rem 0;">
     <a href="/" class="btn-secondary" data-i18n-key="about-back">Zpět na hlavní stránku</a>
   </div>

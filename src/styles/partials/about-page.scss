@@ -4,63 +4,99 @@
 
 .about-hero {
   background: linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%);
-  padding: 3rem 1rem 2rem;
+  padding: 3.2rem 1rem 2.4rem 1rem;
+
   .about-hero-inner {
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 2.5rem;
-    max-width: 1080px;
+    align-items: center;
+    gap: 3.5rem;
+    max-width: 1200px;
     margin: 0 auto;
+    flex-wrap: wrap;
 
     @media (max-width: 900px) {
       flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 2rem;
+      gap: 2.2rem;
     }
   }
-  .about-founder-photo {
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 32px #0077cc22;
-    border: 4px solid #fff;
-  }
-  .about-signature {
-    font-weight: 600;
-    margin-top: 1rem;
-    color: #192646;
-    font-size: 1.08rem;
-    line-height: 1.5;
-    text-align: center;
-  }
-  h1 {
-    font-size: 2.3rem;
-    margin-bottom: 1.4rem;
-    color: #0077cc;
-    text-align: left;
-    @media (max-width: 900px) {
-      text-align: center;
+  .about-hero-visual {
+    flex: 0 0 300px;
+    max-width: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .hero-globe {
+      width: 90%;
+      min-width: 180px;
+      max-width: 320px;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 6px 32px #14c2c52a);
     }
   }
-  .about-hero-text {
-    font-size: 1.15rem;
-    color: #224;
-    line-height: 1.6;
-    margin-bottom: 0;
-    text-align: left;
-    @media (max-width: 900px) {
-      text-align: center;
+  .about-hero-textblock {
+    flex: 1 1 350px;
+    min-width: 0;
+    h1 {
+      font-size: 2.4rem;
+      color: #0077cc;
+      font-weight: 800;
+      margin-bottom: 1.6rem;
+      letter-spacing: -0.5px;
     }
-    strong {
-      color: #14c2c5;
-      font-weight: 700;
+    .about-hero-text {
+      font-size: 1.18rem;
+      color: #224;
+      line-height: 1.65;
+      margin-bottom: 0;
+      strong {
+        display: block;
+        color: #14c2c5;
+        font-weight: 800;
+        font-size: 1.13em;
+        margin-top: 1.6rem;
+        letter-spacing: -0.3px;
+      }
     }
   }
 }
+
+// ============================================= 
+
+@media (max-width: 600px) {
+  .about-hero {
+    padding: 0.7rem 0.1rem 0.3rem 0.1rem;
+    min-height: 0;
+    height: auto;
+    .about-hero-inner {
+      flex-direction: column;
+      gap: 0.2rem;
+      align-items: center; // Zarovnání na střed
+      min-height: 0;
+      height: auto;
+    }
+    .about-hero-textblock {
+      order: 1;
+      text-align: center;
+      margin-bottom: 0.1rem; // Minimální mezera
+      width: 100%;
+    }
+    .about-hero-visual {
+      order: 2;
+      max-width: 130px;
+      margin: 0.1rem auto 0.1rem auto;
+      .hero-globe {
+        min-width: 80px;
+        max-width: 120px;
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        max-height: 120px;
+      }
+    }
+  }
+}
+// ============================================= 
 
 .about-values {
   background: #fff;
@@ -179,5 +215,383 @@
   }
   .about-motto blockquote {
     font-size: 1.05rem;
+  }
+}
+// =============================================
+// ABOUT TIMELINE SECTION
+// =============================================
+
+.about-timeline {
+  background: linear-gradient(120deg, #e8f4fc 0%, #f6faff 100%);
+  padding: 3rem 1rem 2.5rem 1rem;
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    color: #0077cc;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2.3rem;
+    position: relative;
+    margin: 0;
+    padding-left: 0.4rem;
+  }
+
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 2.2rem;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 20px;
+      top: 2.2rem;
+      width: 2px;
+      height: calc(100% - 2.2rem);
+      background: linear-gradient(#0077cc33, #14c2c533);
+      z-index: 0;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    &:last-child::before {
+      display: none; // u posledního milníku neprotahovat čáru dolů
+    }
+  }
+
+  .timeline-year {
+    flex: 0 0 80px;
+    font-size: 1.22rem;
+    font-weight: 700;
+    color: #14c2c5;
+    background: #fff;
+    border-radius: 1.3em;
+    box-shadow: 0 2px 8px #14c2c51a;
+    text-align: center;
+    padding: 0.6em 1em;
+    position: relative;
+    z-index: 1;
+    min-width: 72px;
+    margin-top: 0.1em;
+  }
+
+  .timeline-content {
+    flex: 1 1 0%;
+    font-size: 1.12rem;
+    color: #184469;
+    background: #fff;
+    border-radius: 1.1em;
+    box-shadow: 0 1px 6px #0077cc16;
+    padding: 1.1rem 1.5rem;
+    position: relative;
+    z-index: 1;
+    line-height: 1.6;
+    letter-spacing: -0.1px;
+  }
+}
+
+// --- MOBILE VERSION ---
+@media (max-width: 700px) {
+  .about-timeline {
+    padding: 2rem 0.1rem 1.4rem 0.1rem;
+
+    h2 {
+      font-size: 1.22rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .timeline-list {
+      gap: 1.15rem;
+      padding-left: 0;
+    }
+
+    .timeline-item {
+      gap: 1.1rem;
+
+      .timeline-year {
+        font-size: 1rem;
+        min-width: 56px;
+        padding: 0.5em 0.7em;
+      }
+      .timeline-content {
+        font-size: 0.97rem;
+        padding: 0.8rem 0.7rem;
+      }
+    }
+  }
+}
+// =============================================
+// ABOUT TEAM SECTION
+// =============================================
+
+.about-team {
+  background: linear-gradient(120deg, #f8fcff 0%, #e1f5fb 100%);
+  padding: 3rem 1rem 2.5rem 1rem;
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    color: #0077cc;
+    text-align: center;
+    margin-bottom: 2.2rem;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .team-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2.2rem;
+  }
+
+  .team-member {
+    background: #fff;
+    border-radius: 1.5em;
+    box-shadow: 0 4px 22px #0077cc18, 0 1px 6px #14c2c514;
+    display: flex;
+    align-items: center;
+    gap: 2.1rem;
+    padding: 2.2rem 2.6rem;
+    min-width: 320px;
+    max-width: 540px;
+    margin: 0 auto;
+    position: relative;
+    transition: transform 0.18s, box-shadow 0.18s;
+
+    &:hover,
+    &:focus-within {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 8px 32px #14c2c526, 0 2px 14px #0077cc24;
+    }
+  }
+
+  .team-photo {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 18px #14c2c533;
+    border: 3px solid #fff;
+    background: #e1f5fb;
+    flex-shrink: 0;
+    transition: box-shadow 0.18s;
+    display: block;
+  }
+
+  .team-info {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  .team-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #184469;
+    margin-bottom: 0.1em;
+    letter-spacing: -0.3px;
+  }
+
+  .team-role {
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: #14c2c5;
+    margin-bottom: 0.3em;
+    letter-spacing: -0.2px;
+  }
+
+  .team-claim {
+    font-size: 1.08rem;
+    color: #334b69;
+    margin-bottom: 0.7em;
+    line-height: 1.5;
+    letter-spacing: -0.1px;
+  }
+
+  .team-linkedin {
+    margin-top: 0.3em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    transition: filter 0.14s;
+    filter: grayscale(60%) brightness(0.86);
+
+    &:hover,
+    &:focus {
+      filter: none;
+    }
+
+    img {
+      width: 26px;
+      height: 26px;
+      border-radius: 0.6em;
+      box-shadow: 0 1px 5px #0077cc14;
+      background: #eaf5fc;
+      display: block;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  }
+}
+
+// --- MOBILE VERSION ---
+@media (max-width: 700px) {
+  .about-team {
+    padding: 2rem 0.2rem 1.2rem 0.2rem;
+
+    h2 {
+      font-size: 1.19rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .team-list {
+      gap: 1.3rem;
+    }
+
+    .team-member {
+      flex-direction: column;
+      align-items: center;
+      padding: 1.3rem 0.8rem;
+      min-width: 0;
+      max-width: 100%;
+      gap: 1.1rem;
+    }
+
+    .team-photo {
+      width: 84px;
+      height: 84px;
+    }
+
+    .team-info {
+      align-items: center;
+      text-align: center;
+      gap: 0.2rem;
+    }
+
+    .team-name {
+      font-size: 1.08rem;
+    }
+    .team-role {
+      font-size: 0.97rem;
+    }
+    .team-claim {
+      font-size: 0.98rem;
+    }
+    .team-linkedin img {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
+// =============================================
+// ABOUT CTA SECTION
+// =============================================
+
+.about-cta {
+  background: linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%);
+  padding: 3.2rem 1rem 2.5rem 1rem;
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  h2 {
+    color: #0077cc;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.3rem;
+    letter-spacing: -0.5px;
+  }
+
+  .about-cta-text {
+    font-size: 1.14rem;
+    color: #224;
+    margin-bottom: 2.1rem;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  .about-cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.3rem;
+    flex-wrap: wrap;
+
+    .btn-primary {
+      padding: 0.9em 2.2em;
+      font-size: 1.1rem;
+      background: linear-gradient(90deg, #14c2c5 30%, #0077cc 100%);
+      border: none;
+      border-radius: 1.7em;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 3px 16px #14c2c52a;
+      transition: background 0.17s, box-shadow 0.17s, transform 0.14s;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 0.3em;
+
+      &:hover, &:focus {
+        background: linear-gradient(90deg, #0077cc 30%, #14c2c5 100%);
+        box-shadow: 0 6px 24px #0077cc2a;
+        transform: translateY(-2px) scale(1.03);
+        color: #fff;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .about-cta {
+    padding: 1.7rem 0.15rem 1.3rem 0.15rem;
+
+    h2 {
+      font-size: 1.17rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .about-cta-text {
+      font-size: 1.01rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .about-cta-actions .btn-primary {
+      font-size: 0.97rem;
+      padding: 0.7em 1.3em;
+    }
   }
 }

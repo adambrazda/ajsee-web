@@ -1,0 +1,183 @@
+// =============================================
+// ABOUT PAGE (about.html)
+// =============================================
+
+.about-hero {
+  background: linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%);
+  padding: 3rem 1rem 2rem;
+  .about-hero-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 2.5rem;
+    max-width: 1080px;
+    margin: 0 auto;
+
+    @media (max-width: 900px) {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 2rem;
+    }
+  }
+  .about-founder-photo {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 32px #0077cc22;
+    border: 4px solid #fff;
+  }
+  .about-signature {
+    font-weight: 600;
+    margin-top: 1rem;
+    color: #192646;
+    font-size: 1.08rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+  h1 {
+    font-size: 2.3rem;
+    margin-bottom: 1.4rem;
+    color: #0077cc;
+    text-align: left;
+    @media (max-width: 900px) {
+      text-align: center;
+    }
+  }
+  .about-hero-text {
+    font-size: 1.15rem;
+    color: #224;
+    line-height: 1.6;
+    margin-bottom: 0;
+    text-align: left;
+    @media (max-width: 900px) {
+      text-align: center;
+    }
+    strong {
+      color: #14c2c5;
+      font-weight: 700;
+    }
+  }
+}
+
+.about-values {
+  background: #fff;
+  padding: 3rem 1rem 2rem;
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  h2 {
+    color: #0077cc;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    text-align: center;
+  }
+  .about-values-grid {
+    display: flex;
+    gap: 2.2rem;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    @media (max-width: 900px) {
+      justify-content: center;
+      gap: 1.2rem;
+    }
+  }
+  .about-value {
+    background: #f6faff;
+    border-radius: 1.1rem;
+    box-shadow: 0 2px 12px #0077cc1a;
+    padding: 1.4rem 2.2rem;
+    min-width: 220px;
+    max-width: 340px;
+    text-align: center;
+    transition: transform 0.18s;
+    .about-value-icon {
+      width: 54px;
+      height: 54px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 2px 8px #0077cc33);
+      transition: filter 0.18s;
+      display: inline-block;
+    }
+    &:hover {
+      transform: translateY(-4px) scale(1.03);
+      .about-value-icon {
+        filter: drop-shadow(0 6px 16px #0077cc4d);
+      }
+    }
+    div {
+      font-size: 1.13rem;
+      color: #184469;
+    }
+  }
+}
+
+.about-motto {
+  background: none;
+  padding: 1.5rem 0 2.4rem;
+  blockquote {
+    font-size: 1.5rem;
+    color: #0077cc;
+    font-style: italic;
+    text-align: center;
+    margin: 0;
+  }
+}
+
+.about-back-link {
+  text-align: center;
+  margin: 2.5rem 0 1rem 0;
+  .btn-secondary {
+    display: inline-block;
+    margin: 1rem auto 0;
+    font-size: 1rem;
+    padding: 0.7rem 1.7rem;
+    background: none;
+    border: 2px solid #14c2c5;
+    border-radius: 1.2em;
+    color: #14c2c5;
+    font-weight: 600;
+    transition: background 0.18s, color 0.18s;
+    &:hover, &:focus {
+      background: #14c2c5;
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+}
+
+// Základní responsivita pro mobil
+@media (max-width: 600px) {
+  .about-hero {
+    padding: 1.6rem 0.2rem 1.2rem;
+    .about-founder-photo {
+      width: 120px;
+      height: 120px;
+    }
+    h1 {
+      font-size: 1.48rem;
+      margin-bottom: 1rem;
+    }
+    .about-hero-text {
+      font-size: 1.02rem;
+    }
+  }
+  .about-values {
+    padding: 2rem 0.2rem 1rem;
+    h2 {
+      font-size: 1.3rem;
+    }
+    .about-value {
+      padding: 1rem 0.7rem;
+      min-width: 150px;
+      max-width: 100%;
+      font-size: 1rem;
+    }
+  }
+  .about-motto blockquote {
+    font-size: 1.05rem;
+  }
+}

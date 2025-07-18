@@ -82,6 +82,7 @@
       width: 100%;
     }
     .about-hero-visual {
+      display: none; // Skrytí vizuálního prvku na mobilu
       order: 2;
       max-width: 130px;
       margin: 0.1rem auto 0.1rem auto;

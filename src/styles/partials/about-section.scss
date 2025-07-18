@@ -5,7 +5,7 @@
 .about-section.fancy-bg {
   background: linear-gradient(180deg, #f7f7f9 75%, #e5f9fb 100%);
   border-top: 1px solid #e0e6ec;
-  padding: 1.5rem 0 1.2rem 0;
+  padding: 3rem 0 2.5rem 0;
 
   .container {
     max-width: 1200px;
@@ -14,10 +14,151 @@
   }
 
   .about-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2.8rem;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+
+  .about-text-content {
+    flex: 1 1 540px;
+    max-width: 540px;
+    text-align: left;
+
+    .about-headline {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #192646;
+      margin-bottom: 0.7em;
+      letter-spacing: -0.01em;
+      text-align: left;
+    }
+
+    .about-lead {
+      font-size: 1.19rem;
+      color: #232c3d;
+      margin-bottom: 1.2em;
+      font-weight: 500;
+      line-height: 1.5;
+      max-width: 520px;
+      text-align: left;
+    }
+
+    .about-text {
+      font-size: 1.13rem;
+      color: #232c3d;
+      margin-bottom: 1.6em;
+      max-width: 540px;
+      line-height: 1.67;
+      text-align: left;
+
+      strong {
+        font-weight: 700;
+        color: #0077cc;
+        font-size: 1.07em;
+      }
+      sup {
+        font-size: 0.67em;
+        top: -0.7em;
+        left: 0.01em;
+        position: relative;
+      }
+    }
+
+    .btn-main.btn-with-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      background: linear-gradient(90deg, #0077cc, #14c2c5 80%);
+      color: #fff;
+      font-size: 1.11rem;
+      font-weight: 600;
+      padding: 0.85em 2.1em;
+      border-radius: 1.7em;
+      box-shadow: 0 4px 18px #14c2c516;
+      text-decoration: none;
+      gap: 0.38em;
+      margin: 0;
+      min-width: 0;
+      box-sizing: border-box;
+      transition: background 0.17s, box-shadow 0.19s, transform 0.15s;
+      cursor: pointer;
+
+      span {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        justify-content: flex-start;
+        text-align: left;
+
+        strong {
+          font-weight: 700;
+          margin-left: 0.13em;
+          sup {
+            font-size: 0.6em;
+            top: -0.5em;
+            left: 0.01em;
+            position: relative;
+          }
+        }
+      }
+
+      svg {
+        margin-left: 0.18em;
+        margin-bottom: 0.03em;
+      }
+
+      &:hover,
+      &:focus {
+        background: linear-gradient(90deg, #14c2c5 15%, #0077cc 100%);
+        box-shadow: 0 7px 24px #14c2c529;
+        transform: translateY(-2px) scale(1.035);
+        color: #fff;
+      }
+    }
+  }
+
+  .about-visual {
+    flex: 1 1 310px;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0;
+
+    .about-globe-anim {
+      margin: 0 auto;
+      max-width: 190px;
+      width: 100%;
+      animation: aboutGlobeBounce 2.5s infinite cubic-bezier(0.51, 0.05, 0.47, 1.16);
+
+      svg {
+        display: block;
+        width: 100%;
+        max-width: 190px;
+        margin: 0 auto;
+        filter: drop-shadow(0 8px 28px #14c2c545);
+      }
+    }
+  }
+
+  // Reset <p> v textu (pro desktop i mobil)
+  .about-text-content p,
+  .about-text-content .about-text p {
+    margin: 0;
+    padding: 0;
+  }
+
+  // === MOBILNÍ VERZE ===
+  @media (max-width: 768px) {
+  padding: 1.5rem 0 1.2rem 0;
+
+  .about-flex {
     display: block;
     text-align: center;
     margin: 0;
     padding: 0;
+    gap: 0;
   }
 
   .about-text-content,
@@ -26,174 +167,47 @@
     max-width: 100%;
     margin: 0 auto;
     padding: 0;
-    text-align: center;
+    text-align: center !important;
   }
 
-  .about-headline {
-    font-size: 2.05rem;
-    font-weight: 800;
-    color: #192646;
-    margin-bottom: 0.6em;
-    letter-spacing: -0.01em;
-    text-align: center;
-  }
-
-  .about-lead {
-    font-size: 1.19rem;
-    color: #232c3d;
-    margin-bottom: 1.2em;
-    font-weight: 500;
-    line-height: 1.5;
-    max-width: 620px;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
+  .about-headline,
+  .about-lead,
   .about-text {
-    font-size: 1.12rem;
-    color: #232c3d;
-    margin-bottom: 2.1em;
-    max-width: 660px;
-    line-height: 1.67;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-
-    strong {
-      font-weight: 700;
-      color: #0077cc;
-      font-size: 1.07em;
-    }
-    sup {
-      font-size: 0.67em;
-      top: -0.7em;
-      left: 0.01em;
-      position: relative;
-    }
-  }
-
-  // Button (importuj klidně ze společného _btn.scss)
-  .btn-main.btn-with-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(90deg, #0077cc, #14c2c5 80%);
-    color: #fff;
-    font-size: 1.11rem;
-    font-weight: 600;
-    padding: 0.85em 2.1em;
-    border-radius: 1.7em;
-    box-shadow: 0 4px 18px #14c2c516;
-    text-decoration: none;
-    gap: 0.38em;
-    margin: 1.1em auto 1.2em auto;
-    max-width: 340px;
-    min-width: 0;
-    box-sizing: border-box;
-    transition: background 0.17s, box-shadow 0.19s, transform 0.15s;
-    cursor: pointer;
-
-    span {
-      display: flex;
-      align-items: center;
-      font-weight: 600;
-      justify-content: center;
-      width: 100%;
-      text-align: center;
-
-      strong {
-        font-weight: 700;
-        margin-left: 0.13em;
-        sup {
-          font-size: 0.6em;
-          top: -0.5em;
-          left: 0.01em;
-          position: relative;
-        }
-      }
-    }
-
-    svg {
-      margin-left: 0.18em;
-      margin-bottom: 0.03em;
-    }
-
-    &:hover,
-    &:focus {
-      background: linear-gradient(90deg, #14c2c5 15%, #0077cc 100%);
-      box-shadow: 0 7px 24px #14c2c529;
-      transform: translateY(-2px) scale(1.035);
-      color: #fff;
-    }
+    text-align: center !important;
   }
 
   .about-visual {
     margin-top: 1.8em;
-    margin-bottom: 0.6em;
     .about-globe-anim {
       margin: 1.1em auto 0 auto;
       max-width: 120px;
       width: 100%;
-      animation: aboutGlobeBounce 2.5s infinite cubic-bezier(0.51, 0.05, 0.47, 1.16);
 
       svg {
-        display: block;
-        width: 100%;
         max-width: 120px;
-        margin: 0 auto;
-        filter: drop-shadow(0 4px 18px #14c2c524);
       }
     }
-  }
-  // <p> v textu - bez marginu na mobilu
-  .about-text-content p,
-  .about-text-content .about-text p {
-    margin: 0;
-    padding: 0;
   }
 
-  // DESKTOP BREAKPOINT
-  @media (min-width: 769px) {
-    padding: 4.5rem 0 3rem 0;
-    .about-flex {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 3rem;
-      flex-wrap: wrap;
-      text-align: left;
-    }
-    .about-text-content {
-      flex: 1 1 500px;
-      text-align: left;
-    }
-    .about-visual {
-      flex: 1 1 300px;
-      margin-top: 0;
-      margin-bottom: 0;
-      .about-globe-anim {
-        margin: 0 auto;
-        max-width: 160px;
-        width: 100%;
-        svg {
-          max-width: 160px;
-        }
-      }
-    }
-    .about-headline,
-    .about-lead,
-    .about-text {
-      text-align: left;
-    }
+  .btn-main.btn-with-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1.1em auto 1.2em auto;
+    width: 100%;
+    max-width: 340px;
+    font-size: 1.08rem;
+    padding: 0.96em 1.3em;
   }
 }
 
-// KEYFRAMES - Můžeš dát do components/_globe-anim.scss, nebo nechat zde
+
+// KEYFRAMES
 @keyframes aboutGlobeBounce {
   0%   { transform: translateY(0); }
   25%  { transform: translateY(-8px); }
   50%  { transform: translateY(0); }
   80%  { transform: translateY(-3px); }
   100% { transform: translateY(0); }
+}
 }

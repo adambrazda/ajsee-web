@@ -53,20 +53,47 @@ function activateNavLink() {
     }
   });
 }
+function updateMenuLinksWithLang(lang) {
+  document.querySelectorAll('.main-nav a').forEach(link => {
+    let href = link.getAttribute('href');
+    if (!href || href.startsWith('mailto:') || href.startsWith('http')) return;
+
+    // Blog/Kontakt vždy na homepage s kotvou a jazykem
+    if (href.endsWith('#blog')) {
+      href = `/index.html?lang=${lang}#blog`;
+    } else if (href.endsWith('#contact')) {
+      href = `/index.html?lang=${lang}#contact`;
+    } else {
+      // Ostatní odkazy:
+      // Smaže předchozí lang parametr
+      href = href.replace(/\?lang=[a-z]{2}/, '').replace(/&lang=[a-z]{2}/, '');
+
+      // Přidá lang podle toho, jestli je tam ?
+      if (href.includes('?')) {
+        href = href + `&lang=${lang}`;
+      } else {
+        href = href + `?lang=${lang}`;
+      }
+    }
+
+    link.setAttribute('href', href);
+  });
+}
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   currentLang = detectLang();
+  updateMenuLinksWithLang(currentLang);   // ← NOVÁ ŘÁDKA!
   await applyTranslations(currentLang);
   activateNavLink();
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      currentLang = btn.dataset.lang;
-      const url = new URL(window.location);
-      url.searchParams.set('lang', currentLang);
-      history.replaceState({}, '', url);
-      await applyTranslations(currentLang);
-      renderEvents(currentLang, currentFilters);
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const lang = btn.dataset.lang;
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', lang);
+      window.location.href = url.toString(); // stránka se znovu načte s novým jazykem
     });
   });
 

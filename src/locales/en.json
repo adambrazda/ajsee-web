@@ -120,5 +120,7 @@
   "blog-read-more": "Read more",
   "blog-empty": "No articles for this category.",
   "blog-back": "← Back to blog",
-  "blog-not-found": "Article not found."
+  "blog-not-found": "Article not found.",
+  "blog-headline-home": "Blog & Reviews",
+  "blog-show-all": "Show all articles"
 }

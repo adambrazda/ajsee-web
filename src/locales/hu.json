@@ -120,5 +120,7 @@
   "blog-read-more": "Tovább olvasom",
   "blog-empty": "Nincsenek cikkek ebben a kategóriában.",
   "blog-back": "← Vissza a bloghoz",
-  "blog-not-found": "A cikk nem található."
+  "blog-not-found": "A cikk nem található.",
+  "blog-headline-home": "Blog & Élménybeszámolók",
+  "blog-show-all": "Összes cikk megtekintése"
 }

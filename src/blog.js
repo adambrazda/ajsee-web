@@ -24,19 +24,18 @@ function renderBlogArticles(category = 'all') {
     return;
   }
 
-container.innerHTML = filtered.map(article => `
-  <div class="blog-card">
-    <img src="${article.image}" alt="${article.title[lang] || article.title['cs']}" class="blog-card-img">
-    <div class="blog-card-body">
-      <h2 class="blog-card-title">${article.title[lang] || article.title['cs']}</h2>
-      <div class="blog-card-lead">${article.lead[lang] || article.lead['cs']}</div>
-      <div class="blog-card-actions">
-        <a href="blog-detail.html?slug=${article.slug}&lang=${lang}" class="blog-readmore" data-i18n-key="blog-read-more">Číst dál &rarr;</a>
+  container.innerHTML = filtered.map(article => `
+    <div class="blog-card">
+      <img src="${article.image}" alt="${article.title[lang] || article.title['cs']}" class="blog-card-img" />
+      <div class="blog-card-body">
+        <h3 class="blog-card-title">${article.title[lang] || article.title['cs']}</h3>
+        <div class="blog-card-lead">${article.lead[lang] || article.lead['cs']}</div>
+        <div class="blog-card-actions">
+          <a href="blog-detail.html?slug=${article.slug}&lang=${lang}" class="blog-readmore" data-i18n-key="blog-read-more">Číst dál &rarr;</a>
+        </div>
       </div>
     </div>
-  </div>
-`).join('');
-
+  `).join('');
 }
 
 // Eventy pro filtry

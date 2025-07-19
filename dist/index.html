@@ -15,9 +15,11 @@
     gtag('js', new Date());
     gtag('config', 'G-KOZS0D9JLK');
   </script>
-  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/main-DRJ5Tk4y.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-BXlqycEz.css">
+  <script type="module" crossorigin src="/assets/main-CYW6HRX_.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/main-CUMmRhUJ.js">
+  <link rel="modulepreload" crossorigin href="/assets/blogArticles-DssWefat.js">
+  <link rel="stylesheet" crossorigin href="/assets/main-tb0ZkBlj.css">
 </head>
 <body>
 <header class="site-header">
@@ -175,21 +177,19 @@
 </section>
 <!--KONEC SEKCE O NÁS-->
   <!-- SEKCE BLOG -->
-  <section id="blog" class="blog-section">
-    <div class="container">
-      <h2 data-i18n-key="blog-headline">Blog & Reference</h2>
-      <div id="blog-list" class="blog-grid">
-        <div class="blog-card">
-          <img src="/images/blog-illustration.png" alt="Blog obrázek" class="blog-image" />
-          <div class="blog-meta">12. 6. 2025 • Novinka</div>
-          <h3>Nový web AJSEE spuštěn!</h3>
-          <p>Právě jsme spustili nový web a rozjíždíme kurátorovaný výběr světových akcí. Sledujte nás pro novinky.</p>
-        </div>
-        <!-- Další blog-card zde... -->
-      </div>
+ <section class="homepage-blog" id="blog">
+  <div class="container">
+    <h2 data-i18n-key="blog-headline-home">Blog & Recenze</h2>
+    <div class="homepage-blog-cards" id="homepage-blog-list">
+      <!-- Tady budou generované články -->
     </div>
-  </section>
+    <a href="/blog.html" class="homepage-blog-more" data-i18n-key="blog-show-all">Zobrazit všechny články</a>
+  </div>
+</section>
 
+<!-- KONEC SEKCE BLOG -->
+
+<!-- KONTAKTNÍ SEKCE -->
   <section id="contact" class="contact-section">
   <div class="container">
     <h2 data-i18n-key="contact-headline">Kontaktujte nás</h2>
@@ -383,6 +383,7 @@
     </div>
   </div>
 </div>
-<!-- Skripty -->
+<!-- Skripty -->
+
 </body>
 </html>

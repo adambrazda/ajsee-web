@@ -1,71 +1,123 @@
-// =============================================
-// BLOG SECTION – grid, card, image, hover
-// =============================================
-
-.blog-section {
-  padding: 4rem 1rem;
-  background: #fff;
-  text-align: center;
-}
-
-.blog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-// ------------------------
-// BLOG CARD
-// ------------------------
-
-.blog-card {
-  background: $brand-grey-bg;
-  border-radius: $radius-md;
-  padding: 1.5rem;
-  box-shadow: $shadow-light;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 0 8px 28px rgba($brand-blue, 0.1);
+.homepage-blog {
+  padding: 3rem 0 3rem 0;
+  background: linear-gradient(90deg, #f2f8fd 0%, #e6f4fb 100%);
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  h2 {
+    text-align: center;
+    font-size: 2.1rem;
+    color: #184469;
+    margin-bottom: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+  }
+  .homepage-blog-cards {
+    display: flex;
+    gap: 2.3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-height: 250px; // pokud nejsou články, sekce nebude "spadlá"
+  }
+  .blog-card-homepage {
+    max-width: 360px;
+    flex: 1 1 300px;
+    background: #fff;
+    border-radius: 1.2em;
+    box-shadow: 0 3px 16px #14c2c51c;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.16s, box-shadow 0.17s;
+    &:hover, &:focus-within {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 26px #0077cc22;
+    }
+    .blog-card-img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+      border-radius: 1.2em 1.2em 0 0;
+    }
+    .blog-card-body {
+      padding: 1.2rem 1.3rem 1.1rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0;
+    }
+    .blog-card-title {
+      font-size: 1.17rem;
+      font-weight: 800;
+      color: #184469;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.3px;
+      line-height: 1.24;
+    }
+    .blog-card-lead {
+      color: #334b69;
+      font-size: 1.04rem;
+      margin-bottom: 0.8rem;
+      flex: 1 1 0;
+    }
+    .blog-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: auto;
+      .blog-readmore {
+        background: linear-gradient(90deg, #14c2c5 30%, #0077cc 100%);
+        color: #fff;
+        font-weight: 700;
+        padding: 0.5em 1.3em;
+        border-radius: 1em;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.13s, transform 0.13s;
+        &:hover, &:focus {
+          background: linear-gradient(90deg, #0077cc 30%, #14c2c5 100%);
+          transform: scale(1.05);
+        }
+      }
+    }
+  }
+  .homepage-blog-more {
+    display: block;
+    text-align: center;
+    margin: 2.7rem auto 0 auto;
+    font-weight: 700;
+    color: #14c2c5;
+    font-size: 1.13rem;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
   }
 
-  h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 0.6rem;
+  @media (max-width: 900px) {
+    .homepage-blog-cards {
+      gap: 1.3rem;
+    }
+    .blog-card-homepage {
+      max-width: 95vw;
+      .blog-card-img { height: 150px; }
+    }
   }
-
-  p {
-    font-size: 1rem;
-    color: #444;
-    margin-bottom: 0.5rem;
+  @media (max-width: 600px) {
+    padding: 2.3rem 0 2.3rem 0;
+    .homepage-blog-cards {
+      flex-direction: column;
+      gap: 1.2rem;
+      align-items: center;
+    }
+    .blog-card-homepage {
+      max-width: 98vw;
+      border-radius: 0.9em;
+      .blog-card-img { height: 120px; }
+      .blog-card-body { padding: 1rem 0.9rem 0.8rem 0.9rem; }
+    }
+    h2 { font-size: 1.35rem; }
+    .homepage-blog-more { font-size: 1.01rem; }
   }
-}
-
-// ------------------------
-// IMAGE
-// ------------------------
-
-.blog-image {
-  max-width: 100%;
-  max-height: 160px;
-  object-fit: cover;
-  border-radius: $radius-sm;
-  margin-bottom: 1rem;
-}
-
-// ------------------------
-// META INFO
-// ------------------------
-
-.blog-meta {
-  font-size: 0.92rem;
-  color: $brand-blue;
-  margin-bottom: 0.4rem;
 }

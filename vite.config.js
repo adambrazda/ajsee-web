@@ -10,7 +10,9 @@ export default defineConfig({
         about: resolve(__dirname, 'about.html'),
         events: resolve(__dirname, 'events.html'),
         partners: resolve(__dirname, 'partners.html'),
-        thankyou: resolve(__dirname, 'thank-you.html')
+        thankyou: resolve(__dirname, 'thank-you.html'),
+        blog: resolve(__dirname, 'blog.html'),
+        'blog-detail': resolve(__dirname, 'blog-detail.html'),  // Přidáno pro blog detail
       }
     }
   },

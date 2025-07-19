@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title data-i18n-key="blog-title">Blog & Recenze | AJSEE®</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/src/styles/main.scss">
+  <link rel="icon" href="/images/logo-ajsee.png">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+
+    <!-- Logo -->
+    <a href="/" class="logo-link" aria-label="Domů">
+      <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
+    </a>
+
+    <!-- Hamburger menu (pouze mobil) -->
+    <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Navigace (hlavní menu) -->
+    <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+      <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+      <ul>
+        <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+        <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
+        <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
+        <li><a href="#blog" data-i18n-key="nav-blog">Blog</a></li>
+        <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+      </ul>
+
+      <!-- Jazykové přepínače v mobilním menu -->
+      <div class="language-switcher mobile-switcher">
+        <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+      </div>
+    </nav>
+
+    <!-- Jazykové přepínače – desktop -->
+    <div class="language-switcher desktop-switcher">
+      <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+    </div>
+
+    <!-- Overlay pozadí menu -->
+    <div class="menu-overlay-bg"></div>
+
+  </div>
+</header>
+<main>
+  <!-- BLOG HERO -->
+  <section class="blog-hero">
+    <div class="container">
+      <h1 data-i18n-key="blog-headline">Blog & Recenze</h1>
+      <p class="blog-lead" data-i18n-key="blog-lead">
+        Přečtěte si recenze kulturních akcí a nenechte si ujít tipy na nejlepší zážitky po celém světě.
+      </p>
+    </div>
+  </section>
+  <!-- BLOG FILTERS -->
+  <section class="blog-filters">
+    <div class="container">
+      <div class="filter-categories">
+        <button data-category="all" class="active" data-i18n-key="blog-filter-all">Vše</button>
+        <button data-category="concert" data-i18n-key="blog-filter-concert">Koncerty</button>
+        <button data-category="theatre" data-i18n-key="blog-filter-theatre">Divadlo</button>
+        <button data-category="festival" data-i18n-key="blog-filter-festival">Festivaly</button>
+        <button data-category="sport" data-i18n-key="blog-filter-sport">Sport</button>
+        <button data-category="tip" data-i18n-key="blog-filter-tip">Tipy</button>
+        <button data-category="review" data-i18n-key="blog-filter-review">Recenze</button>
+      </div>
+    </div>
+  </section>
+  <!-- BLOG ARTICLES LIST -->
+  <section class="blog-list">
+    <div class="container">
+      <div class="blog-cards">
+        <!-- Tady budou články generované JS (nebo později Netlify CMS) -->
+      </div>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="footer-social">
+    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
+      <img src="/images/icons/instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
+      <img src="/images/icons/facebook.svg" alt="Facebook" />
+    </a>
+    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
+      <img src="/images/icons/twitter.svg" alt="Twitter" />
+    </a>
+    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
+      <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
+    </a>
+  </div>
+  <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
+</footer>
+<script type="module" src="/src/main.js"></script>
+<script type="module" src="/src/blog.js"></script>
+</body>
+</html>

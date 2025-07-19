@@ -16,7 +16,6 @@
   "feature3-desc": "Tylko najlepsze wydarzenia i partnerzy.",
   "partners-headline": "Nasi partnerzy",
   "partners-cta": "Zostań partnerem",
-  "blog-headline": "Blog i Referencje",
   "contact-headline": "Skontaktuj się z nami",
   "contact-send": "Wyślij",
   "contact-success-msg": "Dziękujemy za wiadomość! Skontaktujemy się z Tobą jak najszybciej.",
@@ -107,5 +106,19 @@
   "about-team-adam-linkedin": "Profil LinkedIn",
   "about-cta-headline": "Chcesz być częścią tego?",
   "about-cta-text": "AJSEE® jest otwarta na współpracę, pomysły i nowe partnerstwa. Jeśli nasza misja Cię zainteresowała, napisz do nas – czekamy na Twoją wiadomość!",
-  "about-cta-contact": "Skontaktuj się z AJSEE®"
+  "about-cta-contact": "Skontaktuj się z AJSEE®",
+  "blog-title": "Blog i Recenzje | AJSEE®",
+  "blog-headline": "Blog i Recenzje",
+  "blog-lead": "Przeczytaj recenzje wydarzeń kulturalnych i poznaj najlepsze wskazówki na niezapomniane przeżycia na całym świecie.",
+  "blog-filter-all": "Wszystko",
+  "blog-filter-concert": "Koncerty",
+  "blog-filter-theatre": "Teatr",
+  "blog-filter-festival": "Festiwale",
+  "blog-filter-sport": "Sport",
+  "blog-filter-tip": "Wskazówki",
+  "blog-filter-review": "Recenzje",
+  "blog-read-more": "Czytaj więcej",
+  "blog-empty": "Brak artykułów w tej kategorii.",
+  "blog-back": "← Wróć do bloga",
+  "blog-not-found": "Artykuł nie został znaleziony."
 }

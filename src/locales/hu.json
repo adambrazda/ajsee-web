@@ -16,7 +16,6 @@
   "feature3-desc": "Csak a legjobb események és partnerek.",
   "partners-headline": "Partnereink",
   "partners-cta": "Partner lennék",
-  "blog-headline": "Blog & Referenciák",
   "contact-headline": "Lépj velünk kapcsolatba",
   "contact-send": "Küldés",
   "contact-success-msg": "Köszönjük üzenetét! Hamarosan jelentkezünk.",
@@ -107,5 +106,19 @@
   "about-team-adam-linkedin": "LinkedIn profil",
   "about-cta-headline": "Szeretnél részese lenni?",
   "about-cta-text": "Az AJSEE® nyitott az együttműködésre, ötletekre és új partnerségekre. Ha felkeltettük az érdeklődésed, írj nekünk – várjuk az üzeneted!",
-  "about-cta-contact": "Kapcsolatfelvétel AJSEE®-vel"
+  "about-cta-contact": "Kapcsolatfelvétel AJSEE®-vel",
+  "blog-title": "Blog & Vélemények | AJSEE®",
+  "blog-headline": "Blog & Vélemények",
+  "blog-lead": "Olvass kulturális eseményekről szóló véleményeket és fedezd fel a legjobb élményekhez vezető tippeket szerte a világon.",
+  "blog-filter-all": "Összes",
+  "blog-filter-concert": "Koncertek",
+  "blog-filter-theatre": "Színház",
+  "blog-filter-festival": "Fesztiválok",
+  "blog-filter-sport": "Sport",
+  "blog-filter-tip": "Tippek",
+  "blog-filter-review": "Vélemények",
+  "blog-read-more": "Tovább olvasom",
+  "blog-empty": "Nincsenek cikkek ebben a kategóriában.",
+  "blog-back": "← Vissza a bloghoz",
+  "blog-not-found": "A cikk nem található."
 }

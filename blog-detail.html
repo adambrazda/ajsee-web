@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title data-i18n-key="blog-detail-title">Blog | AJSEE®</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/src/styles/main.scss">
+  <link rel="icon" href="/images/logo-ajsee.png">
+</head>
+<body>
+<header class="site-header">
+  <!-- ... stejný header jako jinde ... -->
+</header>
+<main>
+  <section class="blog-detail">
+    <div class="container">
+    <a href="/blog.html?lang=cs" class="back-link" data-i18n-key="blog-back">← Zpět na blog</a>
+      <article id="blogArticle">
+        <!-- Zde dynamicky vkládáme článek podle JS -->
+      </article>
+    </div>
+  </section>
+</main>
+<footer>
+  <!-- ... footer ... -->
+</footer>
+<script type="module" src="/src/main.js"></script>
+<script type="module" src="/src/blog-detail.js"></script>
+</body>
+</html>

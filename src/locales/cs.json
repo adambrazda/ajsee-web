@@ -16,7 +16,6 @@
   "feature3-desc": "Jen ty nejlepší akce a partneři.",
   "partners-headline": "Naši partneři",
   "partners-cta": "Chci být partnerem",
-  "blog-headline": "Blog & Reference",
   "contact-headline": "Kontaktujte nás",
   "contact-send": "Odeslat",
   "footer-copyright": "© 2025 AJSEE®. Všechna práva vyhrazena.",
@@ -107,5 +106,19 @@
   "about-team-adam-linkedin": "LinkedIn profil",
   "about-cta-headline": "Chceš být u toho?",
   "about-cta-text": "AJSEE® je otevřená spolupráci, nápadům i novým partnerstvím. Pokud tě naše mise zaujala, napiš nám – těšíme se na zprávu!",
-  "about-cta-contact": "Kontaktovat AJSEE®"
+  "about-cta-contact": "Kontaktovat AJSEE®",
+  "blog-title": "Blog & Recenze | AJSEE®",
+  "blog-headline": "Blog & Recenze",
+  "blog-lead": "Přečtěte si recenze kulturních akcí a nenechte si ujít tipy na nejlepší zážitky po celém světě.",
+  "blog-filter-all": "Vše",
+  "blog-filter-concert": "Koncerty",
+  "blog-filter-theatre": "Divadlo",
+  "blog-filter-festival": "Festivaly",
+  "blog-filter-sport": "Sport",
+  "blog-filter-tip": "Tipy",
+  "blog-filter-review": "Recenze",
+  "blog-read-more": "Číst dál",
+  "blog-empty": "Žádné články pro tuto kategorii.",
+  "blog-back": "← Zpět na blog",
+  "blog-not-found": "Článek nebyl nalezen."
 }

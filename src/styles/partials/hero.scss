@@ -5,7 +5,7 @@
 .hero-section {
   display: flex;
   min-height: 480px;
-  background: linear-gradient(133deg, #0077cc 80%, #004080 100%);
+  background: linear-gradient(133deg, #1b3c53 0%, #169ac5 78%, #9de5ec 100%);
   color: #fff;
   padding: 0.6rem 0;
   position: relative;
@@ -16,7 +16,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(110deg, #0077cc 70%, #00325cee 100%);
+    background: linear-gradient(110deg, #233e50 65%, #53d6e0ee 100%);
     opacity: 0.92;
     z-index: -1;
     pointer-events: none;
@@ -223,6 +223,7 @@
     padding: 1.2rem 0.2rem;
   }
   .hero-image-wrapper .hero-image {
+    display:none;
     width: 88vw;
     max-width: 97vw;
   }

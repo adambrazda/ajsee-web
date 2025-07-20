@@ -1,8 +1,11 @@
 {
-  "headline": "Vstupenky na světové akce. Česky, přehledně, na pár kliknutí.",
-  "intro": "S <b>AJSEE®</b> už nemusíte složitě hledat a kupovat lístky na zahraničních webech...",
-  "cta-collab": "Chci spolupracovat",
-  "cta-info": "Zjistit víc o AJSEE®",
+
+  "hero.badge": "Český startup hledá partnery",
+  "hero.headline": "Spojte světové akce s českým a slovenským publikem",
+  "hero.intro": "AJSEE® je nový projekt, který umožní českým a slovenským fanouškům snadno a bezpečně kupovat vstupenky na zahraniční koncerty, festivaly a sportovní akce. Aktuálně hledáme partnery a poskytovatele vstupenek z celého světa.",
+  "hero.imageAlt": "Ilustrace: světové akce propojené s českými a slovenskými fanoušky.",
+  "hero.cta-collab": "Chci spolupracovat",
+  "hero.cta-info": "Zjistit víc o AJSEE®",
   "nav-home": "Domů",
   "nav-partners": "Pro partnery",
   "nav-blog": "Blog",

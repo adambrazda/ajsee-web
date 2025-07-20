@@ -6,6 +6,27 @@ let currentFilters = { category: '', sort: 'date-asc' };
 let currentLang = 'cs';
 let selectedEvent = null;
 
+// === BEGIN: fixNonBreakingShortWords ===
+function fixNonBreakingShortWords(text, lang = 'cs') {
+  if (!text || typeof text !== 'string') return text;
+  switch (lang) {
+    case 'cs': // čeština
+      return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
+    case 'sk': // slovenština
+      return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
+    case 'pl': // polština
+      return text.replace(/ ([aAiIoOuUwWzZ]) /g, '\u00a0$1\u00a0');
+    case 'hu': // maďarština
+      return text.replace(/ ([aAiIsS]) /g, '\u00a0$1\u00a0');
+    case 'de': // němčina
+    case 'en': // angličtina
+      return text.replace(/ ([aI]) /g, '\u00a0$1\u00a0');
+    default:
+      return text;
+  }
+}
+// === END: fixNonBreakingShortWords ===
+
 function detectLang() {
   const urlLang = new URLSearchParams(window.location.search).get('lang');
   if (urlLang && ['cs', 'en', 'de', 'sk', 'pl', 'hu'].includes(urlLang)) return urlLang;
@@ -18,13 +39,18 @@ async function loadTranslations(lang) {
   return await resp.json();
 }
 
+// === BEGIN: Překlad a fixování pouze pro <p> ===
 async function applyTranslations(lang) {
   const translations = await loadTranslations(lang);
 
   document.querySelectorAll('[data-i18n-key]').forEach(el => {
     const key = el.getAttribute('data-i18n-key');
-    const t = translations[key];
+    let t = translations[key];
     if (t) {
+      // Aplikuj fix jen pokud je to <p>
+      if (el.tagName.toLowerCase() === 'p') {
+        t = fixNonBreakingShortWords(t, lang);
+      }
       if (/<[a-z][\s\S]*>/i.test(t)) el.innerHTML = t;
       else el.textContent = t;
     }
@@ -32,9 +58,14 @@ async function applyTranslations(lang) {
 
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
-    if (translations[key]) el.placeholder = translations[key];
+    if (translations[key]) {
+      // Placeholder je vždy jednoduchý text, můžeme použít fix
+      let placeholder = fixNonBreakingShortWords(translations[key], lang);
+      el.placeholder = placeholder;
+    }
   });
 }
+// === END: Překlad a fixování pouze pro <p> ===
 
 function activateNavLink() {
   const path = window.location.pathname;
@@ -58,32 +89,25 @@ function updateMenuLinksWithLang(lang) {
     let href = link.getAttribute('href');
     if (!href || href.startsWith('mailto:') || href.startsWith('http')) return;
 
-    // Blog/Kontakt vždy na homepage s kotvou a jazykem
     if (href.endsWith('#blog')) {
       href = `/index.html?lang=${lang}#blog`;
     } else if (href.endsWith('#contact')) {
       href = `/index.html?lang=${lang}#contact`;
     } else {
-      // Ostatní odkazy:
-      // Smaže předchozí lang parametr
       href = href.replace(/\?lang=[a-z]{2}/, '').replace(/&lang=[a-z]{2}/, '');
-
-      // Přidá lang podle toho, jestli je tam ?
       if (href.includes('?')) {
-        href = href + `&lang=${lang}`;
+        href = `${href}&lang=${lang}`;
       } else {
-        href = href + `?lang=${lang}`;
+        href = `${href}?lang=${lang}`;
       }
     }
-
     link.setAttribute('href', href);
   });
 }
 
-
 document.addEventListener('DOMContentLoaded', async () => {
   currentLang = detectLang();
-  updateMenuLinksWithLang(currentLang);   // ← NOVÁ ŘÁDKA!
+  updateMenuLinksWithLang(currentLang);
   await applyTranslations(currentLang);
   activateNavLink();
 
@@ -93,11 +117,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const lang = btn.dataset.lang;
       const url = new URL(window.location.href);
       url.searchParams.set('lang', lang);
-      window.location.href = url.toString(); // stránka se znovu načte s novým jazykem
+      window.location.href = url.toString();
     });
   });
 
-  // Přidáno - ODKAZY NA EVENTS
   document.querySelectorAll('a[href="/events.html"], a.btn-secondary[href="/events.html"]').forEach(link => {
     link.addEventListener('click', function (e) {
       e.preventDefault();
@@ -105,7 +128,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Již existující přesměrování o nás (ponechávám):
   document.querySelectorAll('a[href="/about.html"], a.btn-secondary[href="/about.html"]').forEach(link => {
     link.addEventListener('click', function (e) {
       e.preventDefault();
@@ -172,75 +194,66 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderEvents(currentLang, currentFilters);
     });
   }
-const form = document.getElementById('contact-form');
-const successMsg = document.getElementById('contact-success');
-const errorMsg = document.getElementById('contact-error');
+  const form = document.getElementById('contact-form');
+  const successMsg = document.getElementById('contact-success');
+  const errorMsg = document.getElementById('contact-error');
 
-function hideAllFieldErrors(form) {
-  form.querySelectorAll('.form-error').forEach(el => {
-    el.textContent = '';
-    el.classList.remove('active');
-  });
-}
-function showFieldError(form, fieldName, msg) {
-  const errEl = form.querySelector(`#error-${fieldName}`);
-  if (errEl) {
-    errEl.textContent = msg;
-    errEl.classList.add('active');
+  function hideAllFieldErrors(form) {
+    form.querySelectorAll('.form-error').forEach(el => {
+      el.textContent = '';
+      el.classList.remove('active');
+    });
   }
-}
-
-if (form) {
-  form.addEventListener('submit', function(e) {
-    hideAllFieldErrors(form);
-    errorMsg.style.display = "none";
-
-    // Detekuj aktuální jazyk – vezmi z URL, localStorage nebo jak to děláš v projektu
-  let currentLang = 'cs';
-  // 1. Z URL (pokud používáš ?lang=xx)
-  const urlLang = new URLSearchParams(window.location.search).get('lang');
-  if (urlLang && ['cs','en','de','sk','pl','hu'].includes(urlLang)) {
-    currentLang = urlLang;
+  function showFieldError(form, fieldName, msg) {
+    const errEl = form.querySelector(`#error-${fieldName}`);
+    if (errEl) {
+      errEl.textContent = msg;
+      errEl.classList.add('active');
+    }
   }
-  // 2. Nebo z proměnné/volby jazykového switche
-  // Pokud máš někde proměnnou jako currentLang, použij ji raději
 
-  // Nastav akci formuláře dynamicky:
-  form.setAttribute('action', `/thank-you.html?lang=${currentLang}`);
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      hideAllFieldErrors(form);
+      errorMsg.style.display = "none";
 
-    // honeypot (bot-field)
-    if (form.querySelector('input[name="bot-field"]')?.value) {
-      e.preventDefault();
-      return;
-    }
+      let currentLang = 'cs';
+      const urlLang = new URLSearchParams(window.location.search).get('lang');
+      if (urlLang && ['cs','en','de','sk','pl','hu'].includes(urlLang)) {
+        currentLang = urlLang;
+      }
 
-    const name = form.name.value.trim();
-    const email = form.email.value.trim();
-    const message = form.message.value.trim();
+      form.setAttribute('action', `/thank-you.html?lang=${currentLang}`);
 
-    let valid = true;
-    const t = window.translations || {};
-    if (!name) {
-      showFieldError(form, 'name', t['contact-error-name'] || 'Zadejte své jméno.');
-      valid = false;
-    }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showFieldError(form, 'email', t['contact-error-email'] || 'Zadejte platný e-mail.');
-      valid = false;
-    }
-    if (!message) {
-      showFieldError(form, 'message', t['contact-error-message'] || 'Napište zprávu.');
-      valid = false;
-    }
-    if (!valid) {
-      e.preventDefault(); // Zastav pouze pokud není validní!
-      return;
-    }
+      if (form.querySelector('input[name="bot-field"]')?.value) {
+        e.preventDefault();
+        return;
+      }
 
-    // Pokud je vše validní → nenechávej JS submit (žádný fetch) → HTML submit se provede sám a Netlify to zachytí!
-    // Úspěšná zpráva se zobrazí na thanks stránce nebo Netlify success message.
-  });
-}
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const message = form.message.value.trim();
+
+      let valid = true;
+      const t = window.translations || {};
+      if (!name) {
+        showFieldError(form, 'name', t['contact-error-name'] || 'Zadejte své jméno.');
+        valid = false;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showFieldError(form, 'email', t['contact-error-email'] || 'Zadejte platný e-mail.');
+        valid = false;
+      }
+      if (!message) {
+        showFieldError(form, 'message', t['contact-error-message'] || 'Napište zprávu.');
+        valid = false;
+      }
+      if (!valid) {
+        e.preventDefault();
+        return;
+      }
+    });
+  }
 
   const pathname = window.location.pathname.split('/').pop();
   if (pathname === 'partners.html') {
@@ -257,8 +270,6 @@ if (form) {
   }
 });
 
-// ... (dál už žádné změny nejsou potřeba, zbytek kódu ponech, vše ostatní je správně)
-// Načti a zobraz události
 async function renderEvents(locale = 'cs', filters = currentFilters) {
   const eventsList = document.getElementById('eventsList');
   if (!eventsList) return;
@@ -314,16 +325,19 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     }
 
     eventsList.innerHTML = filtered.map(event => {
+      // ZDE: použij fixNonBreakingShortWords pouze na description, NE na titulek
       const title = event.title?.[locale] || event.title?.cs || 'Bez názvu';
-      const description = event.description?.[locale] || event.description?.cs || '';
+      const description = fixNonBreakingShortWords(event.description?.[locale] || event.description?.cs || '', locale);
+
       const date = new Date(event.date).toLocaleDateString(locale, {
         day: 'numeric', month: 'long', year: 'numeric'
       });
       const image = event.image || getRandomFallback(event.category);
       const isDemoDetail = !event.url || event.url.includes('example');
       const isDemoTickets = !event.tickets || event.tickets.includes('example');
-      const detailLabel = translations[isDemoDetail ? 'event-details-demo' : 'event-details'] || 'Zjistit více';
-      const ticketLabel = translations[isDemoTickets ? 'event-tickets-demo' : 'event-tickets'] || 'Vstupenky';
+      // popisek tlačítek fixovat můžeme (většinou v <span> nebo <button>)
+      const detailLabel = fixNonBreakingShortWords(translations[isDemoDetail ? 'event-details-demo' : 'event-details'] || 'Zjistit více', locale);
+      const ticketLabel = fixNonBreakingShortWords(translations[isDemoTickets ? 'event-tickets-demo' : 'event-tickets'] || 'Vstupenky', locale);
 
       const cardClasses = ['event-card'];
       if (event.promo) cardClasses.push('event-card-promo');
@@ -362,7 +376,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   }
 }
 
-  console.log('Přidána tlačítka .btn-event.detail:', document.querySelectorAll('.btn-event.detail'));
 async function openEventModal(eventData, locale = 'cs') {
   const modal = document.getElementById('eventModal');
   if (!modal) {
@@ -370,7 +383,6 @@ async function openEventModal(eventData, locale = 'cs') {
     return;
   }
 
-  // Najdi prvky relativně k modalu
   const titleEl = modal.querySelector('#modalTitle');
   const imageEl = modal.querySelector('#modalImage');
   const dateEl = modal.querySelector('#modalDate');
@@ -392,71 +404,29 @@ async function openEventModal(eventData, locale = 'cs') {
   }
 
   const categoryKey = eventData.category || '';
-  const categoryTranslated = translations[`category-${categoryKey}`] || categoryKey; // <-- AŽ TADY!
-
+  // Opět pouze description fixovat, titulek ne
+  const categoryTranslated = fixNonBreakingShortWords(translations[`category-${categoryKey}`] || categoryKey, locale);
   const title = eventData.title?.[locale] || eventData.title?.cs || 'Bez názvu';
-  const description = eventData.description?.[locale] || '';
-  const location = eventData.location?.[locale] || translations['unknown-location'] || 'Neznámé místo';
-  const dateObj = new Date(eventData.date);
-  const dateFormatted = dateObj.toLocaleDateString(locale, {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
+  const description = fixNonBreakingShortWords(eventData.description?.[locale] || eventData.description?.cs || '', locale);
+  const image = eventData.image || '/images/fallbacks/concert0.jpg';
+  const date = new Date(eventData.date).toLocaleDateString(locale, {
+    day: 'numeric', month: 'long', year: 'numeric'
   });
-
+  const location = eventData.location || '';
   titleEl.textContent = title;
-  imageEl.src = eventData.image || '/images/fallbacks/concert0.jpg';
+  imageEl.src = image;
   imageEl.alt = title;
-  dateEl.textContent = dateFormatted;
+  dateEl.textContent = date;
   locationEl.textContent = location;
   descEl.textContent = description;
   categoryEl.textContent = categoryTranslated;
-
-  // Kalendářové odkazy
-  const googleLink = modal.querySelector('#googleCalendarLink');
-  const outlookLink = modal.querySelector('#outlookCalendarLink');
-  const appleLink = modal.querySelector('#appleCalendarLink');
-
-  const startISO = dateObj.toISOString().replace(/-|:|\.\d\d\d/g, '');
-  const endDate = new Date(dateObj.getTime() + 2 * 60 * 60 * 1000);
-  const endISO = endDate.toISOString().replace(/-|:|\.\d\d\d/g, '');
-
-  const dates = `${startISO}/${endISO}`;
-  const encTitle = encodeURIComponent(title);
-  const encDesc = encodeURIComponent(description);
-  const encLoc = encodeURIComponent(location);
-
-  const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encTitle}&dates=${dates}&details=${encDesc}&location=${encLoc}`;
-  const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encTitle}&startdt=${dateObj.toISOString()}&enddt=${endDate.toISOString()}&body=${encDesc}&location=${encLoc}`;
-  const appleUrl = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDESCRIPTION:${description}\nLOCATION:${location}\nDTSTART:${startISO}\nDTEND:${endISO}\nEND:VEVENT\nEND:VCALENDAR`;
-  const appleBlob = new Blob([appleUrl], { type: 'text/calendar' });
-  const appleICSUrl = URL.createObjectURL(appleBlob);
-
-  if (googleLink) googleLink.href = googleUrl;
-  if (outlookLink) outlookLink.href = outlookUrl;
-  if (appleLink) {
-    appleLink.href = appleICSUrl;
-    appleLink.download = 'event.ics';
-  }
-
-  // Otevři modal
-  modal.classList.remove('hidden');
-  modal.classList.add('visible');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
-// Funkce pro zavření modálního okna
+
 function closeEventModal() {
   const modal = document.getElementById('eventModal');
-  if (modal) {
-    modal.classList.remove('visible');
-    modal.classList.add('hidden');
-  }
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
 }
-
-// Zavírání modalu klávesou ESC
-function handleModalEsc(e) {
-  const modal = document.getElementById('eventModal');
-  if (e.key === 'Escape' && modal && modal.classList.contains('visible')) {
-    closeEventModal();
-  }
-}
-document.addEventListener('keydown', handleModalEsc);

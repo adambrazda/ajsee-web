@@ -10,33 +10,57 @@
   <link rel="stylesheet" href="/src/styles/main.scss" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-top">
-      <a href="/" class="logo-link">
-        <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo"/>
-      </a>
-      <nav class="main-nav">
-        <button class="hamburger" id="hamburger-btn" aria-label="Menu">
-          <span></span><span></span><span></span>
-        </button>
-        <ul>
-          <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
-          <!-- Neodkazuj na partners z partners, zabráníš cyklu -->
-          <li><a href="/#events" data-i18n-key="nav-events">Události</a></li>
-          <li><a href="/#blog" data-i18n-key="nav-blog">Blog</a></li>
-          <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
-        </ul>
-      </nav>
-      <div class="language-switcher">
-        <button class="lang-btn" data-lang="cs"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="en"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="de"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="sk"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="pl"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="hu"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+ <header class="site-header">
+  <div class="header-inner">
+
+    <!-- Logo -->
+    <a href="/" class="logo-link" aria-label="Domů">
+      <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
+    </a>
+
+    <!-- Hamburger menu (pouze mobil) -->
+    <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Navigace (hlavní menu) -->
+    <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+      <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+      <ul>
+        <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+        <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
+        <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
+        <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
+        <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+      </ul>
+
+      <!-- Jazykové přepínače v mobilním menu -->
+      <div class="language-switcher mobile-switcher">
+        <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
+        <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
       </div>
+    </nav>
+
+    <!-- Jazykové přepínače – desktop -->
+    <div class="language-switcher desktop-switcher">
+      <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
+      <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
     </div>
-  </header>
+
+    <!-- Overlay pozadí menu -->
+    <div class="menu-overlay-bg"></div>
+
+  </div>
+</header>
   <main>
     <section class="partners-hero">
       <div class="container hero-flex">

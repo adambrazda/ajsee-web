@@ -13,6 +13,7 @@ export default defineConfig({
         thankyou: resolve(__dirname, 'thank-you.html'),
         blog: resolve(__dirname, 'blog.html'),
         'blog-detail': resolve(__dirname, 'blog-detail.html'),  // Přidáno pro blog detail
+        faq: resolve(__dirname, 'faq.html') // Přidáno pro FAQ
       }
     }
   },

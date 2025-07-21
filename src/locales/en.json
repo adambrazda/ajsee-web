@@ -124,5 +124,15 @@
   "blog-back": "← Back to blog",
   "blog-not-found": "Article not found.",
   "blog-headline-home": "Blog & Reviews",
-  "blog-show-all": "Show all articles"
+  "blog-show-all": "Show all articles",
+  "faq-title": "Frequently Asked Questions",
+  "faq-q1": "How does AJSEE work?",
+  "faq-a1": "AJSEE is a modern platform for tickets to culture, sports, and concerts, designed for users and partners.",
+  "faq-q2": "How many languages does AJSEE support?",
+  "faq-a2": "AJSEE is fully localized in 6 languages: Czech, English, German, Slovak, Polish, and Hungarian.",
+  "faq-q3": "Is AJSEE free to use?",
+  "faq-a3": "Registration and event browsing are free, you only pay for tickets.",
+  "faq-q4": "How can I become an AJSEE partner?",
+  "faq-a4": "Just fill out the form on the Partners page and we will contact you.",
+  "nav-faq": "FAQ"
 }

@@ -125,5 +125,15 @@
   "blog-back": "← Zpět na blog",
   "blog-not-found": "Článek nebyl nalezen.",
   "blog-headline-home": "Blog & Recenze",
-  "blog-show-all": "Zobrazit všechny články"
+  "blog-show-all": "Zobrazit všechny články",
+  "faq-title": "Často kladené dotazy",
+  "faq-q1": "Jak funguje AJSEE?",
+  "faq-a1": "AJSEE je moderní platforma pro vstupenky na kulturu, sport a koncerty, navržená pro uživatele i partnery.",
+  "faq-q2": "Kolik jazyků AJSEE podporuje?",
+  "faq-a2": "Web AJSEE je plně lokalizovaný do 6 jazyků: čeština, angličtina, němčina, slovenština, polština a maďarština.",
+  "faq-q3": "Je používání AJSEE zdarma?",
+  "faq-a3": "Registrace a vyhledávání událostí je zdarma, platíte pouze za samotné vstupenky.",
+  "faq-q4": "Jak se mohu stát partnerem AJSEE?",
+  "faq-a4": "Stačí vyplnit formulář na stránce Pro partnery. Ozveme se vám s dalším postupem.",
+  "nav-faq": "FAQ"
 }

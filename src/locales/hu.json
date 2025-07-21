@@ -124,5 +124,15 @@
   "blog-back": "← Vissza a bloghoz",
   "blog-not-found": "A cikk nem található.",
   "blog-headline-home": "Blog & Élménybeszámolók",
-  "blog-show-all": "Összes cikk megtekintése"
+  "blog-show-all": "Összes cikk megtekintése",
+  "faq-title": "Gyakran ismételt kérdések",
+  "faq-q1": "Hogyan működik az AJSEE?",
+  "faq-a1": "Az AJSEE egy modern platform kulturális, sport- és koncertjegyekhez, amelyet felhasználók és partnerek számára terveztek.",
+  "faq-q2": "Hány nyelvet támogat az AJSEE?",
+  "faq-a2": "Az AJSEE weboldala teljesen elérhető 6 nyelven: cseh, angol, német, szlovák, lengyel és magyar.",
+  "faq-q3": "Az AJSEE használata ingyenes?",
+  "faq-a3": "A regisztráció és az események böngészése ingyenes, csak a jegyekért kell fizetni.",
+  "faq-q4": "Hogyan lehetek AJSEE partner?",
+  "faq-a4": "Csak töltsd ki az űrlapot a Partnerek oldalán, és hamarosan felvesszük veled a kapcsolatot.",
+  "nav-faq": "GYIK"
 }

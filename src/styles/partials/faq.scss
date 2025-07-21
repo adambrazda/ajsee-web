@@ -1,0 +1,118 @@
+.faq-section {
+  background: $background-alt;
+  min-height: 60vh;
+  padding: 4rem 0 5.5rem 0;
+
+  h1 {
+    text-align: center;
+    margin-bottom: 2.7rem;
+    font-size: 2.15rem;
+    color: $color-dark;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .faq-list {
+    max-width: 740px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+  }
+
+  .faq-item {
+    background: #fff;
+    border-radius: 1.1rem;
+    box-shadow: 0 2px 14px 0 rgba(20, 194, 197, 0.07);
+    overflow: hidden;
+    transition: box-shadow 0.22s cubic-bezier(.22,.61,.36,1), border 0.18s;
+    border: 1px solid transparent;
+    position: relative;
+
+    &:hover {
+      box-shadow: 0 4px 28px 0 rgba(20, 194, 197, 0.13);
+      border: 1px solid $color-primary;
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      outline: none;
+      text-align: left;
+      padding: 1.35rem 2rem 1.35rem 2.3rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: $color-dark;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      position: relative;
+      transition: color 0.17s;
+
+      &::after {
+        content: '';
+        display: inline-block;
+        width: 1.1em;
+        height: 1.1em;
+        margin-left: auto;
+        background: $color-primary;
+        mask: url('/images/icons/arrow-down.svg') no-repeat center;
+        -webkit-mask: url('/images/icons/arrow-down.svg') no-repeat center;
+        mask-size: contain;
+        -webkit-mask-size: contain;
+        transition: transform 0.23s cubic-bezier(.22,.61,.36,1);
+        transform: rotate(0deg);
+      }
+      &[aria-expanded="true"]::after {
+        transform: rotate(180deg);
+      }
+      &:focus-visible {
+        outline: 2px solid $color-primary;
+      }
+    }
+
+    .faq-answer {
+      padding: 0 2.3rem 0 2.3rem;
+      font-size: 1.06rem;
+      color: $text-secondary;
+      line-height: 1.7;
+      opacity: 0;
+      max-height: 0;
+      pointer-events: none;
+      transition: max-height 0.33s cubic-bezier(.22,.61,.36,1), opacity 0.23s;
+      overflow: hidden;
+    }
+
+    // Otevřená položka
+    &.open {
+      .faq-answer {
+        opacity: 1;
+        max-height: 600px;
+        pointer-events: all;
+        padding-bottom: 1.3rem;
+        transition-delay: 0.08s;
+        animation: fadeIn 0.33s;
+      }
+    }
+  }
+}
+
+// Responsivita
+@media (max-width: 700px) {
+  .faq-section {
+    padding: 2.3rem 0 2.5rem 0;
+    h1 { font-size: 1.6rem; }
+    .faq-list { max-width: 98vw; }
+    .faq-item .faq-question,
+    .faq-item .faq-answer {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px);}
+  to { opacity: 1; transform: translateY(0);}
+}

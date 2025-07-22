@@ -231,3 +231,120 @@
   padding-right: 2em;
   margin-top: 0.7rem;
 }
+// =============================================
+// PARTNERS PLACEHOLDER – budoucí partneři
+// =============================================
+
+.partners-placeholder {
+  background: $brand-grey-bg;
+  padding: 3.5rem 0;
+
+  h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: $brand-dark;
+    margin-bottom: 0.6rem;
+    letter-spacing: -0.5px;
+  }
+
+  p {
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto 2.2rem;
+    font-size: 1.1rem;
+    color: $text-secondary;
+  }
+
+  .partner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1.6rem;
+    justify-content: center;
+    align-items: stretch;
+    max-width: 1000px; // Rozšířeno pro 6 boxů vedle sebe
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+.partner-item {
+  background: #fff;
+  border-radius: 1.2rem;
+  padding: 1.5rem 1rem 1.2rem;
+  box-shadow: 0 2px 18px rgba($brand-blue, 0.07);
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 24px rgba($brand-blue, 0.1);
+  }
+
+  img {
+    width: 64px;
+    height: 56px;
+    margin-bottom: 0.8rem;
+    object-fit: contain;
+  }
+
+  span {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    color: $brand-dark;
+    text-align: center;
+  }
+}
+
+}
+// Responsivita
+@media (max-width: 600px) {
+  .partners-placeholder {
+    padding: 2.3rem 0;
+
+    h2 {
+      font-size: 1.6rem;
+    }
+
+    p {
+      font-size: 1rem;
+    }
+
+    .partner-grid {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      padding: 0 1rem 1rem;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .partner-item {
+      flex: 0 0 auto;
+      min-width: 110px;
+      scroll-snap-align: center;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 0.6rem;
+        object-fit: contain;
+      }
+
+      span {
+        font-size: 0.95rem;
+        text-align: center;
+        font-weight: 500;
+      }
+    }
+  }
+}

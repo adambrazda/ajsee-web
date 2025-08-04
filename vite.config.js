@@ -12,17 +12,25 @@ export default defineConfig({
         partners: resolve(__dirname, 'partners.html'),
         thankyou: resolve(__dirname, 'thank-you.html'),
         blog: resolve(__dirname, 'blog.html'),
-        'blog-detail': resolve(__dirname, 'blog-detail.html'),  // Přidáno pro blog detail
-        faq: resolve(__dirname, 'faq.html') // Přidáno pro FAQ
+        'blog-detail': resolve(__dirname, 'blog-detail.html'),
+        faq: resolve(__dirname, 'faq.html')
       }
     }
   },
-   plugins: [
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8888',
+        changeOrigin: true
+      }
+    }
+  },
+  plugins: [
     viteStaticCopy({
       targets: [
         {
           src: 'src/locales/*.json',
-          dest: 'locales' // zkopíruje do public/dist/locales/
+          dest: 'locales'
         }
       ]
     })

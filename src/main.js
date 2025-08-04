@@ -1,5 +1,5 @@
 import './styles/main.scss';
-import { events, showDemoBadge } from './events.js';
+
 import { getAllEvents } from './api/eventsApi.js';
 
 let currentFilters = { category: '', sort: 'date-asc' };
@@ -273,9 +273,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function renderEvents(locale = 'cs', filters = currentFilters) {
   const eventsList = document.getElementById('eventsList');
   if (!eventsList) return;
-  if (!Array.isArray(events)) return;
 
   try {
+    const events = await getAllEvents({ locale, filters });
     const translations = await loadTranslations(locale);
 
     const fallbackImages = {
@@ -318,24 +318,27 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       filtered = filtered.filter(e => e.category === filters.category);
     }
 
+    // Opraveno: Řadíme podle datetime nebo date
     if (filters.sort === 'nearest') {
-      filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+      filtered.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
     } else if (filters.sort === 'latest') {
-      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+      filtered.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
     }
 
     eventsList.innerHTML = filtered.map(event => {
-      // ZDE: použij fixNonBreakingShortWords pouze na description, NE na titulek
       const title = event.title?.[locale] || event.title?.cs || 'Bez názvu';
       const description = fixNonBreakingShortWords(event.description?.[locale] || event.description?.cs || '', locale);
 
-      const date = new Date(event.date).toLocaleDateString(locale, {
-        day: 'numeric', month: 'long', year: 'numeric'
-      });
+      const dateVal = event.datetime || event.date;
+      const date = dateVal
+        ? new Date(dateVal).toLocaleDateString(locale, {
+            day: 'numeric', month: 'long', year: 'numeric'
+          })
+        : '';
+
       const image = event.image || getRandomFallback(event.category);
       const isDemoDetail = !event.url || event.url.includes('example');
       const isDemoTickets = !event.tickets || event.tickets.includes('example');
-      // popisek tlačítek fixovat můžeme (většinou v <span> nebo <button>)
       const detailLabel = fixNonBreakingShortWords(translations[isDemoDetail ? 'event-details-demo' : 'event-details'] || 'Zjistit více', locale);
       const ticketLabel = fixNonBreakingShortWords(translations[isDemoTickets ? 'event-tickets-demo' : 'event-tickets'] || 'Vstupenky', locale);
 
@@ -404,15 +407,17 @@ async function openEventModal(eventData, locale = 'cs') {
   }
 
   const categoryKey = eventData.category || '';
-  // Opět pouze description fixovat, titulek ne
   const categoryTranslated = fixNonBreakingShortWords(translations[`category-${categoryKey}`] || categoryKey, locale);
   const title = eventData.title?.[locale] || eventData.title?.cs || 'Bez názvu';
   const description = fixNonBreakingShortWords(eventData.description?.[locale] || eventData.description?.cs || '', locale);
   const image = eventData.image || '/images/fallbacks/concert0.jpg';
-  const date = new Date(eventData.date).toLocaleDateString(locale, {
-    day: 'numeric', month: 'long', year: 'numeric'
-  });
-  const location = eventData.location || '';
+  const dateVal = eventData.datetime || eventData.date;
+  const date = dateVal
+    ? new Date(dateVal).toLocaleDateString(locale, {
+        day: 'numeric', month: 'long', year: 'numeric'
+      })
+    : '';
+  const location = eventData.location?.city || eventData.location || '';
   titleEl.textContent = title;
   imageEl.src = image;
   imageEl.alt = title;

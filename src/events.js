@@ -1,49 +1,45 @@
 // /src/events.js
 
-export const events = [
-  {
-    id: 'event-summer-concert',
-    title: {
-      cs: 'Letní koncert',
-      en: 'Summer Concert',
-      sk: 'Letný koncert',
-      pl: 'Letni koncert'
-    },
-    description: {
-      cs: 'Hudba pod širým nebem.',
-      en: 'Open-air music event.',
-      sk: 'Hudba pod holým nebom.',
-      pl: 'Muzyka na świeżym powietrzu.'
-    },
-    date: '2025-08-15',
-    url: 'https://example.com/detail-koncert',
-    tickets: 'https://example.com/tickets-koncert',
-    category: 'concert',
-    promo: true
-  },
-  {
-    id: 'event-summer-festival',
-    title: {
-      cs: 'Letní festival',
-      en: 'Summer Festival',
-      sk: 'Letný festival',
-      pl: 'Letni festiwal'
-    },
-    description: {
-      cs: 'Zábava, jídlo a hudba.',
-      en: 'Fun, food and music.',
-      sk: 'Zábava, jedlo a hudba.',
-      pl: 'Zabawa, jedzenie i muzyka.'
-    },
-    date: '2025-07-22',
-    url: 'https://example.com/festival',
-    tickets: '',
-    category: 'festival',
-    promo: false
-  }
-];
+/**
+ * Načte eventy z Ticketmaster backend endpointu (proxy).
+ * 
+ * @param {Object} options - Volby pro dotaz
+ * @param {string} options.country - Kód země (např. 'CZ')
+ * @param {string} options.locale - Kód jazyka (např. 'cs')
+ * @returns {Promise<Array>} Pole eventů připravených pro výpis
+ */
+export async function fetchTicketmasterEvents({ country = 'CZ', locale = 'cs' } = {}) {
+  // Pozn.: Měj v projektu backend proxy endpoint, např. /api/ticketmasterEvents
+  const response = await fetch(`/api/ticketmasterEvents?country=${country}&locale=${locale}`);
+  if (!response.ok) throw new Error('Chyba načítání událostí z API');
+  const data = await response.json();
 
-// Stávající funkce pro demo badge
+  // Transformace Ticketmaster struktury na jednoduchý formát
+  if (data._embedded && data._embedded.events) {
+    return data._embedded.events.map(event => ({
+      id: event.id,
+      title: event.name,
+      description: event.info || event.pleaseNote || '',
+      date: event.dates?.start?.localDate || '',
+      time: event.dates?.start?.localTime || '',
+      url: event.url,
+      image: event.images?.[0]?.url || '',
+      venue: event._embedded?.venues?.[0]?.name || '',
+      city: event._embedded?.venues?.[0]?.city?.name || '',
+      country: event._embedded?.venues?.[0]?.country?.name || '',
+      category: event.classifications?.[0]?.segment?.name || '',
+      genre: event.classifications?.[0]?.genre?.name || '',
+      priceRanges: event.priceRanges || [],
+      ticketsUrl: event.url, // můžeš použít jiné pole pokud je jiné
+      source: 'ticketmaster'
+    }));
+  }
+  return [];
+}
+
+/**
+ * Demo badge (zůstává z původního kódu, volitelné)
+ */
 export function showDemoBadge(isDemo) {
   let badge = document.getElementById('demo-badge');
   if (isDemo) {

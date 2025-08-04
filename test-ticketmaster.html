@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Ticketmaster API</title>
+</head>
+<body>
+  <h1>Test Ticketmaster API</h1>
+  <button id="fetchBtn">Načíst akce z Ticketmaster</button>
+  <pre id="output"></pre>
+  <script>
+    document.getElementById('fetchBtn').onclick = async () => {
+      document.getElementById('output').innerText = "Načítám...";
+      try {
+        // Voláme naši serverless funkci
+        const res = await fetch('/.netlify/functions/ticketmasterEvents?keyword=Brno');
+        const text = await res.text();
+        document.getElementById('output').innerText = text;
+      } catch (err) {
+        document.getElementById('output').innerText = "Chyba: " + err;
+      }
+    };
+  </script>
+</body>
+</html>

@@ -325,6 +325,14 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       filtered.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
     }
 
+    // === OMEZENÍ NA HOMEPAGE ===
+    const isHomepage = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
+    let showAllLink = false;
+    if (isHomepage && filtered.length > 6) {
+      filtered = filtered.slice(0, 6);
+      showAllLink = true;
+    }
+
     eventsList.innerHTML = filtered.map(event => {
       const title = event.title?.[locale] || event.title?.cs || 'Bez názvu';
       const description = fixNonBreakingShortWords(event.description?.[locale] || event.description?.cs || '', locale);
@@ -345,7 +353,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       const cardClasses = ['event-card'];
       if (event.promo) cardClasses.push('event-card-promo');
 
-      // === ZDE JE ÚPRAVA! ===
       // Pokud je partner "ticketmaster", detail vede na URL eventu na Ticketmasteru
       return `
         <div class="${cardClasses.join(' ')}">
@@ -369,8 +376,16 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
           </div>
         </div>
       `;
-      // === KONEC ÚPRAVY ===
     }).join('');
+
+    // Přidat tlačítko "Zobrazit všechny události" na homepage, pokud bylo oříznuto
+    if (isHomepage && showAllLink) {
+      eventsList.innerHTML += `
+        <div class="events-show-all-btn" style="text-align:center;margin:2rem 0;">
+          <a href="/events.html?lang=${locale}" class="btn btn-primary">Zobrazit všechny události</a>
+        </div>
+      `;
+    }
 
     document.querySelectorAll('.btn-event.detail').forEach(button => {
       // Je to <button>? → otevře modal (neplatí pro Ticketmaster)

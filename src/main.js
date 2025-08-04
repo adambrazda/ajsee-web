@@ -345,6 +345,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       const cardClasses = ['event-card'];
       if (event.promo) cardClasses.push('event-card-promo');
 
+      // === ZDE JE ÚPRAVA! ===
+      // Pokud je partner "ticketmaster", detail vede na URL eventu na Ticketmasteru
       return `
         <div class="${cardClasses.join(' ')}">
           <img src="${image}" alt="${title}" class="event-img" />
@@ -353,24 +355,34 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
             <p class="event-date">${date}</p>
             <p class="event-description">${description}</p>
             <div class="event-buttons-group">
-              <button class="btn-event detail" data-event-id="${event.id}">${detailLabel}</button>
-              ${isDemoTickets
-                ? `<span class="btn-event ticket demo">${ticketLabel}</span>`
-                : `<a href="${event.tickets}" class="btn-event ticket" target="_blank">${ticketLabel}</a>`}
+              ${
+                event.partner === 'ticketmaster'
+                  ? `<a href="${event.url}" class="btn-event detail" target="_blank" rel="noopener">${detailLabel}</a>`
+                  : `<button class="btn-event detail" data-event-id="${event.id}">${detailLabel}</button>`
+              }
+              ${
+                isDemoTickets
+                  ? `<span class="btn-event ticket demo">${ticketLabel}</span>`
+                  : `<a href="${event.tickets}" class="btn-event ticket" target="_blank">${ticketLabel}</a>`
+              }
             </div>
           </div>
         </div>
       `;
+      // === KONEC ÚPRAVY ===
     }).join('');
 
     document.querySelectorAll('.btn-event.detail').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const id = e.currentTarget.getAttribute('data-event-id');
-        const eventData = events.find(ev => ev.id === id);
-        if (eventData) {
-          openEventModal(eventData, locale);
-        }
-      });
+      // Je to <button>? → otevře modal (neplatí pro Ticketmaster)
+      if (button.tagName.toLowerCase() === 'button') {
+        button.addEventListener('click', (e) => {
+          const id = e.currentTarget.getAttribute('data-event-id');
+          const eventData = events.find(ev => ev.id === id);
+          if (eventData) {
+            openEventModal(eventData, locale);
+          }
+        });
+      }
     });
 
   } catch (e) {

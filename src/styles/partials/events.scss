@@ -506,4 +506,36 @@
     }
   }
 }
+.events-show-all-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 2.5rem 0 2rem 0;
+}
 
+.show-all-events-btn {
+  display: inline-block;
+  min-width: 280px;         // Zajistí „ne příliš malé“ tlačítko, ale ne přes celou stránku
+  max-width: 95vw;
+  padding: 1rem 2.5rem;
+  border-radius: 2rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(90deg, #058ee9 0%, #00c9ff 100%);
+  box-shadow: 0 4px 20px 0 rgba(5,142,233,0.15);
+  text-align: center;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.12s;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover, &:focus {
+    background: linear-gradient(90deg, #00c9ff 0%, #058ee9 100%);
+    box-shadow: 0 8px 32px 0 rgba(5,142,233,0.23);
+    color: #fff;
+    transform: translateY(-2px) scale(1.03);
+    outline: none;
+  }
+}

@@ -1,5 +1,4 @@
 import './styles/main.scss';
-
 import { getAllEvents } from './api/eventsApi.js';
 
 let currentFilters = { category: '', sort: 'date-asc' };
@@ -10,19 +9,13 @@ let selectedEvent = null;
 function fixNonBreakingShortWords(text, lang = 'cs') {
   if (!text || typeof text !== 'string') return text;
   switch (lang) {
-    case 'cs': // čeština
-      return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
-    case 'sk': // slovenština
-      return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
-    case 'pl': // polština
-      return text.replace(/ ([aAiIoOuUwWzZ]) /g, '\u00a0$1\u00a0');
-    case 'hu': // maďarština
-      return text.replace(/ ([aAiIsS]) /g, '\u00a0$1\u00a0');
-    case 'de': // němčina
-    case 'en': // angličtina
-      return text.replace(/ ([aI]) /g, '\u00a0$1\u00a0');
-    default:
-      return text;
+    case 'cs': return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
+    case 'sk': return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
+    case 'pl': return text.replace(/ ([aAiIoOuUwWzZ]) /g, '\u00a0$1\u00a0');
+    case 'hu': return text.replace(/ ([aAiIsS]) /g, '\u00a0$1\u00a0');
+    case 'de':
+    case 'en': return text.replace(/ ([aI]) /g, '\u00a0$1\u00a0');
+    default: return text;
   }
 }
 // === END: fixNonBreakingShortWords ===
@@ -39,7 +32,6 @@ async function loadTranslations(lang) {
   return await resp.json();
 }
 
-// === BEGIN: Překlad a fixování pouze pro <p> ===
 async function applyTranslations(lang) {
   const translations = await loadTranslations(lang);
 
@@ -47,7 +39,6 @@ async function applyTranslations(lang) {
     const key = el.getAttribute('data-i18n-key');
     let t = translations[key];
     if (t) {
-      // Aplikuj fix jen pokud je to <p>
       if (el.tagName.toLowerCase() === 'p') {
         t = fixNonBreakingShortWords(t, lang);
       }
@@ -59,13 +50,11 @@ async function applyTranslations(lang) {
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
     if (translations[key]) {
-      // Placeholder je vždy jednoduchý text, můžeme použít fix
       let placeholder = fixNonBreakingShortWords(translations[key], lang);
       el.placeholder = placeholder;
     }
   });
 }
-// === END: Překlad a fixování pouze pro <p> ===
 
 function activateNavLink() {
   const path = window.location.pathname;
@@ -318,7 +307,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       filtered = filtered.filter(e => e.category === filters.category);
     }
 
-    // Opraveno: Řadíme podle datetime nebo date
     if (filters.sort === 'nearest') {
       filtered.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
     } else if (filters.sort === 'latest') {
@@ -353,7 +341,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       const cardClasses = ['event-card'];
       if (event.promo) cardClasses.push('event-card-promo');
 
-      // Pokud je partner "ticketmaster", detail vede na URL eventu na Ticketmasteru
       return `
         <div class="${cardClasses.join(' ')}">
           <img src="${image}" alt="${title}" class="event-img" />
@@ -381,14 +368,15 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     // Přidat tlačítko "Zobrazit všechny události" na homepage, pokud bylo oříznuto
     if (isHomepage && showAllLink) {
       eventsList.innerHTML += `
-        <div class="events-show-all-btn" style="text-align:center;margin:2rem 0;">
-          <a href="/events.html?lang=${locale}" class="btn btn-primary">Zobrazit všechny události</a>
+        <div class="events-show-all-btn">
+          <a href="/events.html?lang=${locale}" class="btn btn-primary show-all-events-btn">
+            ${translations['events-show-all'] || 'Zobrazit všechny události'}
+          </a>
         </div>
       `;
     }
 
     document.querySelectorAll('.btn-event.detail').forEach(button => {
-      // Je to <button>? → otevře modal (neplatí pro Ticketmaster)
       if (button.tagName.toLowerCase() === 'button') {
         button.addEventListener('click', (e) => {
           const id = e.currentTarget.getAttribute('data-event-id');

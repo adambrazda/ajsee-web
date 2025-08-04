@@ -18,6 +18,10 @@ exports.handler = async function(event, context) {
     return {
       statusCode: 200,
       body: data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*', // pro jistotu pro Netlify dev i ostrý režim
+      },
     };
   } catch (err) {
     console.error("[ticketmasterEvents] Error:", err);

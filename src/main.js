@@ -1,7 +1,7 @@
 // src/main.js
 // ---------------------------------------------------------
 // AJSEE – Events UI, i18n & filters (+ city typeahead, "Near me",
-// active-filter chips, URL sync, calendar links)
+// active-filter chips, URL sync, calendar links, mobile sheet)
 // ---------------------------------------------------------
 
 import './styles/main.scss';
@@ -35,11 +35,6 @@ function getCookie(name) {
 function qs(sel, root = document) { return root.querySelector(sel); }
 function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
 const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
-
-// malý helper pro yyyy-mm-dd
-function fmtISO(d) {
-  try { return new Date(d).toISOString().slice(0, 10); } catch { return ''; }
-}
 
 // ------- Helpers: typography -------
 function fixNonBreakingShortWords(text, lang = 'cs') {
@@ -76,14 +71,12 @@ function toISODate(d) {
 function syncURLFromFilters() {
   const u = new URL(window.location.href);
   const p = u.searchParams;
-  // store only "clean" params
   (currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city'));
   (currentFilters.dateFrom ? p.set('from', toISODate(currentFilters.dateFrom)) : p.delete('from'));
   (currentFilters.dateTo ? p.set('to', toISODate(currentFilters.dateTo)) : p.delete('to'));
   (currentFilters.category && currentFilters.category !== 'all' ? p.set('segment', currentFilters.category) : p.delete('segment'));
   (currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q'));
   (currentFilters.sort && currentFilters.sort !== 'nearest' ? p.set('sort', currentFilters.sort) : p.delete('sort'));
-  // pro soukromí lat/lon do URL nedáváme
   history.replaceState(null, '', u.toString());
 }
 
@@ -96,10 +89,8 @@ function getByPath(obj, path) {
   if (!obj || !path) return undefined;
   return path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
 }
-// Resolve translation with both directions of legacy aliases
 function t(key, fallback) {
   const tr = window.translations || {};
-
   const exact = getByPath(tr, key) ?? tr[key];
   if (exact !== undefined) return exact;
 
@@ -198,7 +189,6 @@ async function suggestCities({ locale = 'cs', countryCode = 'CZ', keyword = '', 
     }
     const data = await r.json();
 
-    // Normalizace do jednotného tvaru
     const out = (Array.isArray(data.cities) ? data.cities : []).map((c) => ({
       city: c.label || c.name || c.value || '',
       countryCode: c.countryCode || c.country || '',
@@ -252,7 +242,6 @@ function setupCityTypeahead(inputEl) {
     const it = items[idx]; if (!it) return;
     inputEl.value = it.city;
     currentFilters.city = it.city;
-    // pokud uživatel vybral město, vypneme Near me
     clearNearMe();
     close();
   };
@@ -289,132 +278,52 @@ function setupCityTypeahead(inputEl) {
 }
 
 /* =========================================================
-   Active filter chips toolbar + Near Me
+   Quick chips (Dnes / Tento víkend / Vymazat)
    ========================================================= */
-
-// požádá o polohu a zapne Near Me (případně přepíná stav)
-async function enableNearMeViaGeolocate(triggerEl) {
-  try {
-    if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-      // toggle off
-      clearNearMe();
-      setFilterInputsFromState();
-      await renderAndSync();
-      return;
-    }
-    if (triggerEl) {
-      triggerEl.disabled = true;
-      triggerEl.textContent = t('filters.finding','Zjišťuji polohu…');
-    }
-    const pos = await new Promise((res, rej) => {
-      if (!navigator.geolocation) return rej(new Error('no geo'));
-      navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
-    });
-    currentFilters.nearMeLat = pos.coords.latitude;
-    currentFilters.nearMeLon = pos.coords.longitude;
-    currentFilters.nearMeRadiusKm = 50;
-    // pokud zapneme near me, zrušíme město (aby se neovlivňovalo)
-    currentFilters.city = '';
-    setFilterInputsFromState();
-    await renderAndSync();
-  } catch (e) {
-    console.warn('Geo failed:', e);
-    alert(t('filters.geoError', 'Nepodařilo se získat polohu.'));
-  } finally {
-    if (triggerEl) {
-      triggerEl.disabled = false;
-      triggerEl.textContent = t('filters.nearMe', 'V mém okolí');
-    }
-  }
+function setDateInput(el, d) {
+  if (!el) return;
+  const iso = typeof d === 'string' ? d : new Date(d).toISOString().slice(0, 10);
+  el.value = iso;
+}
+function comingWeekendRange() {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun..6=Sat
+  const diffToSat = (6 - day + 7) % 7;
+  const diffToSun = (7 - day + 7) % 7;
+  const sat = new Date(now); sat.setDate(now.getDate() + diffToSat);
+  const sun = new Date(now); sun.setDate(now.getDate() + diffToSun);
+  return [sat, sun];
 }
 
-// rychločipy: Dnes / Tento víkend / Vymazat + Blízko mě
-function setupQuickChips() {
-  const todayBtn   = qs('#chipToday');
-  const weekendBtn = qs('#chipWeekend');
-  const clearBtn   = qs('#chipClear');
-  const nearBtn    = qs('#chipNearMe');
-
-  const setActive = (btn) => {
-    [todayBtn, weekendBtn, clearBtn].forEach(b => b?.classList.remove('is-active'));
-    btn?.classList.add('is-active');
-  };
-
-  todayBtn?.addEventListener('click', async () => {
-    const d = new Date();
-    currentFilters.dateFrom = fmtISO(d);
-    currentFilters.dateTo   = fmtISO(d);
-    setFilterInputsFromState();
-    setActive(todayBtn);
-    await renderAndSync();
-  });
-
-  weekendBtn?.addEventListener('click', async () => {
-    const d = new Date();
-    const day = d.getDay(); // 0=Ne, 6=So
-    const diffToSat = (6 - day + 7) % 7;
-    const sat = new Date(d); sat.setDate(d.getDate() + diffToSat);
-    const sun = new Date(sat); sun.setDate(sat.getDate() + 1);
-    currentFilters.dateFrom = fmtISO(sat);
-    currentFilters.dateTo   = fmtISO(sun);
-    setFilterInputsFromState();
-    setActive(weekendBtn);
-    await renderAndSync();
-  });
-
-  clearBtn?.addEventListener('click', async () => {
-    const cc = currentFilters.countryCode;
-    currentFilters = {
-      category: 'all', sort: 'nearest', city: '',
-      dateFrom: '', dateTo: '', keyword: '',
-      countryCode: cc, nearMeLat: null, nearMeLon: null, nearMeRadiusKm: 50
-    };
-    setFilterInputsFromState();
-    setActive(clearBtn);
-    await renderAndSync();
-  });
-
-  nearBtn?.addEventListener('click', async (e) => {
-    // toggle near me
-    await enableNearMeViaGeolocate(e.currentTarget);
-  });
+/* =========================================================
+   Active filter chips + Near Me
+   ========================================================= */
+function ensureActiveChipsContainer() {
+  // necháme původní .filters-toolbar bez zásahu (kvůli „problikávání“)
+  let holder = qs('.filters-active');
+  if (!holder) {
+    holder = document.createElement('div');
+    holder.className = 'filters-active';
+    // vizuálně jako "chips" řada
+    holder.style.display = 'flex';
+    holder.style.flexWrap = 'wrap';
+    holder.style.gap = '8px';
+    holder.style.margin = '8px 0 12px';
+    const toolbar = qs('.filters-toolbar');
+    if (toolbar && toolbar.parentElement) {
+      toolbar.parentElement.insertBefore(holder, toolbar.nextSibling);
+    } else {
+      // fallback – vlož před seznam událostí
+      const section = qs('.section-events .container') || qs('.events-upcoming-section .container') || document.body;
+      section.insertBefore(holder, qs('#eventsList') || section.firstChild);
+    }
+  }
+  return holder;
 }
 
 function renderFilterChips() {
-  const existing = qs('.filters-toolbar');
-  const host = existing || (() => {
-    // fallback – toolbar nad gridem/sekcí
-    const section = qs('.section-events .container') || qs('.events-upcoming-section .container') || document.body;
-    const bar = document.createElement('div');
-    bar.className = 'filters-toolbar';
-    // jednoduché defaultní styly (když by neexistovaly v CSS)
-    bar.style.display = 'flex';
-    bar.style.flexWrap = 'wrap';
-    bar.style.gap = '8px';
-    bar.style.margin = '0 0 8px 2px';
-    section.insertBefore(bar, qs('#eventsList') || section.firstChild);
-    return bar;
-  })();
-
-  // NEmažeme obsah toolbaru (statické čipy musí zůstat vidět)!
-  // Statické čipy (Dnes/Víkend/Vymazat/Blízko mě) necháme v .chips-static (případně označíme)
-  let staticWrap = host.querySelector('.chips-static') || host.querySelector('.chips');
-  if (staticWrap) staticWrap.classList.add('chips-static');
-
-  // Aktivní čipy rendrujeme do separátního bloku .chips-active
-  let activeWrap = host.querySelector('.chips-active');
-  if (!activeWrap) {
-    activeWrap = document.createElement('div');
-    activeWrap.className = 'chips chips-active';
-    if (staticWrap && staticWrap.nextSibling) {
-      host.insertBefore(activeWrap, staticWrap.nextSibling);
-    } else if (staticWrap) {
-      host.appendChild(activeWrap);
-    } else {
-      host.insertBefore(activeWrap, host.firstChild);
-    }
-  }
-  activeWrap.innerHTML = '';
+  const host = ensureActiveChipsContainer();
+  host.innerHTML = '';
 
   const addChip = (label, onClear) => {
     const chip = document.createElement('button');
@@ -422,8 +331,14 @@ function renderFilterChips() {
     chip.className = 'chip';
     chip.textContent = label;
     chip.setAttribute('aria-label', `${label} – ${t('filters.reset','Vymazat')}`);
+    chip.style.border = '1px solid #cbd9e8';
+    chip.style.padding = '6px 10px';
+    chip.style.borderRadius = '999px';
+    chip.style.background = '#fff';
+    chip.style.fontWeight = '600';
+    chip.style.cursor = 'pointer';
     chip.addEventListener('click', onClear);
-    activeWrap.appendChild(chip);
+    host.appendChild(chip);
   };
 
   if (currentFilters.category && currentFilters.category !== 'all') {
@@ -477,10 +392,83 @@ function renderFilterChips() {
   }
 }
 
+function clearNearMe() {
+  currentFilters.nearMeLat = null;
+  currentFilters.nearMeLon = null;
+}
+
+// společná obsluha near-me pro jakékoli tlačítko (chip/ghost)
+async function handleNearMeClick(btn) {
+  try {
+    // pouze na zabezpečeném původu
+    if (location.protocol !== 'https:') {
+      alert(t('filters.geoHttps', 'Geolokace vyžaduje zabezpečené připojení (HTTPS).'));
+      return;
+    }
+    if (!navigator.geolocation) {
+      alert(t('filters.geoUnsupported', 'Tento prohlížeč nepodporuje geolokaci.'));
+      return;
+    }
+
+    btn.disabled = true;
+    const orig = btn.textContent;
+    btn.textContent = t('filters.finding', 'Zjišťuji polohu…');
+
+    // pokud jde zjistit stav oprávnění, pomoz uživateli dřív
+    try {
+      const perm = await (navigator.permissions?.query({ name: 'geolocation' }) ?? Promise.resolve(null));
+      if (perm && perm.state === 'denied') {
+        btn.textContent = orig;
+        btn.disabled = false;
+        alert(t('filters.geoDenied', 'Přístup k poloze je zablokovaný. Povolení změňte v nastavení prohlížeče (ikona zámku v adresním řádku).'));
+        return;
+      }
+    } catch { /* ignore */ }
+
+    const pos = await new Promise((res, rej) =>
+      navigator.geolocation.getCurrentPosition(res, rej, {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      })
+    );
+
+    currentFilters.nearMeLat = pos.coords.latitude;
+    currentFilters.nearMeLon = pos.coords.longitude;
+    currentFilters.nearMeRadiusKm = 50;
+    currentFilters.city = ''; // vypni kolizi s polem Město
+    setFilterInputsFromState();
+    await renderAndSync();
+  } catch (e) {
+    const msgMap = {
+      1: t('filters.geoDenied', 'Přístup k poloze je zablokovaný. Povolení změňte v nastavení prohlížeče.'),
+      2: t('filters.geoUnavailable', 'Poloha není dostupná. Zkuste to znovu.'),
+      3: t('filters.geoTimeout', 'Vypršel čas na zjištění polohy. Zkuste to znovu.')
+    };
+    alert(msgMap[e?.code] || t('filters.geoError', 'Nepodařilo se získat polohu.'));
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = t('filters.nearMe', 'V mém okolí');
+    }
+  }
+}
+
+// přidá fallback tlačítko „V mém okolí“, pokud už na stránce neexistuje .chip-near
 function attachNearMeButton(formEl) {
   if (!formEl) return;
-  if (qs('#filter-nearme', formEl)) return; // už existuje
 
+  // pokud existuje "chip-near" (v toolbaru), NEdoplňuj druhé tlačítko – jen ho naváž
+  const chipNear = qs('#chipNearMe');
+  if (chipNear) {
+    if (!chipNear.dataset.bound) {
+      chipNear.dataset.bound = '1';
+      chipNear.addEventListener('click', () => handleNearMeClick(chipNear));
+    }
+    return;
+  }
+
+  // jinak vytvoř ghost tlačítko v .filter-actions
   const actions = qs('.filter-actions', formEl) || (() => {
     const div = document.createElement('div');
     div.className = 'filter-actions';
@@ -488,21 +476,15 @@ function attachNearMeButton(formEl) {
     return div;
   })();
 
+  if (qs('#filter-nearme', actions)) return; // už existuje
+
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.id = 'filter-nearme';
   btn.className = 'btn btn-ghost';
   btn.textContent = t('filters.nearMe', 'V mém okolí');
   actions.prepend(btn);
-
-  btn.addEventListener('click', async () => {
-    await enableNearMeViaGeolocate(btn);
-  });
-}
-
-function clearNearMe() {
-  currentFilters.nearMeLat = null;
-  currentFilters.nearMeLon = null;
+  btn.addEventListener('click', () => handleNearMeClick(btn));
 }
 
 // pomocné – props -> inputy
@@ -530,34 +512,47 @@ async function renderAndSync() {
 }
 
 /* =========================================================
-   Bottom sheet (mobile) – otevření/zavření
+   Mobile bottom sheet (Filtry)
    ========================================================= */
-function setupFilterDockSheet() {
-  const sheet   = qs('.filter-dock[data-behavior="sheet"]');
+function setupFiltersSheet() {
+  const form = qs('#events-filters-form');
   const openBtn = qs('#filtersOpen');
-  const closeBtn= qs('#filtersClose');
+  const closeBtn = qs('#filtersClose');
   const overlay = qs('#filtersOverlay');
 
-  if (!sheet || !openBtn || !overlay) return;
+  if (!form || !openBtn || !overlay) return;
+
+  const isSheet = () => form.dataset.behavior === 'sheet' && isMobile();
 
   const open = () => {
-    sheet.classList.add('is-open');
-    overlay.hidden = false;
+    if (!isSheet()) return;
+    form.classList.add('is-open');
+    overlay.removeAttribute('hidden');
     overlay.classList.add('is-open');
     document.body.style.overflow = 'hidden';
   };
   const close = () => {
-    sheet.classList.remove('is-open');
+    form.classList.remove('is-open');
     overlay.classList.remove('is-open');
-    overlay.hidden = true;
+    overlay.setAttribute('hidden', '');
     document.body.style.overflow = '';
   };
 
   openBtn.addEventListener('click', open);
   closeBtn?.addEventListener('click', close);
   overlay.addEventListener('click', close);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-  window.addEventListener('resize', () => { if (!isMobile()) close(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+  // když se změní viewport (rotace apod.)
+  window.addEventListener('resize', () => {
+    if (!isSheet()) {
+      // při přechodu na desktop schovej overlay i sheet
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('hidden', '');
+      form.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+  });
 }
 
 // ------- DOM Ready -------
@@ -609,46 +604,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
- // Mobile menu
-const hamburger = document.querySelector('.hamburger-btn');
-const nav = document.querySelector('.main-nav');
-const overlayNav = document.querySelector('.menu-overlay-bg');
-const closeBtn = document.querySelector('.menu-close');
+  // Mobile menu
+  const hamburger = document.querySelector('.hamburger-btn');
+  const nav = document.querySelector('.main-nav');
+  const overlayMenu = document.querySelector('.menu-overlay-bg');
+  const closeBtnMenu = document.querySelector('.menu-close');
 
-if (hamburger && nav && overlayNav && closeBtn) {
-  // Bezpečný výchozí stav (některé buildy nechaly overlay aktivní)
-  nav.classList.remove('open');
-  overlayNav.classList.remove('active');
-  overlayNav.style.pointerEvents = 'none';
-  overlayNav.style.opacity = '0';
-  document.body.classList.remove('nav-open');
-  document.body.style.overflow = '';
-
-  const openMenu = () => {
-    nav.classList.add('open');
-    overlayNav.classList.add('active');
-    overlayNav.style.pointerEvents = 'auto';
-    overlayNav.style.opacity = '1';
-    document.body.classList.add('nav-open');
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closeMenu = () => {
+  if (hamburger && nav && overlayMenu && closeBtnMenu) {
     nav.classList.remove('open');
-    overlayNav.classList.remove('active');
-    overlayNav.style.pointerEvents = 'none';
-    overlayNav.style.opacity = '0';
+    overlayMenu.classList.remove('active');
+    overlayMenu.style.pointerEvents = 'none';
+    overlayMenu.style.opacity = '0';
     document.body.classList.remove('nav-open');
     document.body.style.overflow = '';
-  };
 
-  hamburger.addEventListener('click', openMenu);
-  closeBtn.addEventListener('click', closeMenu);
-  overlayNav.addEventListener('click', closeMenu);
-  document.querySelectorAll('.main-nav a').forEach((link) => link.addEventListener('click', closeMenu));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-}
+    const openMenu = () => {
+      nav.classList.add('open');
+      overlayMenu.classList.add('active');
+      overlayMenu.style.pointerEvents = 'auto';
+      overlayMenu.style.opacity = '1';
+      document.body.classList.add('nav-open');
+      document.body.style.overflow = 'hidden';
+    };
 
+    const closeMenu = () => {
+      nav.classList.remove('open');
+      overlayMenu.classList.remove('active');
+      overlayMenu.style.pointerEvents = 'none';
+      overlayMenu.style.opacity = '0';
+      document.body.classList.remove('nav-open');
+      document.body.style.overflow = '';
+    };
+
+    hamburger.addEventListener('click', openMenu);
+    closeBtnMenu.addEventListener('click', closeMenu);
+    overlayMenu.addEventListener('click', closeMenu);
+    document.querySelectorAll('.main-nav a').forEach((link) => link.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+  }
 
   // ------- Filters -------
   const eventsList = qs('#eventsList');
@@ -675,14 +668,40 @@ if (hamburger && nav && overlayNav && closeBtn) {
     // City typeahead – aktivace
     if ($city) setupCityTypeahead($city);
 
-    // Near Me – button v actions
+    // Near Me – použij existující chip, nebo vytvoř ghost tlačítko
     attachNearMeButton($form || qs('.events-filters'));
 
-    // Rychločipy (Dnes / Tento víkend / Vymazat / Blízko mě)
-    setupQuickChips();
+    // Quick chips (Dnes / Tento víkend / Vymazat)
+    const chipToday = qs('#chipToday');
+    const chipWeekend = qs('#chipWeekend');
+    const chipClear = qs('#chipClear');
 
-    // Bottom-sheet na mobilech
-    setupFilterDockSheet();
+    chipToday?.addEventListener('click', async () => {
+      const today = new Date().toISOString().slice(0, 10);
+      currentFilters.dateFrom = today;
+      currentFilters.dateTo = today;
+      setDateInput($from, today);
+      setDateInput($to, today);
+      await renderAndSync();
+    });
+
+    chipWeekend?.addEventListener('click', async () => {
+      const [sat, sun] = comingWeekendRange();
+      const isoSat = sat.toISOString().slice(0, 10);
+      const isoSun = sun.toISOString().slice(0, 10);
+      currentFilters.dateFrom = isoSat;
+      currentFilters.dateTo = isoSun;
+      setDateInput($from, isoSat);
+      setDateInput($to, isoSun);
+      await renderAndSync();
+    });
+
+    chipClear?.addEventListener('click', async () => {
+      const cc = currentFilters.countryCode;
+      currentFilters = { category: 'all', sort: 'nearest', city: '', dateFrom: '', dateTo: '', keyword: '', countryCode: cc, nearMeLat: null, nearMeLon: null, nearMeRadiusKm: 50 };
+      setFilterInputsFromState();
+      await renderAndSync();
+    });
 
     await renderAndSync();
 
@@ -725,10 +744,8 @@ if (hamburger && nav && overlayNav && closeBtn) {
       });
     }
 
-    // Events page (div + vlastní Apply button)
     if ($applyBtnOnEventsPage) {
       $applyBtnOnEventsPage.addEventListener('click', async () => {
-        // jednoduché ověření datumu
         if ($from?.value && $to?.value && new Date($from.value) > new Date($to.value)) {
           [$from, $to].forEach((input) => input?.classList.add('input-error'));
           return;
@@ -736,6 +753,9 @@ if (hamburger && nav && overlayNav && closeBtn) {
         await renderAndSync();
       });
     }
+
+    // bottom sheet (mobilní „Filtry“)
+    setupFiltersSheet();
   }
 
   // ------- Contact form validation -------
@@ -822,7 +842,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   if (!eventsList) return;
 
   try {
-    // getAllEvents může (ale nemusí) rozumět nearMeLat/Lon; předáme bezpodmínečně
     const events = await getAllEvents({ locale, filters });
     if (!window.translations) {
       window.translations = await loadTranslations(locale);
@@ -938,7 +957,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 function toCalDate(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
-  // UTC-less fallback – použij „local“ bez Z (lepší pro jednodenní akce)
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -1030,8 +1048,7 @@ async function openEventModal(eventData, locale = 'cs') {
       ri: '0',
       subject: title,
       body: details,
-      location,
-      // Outlook web neumí jednoduše YYYYMMDD bez času, necháme bez začátku/konce
+      location
     });
     const oLink = modal.querySelector('#outlookCalendarLink');
     if (oLink) oLink.href = `https://outlook.office.com/calendar/0/deeplink/compose?${oParams.toString()}`;

@@ -1,2 +1,25 @@
+# netlify.toml
+
+[build]
+  # Uprav podle svého build toolu (Vite apod.)
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 [dev]
   functions = "netlify/functions"
+  edge_functions = "netlify/edge-functions"
+
+# Zapne Edge funkci geo-country pro všechny HTML requesty
+[[edge_functions]]
+  path = "/*"
+  function = "geo-country"
+
+# (Volitelné) Pokud máš čistě SPA routování, odkomentuj fallback:
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200

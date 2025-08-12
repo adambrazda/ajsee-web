@@ -5,35 +5,44 @@
   "hero.cta-collab": "Partnerschaft anbieten",
   "hero.cta-info": "Mehr über AJSEE® erfahren",
   "hero.imageAlt": "Illustration: Weltweite Events verbunden mit tschechischen und slowakischen Fans.",
+
   "nav-home": "Startseite",
   "nav-events": "Events",
   "nav-partners": "Für Partner",
   "nav-blog": "Blog",
   "nav-contact": "Kontakt",
+  "nav-about": "Über uns",
+  "nav-faq": "FAQ",
+
   "section-events-title": "Nächste Events",
+
   "feature1-title": "Sicherer Kauf",
   "feature1-desc": "Deine Tickets sind immer original und geprüft.",
   "feature2-title": "Lokaler Support",
   "feature2-desc": "Wir sprechen Deutsch und kümmern uns um alles.",
   "feature3-title": "Kuratiertes Angebot",
   "feature3-desc": "Nur die besten Events und Partner.",
+
   "partners-headline": "Unsere Partner",
   "partners-cta": "Partner werden",
+
   "contact-headline": "Kontaktieren Sie uns",
   "contact-send": "Absenden",
   "contact-success-msg": "Vielen Dank für Ihre Nachricht! Wir melden uns schnellstmöglich.",
-  "footer-copyright": "© 2025 AJSEE®. Alle Rechte vorbehalten.",
+  "contact-error-msg": "Das Absenden ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal.",
+  "contact-error-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+  "contact-honeypot-label": "Bitte nicht ausfüllen:",
   "contact-label-name": "Name",
   "contact-label-email": "E-Mail",
   "contact-label-message": "Nachricht",
   "contact-placeholder-name": "Ihr Name",
   "contact-placeholder-email": "Ihre E-Mail",
   "contact-placeholder-message": "Ihre Nachricht",
+
   "about-headline": "Über uns",
   "about-lead": "Wir glauben, dass Kultur Menschen verbindet.",
   "about-text": "<strong>AJSEE<sup>®</sup></strong> eröffnet Ihnen den Zugang zu weltweiten Veranstaltungen ohne Sprachbarrieren – mit Leidenschaft für authentische Erlebnisse!",
   "about-btn": "Mehr über AJSEE<sup>®</sup> erfahren",
-  "nav-about": "Über uns",
   "about-title": "Über uns | AJSEE®",
   "about-headline-full": "Unsere Geschichte, unsere Vision",
   "about-hero-text": "Bei AJSEE® glauben wir, dass Kultur, Sport und Musik allen gehören. Unsere Mission ist es, Sprachbarrieren abzubauen, weltweite Erlebnisse zu ermöglichen und Menschen grenzenlos zu verbinden.",
@@ -44,31 +53,26 @@
   "about-value-3": "<strong>Innovation</strong> – Wir folgen Trends und wählen die besten Events und Technologien.",
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Zurück zur Startseite",
+
   "category-concert": "Konzerte",
   "category-sport": "Sport",
   "category-festival": "Festivals",
   "category-theatre": "Theater",
+
   "sort-date-asc": "Demnächst",
   "sort-date-desc": "Späteste",
+
   "event-details": "Mehr erfahren",
   "event-details-demo": "Mehr erfahren (Demo)",
   "event-tickets": "Tickets",
   "event-tickets-demo": "Tickets (Demo)",
   "event-demo-badge": "Beispielveranstaltungen – Ticketverkauf kommt bald. Bleiben Sie dran!",
-  "filter-category": "Kategorie",
-  "filter-sort": "Sortieren nach",
-  "filter-all": "Alle",
-  "filter-concert": "Konzert",
-  "filter-festival": "Festival",
-  "filter-sport": "Sport",
-  "filter-theatre": "Theater",
-  "filter-nearest": "Bevorstehend",
-  "filter-latest": "Neueste",
   "event-category": "Kategorie:",
   "add-to-calendar": "Zum Kalender hinzufügen:",
   "calendar-google": "Google",
   "calendar-outlook": "Outlook",
   "calendar-apple": "Apple / ICS",
+
   "events-page-title": "Veranstaltungen",
   "events-hero-title": "Die besten Erlebnisse warten",
   "events-hero-desc": "Entdecken Sie Konzerte, Festivals, Theater und Sportveranstaltungen in einem übersichtlichen Katalog.",
@@ -87,13 +91,15 @@
   "events-benefit-1": "Originaltickets direkt vom Veranstalter",
   "events-benefit-2": "Lokaler Kundensupport",
   "events-benefit-3": "Sorgfältig ausgewählte Events",
-  "contact-error-msg": "Das Absenden ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal.",
-  "contact-error-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
-  "contact-honeypot-label": "Bitte nicht ausfüllen:",
+
+  "events-show-all": "Alle Veranstaltungen anzeigen",
+  "events-load-error": "Veranstaltungen konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+
   "thankyou-title": "Vielen Dank für Ihre Nachricht | AJSEE",
   "thankyou-headline": "Vielen Dank!",
   "thankyou-message": "Ihre Nachricht wurde erfolgreich gesendet.<br>Wir melden uns in Kürze bei Ihnen.",
   "thankyou-back": "Zurück zur Startseite",
+
   "about-timeline-headline": "Unser Weg",
   "about-timeline-2024-year": "2024",
   "about-timeline-2024": "Die ersten Ideen zur Schaffung der AJSEE®-Plattform. Die Vision entsteht, die Kulturwelt ohne Sprachbarrieren zu verbinden.",
@@ -109,6 +115,7 @@
   "about-cta-headline": "Willst du dabei sein?",
   "about-cta-text": "AJSEE® ist offen für Zusammenarbeit, Ideen und neue Partnerschaften. Wenn dich unsere Mission anspricht, schreib uns – wir freuen uns auf deine Nachricht!",
   "about-cta-contact": "AJSEE® kontaktieren",
+
   "blog-title": "Blog & Rezensionen | AJSEE®",
   "blog-headline": "Blog & Rezensionen",
   "blog-lead": "Lesen Sie Rezensionen zu kulturellen Veranstaltungen und verpassen Sie keine Tipps für die besten Erlebnisse weltweit.",
@@ -125,6 +132,7 @@
   "blog-not-found": "Artikel nicht gefunden.",
   "blog-headline-home": "Blog & Rezensionen",
   "blog-show-all": "Alle Artikel anzeigen",
+
   "faq-title": "Häufig gestellte Fragen",
   "faq-q1": "Wie funktioniert AJSEE?",
   "faq-a1": "AJSEE ist eine moderne Plattform für Tickets zu Kultur-, Sport- und Konzertveranstaltungen, entwickelt für Nutzer und Partner.",
@@ -134,5 +142,39 @@
   "faq-a3": "Die Registrierung und das Durchsuchen von Veranstaltungen sind kostenlos. Sie bezahlen nur für die Tickets.",
   "faq-q4": "Wie kann ich AJSEE-Partner werden?",
   "faq-a4": "Füllen Sie einfach das Formular auf der Partnerseite aus und wir melden uns bei Ihnen.",
-  "nav-faq": "FAQ"
+
+  "filters": {
+    "title": "Filter",
+    "category": "Kategorie",
+    "sort": "Sortieren nach",
+    "city": "Stadt",
+    "dateFrom": "Von",
+    "dateTo": "Bis",
+    "keyword": "Suchbegriff",
+
+    "searchCityPlaceholder": "Prag",
+    "searchPlaceholder": "Veranstaltungen suchen…",
+
+    "allCategories": "Alle",
+    "concert": "Konzert",
+    "festival": "Festival",
+    "sport": "Sport",
+    "theatre": "Theater",
+
+    "nearest": "Bevorstehend",
+    "latest": "Neueste",
+
+    "apply": "Filter anwenden",
+    "reset": "Zurücksetzen"
+  },
+
+  "filter-category": "Kategorie",
+  "filter-sort": "Sortieren nach",
+  "filter-all": "Alle",
+  "filter-concert": "Konzert",
+  "filter-festival": "Festival",
+  "filter-sport": "Sport",
+  "filter-theatre": "Theater",
+  "filter-nearest": "Bevorstehend",
+  "filter-latest": "Neueste"
 }

@@ -1,12 +1,16 @@
-// =============================================
-// EVENTS SECTION – vylepšený design a UX
-// =============================================
+/* src/styles/events.scss
+   ---------------------------------------------------------
+   AJSEE – Events section (filters + cards + modal)
+   Backward-compatible with current markup and new <form>-based layout
+   --------------------------------------------------------- */
 
+/* Section wrapper */
 .section-events {
   padding: 4rem 1rem 2rem 1rem;
   background: #fff;
 }
 
+/* Header */
 .events-header {
   text-align: center;
   margin-bottom: 2rem;
@@ -36,66 +40,220 @@
   }
 }
 
-// ------------------------
-// FILTRY
-// ------------------------
+/* ------------------------
+   FILTERS (container + grid)
+   ------------------------ */
+
+/* Works for both .events-filters (div) and <form id="events-filters-form"> */
 .events-filters {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
+  /* už ne grid – grid je uvnitř fieldsetu */
+  display: block;
   margin-bottom: 2.5rem;
-  padding: 1.5rem;
+  padding: 1.2rem 1.5rem;
   background: #f5f9fc;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
 
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    min-width: 200px;
-    font-size: 1rem;
+/* vlastní grid jen pro skupiny polí */
+.filters-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
 
-    label {
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #003366;
-    }
+  /* GRID DEFAULTS (mobile-first) */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem 1.25rem;
+  align-items: end; /* sjednotí baseline všech polí */
+}
 
-    select {
-      padding: 0.6rem 1rem;
-      border: 1px solid #ccddee;
-      border-radius: 8px;
-      background: #fff;
-      font-size: 1rem;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+/* legend vizuálně skrytý */
+.filters-fieldset > legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
 
-      &:hover {
-        border-color: #0077cc;
-        background-color: #f0f8ff;
-      }
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 1rem;
+  position: relative; /* pro panel našeptávače */
 
-      &:focus {
-        border-color: #0077cc;
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.2);
-        background-color: #fff;
-      }
-    }
+  label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #003366;
+  }
+}
+
+/* Unified style for inputs/selects */
+.styled-input,
+.styled-select,
+.filter-group select,
+.filter-group input[type="text"],
+.filter-group input[type="search"],
+.filter-group input[type="date"] {
+  height: 44px; /* stejné s tlačítky */
+  padding: 0 0.9rem;
+  border: 1px solid #ccddee;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  width: 100%;
+
+  &:hover {
+    border-color: #0077cc;
+    background-color: #f0f8ff;
   }
 
-  @media (max-width: 600px) {
-    flex-direction: column;
-    .filter-group {
-      width: 100%;
+  &:focus {
+    border-color: #0077cc;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,119,204,0.2);
+    background-color: #fff;
+  }
+}
+
+/* Ensure options are visible across browsers/themes */
+.styled-select,
+.filter-group select { color:#0d2235; background:#fff; }
+
+.styled-select option,
+.filter-group select option { color:#0d2235; background:#fff; }
+
+/* Actions */
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-top: .25rem;
+
+  .btn {
+    height: 44px;
+    padding: 0 .95rem;
+    border-radius: 10px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: transform .12s, box-shadow .2s, background .18s;
+
+    &.btn-primary {
+      background: #0077cc;
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0, 119, 204, 0.18);
+
+      &:hover, &:focus {
+        background: #0063a8;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 119, 204, 0.28);
+        outline: none;
+      }
+    }
+
+    &.btn-ghost {
+      background: #eef4fb;
+      color: #003366;
+
+      &:hover, &:focus {
+        background: #e2edf9;
+        transform: translateY(-1px);
+        outline: none;
+      }
     }
   }
 }
 
-// ------------------------
-// EVENT CARDS
-// ------------------------
+/* --- Desktop ≥1100px: 12 sloupců ---
+   1. řádek: Kategorie | Řazení | Město | Od
+   2. řádek: Do | Klíčové slovo (6 sloupců) | Tlačítka
+*/
+@media (min-width: 1100px) {
+  .filters-fieldset { grid-template-columns: repeat(12, minmax(0,1fr)); }
+
+  /* default: každá .filter-group zabere 3 sloupce (4 do řady) */
+  .filters-fieldset .filter-group { grid-column: span 3; }
+
+  /* „Do“ je 5. group v DOM → na 2. řádek vlevo */
+  .filters-fieldset .filter-group:nth-of-type(5) { grid-column: 1 / span 3; }
+
+  /* Klíčové slovo uprostřed přes 6 sloupců */
+  .filters-fieldset .filter-keyword { grid-column: 4 / span 6; }
+
+  /* Akční tlačítka vpravo */
+  .filters-fieldset .filter-actions { grid-column: 10 / -1; justify-content: flex-end; }
+}
+
+/* --- Tablet 721–1099px: 2 sloupce --- */
+@media (max-width: 1099px) and (min-width: 721px) {
+  .filters-fieldset { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .filters-fieldset .filter-keyword { grid-column: span 2; }
+  .filters-fieldset .filter-actions { grid-column: 2; justify-content: flex-end; }
+}
+
+/* --- Mobil ≤720px: 1 sloupec --- */
+@media (max-width: 720px) {
+  .filters-fieldset { grid-template-columns: 1fr; gap: .9rem; }
+  .filter-actions { justify-content: stretch; }
+  .filter-actions .btn { width: 100%; }
+}
+
+/* ------------------------
+   TYPEAHEAD (City suggest)
+   ------------------------ */
+
+.typeahead-panel {
+  position: absolute;
+  z-index: 50;
+  left: 0; right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid #ccddee;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  padding: 6px 0;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.typeahead-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .75rem;
+  padding: .6rem .85rem;
+  cursor: pointer;
+  font-size: 0.98rem;
+  color: #0d2235;
+
+  &:hover, &.active { background: #f0f8ff; }
+  .ti-city { font-weight: 700; letter-spacing: .01em; }
+  .ti-meta { font-size: .85rem; color: #557; opacity: .95; }
+}
+
+.typeahead-empty {
+  padding: .6rem .85rem;
+  font-size: .95rem;
+  color: #667;
+}
+
+/* ------------------------
+   EVENTS GRID & CARDS
+   ------------------------ */
 
 .events-list {
   display: grid;
@@ -106,7 +264,7 @@
 
 .event-card {
   background: #fff;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 1.2rem;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   transition: transform 0.2s, box-shadow 0.2s;
@@ -119,24 +277,29 @@
     box-shadow: 0 6px 24px 0 rgba(0,119,204,0.09);
   }
 
-  h3 {
-    margin-bottom: 0.5rem;
-    font-size: 1.3rem;
-    font-weight: 600;
+  .event-title {
+    margin-bottom: 0.4rem;
+    font-size: 1.25rem;
+    font-weight: 700;
     color: #0d2235;
   }
 
-  p {
+  .event-date {
+    margin-bottom: 0.35rem;
+    font-size: 0.95rem;
+    color: #3b5870;
+  }
+
+  .event-description {
+    margin-top: 0.25rem;
     margin-bottom: 0.7rem;
-    font-size: 0.97rem;
-    color: #555;
+    font-size: 0.98rem;
+    color: #455a6b;
+    line-height: 1.45;
   }
 }
 
-// ------------------------
-// IMAGE
-// ------------------------
-
+/* Image */
 .event-img {
   width: 100%;
   max-height: 220px;
@@ -146,10 +309,7 @@
   background: #eaf6fb;
 }
 
-// ------------------------
-// PROMO
-// ------------------------
-
+/* Promo highlight */
 .event-card-promo {
   border: 2px solid #0077cc;
   position: relative;
@@ -167,10 +327,7 @@
   box-shadow: 0 2px 8px #0077cc55;
 }
 
-// ------------------------
-// BUTTONS
-// ------------------------
-
+/* Buttons */
 .event-buttons,
 .event-buttons-group {
   display: flex;
@@ -184,7 +341,7 @@
   display: inline-block;
   padding: 10px 18px;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
   text-decoration: none;
   white-space: nowrap;
@@ -197,18 +354,14 @@
   background-color: #003366;
   color: #fff;
 
-  &:hover {
-    background-color: #002952;
-  }
+  &:hover { background-color: #002952; }
 }
 
 .btn-event.ticket {
   background-color: #ffd400;
   color: #000;
 
-  &:hover {
-    background-color: #e6be00;
-  }
+  &:hover { background-color: #e6be00; }
 }
 
 .btn-event.demo {
@@ -216,9 +369,7 @@
   color: #666;
   border: 1px dashed #aaa;
 
-  &:hover {
-    background-color: #ddd;
-  }
+  &:hover { background-color: #ddd; }
 }
 
 .btn-event:disabled {
@@ -226,45 +377,35 @@
   cursor: not-allowed;
 }
 
-// ------------------------
-// BADGE – DEMO
-// ------------------------
-
+/* Demo badge/info */
 .event-demo-badge {
   background: #eaf4ff;
   color: #004a88;
   padding: 14px 22px;
   margin: 2rem auto 0 auto;
   border-left: 5px solid #0078d7;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 8px;
   text-align: center;
   max-width: 800px;
   font-size: 1rem;
 }
-// ------------------------
-// ------------------------
-// MODAL – detail události
-// ------------------------
+
+/* ------------------------
+   MODAL
+   ------------------------ */
 
 .event-modal {
   display: none;
   position: fixed;
   z-index: 9999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   overflow-y: auto;
   background-color: rgba(0, 0, 0, 0.6);
   padding: 2rem;
 
-  &.visible {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.3s ease-in-out;
-  }
+  &.visible { display: flex; align-items: center; justify-content: center; animation: fadeIn .3s ease-in-out; }
+  &.open { display: flex; align-items: center; justify-content: center; animation: fadeIn .3s ease-in-out; }
 }
 
 .event-modal-content {
@@ -299,11 +440,7 @@
   transition: background 0.18s, box-shadow 0.2s, transform 0.13s;
 
   svg {
-    stroke: #2b2b2b;
-    stroke-width: 2.3;
-    width: 28px;
-    height: 28px;
-    transition: stroke 0.18s;
+    stroke: #2b2b2b; stroke-width: 2.3; width: 28px; height: 28px; transition: stroke 0.18s;
   }
 
   &:hover,
@@ -311,16 +448,13 @@
     background: #ebebf4;
     box-shadow: 0 6px 18px #004a884a;
     transform: scale(1.08);
-    svg {
-      stroke: #0077cc;
-    }
+    svg { stroke: #0077cc; }
     outline: none;
   }
 }
 
-
-
-.modal-img {
+/* matchuje markup: class="modal-image" */
+.modal-image {
   width: 100%;
   border-radius: 10px;
   margin-bottom: 1.5rem;
@@ -329,7 +463,7 @@
 }
 
 .modal-date-location {
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 0.75rem;
   color: #333;
   font-size: 0.98rem;
@@ -345,12 +479,11 @@
 .modal-category {
   font-size: 0.95rem;
   color: #0077cc;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 1rem;
   font-style: italic;
 }
 
-// Upozornění pro demo
 .modal-demo-note {
   background: #f0f8ff;
   color: #004a88;
@@ -361,151 +494,20 @@
   font-size: 0.95rem;
 }
 
-// ------------------------
-// POMOCNÉ TŘÍDY
+/* Utilities */
+.hidden { display: none !important; }
 
-// Pomocná třída pro skrytí
-.hidden {
-  display: none !important;
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-// Animace
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-// ------------------------
-// RESPONSIVITA
-// ------------------------
-
+/* Modal responsive */
 @media (max-width: 768px) {
-  .event-modal-content {
-    padding: 1.2rem;
-    border-radius: 12px;
-  }
-
-  .modal-img {
-    max-height: 200px;
-  }
-
-  .event-modal-close {
-    top: 10px;
-    right: 12px;
-    font-size: 1.6rem;
-  }
-}
-.event-modal.hidden {
-  display: none;
+  .event-modal-content { padding: 1.2rem; border-radius: 12px; }
+  .modal-image { max-height: 200px; }
+  .event-modal-close { top: 10px; right: 12px; }
 }
 
-.event-modal.visible {
-  display: block;
-}
-.calendar-buttons {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.4rem;
-  margin-top: 1.4rem;
-
-  .calendar-label {
-    font-weight: 600;
-    color: #004a88;
-    min-width: 155px;
-    font-size: 1.1rem;
-    padding-top: 0.33em;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .calendar-btns-wrap {
-    display: flex;
-    gap: 0.8em;
-    flex-wrap: wrap;
-  }
-
-  .calendar-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.7em;
-    background: #0a66c2;
-    color: #fff;
-    border-radius: 8px;
-    padding: 0.5em 1.5em 0.5em 1em;
-    font-size: 1.09rem;
-    font-weight: 600;
-    text-decoration: none;
-    border: none;
-    outline: none;
-    min-width: 0;
-    box-shadow: 0 2px 8px #0078d72e;
-    transition: background 0.16s, box-shadow 0.18s, transform 0.13s;
-    cursor: pointer;
-    line-height: 1.2;
-    height: 44px;
-    min-width: 145px;
-
-    &:hover,
-    &:focus {
-      background: #1877f3;
-      color: #fff;
-      box-shadow: 0 4px 14px #0a66c24b;
-      transform: translateY(-1.5px) scale(1.02);
-      text-decoration: none;
-    }
-
-    .calendar-btn-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 0.2em;
-
-      svg {
-        width: 1.33em;
-        height: 1.33em;
-        display: block;
-      }
-    }
-    .calendar-btn-label {
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
-  }
-}
-
-// Responsivita pro mobile/tablet – tlačítka pod sebou, 100% width
-@media (max-width: 900px) {
-  .calendar-buttons {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.6rem;
-
-    .calendar-label {
-      margin-bottom: 0.7rem;
-      padding-top: 0;
-      min-width: 0;
-    }
-    .calendar-btns-wrap {
-      flex-direction: column;
-      width: 100%;
-      gap: 0.6em;
-      display: flex; // DŮLEŽITÉ pro správné zarovnání tlačítek!
-    }
-    .calendar-btn {
-      width: 100%;
-      justify-content: flex-start;
-      font-size: 1rem;
-      padding: 0.6em 1em;
-      min-width: 0;
-      height: 44px;
-    }
-  }
-}
+/* Show-all CTA */
 .events-show-all-btn {
   display: flex;
   justify-content: center;
@@ -516,12 +518,12 @@
 
 .show-all-events-btn {
   display: inline-block;
-  min-width: 280px;         // Zajistí „ne příliš malé“ tlačítko, ale ne přes celou stránku
+  min-width: 280px;
   max-width: 95vw;
   padding: 1rem 2.5rem;
   border-radius: 2rem;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #fff;
   background: linear-gradient(90deg, #058ee9 0%, #00c9ff 100%);
   box-shadow: 0 4px 20px 0 rgba(5,142,233,0.15);
@@ -539,3 +541,201 @@
     outline: none;
   }
 }
+
+/* Calendar buttons (kept) */
+.calendar-buttons {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.4rem;
+  margin-top: 1.4rem;
+
+  .calendar-label {
+    font-weight: 700;
+    color: #004a88;
+    min-width: 155px;
+    font-size: 1.1rem;
+    padding-top: 0.33em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .calendar-btns-wrap {
+    display: flex;
+    gap: 0.8em;
+    flex-wrap: wrap;
+  }
+  .calendar-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    background: #0a66c2;
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.5em 1.5em 0.5em 1em;
+    font-size: 1.09rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    outline: none;
+    min-width: 145px;
+    box-shadow: 0 2px 8px #0078d72e;
+    transition: background .16s, box-shadow .18s, transform .13s;
+    cursor: pointer;
+    line-height: 1.2;
+    height: 44px;
+
+    &:hover, &:focus {
+      background: #1877f3;
+      color: #fff;
+      box-shadow: 0 4px 14px #0a66c24b;
+      transform: translateY(-1.5px) scale(1.02);
+      text-decoration: none;
+    }
+
+    .calendar-btn-icon { display: flex; align-items: center; justify-content: center; svg { width: 1.33em; height: 1.33em; display: block; } }
+    .calendar-btn-label { font-weight: 700; letter-spacing: 0.01em; }
+  }
+}
+
+@media (max-width: 900px) {
+  .calendar-buttons {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+
+    .calendar-label { margin-bottom: 0.7rem; padding-top: 0; min-width: 0; }
+    .calendar-btns-wrap { flex-direction: column; width: 100%; gap: 0.6em; display: flex; }
+    .calendar-btn { width: 100%; justify-content: flex-start; font-size: 1rem; padding: 0.6em 1em; height: 44px; }
+  }
+}
+
+/* ------------------------
+   FORM FIELD ERROR STATE
+   ------------------------ */
+
+.input-error {
+  border-color: #e63946 !important;
+  background-color: #fff5f5 !important;
+  box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.15);
+
+  &:focus {
+    border-color: #d62828 !important;
+    box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.25);
+    background-color: #fff;
+  }
+}
+
+.form-error {
+  color: #e63946;
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+/* AURORA FILTER DOCK + BOTTOM SHEET
+   --------------------------------- */
+:root {
+  --clr-primary: #0077cc;
+  --clr-primary-600: #0063a8;
+  --clr-accent:  #14c2c5;
+  --sheet-radius: 18px;
+}
+
+/* Toolbar + chips */
+.filters-toolbar{
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  margin-bottom:.9rem; flex-wrap:wrap;
+}
+.chips{display:flex;gap:.5rem;flex-wrap:wrap}
+.chip{
+  appearance:none;border:1px solid #ccddee;background:#fff;color:#0d2235;
+  padding:.5rem .9rem;border-radius:999px;font-weight:700;cursor:pointer;
+  transition:background .15s,border-color .15s,transform .1s;
+}
+.chip:hover{background:#f0f8ff;border-color:var(--clr-primary)}
+.chip.ghost{background:#f7fbff;border-color:transparent}
+.chip-near{
+  display:flex;align-items:center;gap:.5rem;background:linear-gradient(90deg,var(--clr-primary),var(--clr-accent));
+  color:#fff;border-color:transparent;
+}
+.chip-near svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:1.8}
+
+/* FAB (mobile only) */
+.filters-fab{
+  position:fixed;right:16px;bottom:16px;z-index:60;
+  background:linear-gradient(90deg,var(--clr-primary),var(--clr-accent));
+  color:#fff;border:none;border-radius:999px;padding:.9rem 1.2rem;font-weight:800;
+  box-shadow:0 10px 28px rgba(0,0,0,.2);display:none;
+}
+.filters-fab:active{transform:translateY(1px)}
+
+/* Overlay – výchozí stav skrytý, aktivuje se .is-open */
+.filters-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:saturate(120%) blur(3px);
+  -webkit-backdrop-filter:saturate(120%) blur(3px);
+  z-index:55;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .2s ease, visibility .2s ease;
+}
+.filters-overlay.is-open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+/* Bottom sheet behavior */
+.filter-dock[data-behavior="sheet"]{transition:transform .25s ease, box-shadow .2s}
+@media (max-width: 720px){
+  .filters-fab{display:inline-flex;align-items:center;gap:.5rem}
+  .filter-dock[data-behavior="sheet"]{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;
+    box-shadow:0 -12px 40px rgba(0,0,0,.22);
+    border-top-left-radius:var(--sheet-radius);border-top-right-radius:var(--sheet-radius);
+    transform:translateY(102%); padding:1rem 1rem 1.1rem 1rem;
+    max-height:85svh; overflow:auto;
+  }
+  .filter-dock[data-behavior="sheet"].is-open{transform:translateY(0)}
+  .filters-close{
+    position:absolute;top:.6rem;right:.6rem;width:34px;height:34px;border-radius:50%;
+    border:none;background:#eef4fb;box-shadow:0 2px 8px rgba(0,0,0,.08);
+  }
+  .filters-close::before,.filters-close::after{
+    content:'';position:absolute;inset:0;margin:auto;width:16px;height:2px;background:#003366;
+    transform:rotate(45deg)
+  }
+  .filters-close::after{transform:rotate(-45deg)}
+}
+
+/* Aktivní chip stav */
+.chip.is-active{box-shadow:0 0 0 2px rgba(0,119,204,.22) inset;border-color:var(--clr-primary)}
+
+/* --- HOT-FIX pro případy, kdy jsou inputy vloženy přímo do .events-filters --- */
+.events-filters input,
+.events-filters select {
+  height: 44px;
+  width: 100%;
+  padding: 0 0.9rem;
+  border: 1px solid #ccddee;
+  border-radius: 8px;
+  background: #fff;
+  color: #0d2235;
+  font-size: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: border-color .18s, box-shadow .18s, background-color .15s;
+}
+.events-filters input:hover,
+.events-filters select:hover { border-color:#0077cc; background-color:#f0f8ff; }
+.events-filters input:focus,
+.events-filters select:focus {
+  outline: 0; border-color:#0077cc; box-shadow:0 0 0 3px rgba(0,119,204,.2); background:#fff;
+}
+/* Kontejnerové děti ne ať nepřetékají */
+.events-filters > * { min-width: 0; }

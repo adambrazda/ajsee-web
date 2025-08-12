@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title data-i18n-key="events-page-title">Události</title>
-  <link rel="stylesheet" href="/src/styles/main.scss" />
 </head>
 <body>
   <!-- Header a navigace -->
@@ -64,47 +63,105 @@
   <main>
     <!-- Hero sekce -->
     <section class="events-hero">
-  <div class="container events-hero-content">
-    <div class="events-hero-text">
-      <h1 class="events-hero-title" data-i18n-key="events-hero-title">
-        Nejlepší zážitky na dosah
-      </h1>
-      <p class="events-hero-desc" data-i18n-key="events-hero-desc">
-        Objevte koncerty, festivaly, divadlo i sportovní akce v jednom přehledném katalogu.
-      </p>
-      <a href="#upcoming-events" class="events-cta-btn" data-i18n-key="events-hero-cta">
-        Zjistit nejbližší události
-      </a>
-    </div>
-    <div class="events-hero-image">
-      <img src="/images/hero-events.svg" alt="Ilustrace událostí" loading="lazy" />
-    </div>
-  </div>
-</section>
+      <div class="container events-hero-content">
+        <div class="events-hero-text">
+          <h1 class="events-hero-title" data-i18n-key="events-hero-title">
+            Nejlepší zážitky na dosah
+          </h1>
+          <p class="events-hero-desc" data-i18n-key="events-hero-desc">
+            Objevte koncerty, festivaly, divadlo i sportovní akce v jednom přehledném katalogu.
+          </p>
+          <a href="#upcoming-events" class="events-cta-btn" data-i18n-key="events-hero-cta">
+            Zjistit nejbližší události
+          </a>
+        </div>
+        <div class="events-hero-image">
+          <img src="/images/hero-events.svg" alt="Ilustrace událostí" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
     <!-- Sekce: Nejbližší události -->
     <section id="upcoming-events" class="events-upcoming-section">
       <div class="container">
-        <div class="events-filters">
-          <label>
-            <span data-i18n-key="events-filter-category"></span>
-            <select id="events-category-filter">
-              <option value="all" data-i18n-key="events-category-all"></option>
-              <option value="concert" data-i18n-key="events-category-concert"></option>
-              <option value="festival" data-i18n-key="events-category-festival"></option>
-              <option value="theatre" data-i18n-key="events-category-theatre"></option>
-              <option value="sport" data-i18n-key="events-category-sport"></option>
-            </select>
-          </label>
-          <label>
-            <span data-i18n-key="events-filter-sort"></span>
-            <select id="events-sort-filter">
-              <option value="nearest" data-i18n-key="events-sort-nearest"></option>
-              <option value="latest" data-i18n-key="events-sort-latest"></option>
-            </select>
-          </label>
-        </div>
+
+        <!-- FILTRY -->
+        <form id="events-filters-form" class="events-filters filter-dock" novalidate data-behavior="sheet">
+          <!-- TOOLBAR S CHIPY -->
+          <div class="filters-toolbar" aria-label="Rychlé filtry">
+            <div class="chips">
+              <button type="button" class="chip" id="chipToday">Dnes</button>
+              <button type="button" class="chip" id="chipWeekend">Tento víkend</button>
+              <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
+            </div>
+            <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>
+              <span data-i18n-key="filters.nearMe">V mém okolí</span>
+            </button>
+          </div>
+
+          <fieldset class="filters-fieldset">
+            <legend>Filtry</legend>
+
+            <div class="filter-group">
+              <label for="filter-category" data-i18n-key="filters.category">Kategorie</label>
+              <select id="filter-category" class="styled-select">
+                <option value="all" data-i18n-key="filters.all">Vše</option>
+                <option value="concert" data-i18n-key="category-concert">Koncerty</option>
+                <option value="festival" data-i18n-key="category-festival">Festivaly</option>
+                <option value="sport" data-i18n-key="category-sport">Sport</option>
+                <option value="theatre" data-i18n-key="category-theatre">Divadlo</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="filter-sort" data-i18n-key="filters.sort">Řazení</label>
+              <select id="filter-sort" class="styled-select">
+                <option value="nearest" data-i18n-key="filters.nearest">Nejbližší</option>
+                <option value="latest" data-i18n-key="filters.latest">Nejnovější</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="filter-city" data-i18n-key="filters.city">Město</label>
+              <input id="filter-city" type="text" class="styled-input"
+                     placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
+            </div>
+
+            <div class="filter-group">
+              <label for="filter-date-from" data-i18n-key="filters.dateFrom">Od</label>
+              <input id="filter-date-from" type="date" class="styled-input">
+            </div>
+
+            <div class="filter-group">
+              <label for="filter-date-to" data-i18n-key="filters.dateTo">Do</label>
+              <input id="filter-date-to" type="date" class="styled-input">
+            </div>
+
+            <div class="filter-group filter-keyword">
+              <label for="filter-keyword" data-i18n-key="filters.keyword">Klíčové slovo</label>
+              <input id="filter-keyword" type="search" class="styled-input"
+                     placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
+            </div>
+
+            <div class="filter-actions">
+              <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe">V mém okolí</button>
+              <button type="submit" class="btn btn-primary" data-i18n-key="filters.apply">Použít filtry</button>
+              <button type="reset" class="btn btn-ghost" data-i18n-key="filters.reset">Vymazat</button>
+            </div>
+          </fieldset>
+
+          <!-- CLOSE BTN pro bottom sheet (zobrazí se jen na mobilu) -->
+          <button type="button" class="filters-close" id="filtersClose" aria-label="Zavřít filtry"></button>
+        </form>
+
+        <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form">Filtry</button>
+        <div class="filters-overlay" id="filtersOverlay" hidden></div>
+
         <h2 class="events-upcoming-title" data-i18n-key="events-upcoming-title">Nejbližší události</h2>
-        <div id="eventsList" class="events-grid"></div>
+
+        <!-- sjednoceno s CSS + JS -->
+        <div id="eventsList" class="events-list" aria-live="polite"></div>
       </div>
     </section>
 
@@ -158,7 +215,10 @@
     <div id="eventModal" class="event-modal hidden">
       <div class="event-modal-content">
         <button id="modalClose" class="event-modal-close" aria-label="Zavřít" tabindex="0">
-          <!-- SVG nebo křížek -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
         </button>
         <img id="modalImage" class="modal-image" alt="" />
         <div class="modal-details">
@@ -168,23 +228,24 @@
             <span id="modalLocation" class="modal-location"></span>
           </p>
           <p id="modalDescription" class="modal-description"></p>
-          <p class="modal-category" data-i18n-key="event-category">
+          <p class="modal-category">
+            <span data-i18n-key="event-category">Kategorie:</span>
             <span id="modalCategory"></span>
           </p>
           <div class="calendar-buttons">
-            <span class="calendar-label" data-i18n-key="add-to-calendar"></span>
+            <span class="calendar-label" data-i18n-key="add-to-calendar">Přidat do kalendáře:</span>
             <div class="calendar-btns-wrap">
               <a href="#" id="googleCalendarLink" class="calendar-btn calendar-btn--google" target="_blank" rel="noopener">
                 <span class="calendar-btn-icon"></span>
-                <span class="calendar-btn-label" data-i18n-key="calendar-google"></span>
+                <span class="calendar-btn-label" data-i18n-key="calendar-google">Google</span>
               </a>
               <a href="#" id="outlookCalendarLink" class="calendar-btn calendar-btn--outlook" target="_blank" rel="noopener">
                 <span class="calendar-btn-icon"></span>
-                <span class="calendar-btn-label" data-i18n-key="calendar-outlook"></span>
+                <span class="calendar-btn-label" data-i18n-key="calendar-outlook">Outlook</span>
               </a>
               <a href="#" id="appleCalendarLink" class="calendar-btn calendar-btn--apple" download="event.ics">
                 <span class="calendar-btn-icon"></span>
-                <span class="calendar-btn-label" data-i18n-key="calendar-apple"></span>
+                <span class="calendar-btn-label" data-i18n-key="calendar-apple">Apple / ICS</span>
               </a>
             </div>
           </div>
@@ -193,24 +254,26 @@
     </div>
 
   </main>
+
   <!-- Footer -->
   <footer>
-  <div class="footer-social">
-    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
-      <img src="/images/icons/instagram.svg" alt="Instagram" />
-    </a>
-    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
-      <img src="/images/icons/facebook.svg" alt="Facebook" />
-    </a>
-    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
-      <img src="/images/icons/twitter.svg" alt="Twitter" />
-    </a>
-    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
-      <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
-    </a>
-  </div>
-  <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
-</footer>
+    <div class="footer-social">
+      <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
+        <img src="/images/icons/instagram.svg" alt="Instagram" />
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
+        <img src="/images/icons/facebook.svg" alt="Facebook" />
+      </a>
+      <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
+        <img src="/images/icons/twitter.svg" alt="Twitter" />
+      </a>
+      <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
+        <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
+      </a>
+    </div>
+    <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
+  </footer>
+
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

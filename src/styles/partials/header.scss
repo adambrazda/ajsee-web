@@ -42,9 +42,9 @@
   transition: height 0.18s;
 }
 
-// ------------------------
-// LANGUAGE SWITCHERS
-// ------------------------
+/* ------------------------
+   LANGUAGE SWITCHERS
+   ------------------------ */
 
 .language-switcher {
   display: flex;
@@ -87,9 +87,9 @@
   }
 }
 
-// ------------------------
-// HAMBURGER BUTTON
-// ------------------------
+/* ------------------------
+   HAMBURGER BUTTON
+   ------------------------ */
 
 .hamburger-btn {
   display: none;
@@ -122,28 +122,37 @@
   }
 }
 
-// ------------------------
-// OVERLAY FOR MOBILE MENU
-// ------------------------
+/* ------------------------
+   OVERLAY FOR MOBILE MENU (single, clean definition)
+   ------------------------ */
 
-.menu-overlay-bg {
-  display: none;
+/* default: neviditelné, neklikací, bez blur */
+.site-header .menu-overlay-bg {
   position: fixed;
   inset: 0;
-  background: #00336688;
-  z-index: 1000;
+  z-index: 1000;           /* pod headerem (9999), nad obsahem */
+  background: rgba(0,0,0,0.28);
   opacity: 0;
-  transition: opacity 0.2s;
-
-  &.active {
-    display: block;
-    opacity: 1;
-  }
+  visibility: hidden;
+  pointer-events: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  display: block;          /* držíme v DOM bez layout skoků */
+  transition: opacity .2s ease, visibility .2s ease;
 }
 
-// ------------------------
-// MAIN NAVIGATION
-// ------------------------
+/* aktivní stav: viditelný, klikací, s blur */
+.site-header .menu-overlay-bg.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ------------------------
+   MAIN NAVIGATION
+   ------------------------ */
 
 .main-nav {
   display: flex;
@@ -184,9 +193,10 @@
     width: 82vw;
     max-width: 340px;
     height: 100vh;
-    // ==== OPRAVA: Plně neprůhledné pozadí ====
+
+    /* neprůhledné pozadí panelu (ne „skleněné“) */
     background: linear-gradient(108deg, #eafcff 0%, #53e0f6 70%, #139dcf 100%);
-    // ====== konec změny ======
+
     flex-direction: column;
     align-items: flex-start;
     box-shadow: -8px 0 32px #00336622;
@@ -224,5 +234,5 @@
 }
 
 .main-nav.open {
-  transform: translateX(0%) !important;
+  transform: translateX(0%);
 }

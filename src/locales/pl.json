@@ -1,6 +1,6 @@
 {
   "hero.badge": "Czeski startup szuka partnerów",
-  "hero.headline": "Połącz światowe wydarzenia z polską i słowacką publicznością",
+  "hero.headline": "Połącz światowe wydarzenia z czeską i słowacką publicznością",
   "hero.intro": "AJSEE® to nowy projekt ułatwiający czeskim i słowackim fanom bezpieczny zakup biletów na zagraniczne koncerty, festiwale i wydarzenia sportowe. Obecnie szukamy partnerów i dostawców biletów z całego świata.",
   "hero.cta-collab": "Chcę współpracować",
   "hero.cta-info": "Dowiedz się więcej o AJSEE®",
@@ -15,6 +15,7 @@
   "nav-faq": "FAQ",
 
   "section-events-title": "Nadchodzące wydarzenia",
+  "section-events-subtitle": "Zdobądź bilety na najlepsze kulturalne przeżycia w Twojej okolicy.",
 
   "feature1-title": "Bezpieczny zakup",
   "feature1-desc": "Twoje bilety są zawsze oryginalne i zweryfikowane.",
@@ -67,6 +68,7 @@
   "event-tickets": "Bilety",
   "event-tickets-demo": "Bilety (demo)",
   "event-demo-badge": "Przykładowe wydarzenia – prawdziwa sprzedaż biletów już wkrótce. Śledź nas!",
+
   "event-category": "Kategoria:",
   "add-to-calendar": "Dodaj do kalendarza:",
   "calendar-google": "Google",
@@ -152,6 +154,13 @@
     "dateTo": "Do",
     "keyword": "Słowo kluczowe",
 
+    "today": "Dzisiaj",
+    "weekend": "W ten weekend",
+    "nearMe": "W mojej okolicy",
+
+    "cityPlaceholder": "Praga, Brno…",
+    "keywordPlaceholder": "Artysta, miejsce, wydarzenie…",
+
     "searchCityPlaceholder": "Praga",
     "searchPlaceholder": "Szukaj wydarzeń…",
 
@@ -163,6 +172,12 @@
 
     "nearest": "Najbliższe",
     "latest": "Najnowsze",
+
+    "noResults": "Brak wyników",
+    "finding": "Ustalanie lokalizacji…",
+    "geoError": "Lokalizacja niedostępna. Spróbuj ponownie.",
+    "geoDenied": "Dostęp do lokalizacji jest zablokowany. Zmień uprawnienia w przeglądarce.",
+    "geoTimeout": "Pobieranie lokalizacji trwało zbyt długo. Spróbuj ponownie.",
 
     "apply": "Zastosuj filtry",
     "reset": "Wyczyść"

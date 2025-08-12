@@ -15,6 +15,7 @@
   "nav-faq": "FAQ",
 
   "section-events-title": "Najbližšie podujatia",
+  "section-events-subtitle": "Získajte vstupenky na najlepšie kultúrne zážitky vo vašom okolí.",
 
   "feature1-title": "Bezpečný nákup",
   "feature1-desc": "Vaše vstupenky sú vždy originálne a overené.",
@@ -67,6 +68,7 @@
   "event-tickets": "Vstupenky",
   "event-tickets-demo": "Vstupenky (demo)",
   "event-demo-badge": "Ukážkové podujatia – pripravujeme reálny predaj vstupeniek. Sledujte nás!",
+
   "event-category": "Kategória:",
   "add-to-calendar": "Pridať do kalendára:",
   "calendar-google": "Google",
@@ -152,10 +154,17 @@
     "dateTo": "Do",
     "keyword": "Kľúčové slovo",
 
+    "today": "Dnes",
+    "weekend": "Tento víkend",
+    "nearMe": "V mojom okolí",
+
+    "cityPlaceholder": "Bratislava, Košice…",
+    "keywordPlaceholder": "Umelec, miesto, podujatie…",
+
     "searchCityPlaceholder": "Bratislava",
     "searchPlaceholder": "Hľadať podujatia…",
 
-    "allCategories": "Všetko",
+    "all": "Všetko",
     "concert": "Koncert",
     "festival": "Festival",
     "sport": "Šport",
@@ -163,6 +172,12 @@
 
     "nearest": "Najbližšie",
     "latest": "Najnovšie",
+
+    "noResults": "Žiadne výsledky",
+    "finding": "Zisťujem polohu…",
+    "geoError": "Poloha nie je dostupná. Skúste to znova.",
+    "geoDenied": "Prístup k polohe je zamietnutý. Zmeňte povolenia v prehliadači.",
+    "geoTimeout": "Získanie polohy trvalo príliš dlho. Skúste to znova.",
 
     "apply": "Použiť filtre",
     "reset": "Vymazať"
@@ -176,5 +191,7 @@
   "filter-sport": "Šport",
   "filter-theatre": "Divadlo",
   "filter-nearest": "Najbližšie",
-  "filter-latest": "Najnovšie"
+  "filter-latest": "Najnovšie",
+
+  "footer-copyright": "© 2025 AJSEE®. Všetky práva vyhradené."
 }

@@ -1,38 +1,51 @@
 {
-
   "hero.badge": "Český startup hledá partnery",
   "hero.headline": "Spojte světové akce s českým a slovenským publikem",
   "hero.intro": "AJSEE® je nový projekt, který umožní českým a slovenským fanouškům snadno a bezpečně kupovat vstupenky na zahraniční koncerty, festivaly a sportovní akce. Aktuálně hledáme partnery a poskytovatele vstupenek z celého světa.",
   "hero.imageAlt": "Ilustrace: světové akce propojené s českými a slovenskými fanoušky.",
   "hero.cta-collab": "Chci spolupracovat",
   "hero.cta-info": "Zjistit víc o AJSEE®",
+
   "nav-home": "Domů",
   "nav-partners": "Pro partnery",
   "nav-blog": "Blog",
   "nav-contact": "Kontakt",
+  "nav-about": "O nás",
+  "nav-events": "Události",
+  "nav-faq": "FAQ",
+
   "section-events-title": "Nejbližší události",
+  "section-events-subtitle": "Získejte vstupenky na nejlepší kulturní zážitky ve vašem okolí.",
+
   "feature1-title": "Bezpečný nákup",
   "feature1-desc": "Vaše vstupenky jsou vždy ověřené a originální.",
   "feature2-title": "Lokální podpora",
   "feature2-desc": "Komunikujeme česky a řešíme vše za vás.",
   "feature3-title": "Kurátorský výběr",
   "feature3-desc": "Jen ty nejlepší akce a partneři.",
+
   "partners-headline": "Naši partneři",
   "partners-cta": "Chci být partnerem",
+
   "contact-headline": "Kontaktujte nás",
   "contact-send": "Odeslat",
-  "footer-copyright": "© 2025 AJSEE®. Všechna práva vyhrazena.",
+  "contact-success-msg": "Děkujeme za zprávu! Ozveme se vám co nejdříve.",
+  "contact-error-msg": "Odeslání se nezdařilo. Zkuste to prosím později.",
+  "contact-error-name": "Zadejte své jméno.",
+  "contact-error-email": "Zadejte platný e-mail.",
+  "contact-error-message": "Napište zprávu.",
+  "contact-honeypot-label": "Nevyplňujte toto pole:",
   "contact-label-name": "Jméno",
   "contact-label-email": "E-mail",
   "contact-label-message": "Zpráva",
   "contact-placeholder-name": "Vaše jméno",
   "contact-placeholder-email": "Váš e-mail",
   "contact-placeholder-message": "Vaše zpráva",
+
   "about-headline": "O nás",
   "about-lead": "Věříme, že kultura spojuje lidi.",
-  "about-text": "<strong>AJSEE<sup>®</sup></strong> vám otevírá cestu ke světovým akcím bez jazykových bariér – s nadšením pro autentické zážitky!",
+  "about-text": "<strong>AJSEE<sup>®</sup></strong> vám otevírá cestu ke světovým akcím bez jazykových bariér – s nadšením pro autentické zážitky!",
   "about-btn": "Zjisti více o AJSEE<sup>®</sup>",
-  "nav-about": "O nás",
   "about-title": "O nás | AJSEE®",
   "about-headline-full": "Můj příběh, naše vize",
   "about-hero-text": "V AJSEE® věříme, že kultura, sport a hudba patří všem. Naším posláním je bourat jazykové bariéry, otevírat světové zážitky a spojovat lidi bez hranic.",
@@ -43,33 +56,28 @@
   "about-value-3": "<strong>Inovace</strong> – Sledujeme trendy, vybíráme nejlepší eventy a technologie.",
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Zpět na hlavní stránku",
+
   "category-concert": "Koncerty",
   "category-sport": "Sport",
   "category-festival": "Festivaly",
   "category-theatre": "Divadlo",
+
   "sort-date-asc": "Nejbližší",
   "sort-date-desc": "Nejpozdější",
+
   "event-details": "Zjistit více",
   "event-details-demo": "Zjistit více (demo)",
   "event-tickets": "Vstupenky",
   "event-tickets-demo": "Vstupenky (demo)",
   "event-demo-badge": "Ukázkové události – připravujeme reálný prodej vstupenek. Sledujte nás!",
-  "filter-category": "Kategorie",
-  "filter-sort": "Řazení",
-  "filter-all": "Vše",
-  "filter-concert": "Koncert",
-  "filter-festival": "Festival",
-  "filter-sport": "Sport",
-  "filter-theatre": "Divadlo",
-  "filter-nearest": "Nejbližší",
-  "filter-latest": "Nejnovější",
+
   "event-category": "Kategorie:",
   "add-to-calendar": "Přidat do kalendáře:",
   "calendar-google": "Google",
   "calendar-outlook": "Outlook",
   "calendar-apple": "Apple / ICS",
+
   "events-page-title": "Události",
-  "nav-events": "Události",
   "events-hero-title": "Nejlepší zážitky na dosah",
   "events-hero-desc": "Objevte koncerty, festivaly, divadlo i sportovní akce v jednom přehledném katalogu.",
   "events-hero-cta": "Zjistit nejbližší události",
@@ -87,14 +95,14 @@
   "events-benefit-1": "Originální vstupenky přímo od pořadatelů",
   "events-benefit-2": "Lokální zákaznická podpora",
   "events-benefit-3": "Pečlivě vybírané akce",
-  "contact-error-msg": "Odeslání se nezdařilo. Zkuste to prosím později.",
-  "contact-error-email": "Zadejte platný e-mail.",
-  "contact-honeypot-label": "Nevyplňujte toto pole:",
-  "contact-success-msg": "Děkujeme za zprávu! Ozveme se vám co nejdříve.",
+  "events-show-all": "Zobrazit všechny události",
+  "events-load-error": "Události nelze načíst. Zkuste to později.",
+
   "thankyou-title": "Děkujeme za zprávu | AJSEE",
   "thankyou-headline": "Děkujeme!",
   "thankyou-message": "Vaše zpráva byla úspěšně odeslána.<br>Ozveme se vám co nejdříve.",
   "thankyou-back": "Zpět na hlavní stránku",
+
   "about-timeline-headline": "Naše cesta",
   "about-timeline-2024-year": "2024",
   "about-timeline-2024": "První nápady na vytvoření platformy AJSEE®. Začíná se rodit vize propojit kulturní svět bez jazykových bariér.",
@@ -110,6 +118,7 @@
   "about-cta-headline": "Chceš být u toho?",
   "about-cta-text": "AJSEE® je otevřená spolupráci, nápadům i novým partnerstvím. Pokud tě naše mise zaujala, napiš nám – těšíme se na zprávu!",
   "about-cta-contact": "Kontaktovat AJSEE®",
+
   "blog-title": "Blog & Recenze | AJSEE®",
   "blog-headline": "Blog & Recenze",
   "blog-lead": "Přečtěte si recenze kulturních akcí a nenechte si ujít tipy na nejlepší zážitky po celém světě.",
@@ -126,6 +135,7 @@
   "blog-not-found": "Článek nebyl nalezen.",
   "blog-headline-home": "Blog & Recenze",
   "blog-show-all": "Zobrazit všechny články",
+
   "faq-title": "Často kladené dotazy",
   "faq-q1": "Jak funguje AJSEE?",
   "faq-a1": "AJSEE je moderní platforma pro vstupenky na kulturu, sport a koncerty, navržená pro uživatele i partnery.",
@@ -135,5 +145,54 @@
   "faq-a3": "Registrace a vyhledávání událostí je zdarma, platíte pouze za samotné vstupenky.",
   "faq-q4": "Jak se mohu stát partnerem AJSEE?",
   "faq-a4": "Stačí vyplnit formulář na stránce Pro partnery. Ozveme se vám s dalším postupem.",
-  "nav-faq": "FAQ"
+
+  "filters": {
+    "title": "Filtry",
+    "category": "Kategorie",
+    "sort": "Řazení",
+    "city": "Město",
+    "dateFrom": "Od",
+    "dateTo": "Do",
+    "keyword": "Klíčové slovo",
+
+    "today": "Dnes",
+    "weekend": "Tento víkend",
+    "nearMe": "V mém okolí",
+
+    "cityPlaceholder": "Praha, Brno…",
+    "keywordPlaceholder": "Umělec, místo, akce…",
+
+    "searchCityPlaceholder": "Praha",
+    "searchPlaceholder": "Hledat události…",
+
+    "allCategories": "Vše",
+    "concert": "Koncert",
+    "festival": "Festival",
+    "sport": "Sport",
+    "theatre": "Divadlo",
+
+    "nearest": "Nejbližší",
+    "latest": "Nejnovější",
+
+    "noResults": "Žádné výsledky",
+    "finding": "Zjišťuji polohu…",
+    "geoError": "Poloha není dostupná. Zkuste to znovu.",
+    "geoDenied": "Přístup k poloze je zamítnut. Povolení můžete změnit v nastavení prohlížeče.",
+    "geoTimeout": "Získání polohy trvalo příliš dlouho. Zkuste to prosím znovu.",
+
+    "apply": "Použít filtry",
+    "reset": "Vymazat"
+  },
+
+  "filter-category": "Kategorie",
+  "filter-sort": "Řazení",
+  "filter-all": "Vše",
+  "filter-concert": "Koncert",
+  "filter-festival": "Festival",
+  "filter-sport": "Sport",
+  "filter-theatre": "Divadlo",
+  "filter-nearest": "Nejbližší",
+  "filter-latest": "Nejnovější",
+
+  "footer-copyright": "© 2025 AJSEE®. Všechna práva vyhrazena."
 }

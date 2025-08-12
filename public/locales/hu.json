@@ -15,6 +15,7 @@
   "nav-faq": "GYIK",
 
   "section-events-title": "Közelgő események",
+  "section-events-subtitle": "Szerezd be a legjobb kulturális élmények jegyeit a közeledben.",
 
   "feature1-title": "Biztonságos vásárlás",
   "feature1-desc": "Jegyeid mindig eredetiek és ellenőrzöttek.",
@@ -67,6 +68,7 @@
   "event-tickets": "Jegyek",
   "event-tickets-demo": "Jegyek (demo)",
   "event-demo-badge": "Mintarendezvények – a valódi jegyértékesítés hamarosan indul. Kövess minket!",
+
   "event-category": "Kategória:",
   "add-to-calendar": "Hozzáadás a naptárhoz:",
   "calendar-google": "Google",
@@ -152,6 +154,13 @@
     "dateTo": "Dátumig",
     "keyword": "Kulcsszó",
 
+    "today": "Ma",
+    "weekend": "Hétvégén",
+    "nearMe": "A közelemben",
+
+    "cityPlaceholder": "Prága, Brno…",
+    "keywordPlaceholder": "Előadó, helyszín, esemény…",
+
     "searchCityPlaceholder": "Prága",
     "searchPlaceholder": "Események keresése…",
 
@@ -163,6 +172,12 @@
 
     "nearest": "Legközelebbi",
     "latest": "Legújabb",
+
+    "noResults": "Nincs találat",
+    "finding": "Helymeghatározás…",
+    "geoError": "A hely nem érhető el. Próbáld újra.",
+    "geoDenied": "A helyhozzáférés le van tiltva. Engedélyezd a böngészőben.",
+    "geoTimeout": "A hely meghatározása túl sokáig tartott. Próbáld újra.",
 
     "apply": "Szűrők alkalmazása",
     "reset": "Törlés"

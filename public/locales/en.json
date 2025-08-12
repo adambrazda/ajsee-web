@@ -15,6 +15,7 @@
   "nav-faq": "FAQ",
 
   "section-events-title": "Upcoming Events",
+  "section-events-subtitle": "Get tickets for the best cultural experiences near you.",
 
   "feature1-title": "Secure Purchase",
   "feature1-desc": "Your tickets are always verified and original.",
@@ -30,7 +31,9 @@
   "contact-send": "Send",
   "contact-success-msg": "Thank you for your message! We will get back to you as soon as possible.",
   "contact-error-msg": "Submission failed. Please try again later.",
+  "contact-error-name": "Please enter your name.",
   "contact-error-email": "Please enter a valid email address.",
+  "contact-error-message": "Please enter a message.",
   "contact-honeypot-label": "Don’t fill this out:",
   "contact-label-name": "Name",
   "contact-label-email": "Email",
@@ -153,6 +156,13 @@
     "dateTo": "To",
     "keyword": "Keyword",
 
+    "today": "Today",
+    "weekend": "This weekend",
+    "nearMe": "Near me",
+
+    "cityPlaceholder": "Prague, Brno…",
+    "keywordPlaceholder": "Artist, venue, event…",
+
     "searchCityPlaceholder": "Prague",
     "searchPlaceholder": "Search events…",
 
@@ -164,6 +174,12 @@
 
     "nearest": "Upcoming",
     "latest": "Newest",
+
+    "noResults": "No results",
+    "finding": "Detecting location…",
+    "geoError": "Location is not available. Please try again.",
+    "geoDenied": "Location access is denied. You can enable it in your browser settings.",
+    "geoTimeout": "Getting location took too long. Please try again.",
 
     "apply": "Apply filters",
     "reset": "Clear"

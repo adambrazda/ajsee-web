@@ -15,9 +15,10 @@
   "nav-faq": "FAQ",
 
   "section-events-title": "Nächste Events",
+  "section-events-subtitle": "Sichern Sie sich Tickets für die besten Kultur-Erlebnisse in Ihrer Nähe.",
 
   "feature1-title": "Sicherer Kauf",
-  "feature1-desc": "Deine Tickets sind immer original und geprüft.",
+  "feature1-desc": "Ihre Tickets sind immer original und geprüft.",
   "feature2-title": "Lokaler Support",
   "feature2-desc": "Wir sprechen Deutsch und kümmern uns um alles.",
   "feature3-title": "Kuratiertes Angebot",
@@ -67,6 +68,7 @@
   "event-tickets": "Tickets",
   "event-tickets-demo": "Tickets (Demo)",
   "event-demo-badge": "Beispielveranstaltungen – Ticketverkauf kommt bald. Bleiben Sie dran!",
+
   "event-category": "Kategorie:",
   "add-to-calendar": "Zum Kalender hinzufügen:",
   "calendar-google": "Google",
@@ -152,6 +154,13 @@
     "dateTo": "Bis",
     "keyword": "Suchbegriff",
 
+    "today": "Heute",
+    "weekend": "Dieses Wochenende",
+    "nearMe": "In meiner Nähe",
+
+    "cityPlaceholder": "Prag, Brünn…",
+    "keywordPlaceholder": "Künstler, Ort, Event…",
+
     "searchCityPlaceholder": "Prag",
     "searchPlaceholder": "Veranstaltungen suchen…",
 
@@ -163,6 +172,12 @@
 
     "nearest": "Bevorstehend",
     "latest": "Neueste",
+
+    "noResults": "Keine Treffer",
+    "finding": "Standort wird ermittelt…",
+    "geoError": "Standort nicht verfügbar. Bitte erneut versuchen.",
+    "geoDenied": "Zugriff auf Standort verweigert. Erlaubnis im Browser anpassen.",
+    "geoTimeout": "Standorterkennung dauerte zu lange. Bitte erneut versuchen.",
 
     "apply": "Filter anwenden",
     "reset": "Zurücksetzen"

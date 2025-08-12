@@ -36,6 +36,11 @@ function qs(sel, root = document) { return root.querySelector(sel); }
 function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
 const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
 
+// malý helper pro yyyy-mm-dd
+function fmtISO(d) {
+  try { return new Date(d).toISOString().slice(0, 10); } catch { return ''; }
+}
+
 // ------- Helpers: typography -------
 function fixNonBreakingShortWords(text, lang = 'cs') {
   if (!text || typeof text !== 'string') return text;
@@ -286,9 +291,99 @@ function setupCityTypeahead(inputEl) {
 /* =========================================================
    Active filter chips toolbar + Near Me
    ========================================================= */
+
+// požádá o polohu a zapne Near Me (případně přepíná stav)
+async function enableNearMeViaGeolocate(triggerEl) {
+  try {
+    if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
+      // toggle off
+      clearNearMe();
+      setFilterInputsFromState();
+      await renderAndSync();
+      return;
+    }
+    if (triggerEl) {
+      triggerEl.disabled = true;
+      triggerEl.textContent = t('filters.finding','Zjišťuji polohu…');
+    }
+    const pos = await new Promise((res, rej) => {
+      if (!navigator.geolocation) return rej(new Error('no geo'));
+      navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+    });
+    currentFilters.nearMeLat = pos.coords.latitude;
+    currentFilters.nearMeLon = pos.coords.longitude;
+    currentFilters.nearMeRadiusKm = 50;
+    // pokud zapneme near me, zrušíme město (aby se neovlivňovalo)
+    currentFilters.city = '';
+    setFilterInputsFromState();
+    await renderAndSync();
+  } catch (e) {
+    console.warn('Geo failed:', e);
+    alert(t('filters.geoError', 'Nepodařilo se získat polohu.'));
+  } finally {
+    if (triggerEl) {
+      triggerEl.disabled = false;
+      triggerEl.textContent = t('filters.nearMe', 'V mém okolí');
+    }
+  }
+}
+
+// rychločipy: Dnes / Tento víkend / Vymazat + Blízko mě
+function setupQuickChips() {
+  const todayBtn   = qs('#chipToday');
+  const weekendBtn = qs('#chipWeekend');
+  const clearBtn   = qs('#chipClear');
+  const nearBtn    = qs('#chipNearMe');
+
+  const setActive = (btn) => {
+    [todayBtn, weekendBtn, clearBtn].forEach(b => b?.classList.remove('is-active'));
+    btn?.classList.add('is-active');
+  };
+
+  todayBtn?.addEventListener('click', async () => {
+    const d = new Date();
+    currentFilters.dateFrom = fmtISO(d);
+    currentFilters.dateTo   = fmtISO(d);
+    setFilterInputsFromState();
+    setActive(todayBtn);
+    await renderAndSync();
+  });
+
+  weekendBtn?.addEventListener('click', async () => {
+    const d = new Date();
+    const day = d.getDay(); // 0=Ne, 6=So
+    const diffToSat = (6 - day + 7) % 7;
+    const sat = new Date(d); sat.setDate(d.getDate() + diffToSat);
+    const sun = new Date(sat); sun.setDate(sat.getDate() + 1);
+    currentFilters.dateFrom = fmtISO(sat);
+    currentFilters.dateTo   = fmtISO(sun);
+    setFilterInputsFromState();
+    setActive(weekendBtn);
+    await renderAndSync();
+  });
+
+  clearBtn?.addEventListener('click', async () => {
+    const cc = currentFilters.countryCode;
+    currentFilters = {
+      category: 'all', sort: 'nearest', city: '',
+      dateFrom: '', dateTo: '', keyword: '',
+      countryCode: cc, nearMeLat: null, nearMeLon: null, nearMeRadiusKm: 50
+    };
+    setFilterInputsFromState();
+    setActive(clearBtn);
+    await renderAndSync();
+  });
+
+  nearBtn?.addEventListener('click', async (e) => {
+    // toggle near me
+    await enableNearMeViaGeolocate(e.currentTarget);
+  });
+}
+
 function renderFilterChips() {
-  const host = qs('.filters-toolbar') || (() => {
-    // vytvoř toolbar nad gridem/sekcí
+  const existing = qs('.filters-toolbar');
+  const host = existing || (() => {
+    // fallback – toolbar nad gridem/sekcí
     const section = qs('.section-events .container') || qs('.events-upcoming-section .container') || document.body;
     const bar = document.createElement('div');
     bar.className = 'filters-toolbar';
@@ -301,7 +396,25 @@ function renderFilterChips() {
     return bar;
   })();
 
-  host.innerHTML = '';
+  // NEmažeme obsah toolbaru (statické čipy musí zůstat vidět)!
+  // Statické čipy (Dnes/Víkend/Vymazat/Blízko mě) necháme v .chips-static (případně označíme)
+  let staticWrap = host.querySelector('.chips-static') || host.querySelector('.chips');
+  if (staticWrap) staticWrap.classList.add('chips-static');
+
+  // Aktivní čipy rendrujeme do separátního bloku .chips-active
+  let activeWrap = host.querySelector('.chips-active');
+  if (!activeWrap) {
+    activeWrap = document.createElement('div');
+    activeWrap.className = 'chips chips-active';
+    if (staticWrap && staticWrap.nextSibling) {
+      host.insertBefore(activeWrap, staticWrap.nextSibling);
+    } else if (staticWrap) {
+      host.appendChild(activeWrap);
+    } else {
+      host.insertBefore(activeWrap, host.firstChild);
+    }
+  }
+  activeWrap.innerHTML = '';
 
   const addChip = (label, onClear) => {
     const chip = document.createElement('button');
@@ -309,14 +422,8 @@ function renderFilterChips() {
     chip.className = 'chip';
     chip.textContent = label;
     chip.setAttribute('aria-label', `${label} – ${t('filters.reset','Vymazat')}`);
-    chip.style.border = '1px solid #cbd9e8';
-    chip.style.padding = '6px 10px';
-    chip.style.borderRadius = '999px';
-    chip.style.background = '#fff';
-    chip.style.fontWeight = '600';
-    chip.style.cursor = 'pointer';
     chip.addEventListener('click', onClear);
-    host.appendChild(chip);
+    activeWrap.appendChild(chip);
   };
 
   if (currentFilters.category && currentFilters.category !== 'all') {
@@ -389,27 +496,7 @@ function attachNearMeButton(formEl) {
   actions.prepend(btn);
 
   btn.addEventListener('click', async () => {
-    try {
-      btn.disabled = true;
-      btn.textContent = t('filters.finding','Zjišťuji polohu…');
-      const pos = await new Promise((res, rej) => {
-        if (!navigator.geolocation) return rej(new Error('no geo'));
-        navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
-      });
-      currentFilters.nearMeLat = pos.coords.latitude;
-      currentFilters.nearMeLon = pos.coords.longitude;
-      currentFilters.nearMeRadiusKm = 50;
-      // pokud zapneme near me, zrušíme město (aby se neovlivňovalo)
-      currentFilters.city = '';
-      setFilterInputsFromState();
-      renderAndSync();
-    } catch (e) {
-      console.warn('Geo failed:', e);
-      alert(t('filters.geoError', 'Nepodařilo se získat polohu.'));
-    } finally {
-      btn.disabled = false;
-      btn.textContent = t('filters.nearMe', 'V mém okolí');
-    }
+    await enableNearMeViaGeolocate(btn);
   });
 }
 
@@ -440,6 +527,37 @@ async function renderAndSync() {
   syncURLFromFilters();
   await renderEvents(currentLang, currentFilters);
   renderFilterChips();
+}
+
+/* =========================================================
+   Bottom sheet (mobile) – otevření/zavření
+   ========================================================= */
+function setupFilterDockSheet() {
+  const sheet   = qs('.filter-dock[data-behavior="sheet"]');
+  const openBtn = qs('#filtersOpen');
+  const closeBtn= qs('#filtersClose');
+  const overlay = qs('#filtersOverlay');
+
+  if (!sheet || !openBtn || !overlay) return;
+
+  const open = () => {
+    sheet.classList.add('is-open');
+    overlay.hidden = false;
+    overlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  };
+  const close = () => {
+    sheet.classList.remove('is-open');
+    overlay.classList.remove('is-open');
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  };
+
+  openBtn.addEventListener('click', open);
+  closeBtn?.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  window.addEventListener('resize', () => { if (!isMobile()) close(); });
 }
 
 // ------- DOM Ready -------
@@ -494,39 +612,39 @@ document.addEventListener('DOMContentLoaded', async () => {
  // Mobile menu
 const hamburger = document.querySelector('.hamburger-btn');
 const nav = document.querySelector('.main-nav');
-const overlay = document.querySelector('.menu-overlay-bg');
+const overlayNav = document.querySelector('.menu-overlay-bg');
 const closeBtn = document.querySelector('.menu-close');
 
-if (hamburger && nav && overlay && closeBtn) {
+if (hamburger && nav && overlayNav && closeBtn) {
   // Bezpečný výchozí stav (některé buildy nechaly overlay aktivní)
   nav.classList.remove('open');
-  overlay.classList.remove('active');
-  overlay.style.pointerEvents = 'none';
-  overlay.style.opacity = '0';
+  overlayNav.classList.remove('active');
+  overlayNav.style.pointerEvents = 'none';
+  overlayNav.style.opacity = '0';
   document.body.classList.remove('nav-open');
   document.body.style.overflow = '';
 
   const openMenu = () => {
     nav.classList.add('open');
-    overlay.classList.add('active');
-    overlay.style.pointerEvents = 'auto';
-    overlay.style.opacity = '1';
+    overlayNav.classList.add('active');
+    overlayNav.style.pointerEvents = 'auto';
+    overlayNav.style.opacity = '1';
     document.body.classList.add('nav-open');
     document.body.style.overflow = 'hidden';
   };
 
   const closeMenu = () => {
     nav.classList.remove('open');
-    overlay.classList.remove('active');
-    overlay.style.pointerEvents = 'none';
-    overlay.style.opacity = '0';
+    overlayNav.classList.remove('active');
+    overlayNav.style.pointerEvents = 'none';
+    overlayNav.style.opacity = '0';
     document.body.classList.remove('nav-open');
     document.body.style.overflow = '';
   };
 
   hamburger.addEventListener('click', openMenu);
   closeBtn.addEventListener('click', closeMenu);
-  overlay.addEventListener('click', closeMenu);
+  overlayNav.addEventListener('click', closeMenu);
   document.querySelectorAll('.main-nav a').forEach((link) => link.addEventListener('click', closeMenu));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
 }
@@ -557,8 +675,14 @@ if (hamburger && nav && overlay && closeBtn) {
     // City typeahead – aktivace
     if ($city) setupCityTypeahead($city);
 
-    // Near Me – button
+    // Near Me – button v actions
     attachNearMeButton($form || qs('.events-filters'));
+
+    // Rychločipy (Dnes / Tento víkend / Vymazat / Blízko mě)
+    setupQuickChips();
+
+    // Bottom-sheet na mobilech
+    setupFilterDockSheet();
 
     await renderAndSync();
 

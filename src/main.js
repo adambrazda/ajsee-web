@@ -1,7 +1,8 @@
 // src/main.js
 // ---------------------------------------------------------
 // AJSEE – Events UI, i18n & filters (+ city typeahead, "Near me",
-// active-filter chips, URL sync, calendar links)
+// quick chips (Today/Weekend/Clear), active-filter chips,
+// URL sync, calendar links, mobile sheet, geolocation w/ IP fallback)
 // ---------------------------------------------------------
 
 import './styles/main.scss';
@@ -286,10 +287,70 @@ function setupCityTypeahead(inputEl) {
 }
 
 /* =========================================================
-   Active filter chips toolbar + Near Me
+   Quick chips (Today / Weekend / Clear) + Active chips + Near Me
    ========================================================= */
 
-// Reverse geocode lat/lon -> city label (best effort)
+// --- Quick chips (Today / Weekend / Clear) ---
+function pad2(n){ return String(n).padStart(2,'0'); }
+function toLocalISO(d){
+  const y = d.getFullYear(), m = pad2(d.getMonth()+1), day = pad2(d.getDate());
+  return `${y}-${m}-${day}`;
+}
+function setTodayRange() {
+  const today = new Date();
+  const iso = toLocalISO(today);
+  currentFilters.dateFrom = iso;
+  currentFilters.dateTo   = iso;
+}
+function setWeekendRange() {
+  const now = new Date();              // 0=Ne ... 6=So
+  const day = now.getDay();
+  const diffToSat = (6 - day + 7) % 7; // nejbližší sobota
+  const sat = new Date(now); sat.setDate(now.getDate() + diffToSat);
+  const sun = new Date(sat); sun.setDate(sat.getDate() + 1);
+  currentFilters.dateFrom = toLocalISO(sat);
+  currentFilters.dateTo   = toLocalISO(sun);
+}
+function applyDatesToInputs(){
+  const $from = qs('#filter-date-from') || qs('#events-date-from');
+  const $to   = qs('#filter-date-to')   || qs('#events-date-to');
+  if ($from) $from.value = currentFilters.dateFrom || '';
+  if ($to)   $to.value   = currentFilters.dateTo   || '';
+}
+function setupQuickChips(formEl){
+  const chipToday = document.getElementById('chipToday');
+  const chipWknd  = document.getElementById('chipWeekend');
+  const chipClear = document.getElementById('chipClear');
+  const resetBtn  = formEl?.querySelector('.filter-actions button[type="reset"]');
+
+  // pokud existuje „pravé“ reset tlačítko, chip „Vymazat“ odstraníme (zůstane jen jedno)
+  if (chipClear && resetBtn) chipClear.remove();
+
+  chipToday?.addEventListener('click', async () => {
+    setTodayRange();
+    applyDatesToInputs();
+    await renderAndSync();
+  });
+
+  chipWknd?.addEventListener('click', async () => {
+    setWeekendRange();
+    applyDatesToInputs();
+    await renderAndSync();
+  });
+
+  // pokud chip „Vymazat“ existuje, proveď plný reset (pro stránky bez tlačítka reset)
+  chipClear?.addEventListener('click', async () => {
+    const cc = currentFilters.countryCode;
+    currentFilters = {
+      category:'all', sort:'nearest', city:'', dateFrom:'', dateTo:'',
+      keyword:'', countryCode: cc, nearMeLat: null, nearMeLon: null, nearMeRadiusKm: 50
+    };
+    setFilterInputsFromState();
+    await renderAndSync();
+  });
+}
+
+// --- Reverse geocode lat/lon -> city label (best effort) ---
 async function reverseGeocode(lat, lon) {
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?${new URLSearchParams({
@@ -303,14 +364,12 @@ async function reverseGeocode(lat, lon) {
     if (!r.ok) return null;
     const j = await r.json();
     const a = j.address || {};
-    // prefer city/town/village
     return a.city || a.town || a.village || a.municipality || a.county || null;
   } catch { return null; }
 }
 
-// Geolocation (HTML5) with IP fallback
+// --- Geolocation (HTML5) with IP fallback ---
 async function getPositionWithFallback() {
-  // 1) native geolocation
   try {
     const pos = await new Promise((res, rej) => {
       if (!navigator.geolocation) return rej(new Error('UNSUPPORTED'));
@@ -324,11 +383,8 @@ async function getPositionWithFallback() {
       }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
     });
     return { lat: pos.coords.latitude, lon: pos.coords.longitude, source: 'browser' };
-  } catch (e) {
-    // continue
-  }
+  } catch (e) { /* continue with IP */ }
 
-  // 2) IP fallback (ipapi.co)
   try {
     const r = await fetchWithTimeout('https://ipapi.co/json/', { timeout: 7000 });
     if (r.ok) {
@@ -343,14 +399,13 @@ async function getPositionWithFallback() {
   throw new Error('POSITION_UNAVAILABLE');
 }
 
-// robustní handler pro geolokaci – sdílený chip/ghost tlačítky
+// --- robustní handler pro geolokaci – sdílený chip/ghost tlačítky ---
 async function handleNearMeClick(btn) {
   const allBtns = [qs('#chipNearMe'), qs('#filter-nearme')].filter(Boolean);
 
   try {
     allBtns.forEach(b => { b.disabled = true; b.textContent = t('filters.finding', 'Zjišťuji polohu…'); });
 
-    // rychlá kontrola permisse (pokud k dispozici)
     try {
       if (navigator.permissions?.query) {
         const status = await navigator.permissions.query({ name: 'geolocation' });
@@ -366,18 +421,17 @@ async function handleNearMeClick(btn) {
     currentFilters.nearMeLon = Number(lon);
     currentFilters.nearMeRadiusKm = 50;
 
-    // vizuální vyplnění "Město" (nezmění logiku filtru – currentFilters.city necháme prázdné)
+    // vizuální vyplnění "Město" (nezapisujeme do currentFilters.city)
     const cityInput = qs('#filter-city') || qs('#events-city-filter');
     if (cityInput) {
       const label = (await reverseGeocode(lat, lon)) || '';
       if (label) {
         cityInput.value = `${label} (okolí)`;
-        cityInput.dataset.autofromnearme = '1'; // jen pro info
+        cityInput.dataset.autofromnearme = '1';
       }
     }
 
-    // město rušíme, priorita je nearMe
-    currentFilters.city = '';
+    currentFilters.city = ''; // priorita je nearMe
     setFilterInputsFromState();
     await renderAndSync();
   } catch (e) {
@@ -396,7 +450,7 @@ async function handleNearMeClick(btn) {
 }
 
 function renderFilterChips() {
-  // lišta s aktivními chipy – oddělená od rychlých chipů, ať nic „nemizí“
+  // lišta s aktivními chipy – oddělená od rychlých chipů
   let host = qs('.chips-active');
   if (!host) {
     host = document.createElement('div');
@@ -682,6 +736,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // City typeahead – aktivace
     if ($city) setupCityTypeahead($city);
+
+    // Quick chips (Today / Weekend / Clear)
+    setupQuickChips($form || qs('.events-filters'));
 
     // Near Me – chip/ghost
     attachNearMeButton($form || qs('.events-filters'));

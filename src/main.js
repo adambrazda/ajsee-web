@@ -121,6 +121,36 @@ function t(key, fallback) {
   return fallback;
 }
 
+/** Set texts/labels/placeholders for filter UI that don't have data-i18n-* attributes */
+function setBtnLabel(el, text) {
+  if (!el) return;
+  const lbl = el.querySelector('[data-i18n-label], .label, .btn-label');
+  if (lbl) lbl.textContent = text;
+  else el.textContent = text;
+}
+function updateFilterLocaleTexts() {
+  // Quick chips
+  setBtnLabel(qs('#chipToday'),   t('filters.today',   'Dnes'));
+  setBtnLabel(qs('#chipWeekend'), t('filters.weekend', 'Tento víkend'));
+  // Near Me – both chip and fallback ghost button
+  setBtnLabel(qs('#chipNearMe'),    t('filters.nearMe', 'V mém okolí'));
+  setBtnLabel(qs('#filter-nearme'), t('filters.nearMe', 'V mém okolí'));
+
+  // Placeholders
+  const cityInput = qs('#filter-city') || qs('#events-city-filter');
+  if (cityInput) cityInput.placeholder = t('filters.cityPlaceholder', 'Praha, Brno...');
+
+  const kwInput = qs('#filter-keyword');
+  if (kwInput) kwInput.placeholder = t('filters.keywordPlaceholder', 'Umělec, místo, akce...');
+
+  // Action buttons (if nejsou označeny data-i18n-key)
+  const applyBtn = qs('#events-apply-filters') || qs('.filter-actions .btn.btn-primary');
+  if (applyBtn) setBtnLabel(applyBtn, t('filters.apply', 'Použít filtry'));
+
+  const resetBtn = qs('#events-clear-filters') || qs('.filter-actions button[type="reset"]');
+  if (resetBtn) setBtnLabel(resetBtn, t('filters.reset', 'Vymazat'));
+}
+
 async function applyTranslations(lang) {
   const translations = await loadTranslations(lang);
   window.translations = translations;
@@ -144,6 +174,9 @@ async function applyTranslations(lang) {
       el.setAttribute('placeholder', fixNonBreakingShortWords(String(value), lang));
     }
   });
+
+  // doplň chybějící texty/placeholdery
+  updateFilterLocaleTexts();
 }
 
 // ------- Nav -------
@@ -634,7 +667,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentFilters.countryCode = (ccCookie || langToCountry[currentLang] || 'CZ').toUpperCase();
 
   updateMenuLinksWithLang(currentLang);
-  await applyTranslations(currentLang);
+  await applyTranslations(currentLang); // zároveň doplní quick chips a placeholdery
   activateNavLink();
 
   // Jazykové přepínače

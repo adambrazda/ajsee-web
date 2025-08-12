@@ -8,6 +8,8 @@ import './styles/main.scss';
 import { getAllEvents } from './api/eventsApi.js';
 
 // ------- Global state -------
+const NEARME_RADIUS_DEFAULT = 50;
+
 let currentFilters = {
   category: 'all',
   sort: 'nearest',
@@ -18,7 +20,7 @@ let currentFilters = {
   countryCode: 'CZ',
   nearMeLat: null,
   nearMeLon: null,
-  nearMeRadiusKm: 50
+  nearMeRadiusKm: NEARME_RADIUS_DEFAULT
 };
 let currentLang = 'cs';
 
@@ -77,13 +79,20 @@ function syncURLFromFilters() {
   (currentFilters.category && currentFilters.category !== 'all' ? p.set('segment', currentFilters.category) : p.delete('segment'));
   (currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q'));
   (currentFilters.sort && currentFilters.sort !== 'nearest' ? p.set('sort', currentFilters.sort) : p.delete('sort'));
+  // pro soukromí lat/lon do URL nedáváme
   history.replaceState(null, '', u.toString());
 }
 
 // ------- i18n -------
 async function loadTranslations(lang) {
-  const resp = await fetch(`/locales/${lang}.json`);
-  return await resp.json();
+  try {
+    const resp = await fetch(`/locales/${lang}.json`, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('i18n load failed');
+    return await resp.json();
+  } catch {
+    // graceful fallback
+    return {};
+  }
 }
 function getByPath(obj, path) {
   if (!obj || !path) return undefined;
@@ -283,58 +292,115 @@ function setupCityTypeahead(inputEl) {
    Active filter chips toolbar + Near Me
    ========================================================= */
 
-// robustní handler pro geolokaci – sdílený chip/ghost tlačítky
-async function handleNearMeClick(btn) {
-  const allBtns = [qs('#chipNearMe'), qs('#filter-nearme')].filter(Boolean);
-
+// --- robustní získání polohy: geolokace (hi -> coarse) + IP fallback ---
+async function getBrowserLocation() {
+  // 1) vysoká přesnost
   try {
-    allBtns.forEach(b => { b.disabled = true; b.textContent = t('filters.finding', 'Zjišťuji polohu…'); });
+    const pos = await new Promise((res, rej) => {
+      if (!navigator.geolocation) return rej(new Error('UNSUPPORTED'));
+      navigator.geolocation.getCurrentPosition(
+        res,
+        (err) => rej(err || new Error('GEO_ERROR')),
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+      );
+    });
+    return { lat: pos.coords.latitude, lon: pos.coords.longitude, source: 'geo-hi' };
+  } catch (e1) {
+    // když je explicitně zamítnuto, další pokusy nemají smysl
+    if (e1 && Number(e1.code) === 1) throw new Error('PERMISSION_DENIED');
+    // 2) hrubší přesnost (rychlejší)
+    const pos2 = await new Promise((res, rej) => {
+      if (!navigator.geolocation) return rej(new Error('UNSUPPORTED'));
+      navigator.geolocation.getCurrentPosition(
+        res,
+        (err) => rej(err || new Error('GEO_ERROR')),
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 }
+      );
+    });
+    return { lat: pos2.coords.latitude, lon: pos2.coords.longitude, source: 'geo-coarse' };
+  }
+}
 
-    // (volitelné) Máme povolení?
+async function getApproxLocationFromIP() {
+  // 1) ipapi.co
+  try {
+    const r = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+    if (r.ok) {
+      const j = await r.json();
+      if (j && j.latitude && j.longitude) {
+        return { lat: Number(j.latitude), lon: Number(j.longitude), source: 'ipapi' };
+      }
+    }
+  } catch (_) {}
+  // 2) ipwho.is
+  try {
+    const r2 = await fetch('https://ipwho.is/', { cache: 'no-store' });
+    if (r2.ok) {
+      const j2 = await r2.json();
+      if (j2 && j2.success && j2.latitude && j2.longitude) {
+        return { lat: Number(j2.latitude), lon: Number(j2.longitude), source: 'ipwho' };
+      }
+    }
+  } catch (_) {}
+  throw new Error('IP_FALLBACK_FAILED');
+}
+
+// společný handler pro chip/ghost tlačítka Near-me
+async function handleNearMeClick() {
+  const allBtns = [qs('#chipNearMe'), qs('#filter-nearme')].filter(Boolean);
+  const setBusy = (busy) => {
+    allBtns.forEach(b => {
+      if (!b) return;
+      b.disabled = !!busy;
+      b.textContent = busy ? t('filters.finding','Zjišťuji polohu…') : t('filters.nearMe','V mém okolí');
+    });
+  };
+
+  setBusy(true);
+  try {
+    // (volitelné) nahlédni na povolení – pro okamžitou hlášku
     try {
       if (navigator.permissions?.query) {
         const status = await navigator.permissions.query({ name: 'geolocation' });
-        if (status.state === 'denied') {
-          throw new Error('PERMISSION_DENIED');
-        }
+        if (status.state === 'denied') throw new Error('PERMISSION_DENIED');
       }
     } catch { /* ignore */ }
 
-    const pos = await new Promise((res, rej) => {
-      if (!navigator.geolocation) return rej(new Error('UNSUPPORTED'));
-      navigator.geolocation.getCurrentPosition(res, (err) => {
-        // normalizuj error kódy
-        if (err && typeof err.code === 'number') {
-          if (err.code === 1) rej(new Error('PERMISSION_DENIED'));
-          else if (err.code === 2) rej(new Error('POSITION_UNAVAILABLE'));
-          else if (err.code === 3) rej(new Error('TIMEOUT'));
-          else rej(err);
-        } else rej(err || new Error('GEO_ERROR'));
-      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
-    });
+    // 1) geolokace (2 pokusy)
+    let loc;
+    try {
+      loc = await getBrowserLocation();
+    } catch (e) {
+      if (String(e.message).includes('PERMISSION_DENIED')) {
+        throw new Error('PERMISSION_DENIED');
+      }
+      // 2) Fallback podle IP
+      loc = await getApproxLocationFromIP();
+      console.info('[NearMe] Using IP fallback:', loc);
+    }
 
-    currentFilters.nearMeLat = pos.coords.latitude;
-    currentFilters.nearMeLon = pos.coords.longitude;
-    currentFilters.nearMeRadiusKm = 50;
-    currentFilters.city = ''; // clear město
+    currentFilters.nearMeLat = loc.lat;
+    currentFilters.nearMeLon = loc.lon;
+    currentFilters.nearMeRadiusKm = NEARME_RADIUS_DEFAULT;
+    currentFilters.city = ''; // ruší konkrétní město
     setFilterInputsFromState();
     await renderAndSync();
   } catch (e) {
     console.warn('Geo failed:', e);
     let msg = t('filters.geoError', 'Poloha není dostupná. Zkuste to znovu.');
-    if (String(e?.message).includes('PERMISSION_DENIED')) {
+    if (String(e.message).includes('PERMISSION_DENIED')) {
       msg = t('filters.geoDenied', 'Přístup k poloze je zamítnut. Povolení můžete změnit v nastavení prohlížeče.');
-    } else if (String(e?.message).includes('TIMEOUT')) {
+    } else if (String(e.message).includes('TIMEOUT')) {
       msg = t('filters.geoTimeout', 'Získání polohy trvalo příliš dlouho. Zkuste to prosím znovu.');
     }
     alert(msg);
   } finally {
-    allBtns.forEach(b => { b.disabled = false; b.textContent = t('filters.nearMe', 'V mém okolí'); });
+    setBusy(false);
   }
 }
 
 function renderFilterChips() {
-  // !!! NEMAZAT toolbar s rychlými chipy – vytvoř si vlastní lištu
+  // Sekce pro aktivní chipy (nezaměňovat s toolbar „Dnes/Víkend/Vymazat“)
   let host = qs('.chips-active');
   if (!host) {
     host = document.createElement('div');
@@ -414,7 +480,7 @@ function renderFilterChips() {
 function attachNearMeButton(formEl) {
   if (!formEl) return;
 
-  const chipNear = qs('#chipNearMe', formEl) || qs('#chipNearMe'); // primární místo
+  const chipNear = qs('#chipNearMe', formEl) || qs('#chipNearMe'); // primární (toolbar)
   const actions = qs('.filter-actions', formEl) || (() => {
     const div = document.createElement('div');
     div.className = 'filter-actions';
@@ -422,25 +488,26 @@ function attachNearMeButton(formEl) {
     return div;
   })();
 
-  // pokud máme chip v toolbaru, ghost tlačítko v akcích odstraníme (kdyby bylo ze starší verze)
+  // Pokud existuje chip v toolbaru, žádné ghost tlačítko v akcích
   const oldGhost = qs('#filter-nearme', actions);
   if (chipNear && oldGhost) oldGhost.remove();
 
   if (chipNear) {
-    chipNear.removeEventListener('click', chipNear.__handler || (() => {}));
-    chipNear.__handler = () => handleNearMeClick(chipNear);
+    // zajisti jediný handler
+    if (chipNear.__handler) chipNear.removeEventListener('click', chipNear.__handler);
+    chipNear.__handler = () => handleNearMeClick();
     chipNear.addEventListener('click', chipNear.__handler);
-    return; // ghost nevytvářet
+    return;
   }
 
-  // fallback – chip není v DOM → vlož ghost tlačítko do actions
+  // Fallback – chip není v DOM → vlož ghost tlačítko do actions
   if (!qs('#filter-nearme', actions)) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.id = 'filter-nearme';
     btn.className = 'btn btn-ghost';
     btn.textContent = t('filters.nearMe', 'V mém okolí');
-    btn.addEventListener('click', () => handleNearMeClick(btn));
+    btn.addEventListener('click', () => handleNearMeClick());
     actions.prepend(btn);
   }
 }
@@ -620,7 +687,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // City typeahead – aktivace
     if ($city) setupCityTypeahead($city);
 
-    // Near Me – chip/ghost
+    // Near Me – chip/ghost (žádné duplicity)
     attachNearMeButton($form || qs('.events-filters'));
 
     await renderAndSync();
@@ -658,7 +725,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       $form.addEventListener('reset', async () => {
         const cc = currentFilters.countryCode;
-        currentFilters = { category: 'all', sort: 'nearest', city: '', dateFrom: '', dateTo: '', keyword: '', countryCode: cc, nearMeLat: null, nearMeLon: null, nearMeRadiusKm: 50 };
+        currentFilters = {
+          category: 'all', sort: 'nearest', city: '',
+          dateFrom: '', dateTo: '', keyword: '',
+          countryCode: cc, nearMeLat: null, nearMeLon: null, nearMeRadiusKm: NEARME_RADIUS_DEFAULT
+        };
         setFilterInputsFromState();
         await renderAndSync();
       });

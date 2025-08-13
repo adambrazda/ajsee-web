@@ -136,14 +136,16 @@ function updateFilterLocaleTexts() {
   setBtnLabel(qs('#chipNearMe'),    t('filters.nearMe', 'V mém okolí'));
   setBtnLabel(qs('#filter-nearme'), t('filters.nearMe', 'V mém okolí'));
 
-  // Placeholders
+  // Placeholders (fallback na starší klíče)
   const cityInput = qs('#filter-city') || qs('#events-city-filter');
-  if (cityInput) cityInput.placeholder = t('filters.cityPlaceholder', 'Praha, Brno...');
+  const cityPh = t('filters.cityPlaceholder') ?? t('filters.searchCityPlaceholder') ?? 'Praha, Brno...';
+  if (cityInput) cityInput.placeholder = cityPh;
 
   const kwInput = qs('#filter-keyword');
-  if (kwInput) kwInput.placeholder = t('filters.keywordPlaceholder', 'Umělec, místo, akce...');
+  const kwPh = t('filters.keywordPlaceholder') ?? t('filters.searchPlaceholder') ?? 'Umělec, místo, akce...';
+  if (kwInput) kwInput.placeholder = kwPh;
 
-  // Action buttons (if nejsou označeny data-i18n-key)
+  // Action buttons (pokud nejsou označeny data-i18n-key)
   const applyBtn = qs('#events-apply-filters') || qs('.filter-actions .btn.btn-primary');
   if (applyBtn) setBtnLabel(applyBtn, t('filters.apply', 'Použít filtry'));
 
@@ -215,14 +217,23 @@ function updateMenuLinksWithLang(lang) {
    (Proxy endpoint: /.netlify/functions/ticketmasterCitySuggest)
    ========================================================= */
 const citySuggestCache = new Map();
+// jednotný multistátní scope pro střední Evropu (nezávislý na jazyku UI)
+const CITY_SUGGEST_SCOPE = ['CZ','SK','PL','HU','DE','AT'];
 
-async function suggestCities({ locale = 'cs', countryCode = 'CZ', keyword = '', size = 50 } = {}) {
+async function suggestCities({
+  locale = 'cs',
+  countryCodes = CITY_SUGGEST_SCOPE,
+  keyword = '',
+  size = 50
+} = {}) {
   const q = keyword.trim();
   if (q.length < 2) return [];
-  const cacheKey = `${locale}|${countryCode}|${q.toLowerCase()}|${size}`;
+  const cacheKey = `${locale}|${countryCodes.join(',')}|${q.toLowerCase()}|${size}`;
   if (citySuggestCache.has(cacheKey)) return citySuggestCache.get(cacheKey);
 
-  const qsParams = new URLSearchParams({ locale, countryCode, keyword: q, size: String(size) });
+  const qsParams = new URLSearchParams({ locale, keyword: q, size: String(size) });
+  qsParams.set('countryCode', countryCodes.join(','));
+
   try {
     const r = await fetch(`/.netlify/functions/ticketmasterCitySuggest?${qsParams.toString()}`);
     if (!r.ok) {
@@ -230,7 +241,6 @@ async function suggestCities({ locale = 'cs', countryCode = 'CZ', keyword = '', 
       return [];
     }
     const data = await r.json();
-
     const out = (Array.isArray(data.cities) ? data.cities : []).map((c) => ({
       city: c.label || c.name || c.value || '',
       countryCode: c.countryCode || c.country || '',
@@ -308,8 +318,14 @@ function setupCityTypeahead(inputEl) {
     const q = inputEl.value.trim();
     currentFilters.city = q;
     if (q.length < 2) { close(); return; }
-    const cc = (currentFilters.countryCode || 'CZ').toUpperCase();
-    items = await suggestCities({ locale: currentLang, countryCode: cc, keyword: q, size: 80 });
+
+    // ⬇️ nezávislé na jazyku – hledáme v CEE scopu
+    items = await suggestCities({
+      locale: currentLang,
+      countryCodes: CITY_SUGGEST_SCOPE,
+      keyword: q,
+      size: 80
+    });
     activeIndex = -1; render(); open();
   }, 180);
 
@@ -822,7 +838,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Events page (div + vlastní Apply button)
     if ($applyBtnOnEventsPage) {
       $applyBtnOnEventsPage.addEventListener('click', async () => {
-        if ($from?.value && $to?.value && new Date($from.value) > new Date($to.value)) {
+        if ($from?.value && $to?.value && new Date($from.value) > new Date($to?.value)) {
           [$from, $to].forEach((input) => input?.classList.add('input-error'));
           return;
         }
@@ -1025,7 +1041,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   } catch (e) {
     console.error(e);
     const msg = t('events-load-error', 'Události nelze načíst. Zkuste to později.');
-    if (eventsList) eventsList.innerHTML = `<p>${msg}</p>`;
+    const list = document.getElementById('eventsList');
+    if (list) list.innerHTML = `<p>${msg}</p>`;
   }
 }
 

@@ -4,8 +4,9 @@
 // UX vyladění (H5d):
 // - diakriticky nezávislé zvýraznění shody (<mark>)
 // - ARIA: role=listbox/option, aria-activedescendant, aria-live polite
-// - klávesy: ↑/↓, Enter, Escape, Home/End, myš, focus reopen
+// - klávesy: ↑/↓, Home/End, Enter, Escape; myš/dotyk (pointerdown)
 // - loader stav, "no results", minimální flicker
+// - lokalizované fallbacky (když chybí překlady v JSON)
 // ---------------------------------------------------------
 
 import { suggestCities } from './suggestClient.js';
@@ -33,6 +34,46 @@ function highlight(label, query) {
   return `${start}<mark>${mid}</mark>${end}`;
 }
 
+/** jazykové fallbacky, když t(key) není k dispozici */
+function defaultText(key, lang = 'en', n = 0) {
+  const L = (lang || 'en').toLowerCase();
+  const pluralFew = (x) =>
+    (x % 10 >= 2 && x % 10 <= 4) && !(x % 100 >= 12 && x % 100 <= 14);
+
+  if (key === 'loading') {
+    switch (L) {
+      case 'cs': return 'Načítám…';
+      case 'sk': return 'Načítavam…';
+      case 'pl': return 'Wczytywanie…';
+      case 'hu': return 'Betöltés…';
+      case 'de': return 'Lade…';
+      default:   return 'Loading…';
+    }
+  }
+  if (key === 'noResults') {
+    switch (L) {
+      case 'cs': return 'Žádné výsledky';
+      case 'sk': return 'Žiadne výsledky';
+      case 'pl': return 'Brak wyników';
+      case 'hu': return 'Nincs találat';
+      case 'de': return 'Keine Treffer';
+      default:   return 'No results';
+    }
+  }
+  if (key === 'resultsCount') {
+    const nn = Number(n) || 0;
+    switch (L) {
+      case 'cs': return nn === 1 ? '1 výsledek' : pluralFew(nn) ? `${nn} výsledky` : `${nn} výsledků`;
+      case 'sk': return nn === 1 ? '1 výsledok' : pluralFew(nn) ? `${nn} výsledky` : `${nn} výsledkov`;
+      case 'pl': return nn === 1 ? '1 wynik'    : pluralFew(nn) ? `${nn} wyniki`   : `${nn} wyników`;
+      case 'hu': return nn === 1 ? '1 találat'  : `${nn} találat`;
+      case 'de': return nn === 1 ? '1 Ergebnis' : `${nn} Ergebnisse`;
+      default:   return nn === 1 ? '1 result'   : `${nn} results`;
+    }
+  }
+  return '';
+}
+
 /**
  * @param {HTMLInputElement} inputEl
  * @param {{
@@ -49,7 +90,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
 
   const {
     locale = 'cs',
-    t = (k, f) => f || k,
+    t = (k, f) => (typeof window !== 'undefined' && window.translations && k in window.translations ? window.translations[k] : f),
     countryCodes = ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'],
     minChars = 2,
     debounceMs = 160,
@@ -104,16 +145,18 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   const choose = (idx) => {
     const it = items[idx]; if (!it) return;
     onChoose(it);
+    // vyvoláme change pro případné posluchače
+    inputEl.dispatchEvent(new Event('change', { bubbles: true }));
     close();
   };
 
   const render = () => {
     if (loading) {
-      panel.innerHTML = `<div class="typeahead-loading">${t('filters.loading','Načítám…')}</div>`;
+      panel.innerHTML = `<div class="typeahead-loading">${t('filters.loading', defaultText('loading', locale))}</div>`;
       return;
     }
     if (!items.length) {
-      panel.innerHTML = `<div class="typeahead-empty">${t('filters.noResults','Žádné výsledky')}</div>`;
+      panel.innerHTML = `<div class="typeahead-empty">${t('filters.noResults', defaultText('noResults', locale))}</div>`;
       return;
     }
 
@@ -130,17 +173,20 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         </div>
       `;
     }).join('');
+
+    // oznam jen do live-region (ne do UI), ať nezavazíme v panelu
+    announce(defaultText('resultsCount', locale, items.length));
   };
 
-  // klik myší
-  panel.addEventListener('mousedown', (e) => {
+  // výběr – pointerdown je spolehlivý i na mobilech
+  panel.addEventListener('pointerdown', (e) => {
     const el = e.target.closest('.typeahead-item');
     if (!el) return;
-    e.preventDefault(); // nepropadne blur na inputu
+    e.preventDefault(); // nevyvolá blur na inputu → neshodí panel dřív, než vybereme
     choose(parseInt(el.dataset.index, 10));
   });
 
-  // hover = aktivní
+  // hover = aktivní (myš)
   panel.addEventListener('mousemove', (e) => {
     const el = e.target.closest('.typeahead-item');
     if (!el) return;
@@ -148,8 +194,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (Number.isFinite(idx) && idx !== activeIndex) setActive(idx);
   });
 
-  // click mimo → zavřít
-  document.addEventListener('click', (e) => {
+  // klik/pointer mimo panel → zavřít
+  document.addEventListener('pointerdown', (e) => {
     if (!panel.contains(e.target) && e.target !== inputEl) close();
   });
 
@@ -210,18 +256,12 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       items = list;
       loading = false;
       render();
-      announce(
-        items.length
-          ? t('filters.resultsCount', `${items.length} výsledků`).replace('%COUNT%', String(items.length))
-          : t('filters.noResults','Žádné výsledky')
-      );
-      // auto-aktivovat 1. položku (lepší Enter UX)
+      // Aktivuj první položku kvůli Enter UX
       if (items.length) setActive(0);
     } catch {
       items = [];
       loading = false;
       render();
-      announce(t('filters.noResults','Žádné výsledky'));
     }
   }
 

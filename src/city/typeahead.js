@@ -1,139 +1,154 @@
 // src/city/typeahead.js
 // ---------------------------------------------------------
-// City typeahead (frontend UI binder)
-// - volá suggestCities() (s CSV country-scope podporou)
-// - zvýrazňuje shodu (diakritika-insensitive)
-// - řeší race conditions (poslední dotaz vyhrává)
-// - přístupnost: role="listbox"/"option", Enter/Arrows/Escape
-//
-// Závislosti:
-//   - src/city/suggestClient.js (suggestCities, CITY_SUGGEST_SCOPE)
-//   - t() předává volající přes options (fallbacky zajištěny)
+// City Typeahead UI – používá suggestCities() a canonical mapování.
+// UX vyladění (H5d):
+// - diakriticky nezávislé zvýraznění shody (<mark>)
+// - ARIA: role=listbox/option, aria-activedescendant, aria-live polite
+// - klávesy: ↑/↓, Enter, Escape, Home/End, myš, focus reopen
+// - loader stav, "no results", minimální flicker
 // ---------------------------------------------------------
 
-import { suggestCities, CITY_SUGGEST_SCOPE } from './suggestClient.js';
+import { suggestCities } from './suggestClient.js';
 
-// --- utils: normalize & escape ---
-function normalizeNoDia(s = '') {
-  return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-}
-function escapeHtml(s = '') {
-  return String(s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-// najdi rozsah shody (bez diakritiky) v původním labelu → [start,end)
-function findNormalizedRange(label = '', query = '') {
-  const ln = normalizeNoDia(label);
-  const qn = normalizeNoDia(query);
-  const pos = ln.indexOf(qn);
-  if (pos < 0) return null;
-
-  // mapování indexů z normalizovaného řetězce zpět na původní
-  const map = [];
-  for (let i = 0; i < label.length; i++) {
-    const c = label[i];
-    const cn = normalizeNoDia(c);
-    if (cn.length > 0) {
-      // většinou 1:1, pro jistotu push pro každý "norm" znak
-      for (let k = 0; k < cn.length; k++) map.push(i);
-    }
-  }
-  const start = map[pos] ?? 0;
-  const end = (map[pos + qn.length - 1] ?? (label.length - 1)) + 1;
-  return { start, end };
-}
-function highlightLabel(label = '', query = '') {
-  if (!query) return escapeHtml(label);
-  const r = findNormalizedRange(label, query);
-  if (!r) return escapeHtml(label);
-  return (
-    escapeHtml(label.slice(0, r.start)) +
-    '<mark>' + escapeHtml(label.slice(r.start, r.end)) + '</mark>' +
-    escapeHtml(label.slice(r.end))
-  );
+/** diakriticky nezávislá normalizace (pro vyhledání shody) */
+function norm(s) {
+  return (s || '')
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
 }
 
-// ---------------------------------------------------------
-// Public API
-// ---------------------------------------------------------
+/** zvýrazní první výskyt dotazu (bez diakritiky), zachová původní label */
+function highlight(label, query) {
+  if (!label || !query) return label;
+  const nl = norm(label);
+  const nq = norm(query);
+  const i = nl.indexOf(nq);
+  if (i < 0) return label;
+  const start = Array.from(label).slice(0, i).join('');
+  const mid   = Array.from(label).slice(i, i + nq.length).join('');
+  const end   = Array.from(label).slice(i + nq.length).join('');
+  return `${start}<mark>${mid}</mark>${end}`;
+}
+
 /**
- * Připojí k <input> městský typeahead.
  * @param {HTMLInputElement} inputEl
- * @param {Object} options
- * @param {string} options.locale - UI jazyk (ovlivní popisky)
- * @param {Function} options.t - překladová funkce (key, fallback) => string
- * @param {string[]|string} [options.countryCodes=CITY_SUGGEST_SCOPE] - CSV/pole kódů zemí
- * @param {number} [options.minChars=2]
- * @param {Function} [options.onChoose] - callback při výběru {city,countryCode,lat,lon}
+ * @param {{
+ *   locale?: string,
+ *   t?: (key:string, fallback?:string)=>string,
+ *   countryCodes?: string[]|string,
+ *   minChars?: number,
+ *   debounceMs?: number,
+ *   onChoose?: (item:{city:string,countryCode?:string,lat?:number,lon?:number,score?:number})=>void
+ * }} opts
  */
-export function setupCityTypeahead(inputEl, {
-  locale = 'cs',
-  t = (k, f) => f ?? k,
-  countryCodes = CITY_SUGGEST_SCOPE,
-  minChars = 2,
-  onChoose = () => {}
-} = {}) {
+export function setupCityTypeahead(inputEl, opts = {}) {
   if (!inputEl) return;
 
-  // panel
+  const {
+    locale = 'cs',
+    t = (k, f) => f || k,
+    countryCodes = ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'],
+    minChars = 2,
+    debounceMs = 160,
+    onChoose = (it) => { inputEl.value = it?.city || ''; }
+  } = opts;
+
+  // Panel + ARIA napojení
   const panel = document.createElement('div');
   panel.className = 'typeahead-panel';
   panel.setAttribute('role', 'listbox');
   panel.style.display = 'none';
-  inputEl.parentElement.appendChild(panel);
+  const panelId = `${inputEl.id || 'city-input'}-listbox`;
+  panel.id = panelId;
+  inputEl.setAttribute('aria-controls', panelId);
+  inputEl.setAttribute('aria-expanded', 'false');
+  inputEl.setAttribute('autocomplete', 'off');
 
-  // stav
+  // live region (oznámení počtu výsledků)
+  const live = document.createElement('div');
+  live.className = 'sr-only';
+  live.setAttribute('aria-live', 'polite');
+  live.setAttribute('aria-atomic', 'true');
+
+  const host = inputEl.parentElement || inputEl.closest('.input') || inputEl;
+  host.appendChild(panel);
+  host.appendChild(live);
+
   let items = [];
   let activeIndex = -1;
-  let lastToken = 0; // prevence race conditions
+  let loading = false;
+  let lastQuery = '';
 
-  const labels = {
-    searching: t('filters.finding', 'Hledám…'),
-    noResults: t('filters.noResults', 'Žádné výsledky')
+  const open = () => { panel.style.display = 'block'; inputEl.setAttribute('aria-expanded', 'true'); };
+  const close = () => {
+    panel.style.display = 'none';
+    inputEl.setAttribute('aria-expanded', 'false');
+    inputEl.removeAttribute('aria-activedescendant');
+    activeIndex = -1;
   };
-
-  const open = () => { panel.style.display = 'block'; };
-  const close = () => { panel.style.display = 'none'; activeIndex = -1; };
   const isOpen = () => panel.style.display !== 'none';
 
-  function renderLoading() {
-    panel.innerHTML = `<div class="typeahead-loading">${escapeHtml(labels.searching)}</div>`;
-  }
-  function renderEmpty() {
-    panel.innerHTML = `<div class="typeahead-empty">${escapeHtml(labels.noResults)}</div>`;
-  }
-  function renderList(query) {
-    if (!items.length) { renderEmpty(); return; }
+  const announce = (msg) => { live.textContent = msg || ''; };
+
+  const setActive = (idx) => {
+    activeIndex = idx;
+    const activeEl = panel.querySelector(`[data-index="${idx}"]`);
+    if (activeEl) inputEl.setAttribute('aria-activedescendant', activeEl.id);
+    panel.querySelectorAll('.typeahead-item').forEach(el => el.classList.remove('active'));
+    if (activeEl) activeEl.classList.add('active');
+  };
+
+  const choose = (idx) => {
+    const it = items[idx]; if (!it) return;
+    onChoose(it);
+    close();
+  };
+
+  const render = () => {
+    if (loading) {
+      panel.innerHTML = `<div class="typeahead-loading">${t('filters.loading','Načítám…')}</div>`;
+      return;
+    }
+    if (!items.length) {
+      panel.innerHTML = `<div class="typeahead-empty">${t('filters.noResults','Žádné výsledky')}</div>`;
+      return;
+    }
+
     panel.innerHTML = items.map((it, i) => {
-      const meta = [it.countryCode].filter(Boolean).join(', ');
-      const cls = i === activeIndex ? 'typeahead-item active' : 'typeahead-item';
+      const meta = [it.state, it.countryCode].filter(Boolean).join(', ');
+      const htmlLabel = highlight(it.city, lastQuery);
+      const id = `${panelId}-opt-${i}`;
       return `
-        <div class="${cls}" role="option" data-index="${i}">
-          <span class="ti-city">${highlightLabel(it.city, query)}</span>
-          <span class="ti-meta">${escapeHtml(meta)}</span>
+        <div id="${id}" class="typeahead-item ${i === activeIndex ? 'active' : ''}"
+             role="option" aria-selected="${i === activeIndex ? 'true':'false'}"
+             data-index="${i}">
+          <span class="ti-city">${htmlLabel}</span>
+          ${meta ? `<span class="ti-meta">${meta}</span>` : ''}
         </div>
       `;
     }).join('');
-  }
+  };
 
-  function choose(idx) {
-    const it = items[idx];
-    if (!it) return;
-    inputEl.value = it.city;
-    // vyvolej callback pro volající (může si vyčistit NearMe, nastavit filtry apod.)
-    try { onChoose(it); } catch {}
-    close();
-  }
-
-  // klik na item
+  // klik myší
   panel.addEventListener('mousedown', (e) => {
     const el = e.target.closest('.typeahead-item');
-    if (el) choose(parseInt(el.dataset.index, 10));
+    if (!el) return;
+    e.preventDefault(); // nepropadne blur na inputu
+    choose(parseInt(el.dataset.index, 10));
   });
-  // klik mimo
+
+  // hover = aktivní
+  panel.addEventListener('mousemove', (e) => {
+    const el = e.target.closest('.typeahead-item');
+    if (!el) return;
+    const idx = parseInt(el.dataset.index, 10);
+    if (Number.isFinite(idx) && idx !== activeIndex) setActive(idx);
+  });
+
+  // click mimo → zavřít
   document.addEventListener('click', (e) => {
     if (!panel.contains(e.target) && e.target !== inputEl) close();
   });
@@ -143,85 +158,81 @@ export function setupCityTypeahead(inputEl, {
     if (!isOpen()) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      activeIndex = Math.min(activeIndex + 1, Math.max(0, items.length - 1));
-      renderList(inputEl.value.trim());
+      setActive(Math.min(activeIndex + 1, items.length - 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      activeIndex = Math.max(activeIndex - 1, 0);
-      renderList(inputEl.value.trim());
+      setActive(Math.max(activeIndex - 1, 0));
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setActive(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      setActive(items.length - 1);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (activeIndex >= 0) choose(activeIndex);
-      else if (items.length > 0) choose(0); // implicitně první
-      else close();
+      if (activeIndex >= 0) choose(activeIndex); else close();
     } else if (e.key === 'Escape') {
       e.preventDefault();
       close();
     }
   });
 
-  // debounce
+  // debounce loader
   let timer = null;
-  function debounce(fn, wait = 180) {
-    return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), wait); };
+  const debouncedLoad = () => {
+    clearTimeout(timer);
+    timer = setTimeout(load, debounceMs);
+  };
+
+  async function load() {
+    const q = inputEl.value.trim();
+    lastQuery = q;
+
+    if (q.length < minChars) {
+      items = [];
+      announce('');
+      render();
+      close();
+      return;
+    }
+
+    loading = true;
+    render();
+    open();
+
+    try {
+      const list = await suggestCities({
+        locale,
+        keyword: q,
+        size: 80,
+        countryCodes
+      });
+      items = list;
+      loading = false;
+      render();
+      announce(
+        items.length
+          ? t('filters.resultsCount', `${items.length} výsledků`).replace('%COUNT%', String(items.length))
+          : t('filters.noResults','Žádné výsledky')
+      );
+      // auto-aktivovat 1. položku (lepší Enter UX)
+      if (items.length) setActive(0);
+    } catch {
+      items = [];
+      loading = false;
+      render();
+      announce(t('filters.noResults','Žádné výsledky'));
+    }
   }
 
-  // loader
-  const load = debounce(async () => {
-    const q = inputEl.value.trim();
-    if (q.length < minChars) { close(); return; }
+  // input změna
+  inputEl.addEventListener('input', debouncedLoad);
 
-    renderLoading(); open();
-
-    const myToken = ++lastToken;
-    let list = [];
-    try {
-      list = await suggestCities({ locale, keyword: q, size: 80, countryCodes });
-      // pokud mezitím přišel novější dotaz, ignoruj tento výsledek
-      if (myToken !== lastToken) return;
-    } catch {
-      // ignore
-    }
-
-    // Převod na UI strukturu (suggestClient už sloučil synonyma)
-    items = (list || []).map(c => ({
-      city: c.city || c.name || c.label || '',
-      countryCode: c.countryCode || '',
-      lat: c.lat, lon: c.lon, score: c.score
-    }));
-
-    activeIndex = -1;
-    renderList(q); open();
-  }, 180);
-
-  // vstup + focus
-  inputEl.addEventListener('input', () => {
-    // při psaní vždy resetuj výběr
-    activeIndex = -1;
-    load();
-  });
+  // fokus – když už jsou data, jen znovu otevři
   inputEl.addEventListener('focus', () => {
-    const q = inputEl.value.trim();
-    if (q.length >= minChars && items.length) { renderList(q); open(); }
-  });
-
-  // veřejná možnost zavřít panel (když se např. mění jazyk UI externě)
-  inputEl.addEventListener('blur', () => {
-    // necháme klik proběhnout (mousedown již vyřeší choose), drobná prodleva
-    setTimeout(() => { if (!panel.matches(':hover')) close(); }, 120);
-  });
-
-  // helper pro programové zavření
-  return {
-    close,
-    open: () => { renderList(inputEl.value.trim()); open(); },
-    destroy: () => {
-      close();
-      panel.remove();
-      inputEl.removeEventListener('keydown', () => {});
-      inputEl.removeEventListener('input', () => {});
-      inputEl.removeEventListener('focus', () => {});
-      inputEl.removeEventListener('blur', () => {});
+    if (inputEl.value.trim().length >= minChars && items.length) {
+      render();
+      open();
     }
-  };
+  });
 }

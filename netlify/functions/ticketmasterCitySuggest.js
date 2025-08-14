@@ -1,4 +1,19 @@
 // netlify/functions/ticketmasterCitySuggest.js
+// ---------------------------------------------------------
+// City suggest přes Ticketmaster Discovery API (venues + fallback events)
+// - sjednocení měst (Praha 1/2/… → Praha)
+// - aliasy (Praha/Prague/Prag/Praga… → jedna položka)
+// - jazykový label (Praha / Prague / Wien / Vídeň … podle UI jazyka)
+// - podpora countryCode i jako CSV (CZ,SK,PL,HU,DE,AT)
+// ---------------------------------------------------------
+
+import {
+  normalize as norm,
+  baseCityKey,
+  canonForInputCity,
+  labelForCanon
+} from '../../shared/city/canonical.js';
+
 export const handler = async (event) => {
   try {
     const API_KEY =
@@ -13,76 +28,33 @@ export const handler = async (event) => {
       return json(500, { error: 'Missing Ticketmaster API key' });
     }
 
-    // Bezpečné parsování query (funguje i v Lambda compat režimu)
+    // --- Bezpečné parsování query (funguje i v Lambda compat režimu) ---
     const url = new URL(
       event.rawUrl ||
       `http://local/?${new URLSearchParams(event.queryStringParameters || {}).toString()}`
     );
 
-    const qRaw = (url.searchParams.get('keyword') || '').trim();
-    const countryCodeRaw = (url.searchParams.get('countryCode') || '').toUpperCase();
-    const locale = url.searchParams.get('locale') || 'en';
+    const q = (url.searchParams.get('keyword') || '').trim();
+    const ccParam = (url.searchParams.get('countryCode') || '').trim();
+    const locale = (url.searchParams.get('locale') || 'en').slice(0, 2).toLowerCase();
     const size = Math.max(1, Math.min(50, parseInt(url.searchParams.get('size') || '10', 10)));
 
-    if (qRaw.length < 2) {
+    if (q.length < 2) {
       return json(200, { cities: [] });
     }
 
-    // ---------- Normalizace a pomocníci ----------
-    const stripDiacritics = (s) =>
-      (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    // --- Připrav CC seznam (CSV i single hodnotu) ---
+    // Prázdný seznam znamená "globální" dotaz (bez countryCode)
+    const ccList = ccParam
+      ? ccParam.split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
+      : [];
 
-    // Mapy synonym pro velká města (aby „praha / prague / prag / praga / prága“ splynulo)
-    const SYNS = {
-      prague: ['praha', 'prague', 'prag', 'praga', 'praga ', 'pr\xa1ga', 'praga', 'prága'],
-      vienna: ['wien', 'vienna', 'vieden', 'viedeň', 'vídeň'],
-      warsaw: ['warszawa', 'warsaw', 'warschau'],
-      budapest: ['budapest', 'budapešť', 'budapesti'],
-      munich: ['münchen', 'munchen', 'munich', 'mnichov'],
-      cologne: ['köln', 'koln', 'cologne', 'kolín nad rýnem'],
-      bratislava: ['bratislava', 'pozsony', 'pressburg'],
-    };
-    const synToKey = new Map(
-      Object.entries(SYNS).flatMap(([key, arr]) => arr.map(v => [stripDiacritics(v), key]))
-    );
-
-    // Odstranění obvodu: „Praha 5“, „Prague 7“, „Budapest I.“,
-    // „Warszawa-Śródmieście“, „Praha-Libuš“, apod.
-    const collapseToBaseCity = (name) => {
-      if (!name) return name;
-      let s = name.trim();
-
-      // Pokud je to tvar "Město - cokoliv" → nech "Město"
-      s = s.replace(/\s*[-–]\s*.+$/, '');
-
-      // "- část / okres" za čárkou necháme, ale pouze pokud nejde o statní zemi
-      // (většina TM měst nemá za čárkou nic – pro jistotu necháme jen před čárkou)
-      s = s.split(',')[0].trim();
-
-      // Tvary "Město 1", "Město 12", "Město IV", "Město IX"
-      s = s.replace(/\s+(?:\d+|[IVXLCDM]+)\.?$/i, '').trim();
-
-      // Speciál pro Prahu/Prague/Prag/Praga: "Praha 4-Libuš" → "Praha"
-      s = s.replace(/\s+\d+\s*-.+$/i, '').trim();
-
-      return s;
-    };
-
-    const normCityKey = (name) => {
-      const base = collapseToBaseCity(name);
-      const n = stripDiacritics(base);
-      return synToKey.get(n) || n; // pokud je to synonymum, vrať kanonický klíč
-    };
-
-    const q = qRaw;
-    const qn = stripDiacritics(q);
-
-    // ---------- Volání TM (venues + fallback events) ----------
+    // --- Jednotné volání na TM (venues + fallback events) ---
     const tm = async (path, params, cc) => {
       try {
         const u = new URL(`${BASE}${path}`);
         u.searchParams.set('apikey', API_KEY);
-        u.searchParams.set('locale', locale);
+        u.searchParams.set('locale', locale || 'en');
         if (cc) u.searchParams.set('countryCode', cc);
         for (const [k, v] of Object.entries(params || {})) {
           if (v !== undefined && v !== null && `${v}` !== '') u.searchParams.set(k, v);
@@ -101,57 +73,72 @@ export const handler = async (event) => {
       }
     };
 
-    // Primárně bereme VENUES (města jsou v nich nejkonzistentnější)
-    const collect = async (cc) => {
+    // --- Sběr kandidátů pro 1 CC (nebo globálně, když cc = ''/null) ---
+    const collectForCC = async (cc) => {
       const bucket = new Map();
-      const add = (name, countryCode, lat, lon, w = 1) => {
-        if (!name) return;
-        const base = collapseToBaseCity(name);
-        const key = `${normCityKey(base)}|${countryCode || ''}`;
+
+      // vnitřní akumulace
+      const add = (rawName, countryCode, lat, lon, weight = 1) => {
+        if (!rawName) return;
+
+        // 1) získej kanonický název pro dotaz (sjednotí Praha/Prague/Prag/…)
+        const canonForQuery = canonForInputCity(rawName) || rawName;
+
+        // 2) "base" bez městských částí: "Praha 7" → "Praha"
+        const baseHuman = collapseDistricts(rawName);
+
+        // 3) klíč skupiny: podle kanonické formy (aby "Prag" splynul s "Praha")
+        const groupKeyCanon = norm(canonForQuery); // např. "prague"
+
+        // 4) preferovaný zobrazovací label podle UI jazyka
+        //    (když CANON_LABEL nezná město, necháme baseHuman)
+        const displayLabel = labelForCanon(groupKeyCanon, locale) || baseHuman;
+
+        const key = `${groupKeyCanon}|${countryCode || ''}`;
         const cur = bucket.get(key) || {
-          namePref: base, // název, který budeme zobrazovat
-          nameAll: new Set([base]),
+          namePref: displayLabel,          // co budeme ukazovat
           countryCode: countryCode || '',
-          lat, lon, score: 0
+          lat: undefined,
+          lon: undefined,
+          score: 0
         };
-        cur.score += w;
-        if (!cur.lat && lat) cur.lat = Number(lat);
-        if (!cur.lon && lon) cur.lon = Number(lon);
-        cur.nameAll.add(base);
-        // Preferuj variantu, která nejlépe odpovídá dotazu (prefix); jinak nejkratší
-        const cand = base;
-        const bestNow = stripDiacritics(cur.namePref);
-        const candN = stripDiacritics(cand);
+
+        cur.score += weight;
+        if (cur.lat == null && lat != null) cur.lat = Number(lat);
+        if (cur.lon == null && lon != null) cur.lon = Number(lon);
+
+        // Pokud nová varianta lépe odpovídá dotazu, preferuj ji (prefix)
+        const bestN = norm(cur.namePref);
+        const candN = norm(displayLabel);
+        const qn = norm(q);
         const better =
-          (candN.startsWith(qn) && !bestNow.startsWith(qn)) ||
-          (cand.length < cur.namePref.length && (candN.startsWith(qn) === bestNow.startsWith(qn)));
-        if (better) cur.namePref = cand;
+          (candN.startsWith(qn) && !bestN.startsWith(qn)) ||
+          (displayLabel.length < cur.namePref.length && (candN.startsWith(qn) === bestN.startsWith(qn)));
+        if (better) cur.namePref = displayLabel;
+
         bucket.set(key, cur);
       };
 
-      // 1) venues by city:
+      // 1) venues by city (vyšší váha)
       const vCity = await tm('/venues.json', { city: q, size: Math.min(size * 2, 100) }, cc);
       for (const v of vCity?._embedded?.venues ?? []) {
-        add(v?.city?.name, v?.country?.countryCode || v?.country?.name,
-            v?.location?.latitude, v?.location?.longitude, 3);
+        add(v?.city?.name, v?.country?.countryCode || v?.country?.name, v?.location?.latitude, v?.location?.longitude, 3);
       }
 
-      // 2) venues by keyword:
+      // 2) venues by keyword (fallback)
       if (bucket.size < size) {
         const vKey = await tm('/venues.json', { keyword: q, size: Math.min(size * 5, 200) }, cc);
         for (const v of vKey?._embedded?.venues ?? []) {
-          add(v?.city?.name, v?.country?.countryCode || v?.country?.name,
-              v?.location?.latitude, v?.location?.longitude, 1);
+          add(v?.city?.name, v?.country?.countryCode || v?.country?.name, v?.location?.latitude, v?.location?.longitude, 1);
         }
       }
 
-      // 3) fallback z events:
+      // 3) events (další fallback – vyjmout města z embedded venues)
       if (bucket.size < size) {
         const evs = await tm('/events.json', { keyword: q, size: Math.min(size * 3, 100) }, cc);
         for (const e of evs?._embedded?.events ?? []) {
           for (const v of e?._embedded?.venues ?? []) {
-            add(v?.city?.name, v?.country?.countryCode || v?.country?.name,
-                v?.location?.latitude, v?.location?.longitude, 1);
+            add(v?.city?.name, v?.country?.countryCode || v?.country?.name, v?.location?.latitude, v?.location?.longitude, 1);
           }
         }
       }
@@ -159,43 +146,75 @@ export const handler = async (event) => {
       return bucket;
     };
 
-    // 1) Zkus s countryCode (když ho klient poslal)
-    let bucket = await collect(countryCodeRaw);
+    // --- Kolekce přes více CC (CSV), případně globální fallback ---
+    let merged = new Map();
 
-    // 2) Pokud nic rozumného, zkuste to bez countryCode (globální vyhledávání)
-    if ((!bucket || bucket.size === 0) && countryCodeRaw) {
-      bucket = await collect('');
+    const mergeBuckets = (src) => {
+      for (const [k, v] of src.entries()) {
+        const cur = merged.get(k);
+        if (!cur) { merged.set(k, { ...v }); continue; }
+        cur.score = (cur.score || 0) + (v.score || 0);
+        if (cur.lat == null && v.lat != null) cur.lat = v.lat;
+        if (cur.lon == null && v.lon != null) cur.lon = v.lon;
+        // preferuj lepší label (prefix k dotazu / kratší)
+        const qn = norm(q);
+        const bestN = norm(cur.namePref || '');
+        const candN = norm(v.namePref || '');
+        const better =
+          (candN.startsWith(qn) && !bestN.startsWith(qn)) ||
+          (v.namePref?.length < (cur.namePref?.length || Infinity) && (candN.startsWith(qn) === bestN.startsWith(qn)));
+        if (better) cur.namePref = v.namePref;
+        merged.set(k, cur);
+      }
+    };
+
+    if (ccList.length) {
+      for (const cc of ccList) {
+        const b = await collectForCC(cc);
+        mergeBuckets(b);
+      }
+      // pokud po regionálním kolekci je výsledek prázdný → zkus globálně
+      if (merged.size === 0) {
+        const bGlobal = await collectForCC('');
+        mergeBuckets(bGlobal);
+      }
+    } else {
+      // rovnou globální vyhledávání
+      const bGlobal = await collectForCC('');
+      mergeBuckets(bGlobal);
     }
 
-    // ---------- Seřazení + vyfiltrování ----------
-    const itemsRaw = Array.from(bucket.values()).map(x => {
-      const ln = stripDiacritics(x.namePref);
+    // --- Postprocess: boost podle relevance k dotazu + seřazení ---
+    const qn = norm(q);
+    let items = Array.from(merged.values()).map(x => {
+      const ln = norm(x.namePref);
       const starts = ln.startsWith(qn);
       const contains = !starts && ln.includes(qn);
       const boost = (starts ? 10 : 0) + (contains ? 5 : 0);
       return { ...x, score: (x.score || 0) + boost, _starts: starts, _contains: contains };
     });
 
-    // Když máme relevantní (starts/contains), ostatní odhoď
-    const relevant = itemsRaw.filter(it => it._starts || it._contains);
-    const pool = relevant.length ? relevant : itemsRaw;
+    // Pokud máme nějaké relevantní (starts/contains), ostatní odhoď
+    const relevant = items.filter(it => it._starts || it._contains);
+    if (relevant.length) items = relevant;
 
-    const list = pool
-      .sort((a, b) => b.score - a.score || a.namePref.localeCompare(b.namePref))
-      .slice(0, size)
-      .map(x => ({
-        // zobraz pouze základní město
-        label: x.countryCode ? `${x.namePref}, ${x.countryCode}` : x.namePref,
-        value: x.namePref,
-        name: x.namePref,
-        countryCode: x.countryCode,
-        lat: x.lat,
-        lon: x.lon,
-        score: x.score
-      }));
+    items.sort((a, b) => (b.score - a.score) || a.namePref.localeCompare(b.namePref));
+    items = items.slice(0, size);
 
-    console.log('[citySuggest] return', list.length, 'items');
-    return json(200, { cities: list });
+    // --- Výstup: jen základní město (bez částí), + country code ---
+    const out = items.map(x => ({
+      label: x.countryCode ? `${x.namePref}, ${x.countryCode}` : x.namePref,
+      value: x.namePref,
+      name: x.namePref,
+      countryCode: x.countryCode,
+      lat: x.lat,
+      lon: x.lon,
+      score: x.score
+    }));
+
+    console.log('[citySuggest] return', out.length, 'items');
+    return json(200, { cities: out });
+
   } catch (err) {
     console.error('ticketmasterCitySuggest crashed:', err);
     // Vždy vrať platnou odpověď
@@ -203,7 +222,30 @@ export const handler = async (event) => {
   }
 };
 
-// Jednotný způsob odpovědi pro Netlify Functions (Lambda compat)
+// --- Pomocné: kolaps městských částí (Praha 1/2/… → Praha) ---
+function collapseDistricts(name) {
+  if (!name) return name;
+  let s = String(name).trim();
+
+  // "Město - část" → jen "Město"
+  s = s.replace(/\s*[-–]\s*.+$/, '');
+
+  // před čárkou je nejčastěji město
+  s = s.split(',')[0].trim();
+
+  // "Město 1", "Město 12", "Město IV"
+  s = s.replace(/\s+(?:\d+|[IVXLCDM]+)\.?$/i, '').trim();
+
+  // "Praha 4-Libuš" → "Praha"
+  s = s.replace(/\s+\d+\s*-.+$/i, '').trim();
+
+  // Pokud jde o známé aliasy, vrať „kanonické“ base město (Praha/Wien…)
+  const baseKey = baseCityKey(s); // např. "prague", "bratislava", "vienna", nebo normalizovaný název bez částí
+  // label necháme na vyšší vrstvě (labelForCanon), zde vracíme "human" tvar (bez částí)
+  return s;
+}
+
+// --- Jednotný způsob odpovědi pro Netlify Functions (Lambda compat) ---
 function json(status, data) {
   return {
     statusCode: status,

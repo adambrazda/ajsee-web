@@ -2,6 +2,7 @@
 // ---------------------------------------------------------
 // Aggregate events from adapters, apply consistent client-side filters
 // + multilingual city alias matching (Praha/Prague/Prag/Praga…)
+// + collapse districts (Praha 1..10 / Prague 5 -> Prague)
 // + optional Near Me filtering for local/demo sources
 // ---------------------------------------------------------
 
@@ -38,17 +39,6 @@ function normalizeStr(s) {
   return normalizeText(s);
 }
 
-function containsAny(hay, terms) {
-  if (!hay) return false;
-  const h = normalizeText(hay);
-  for (const t of terms) {
-    if (!t) continue;
-    const tn = normalizeText(t);
-    if (tn && h.includes(tn)) return true;
-  }
-  return false;
-}
-
 // Haversine distance in km
 function haversineKm(lat1, lon1, lat2, lon2) {
   if (
@@ -70,8 +60,10 @@ function haversineKm(lat1, lon1, lat2, lon2) {
 
 // ------- Multilingual city aliases (shared logic with FE/Function) -------
 /**
- * Minimal CEE alias set so that "Prague"/"Prag"/"Praga" === "Praha" etc.
- * Keys are canonical labels, values include the canonical label itself.
+ * Aliasové skupiny pro CEE. Klíčem je "kanonický label" (lokální
+ * podoba), ale pro interní porovnávání používáme *ID v angličtině*
+ * (viz LABEL_TO_ID). Tím zajistíme, že Praha/Prague/Prag/Praga
+ * skončí vždy jako stejné ID: "prague".
  */
 const CITY_ALIASES = {
   // CZ
@@ -108,51 +100,96 @@ const CITY_ALIASES = {
   'Graz': ['Graz', 'Štýrský Hradec'],
 };
 
-const aliasIndex = (() => {
+// Map kanonických labelů na stabilní ID (EN)
+const LABEL_TO_ID = {
+  // CZ
+  'Praha': 'prague',
+  'Brno': 'brno',
+  'Ostrava': 'ostrava',
+  'Plzeň': 'plzen',
+  'Olomouc': 'olomouc',
+  // SK
+  'Bratislava': 'bratislava',
+  'Košice': 'kosice',
+  'Žilina': 'zilina',
+  // PL
+  'Warszawa': 'warsaw',
+  'Kraków': 'krakow',
+  'Wrocław': 'wroclaw',
+  'Gdańsk': 'gdansk',
+  'Poznań': 'poznan',
+  'Łódź': 'lodz',
+  'Katowice': 'katowice',
+  // HU
+  'Budapest': 'budapest',
+  'Debrecen': 'debrecen',
+  // DE
+  'Berlin': 'berlin',
+  'München': 'munich',
+  'Dresden': 'dresden',
+  'Leipzig': 'leipzig',
+  'Nürnberg': 'nuremberg',
+  // AT
+  'Wien': 'vienna',
+  'Salzburg': 'salzburg',
+  'Linz': 'linz',
+  'Graz': 'graz',
+};
+
+// alias -> canonical label
+const aliasToCanonical = (() => {
   const m = new Map();
   for (const [canonical, list] of Object.entries(CITY_ALIASES)) {
     for (const alias of list) {
       m.set(normalizeText(alias), canonical);
     }
-  }
-  // also map canonical -> canonical
-  for (const canonical of Object.keys(CITY_ALIASES)) {
+    // pro jistotu i samotný canonical
     m.set(normalizeText(canonical), canonical);
   }
   return m;
 })();
 
-function resolveCityCanonical(input) {
-  const norm = normalizeText(input);
-  if (!norm) return null;
-  // exact alias hit
-  if (aliasIndex.has(norm)) {
-    const canonical = aliasIndex.get(norm);
-    const synonyms = CITY_ALIASES[canonical] || [canonical];
-    return { canonical, synonyms };
-  }
-  // substring hit: pick first canonical that contains the token
-  for (const [kNorm, canonical] of aliasIndex.entries()) {
-    if (kNorm.includes(norm)) {
-      const synonyms = CITY_ALIASES[canonical] || [canonical];
-      return { canonical, synonyms };
+// alias -> cityId (EN)
+const aliasToId = (() => {
+  const m = new Map();
+  for (const [canonical, list] of Object.entries(CITY_ALIASES)) {
+    const id = LABEL_TO_ID[canonical];
+    if (!id) continue;
+    for (const alias of list) {
+      m.set(normalizeText(alias), id);
     }
+    m.set(normalizeText(canonical), id);
   }
-  return null;
+  return m;
+})();
+
+/** Srazí „Praha 1..10“ / „Prague 5“ na „praha“/„prague“ (pro robustní porovnání) */
+function collapseDistricts(n = '') {
+  let s = n;
+  s = s.replace(/^praha\s+([ivxlcdm]+|\d+)\b.*$/, 'praha');
+  s = s.replace(/^prague\s+\d+\b.*$/, 'prague');
+  return s;
 }
 
+/** Vrátí stabilní cityId (EN), např. "prague", "vienna", ... */
+function cityId(raw = '') {
+  if (!raw) return '';
+  let n = normalizeText(raw);
+  n = collapseDistricts(n);
+  // známý alias -> id
+  if (aliasToId.has(n)) return aliasToId.get(n);
+  // fallback: použij první „slovo“ (např. "rome") – ale už bez diakritiky
+  return n;
+}
+
+/** Vytáhne kandidáty názvu města z eventu */
 function eventCityCandidates(ev) {
   const c = ev?.location?.city || ev?.city || '';
-  const extras = [];
-  // sometimes providers stuff state/country into city-like fields
-  if (ev?.location?.state) extras.push(ev.location.state);
-  if (ev?.location?.country) extras.push(ev.location.country);
-  return [c, ...extras].filter(Boolean);
+  return [c].filter(Boolean);
 }
 
 /**
- * Fetches and merges events from partners, then applies client-side filters
- * (useful especially for demo/secondary sources).
+ * Fetches and merges events from partners, then applies client-side filters.
  */
 export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
   let all = [];
@@ -168,17 +205,16 @@ export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
     nearMeLat = null,
     nearMeLon = null,
     nearMeRadiusKm = 50,
-    countryCode = ''
   } = filters;
 
-  const cityInfo = city ? resolveCityCanonical(city) : null;
-  const canonicalCity = cityInfo?.canonical || city || '';
+  // Pro upstream: pošleme kanonický label (pokud ho umíme určit),
+  // backend funkce si to stejně přemapuje na "city=Prague" apod.
+  let upstreamCity = city;
+  const norm = normalizeText(city);
+  const hitCanonical = aliasToCanonical.get(collapseDistricts(norm));
+  if (hitCanonical) upstreamCity = hitCanonical;
 
-  // Build filters for upstream adapters (e.g., Ticketmaster)
-  const upstreamFilters = {
-    ...filters,
-    city: canonicalCity, // use canonical for provider query
-  };
+  const upstreamFilters = { ...filters, city: upstreamCity };
 
   // --- Ticketmaster (always) ---
   const tm = await fetchTicketmasterEvents({ locale, filters: upstreamFilters });
@@ -191,37 +227,30 @@ export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
     all = all.concat(demo);
   }
 
-  // ---- Client-side filters (defensive; backend already filters for TM) ----
+  // ---- Client-side filters (defensive; backend už filtruje Ticketmaster) ----
 
   // Category
   if (category && category !== 'all') {
     all = all.filter(ev => normalizeStr(ev.category) === normalizeStr(category));
   }
 
-  // City (multilingual alias match OR substring match)
+  // City (alias-aware, district-safe)
   if (city) {
-    const normInput = normalizeText(city);
-    const synonyms = cityInfo?.synonyms || [city];
+    const qId = cityId(city); // např. "prague"
     all = all.filter(ev => {
       const candidates = eventCityCandidates(ev);
       if (!candidates.length) return false;
-
-      // direct substring on raw city field
-      if (containsAny(candidates.join(' | '), [city])) return true;
-
-      // alias equality or substring match
-      for (const cand of candidates) {
-        const cn = normalizeText(cand);
-        if (cn === normalizeText(canonicalCity)) return true;
-        if (synonyms.some(a => cn === normalizeText(a) || cn.includes(normalizeText(a)))) return true;
-        // also cover input token as substring (typed "Pra" etc.)
-        if (cn.includes(normInput)) return true;
-      }
-      return false;
+      // stačí shoda pro některého kandidáta
+      return candidates.some(label => {
+        const evId = cityId(label);
+        if (!evId) return false;
+        // tvrdá shoda id, případně inkluze kvůli exotickým variantám
+        return evId === qId || evId.includes(qId) || qId.includes(evId);
+      });
     });
   }
 
-  // Near Me (client-side pass for demo sources; TM already handles via backend)
+  // Near Me (client-side pass pro demo zdroje; TM standardně neposkytuje lat/lon)
   if (nearMeLat != null && nearMeLon != null && Number.isFinite(nearMeRadiusKm)) {
     all = all.filter(ev => {
       const lat = ev?.location?.lat ?? ev?.location?.latitude ?? ev?.lat;
@@ -251,7 +280,7 @@ export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
 
   // Date range
   const fromISO = dateFrom ? new Date(dateFrom).toISOString() : '';
-  const toISO = dateTo ? new Date(dateTo).toISOString() : '';
+  const toISO   = dateTo   ? new Date(dateTo).toISOString()   : '';
   if (fromISO || toISO) {
     all = all.filter(ev => inRangeISO(ev.datetime || ev.date, fromISO, toISO));
   }

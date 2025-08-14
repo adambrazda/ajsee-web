@@ -5,6 +5,32 @@
 // page, size, sort (nearest/latest), plus optional geo/ids.
 // ---------------------------------------------------------
 
+/** Normalize to basic (for local equality checks) */
+function normBasic(s = '') {
+  return String(s)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+  .trim();
+}
+
+/** Canonical city (must mirror server behavior for best UX labels) */
+function canonicalCityLabel(raw = '') {
+  const n = normBasic(raw).replace(/^praha\s+([ivxlcdm]+|\d+)\b.*$/, 'praha').replace(/^prague\s+\d+\b.*$/, 'prague');
+  if (/^(praha|prague|prag|praga)\b/.test(n)) return 'Prague';
+  if (/^(vienna|wien|viden|v%C3%ADde%C5%88|viden)\b/.test(n)) return 'Vienna';
+  if (/^(munich|muenchen|mnichov|m%C3%BCnchen)\b/.test(n)) return 'Munich';
+  if (/^bratislava\b/.test(n)) return 'Bratislava';
+  if (/^brno\b/.test(n)) return 'Brno';
+  if (/^ostrava\b/.test(n)) return 'Ostrava';
+  if (/^(warszawa|warsaw|warschau|varsava)\b/.test(n)) return 'Warsaw';
+  if (/^(wroclaw|wroc%C5%82aw)\b/.test(n)) return 'Wroclaw';
+  if (/^(krakow|krak%C3%B3w|krakov)\b/.test(n)) return 'Krakow';
+  if (/^budapest\b/.test(n)) return 'Budapest';
+  return raw.toString().trim();
+}
+
 /** Normalize TM segment to our internal category */
 function mapSegmentToCategory(ev) {
   const seg = ev?.classifications?.[0]?.segment?.name || '';
@@ -31,41 +57,31 @@ function mapSegmentToCategory(ev) {
 function toTmSort(sortUi) {
   if (sortUi === 'latest') return 'date,desc';
   if (sortUi === 'nearest') return 'date,asc';
-  // Allow raw passthrough like "onSaleStartDateTime,asc"
   return sortUi || 'date,asc';
 }
 
 export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const countryCode = (filters.countryCode || 'CZ').toUpperCase();
 
-  // Build query for our Netlify function (it will map to TM params)
   const qs = new URLSearchParams();
-
-  // Required
   qs.set('countryCode', countryCode);
 
-  // Locale fallback order: requested -> cs -> en (deduped)
-  const locales = [locale, 'cs', 'en'].filter(
-    (v, i, arr) => !!v && arr.indexOf(v) === i
-  );
+  const locales = [locale, 'cs', 'en'].filter((v, i, arr) => !!v && arr.indexOf(v) === i);
 
-  // Common params
   const sort = toTmSort(filters.sort);
   const page = Number.isFinite(+filters.page) ? String(+filters.page) : '0';
   const size = Number.isFinite(+filters.size) ? String(+filters.size) : '50';
 
-  // TM classification segmentName from our category
   const segmentMap = {
     concert: 'Music',
     sport: 'Sports',
     theatre: 'Arts & Theatre',
-    festival: 'Arts & Theatre', // many festivals live under A&T
+    festival: 'Arts & Theatre',
   };
   const segmentName = filters.category ? (segmentMap[filters.category] || '') : '';
 
-  // Set normalized params (Netlify function supports both names)
   if (filters.keyword) qs.set('keyword', String(filters.keyword));
-  if (filters.city) qs.set('city', String(filters.city));
+  if (filters.city) qs.set('city', String(filters.city)); // server si to kanonizuje
   if (segmentName) qs.set('segmentName', segmentName);
   if (filters.classificationName) qs.set('classificationName', String(filters.classificationName));
   if (filters.dateFrom) qs.set('dateFrom', String(filters.dateFrom));
@@ -81,8 +97,6 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   qs.set('page', page);
   qs.set('size', size);
 
-  // We'll try locales sequentially on the client by calling the proxy multiple times,
-  // stopping at the first response that contains events.
   for (const loc of locales) {
     qs.set('locale', loc);
     const url = `/.netlify/functions/ticketmasterEvents?${qs.toString()}`;
@@ -90,7 +104,6 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     try {
       const res = await fetch(url);
       if (!res.ok) continue;
-
       const data = await res.json();
       const list = data?._embedded?.events || [];
       if (!list.length) continue;
@@ -108,10 +121,12 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
             .filter(im => im?.url)
             .sort((a, b) => (b.width || 0) - (a.width || 0))[0]?.url || '';
 
-        const city = ev?._embedded?.venues?.[0]?.city?.name || '';
+        const cityRaw = ev?._embedded?.venues?.[0]?.city?.name || '';
         const country = ev?._embedded?.venues?.[0]?.country?.countryCode || '';
 
-        // merge two common description fields
+        // sjednocená label hodnota, aby FE filtr (contains) nepadal na Praha/Prague
+        const city = canonicalCityLabel(cityRaw);
+
         const desc = [ev?.info, ev?.pleaseNote].filter(Boolean).join(' — ');
 
         return {
@@ -131,7 +146,6 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       });
     } catch (err) {
       console.error('[Ticketmaster adapter] fetch error for locale:', loc, err);
-      // try next locale
     }
   }
 

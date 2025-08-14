@@ -8,10 +8,6 @@
 import './styles/main.scss';
 import { getAllEvents } from './api/eventsApi.js';
 
-// ⬇️ NOVÉ: centrální kanonizace a klientské suggest
-import { canonForInputCity } from './city/canonical.js';
-import { suggestCities } from './city/suggestClient.js';
-
 // ------- Global state -------
 let currentFilters = {
   category: 'all',
@@ -125,6 +121,23 @@ function t(key, fallback) {
   return fallback;
 }
 
+/**
+ * H4 helper: bezpečně vybere nejlepší lokalizovaný text z mapy
+ * Přednost: [preferované jazyky] → libovolná neprázdná hodnota → ''
+ * Podporuje i případ, kdy pole je rovnou string (např. demo data).
+ */
+function pickLocalized(map, preferred = []) {
+  if (!map) return '';
+  if (typeof map === 'string') return map;
+  if (typeof map !== 'object') return '';
+  for (const k of preferred) {
+    const v = map?.[k];
+    if (v) return String(v);
+  }
+  const any = Object.values(map).find(Boolean);
+  return any ? String(any) : '';
+}
+
 /** Set texts/labels/placeholders for filter UI that don't have data-i18n-* attributes */
 function setBtnLabel(el, text) {
   if (!el) return;
@@ -218,8 +231,155 @@ function updateMenuLinksWithLang(lang) {
 
 /* =========================================================
    City canonicalization & typeahead postprocess
-   (❗️přesunuto do ./city/*.js; zde ponecháno jen typeahead UI)
    ========================================================= */
+
+// diacritics-less lower
+const norm = (s) => (s||'').toString().toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+
+// heuristika: „praha 1/2/…“, „bratislava - stare mesto“ apod. -> base město
+function baseCityKey(s) {
+  const n = norm(s);
+
+  // Praha 1..10, Praha-… => "praha"
+  if (/^praha(?:\s*[- ]?\s*(?:[0-9ivxlcdm]+|[^0-9\s-].*))?$/i.test(n)) return 'praha';
+
+  // Bratislava – městské části
+  if (/^bratislava(?:\s*[- ]?.+)?$/.test(n)) return 'bratislava';
+
+  // Vídeň / Wien / Vienna / Wiedeń / Viedeň / Bécs => "vienna"
+  if (['wien','vienna','viden','vieden','wieden','becs'].includes(n)) return 'vienna';
+
+  // další triviální normalizace (vyhoď vše za čárkou / pomlčkou)
+  return n.split(/[,-]/)[0].trim();
+}
+
+// map kanon → preferovaný label v jazycích UI
+const CANON_LABEL = {
+  prague:  { cs:'Praha', sk:'Praha', en:'Prague', de:'Prag', pl:'Praga', hu:'Prága' },
+  brno:    { cs:'Brno',  sk:'Brno',  en:'Brno',   de:'Brünn',pl:'Brno',  hu:'Brünn' },
+  bratislava: { cs:'Bratislava', sk:'Bratislava', en:'Bratislava', de:'Pressburg', pl:'Bratysława', hu:'Pozsony' },
+  vienna:  { cs:'Vídeň', sk:'Viedeň', en:'Vienna', de:'Wien', pl:'Wiedeń', hu:'Bécs' },
+  ostrava: { cs:'Ostrava', sk:'Ostrava', en:'Ostrava', de:'Ostrau', pl:'Ostrawa', hu:'Osztrava' },
+  krakow:  { cs:'Krakov', sk:'Krakov', en:'Kraków', de:'Krakau', pl:'Kraków', hu:'Krakkó' },
+  warsaw:  { cs:'Varšava', sk:'Varšava', en:'Warsaw', de:'Warschau', pl:'Warszawa', hu:'Varsó' }
+};
+
+// aliasy → kanon (pro TM „city“ parametr použijeme EN endonym)
+function canonForInputCity(s) {
+  const n = norm(s);
+  if (!n) return '';
+
+  // Praha a spol.
+  if (n === 'praha' || n === 'prague' || n === 'prag' || n === 'praga' || /^praha/.test(n)) return 'Prague';
+
+  // Brno
+  if (n === 'brno') return 'Brno';
+
+  // Bratislava (včetně historických/hu názvů)
+  if (n === 'bratislava' || n === 'pozsony') return 'Bratislava';
+
+  // Vienna / Wien / Vídeň / Wiedeń / Viedeň / Bécs
+  if (['vienna','wien','viden','vieden','wieden','becs'].includes(n)) return 'Vienna';
+
+  // Ostrava
+  if (['ostrava','ostrau','ostrawa','osztrava'].includes(n)) return 'Ostrava';
+
+  // Warsaw
+  if (['warsaw','warszawa','warschau','varso','varšava','varsava','varsó'].includes(n)) return 'Warsaw';
+
+  // Krakow
+  if (['krakow','krakow','krakau','krakov','krakkó','krakow\u0144'].includes(n)) return 'Kraków';
+
+  // fallback: pokud uživatel zadal „praha 7“ apod., vrať kanon dle base klíče
+  const base = baseCityKey(n);
+  if (base === 'praha') return 'Prague';
+  if (base === 'bratislava') return 'Bratislava';
+  if (base === 'vienna') return 'Vienna';
+
+  // neznámé necháme být – pošleme tak, jak je (TM to občas zvládne)
+  return s;
+}
+
+function labelForCanon(canon, lang = currentLang) {
+  const key = norm(canon || '');
+  const map = CANON_LABEL[key];
+  if (!map) return canon;
+  return map[lang] || canon;
+}
+
+/* =========================================================
+   Ticketmaster Discovery API – city suggest (frontend side)
+   (Proxy endpoint: /.netlify/functions/ticketmasterCitySuggest)
+   ========================================================= */
+const citySuggestCache = new Map();
+
+// ⚠️ ZÁMĚRNĚ neposíláme countryCode (global search),
+// aby PL verze nevracela jen polská města. Netlify funkce
+// může volitelně přijmout víc kódů (CSV) – pokud ji upravíme,
+// je možné obnovit regionální scope a poslat např. "CZ,SK,PL,HU,DE,AT".
+async function suggestCities({
+  locale = 'cs',
+  keyword = '',
+  size = 50
+} = {}) {
+  const q = keyword.trim();
+  if (q.length < 2) return [];
+  const cacheKey = `${locale}|GLOBAL|${q.toLowerCase()}|${size}`;
+  if (citySuggestCache.has(cacheKey)) return citySuggestCache.get(cacheKey);
+
+  const qsParams = new URLSearchParams({ locale, keyword: q, size: String(size) });
+  try {
+    const r = await fetch(`/.netlify/functions/ticketmasterCitySuggest?${qsParams.toString()}`);
+    if (!r.ok) {
+      citySuggestCache.set(cacheKey, []);
+      return [];
+    }
+    const data = await r.json();
+
+    // základní převod
+    let list = (Array.isArray(data.cities) ? data.cities : []).map((c) => ({
+      city: c.label || c.name || c.value || '',
+      countryCode: c.countryCode || c.country || '',
+      lat: c.lat !== undefined ? Number(c.lat) : undefined,
+      lon: c.lon !== undefined ? Number(c.lon) : undefined,
+      score: typeof c.score === 'number' ? c.score : undefined
+    }));
+
+    // Sloučení „Praha 1/2/…“ atp. + seskupení synonym (Praha/Prague/Prag)
+    const merged = new Map();
+    for (const it of list) {
+      const b = baseCityKey(it.city);
+      // klíč pro skupinu synonym
+      let canonKey = b;
+      if (b === 'praha') canonKey = 'prague';
+      if (b === 'bratislava') canonKey = 'bratislava';
+      if (b === 'vienna') canonKey = 'vienna';
+      if (b === 'ostrava') canonKey = 'ostrava';
+      if (b === 'warszawa') canonKey = 'warsaw';
+      if (b === 'krakow') canonKey = 'krakow';
+
+      const cur = merged.get(canonKey);
+      if (!cur) {
+        merged.set(canonKey, { ...it, city: labelForCanon(canonKey, currentLang) });
+      } else {
+        // zvedni skóre, doplň lat/lon pokud chybí
+        cur.score = Math.max(cur.score || 0, it.score || 0);
+        if (!cur.lat && it.lat) cur.lat = it.lat;
+        if (!cur.lon && it.lon) cur.lon = it.lon;
+      }
+    }
+    // seřazení podle score/abecedy
+    list = Array.from(merged.values())
+      .sort((a, b) => (b.score || 0) - (a.score || 0) || a.city.localeCompare(b.city));
+
+    citySuggestCache.set(cacheKey, list);
+    return list;
+  } catch {
+    citySuggestCache.set(cacheKey, []);
+    return [];
+  }
+}
 
 /* UI binder pro input Město */
 function setupCityTypeahead(inputEl) {
@@ -284,7 +444,7 @@ function setupCityTypeahead(inputEl) {
     currentFilters.city = q;
     if (q.length < 2) { close(); return; }
 
-    // Globální hledání (nenutíme countryCode), následně lokálně sloučíme varianty – řeší suggestClient
+    // Globální hledání (nenutíme countryCode), následně lokálně sloučíme varianty
     items = await suggestCities({
       locale: currentLang,
       keyword: q,
@@ -452,7 +612,7 @@ async function handleNearMeClick(btn) {
     let msg = t('filters.geoError', 'Poloha není dostupná. Zkuste to znovu.');
     const em = String(e?.message || '');
     if (em.includes('PERMISSION_DENIED')) {
-      msg = t('filters.geoDenied', 'Přístup k poloze je zamítnut. Povolení můžete změnit v nastavení prohlížeče.');
+      msg = t('filters.geoDenied', 'Přístup k poloze je zamítnut. Povolení můžete změnit v nastavení prohlížeře.');
     } else if (em.includes('TIMEOUT')) {
       msg = t('filters.geoTimeout', 'Získání polohy trvalo příliš dlouho. Zkuste to prosím znovu.');
     }
@@ -922,6 +1082,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       return Array.isArray(imgs) ? imgs[Math.floor(Math.random() * imgs.length)] : imgs;
     };
 
+    const preferredLocales = [locale, 'en', 'cs'];
+
     let filtered = [...events];
     filtered.forEach((event, index) => {
       if (!event.id) event.id = `event-${index}-${Math.random().toString(36).slice(2, 8)}`;
@@ -946,8 +1108,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     eventsList.innerHTML = filtered
       .map((event) => {
-        const title = event.title?.[locale] || event.title?.cs || 'Bez názvu';
-        const description = fixNonBreakingShortWords(event.description?.[locale] || event.description?.cs || '', locale);
+        const title = pickLocalized(event.title, preferredLocales) || 'Bez názvu';
+        const description = fixNonBreakingShortWords(pickLocalized(event.description, preferredLocales) || '', locale);
 
         const dateVal = event.datetime || event.date;
         const date = dateVal
@@ -1071,11 +1233,13 @@ async function openEventModal(eventData, locale = 'cs') {
     window.translations = await loadTranslations(locale);
   }
 
+  const preferredLocales = [locale, 'en', 'cs'];
+
   const categoryKey = eventData.category || '';
   const categoryTranslated = fixNonBreakingShortWords(t(`category-${categoryKey}`, categoryKey), locale);
 
-  const title = eventData.title?.[locale] || eventData.title?.cs || 'Bez názvu';
-  const description = fixNonBreakingShortWords(eventData.description?.[locale] || eventData.description?.cs || '', locale);
+  const title = pickLocalized(eventData.title, preferredLocales) || 'Bez názvu';
+  const description = fixNonBreakingShortWords(pickLocalized(eventData.description, preferredLocales) || '', locale);
   const image = eventData.image || '/images/fallbacks/concert0.jpg';
   const dateVal = eventData.datetime || eventData.date;
   const date = dateVal

@@ -220,6 +220,17 @@ const citySuggestCache = new Map();
 // jednotný multistátní scope pro střední Evropu (nezávislý na jazyku UI)
 const CITY_SUGGEST_SCOPE = ['CZ','SK','PL','HU','DE','AT'];
 
+// 🧠 základní „odstripování“ městských částí/římských číslic apod.
+function baseCityLabel(name) {
+  if (!name) return name;
+  let s = String(name).trim();
+  s = s.split(',')[0].trim();            // "Praha, CZ" -> "Praha"
+  s = s.replace(/\s*[-–]\s*.+$/, '');    // "Praha-Libuš" -> "Praha"
+  s = s.replace(/\s+(?:\d+|[IVXLCDM]+)\.?$/i, '').trim(); // "Praha 5" / "Budapest II." -> base
+  s = s.replace(/\s+\d+\s*-.+$/i, '').trim(); // "Praha 4-Libuš" -> "Praha"
+  return s;
+}
+
 async function suggestCities({
   locale = 'cs',
   countryCodes = CITY_SUGGEST_SCOPE,
@@ -241,13 +252,16 @@ async function suggestCities({
       return [];
     }
     const data = await r.json();
-    const out = (Array.isArray(data.cities) ? data.cities : []).map((c) => ({
-      city: c.label || c.name || c.value || '',
-      countryCode: c.countryCode || c.country || '',
-      lat: c.lat !== undefined ? Number(c.lat) : undefined,
-      lon: c.lon !== undefined ? Number(c.lon) : undefined,
-      score: typeof c.score === 'number' ? c.score : undefined
-    }));
+    const out = (Array.isArray(data.cities) ? data.cities : []).map((c) => {
+      const label = baseCityLabel(c.label || c.name || c.value || '');
+      return {
+        city: label,
+        countryCode: c.countryCode || c.country || '',
+        lat: c.lat !== undefined ? Number(c.lat) : undefined,
+        lon: c.lon !== undefined ? Number(c.lon) : undefined,
+        score: typeof c.score === 'number' ? c.score : undefined
+      };
+    });
     citySuggestCache.set(cacheKey, out);
     return out;
   } catch {
@@ -292,8 +306,9 @@ function setupCityTypeahead(inputEl) {
 
   const choose = (idx) => {
     const it = items[idx]; if (!it) return;
-    inputEl.value = it.city;
-    currentFilters.city = it.city;
+    const base = baseCityLabel(it.city);
+    inputEl.value = base;
+    currentFilters.city = base;
     clearNearMe(); // výběr města ruší Near me
     close();
   };
@@ -316,6 +331,7 @@ function setupCityTypeahead(inputEl) {
 
   const load = debounce(async () => {
     const q = inputEl.value.trim();
+    // Při psaní zatím nekanonizujeme, jen doplníme návrhy.
     currentFilters.city = q;
     if (q.length < 2) { close(); return; }
 
@@ -330,6 +346,14 @@ function setupCityTypeahead(inputEl) {
   }, 180);
 
   inputEl.addEventListener('input', load);
+
+  // jakmile pole ztratí fokus / změní se, sjednoť na základní město
+  inputEl.addEventListener('change', () => {
+    const base = baseCityLabel(inputEl.value.trim());
+    inputEl.value = base;
+    currentFilters.city = base;
+  });
+
   inputEl.addEventListener('focus', () => {
     if (inputEl.value.trim().length >= 2 && items.length) { render(); open(); }
   });
@@ -765,7 +789,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const eventsList = qs('#eventsList');
   if (eventsList) {
     const qsUrl = new URLSearchParams(window.location.search);
-    if (qsUrl.get('city')) currentFilters.city = qsUrl.get('city') || '';
+    if (qsUrl.get('city')) currentFilters.city = baseCityLabel(qsUrl.get('city') || '');
     if (qsUrl.get('from')) currentFilters.dateFrom = qsUrl.get('from') || '';
     if (qsUrl.get('to')) currentFilters.dateTo = qsUrl.get('to') || '';
     if (qsUrl.get('segment')) currentFilters.category = qsUrl.get('segment') || 'all';
@@ -808,6 +832,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (currentFilters.city) clearNearMe();
       $city.removeAttribute('data-autofromnearme');
     });
+    // při blur/enter aplikuj základní tvar města
+    $city?.addEventListener('change', () => {
+      const base = baseCityLabel($city.value.trim());
+      $city.value = base;
+      currentFilters.city = base;
+    });
+
     $from?.addEventListener('change', (e) => (currentFilters.dateFrom = e.target.value || ''));
     $to?.addEventListener('change', (e) => (currentFilters.dateTo = e.target.value || ''));
     $keyword?.addEventListener('input', (e) => (currentFilters.keyword = e.target.value.trim()));
@@ -824,6 +855,13 @@ document.addEventListener('DOMContentLoaded', async () => {
           [$from, $to].forEach((input) => input?.classList.add('input-error'));
         }
 
+        // sjednoť město na základní název
+        if ($city) {
+          const base = baseCityLabel($city.value.trim());
+          $city.value = base;
+          currentFilters.city = base;
+        }
+
         if (valid) await renderAndSync();
       });
 
@@ -838,9 +876,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Events page (div + vlastní Apply button)
     if ($applyBtnOnEventsPage) {
       $applyBtnOnEventsPage.addEventListener('click', async () => {
-        if ($from?.value && $to?.value && new Date($from.value) > new Date($to?.value)) {
+        if ($from?.value && $to?.value && new Date($from.value) > new Date($to.value)) {
           [$from, $to].forEach((input) => input?.classList.add('input-error'));
           return;
+        }
+        if ($city) {
+          const base = baseCityLabel($city.value.trim());
+          $city.value = base;
+          currentFilters.city = base;
         }
         await renderAndSync();
       });
@@ -994,7 +1037,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
         if (event.promo) cardClasses.push('event-card-promo');
 
         return `
-          <div class="${cardClasses.join(' ')}">
+          <div class="${cardClasses.join(' ')}}">
             <img src="${image}" alt="${title}" class="event-img" />
             <div class="event-content">
               <h3 class="event-title">${title}</h3>

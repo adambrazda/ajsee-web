@@ -5,12 +5,13 @@
 // Bez globálů; vše přes parametry.
 //
 // Závislosti:
-//   - src/city/canonical.js  (baseCityKey, canonForInputCity, labelForCanon)
+//   - src/city/canonical.js  (canonForInputCity, labelForCanon)
 // ---------------------------------------------------------
 
-import { baseCityKey, canonForInputCity, labelForCanon } from './canonical.js';
+import { canonForInputCity, labelForCanon } from './canonical.js';
 
-// Jednotný scope pro střední Evropu
+// Jednotný scope pro střední Evropu (necháváme jako CSV – BE při prázdné
+// nebo neplatné kombinaci spadne na globální vyhledávání, což je v pořádku)
 export const CITY_SUGGEST_SCOPE = ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'];
 
 // Diacritics-less normalize
@@ -23,7 +24,7 @@ function norm(s) {
     .trim();
 }
 
-// Sloučení městských částí (bezpečná heuristika, shodná s funkcí na BE)
+// Sloučení městských částí (shodná heuristika s BE)
 function collapseDistricts(name) {
   if (!name) return name;
   let s = String(name).trim();

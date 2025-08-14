@@ -3,8 +3,9 @@
 // Jediný "zdroj pravdy" pro práci s názvy měst napříč FE i Netlify funkcemi.
 // - robustní normalizace (bez diakritiky, lower, trim)
 // - baseCityKey(): sloučí "Praha 1/2/7…" → prague, "Bratislava - Staré Mesto" → bratislava
-// - canonForInputCity(): převede aliasy na kanonické endonym/exonym používané v TM (EN varianty)
-// - labelForCanon(): vrátí preferovaný popisek podle UI jazyka
+// - canonForInputCity(): aliasy -> kanonické endonym/exonym pro TM (EN varianty)
+// - labelForCanon(): preferovaný popisek dle UI jazyka
+// - NEW: guessCountryCodeFromCity(): odvodí správný countryCode z města
 // ---------------------------------------------------------
 
 /** Základní normalizace textu: lower + odstranění diakritiky + trim */
@@ -31,7 +32,6 @@ export function baseCityKey(input) {
   const n = normalize(input);
 
   // Praha – čísla, římské číslice, textové části
-  // "praha", "praha 1", "praha-7", "praha dejvice" → prague
   if (/^praha(?:\s*[-–]?\s*(?:\d+|[ivxlcdm]+|[a-z\u00e1-\u017e]+))?$/i.test(n)) {
     return 'prague';
   }
@@ -41,7 +41,7 @@ export function baseCityKey(input) {
     return 'bratislava';
   }
 
-  // Vídeň / Wien / Vienna / Wiedeń / Viedeň / Bécs → vienna
+  // Vídeň / Wien / Vienna / Wiedeń / Viedeň / Bécs
   if (['vienna', 'wien', 'viden', 'vieden', 'wieden', 'becs'].includes(n)) {
     return 'vienna';
   }
@@ -52,7 +52,7 @@ export function baseCityKey(input) {
 
 /**
  * Převede aliasy měst na kanonický "TM-friendly" název pro dotaz do Ticketmasteru.
- * Preferujeme zde EN endonym/exonym, které TM nejlépe chápe u parametru `city`.
+ * Preferujeme EN endonym/exonym, které TM nejlépe chápe u parametru `city`.
  */
 export function canonForInputCity(input) {
   const n = normalize(input);
@@ -104,7 +104,7 @@ export function canonForInputCity(input) {
   if (base === 'bratislava') return 'Bratislava';
   if (base === 'vienna') return 'Vienna';
 
-  // Nic nemapujeme → vrať původní vstup (TM si občas poradí)
+  // Neznámé -> vrať původní vstup (TM si občas poradí)
   return input;
 }
 
@@ -125,4 +125,38 @@ export function labelForCanon(canonKey, lang = 'cs') {
   const key = normalize(canonKey);
   const map = CANON_LABEL[key];
   return map?.[lang] || canonKey;
+}
+
+/* ---------------------------------------------------------
+   NEW: mapování město → countryCode + helper
+   Použijeme při dotazu na Ticketmaster: když je zadané město,
+   přepíšeme `countryCode` na správnou zemi bez ohledu na jazyk UI.
+--------------------------------------------------------- */
+
+const CITY_TO_CC = {
+  // CZ
+  'Prague': 'CZ',
+  'Brno': 'CZ',
+  'Ostrava': 'CZ',
+  'Pilsen': 'CZ',
+
+  // SK
+  'Bratislava': 'SK',
+
+  // AT
+  'Vienna': 'AT',
+
+  // PL
+  'Kraków': 'PL',
+  'Warsaw': 'PL',
+
+  // HU
+  'Budapest': 'HU'
+};
+
+/** Vratí ISO country code pro zadané město (pokud ho známe). */
+export function guessCountryCodeFromCity(input) {
+  if (!input) return '';
+  const canonCity = canonForInputCity(input); // např. "Prague", "Vienna", …
+  return CITY_TO_CC[canonCity] || '';
 }

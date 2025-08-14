@@ -1,17 +1,13 @@
 // /src/api/eventsApi.js
 // ---------------------------------------------------------
 // Aggregate events from adapters, apply consistent client-side filters
-// + city canonicalization via shared/city/canonical.js
+// + multilingual city alias matching (Praha/Prague/Prag/Praga…)
 // + collapse districts (Praha 1..10 / Prague 5 -> Prague)
 // + optional Near Me filtering for local/demo sources
 // ---------------------------------------------------------
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
-import {
-  canonForInputCity,         // "Praha"/"Prag"/"Praga"/"Praha 7" -> "Prague" (TM-friendly)
-  guessCountryCodeFromCity,  // z libovolného vstupu města -> "CZ"/"AT"/...
-  baseCityKey                // "Praha 7" / "Prague 5" / "Wien-Landstraße" -> "prague" / "vienna"
-} from '../city/canonical.js';
+import { canonForInputCity } from '../city/canonical.js';
 
 // Consider anything that's not localhost/127.* as production (adjust if needed)
 const isProduction =
@@ -63,18 +59,115 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+// ------- Multilingual city aliases (for client-side matching only) -------
+const CITY_ALIASES = {
+  // CZ
+  'Praha': ['Praha', 'Prague', 'Prag', 'Praga', 'Praag', 'Prága'],
+  'Brno': ['Brno', 'Brünn'],
+  'Ostrava': ['Ostrava'],
+  'Plzeň': ['Plzeň', 'Plzen', 'Pilsen'],
+  'Olomouc': ['Olomouc', 'Olmütz'],
+  // SK
+  'Bratislava': ['Bratislava', 'Pressburg', 'Pozsony'],
+  'Košice': ['Košice', 'Kosice', 'Kassa'],
+  'Žilina': ['Žilina', 'Zilina'],
+  // PL
+  'Warszawa': ['Warszawa', 'Warsaw', 'Warschau'],
+  'Kraków': ['Kraków', 'Krakow', 'Cracow', 'Krakau'],
+  'Wrocław': ['Wrocław', 'Wroclaw', 'Breslau'],
+  'Gdańsk': ['Gdańsk', 'Gdansk', 'Danzig'],
+  'Poznań': ['Poznań', 'Poznan'],
+  'Łódź': ['Łódź', 'Lodz'],
+  'Katowice': ['Katowice'],
+  // HU
+  'Budapest': ['Budapest', 'Budapešť', 'Budapeszt', 'Budapesta'],
+  'Debrecen': ['Debrecen'],
+  // DE
+  'Berlin': ['Berlin', 'Berlín'],
+  'München': ['München', 'Munich', 'Muenchen', 'Mnichov'],
+  'Dresden': ['Dresden', 'Drážďany'],
+  'Leipzig': ['Leipzig'],
+  'Nürnberg': ['Nürnberg', 'Nuremberg', 'Norimberk'],
+  // AT
+  'Wien': ['Wien', 'Vienna', 'Vídeň', 'Viedeň', 'Wiedeń'],
+  'Salzburg': ['Salzburg', 'Solnohrad'],
+  'Linz': ['Linz'],
+  'Graz': ['Graz', 'Štýrský Hradec'],
+};
+
+// Map kanonických labelů na stabilní ID (EN)
+const LABEL_TO_ID = {
+  // CZ
+  'Praha': 'prague',
+  'Brno': 'brno',
+  'Ostrava': 'ostrava',
+  'Plzeň': 'plzen',
+  'Olomouc': 'olomouc',
+  // SK
+  'Bratislava': 'bratislava',
+  'Košice': 'kosice',
+  'Žilina': 'zilina',
+  // PL
+  'Warszawa': 'warsaw',
+  'Kraków': 'krakow',
+  'Wrocław': 'wroclaw',
+  'Gdańsk': 'gdansk',
+  'Poznań': 'poznan',
+  'Łódź': 'lodz',
+  'Katowice': 'katowice',
+  // HU
+  'Budapest': 'budapest',
+  'Debrecen': 'debrecen',
+  // DE
+  'Berlin': 'berlin',
+  'München': 'munich',
+  'Dresden': 'dresden',
+  'Leipzig': 'leipzig',
+  'Nürnberg': 'nuremberg',
+  // AT
+  'Wien': 'vienna',
+  'Salzburg': 'salzburg',
+  'Linz': 'linz',
+  'Graz': 'graz',
+};
+
+// alias -> cityId (EN) (pro klientské porovnávání)
+const aliasToId = (() => {
+  const m = new Map();
+  for (const [canonical, list] of Object.entries(CITY_ALIASES)) {
+    const id = LABEL_TO_ID[canonical];
+    if (!id) continue;
+    for (const alias of list) {
+      m.set(normalizeText(alias), id);
+    }
+    m.set(normalizeText(canonical), id);
+  }
+  return m;
+})();
+
+/** Srazí „Praha 1..10“ / „Prague 5“ na základní klíč */
+function collapseDistricts(n = '') {
+  let s = n;
+  s = s.replace(/^praha\s+([ivxlcdm]+|\d+)\b.*$/, 'praha');
+  s = s.replace(/^prague\s+\d+\b.*$/, 'prague');
+  return s;
+}
+
+/** Vrátí stabilní cityId (EN), např. "prague", "vienna", ... */
+function cityId(raw = '') {
+  if (!raw) return '';
+  let n = normalizeText(raw);
+  n = collapseDistricts(n);
+  // známý alias -> id
+  if (aliasToId.has(n)) return aliasToId.get(n);
+  // fallback: použij „holé“ n (už bez diakritiky) – pokryje exotické varianty
+  return n;
+}
+
 /** Vytáhne kandidáty názvu města z eventu */
 function eventCityCandidates(ev) {
   const c = ev?.location?.city || ev?.city || '';
   return [c].filter(Boolean);
-}
-
-/** Stabilní city-id pro porovnávání na FE (např. "prague", "vienna"…) */
-function cityId(raw = '') {
-  if (!raw) return '';
-  // baseCityKey už složí „Praha 7“, „Bratislava - Staré Mesto“… na jeden klíč
-  const key = baseCityKey(raw);
-  return key || normalizeText(raw);
 }
 
 /**
@@ -92,20 +185,17 @@ export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
     sort = 'nearest',
     nearMeLat = null,
     nearMeLon = null,
-    nearMeRadiusKm = 50
+    nearMeRadiusKm = 50,
   } = filters;
 
-  // ---- H2: PŘÍMÁ OPRAVA COUNTRYCODE PODLE MĚSTA ----
-  // Pokud uživatel zadal město, přemapujeme:
-  //  - city -> TM-friendly (Prague/Vienna/Bratislava…)
-  //  - countryCode -> podle města (CZ/AT/SK/PL/HU…)
-  const upstreamFilters = { ...filters };
-  if (city && String(city).trim().length > 0) {
-    const tmCity = canonForInputCity(city);            // např. "Prague"
-    const ccFromCity = guessCountryCodeFromCity(city); // např. "CZ"
-    if (tmCity) upstreamFilters.city = tmCity;
-    if (ccFromCity) upstreamFilters.countryCode = ccFromCity;
-  }
+  // 🔧 KLÍČOVÁ OPRAVA:
+  // Do upstreamu posíláme *anglické endonymum* (Prague/Vienna/…),
+  // protože Ticketmaster má s EN tvary nejlepší „hit rate“ napříč jazyky.
+  // (main.js už canonForInputCity používá – zde to jen pojistíme)
+  const upstreamFilters = {
+    ...filters,
+    city: city ? canonForInputCity(city) : ''
+  };
 
   // --- Ticketmaster (always) ---
   const tm = await fetchTicketmasterEvents({ locale, filters: upstreamFilters });
@@ -118,15 +208,14 @@ export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
     all = all.concat(demo);
   }
 
-  // ---- Client-side filters (defensive) ----
+  // ---- Client-side filters (defensive; backend už filtruje Ticketmaster) ----
 
   // Category
   if (category && category !== 'all') {
     all = all.filter(ev => normalizeStr(ev.category) === normalizeStr(category));
   }
 
-  // City (alias-aware, district-safe; děláme i na FE, protože některé zdroje
-  // nemusí být 100% konzistentní v lokalizaci názvů měst)
+  // City (alias-aware, district-safe)
   if (city) {
     const qId = cityId(city); // např. "prague"
     all = all.filter(ev => {
@@ -140,7 +229,7 @@ export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
     });
   }
 
-  // Near Me (client-side pass pro demo/sekundární zdroje; TM řeší na backendu)
+  // Near Me (client-side pass pro demo zdroje)
   if (nearMeLat != null && nearMeLon != null && Number.isFinite(nearMeRadiusKm)) {
     all = all.filter(ev => {
       const lat = ev?.location?.lat ?? ev?.location?.latitude ?? ev?.lat;
@@ -155,9 +244,15 @@ export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
     const q = normalizeStr(keyword);
     all = all.filter(ev => {
       const title =
-        ev?.title?.[locale] ?? ev?.title?.cs ?? ev?.title ?? '';
+        ev?.title?.[locale] ??
+        ev?.title?.cs ??
+        ev?.title ??
+        '';
       const desc =
-        ev?.description?.[locale] ?? ev?.description?.cs ?? ev?.description ?? '';
+        ev?.description?.[locale] ??
+        ev?.description?.cs ??
+        ev?.description ??
+        '';
       return normalizeStr(title).includes(q) || normalizeStr(desc).includes(q);
     });
   }

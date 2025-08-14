@@ -687,9 +687,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // regionální scope – můžeme později upravit podle ccCookie či UI
         countryCodes: ['CZ','SK','PL','HU','DE','AT'],
         onChoose: (it) => {
+          // ⬅ zásadní doplnění: vyplň input i stav
+          $city.value = it.city;
           currentFilters.city = it.city;
           clearNearMe(); // výběr města ruší Near Me
-          // necháme Apply tlačítko potvrdit filtr (UX beze změny)
+          // filtr se použije po kliknutí na Apply (UX beze změny)
         }
       });
     }

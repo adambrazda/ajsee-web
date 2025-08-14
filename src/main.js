@@ -7,6 +7,8 @@
 
 import './styles/main.scss';
 import { getAllEvents } from './api/eventsApi.js';
+import { setupCityTypeahead } from './city/typeahead.js';
+import { canonForInputCity } from './city/canonical.js';
 
 // ------- Global state -------
 let currentFilters = {
@@ -230,236 +232,6 @@ function updateMenuLinksWithLang(lang) {
 }
 
 /* =========================================================
-   City canonicalization & typeahead postprocess
-   ========================================================= */
-
-// diacritics-less lower
-const norm = (s) => (s||'').toString().toLowerCase()
-  .normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
-
-// heuristika: „praha 1/2/…“, „bratislava - stare mesto“ apod. -> base město
-function baseCityKey(s) {
-  const n = norm(s);
-
-  // Praha 1..10, Praha-… => "praha"
-  if (/^praha(?:\s*[- ]?\s*(?:[0-9ivxlcdm]+|[^0-9\s-].*))?$/i.test(n)) return 'praha';
-
-  // Bratislava – městské části
-  if (/^bratislava(?:\s*[- ]?.+)?$/.test(n)) return 'bratislava';
-
-  // Vídeň / Wien / Vienna / Wiedeń / Viedeň / Bécs => "vienna"
-  if (['wien','vienna','viden','vieden','wieden','becs'].includes(n)) return 'vienna';
-
-  // další triviální normalizace (vyhoď vše za čárkou / pomlčkou)
-  return n.split(/[,-]/)[0].trim();
-}
-
-// map kanon → preferovaný label v jazycích UI
-const CANON_LABEL = {
-  prague:  { cs:'Praha', sk:'Praha', en:'Prague', de:'Prag', pl:'Praga', hu:'Prága' },
-  brno:    { cs:'Brno',  sk:'Brno',  en:'Brno',   de:'Brünn',pl:'Brno',  hu:'Brünn' },
-  bratislava: { cs:'Bratislava', sk:'Bratislava', en:'Bratislava', de:'Pressburg', pl:'Bratysława', hu:'Pozsony' },
-  vienna:  { cs:'Vídeň', sk:'Viedeň', en:'Vienna', de:'Wien', pl:'Wiedeń', hu:'Bécs' },
-  ostrava: { cs:'Ostrava', sk:'Ostrava', en:'Ostrava', de:'Ostrau', pl:'Ostrawa', hu:'Osztrava' },
-  krakow:  { cs:'Krakov', sk:'Krakov', en:'Kraków', de:'Krakau', pl:'Kraków', hu:'Krakkó' },
-  warsaw:  { cs:'Varšava', sk:'Varšava', en:'Warsaw', de:'Warschau', pl:'Warszawa', hu:'Varsó' }
-};
-
-// aliasy → kanon (pro TM „city“ parametr použijeme EN endonym)
-function canonForInputCity(s) {
-  const n = norm(s);
-  if (!n) return '';
-
-  // Praha a spol.
-  if (n === 'praha' || n === 'prague' || n === 'prag' || n === 'praga' || /^praha/.test(n)) return 'Prague';
-
-  // Brno
-  if (n === 'brno') return 'Brno';
-
-  // Bratislava (včetně historických/hu názvů)
-  if (n === 'bratislava' || n === 'pozsony') return 'Bratislava';
-
-  // Vienna / Wien / Vídeň / Wiedeń / Viedeň / Bécs
-  if (['vienna','wien','viden','vieden','wieden','becs'].includes(n)) return 'Vienna';
-
-  // Ostrava
-  if (['ostrava','ostrau','ostrawa','osztrava'].includes(n)) return 'Ostrava';
-
-  // Warsaw
-  if (['warsaw','warszawa','warschau','varso','varšava','varsava','varsó'].includes(n)) return 'Warsaw';
-
-  // Krakow
-  if (['krakow','krakow','krakau','krakov','krakkó','krakow\u0144'].includes(n)) return 'Kraków';
-
-  // fallback: pokud uživatel zadal „praha 7“ apod., vrať kanon dle base klíče
-  const base = baseCityKey(n);
-  if (base === 'praha') return 'Prague';
-  if (base === 'bratislava') return 'Bratislava';
-  if (base === 'vienna') return 'Vienna';
-
-  // neznámé necháme být – pošleme tak, jak je (TM to občas zvládne)
-  return s;
-}
-
-function labelForCanon(canon, lang = currentLang) {
-  const key = norm(canon || '');
-  const map = CANON_LABEL[key];
-  if (!map) return canon;
-  return map[lang] || canon;
-}
-
-/* =========================================================
-   Ticketmaster Discovery API – city suggest (frontend side)
-   (Proxy endpoint: /.netlify/functions/ticketmasterCitySuggest)
-   ========================================================= */
-const citySuggestCache = new Map();
-
-// ⚠️ ZÁMĚRNĚ neposíláme countryCode (global search),
-// aby PL verze nevracela jen polská města. Netlify funkce
-// může volitelně přijmout víc kódů (CSV) – pokud ji upravíme,
-// je možné obnovit regionální scope a poslat např. "CZ,SK,PL,HU,DE,AT".
-async function suggestCities({
-  locale = 'cs',
-  keyword = '',
-  size = 50
-} = {}) {
-  const q = keyword.trim();
-  if (q.length < 2) return [];
-  const cacheKey = `${locale}|GLOBAL|${q.toLowerCase()}|${size}`;
-  if (citySuggestCache.has(cacheKey)) return citySuggestCache.get(cacheKey);
-
-  const qsParams = new URLSearchParams({ locale, keyword: q, size: String(size) });
-  try {
-    const r = await fetch(`/.netlify/functions/ticketmasterCitySuggest?${qsParams.toString()}`);
-    if (!r.ok) {
-      citySuggestCache.set(cacheKey, []);
-      return [];
-    }
-    const data = await r.json();
-
-    // základní převod
-    let list = (Array.isArray(data.cities) ? data.cities : []).map((c) => ({
-      city: c.label || c.name || c.value || '',
-      countryCode: c.countryCode || c.country || '',
-      lat: c.lat !== undefined ? Number(c.lat) : undefined,
-      lon: c.lon !== undefined ? Number(c.lon) : undefined,
-      score: typeof c.score === 'number' ? c.score : undefined
-    }));
-
-    // Sloučení „Praha 1/2/…“ atp. + seskupení synonym (Praha/Prague/Prag)
-    const merged = new Map();
-    for (const it of list) {
-      const b = baseCityKey(it.city);
-      // klíč pro skupinu synonym
-      let canonKey = b;
-      if (b === 'praha') canonKey = 'prague';
-      if (b === 'bratislava') canonKey = 'bratislava';
-      if (b === 'vienna') canonKey = 'vienna';
-      if (b === 'ostrava') canonKey = 'ostrava';
-      if (b === 'warszawa') canonKey = 'warsaw';
-      if (b === 'krakow') canonKey = 'krakow';
-
-      const cur = merged.get(canonKey);
-      if (!cur) {
-        merged.set(canonKey, { ...it, city: labelForCanon(canonKey, currentLang) });
-      } else {
-        // zvedni skóre, doplň lat/lon pokud chybí
-        cur.score = Math.max(cur.score || 0, it.score || 0);
-        if (!cur.lat && it.lat) cur.lat = it.lat;
-        if (!cur.lon && it.lon) cur.lon = it.lon;
-      }
-    }
-    // seřazení podle score/abecedy
-    list = Array.from(merged.values())
-      .sort((a, b) => (b.score || 0) - (a.score || 0) || a.city.localeCompare(b.city));
-
-    citySuggestCache.set(cacheKey, list);
-    return list;
-  } catch {
-    citySuggestCache.set(cacheKey, []);
-    return [];
-  }
-}
-
-/* UI binder pro input Město */
-function setupCityTypeahead(inputEl) {
-  if (!inputEl) return;
-  const panel = document.createElement('div');
-  panel.className = 'typeahead-panel';
-  panel.setAttribute('role', 'listbox');
-  panel.style.display = 'none';
-  inputEl.parentElement.appendChild(panel);
-
-  let items = [];
-  let activeIndex = -1;
-
-  const open = () => { panel.style.display = 'block'; };
-  const close = () => { panel.style.display = 'none'; activeIndex = -1; };
-  const isOpen = () => panel.style.display !== 'none';
-
-  const render = () => {
-    if (!items.length) {
-      panel.innerHTML = `<div class="typeahead-empty">${t('filters.noResults','Žádné výsledky')}</div>`;
-      return;
-    }
-    panel.innerHTML = items.map((it, i) => {
-      const metaParts = [it.state, it.countryCode].filter(Boolean);
-      const meta = metaParts.join(', ');
-      const score = it.score ? ` • ${it.score}` : '';
-      return `
-        <div class="typeahead-item ${i === activeIndex ? 'active' : ''}" role="option" data-index="${i}">
-          <span class="ti-city">${it.city}</span>
-          <span class="ti-meta">${meta}${score}</span>
-        </div>
-      `;
-    }).join('');
-  };
-
-  const choose = (idx) => {
-    const it = items[idx]; if (!it) return;
-    inputEl.value = it.city;
-    currentFilters.city = it.city;
-    clearNearMe(); // výběr města ruší Near me
-    close();
-  };
-
-  panel.addEventListener('mousedown', (e) => {
-    const el = e.target.closest('.typeahead-item');
-    if (el) choose(parseInt(el.dataset.index, 10));
-  });
-  document.addEventListener('click', (e) => {
-    if (!panel.contains(e.target) && e.target !== inputEl) close();
-  });
-
-  inputEl.addEventListener('keydown', (e) => {
-    if (!isOpen()) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = Math.min(activeIndex + 1, items.length - 1); render(); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); render(); }
-    else if (e.key === 'Enter') { e.preventDefault(); if (activeIndex >= 0) choose(activeIndex); else close(); }
-    else if (e.key === 'Escape') { e.preventDefault(); close(); }
-  });
-
-  const load = debounce(async () => {
-    const q = inputEl.value.trim();
-    currentFilters.city = q;
-    if (q.length < 2) { close(); return; }
-
-    // Globální hledání (nenutíme countryCode), následně lokálně sloučíme varianty
-    items = await suggestCities({
-      locale: currentLang,
-      keyword: q,
-      size: 80
-    });
-    activeIndex = -1; render(); open();
-  }, 180);
-
-  inputEl.addEventListener('input', load);
-  inputEl.addEventListener('focus', () => {
-    if (inputEl.value.trim().length >= 2 && items.length) { render(); open(); }
-  });
-}
-
-/* =========================================================
    Quick chips (Today / Weekend / Clear) + Active chips + Near Me
    ========================================================= */
 
@@ -612,7 +384,7 @@ async function handleNearMeClick(btn) {
     let msg = t('filters.geoError', 'Poloha není dostupná. Zkuste to znovu.');
     const em = String(e?.message || '');
     if (em.includes('PERMISSION_DENIED')) {
-      msg = t('filters.geoDenied', 'Přístup k poloze je zamítnut. Povolení můžete změnit v nastavení prohlížeře.');
+      msg = t('filters.geoDenied', 'Přístup k poloze je zamítnut. Povolení můžete změnit v nastavení prohlížeče.');
     } else if (em.includes('TIMEOUT')) {
       msg = t('filters.geoTimeout', 'Získání polohy trvalo příliš dlouho. Zkuste to prosím znovu.');
     }
@@ -907,8 +679,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     setFilterInputsFromState();
 
-    // City typeahead – aktivace
-    if ($city) setupCityTypeahead($city);
+    // City typeahead – nový modul (H5b/H5c)
+    if ($city) {
+      setupCityTypeahead($city, {
+        locale: currentLang,
+        t,
+        // regionální scope – můžeme později upravit podle ccCookie či UI
+        countryCodes: ['CZ','SK','PL','HU','DE','AT'],
+        onChoose: (it) => {
+          currentFilters.city = it.city;
+          clearNearMe(); // výběr města ruší Near Me
+          // necháme Apply tlačítko potvrdit filtr (UX beze změny)
+        }
+      });
+    }
 
     // Quick chips (Today / Weekend / Clear)
     setupQuickChips($form || qs('.events-filters'));

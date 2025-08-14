@@ -188,14 +188,15 @@ export async function getAllEvents({ locale = 'cs', filters = {} } = {}) {
     nearMeRadiusKm = 50,
   } = filters;
 
-  // 🔧 KLÍČOVÁ OPRAVA:
-  // Do upstreamu posíláme *anglické endonymum* (Prague/Vienna/…),
-  // protože Ticketmaster má s EN tvary nejlepší „hit rate“ napříč jazyky.
-  // (main.js už canonForInputCity používá – zde to jen pojistíme)
+  // Upstream: používej EN endonyma/exonyma (TM má nejlepší „hit rate“),
+  // a pokud je město zadané, NEVÁŽEME dotaz na countryCode odvozené z UI jazyka.
   const upstreamFilters = {
     ...filters,
     city: city ? canonForInputCity(city) : ''
   };
+  if (upstreamFilters.city) {
+    delete upstreamFilters.countryCode; // KLÍČOVÝ HOTFIX
+  }
 
   // --- Ticketmaster (always) ---
   const tm = await fetchTicketmasterEvents({ locale, filters: upstreamFilters });

@@ -1,50 +1,9 @@
 // /netlify/functions/ticketmasterEvents.js
 // ---------------------------------------------------------
-// Netlify proxy for Ticketmaster Discovery API (ESM + Lambda-compatible return)
-// - normalizes city aliases (Praha/Prague/Prag/Praga -> Prague, Praha 1..10 -> Prague)
-// - safe date parsing
-// - fallback retry with keyword if "city" returns no events
+// Netlify proxy pro Ticketmaster Discovery API (ESM + Lambda-compatible return)
+// - countryCode posíláme pouze pokud NENÍ zadané city (globální city search)
+// - bezpečné parsování dat, omezení size, mapování sortu, datumů atd.
 // ---------------------------------------------------------
-
-/** Remove diacritics & normalize */
-function norm(s = '') {
-  return String(s)
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')      // strip diacritics
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-/** Collapse districts etc. -> base city (praha 1..10 => praha) */
-function baseCity(raw = '') {
-  let n = norm(raw);
-  // Praha {1..10} / Praha I..X
-  n = n.replace(/^praha\s+([ivxlcdm]+|\d+)\b.*$/, 'praha');
-  // Prague {1..10}
-  n = n.replace(/^prague\s+\d+\b.*$/, 'prague');
-  return n;
-}
-
-/** Canonicalize to EN names that Ticketmaster spolehlivě zná */
-function canonicalCity(raw = '') {
-  const n = baseCity(raw);
-
-  // CZ/SK/AT/DE/PL/HU – nejčastější aliasy
-  if (/^(praha|prague|prag|praga)\b/.test(n)) return 'Prague';
-  if (/^(vienna|wien|viden|v%C3%ADde%C5%88|v%C3%ADde%C5%88|viden)\b/.test(n)) return 'Vienna';
-  if (/^(munich|muenchen|munch|munchen|muench|muench|mnichov|m%C3%BCnchen|m%C3%BCnch)\b/.test(n)) return 'Munich';
-  if (/^bratislava\b/.test(n)) return 'Bratislava';
-  if (/^brno\b/.test(n)) return 'Brno';
-  if (/^ostrava\b/.test(n)) return 'Ostrava';
-  if (/^(warszawa|warsaw|varsava|var%C5%A1ava|warschau)\b/.test(n)) return 'Warsaw';
-  if (/^(wroclaw|wroc%C5%82aw|wroclaw)\b/.test(n)) return 'Wroclaw';
-  if (/^(krakow|krak%C3%B3w|krakov)\b/.test(n)) return 'Krakow';
-  if (/^budapest\b/.test(n)) return 'Budapest';
-
-  // fallback – vrať původní, ale bez period/čárek apod.
-  return raw.toString().trim();
-}
 
 /**
  * Parse UI date formats to ISO8601:
@@ -87,12 +46,6 @@ function toIsoDay(dateStr, endOfDay = false) {
   return `${y}-${m}-${d}T${hh}:${mm}:${ss}Z`;
 }
 
-async function callTM(url) {
-  const resp = await fetch(url.toString(), { headers: { accept: 'application/json' } });
-  const text = await resp.text();
-  return { status: resp.status, text };
-}
-
 export const handler = async (event) => {
   try {
     const q = event?.queryStringParameters || {};
@@ -103,28 +56,27 @@ export const handler = async (event) => {
 
     if (!API_KEY) {
       console.error('[ticketmasterEvents] Missing API key');
-      return {
-        statusCode: 500,
-        headers: { 'content-type': 'application/json; charset=utf-8' },
-        body: JSON.stringify({ error: 'TM_API_KEY not set' })
-      };
+      return json(500, { error: 'TM_API_KEY not set' });
     }
 
     const BASE =
       process.env.TM_BASE_URL ||
       'https://app.ticketmaster.com/discovery/v2';
 
-    const canonical = canonicalCity(q.city || '');
-
     // Base URL
     const url = new URL(`${BASE}/events.json`);
     url.searchParams.set('apikey', API_KEY);
 
-    // Locale & country
-    const countryCode = q.countryCode || 'CZ';
-    const locale = q.locale || 'cs'; // necháme projít z FE, není to limitující
-    url.searchParams.set('countryCode', countryCode);
+    // Locale & OPTIONAL country
+    const locale = q.locale || 'cs';
     url.searchParams.set('locale', locale);
+
+    // Pokud je zadané city => NEPOSÍLEJ countryCode (globální city search)
+    const cityParam = q.city || '';
+    const rawCountry = (q.countryCode || '').toString().trim().toUpperCase();
+    if (!cityParam && rawCountry) {
+      url.searchParams.set('countryCode', rawCountry);
+    }
 
     // Sort mapping
     const toTmSort = (s) => {
@@ -147,6 +99,7 @@ export const handler = async (event) => {
     // Whitelisted passthrough params
     const passthrough = [
       'keyword',
+      'city',
       'classificationName',
       'venueId',
       'attractionId',
@@ -169,35 +122,14 @@ export const handler = async (event) => {
       }
     }
 
-    // City – pošleme kanon v EN (řeší Praha/Prague/Prag/Praga a Praha 1..10)
-    if ((q.city || '').trim()) {
-      url.searchParams.set('city', canonical);
-    }
-
     const finalUrl = url.toString();
     console.log('[ticketmasterEvents] →', finalUrl);
 
-    // 1) Primární dotaz
-    let { status, text } = await callTM(url);
-
-    // 2) Fallback: když 0 výsledků a máme city, zkus keyword=canonical
-    if (status === 200) {
-      try {
-        const json = JSON.parse(text);
-        if (!json?._embedded?.events?.length && (q.city || '').trim()) {
-          const url2 = new URL(finalUrl);
-          url2.searchParams.delete('city');
-          url2.searchParams.set('keyword', canonical);
-          console.log('[ticketmasterEvents] fallback →', url2.toString());
-          const resp2 = await callTM(url2);
-          status = resp2.status;
-          text = resp2.text;
-        }
-      } catch { /* ignore parse errors, return raw */ }
-    }
+    const resp = await fetch(finalUrl, { headers: { accept: 'application/json' } });
+    const text = await resp.text(); // předáme raw JSON od TM
 
     return {
-      statusCode: status,
+      statusCode: resp.status,
       headers: {
         'content-type': 'application/json; charset=utf-8',
         'access-control-allow-origin': '*'
@@ -206,10 +138,18 @@ export const handler = async (event) => {
     };
   } catch (err) {
     console.error('[ticketmasterEvents] Error:', err);
-    return {
-      statusCode: 500,
-      headers: { 'content-type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({ error: err?.message || String(err) })
-    };
+    return json(500, { error: err?.message || String(err) });
   }
 };
+
+// Jednotný JSON response helper
+function json(status, data) {
+  return {
+    statusCode: status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store'
+    },
+    body: JSON.stringify(data)
+  };
+}

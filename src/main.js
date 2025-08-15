@@ -2,7 +2,8 @@
 // ---------------------------------------------------------
 // AJSEE – Events UI, i18n & filters (+ city typeahead, "Near me",
 // quick chips (Today/Weekend/Clear), active-filter chips,
-// URL sync, calendar links, mobile sheet, geolocation w/ IP fallback)
+// URL sync, calendar links, mobile sheet, geolocation w/ IP fallback,
+// EVENTS PAGE: pagination (Load more), category tiles binding, sticky tweaks
 // ---------------------------------------------------------
 
 import './styles/main.scss';
@@ -24,6 +25,14 @@ let currentFilters = {
   nearMeRadiusKm: 50
 };
 let currentLang = 'cs';
+
+// pagination cache (events page)
+const pagination = {
+  page: 1,
+  pageSize: 12,
+  filtered: [], // poslední vyfiltrované a seřazené eventy
+};
+let ioLoadMore = null; // IntersectionObserver pro auto-load
 
 // Store last opened event for modal (optional future use)
 let selectedEvent = null;
@@ -531,8 +540,10 @@ function setFilterInputsFromState() {
 
 // central render + url + chips
 async function renderAndSync() {
+  // při změně filtrů resetuj stránkování
+  pagination.page = 1;
   syncURLFromFilters();
-  await renderEvents(currentLang, currentFilters);
+  await renderEvents(currentLang, currentFilters, { append: false });
   renderFilterChips();
 }
 
@@ -569,7 +580,45 @@ function initFilterSheet() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 }
 
-// ------- DOM Ready -------
+/* =========================================================
+   Sticky offset helper (hlavička výš) – pro lepší UX filtrovací lišty
+   ========================================================= */
+function applyStickyOffsets() {
+  const header = qs('.site-header');
+  const dock = qs('.filter-dock');
+  if (!header || !dock) return;
+  const top = header.offsetHeight || 72;
+  dock.style.setProperty('--stick-top', `${top}px`);
+}
+
+/* =========================================================
+   Kategorie dlaždice – klik = nastavit filtr + scroll
+   ========================================================= */
+function bindCategoryTiles() {
+  const wrap = qs('#eventsCategories');
+  if (!wrap) return;
+
+  qsa('.category-card', wrap).forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const cat = btn.dataset.category || 'all';
+      currentFilters.category = cat;
+      const select = qs('#filter-category');
+      if (select) select.value = cat;
+      pagination.page = 1;
+      await renderAndSync();
+
+      // vizuální stav
+      qsa('.category-card', wrap).forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+      // scroll k seznamu
+      const target = qs('#upcoming-events') || qs('#eventsList');
+      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
+
+/* =========================================================
+   DOM Ready
+   ========================================================= */
 document.addEventListener('DOMContentLoaded', async () => {
   currentLang = detectLang();
 
@@ -581,6 +630,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateMenuLinksWithLang(currentLang);
   await applyTranslations(currentLang); // zároveň doplní quick chips a placeholdery
   activateNavLink();
+  applyStickyOffsets();
 
   // Jazykové přepínače
   qsa('.lang-btn').forEach((btn) => {
@@ -684,10 +734,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       setupCityTypeahead($city, {
         locale: currentLang,
         t,
-        // regionální scope – můžeme později upravit podle ccCookie či UI
         countryCodes: ['CZ','SK','PL','HU','DE','AT'],
         onChoose: (it) => {
-          // ⬅ zásadní doplnění: vyplň input i stav
           $city.value = it.city;
           currentFilters.city = it.city;
           clearNearMe(); // výběr města ruší Near Me
@@ -701,6 +749,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Near Me – chip/ghost
     attachNearMeButton($form || qs('.events-filters'));
+
+    // Kategorie dlaždice
+    bindCategoryTiles();
 
     await renderAndSync();
 
@@ -838,18 +889,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-// ------- Render events -------
-async function renderEvents(locale = 'cs', filters = currentFilters) {
+// ------- Render events (supports pagination on /events) -------
+async function renderEvents(locale = 'cs', filters = currentFilters, { append = false } = {}) {
   const eventsList = document.getElementById('eventsList');
   if (!eventsList) return;
 
-  try {
-    // ⬇️ důležitá část: kanonizuj město pro Ticketmaster (Praha → Prague apod.)
-    const apiFilters = { ...filters };
-    if (apiFilters.city) {
-      apiFilters.city = canonForInputCity(apiFilters.city);
-    }
+  const isHomepage =
+    window.location.pathname === '/' ||
+    window.location.pathname.endsWith('index.html');
+  const isEventsPage =
+    window.location.pathname.endsWith('/events') ||
+    window.location.pathname.endsWith('events.html') ||
+    /\/events/i.test(window.location.pathname);
 
+  try {
+    // ⬇️ zásadní: kanonizuj město pro Ticketmaster (Praha → Prague apod.)
+    const apiFilters = { ...filters };
+    if (apiFilters.city) apiFilters.city = canonForInputCity(apiFilters.city);
+
+    // Fetch událostí (vždy čerstvě kvůli možnému datovému driftu)
     const events = await getAllEvents({ locale, filters: apiFilters });
 
     if (!window.translations) {
@@ -870,98 +928,175 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     const preferredLocales = [locale, 'en', 'cs'];
 
+    // enrich IDs
     let filtered = [...events];
     filtered.forEach((event, index) => {
       if (!event.id) event.id = `event-${index}-${Math.random().toString(36).slice(2, 8)}`;
     });
 
+    // in-memory „category“ (protože TM segment může zahrnovat širší oblast)
     if (filters.category && filters.category !== 'all') {
       filtered = filtered.filter((e) => e.category === filters.category);
     }
 
+    // sort
     if (filters.sort === 'nearest') {
       filtered.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
     } else if (filters.sort === 'latest') {
       filtered.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
     }
 
-    const isHomepage = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
-    let showAllLink = false;
-    if (isHomepage && filtered.length > 6) {
-      filtered = filtered.slice(0, 6);
-      showAllLink = true;
-    }
+    // --- HOMEPAGE: 6 karet + Show All ---
+    if (isHomepage) {
+      let list = filtered.slice(0, 6);
+      let html = list.map(cardHTML).join('');
+      eventsList.innerHTML = html;
 
-    eventsList.innerHTML = filtered
-      .map((event) => {
-        const title = pickLocalized(event.title, preferredLocales) || 'Bez názvu';
-        const description = fixNonBreakingShortWords(pickLocalized(event.description, preferredLocales) || '', locale);
-
-        const dateVal = event.datetime || event.date;
-        const date = dateVal
-          ? new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-          : '';
-
-        const image = event.image || getRandomFallback(event.category);
-        const isDemoDetail = !event.url || event.url.includes('example');
-        const isDemoTickets = !event.tickets || String(event.tickets).includes('example');
-
-        const detailLabel = fixNonBreakingShortWords(t(isDemoDetail ? 'event-details-demo' : 'event-details', 'Zjistit více'), locale);
-        const ticketLabel = fixNonBreakingShortWords(t(isDemoTickets ? 'event-tickets-demo' : 'event-tickets', 'Vstupenky'), locale);
-
-        const cardClasses = ['event-card'];
-        if (event.promo) cardClasses.push('event-card-promo');
-
-        return `
-          <div class="${cardClasses.join(' ')}">
-            <img src="${image}" alt="${title}" class="event-img" />
-            <div class="event-content">
-              <h3 class="event-title">${title}</h3>
-              <p class="event-date">${date}</p>
-              <p class="event-description">${description}</p>
-              <div class="event-buttons-group">
-                ${
-                  event.partner === 'ticketmaster'
-                    ? `<a href="${event.url}" class="btn-event detail" target="_blank" rel="noopener">${detailLabel}</a>`
-                    : `<button class="btn-event detail" data-event-id="${event.id}">${detailLabel}</button>`
-                }
-                ${
-                  isDemoTickets
-                    ? `<span class="btn-event ticket demo">${ticketLabel}</span>`
-                    : `<a href="${event.tickets}" class="btn-event ticket" target="_blank" rel="noopener">${ticketLabel}</a>`
-                }
-              </div>
-            </div>
+      if (filtered.length > 6) {
+        eventsList.innerHTML += `
+          <div class="events-show-all-btn">
+            <a href="/events.html?lang=${locale}" class="btn btn-primary show-all-events-btn">
+              ${t('events-show-all', 'Zobrazit všechny události')}
+            </a>
           </div>
         `;
-      })
-      .join('');
-
-    if (isHomepage && showAllLink) {
-      eventsList.innerHTML += `
-        <div class="events-show-all-btn">
-          <a href="/events.html?lang=${locale}" class="btn btn-primary show-all-events-btn">
-            ${t('events-show-all', 'Zobrazit všechny události')}
-          </a>
-        </div>
-      `;
+      }
+      // Odpoj případný observer
+      teardownLoadMore();
+      return;
     }
 
-    // Detail modalu
+    // --- EVENTS PAGE: pagination ---
+    // reset při plném renderu
+    if (!append) {
+      pagination.filtered = filtered;
+      pagination.page = 1;
+      eventsList.innerHTML = '';
+    }
+
+    // kolik zobrazit a appendnout
+    const until = pagination.page * pagination.pageSize;
+    const slice = pagination.filtered.slice(0, until);
+
+    // přegeneruj celý obsah (jednodušší = spolehlivější s ohledem na i18n)
+    eventsList.innerHTML = slice.map(cardHTML).join('');
+
+    // Detaily v modalu napoj
     qsa('.btn-event.detail').forEach((button) => {
       if (button.tagName.toLowerCase() === 'button') {
         button.addEventListener('click', (e) => {
           const id = e.currentTarget.getAttribute('data-event-id');
-          const eventData = filtered.find((ev) => ev.id === id) || events.find((ev) => ev.id === id);
+          const eventData = slice.find((ev) => ev.id === id) || pagination.filtered.find((ev) => ev.id === id);
           if (eventData) openEventModal(eventData, locale);
         });
       }
     });
+
+    // „Načíst další“ (vytvořit/skrýt)
+    ensureLoadMore(pagination.filtered.length, slice.length, locale);
+
+    // ---- helpers: karta ----
+    function cardHTML(event) {
+      const title = pickLocalized(event.title, preferredLocales) || 'Bez názvu';
+      const description = fixNonBreakingShortWords(pickLocalized(event.description, preferredLocales) || '', locale);
+
+      const dateVal = event.datetime || event.date;
+      const date = dateVal
+        ? new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
+        : '';
+
+      const image = event.image || getRandomFallback(event.category);
+      const isDemoDetail = !event.url || event.url.includes('example');
+      const isDemoTickets = !event.tickets || String(event.tickets).includes('example');
+
+      const detailLabel = fixNonBreakingShortWords(t(isDemoDetail ? 'event-details-demo' : 'event-details', 'Zjistit více'), locale);
+      const ticketLabel = fixNonBreakingShortWords(t(isDemoTickets ? 'event-tickets-demo' : 'event-tickets', 'Vstupenky'), locale);
+
+      const cardClasses = ['event-card'];
+      if (event.promo) cardClasses.push('event-card-promo');
+
+      return `
+        <div class="${cardClasses.join(' ')}">
+          <img src="${image}" alt="${title}" class="event-img" />
+          <div class="event-content">
+            <h3 class="event-title">${title}</h3>
+            <p class="event-date">${date}</p>
+            <p class="event-description">${description}</p>
+            <div class="event-buttons-group">
+              ${
+                event.partner === 'ticketmaster'
+                  ? `<a href="${event.url}" class="btn-event detail" target="_blank" rel="noopener">${detailLabel}</a>`
+                  : `<button class="btn-event detail" data-event-id="${event.id}">${detailLabel}</button>`
+              }
+              ${
+                isDemoTickets
+                  ? `<span class="btn-event ticket demo">${ticketLabel}</span>`
+                  : `<a href="${event.tickets}" class="btn-event ticket" target="_blank" rel="noopener">${ticketLabel}</a>`
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
   } catch (e) {
     console.error(e);
     const msg = t('events-load-error', 'Události nelze načíst. Zkuste to později.');
     const list = document.getElementById('eventsList');
     if (list) list.innerHTML = `<p>${msg}</p>`;
+    teardownLoadMore();
+  }
+}
+
+/* =========================================================
+   Load more (events page)
+   ========================================================= */
+function ensureLoadMore(total, shown, locale) {
+  let btn = document.getElementById('eventsLoadMore');
+  const host = qs('.events-upcoming-section .container') || document.body;
+
+  if (shown >= total) {
+    // vše zobrazeno
+    if (btn) btn.remove();
+    teardownLoadMore();
+    return;
+  }
+
+  const label = t('events-load-more', 'Načíst další');
+  if (!btn) {
+    const wrap = document.createElement('div');
+    wrap.className = 'events-load-more-wrap';
+    wrap.innerHTML = `<button type="button" id="eventsLoadMore" class="btn btn-secondary">${label}</button>`;
+    host.appendChild(wrap);
+    btn = wrap.querySelector('#eventsLoadMore');
+  } else {
+    btn.textContent = label;
+  }
+
+  btn.onclick = async () => {
+    pagination.page += 1;
+    await renderEvents(currentLang, currentFilters, { append: true });
+  };
+
+  // Auto-load na doscroll (lze vypnout – stačí IO neinstancovat)
+  setupLoadMoreObserver(btn);
+}
+
+function setupLoadMoreObserver(targetBtn) {
+  teardownLoadMore();
+  if (!('IntersectionObserver' in window)) return;
+  ioLoadMore = new IntersectionObserver((entries) => {
+    const e = entries[0];
+    if (e && e.isIntersecting) {
+      targetBtn.click();
+    }
+  }, { rootMargin: '120px 0px' });
+  ioLoadMore.observe(targetBtn);
+}
+
+function teardownLoadMore() {
+  if (ioLoadMore) {
+    ioLoadMore.disconnect();
+    ioLoadMore = null;
   }
 }
 

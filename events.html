@@ -4,37 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title data-i18n-key="events-page-title">Události</title>
+  <!-- (styly bundlu se natahují přes Vite/Netlify v /src/main.js) -->
 </head>
 <body>
   <!-- Header a navigace -->
-<header class="site-header">
-  <div class="header-inner">
+  <header class="site-header">
+    <div class="header-inner">
 
-    <!-- Logo -->
-    <a href="/" class="logo-link" aria-label="Domů">
-      <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
-    </a>
+      <!-- Logo -->
+      <a href="/" class="logo-link" aria-label="Domů">
+        <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
+      </a>
 
-    <!-- Hamburger menu (pouze mobil) -->
-    <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
-      <span></span><span></span><span></span>
-    </button>
+      <!-- Hamburger menu (pouze mobil) -->
+      <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+        <span></span><span></span><span></span>
+      </button>
 
-    <!-- Navigace (hlavní menu) -->
-    <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
-      <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
-      <ul>
-        <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
-        <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
-        <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
-        <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
-        <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
-        <li><a href="/faq.html" data-i18n-key="nav-faq">FAQ</a></li>
-        <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
-      </ul>
+      <!-- Navigace (hlavní menu) -->
+      <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+        <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+        <ul>
+          <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+          <li><a href="/events.html" data-i18n-key="nav-events" aria-current="page">Události</a></li>
+          <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
+          <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
+          <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
+          <li><a href="/faq.html" data-i18n-key="nav-faq">FAQ</a></li>
+          <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+        </ul>
 
-      <!-- Jazykové přepínače v mobilním menu -->
-      <div class="language-switcher mobile-switcher">
+        <!-- Jazykové přepínače v mobilním menu -->
+        <div class="language-switcher mobile-switcher">
+          <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
+          <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
+          <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
+          <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
+          <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
+          <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+        </div>
+      </nav>
+
+      <!-- Jazykové přepínače – desktop -->
+      <div class="language-switcher desktop-switcher" aria-label="Jazyk">
         <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
         <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
         <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
@@ -42,30 +54,19 @@
         <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
         <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
       </div>
-    </nav>
 
-    <!-- Jazykové přepínače – desktop -->
-    <div class="language-switcher desktop-switcher">
-      <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+      <!-- Overlay pozadí menu -->
+      <div class="menu-overlay-bg" aria-hidden="true"></div>
+
     </div>
+  </header>
 
-    <!-- Overlay pozadí menu -->
-    <div class="menu-overlay-bg"></div>
-
-  </div>
-</header>
-
-  <main>
+  <main id="main">
     <!-- Hero sekce -->
-    <section class="events-hero">
+    <section class="events-hero" aria-labelledby="events-hero-title">
       <div class="container events-hero-content">
         <div class="events-hero-text">
-          <h1 class="events-hero-title" data-i18n-key="events-hero-title">
+          <h1 id="events-hero-title" class="events-hero-title" data-i18n-key="events-hero-title">
             Nejlepší zážitky na dosah
           </h1>
           <p class="events-hero-desc" data-i18n-key="events-hero-desc">
@@ -75,23 +76,23 @@
             Zjistit nejbližší události
           </a>
         </div>
-        <div class="events-hero-image">
-          <img src="/images/hero-events.svg" alt="Ilustrace událostí" loading="lazy" />
+        <div class="events-hero-image" aria-hidden="true">
+          <img src="/images/hero-events.svg" alt="" loading="lazy" />
         </div>
       </div>
     </section>
 
     <!-- Sekce: Nejbližší události -->
-    <section id="upcoming-events" class="events-upcoming-section">
+    <section id="upcoming-events" class="events-upcoming-section" aria-labelledby="events-upcoming-title">
       <div class="container">
 
         <!-- FILTRY -->
-        <form id="events-filters-form" class="events-filters filter-dock" novalidate data-behavior="sheet">
-          <!-- TOOLBAR S CHIPY -->
+        <form id="events-filters-form" class="events-filters filter-dock" novalidate data-behavior="sheet" role="search">
+          <!-- TOOLBAR S CHIPY (sticky) -->
           <div class="filters-toolbar" aria-label="Rychlé filtry">
             <div class="chips">
-              <button type="button" class="chip" id="chipToday">Dnes</button>
-              <button type="button" class="chip" id="chipWeekend">Tento víkend</button>
+              <button type="button" class="chip" id="chipToday" data-i18n-key="filters.today">Dnes</button>
+              <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend">Tento víkend</button>
               <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
             </div>
             <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž">
@@ -101,7 +102,7 @@
           </div>
 
           <fieldset class="filters-fieldset">
-            <legend>Filtry</legend>
+            <legend class="sr-only">Filtry</legend>
 
             <div class="filter-group">
               <label for="filter-category" data-i18n-key="filters.category">Kategorie</label>
@@ -125,23 +126,23 @@
             <div class="filter-group">
               <label for="filter-city" data-i18n-key="filters.city">Město</label>
               <input id="filter-city" type="text" class="styled-input"
-                     placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
+                     placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off" />
             </div>
 
             <div class="filter-group">
               <label for="filter-date-from" data-i18n-key="filters.dateFrom">Od</label>
-              <input id="filter-date-from" type="date" class="styled-input">
+              <input id="filter-date-from" type="date" class="styled-input" />
             </div>
 
             <div class="filter-group">
               <label for="filter-date-to" data-i18n-key="filters.dateTo">Do</label>
-              <input id="filter-date-to" type="date" class="styled-input">
+              <input id="filter-date-to" type="date" class="styled-input" />
             </div>
 
             <div class="filter-group filter-keyword">
               <label for="filter-keyword" data-i18n-key="filters.keyword">Klíčové slovo</label>
               <input id="filter-keyword" type="search" class="styled-input"
-                     placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
+                     placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder" />
             </div>
 
             <div class="filter-actions">
@@ -155,64 +156,68 @@
           <button type="button" class="filters-close" id="filtersClose" aria-label="Zavřít filtry"></button>
         </form>
 
-        <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form">Filtry</button>
-        <div class="filters-overlay" id="filtersOverlay" hidden></div>
+        <!-- FAB pro mobil -->
+        <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form" data-i18n-key="filters.open">
+          Filtry
+        </button>
+        <div class="filters-overlay" id="filtersOverlay" hidden aria-hidden="true"></div>
 
-        <h2 class="events-upcoming-title" data-i18n-key="events-upcoming-title">Nejbližší události</h2>
+        <h2 class="events-upcoming-title" id="events-upcoming-title" data-i18n-key="events-upcoming-title">Nejbližší události</h2>
 
-        <!-- sjednoceno s CSS + JS -->
+        <!-- seznam karet; JS doplní skeleton, paginaci a “Load more” -->
         <div id="eventsList" class="events-list" aria-live="polite"></div>
+        <!-- “Load more” tlačítko se vkládá dynamicky JS (ensureLoadMore) -->
       </div>
     </section>
 
-    <!-- Kategorie událostí -->
-    <section class="events-categories">
+    <!-- Kategorie událostí (funkční dlaždice – aplikují filtr) -->
+    <section class="events-categories categories-section" aria-labelledby="events-categories-title">
       <div class="container">
-        <h3 data-i18n-key="events-categories-title">Kategorie</h3>
+        <h3 id="events-categories-title" data-i18n-key="events-categories-title">Kategorie</h3>
         <div class="events-categories-list" id="eventsCategories">
-          <div class="category-card" data-category="concert">
-            <span class="category-icon icon-concert"></span>
-            <span data-i18n-key="events-category-concert"></span>
-          </div>
-          <div class="category-card" data-category="festival">
-            <span class="category-icon icon-festival"></span>
-            <span data-i18n-key="events-category-festival"></span>
-          </div>
-          <div class="category-card" data-category="theatre">
-            <span class="category-icon icon-theatre"></span>
-            <span data-i18n-key="events-category-theatre"></span>
-          </div>
-          <div class="category-card" data-category="sport">
-            <span class="category-icon icon-sport"></span>
-            <span data-i18n-key="events-category-sport"></span>
-          </div>
+          <button class="category-card" data-category="concert" type="button" aria-pressed="false">
+            <span class="category-icon icon-concert" aria-hidden="true"></span>
+            <span data-i18n-key="events-category-concert">Koncerty</span>
+          </button>
+          <button class="category-card" data-category="festival" type="button" aria-pressed="false">
+            <span class="category-icon icon-festival" aria-hidden="true"></span>
+            <span data-i18n-key="events-category-festival">Festivaly</span>
+          </button>
+          <button class="category-card" data-category="theatre" type="button" aria-pressed="false">
+            <span class="category-icon icon-theatre" aria-hidden="true"></span>
+            <span data-i18n-key="events-category-theatre">Divadlo</span>
+          </button>
+          <button class="category-card" data-category="sport" type="button" aria-pressed="false">
+            <span class="category-icon icon-sport" aria-hidden="true"></span>
+            <span data-i18n-key="events-category-sport">Sport</span>
+          </button>
         </div>
       </div>
     </section>
 
-    <!-- Výhody -->
-    <section class="events-benefits">
+    <!-- Výhody (sekce je na /events spíš volitelná; lze skrýt přes JS/SCSS) -->
+    <section class="events-benefits why-us-section" aria-labelledby="events-benefits-title">
       <div class="container">
-        <h3 data-i18n-key="events-benefits-title">Proč s námi?</h3>
-        <div class="benefits-list">
-          <div class="benefit">
-            <span class="benefit-icon">🎫</span>
-            <span data-i18n-key="events-benefit-1"></span>
+        <h3 id="events-benefits-title" data-i18n-key="events-benefits-title">Proč s námi?</h3>
+        <div class="benefits-list" role="list">
+          <div class="benefit" role="listitem">
+            <span class="benefit-icon" aria-hidden="true">🎫</span>
+            <span data-i18n-key="events-benefit-1">Originální vstupenky přímo od pořadatelů</span>
           </div>
-          <div class="benefit">
-            <span class="benefit-icon">🤝</span>
-            <span data-i18n-key="events-benefit-2"></span>
+          <div class="benefit" role="listitem">
+            <span class="benefit-icon" aria-hidden="true">🤝</span>
+            <span data-i18n-key="events-benefit-2">Lokální zákaznická podpora</span>
           </div>
-          <div class="benefit">
-            <span class="benefit-icon">⭐</span>
-            <span data-i18n-key="events-benefit-3"></span>
+          <div class="benefit" role="listitem">
+            <span class="benefit-icon" aria-hidden="true">⭐</span>
+            <span data-i18n-key="events-benefit-3">Pečlivě vybírané akce</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- MODAL: Detail události -->
-    <div id="eventModal" class="event-modal hidden">
+    <div id="eventModal" class="event-modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="event-modal-content">
         <button id="modalClose" class="event-modal-close" aria-label="Zavřít" tabindex="0">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
@@ -236,15 +241,15 @@
             <span class="calendar-label" data-i18n-key="add-to-calendar">Přidat do kalendáře:</span>
             <div class="calendar-btns-wrap">
               <a href="#" id="googleCalendarLink" class="calendar-btn calendar-btn--google" target="_blank" rel="noopener">
-                <span class="calendar-btn-icon"></span>
+                <span class="calendar-btn-icon" aria-hidden="true"></span>
                 <span class="calendar-btn-label" data-i18n-key="calendar-google">Google</span>
               </a>
               <a href="#" id="outlookCalendarLink" class="calendar-btn calendar-btn--outlook" target="_blank" rel="noopener">
-                <span class="calendar-btn-icon"></span>
+                <span class="calendar-btn-icon" aria-hidden="true"></span>
                 <span class="calendar-btn-label" data-i18n-key="calendar-outlook">Outlook</span>
               </a>
               <a href="#" id="appleCalendarLink" class="calendar-btn calendar-btn--apple" download="event.ics">
-                <span class="calendar-btn-icon"></span>
+                <span class="calendar-btn-icon" aria-hidden="true"></span>
                 <span class="calendar-btn-label" data-i18n-key="calendar-apple">Apple / ICS</span>
               </a>
             </div>
@@ -257,18 +262,18 @@
 
   <!-- Footer -->
   <footer>
-    <div class="footer-social">
-      <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
-        <img src="/images/icons/instagram.svg" alt="Instagram" />
+    <div class="footer-social" aria-label="Sociální sítě">
+      <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener" aria-label="Instagram">
+        <img src="/images/icons/instagram.svg" alt="" />
       </a>
-      <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
-        <img src="/images/icons/facebook.svg" alt="Facebook" />
+      <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener" aria-label="Facebook">
+        <img src="/images/icons/facebook.svg" alt="" />
       </a>
-      <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
-        <img src="/images/icons/twitter.svg" alt="Twitter" />
+      <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener" aria-label="X / Twitter">
+        <img src="/images/icons/twitter.svg" alt="" />
       </a>
-      <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
-        <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
+      <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <img src="/images/icons/linkedin.svg" alt="" />
       </a>
     </div>
     <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>

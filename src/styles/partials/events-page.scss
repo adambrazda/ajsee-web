@@ -74,7 +74,6 @@
 
 /* -----------------------------
    „NEJBLÍŽŠÍ UDÁLOSTI“ + FILTRY
-   (POZOR: markup má class="events-upcoming-section")
 ----------------------------- */
 .events-upcoming-section {
   background: #f8fbfe;
@@ -93,23 +92,19 @@
     margin: .25rem 0 1rem;
   }
 
-  /* Sjednocený AURORA filter dock
-     – samotné rozložení/komponenty jsou v src/styles/events.scss.
-     Tady jen page-specifické umístění a sticky chování. */
   .filter-dock {
     margin: 1rem 0 2rem;
   }
 
-  /* sticky na desktopu (drží se pod headerem) */
+  /* sticky na desktopu – offset řízen přes CSS var nastavenou v JS */
   @media (min-width: 1024px) {
     .filter-dock {
       position: sticky;
-      top: clamp(64px, 7.5vh, 92px); /* bezpečný offset pod tvým headerem */
+      top: var(--stick-top, clamp(64px, 7.5vh, 92px));
       z-index: 25;
     }
   }
 
-  /* Toolbar s chipy – jemné doladění spacingu v rámci stránky */
   .filters-toolbar { margin-bottom: .25rem; }
 }
 
@@ -191,8 +186,15 @@
       box-shadow: 0 1px 7px #0077cc10;
       display: flex; flex-direction: column; align-items: center;
       cursor: pointer; transition: background .18s, box-shadow .19s, transform .13s;
+      outline: none;
 
       &:hover, &:focus { background: #eaf6ff; box-shadow: 0 8px 28px #0077cc24; transform: translateY(-2px) scale(1.04); }
+
+      /* aktivní stav po kliknutí (aria-pressed="true") */
+      &[aria-pressed="true"] {
+        background:#eaf6ff;
+        box-shadow: 0 0 0 2px rgba(0,119,204,.22) inset, 0 8px 28px #0077cc24;
+      }
 
       .category-icon { width: 45px; height: 45px; margin-bottom: 1.1rem; }
       span { font-weight: 600; font-size: 1.1rem; color: #003366; }
@@ -201,7 +203,7 @@
 }
 
 /* -----------------------------
-   VÝHODY
+   VÝHODY („Proč s námi?“) – sladěno s aktuálním markupem
 ----------------------------- */
 .events-benefits {
   background: linear-gradient(110deg, #f8fbfe 75%, #fff 100%);
@@ -215,21 +217,33 @@
     text-align: center;
   }
 
-  ul {
-    display: flex; flex-wrap: wrap; gap: 1.8rem; justify-content: center;
-    max-width: 920px; margin: 0 auto; list-style: none; padding: 0;
-
-    li {
-      display: flex; align-items: center; background: #fff; border-radius: 1.1rem;
-      box-shadow: 0 1px 8px #0077cc13; padding: 1.2rem 1.8rem; font-size: 1.08rem;
-      color: #003366; min-width: 220px; font-weight: 600;
-
-      .icon-ticket, .icon-support, .icon-star {
-        display: inline-block; width: 30px; height: 30px; margin-right: 1em;
-      }
-    }
+  .benefits-list{
+    display:flex; flex-wrap:wrap; gap:1.4rem; justify-content:center;
+    max-width: 920px; margin: 0 auto;
   }
+  .benefit{
+    display:flex; align-items:center; gap:.8rem;
+    background:#fff; border-radius: 1.1rem; box-shadow:0 1px 8px #0077cc13;
+    padding: 1rem 1.4rem; font-size: 1.06rem; color:#003366; font-weight:600; min-width:240px;
+  }
+  .benefit-icon{ font-size:1.35rem; line-height:1; }
 }
+
+/* -----------------------------
+   LOAD MORE (pro stránku Události)
+----------------------------- */
+.events-load-more-wrap{
+  display:flex;justify-content:center;align-items:center;width:100%;
+  margin:2rem 0 0;
+}
+.events-load-more-wrap .btn{
+  height:44px; padding:.8rem 1.6rem; border-radius:999px; font-weight:800;
+}
+.events-load-more-wrap .btn.btn-secondary{
+  background:#eef4fb;color:#003366; border:none;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+.events-load-more-wrap .btn.btn-secondary:hover{ background:#e2edf9; transform:translateY(-1px); }
 
 /* -----------------------------
    RESPONSIVE
@@ -246,5 +260,5 @@
   .events-hero-content h1 { font-size: 2rem; }
   .events-list { padding: 0 .3rem; }
   .events-categories-list { grid-template-columns: 1fr 1fr; }
-  .events-benefits ul { flex-direction: column; gap: 1rem; }
+  .events-benefits .benefits-list { flex-direction: column; gap: 1rem; align-items: stretch; }
 }

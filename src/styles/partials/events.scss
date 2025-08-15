@@ -4,6 +4,19 @@
    Backward-compatible with current markup and new <form>-based layout
    --------------------------------------------------------- */
 
+/* Utility (pro ARIA live region v typeaheadu) */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
 /* Section wrapper */
 .section-events {
   padding: 4rem 1rem 2rem 1rem;
@@ -165,6 +178,12 @@
       }
     }
 
+    &.btn-secondary {
+      background:#eef4fb;
+      color:#003366;
+      &:hover,&:focus{ background:#e2edf9; transform:translateY(-1px); outline:none; }
+    }
+
     &.btn-ghost {
       background: #eef4fb;
       color: #003366;
@@ -178,23 +197,12 @@
   }
 }
 
-/* --- Desktop ≥1100px: 12 sloupců ---
-   1. řádek: Kategorie | Řazení | Město | Od
-   2. řádek: Do | Klíčové slovo (6 sloupců) | Tlačítka
-*/
+/* --- Desktop ≥1100px: 12 sloupců --- */
 @media (min-width: 1100px) {
   .filters-fieldset { grid-template-columns: repeat(12, minmax(0,1fr)); }
-
-  /* default: každá .filter-group zabere 3 sloupce (4 do řady) */
   .filters-fieldset .filter-group { grid-column: span 3; }
-
-  /* „Do“ je 5. group v DOM → na 2. řádek vlevo */
   .filters-fieldset .filter-group:nth-of-type(5) { grid-column: 1 / span 3; }
-
-  /* Klíčové slovo uprostřed přes 6 sloupců */
   .filters-fieldset .filter-keyword { grid-column: 4 / span 6; }
-
-  /* Akční tlačítka vpravo */
   .filters-fieldset .filter-actions { grid-column: 10 / -1; justify-content: flex-end; }
 }
 
@@ -245,7 +253,16 @@
   .ti-meta { font-size: .85rem; color: #557; opacity: .95; }
 }
 
-.typeahead-empty {
+/* zvýraznění <mark> z typeaheadu */
+.typeahead-item mark {
+  background: #fff2a8;
+  color: inherit;
+  padding: 0 .1em;
+  border-radius: 2px;
+}
+
+.typeahead-empty,
+.typeahead-loading {
   padding: .6rem .85rem;
   font-size: .95rem;
   color: #667;
@@ -390,6 +407,34 @@
   max-width: 800px;
   font-size: 1rem;
 }
+
+/* Aktivní chipy (sekce pod toolbar) */
+.chips-active {
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  margin:.4rem 0 0.6rem;
+
+  .chip.is-active{
+    background:#fff;
+    border:1px solid #cfe3f7;
+    color:#003366;
+    box-shadow:0 2px 10px rgba(0,0,0,.04);
+  }
+}
+
+/* Load more */
+.events-load-more-wrap{
+  display:flex;justify-content:center;align-items:center;width:100%;
+  margin:2rem 0 0;
+}
+.events-load-more-wrap .btn{ height:44px; }
+.events-load-more-wrap .btn.btn-secondary{
+  background:#eef4fb;color:#003366;border:none;border-radius:999px;
+  padding:.8rem 1.6rem;font-weight:800;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+.events-load-more-wrap .btn.btn-secondary:hover{ background:#e2edf9; transform:translateY(-1px); }
 
 /* ------------------------
    MODAL

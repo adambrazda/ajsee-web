@@ -52,13 +52,13 @@ function fetchWithTimeout(url, { timeout = 8000, ...opts } = {}) {
   return fetch(url, { signal: ctrl.signal, ...opts }).finally(() => clearTimeout(t));
 }
 
-// Inject minimal CSS (runtime) – sr-only + collapsed dock, bez !important
+// Inject minimal CSS (runtime) – sr-only + collapsed dock + dynamic sticky top
 function ensureRuntimeStyles() {
   if (!document.getElementById('ajsee-runtime-style')) {
     const style = document.createElement('style');
     style.id = 'ajsee-runtime-style';
     style.textContent = `
-      /* vizuálně skryté (pro live regiony, bez vlivu na layout) */
+      /* vizuálně skryté (pro live regiony) */
       .sr-only{
         position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
         clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;
@@ -68,9 +68,20 @@ function ensureRuntimeStyles() {
       .filter-dock.is-collapsed{padding-bottom:.6rem;}
       .filter-dock.is-collapsed .filters-toolbar{margin-bottom:0;}
       .filters-toggle.chip{display:inline-flex;align-items:center;gap:.5rem;}
+      /* dynamický offset pod header (řeší "useknutí") */
+      .events-upcoming-section .filter-dock{top:var(--header-offset, 88px);}
     `;
     document.head.appendChild(style);
   }
+}
+
+// dynamický offset podle výšky headeru
+function updateHeaderOffset() {
+  const header = qs('.site-header');
+  const h = header ? Math.ceil(header.getBoundingClientRect().height) : 80;
+  // malý bezpečný rozestup
+  const safe = Math.max(56, h + 8);
+  document.documentElement.style.setProperty('--header-offset', `${safe}px`);
 }
 
 // ------- Helpers: typography -------
@@ -78,17 +89,12 @@ function fixNonBreakingShortWords(text, lang = 'cs') {
   if (!text || typeof text !== 'string') return text;
   switch (lang) {
     case 'cs':
-    case 'sk':
-      return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
-    case 'pl':
-      return text.replace(/ ([aAiIoOuUwWzZ]) /g, '\u00a0$1\u00a0');
-    case 'hu':
-      return text.replace(/ ([aAiIsS]) /g, '\u00a0$1\u00a0');
+    case 'sk': return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
+    case 'pl': return text.replace(/ ([aAiIoOuUwWzZ]) /g, '\u00a0$1\u00a0');
+    case 'hu': return text.replace(/ ([aAiIsS]) /g, '\u00a0$1\u00a0');
     case 'de':
-    case 'en':
-      return text.replace(/ ([aI]) /g, '\u00a0$1\u00a0');
-    default:
-      return text;
+    case 'en': return text.replace(/ ([aI]) /g, '\u00a0$1\u00a0');
+    default:   return text;
   }
 }
 
@@ -150,6 +156,21 @@ function t(key, fallback) {
   return fallback;
 }
 
+// Fallback překlady pro toggle (když v JSON chybí)
+const toggleFallback = {
+  cs: { show: 'Zobrazit filtry', hide: 'Skrýt filtry' },
+  en: { show: 'Show filters',     hide: 'Hide filters' },
+  de: { show: 'Filter anzeigen',  hide: 'Filter ausblenden' },
+  sk: { show: 'Zobraziť filtre',  hide: 'Skryť filtre' },
+  pl: { show: 'Pokaż filtry',     hide: 'Ukryj filtry' },
+  hu: { show: 'Szűrők megjelenítése', hide: 'Szűrők elrejtése' }
+};
+function toggleLabel(mode) { // 'show' | 'hide'
+  const fb = (toggleFallback[currentLang] || toggleFallback.en)[mode];
+  const key = mode === 'show' ? 'filters.show' : 'filters.hide';
+  return t(key, fb);
+}
+
 /**
  * Bezpečně vybere nejlepší lokalizovaný text z mapy
  */
@@ -174,31 +195,31 @@ function setBtnLabel(el, text) {
 }
 function updateFilterLocaleTexts() {
   // Quick chips
-  setBtnLabel(qs('#chipToday'),   t('filters.today',   'Dnes'));
-  setBtnLabel(qs('#chipWeekend'), t('filters.weekend', 'Tento víkend'));
+  setBtnLabel(qs('#chipToday'),   t('filters.today',   'Today'));
+  setBtnLabel(qs('#chipWeekend'), t('filters.weekend', 'This weekend'));
   // Near Me – both chip and fallback ghost button
-  setBtnLabel(qs('#chipNearMe'),    t('filters.nearMe', 'V mém okolí'));
-  setBtnLabel(qs('#filter-nearme'), t('filters.nearMe', 'V mém okolí'));
+  setBtnLabel(qs('#chipNearMe'),    t('filters.nearMe', 'Near me'));
+  setBtnLabel(qs('#filter-nearme'), t('filters.nearMe', 'Near me'));
 
   // Placeholders
   const cityInput = qs('#filter-city') || qs('#events-city-filter');
-  const cityPh = t('filters.cityPlaceholder') ?? t('filters.searchCityPlaceholder') ?? 'Praha, Brno...';
+  const cityPh = t('filters.cityPlaceholder') ?? t('filters.searchCityPlaceholder') ?? 'Prague, Brno...';
   if (cityInput) cityInput.placeholder = cityPh;
 
   const kwInput = qs('#filter-keyword');
-  const kwPh = t('filters.keywordPlaceholder') ?? t('filters.searchPlaceholder') ?? 'Umělec, místo, akce...';
+  const kwPh = t('filters.keywordPlaceholder') ?? t('filters.searchPlaceholder') ?? 'Artist, venue, event...';
   if (kwInput) kwInput.placeholder = kwPh;
 
   // Action buttons
   const applyBtn = qs('#events-apply-filters') || qs('.filter-actions .btn.btn-primary');
-  if (applyBtn) setBtnLabel(applyBtn, t('filters.apply', 'Použít filtry'));
+  if (applyBtn) setBtnLabel(applyBtn, t('filters.apply', 'Apply filters'));
 
   const resetBtn = qs('#events-clear-filters') || qs('.filter-actions button[type="reset"]');
-  if (resetBtn) setBtnLabel(resetBtn, t('filters.reset', 'Vymazat'));
+  if (resetBtn) setBtnLabel(resetBtn, t('filters.reset', 'Clear'));
 
-  // Filters toggle (added runtime)
+  // Filters toggle (runtime)
   const toggleBtn = qs('#filtersToggle');
-  if (toggleBtn) setBtnLabel(toggleBtn, filtersCollapsed ? t('filters.show','Zobrazit filtry') : t('filters.hide','Skrýt filtry'));
+  if (toggleBtn) setBtnLabel(toggleBtn, filtersCollapsed ? toggleLabel('show') : toggleLabel('hide'));
 }
 
 async function applyTranslations(lang) {
@@ -376,7 +397,7 @@ async function handleNearMeClick(btn) {
   const allBtns = [qs('#chipNearMe'), qs('#filter-nearme')].filter(Boolean);
 
   try {
-    allBtns.forEach(b => { b.disabled = true; b.textContent = t('filters.finding', 'Zjišťuji polohu…'); });
+    allBtns.forEach(b => { b.disabled = true; b.textContent = t('filters.finding', 'Detecting location…'); });
 
     try {
       if (navigator.permissions?.query) {
@@ -408,21 +429,20 @@ async function handleNearMeClick(btn) {
     await renderAndSync();
   } catch (e) {
     console.warn('Geo failed:', e);
-    let msg = t('filters.geoError', 'Poloha není dostupná. Zkuste to znovu.');
+    let msg = t('filters.geoError', 'Location unavailable. Try again.');
     const em = String(e?.message || '');
     if (em.includes('PERMISSION_DENIED')) {
-      msg = t('filters.geoDenied', 'Přístup k poloze je zamítnut. Povolení můžete změnit v nastavení prohlížeče.');
+      msg = t('filters.geoDenied', 'Access to location denied. Enable it in the browser settings.');
     } else if (em.includes('TIMEOUT')) {
-      msg = t('filters.geoTimeout', 'Získání polohy trvalo příliš dlouho. Zkuste to prosím znovu.');
+      msg = t('filters.geoTimeout', 'Getting your location took too long. Please try again.');
     }
     alert(msg);
   } finally {
-    allBtns.forEach(b => { if (b) { b.disabled = false; b.textContent = t('filters.nearMe', 'V mém okolí'); } });
+    allBtns.forEach(b => { if (b) { b.disabled = false; b.textContent = t('filters.nearMe', 'Near me'); } });
   }
 }
 
 function renderFilterChips() {
-  // lišta s aktivními chipy – oddělená od rychlých chipů
   let host = qs('.chips-active');
   if (!host) {
     host = document.createElement('div');
@@ -443,55 +463,55 @@ function renderFilterChips() {
     chip.type = 'button';
     chip.className = 'chip is-active';
     chip.textContent = label;
-    chip.setAttribute('aria-label', `${label} – ${t('filters.reset','Vymazat')}`);
+    chip.setAttribute('aria-label', `${label} – ${t('filters.reset','Clear')}`);
     chip.addEventListener('click', onClear);
     host.appendChild(chip);
   };
 
   if (currentFilters.category && currentFilters.category !== 'all') {
-    addChip(`${t('filters.category','Kategorie')}: ${t('category-'+currentFilters.category, currentFilters.category)}`, () => {
+    addChip(`${t('filters.category','Category')}: ${t('category-'+currentFilters.category, currentFilters.category)}`, () => {
       currentFilters.category = 'all';
       setFilterInputsFromState();
       renderAndSync();
     });
   }
   if (currentFilters.city) {
-    addChip(`${t('filters.city','Město')}: ${currentFilters.city}`, () => {
+    addChip(`${t('filters.city','City')}: ${currentFilters.city}`, () => {
       currentFilters.city = '';
       setFilterInputsFromState();
       renderAndSync();
     });
   }
   if (currentFilters.dateFrom) {
-    addChip(`${t('filters.dateFrom','Od')}: ${toISODate(currentFilters.dateFrom)}`, () => {
+    addChip(`${t('filters.dateFrom','From')}: ${toISODate(currentFilters.dateFrom)}`, () => {
       currentFilters.dateFrom = '';
       setFilterInputsFromState();
       renderAndSync();
     });
   }
   if (currentFilters.dateTo) {
-    addChip(`${t('filters.dateTo','Do')}: ${toISODate(currentFilters.dateTo)}`, () => {
+    addChip(`${t('filters.dateTo','To')}: ${toISODate(currentFilters.dateTo)}`, () => {
       currentFilters.dateTo = '';
       setFilterInputsFromState();
       renderAndSync();
     });
   }
   if (currentFilters.keyword) {
-    addChip(`${t('filters.keyword','Klíčové slovo')}: ${currentFilters.keyword}`, () => {
+    addChip(`${t('filters.keyword','Keyword')}: ${currentFilters.keyword}`, () => {
       currentFilters.keyword = '';
       setFilterInputsFromState();
       renderAndSync();
     });
   }
   if (currentFilters.sort && currentFilters.sort !== 'nearest') {
-    addChip(`${t('filters.sort','Řazení')}: ${t('filters.latest','Nejnovější')}`, () => {
+    addChip(`${t('filters.sort','Sort')}: ${t('filters.latest','Latest')}`, () => {
       currentFilters.sort = 'nearest';
       setFilterInputsFromState();
       renderAndSync();
     });
   }
   if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-    addChip(`${t('filters.nearMe','V mém okolí')} ~${currentFilters.nearMeRadiusKm} km`, () => {
+    addChip(`${t('filters.nearMe','Near me')} ~${currentFilters.nearMeRadiusKm} km`, () => {
       clearNearMe();
       setFilterInputsFromState();
       renderAndSync();
@@ -511,7 +531,6 @@ function attachNearMeButton(formEl) {
     return div;
   })();
 
-  // odstraň staré ghost tlačítko, pokud máme chip
   const oldGhost = qs('#filter-nearme', actions);
   if (chipNear && oldGhost) oldGhost.remove();
 
@@ -522,13 +541,12 @@ function attachNearMeButton(formEl) {
     return;
   }
 
-  // fallback – chip není v DOM → vlož ghost tlačítko do actions
   if (!qs('#filter-nearme', actions)) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.id = 'filter-nearme';
     btn.className = 'btn btn-ghost';
-    btn.textContent = t('filters.nearMe', 'V mém okolí');
+    btn.textContent = t('filters.nearMe', 'Near me');
     btn.addEventListener('click', () => handleNearMeClick(btn));
     actions.prepend(btn);
   }
@@ -539,7 +557,7 @@ function clearNearMe() {
   currentFilters.nearMeLon = null;
 }
 
-// pomocné – props -> inputy
+// props -> inputy
 function setFilterInputsFromState() {
   const $cat = qs('#filter-category') || qs('#events-category-filter');
   const $sort = qs('#filter-sort') || qs('#events-sort-filter');
@@ -577,7 +595,7 @@ function collapseFilters() {
   const toggle = qs('#filtersToggle');
   if (toggle) {
     toggle.setAttribute('aria-pressed', 'true');
-    setBtnLabel(toggle, t('filters.show','Zobrazit filtry'));
+    setBtnLabel(toggle, toggleLabel('show'));
   }
 }
 function expandFilters() {
@@ -588,13 +606,10 @@ function expandFilters() {
   const toggle = qs('#filtersToggle');
   if (toggle) {
     toggle.setAttribute('aria-pressed', 'false');
-    setBtnLabel(toggle, t('filters.hide','Skrýt filtry'));
+    setBtnLabel(toggle, toggleLabel('hide'));
   }
 }
-function toggleFilters() {
-  if (filtersCollapsed) expandFilters();
-  else collapseFilters();
-}
+function toggleFilters() { (filtersCollapsed ? expandFilters : collapseFilters)(); }
 
 // central render + url + chips
 async function renderAndSync({ resetPage = true } = {}) {
@@ -602,7 +617,6 @@ async function renderAndSync({ resetPage = true } = {}) {
   syncURLFromFilters();
   await renderEvents(currentLang, currentFilters);
   renderFilterChips();
-  // Auto-collapse if any filter is active (user can toggle back)
   if (hasActiveFilters()) collapseFilters();
 }
 
@@ -617,7 +631,6 @@ function initFilterSheet() {
   const overlay = qs('#filtersOverlay');
 
   const open = () => {
-    // při otevření sheetu rozbal i na desktopu, ať je UI konzistentní
     expandFilters();
     sheet.classList.add('is-open');
     if (overlay) {
@@ -644,6 +657,8 @@ function initFilterSheet() {
 // ------- DOM Ready -------
 document.addEventListener('DOMContentLoaded', async () => {
   ensureRuntimeStyles();
+  updateHeaderOffset();
+  window.addEventListener('resize', debounce(updateHeaderOffset, 150));
 
   currentLang = detectLang();
 
@@ -653,7 +668,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentFilters.countryCode = (ccCookie || langToCountry[currentLang] || 'CZ').toUpperCase();
 
   updateMenuLinksWithLang(currentLang);
-  await applyTranslations(currentLang); // doplní i quick chips a placeholdery
+  await applyTranslations(currentLang);
   activateNavLink();
 
   // Jazykové přepínače
@@ -713,6 +728,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       overlayNav.style.opacity = '1';
       document.body.classList.add('nav-open');
       document.body.style.overflow = 'hidden';
+      updateHeaderOffset(); // header může změnit výšku
     };
 
     const closeMenu = () => {
@@ -722,6 +738,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       overlayNav.style.opacity = '0';
       document.body.classList.remove('nav-open');
       document.body.style.overflow = '';
+      updateHeaderOffset();
     };
 
     hamburger.addEventListener('click', openMenu);
@@ -763,6 +780,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       toggle.id = 'filtersToggle';
       toggle.className = 'chip ghost filters-toggle';
       toggle.setAttribute('aria-pressed', 'false');
+      toggle.setAttribute('aria-controls', 'events-filters-form');
       toggle.addEventListener('click', () => toggleFilters());
       toolbar.appendChild(toggle);
       updateFilterLocaleTexts();
@@ -778,7 +796,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           $city.value = it.city;
           currentFilters.city = it.city;
           clearNearMe();
-          // po výběru města: ihned zpracuj a sbal
           renderAndSync().then(() => collapseFilters());
         }
       });
@@ -807,7 +824,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentFilters.city = e.target.value.trim();
       if (currentFilters.city) clearNearMe();
       $city.removeAttribute('data-autofromnearme');
-      // nevolám hned render; potvrzuje se Apply
     });
     $from?.addEventListener('change', (e) => (currentFilters.dateFrom = e.target.value || ''));
     $to?.addEventListener('change',   (e) => (currentFilters.dateTo   = e.target.value || ''));
@@ -902,15 +918,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       let valid = true;
       if (!name) {
-        showFieldError(form, 'name', t('contact-error-name', 'Zadejte své jméno.'));
+        showFieldError(form, 'name', t('contact-error-name', 'Enter your name.'));
         valid = false;
       }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showFieldError(form, 'email', t('contact-error-email', 'Zadejte platný e-mail.'));
+        showFieldError(form, 'email', t('contact-error-email', 'Enter a valid e-mail.'));
         valid = false;
       }
       if (!message) {
-        showFieldError(form, 'message', t('contact-error-message', 'Napište zprávu.'));
+        showFieldError(form, 'message', t('contact-error-message', 'Write a message.'));
         valid = false;
       }
       if (!valid) e.preventDefault();
@@ -940,7 +956,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   if (!eventsList) return;
 
   try {
-    // ⬇️ kanonizuj město pro Ticketmaster (Praha → Prague apod.)
+    // kanonizuj město pro Ticketmaster (Praha → Prague apod.)
     const apiFilters = { ...filters };
     if (apiFilters.city) {
       apiFilters.city = canonForInputCity(apiFilters.city);
@@ -998,7 +1014,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     eventsList.innerHTML = toRender
       .map((event) => {
-        const title = pickLocalized(event.title, preferredLocales) || 'Bez názvu';
+        const title = pickLocalized(event.title, preferredLocales) || 'Untitled';
         const description = fixNonBreakingShortWords(pickLocalized(event.description, preferredLocales) || '', locale);
 
         const dateVal = event.datetime || event.date;
@@ -1010,8 +1026,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
         const isDemoDetail = !event.url || event.url.includes('example');
         const isDemoTickets = !event.tickets || String(event.tickets).includes('example');
 
-        const detailLabel = fixNonBreakingShortWords(t(isDemoDetail ? 'event-details-demo' : 'event-details', 'Zjistit více'), locale);
-        const ticketLabel = fixNonBreakingShortWords(t(isDemoTickets ? 'event-tickets-demo' : 'event-tickets', 'Vstupenky'), locale);
+        const detailLabel = fixNonBreakingShortWords(t(isDemoDetail ? 'event-details-demo' : 'event-details', 'Details'), locale);
+        const ticketLabel = fixNonBreakingShortWords(t(isDemoTickets ? 'event-tickets-demo' : 'event-tickets', 'Tickets'), locale);
 
         const cardClasses = ['event-card'];
         if (event.promo) cardClasses.push('event-card-promo');
@@ -1046,7 +1062,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       const hasMore = filtered.length > toRender.length;
       const wrapperId = 'eventsLoadMoreWrap';
 
-      // vždy nejdřív odstraň starý wrapper, ať se nevytváří duplicitní
       const oldWrap = document.getElementById(wrapperId);
       if (oldWrap) oldWrap.remove();
 
@@ -1056,7 +1071,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
         wrap.id = wrapperId;
         wrap.innerHTML = `
           <button type="button" class="btn btn-secondary" id="btnLoadMore">
-            ${t('events-load-more','Načíst další')}
+            ${t('events-load-more','Load more')}
           </button>
         `;
         eventsList.parentElement.appendChild(wrap);
@@ -1077,7 +1092,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       eventsList.innerHTML += `
         <div class="events-show-all-btn">
           <a href="/events.html?lang=${locale}" class="btn btn-primary show-all-events-btn">
-            ${t('events-show-all', 'Zobrazit všechny události')}
+            ${t('events-show-all', 'Show all events')}
           </a>
         </div>
       `;
@@ -1095,7 +1110,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     });
   } catch (e) {
     console.error(e);
-    const msg = t('events-load-error', 'Události nelze načíst. Zkuste to později.');
+    const msg = t('events-load-error', 'Unable to load events. Try again later.');
     const list = document.getElementById('eventsList');
     if (list) list.innerHTML = `<p>${msg}</p>`;
   }
@@ -1160,7 +1175,7 @@ async function openEventModal(eventData, locale = 'cs') {
   const categoryKey = eventData.category || '';
   const categoryTranslated = fixNonBreakingShortWords(t(`category-${categoryKey}`, categoryKey), locale);
 
-  const title = pickLocalized(eventData.title, preferredLocales) || 'Bez názvu';
+  const title = pickLocalized(eventData.title, preferredLocales) || 'Untitled';
   const description = fixNonBreakingShortWords(pickLocalized(eventData.description, preferredLocales) || '', locale);
   const image = eventData.image || '/images/fallbacks/concert0.jpg';
   const dateVal = eventData.datetime || eventData.date;

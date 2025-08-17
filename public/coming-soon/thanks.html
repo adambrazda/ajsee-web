@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Díky – AJSEE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;font-family:Poppins,system-ui,sans-serif;background:#f7f8fa;color:#0d2235}
+    .wrap{max-width:720px;margin:0 auto;padding:64px 20px}
+    .card{background:#fff;border:1px solid #d9e1ea;border-radius:16px;padding:32px}
+    h1{margin:0 0 8px} p{color:#5c6a7a}
+    a.btn{display:inline-block;margin-top:14px;padding:12px 18px;background:#0077cc;color:#fff;border-radius:12px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1 class="cs">Děkujeme, jsi na seznamu.</h1>
+      <p class="cs">Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.</p>
+
+      <h1 class="en" style="display:none;">Thanks, you’re on the list.</h1>
+      <p class="en" style="display:none;">Please confirm your subscription in the email (double opt-in). We’ll send launch & partner updates soon.</p>
+
+      <a class="btn cs" href="/">Zpět na AJSEE.cz</a>
+      <a class="btn en" href="/" style="display:none;">Back to AJSEE.cz</a>
+    </div>
+  </div>
+  <script>
+    const lang = (new URLSearchParams(location.search).get('lang')||'').toLowerCase().startsWith('en') ? 'en' : 'cs';
+    document.querySelectorAll('.cs').forEach(el=> el.style.display = lang==='cs' ? '' : 'none');
+    document.querySelectorAll('.en').forEach(el=> el.style.display = lang==='en' ? '' : 'none');
+    document.documentElement.lang = lang;
+    if (window.gtag) window.gtag('event','page_view_waitlist_thanks');
+  </script>
+</body>
+</html>

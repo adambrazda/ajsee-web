@@ -191,5 +191,12 @@
   "filter-sport": "Sport",
   "filter-theatre": "Színház",
   "filter-nearest": "Legközelebbi",
-  "filter-latest": "Legújabb"
+  "filter-latest": "Legújabb",
+  "events-load-more": "Továbbiak betöltése",
+  "hp-waitlist": {
+    "text": "A valódi jegyértékesítés hamarosan indul – csatlakozz a várólistához.",
+    "cta": "Csatlakozás a várólistához",
+    "dismissAria": "Banner bezárása",
+    "ariaLabel": "Értesítés: jegyértékesítés hamarosan, link a várólistához"
+  }
 }

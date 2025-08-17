@@ -192,6 +192,12 @@
   "filter-theatre": "Divadlo",
   "filter-nearest": "Najbližšie",
   "filter-latest": "Najnovšie",
-
-  "footer-copyright": "© 2025 AJSEE®. Všetky práva vyhradené."
+  "footer-copyright": "© 2025 AJSEE®. Všetky práva vyhradené.",
+  "events-load-more": "Načítať ďalšie",
+  "hp-waitlist": {
+    "text": "Reálny predaj vstupeniek pripravujeme — pridajte sa na čakaciu listinu.",
+    "cta": "Pridať sa na čakaciu listinu",
+    "dismissAria": "Zavrieť banner",
+    "ariaLabel": "Informácia: pripravujeme predaj vstupeniek, odkaz na čakaciu listinu"
+  }
 }

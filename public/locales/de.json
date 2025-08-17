@@ -191,5 +191,12 @@
   "filter-sport": "Sport",
   "filter-theatre": "Theater",
   "filter-nearest": "Bevorstehend",
-  "filter-latest": "Neueste"
+  "filter-latest": "Neueste",
+  "events-load-more": "Mehr laden",
+    "hp-waitlist": {
+    "text": "Der echte Ticketverkauf startet bald – trag dich in die Warteliste ein.",
+    "cta": "Zur Warteliste",
+    "dismissAria": "Banner schließen",
+    "ariaLabel": "Hinweis: Ticketverkauf startet bald, Link zur Warteliste."
+  }
 }

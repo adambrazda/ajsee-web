@@ -15,6 +15,31 @@
     gtag('js', new Date());
     gtag('config', 'G-KOZS0D9JLK');
   </script>
+
+  <!-- Minimal styles pro HP waitlist banner (samostatné, bez zásahu do SCSS) -->
+  <style>
+    .hp-waitlist{
+      display:flex;align-items:center;justify-content:center;gap:.9rem;
+      margin:12px 0 18px;padding:12px 14px;
+      border:1px solid #d9e1ea;border-radius:12px;background:#eef6ff;
+      box-shadow:0 2px 10px rgba(0,0,0,.04)
+    }
+    .hp-waitlist p{margin:0;color:#0d2235;font-weight:600}
+    .hp-waitlist .hp-waitlist-cta{
+      display:inline-block;background:#0077cc;color:#fff;text-decoration:none;
+      border-radius:10px;padding:8px 14px;font-weight:800;white-space:nowrap
+    }
+    .hp-waitlist .hp-waitlist-cta:hover,.hp-waitlist .hp-waitlist-cta:focus{
+      background:#0063a8;color:#fff
+    }
+    .hp-waitlist .hp-waitlist-close{
+      background:transparent;border:0;font-size:20px;cursor:pointer;color:#0d2235;
+      width:32px;height:32px;line-height:1;border-radius:50%
+    }
+    .hp-waitlist .hp-waitlist-close:hover,.hp-waitlist .hp-waitlist-close:focus{
+      background:#e9f3ff
+    }
+  </style>
   <script type="module" crossorigin src="/assets/main-DXGW8Jvn.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="modulepreload" crossorigin href="/assets/main-CPlaT0oC.js">
@@ -103,6 +128,32 @@
 <!-- SEKCE UDÁLOSTÍ -->
 <section class="section-events" id="events">
   <div class="container">
+
+    <!-- 🔹 Waitlist banner (i18n 6 jazyků) -->
+    <div id="hpWaitlist"
+         class="hp-waitlist"
+         data-uid="v1"
+         role="region"
+         aria-live="polite"
+         data-i18n-aria="hp-waitlist.ariaLabel"
+         aria-label="Připravujeme reálný prodej vstupenek – přidej se na čekací listinu.">
+      <p data-i18n-key="hp-waitlist.text">
+        Reálný prodej vstupenek připravujeme — přidej se na čekací listinu.
+      </p>
+      <a class="hp-waitlist-cta"
+         id="hpWaitlistCta"
+         href="/coming-soon?utm_source=site&utm_medium=banner&utm_campaign=waitlist"
+         data-i18n-key="hp-waitlist.cta">
+        Přidat se na čekací listinu
+      </a>
+      <button type="button"
+              class="hp-waitlist-close"
+              id="hpWaitlistClose"
+              aria-label="Zavřít banner"
+              data-i18n-key="hp-waitlist.dismissAria">
+        ×
+      </button>
+    </div>
 
     <!-- 🔹 Nadpis sekce -->
     <div class="events-header">
@@ -394,6 +445,53 @@
 </div>
 
 <!-- Skripty -->
+
+<!-- Inline skript: chování waitlist banneru (dismiss + UTM + lang) -->
+<script>
+  (function(){
+    const box = document.getElementById('hpWaitlist');
+    if(!box) return;
+
+    // respektuj trvalé zavření
+    const uid = box.dataset.uid || 'v1';
+    if (localStorage.getItem('hpWaitlistDismissed') === uid) {
+      box.remove();
+      return;
+    }
+
+    // doplnění ?lang= do CTA podle URL (držte 6 jazyků konzistentně)
+    const cta = document.getElementById('hpWaitlistCta');
+    if (cta) {
+      const url = new URL(cta.href, location.origin);
+      const lang = (new URLSearchParams(location.search).get('lang')||'').toLowerCase();
+      if (lang && ['cs','en','de','sk','pl','hu'].includes(lang)) {
+        url.searchParams.set('lang', lang);
+        cta.href = url.toString();
+      }
+      cta.addEventListener('click', function(){
+        if (window.gtag) window.gtag('event','click_waitlist',{source:'home_banner'});
+      });
+    }
+
+    // zavírání
+    const btnClose = document.getElementById('hpWaitlistClose');
+    btnClose && btnClose.addEventListener('click', function(){
+      localStorage.setItem('hpWaitlistDismissed', uid);
+      box.remove();
+    });
+
+    // i18n pro aria-label regionu (volitelné – pokud doplníš klíč v locale JSON)
+    const ariaKey = box.getAttribute('data-i18n-aria');
+    if (ariaKey && window.translations) {
+      const parts = ariaKey.split('.');
+      let txt = window.translations;
+      parts.forEach(k => txt = (txt && typeof txt==='object') ? txt[k] : undefined);
+      if (typeof txt === 'string' && txt.trim()) {
+        box.setAttribute('aria-label', txt);
+      }
+    }
+  })();
+</script>
 
 </body>
 </html>

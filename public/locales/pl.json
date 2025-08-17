@@ -191,5 +191,12 @@
   "filter-sport": "Sport",
   "filter-theatre": "Teatr",
   "filter-nearest": "Najbliższe",
-  "filter-latest": "Najnowsze"
+  "filter-latest": "Najnowsze",
+  "events-load-more": "Wczytaj więcej",
+  "hp-waitlist": {
+    "text": "Prawdziwa sprzedaż biletów już wkrótce – dołącz do listy oczekujących.",
+    "cta": "Dołącz do listy",
+    "dismissAria": "Zamknij baner",
+    "ariaLabel": "Informacja: sprzedaż biletów wkrótce, link do listy oczekujących"
+  }
 }

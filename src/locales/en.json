@@ -193,5 +193,12 @@
   "filter-sport": "Sport",
   "filter-theatre": "Theatre",
   "filter-nearest": "Upcoming",
-  "filter-latest": "Newest"
-}
+  "filter-latest": "Newest",
+  "events-load-more": "Load more",
+  "hp-waitlist": {
+    "text": "Real ticket sales are coming soon — join the waitlist.",
+    "cta": "Join the waitlist",
+    "dismissAria": "Dismiss banner",
+    "ariaLabel": "Notice: ticket sales coming soon, link to the waitlist."
+  }
+  }

@@ -1,0 +1,122 @@
+/* Waitlist banner (homepage) */
+@use '../globals' as *;
+.hp-waitlist {
+  --wl-bg:            var(--ajsee-wl-bg, #eef6ff);
+  --wl-border:        var(--ajsee-wl-border, #d9e1ea);
+  --wl-text:          var(--ajsee-wl-text, #0d2235);
+  --wl-cta-bg:        var(--ajsee-wl-cta, #0b74e5);
+  --wl-cta-bg-hover:  var(--ajsee-wl-cta-hover, #075db7);
+  --wl-cta-text:      #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .9rem;
+  margin: 12px 0 18px;
+  padding: 12px 14px;
+  background: var(--wl-bg);
+  border: 1px solid var(--wl-border);
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.04);
+
+  p {
+    margin: 0;
+    color: var(--wl-text);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  /* CTA button */
+  .hp-waitlist-cta {
+    display: inline-block;
+    background: var(--wl-cta-bg);
+    color: var(--wl-cta-text);
+    text-decoration: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: 800;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(11,116,229,.25);
+    transition: transform .08s ease, background-color .15s ease, box-shadow .15s ease;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--wl-cta-bg-hover);
+      box-shadow: 0 10px 22px rgba(11,116,229,.28);
+    }
+    &:active { transform: translateY(1px); }
+  }
+
+  /* Close (attractive, but quiet) */
+  .hp-waitlist-close {
+    --btn-size: 34px;
+    width: var(--btn-size);
+    height: var(--btn-size);
+    display: inline-grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: var(--wl-text);
+    border-radius: 999px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color .15s ease, transform .08s ease;
+    position: relative;
+
+    /* “×” fallback if no SVG is used */
+    font-size: 20px;
+
+    &:hover,
+    &:focus-visible {
+      background: rgba(7, 93, 183, .10);
+      outline: none;
+    }
+    &:active { transform: translateY(1px); }
+
+    /* Optional icon slot if you decide to drop the plain × and use SVG */
+    svg { width: 18px; height: 18px; }
+  }
+
+  /* Compact layout on narrow screens */
+  @media (max-width: 760px) {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: .6rem;
+    padding: 12px;
+
+    p {
+      flex: 1 1 100%;
+      font-weight: 600;
+      margin-bottom: .25rem;
+    }
+
+    .hp-waitlist-cta {
+      flex: 1 1 auto;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 420px) {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+
+    .hp-waitlist-cta { width: 100%; }
+    .hp-waitlist-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .hp-waitlist-cta,
+    .hp-waitlist-close { transition: none; }
+  }
+}
+
+/* Optional: container-specific spacing when banner leží v sekci událostí */
+.section-events .container > .hp-waitlist {
+  margin-top: 8px;
+}

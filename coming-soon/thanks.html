@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Díky – AJSEE</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-K0ZS0D9JLK');
+  </script>
+
+  <style>
+    :root {
+      --bg:#f7f8fa;
+      --text:#0d2235;
+      --muted:#5c6a7a;
+      --border:#d9e1ea;
+      --brand:#0077cc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Poppins, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 64px 20px; }
+    .card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+    h1 { margin: 0 0 8px; }
+    p { color: var(--muted); margin: 0; }
+    a.btn {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 12px 18px;
+      background: var(--brand);
+      color: #fff;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    a.btn:hover,
+    a.btn:focus { background: #0063a8; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1 data-i18n-key="h1">Děkujeme, jsi na seznamu.</h1>
+      <p data-i18n-key="p">
+        Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.
+      </p>
+      <a class="btn" id="backLink" href="/" data-i18n-key="btn">Zpět na AJSEE.cz</a>
+    </div>
+  </div>
+
+  <script>
+    // 6 jazyků – CZ, EN, DE, SK, PL, HU
+    const TRANSLATIONS = {
+      cs: {
+        title: 'Díky – AJSEE',
+        h1: 'Děkujeme, jsi na seznamu.',
+        p: 'Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.',
+        btn: 'Zpět na AJSEE.cz'
+      },
+      sk: {
+        title: 'Ďakujeme – AJSEE',
+        h1: 'Ďakujeme, si na zozname.',
+        p: 'Potvrď, prosím, prihlásenie v e-maile (double opt-in). Čoskoro pošleme novinky o spustení a partneroch.',
+        btn: 'Späť na AJSEE.cz'
+      },
+      en: {
+        title: 'Thanks – AJSEE',
+        h1: 'Thanks, you’re on the list.',
+        p: 'Please confirm your subscription in the email (double opt-in). We’ll send launch & partner updates soon.',
+        btn: 'Back to AJSEE.cz'
+      },
+      de: {
+        title: 'Danke – AJSEE',
+        h1: 'Danke, du stehst auf der Liste.',
+        p: 'Bitte bestätige deine Anmeldung in der E-Mail (Double Opt-In). Wir senden bald Updates zum Start und zu Partnern.',
+        btn: 'Zurück zu AJSEE.cz'
+      },
+      pl: {
+        title: 'Dziękujemy – AJSEE',
+        h1: 'Dziękujemy, jesteś na liście.',
+        p: 'Potwierdź proszę zapis w e-mailu (double opt-in). Wkrótce wyślemy informacje o starcie i partnerach.',
+        btn: 'Wróć do AJSEE.cz'
+      },
+      hu: {
+        title: 'Köszönjük – AJSEE',
+        h1: 'Köszönjük, felkerültél a listára.',
+        p: 'Kérjük, erősítsd meg a feliratkozást az e-mailben (double opt-in). Hamarosan híreket küldünk az indulásról és partnerekről.',
+        btn: 'Vissza az AJSEE.cz oldalra'
+      }
+    };
+
+    // Zjištění jazyka: ?lang= má přednost, jinak podle prohlížeče
+    const paramLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+    const navLang = (navigator.language || 'cs').slice(0, 2).toLowerCase();
+    const supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+    const lang = supported.includes(paramLang) ? paramLang : (supported.includes(navLang) ? navLang : 'cs');
+
+    // Aplikace textů
+    const t = TRANSLATIONS[lang];
+    document.documentElement.lang = lang;
+    document.title = t.title;
+
+    document.querySelectorAll('[data-i18n-key]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-key');
+      if (t[key]) el.textContent = t[key];
+    });
+
+    // Zpětný odkaz s ?lang=
+    const back = document.getElementById('backLink');
+    if (back) {
+      const url = new URL(back.getAttribute('href'), location.origin);
+      url.searchParams.set('lang', lang);
+      back.setAttribute('href', url.toString());
+    }
+
+    // GA event
+    if (window.gtag) {
+      window.gtag('event', 'page_view_waitlist_thanks', { lang });
+    }
+  </script>
+</body>
+</html>

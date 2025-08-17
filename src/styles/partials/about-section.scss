@@ -1,7 +1,7 @@
 // =============================================
 // ABOUT SECTION (homepage sekce "O nás")
 // =============================================
-
+@use '../globals' as *;
 .about-section.fancy-bg {
   background: linear-gradient(180deg, #f7f7f9 75%, #e5f9fb 100%);
   border-top: 1px solid #e0e6ec;

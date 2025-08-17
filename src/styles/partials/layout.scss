@@ -1,7 +1,7 @@
 // ==============================
 // LAYOUT – Container & Grids
 // ==============================
-
+@use '../globals' as *;
 // Kontejner pro obsah
 .container {
   max-width: 1200px;

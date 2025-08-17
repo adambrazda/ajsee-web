@@ -1,7 +1,7 @@
 // =============================================
 // CONTACT SECTION – form, success, illustration
 // =============================================
-
+@use '../globals' as *;
 .contact-section {
   background: $brand-grey-bg;
   padding: 4rem 0;

@@ -3,7 +3,7 @@
    AJSEE – Events section (filters + cards + modal)
    Backward-compatible with current markup and new <form>-based layout
    --------------------------------------------------------- */
-
+@use '../globals' as *;
 /* Utility (pro ARIA live region v typeaheadu) */
 .sr-only {
   position: absolute !important;

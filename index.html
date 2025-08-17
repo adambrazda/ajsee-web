@@ -7,38 +7,61 @@
   <meta name="description" content="Vstupenky na koncerty, festivaly a sportovní události z celého světa – česky, přehledně a bez překážek." />
   <link rel="icon" href="/images/logo-ajsee.png" />
   <meta name="theme-color" content="#0077cc" />
- <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-K0ZS0D9JLK');
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-K0ZS0D9JLK');
+  </script>
 
   <!-- Minimal styles pro HP waitlist banner (samostatné, bez zásahu do SCSS) -->
   <style>
     .hp-waitlist{
-      display:flex;align-items:center;justify-content:center;gap:.9rem;
+      display:flex;align-items:center;gap:.9rem;
       margin:12px 0 18px;padding:12px 14px;
       border:1px solid #d9e1ea;border-radius:12px;background:#eef6ff;
       box-shadow:0 2px 10px rgba(0,0,0,.04)
     }
-    .hp-waitlist p{margin:0;color:#0d2235;font-weight:600}
+    .hp-waitlist p{margin:0;color:#0d2235;font-weight:700;line-height:1.35;flex:1}
     .hp-waitlist .hp-waitlist-cta{
-      display:inline-block;background:#0077cc;color:#fff;text-decoration:none;
-      border-radius:10px;padding:8px 14px;font-weight:800;white-space:nowrap
+      display:inline-block;background:#0b74e5;color:#fff;text-decoration:none;
+      border-radius:12px;padding:10px 16px;font-weight:800;white-space:nowrap;
+      box-shadow:0 6px 18px rgba(11,116,229,.25);transition:transform .12s,box-shadow .15s,background .15s
     }
     .hp-waitlist .hp-waitlist-cta:hover,.hp-waitlist .hp-waitlist-cta:focus{
-      background:#0063a8;color:#fff
+      background:#085ab5;color:#fff;transform:translateY(-1px);box-shadow:0 10px 26px rgba(11,116,229,.35)
     }
+    /* NOVÉ: atraktivní zavírací tlačítko s ikonou */
     .hp-waitlist .hp-waitlist-close{
-      background:transparent;border:0;font-size:20px;cursor:pointer;color:#0d2235;
-      width:32px;height:32px;line-height:1;border-radius:50%
+      display:inline-flex;align-items:center;gap:.45rem;
+      background:#fff;border:1px solid #cfe1f7;border-radius:999px;
+      padding:.55rem .9rem;font-weight:800;color:#0d2235;cursor:pointer;
+      box-shadow:0 3px 10px rgba(0,119,204,.12);
+      transition:transform .1s, box-shadow .15s, background .15s, border-color .15s
     }
     .hp-waitlist .hp-waitlist-close:hover,.hp-waitlist .hp-waitlist-close:focus{
-      background:#e9f3ff
+      background:#f5faff;border-color:#9ec7ff;box-shadow:0 6px 18px rgba(0,119,204,.18);transform:translateY(-1px);outline:none
+    }
+    .hp-waitlist .hp-waitlist-close .x{
+      width:18px;height:18px;display:inline-block;position:relative
+    }
+    .hp-waitlist .hp-waitlist-close .x::before,
+    .hp-waitlist .hp-waitlist-close .x::after{
+      content:'';position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;
+      width:14px;height:2px;background:#0d2235;border-radius:1px
+    }
+    .hp-waitlist .hp-waitlist-close .x::before{transform:rotate(45deg)}
+    .hp-waitlist .hp-waitlist-close .x::after{transform:rotate(-45deg)}
+    .hp-waitlist .hp-waitlist-close .label{white-space:nowrap}
+
+    /* Mobil: srovnat do sloupců, CTA na 100 %, label u zavření skrýt */
+    @media (max-width:700px){
+      .hp-waitlist{flex-direction:column;align-items:stretch;text-align:left}
+      .hp-waitlist .hp-waitlist-cta{width:100%}
+      .hp-waitlist .hp-waitlist-close{align-self:flex-end}
+      .hp-waitlist .hp-waitlist-close .label{display:none}
     }
   </style>
 </head>
@@ -147,7 +170,8 @@
               id="hpWaitlistClose"
               aria-label="Zavřít banner"
               data-i18n-key="hp-waitlist.dismissAria">
-        ×
+        <span class="x" aria-hidden="true"></span>
+        <span class="label" data-i18n-key="hp-waitlist.dismiss">Skrýt banner</span>
       </button>
     </div>
 
@@ -166,8 +190,9 @@
         <div class="chips">
           <button type="button" class="chip" id="chipToday"   data-i18n-key="filters.today">Dnes</button>
           <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend">Tento víkend</button>
-          <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>        </div>
-          <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž">
+          <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
+        </div>
+        <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>
           <span data-i18n-key="filters.nearMe">V mém okolí</span>
         </button>

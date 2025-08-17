@@ -1,7 +1,7 @@
 // =============================================
 // PARTNERS PAGE – hero, kontakt, výhody
 // =============================================
-
+@use '../globals' as *;
 
 .partners-hero {
   background: linear-gradient(90deg, $brand-blue 0%, $brand-blue-light 100%);

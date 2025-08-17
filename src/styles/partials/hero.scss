@@ -1,7 +1,7 @@
 // =============================================
 // HERO SECTION – univerzální styly pro všechny jazyky
 // =============================================
-
+@use '../globals' as *;
 .hero-section {
   display: flex;
   min-height: 480px;

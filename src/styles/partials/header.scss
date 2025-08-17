@@ -1,7 +1,7 @@
 // =============================================
 // HEADER / NAVIGATION / LANGUAGE SWITCHERS
 // =============================================
-
+@use '../globals' as *;
 .site-header {
   width: 100%;
   background: linear-gradient(108deg, #eafcffcc 0%, #53e0f6cc 70%, #139dcfbb 100%);

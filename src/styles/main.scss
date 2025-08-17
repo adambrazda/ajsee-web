@@ -2,29 +2,29 @@
 // AJSEE – MAIN SCSS ENTRY POINT (Modular Architecture)
 // ------------------------------------------------------
 
-// 🔁 UTILITIES
-@import './utils/variables';
-@import './utils/mixins';
-@import './utils/reset';
+// 🔁 UTILITIES (globální symboly dostupné v tomto souboru přes `as *` – jen tady!)
+@use './globals' as *;   // proměnné + mixiny
+@use './utils/reset';    // skutečné CSS resetu (jen jednou)
 
-// 🔁 LAYOUT
-@import './partials/layout';
+// 🔁 LAYOUT & SECTIONS (každý partial, který používá proměnné/mixiny,
+// musí mít na svém začátku:  @use '../globals' as *; )
+@use './partials/layout';
+@use './partials/header';
+@use './partials/hero';
+@use './partials/events';
+@use './partials/partners';
+@use './partials/blog';
+@use './partials/contact';
+@use './partials/about-page';
+@use './partials/footer';
+@use './partials/events-page';
+@use './partials/about-section';
+@use './partials/blog-page';
+@use './partials/faq';
+@use './partials/typeahead';
+@use './partials/waitlist-banner';
 
-// 🔁 SECTIONS
-@import './partials/header.scss';
-@import './partials/hero.scss';
-@import './partials/events.scss';
-@import './partials/partners.scss';
-@import './partials/blog.scss';
-@import './partials/contact.scss';
-@import './partials/about-page.scss';
-@import './partials/footer.scss';
-@import './partials/events-page.scss';
-@import './partials/about-section.scss';
-@import './partials/blog-page.scss';
-@import './partials/faq.scss';
-@import './partials/typeahead';
-
+// ----- Global bits (můžou zůstat takto) -----
 html, body {
   overflow-x: hidden;
   overflow-y: auto;
@@ -34,4 +34,3 @@ html, body {
   top: 0;
   z-index: 9999;
 }
-

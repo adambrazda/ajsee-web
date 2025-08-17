@@ -1,0 +1,4 @@
+// src/styles/globals.scss
+// Forwarduj jen symboly (proměnné, mixiny, funkce) – bez generování CSS vícekrát.
+@forward './utils/variables';
+@forward './utils/mixins';

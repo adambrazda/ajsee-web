@@ -8,20 +8,22 @@
   --wl-text: #0d2235;
   --wl-accent: #0b74e5;
   --wl-accent-hover: #085ab5;
+  --wl-ring: rgba(158,199,255,.45);
+  --wl-radius: 16px;
 
   display: grid;
   grid-template-columns: minmax(36px,auto) 1fr auto auto;
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
-  border-radius: 16px;
+  border-radius: var(--wl-radius);
   background: var(--wl-bg);
   border: 1px solid var(--wl-border);
   box-shadow: var(--wl-shadow);
   backdrop-filter: saturate(120%) blur(6px);
 
   .wl-icon{
-    width: 36px;height: 36px; display:grid; place-items:center;
+    width: 36px; height: 36px; display:grid; place-items:center;
     border-radius: 999px;
     background: linear-gradient(180deg,#e4f0ff, #d0e7ff);
     color: #08407a; font-size: 18px; font-weight: 700;
@@ -30,28 +32,42 @@
 
   .wl-text{
     margin: 0; color: var(--wl-text); line-height: 1.35;
+    text-wrap: balance;
     strong{ font-weight: 800; margin-right: .35rem; }
   }
 
+  /* CTA button */
   .hp-waitlist-cta{
-    display:inline-block; white-space:nowrap;
+    display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+    min-height: 44px;
     padding: 12px 18px; border-radius: 999px; line-height:1;
     background: var(--wl-accent); color: #fff; font-weight: 800; text-decoration:none;
     box-shadow: 0 10px 22px rgba(11,116,229,.28);
     transition: transform .1s, box-shadow .15s, background .15s;
     &:hover,&:focus-visible{ background: var(--wl-accent-hover); transform: translateY(-1px); }
+    &:focus-visible{ outline: none; box-shadow: 0 0 0 4px var(--wl-ring), 0 10px 22px rgba(11,116,229,.28); }
     &:active{ transform: translateY(0); }
   }
 
+  /* Close button – čisté kolečko bez viditelného textu */
   .hp-waitlist-close{
-    width: 36px;height: 36px; display:grid; place-items:center;
-    border-radius: 999px; border: 1px solid rgba(11,116,229,.15);
+    width: 40px; height: 40px;
+    display: inline-grid; place-items: center;
+    border-radius: 999px; border: 1px solid rgba(11,116,229,.16);
     background: #fff; color: var(--wl-text); cursor: pointer;
+    box-shadow: 0 6px 16px rgba(11,116,229,.18);
     transition: transform .1s, box-shadow .15s, background .15s, border-color .15s;
-    box-shadow: 0 4px 14px rgba(11,116,229,.16);
-    &:hover,&:focus-visible{ background:#f5faff; border-color:#9ec7ff; transform: translateY(-1px); outline:none; }
-    svg{ width:18px; height:18px; }
-    .visually-hidden{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+    /* pojistky proti zobrazení textu uvnitř */
+    font-size: 0; line-height: 0; color: transparent;
+    svg{ width:18px; height:18px; color: currentColor; pointer-events:none; }
+    &:hover,&:focus-visible{
+      background:#f5faff; border-color:#9ec7ff; transform: translateY(-1px); outline: none;
+      box-shadow: 0 0 0 4px var(--wl-ring), 0 10px 22px rgba(11,116,229,.22);
+      color: var(--wl-text);
+    }
+    &:active{ transform: translateY(0); }
+    /* kdyby někde zůstal .label/.visually-hidden uvnitř, ať se nezobrazí */
+    .label, .visually-hidden { display: none !important; }
   }
 
   /* Tablet */
@@ -65,10 +81,16 @@
     grid-template-columns: 1fr;
     row-gap: 10px;
     text-align: left;
+    position: relative;
     .hp-waitlist-cta{ width:100%; text-align:center; }
     .hp-waitlist-close{ position:absolute; top:10px; right:10px; }
-    position: relative;
+  }
+
+  /* Respektuj reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .hp-waitlist-cta, .hp-waitlist-close { transition: none; }
   }
 }
 
+/* jemné odsazení v sekci událostí */
 .section-events .container > .hp-waitlist{ margin: 8px 0 18px; }

@@ -15,11 +15,11 @@
     gtag('js', new Date());
     gtag('config', 'G-K0ZS0D9JLK');
   </script>
-  <script type="module" crossorigin src="/assets/main-DQ7cgbLU.js"></script>
+  <script type="module" crossorigin src="/assets/main-DGlgGB1Z.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/main-BXXL372C.js">
+  <link rel="modulepreload" crossorigin href="/assets/main-Cxe83jMB.js">
   <link rel="modulepreload" crossorigin href="/assets/blogArticles-DssWefat.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-ClqOXqA9.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-BqEd-z60.css">
 </head>
 <body>
 <header class="site-header">
@@ -121,15 +121,15 @@
          href="/coming-soon?utm_source=site&utm_medium=banner&utm_campaign=waitlist"
          data-i18n-key="hp-waitlist.cta">Chci pozvánku</a>
       <button type="button"
-              class="hp-waitlist-close"
-              id="hpWaitlistClose"
+             class="hp-waitlist-close"
+             id="hpWaitlistClose"
               aria-label=""
-              data-i18n-key="hp-waitlist.dismissAria">
-        <span class="visually-hidden" data-i18n-key="hp-waitlist.dismiss">Zavřít</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+              data-i18n-aria="hp-waitlist.dismissAria"
+             title="">
+       <svg viewBox="0 0 24 24" aria-hidden="true">
+         <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+       </svg>
+     </button>
     </div>
 
     <!-- 🔹 Nadpis sekce -->
@@ -424,46 +424,99 @@
 
 <!-- Skripty -->
 
-<!-- Inline skript: chování waitlist banneru (UTM + lang, zavření bez ukládání) -->
+<!-- Inline skript: chování waitlist banneru (UTM + lang, zavření bez ukládání, lokální i18n apply) -->
 <script>
-  (function(){
+  (function () {
     const box = document.getElementById('hpWaitlist');
     if (!box) return;
 
-    // doplnění ?lang= do CTA podle URL (držte 6 jazyků konzistentně)
+    // --- helpers -------------------------------------------------------------
+    const qs = new URLSearchParams(location.search);
+    const getLang = () => {
+      const urlLang = (qs.get('lang') || '').toLowerCase();
+      if (urlLang) return urlLang;
+      const htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+      return htmlLang || 'cs';
+    };
+    const LANG = getLang();
+    const SUPPORTED = ['cs','en','de','sk','pl','hu'];
+
+    // i18n lookup proti window.translations (aktuální jazyk musí být už nahrán runtimem)
+    function t(path) {
+      try {
+        const dict = window.translations || null; // očekáváme aktuální jazyk
+        if (!dict) return null;
+        return path.split('.').reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), dict) ?? null;
+      } catch { return null; }
+    }
+
+    // Aplikuj i18n jen v rámci banneru (bez ohledu na zbytek stránky)
+    function applyBannerI18n(root) {
+      // textové uzly
+      root.querySelectorAll('[data-i18n-key]').forEach(el => {
+        const key = el.getAttribute('data-i18n-key');
+        const val = t(key);
+        if (typeof val === 'string') el.textContent = val;
+      });
+      // aria labely / title
+      root.querySelectorAll('[data-i18n-aria]').forEach(el => {
+        const key = el.getAttribute('data-i18n-aria');
+        const val = t(key);
+        if (typeof val === 'string') {
+          el.setAttribute('aria-label', val);
+          el.setAttribute('title', val);
+        }
+      });
+      // alt/placeholder (pro případné prvky uvnitř)
+      root.querySelectorAll('[data-i18n-alt]').forEach(el => {
+        const key = el.getAttribute('data-i18n-alt');
+        const val = t(key);
+        if (typeof val === 'string') el.setAttribute('alt', val);
+      });
+      root.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        const val = t(key);
+        if (typeof val === 'string') el.setAttribute('placeholder', val);
+      });
+      // region aria-label
+      const regionKey = root.getAttribute('data-i18n-aria');
+      if (regionKey) {
+        const val = t(regionKey);
+        if (typeof val === 'string') root.setAttribute('aria-label', val);
+      }
+    }
+
+    // --- CTA URL: doplň ?lang (pokud je podporovaný) -------------------------
     const cta = document.getElementById('hpWaitlistCta');
     if (cta) {
       const url = new URL(cta.href, location.origin);
-      const lang = (new URLSearchParams(location.search).get('lang')||'').toLowerCase();
-      if (lang && ['cs','en','de','sk','pl','hu'].includes(lang)) {
-        url.searchParams.set('lang', lang);
-        cta.href = url.toString();
-      }
-      cta.addEventListener('click', function(){
-        if (window.gtag) window.gtag('event','click_waitlist',{source:'home_banner'});
+      if (SUPPORTED.includes(LANG)) url.searchParams.set('lang', LANG);
+      cta.href = url.toString();
+      cta.addEventListener('click', function () {
+        if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner' });
       });
     }
 
-    // zavírání – pouze pro aktuální zobrazení (NEukládáme do localStorage)
+    // --- Zavírání: pouze pro aktuální zobrazení ------------------------------
     const btnClose = document.getElementById('hpWaitlistClose');
     if (btnClose) {
-      btnClose.addEventListener('click', function(){
-        box.remove();
-      });
-    }
-
-    // i18n pro aria-label regionu (pokud runtime poskytuje window.translations)
-    const ariaKey = box.getAttribute('data-i18n-aria');
-    if (ariaKey && window.translations) {
-      const parts = ariaKey.split('.');
-      let txt = window.translations;
-      parts.forEach(k => txt = (txt && typeof txt==='object') ? txt[k] : undefined);
-      if (typeof txt === 'string' && txt.trim()) {
-        box.setAttribute('aria-label', txt);
+      btnClose.addEventListener('click', function () { box.remove(); });
+      // i18n aria-label pro close
+      const closeKey = btnClose.getAttribute('data-i18n-aria') || btnClose.getAttribute('data-i18n-key');
+      if (closeKey) {
+        const val = t(closeKey);
+        if (typeof val === 'string') {
+          btnClose.setAttribute('aria-label', val);
+          btnClose.setAttribute('title', val);
+        }
       }
     }
+
+    // --- Lokální i18n pro banner --------------------------------------------
+    applyBannerI18n(box);
   })();
 </script>
+
 
 </body>
 </html>

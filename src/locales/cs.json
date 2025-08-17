@@ -197,29 +197,29 @@
   "events-load-more": "Načíst další",
 
   "hp-waitlist": {
-    "lead": "Launching soon.",
-    "text": "Join the waitlist to get an early invite.",
-    "cta": "Get invite",
-    "dismiss": "Close",
-    "dismissAria": "Close banner",
-    "ariaLabel": "Notice: launching soon – waitlist"
+    "lead": "Spouštíme brzy.",
+    "text": "Přidej se na čekací listinu a získáš pozvánku mezi prvními.",
+    "cta": "Chci pozvánku",
+    "dismiss": "Zavřít",
+    "dismissAria": "Zavřít banner",
+    "ariaLabel": "Informace: spustíme brzy – čekací listina"
   },
   "comingSoon": {
-    "title": "AJSEE Waitlist",
-    "lead": "Leave your email and we’ll send you an early-access invite. No spam.",
-    "emailLabel": "Email",
-    "emailPh": "you@example.com",
-    "consent": "I agree to receive updates about AJSEE and the ticket presale.",
-    "submit": "Join the waitlist",
-    "hint": "Double opt-in enabled. Unsubscribe anytime.",
-    "faqTitle": "Quick FAQ",
-    "faq1q": "When do you launch?",
-    "faq1a": "We’re opening the first presale wave to a limited number of invites. We’ll email the date.",
-    "faq2q": "What do I get?",
-    "faq2a": "Early access, curated tips and a Czech/Slovak friendly experience.",
-    "faq3q": "Is it safe?",
-    "faq3a": "We work only with verified partners and fair terms."
-  }
+  "title": "Čekací listina AJSEE",
+  "lead": "Zanech e-mail a pošleme ti pozvánku do předprodeje. Bez spamu.",
+  "emailLabel": "E-mail",
+  "emailPh": "tvuj@email.cz",
+  "consent": "Souhlasím se zasíláním informací o AJSEE a předprodeji vstupenek.",
+  "submit": "Přidat se na čekací listinu",
+  "hint": "Double opt-in zapnutý. Odhlášení kdykoli.",
+  "faqTitle": "Krátké FAQ",
+  "faq1q": "Kdy spustíte?",
+  "faq1a": "První vlnu předprodeje otevřeme s omezeným počtem pozvánek. Datum pošleme e-mailem.",
+  "faq2q": "Co získám?",
+  "faq2a": "Brzký přístup, kurátorské tipy a prostředí přívětivé pro češtinu/slovenštinu.",
+  "faq3q": "Je to bezpečné?",
+  "faq3a": "Spolupracujeme pouze s ověřenými partnery a férovými podmínkami."
+}
 }
 
   

@@ -6,6 +6,7 @@
   <title data-i18n-key="comingSoon.title">Čekací listina AJSEE</title>
   <meta name="description" content="Přidej se na čekací listinu AJSEE a získej pozvánku do předprodeje.">
   <link rel="icon" href="/images/logo-ajsee.png"/>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
   <script>
@@ -14,10 +15,14 @@
     gtag('js', new Date());
     gtag('config', 'G-K0ZS0D9JLK');
   </script>
+
+  <!-- Vite modul pro styly této stránky -->
+  <script type="module" src="/src/coming-soon.js"></script>
 </head>
 <body class="comingsoon-page">
   <div class="wrap">
-    <div class="brand"><img src="/images/logo-ajsee.png" alt="" /><strong>AJSEE</strong></div>
+    <div class="brand"><img src="/images/logo-ajsee.png" alt="AJSEE logo" /><strong>AJSEE</strong></div>
+
     <div class="card" role="main">
       <h1 data-i18n-key="comingSoon.title">Čekací listina AJSEE</h1>
       <p class="lead" data-i18n-key="comingSoon.lead">Zanech e-mail a pošleme ti pozvánku do předprodeje. Bez spamu.</p>
@@ -29,15 +34,26 @@
         <input type="hidden" name="utm_campaign" id="utm_campaign"/>
         <input type="hidden" name="lang" id="lang"/>
 
+        <!-- Honeypot (Netlify antispam) -->
+        <p hidden aria-hidden="true">
+          <label>Don’t fill this out: <input name="bot-field" /></label>
+        </p>
+
         <label for="email" data-i18n-key="comingSoon.emailLabel">E-mail</label>
         <div></div>
-        <input id="email" name="email" type="email" required placeholder="tvuj@email.cz" data-i18n-placeholder="comingSoon.emailPh"/>
+
+        <input id="email" name="email" type="email" required
+               placeholder="tvuj@email.cz"
+               data-i18n-placeholder="comingSoon.emailPh"
+               autocomplete="email"/>
+
         <button type="submit" data-i18n-key="comingSoon.submit">Přidat se na čekací listinu</button>
 
         <div class="consent">
           <input id="consent" type="checkbox" required/>
           <label for="consent" data-i18n-key="comingSoon.consent">Souhlasím se zpracováním e-mailu…</label>
         </div>
+
         <div class="help" data-i18n-key="comingSoon.hint">Double opt-in zapnutý. Odhlášení kdykoli.</div>
       </form>
 
@@ -50,7 +66,7 @@
     </div>
   </div>
 
-  <!-- i18n bootstrapper: naváže se na jazyk stránky/parametr ?lang, natáhne /locales/{lang}.json a aplikuje texty -->
+  <!-- i18n bootstrapper: ?lang -> <html lang> -> cs, načti /locales/{lang}.json a aplikuj texty -->
   <script>
     (function () {
       const SUPPORTED = ['cs','en','de','sk','pl','hu'];
@@ -72,7 +88,8 @@
         u.searchParams.set('lang', lang);
         form.action = u.pathname + '?' + u.searchParams.toString();
       }
-      const backLink = document.querySelector('.back');
+
+      const backLink = document.getElementById('backLink');
       if (backLink) {
         const href = backLink.getAttribute('href') || '/';
         const u = new URL(href, location.origin);
@@ -91,6 +108,7 @@
         .then(r => r.ok ? r.json() : null)
         .then(dict => {
           if (!dict) return;
+
           const get = (path) => {
             try { return path.split('.').reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), dict); }
             catch { return undefined; }

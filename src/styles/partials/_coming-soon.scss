@@ -2,7 +2,6 @@
 
 /* Coming Soon / Waitlist – page-scoped styles */
 .comingsoon-page {
-  /* barevná paleta (scoped) */
   --bg: #f6faff;
   --card: #ffffff;
   --ink: #0d2235;
@@ -11,7 +10,6 @@
   --accent2: #085ab5;
   --ring: rgba(158,199,255,.30);
 
-  margin: 0;
   background: var(--bg);
   color: var(--ink);
   font: 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial;

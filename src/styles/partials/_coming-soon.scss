@@ -1,0 +1,105 @@
+@use '../globals' as *;
+
+/* Coming Soon / Waitlist – page-scoped styles */
+.comingsoon-page {
+  /* barevná paleta (scoped) */
+  --bg: #f6faff;
+  --card: #ffffff;
+  --ink: #0d2235;
+  --muted: #4a6074;
+  --accent: #0b74e5;
+  --accent2: #085ab5;
+  --ring: rgba(158,199,255,.30);
+
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial;
+
+  .wrap { max-width: 860px; margin: 40px auto; padding: 0 16px; }
+
+  .brand {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+    img { width: 28px; height: 28px; }
+    strong { font-weight: 800; letter-spacing: .2px; }
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(8,60,130,.08);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 18px 50px rgba(8,60,130,.08);
+  }
+
+  h1 { font-size: clamp(24px, 3.4vw, 34px); margin: 0 0 8px; font-weight: 900; }
+  p.lead { color: var(--muted); margin: 0 0 18px; }
+
+  form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+
+    label { font-weight: 700; }
+
+    input[type="email"]{
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(8,60,130,.18);
+      outline: 0;
+      &:focus{
+        border-color: #9ec7ff;
+        box-shadow: 0 0 0 4px var(--ring);
+      }
+    }
+
+    button[type="submit"]{
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff; border: 0; font-weight: 800; cursor: pointer; white-space: nowrap;
+      box-shadow: 0 10px 22px rgba(11,116,229,.28);
+      transition: transform .1s, box-shadow .15s, background .15s;
+      &:hover,&:focus-visible{ background: var(--accent2); transform: translateY(-1px); outline: none; }
+    }
+
+    .consent{
+      grid-column: 1 / -1;
+      display: flex; gap: 10px; align-items: flex-start;
+      color: var(--muted); font-size: .95rem;
+      input[type="checkbox"]{ transform: translateY(2px); }
+    }
+
+    .help{ grid-column: 1 / -1; color: var(--muted); font-size: .9rem; }
+  }
+
+  /* „Zpět na web“ – ghost button s ikonou */
+  .btn-back{
+    display: inline-flex; align-items: center; gap: .55rem;
+    margin-top: 16px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(11,116,229,.18);
+    background: #fff;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 800;
+    box-shadow: 0 6px 18px rgba(11,116,229,.10);
+    transition: transform .1s, box-shadow .15s, background .15s, border-color .15s;
+    &:hover,
+    &:focus-visible{
+      background: #f5faff; border-color: #9ec7ff; transform: translateY(-1px); outline: none;
+      box-shadow: 0 10px 22px rgba(11,116,229,.18);
+    }
+    .back-icon{ width: 18px; height: 18px; flex: 0 0 18px; }
+  }
+
+  @media (max-width: 560px){
+    form{
+      grid-template-columns: 1fr;
+      button[type="submit"]{ width: 100%; }
+    }
+  }
+}

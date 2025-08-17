@@ -6,29 +6,16 @@
   <title data-i18n-key="comingSoon.title">Čekací listina AJSEE</title>
   <meta name="description" content="Přidej se na čekací listinu AJSEE a získej pozvánku do předprodeje.">
   <link rel="icon" href="/images/logo-ajsee.png"/>
-  <style>
-    :root{--bg:#f6faff;--card:#ffffff;--ink:#0d2235;--muted:#4a6074;--accent:#0b74e5;--accent2:#085ab5}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial}
-    .wrap{max-width:860px;margin:40px auto;padding:0 16px}
-    .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
-    .brand img{width:28px;height:28px}
-    .card{background:var(--card);border:1px solid rgba(8,60,130,.08);border-radius:16px;box-shadow:0 18px 50px rgba(8,60,130,.08);padding:24px}
-    h1{font-size:clamp(24px,3.4vw,34px);margin:0 0 8px;font-weight:900}
-    p.lead{color:var(--muted);margin:0 0 18px}
-    form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
-    label{font-weight:700}
-    input[type=email]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(8,60,130,.18);outline:0}
-    input[type=email]:focus{border-color:#9ec7ff;box-shadow:0 0 0 4px rgba(158,199,255,.25)}
-    button[type=submit]{padding:12px 18px;border-radius:999px;background:var(--accent);color:#fff;border:0;font-weight:800;cursor:pointer;white-space:nowrap;box-shadow:0 10px 22px rgba(11,116,229,.28)}
-    button[type=submit]:hover{background:var(--accent2)}
-    .consent{grid-column:1/-1;display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.95rem}
-    .help{grid-column:1/-1;color:var(--muted);font-size:.9rem}
-    .back{display:inline-block;margin-top:16px;color:var(--accent);text-decoration:none;font-weight:700}
-    @media(max-width:560px){form{grid-template-columns:1fr} button[type=submit]{width:100%}}
-  </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-K0ZS0D9JLK');
+  </script>
 </head>
-<body>
+<body class="comingsoon-page">
   <div class="wrap">
     <div class="brand"><img src="/images/logo-ajsee.png" alt="" /><strong>AJSEE</strong></div>
     <div class="card" role="main">
@@ -54,7 +41,12 @@
         <div class="help" data-i18n-key="comingSoon.hint">Double opt-in zapnutý. Odhlášení kdykoli.</div>
       </form>
 
-      <a class="back" href="/?lang=cs" data-i18n-key="comingSoon.back">Zpět na web</a>
+      <a class="back btn-back" id="backLink" href="/">
+        <svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="back-label" data-i18n-key="comingSoon.back">Zpět na web</span>
+      </a>
     </div>
   </div>
 

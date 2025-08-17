@@ -216,5 +216,12 @@
     "faq2a": "Frühen Zugang, kuratierte Tipps und CZ/SK-freundliche Oberfläche.",
     "faq3q": "Ist es sicher?",
     "faq3a": "Nur verifizierte Partner und faire Bedingungen."
-  }
+  },
+  "thanks": {
+  "title": "Danke – AJSEE",
+  "heading": "Danke, du stehst auf der Liste.",
+  "lead": "Bitte bestätige deine Anmeldung in der E-Mail (Double-Opt-In). Wir senden bald Updates zum Start und zu Partnern.",
+  "back": "Zurück zu AJSEE.cz"
+}
+
 }

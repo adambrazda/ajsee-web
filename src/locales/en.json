@@ -218,5 +218,12 @@
   "faq2a": "Early access, curated tips and a Czech/Slovak friendly experience.",
   "faq3q": "Is it safe?",
   "faq3a": "We work only with verified partners and fair terms."
+},
+"thanks": {
+  "title": "Thanks – AJSEE",
+  "heading": "Thanks, you’re on the list.",
+  "lead": "Please confirm your subscription in the email (double opt-in). We’ll send launch and partner updates soon.",
+  "back": "Back to AJSEE.cz"
 }
+
 }

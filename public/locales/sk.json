@@ -218,6 +218,13 @@
     "faq2a": "Skorý prístup, kurátorské tipy a CZ/SK prostredie.",
     "faq3q": "Je to bezpečné?",
     "faq3a": "Spolupracujeme iba s overenými partnermi a férovými podmienkami."
-  }
+  },
+  "thanks": {
+  "title": "Ďakujeme – AJSEE",
+  "heading": "Ďakujeme, si na zozname.",
+  "lead": "Potvrď, prosím, prihlásenie v e-maile (double opt-in). Čoskoro pošleme novinky o spustení a partneroch.",
+  "back": "Späť na AJSEE.cz"
+}
+
 }
 

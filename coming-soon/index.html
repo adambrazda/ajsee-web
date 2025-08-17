@@ -8,7 +8,8 @@
   <link rel="icon" href="/images/logo-ajsee.png"/>
   <style>
     :root{--bg:#f6faff;--card:#ffffff;--ink:#0d2235;--muted:#4a6074;--accent:#0b74e5;--accent2:#085ab5}
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial}
     .wrap{max-width:860px;margin:40px auto;padding:0 16px}
     .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
     .brand img{width:28px;height:28px}
@@ -23,10 +24,6 @@
     button[type=submit]:hover{background:var(--accent2)}
     .consent{grid-column:1/-1;display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.95rem}
     .help{grid-column:1/-1;color:var(--muted);font-size:.9rem}
-    .faq{margin-top:24px}
-    .faq h2{font-size:1.15rem;margin:0 0 8px}
-    details{background:#f8fbff;border:1px solid rgba(8,60,130,.08);border-radius:12px;padding:10px 12px;margin:8px 0}
-    summary{cursor:pointer;font-weight:700}
     .back{display:inline-block;margin-top:16px;color:var(--accent);text-decoration:none;font-weight:700}
     @media(max-width:560px){form{grid-template-columns:1fr} button[type=submit]{width:100%}}
   </style>
@@ -57,35 +54,92 @@
         <div class="help" data-i18n-key="comingSoon.hint">Double opt-in zapnutý. Odhlášení kdykoli.</div>
       </form>
 
-      <div class="faq">
-        <h2 data-i18n-key="comingSoon.faqTitle">Krátké FAQ</h2>
-        <details>
-          <summary data-i18n-key="comingSoon.faq1q">Kdy spustíte?</summary>
-          <p data-i18n-key="comingSoon.faq1a">První vlnu předprodeje…</p>
-        </details>
-        <details>
-          <summary data-i18n-key="comingSoon.faq2q">Co získám po přihlášení?</summary>
-          <p data-i18n-key="comingSoon.faq2a">Brzký přístup…</p>
-        </details>
-        <details>
-          <summary data-i18n-key="comingSoon.faq3q">Je to bezpečné?</summary>
-          <p data-i18n-key="comingSoon.faq3a">Spolupracujeme jen s ověřenými partnery…</p>
-        </details>
-      </div>
-
-      <a class="back" href="/?lang=cs" data-i18n-key="blog-show-all">Zpět na web</a>
+      <a class="back" href="/?lang=cs" data-i18n-key="comingSoon.back">Zpět na web</a>
     </div>
   </div>
 
+  <!-- i18n bootstrapper: naváže se na jazyk stránky/parametr ?lang, natáhne /locales/{lang}.json a aplikuje texty -->
   <script>
-    // Přenes UTM a jazyk z URL do hidden polí
-    (function(){
-      const p = new URLSearchParams(location.search);
+    (function () {
+      const SUPPORTED = ['cs','en','de','sk','pl','hu'];
+      const qs = new URLSearchParams(location.search);
+
+      // 1) Urči jazyk: ?lang -> <html lang> -> 'cs'
+      let lang = (qs.get('lang') || '').toLowerCase();
+      if (!SUPPORTED.includes(lang)) lang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+      if (!SUPPORTED.includes(lang)) lang = 'cs';
+      document.documentElement.setAttribute('lang', lang);
+
+      // 2) Propaguj jazyk do hidden pole, action a „Zpět na web“
+      const langInput = document.getElementById('lang');
+      if (langInput) langInput.value = lang;
+
+      const form = document.forms['ajsee_waitlist'] || document.querySelector('form[name="ajsee_waitlist"]');
+      if (form && form.action) {
+        const u = new URL(form.action, location.origin);
+        u.searchParams.set('lang', lang);
+        form.action = u.pathname + '?' + u.searchParams.toString();
+      }
+      const backLink = document.querySelector('.back');
+      if (backLink) {
+        const href = backLink.getAttribute('href') || '/';
+        const u = new URL(href, location.origin);
+        u.searchParams.set('lang', lang);
+        backLink.setAttribute('href', u.pathname + '?' + u.searchParams.toString());
+      }
+
+      // 3) Přenes UTM hodnoty do hidden polí
       ['utm_source','utm_medium','utm_campaign'].forEach(k=>{
-        const el=document.getElementById(k); if(el) el.value=p.get(k)||'';
+        const el = document.getElementById(k);
+        if (el) el.value = qs.get(k) || '';
       });
-      const lang = (p.get('lang')||'').toLowerCase();
-      const elLang=document.getElementById('lang'); if(elLang) elLang.value=lang||'cs';
+
+      // 4) Načti překlady a aplikuj data-i18n-* na této stránce
+      fetch(`/locales/${lang}.json`, { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : null)
+        .then(dict => {
+          if (!dict) return;
+          const get = (path) => {
+            try { return path.split('.').reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), dict); }
+            catch { return undefined; }
+          };
+
+          // textContent
+          document.querySelectorAll('[data-i18n-key]').forEach(el => {
+            const key = el.getAttribute('data-i18n-key');
+            const v = get(key);
+            if (typeof v === 'string') el.textContent = v;
+          });
+
+          // alt / placeholder / aria-label
+          document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+            const key = el.getAttribute('data-i18n-alt');
+            const v = get(key);
+            if (typeof v === 'string') el.setAttribute('alt', v);
+          });
+          document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            const v = get(key);
+            if (typeof v === 'string') el.setAttribute('placeholder', v);
+          });
+          document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+            const key = el.getAttribute('data-i18n-aria');
+            const v = get(key);
+            if (typeof v === 'string') {
+              el.setAttribute('aria-label', v);
+              el.setAttribute('title', v);
+            }
+          });
+
+          // <title>
+          const titleEl = document.querySelector('title[data-i18n-key]');
+          if (titleEl) {
+            const key = titleEl.getAttribute('data-i18n-key');
+            const v = get(key);
+            if (typeof v === 'string') titleEl.textContent = v;
+          }
+        })
+        .catch(() => {});
     })();
   </script>
 </body>

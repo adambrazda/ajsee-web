@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Díky – AJSEE</title>
+  <title data-i18n-key="thanks.title">Díky – AJSEE</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 
@@ -52,83 +52,67 @@
 <body>
   <div class="wrap">
     <div class="card">
-      <h1 data-i18n-key="h1">Děkujeme, jsi na seznamu.</h1>
-      <p data-i18n-key="p">
+      <h1 data-i18n-key="thanks.heading">Děkujeme, jsi na seznamu.</h1>
+      <p data-i18n-key="thanks.lead">
         Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.
       </p>
-      <a class="btn" id="backLink" href="/" data-i18n-key="btn">Zpět na AJSEE.cz</a>
+      <a class="btn" id="backLink" href="/" data-i18n-key="thanks.back">Zpět na AJSEE.cz</a>
     </div>
   </div>
 
+  <!-- i18n bootstrapper: ?lang -> <html lang> -> cs, načte /locales/{lang}.json a aplikuje texty -->
   <script>
-    // 6 jazyků – CZ, EN, DE, SK, PL, HU
-    const TRANSLATIONS = {
-      cs: {
-        title: 'Díky – AJSEE',
-        h1: 'Děkujeme, jsi na seznamu.',
-        p: 'Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.',
-        btn: 'Zpět na AJSEE.cz'
-      },
-      sk: {
-        title: 'Ďakujeme – AJSEE',
-        h1: 'Ďakujeme, si na zozname.',
-        p: 'Potvrď, prosím, prihlásenie v e-maile (double opt-in). Čoskoro pošleme novinky o spustení a partneroch.',
-        btn: 'Späť na AJSEE.cz'
-      },
-      en: {
-        title: 'Thanks – AJSEE',
-        h1: 'Thanks, you’re on the list.',
-        p: 'Please confirm your subscription in the email (double opt-in). We’ll send launch & partner updates soon.',
-        btn: 'Back to AJSEE.cz'
-      },
-      de: {
-        title: 'Danke – AJSEE',
-        h1: 'Danke, du stehst auf der Liste.',
-        p: 'Bitte bestätige deine Anmeldung in der E-Mail (Double Opt-In). Wir senden bald Updates zum Start und zu Partnern.',
-        btn: 'Zurück zu AJSEE.cz'
-      },
-      pl: {
-        title: 'Dziękujemy – AJSEE',
-        h1: 'Dziękujemy, jesteś na liście.',
-        p: 'Potwierdź proszę zapis w e-mailu (double opt-in). Wkrótce wyślemy informacje o starcie i partnerach.',
-        btn: 'Wróć do AJSEE.cz'
-      },
-      hu: {
-        title: 'Köszönjük – AJSEE',
-        h1: 'Köszönjük, felkerültél a listára.',
-        p: 'Kérjük, erősítsd meg a feliratkozást az e-mailben (double opt-in). Hamarosan híreket küldünk az indulásról és partnerekről.',
-        btn: 'Vissza az AJSEE.cz oldalra'
+    (function () {
+      const SUPPORTED = ['cs','en','de','sk','pl','hu'];
+      const qs = new URLSearchParams(location.search);
+
+      // 1) Zamknout jazyk
+      let lang = (qs.get('lang') || '').toLowerCase();
+      if (!SUPPORTED.includes(lang)) lang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+      if (!SUPPORTED.includes(lang)) lang = 'cs';
+      document.documentElement.setAttribute('lang', lang);
+
+      // 2) Načíst překlady a aplikovat
+      fetch(`/locales/${lang}.json`, { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : null)
+        .then(dict => {
+          if (!dict) return;
+
+          const get = (path) => {
+            try { return path.split('.').reduce((o,k)=> (o && typeof o === 'object' ? o[k] : undefined), dict); }
+            catch { return undefined; }
+          };
+
+          // texty
+          document.querySelectorAll('[data-i18n-key]').forEach(el => {
+            const key = el.getAttribute('data-i18n-key');
+            const val = get(key);
+            if (typeof val === 'string') el.textContent = val;
+          });
+
+          // <title>
+          const titleEl = document.querySelector('title[data-i18n-key]');
+          if (titleEl) {
+            const k = titleEl.getAttribute('data-i18n-key');
+            const v = get(k);
+            if (typeof v === 'string') titleEl.textContent = v;
+          }
+        })
+        .catch(() => {});
+
+      // 3) Zpět na web s ?lang
+      const back = document.getElementById('backLink');
+      if (back) {
+        const url = new URL(back.getAttribute('href') || '/', location.origin);
+        url.searchParams.set('lang', lang);
+        back.setAttribute('href', url.pathname + '?' + url.searchParams.toString());
       }
-    };
 
-    // Zjištění jazyka: ?lang= má přednost, jinak podle prohlížeče
-    const paramLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-    const navLang = (navigator.language || 'cs').slice(0, 2).toLowerCase();
-    const supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
-    const lang = supported.includes(paramLang) ? paramLang : (supported.includes(navLang) ? navLang : 'cs');
-
-    // Aplikace textů
-    const t = TRANSLATIONS[lang];
-    document.documentElement.lang = lang;
-    document.title = t.title;
-
-    document.querySelectorAll('[data-i18n-key]').forEach((el) => {
-      const key = el.getAttribute('data-i18n-key');
-      if (t[key]) el.textContent = t[key];
-    });
-
-    // Zpětný odkaz s ?lang=
-    const back = document.getElementById('backLink');
-    if (back) {
-      const url = new URL(back.getAttribute('href'), location.origin);
-      url.searchParams.set('lang', lang);
-      back.setAttribute('href', url.toString());
-    }
-
-    // GA event
-    if (window.gtag) {
-      window.gtag('event', 'page_view_waitlist_thanks', { lang });
-    }
+      // 4) GA event (volitelné)
+      if (window.gtag) {
+        window.gtag('event', 'page_view_waitlist_thanks', { lang });
+      }
+    })();
   </script>
 </body>
 </html>

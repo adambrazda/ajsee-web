@@ -216,6 +216,13 @@
     "faq2a": "Korai hozzáférést, kurátori tippeket és CZ/SK-barát élményt.",
     "faq3q": "Biztonságos?",
     "faq3a": "Csak ellenőrzött partnerekkel és tisztességes feltételekkel dolgozunk."
-  }
+  },
+  "thanks": {
+  "title": "Köszönjük – AJSEE",
+  "heading": "Köszönjük, felkerültél a listára.",
+  "lead": "Kérjük, erősítsd meg a feliratkozást az e-mailben (double opt-in). Hamarosan híreket küldünk az indulásról és partnerekről.",
+  "back": "Vissza az AJSEE.cz oldalra"
+}
+
 }
 

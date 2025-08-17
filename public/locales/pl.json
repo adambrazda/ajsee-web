@@ -216,6 +216,13 @@
     "faq2a": "Wcześniejszy dostęp, kuratorskie wskazówki i wygodę w języku polskim/czeskim/słowackim.",
     "faq3q": "Czy to bezpieczne?",
     "faq3a": "Tylko zweryfikowani partnerzy i uczciwe warunki."
-  }
+  },
+  "thanks": {
+  "title": "Dziękujemy – AJSEE",
+  "heading": "Dziękujemy, jesteś na liście.",
+  "lead": "Potwierdź proszę zapis w e-mailu (double opt-in). Wkrótce wyślemy informacje o starcie i partnerach.",
+  "back": "Wróć do AJSEE.cz"
+}
+
 }
 

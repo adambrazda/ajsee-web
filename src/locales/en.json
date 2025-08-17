@@ -194,11 +194,29 @@
   "filter-theatre": "Theatre",
   "filter-nearest": "Upcoming",
   "filter-latest": "Newest",
-  "events-load-more": "Load more",
-  "hp-waitlist": {
-    "text": "Real ticket sales are coming soon — join the waitlist.",
-    "cta": "Join the waitlist",
-    "dismissAria": "Dismiss banner",
-    "ariaLabel": "Notice: ticket sales coming soon, link to the waitlist."
-  }
-  }
+"events-load-more": "Load more",
+"hp-waitlist": {
+  "lead": "Launching soon.",
+  "text": "Join the waitlist to get an early invite.",
+  "cta": "Get invite",
+  "dismiss": "Close",
+  "dismissAria": "Close banner",
+  "ariaLabel": "Notice: launching soon – waitlist"
+},
+"comingSoon": {
+  "title": "AJSEE Waitlist",
+  "lead": "Leave your email and we’ll send you an early-access invite. No spam.",
+  "emailLabel": "Email",
+  "emailPh": "you@example.com",
+  "consent": "I agree to receive updates about AJSEE and the ticket presale.",
+  "submit": "Join the waitlist",
+  "hint": "Double opt-in enabled. Unsubscribe anytime.",
+  "faqTitle": "Quick FAQ",
+  "faq1q": "When do you launch?",
+  "faq1a": "We’re opening the first presale wave to a limited number of invites. We’ll email the date.",
+  "faq2q": "What do I get?",
+  "faq2a": "Early access, curated tips and a Czech/Slovak friendly experience.",
+  "faq3q": "Is it safe?",
+  "faq3a": "We work only with verified partners and fair terms."
+}
+}

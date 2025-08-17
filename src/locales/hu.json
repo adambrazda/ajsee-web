@@ -194,9 +194,28 @@
   "filter-latest": "Legújabb",
   "events-load-more": "Továbbiak betöltése",
   "hp-waitlist": {
-    "text": "A valódi jegyértékesítés hamarosan indul – csatlakozz a várólistához.",
-    "cta": "Csatlakozás a várólistához",
+    "lead": "Hamarosan indulunk.",
+    "text": "Iratkozz fel a várólistára, és korai meghívót kapsz.",
+    "cta": "Meghívót kérek",
+    "dismiss": "Bezárás",
     "dismissAria": "Banner bezárása",
-    "ariaLabel": "Értesítés: jegyértékesítés hamarosan, link a várólistához"
+    "ariaLabel": "Értesítés: hamarosan indulunk – várólista"
+  },
+  "comingSoon": {
+    "title": "AJSEE várólista",
+    "lead": "Add meg az e-mailed, és küldünk előzetes meghívót. Nem küldünk spamet.",
+    "emailLabel": "E-mail",
+    "emailPh": "te@pelda.hu",
+    "consent": "Hozzájárulok az AJSEE és az elővétel frissítéseinek fogadásához.",
+    "submit": "Feliratkozom",
+    "hint": "Double opt-in bekapcsolva. Leiratkozás bármikor.",
+    "faqTitle": "Gyors GYIK",
+    "faq1q": "Mikor indultok?",
+    "faq1a": "Az első elővételi hullám korlátozott meghívóval nyílik. Dátumot e-mailben küldünk.",
+    "faq2q": "Mit kapok?",
+    "faq2a": "Korai hozzáférést, kurátori tippeket és CZ/SK-barát élményt.",
+    "faq3q": "Biztonságos?",
+    "faq3a": "Csak ellenőrzött partnerekkel és tisztességes feltételekkel dolgozunk."
   }
 }
+

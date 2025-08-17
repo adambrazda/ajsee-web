@@ -193,10 +193,28 @@
   "filter-nearest": "Bevorstehend",
   "filter-latest": "Neueste",
   "events-load-more": "Mehr laden",
-    "hp-waitlist": {
-    "text": "Der echte Ticketverkauf startet bald – trag dich in die Warteliste ein.",
-    "cta": "Zur Warteliste",
+  "hp-waitlist": {
+    "lead": "Start bald.",
+    "text": "Trag dich in die Warteliste ein und erhalte eine frühe Einladung.",
+    "cta": "Einladung sichern",
+    "dismiss": "Schließen",
     "dismissAria": "Banner schließen",
-    "ariaLabel": "Hinweis: Ticketverkauf startet bald, Link zur Warteliste."
+    "ariaLabel": "Hinweis: Start bald – Warteliste"
+  },
+  "comingSoon": {
+    "title": "AJSEE Warteliste",
+    "lead": "E-Mail hinterlassen – wir senden dir eine Early-Access-Einladung. Kein Spam.",
+    "emailLabel": "E-Mail",
+    "emailPh": "dein@mail.de",
+    "consent": "Ich stimme dem Erhalt von Updates zu AJSEE und dem Vorverkauf zu.",
+    "submit": "Zur Warteliste",
+    "hint": "Double Opt-in aktiviert. Abmeldung jederzeit.",
+    "faqTitle": "Kurz-FAQ",
+    "faq1q": "Wann startet ihr?",
+    "faq1a": "Die erste Presale-Welle öffnet mit begrenzten Einladungen. Datum per E-Mail.",
+    "faq2q": "Was bekomme ich?",
+    "faq2a": "Frühen Zugang, kuratierte Tipps und CZ/SK-freundliche Oberfläche.",
+    "faq3q": "Ist es sicher?",
+    "faq3a": "Nur verifizierte Partner und faire Bedingungen."
   }
 }

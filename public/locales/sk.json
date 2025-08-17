@@ -194,10 +194,30 @@
   "filter-latest": "Najnovšie",
   "footer-copyright": "© 2025 AJSEE®. Všetky práva vyhradené.",
   "events-load-more": "Načítať ďalšie",
+
   "hp-waitlist": {
-    "text": "Reálny predaj vstupeniek pripravujeme — pridajte sa na čakaciu listinu.",
-    "cta": "Pridať sa na čakaciu listinu",
+    "lead": "Spúšťame čoskoro.",
+    "text": "Pridaj sa na waitlist a dostaneš pozvánku medzi prvými.",
+    "cta": "Chcem pozvánku",
+    "dismiss": "Zavrieť",
     "dismissAria": "Zavrieť banner",
-    "ariaLabel": "Informácia: pripravujeme predaj vstupeniek, odkaz na čakaciu listinu"
+    "ariaLabel": "Oznámenie: spúšťame čoskoro – waitlist"
+  },
+  "comingSoon": {
+    "title": "Waitlist AJSEE",
+    "lead": "Zanechaj e-mail a pošleme ti pozvánku do predpredaja. Bez spamu.",
+    "emailLabel": "E-mail",
+    "emailPh": "tvoj@email.sk",
+    "consent": "Súhlasím so zasielaním noviniek o AJSEE a spustení predaja vstupeniek.",
+    "submit": "Pridať sa na waitlist",
+    "hint": "Double opt-in zapnutý. Odhlásenie kedykoľvek.",
+    "faqTitle": "Rýchle FAQ",
+    "faq1q": "Kedy spúšťate?",
+    "faq1a": "Prvú vlnu predpredaja otvárame s obmedzeným počtom pozvánok. Dátum pošleme e-mailom.",
+    "faq2q": "Čo získam?",
+    "faq2a": "Skorý prístup, kurátorské tipy a CZ/SK prostredie.",
+    "faq3q": "Je to bezpečné?",
+    "faq3a": "Spolupracujeme iba s overenými partnermi a férovými podmienkami."
   }
 }
+

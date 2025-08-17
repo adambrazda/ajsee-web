@@ -194,9 +194,28 @@
   "filter-latest": "Najnowsze",
   "events-load-more": "Wczytaj więcej",
   "hp-waitlist": {
-    "text": "Prawdziwa sprzedaż biletów już wkrótce – dołącz do listy oczekujących.",
-    "cta": "Dołącz do listy",
+    "lead": "Start już wkrótce.",
+    "text": "Dołącz do listy oczekujących i otrzymaj wczesne zaproszenie.",
+    "cta": "Chcę zaproszenie",
+    "dismiss": "Zamknij",
     "dismissAria": "Zamknij baner",
-    "ariaLabel": "Informacja: sprzedaż biletów wkrótce, link do listy oczekujących"
+    "ariaLabel": "Informacja: start wkrótce – lista oczekujących"
+  },
+  "comingSoon": {
+    "title": "Lista oczekujących AJSEE",
+    "lead": "Podaj e-mail, a wyślemy zaproszenie do przedsprzedaży. Bez spamu.",
+    "emailLabel": "E-mail",
+    "emailPh": "twoj@mail.pl",
+    "consent": "Zgadzam się na otrzymywanie aktualizacji o AJSEE i przedsprzedaży biletów.",
+    "submit": "Dołącz do listy",
+    "hint": "Double opt-in włączony. Rezygnacja w każdej chwili.",
+    "faqTitle": "Szybkie FAQ",
+    "faq1q": "Kiedy start?",
+    "faq1a": "Pierwszą falę przedsprzedaży otwieramy dla ograniczonej liczby zaproszeń. Datę wyślemy mailem.",
+    "faq2q": "Co otrzymam?",
+    "faq2a": "Wcześniejszy dostęp, kuratorskie wskazówki i wygodę w języku polskim/czeskim/słowackim.",
+    "faq3q": "Czy to bezpieczne?",
+    "faq3a": "Tylko zweryfikowani partnerzy i uczciwe warunki."
   }
 }
+

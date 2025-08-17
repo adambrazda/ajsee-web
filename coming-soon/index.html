@@ -1,327 +1,92 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title data-i18n-key="page.title">AJSEE – Coming Soon / Waitlist</title>
-  <meta name="description" content="AJSEE – kurátorské tipy v CZ/SK a brzy i nákup vstupenek přes ověřené partnery. Přidej se na čekací listinu.">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-K0ZS0D9JLK');
-  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title data-i18n-key="comingSoon.title">Čekací listina AJSEE</title>
+  <meta name="description" content="Přidej se na čekací listinu AJSEE a získej pozvánku do předprodeje.">
+  <link rel="icon" href="/images/logo-ajsee.png"/>
+  <style>
+    :root{--bg:#f6faff;--card:#ffffff;--ink:#0d2235;--muted:#4a6074;--accent:#0b74e5;--accent2:#085ab5}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial}
+    .wrap{max-width:860px;margin:40px auto;padding:0 16px}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+    .brand img{width:28px;height:28px}
+    .card{background:var(--card);border:1px solid rgba(8,60,130,.08);border-radius:16px;box-shadow:0 18px 50px rgba(8,60,130,.08);padding:24px}
+    h1{font-size:clamp(24px,3.4vw,34px);margin:0 0 8px;font-weight:900}
+    p.lead{color:var(--muted);margin:0 0 18px}
+    form{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+    label{font-weight:700}
+    input[type=email]{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(8,60,130,.18);outline:0}
+    input[type=email]:focus{border-color:#9ec7ff;box-shadow:0 0 0 4px rgba(158,199,255,.25)}
+    button[type=submit]{padding:12px 18px;border-radius:999px;background:var(--accent);color:#fff;border:0;font-weight:800;cursor:pointer;white-space:nowrap;box-shadow:0 10px 22px rgba(11,116,229,.28)}
+    button[type=submit]:hover{background:var(--accent2)}
+    .consent{grid-column:1/-1;display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.95rem}
+    .help{grid-column:1/-1;color:var(--muted);font-size:.9rem}
+    .faq{margin-top:24px}
+    .faq h2{font-size:1.15rem;margin:0 0 8px}
+    details{background:#f8fbff;border:1px solid rgba(8,60,130,.08);border-radius:12px;padding:10px 12px;margin:8px 0}
+    summary{cursor:pointer;font-weight:700}
+    .back{display:inline-block;margin-top:16px;color:var(--accent);text-decoration:none;font-weight:700}
+    @media(max-width:560px){form{grid-template-columns:1fr} button[type=submit]{width:100%}}
+  </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <div class="logo">AJSEE • Culture & Events</div>
-      <div class="lang" aria-label="Language switch">
-        <button type="button" data-lang="cs">CZ</button>
-        <button type="button" data-lang="en">EN</button>
-        <button type="button" data-lang="de">DE</button>
-        <button type="button" data-lang="sk">SK</button>
-        <button type="button" data-lang="pl">PL</button>
-        <button type="button" data-lang="hu">HU</button>
-      </div>
-    </header>
+    <div class="brand"><img src="/images/logo-ajsee.png" alt="" /><strong>AJSEE</strong></div>
+    <div class="card" role="main">
+      <h1 data-i18n-key="comingSoon.title">Čekací listina AJSEE</h1>
+      <p class="lead" data-i18n-key="comingSoon.lead">Zanech e-mail a pošleme ti pozvánku do předprodeje. Bez spamu.</p>
 
-    <section class="hero">
-      <h1 data-i18n-key="hero.title">Snadné vstupenky na světové akce.</h1>
-      <p class="sub" data-i18n-key="hero.subtitle">
-        Kurátorské tipy v češtině/slovenštině. Bezproblémový nákup přes ověřené partnery — spustíme brzy.
-      </p>
+      <form name="ajsee_waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/coming-soon/thanks.html">
+        <input type="hidden" name="form-name" value="ajsee_waitlist"/>
+        <input type="hidden" name="utm_source" id="utm_source"/>
+        <input type="hidden" name="utm_medium" id="utm_medium"/>
+        <input type="hidden" name="utm_campaign" id="utm_campaign"/>
+        <input type="hidden" name="lang" id="lang"/>
 
-      <div class="value">
-        <div class="card">
-          <strong data-i18n-key="values.understand.title">Rozumíme ti</strong>
-          <p class="tiny" data-i18n-key="values.understand.desc">Vše v CZ/SK, jasně a bez žargonu.</p>
+        <label for="email" data-i18n-key="comingSoon.emailLabel">E-mail</label>
+        <div></div>
+        <input id="email" name="email" type="email" required placeholder="tvuj@email.cz" data-i18n-placeholder="comingSoon.emailPh"/>
+        <button type="submit" data-i18n-key="comingSoon.submit">Přidat se na čekací listinu</button>
+
+        <div class="consent">
+          <input id="consent" type="checkbox" required/>
+          <label for="consent" data-i18n-key="comingSoon.consent">Souhlasím se zpracováním e-mailu…</label>
         </div>
-        <div class="card">
-          <strong data-i18n-key="values.safe.title">Bezpečně</strong>
-          <p class="tiny" data-i18n-key="values.safe.desc">Jen ověření partneři a férové podmínky.</p>
-        </div>
-        <div class="card">
-          <strong data-i18n-key="values.smart.title">Chytře</strong>
-          <p class="tiny" data-i18n-key="values.smart.desc">Tipy, jak vybrat sedadla, čas i rozpočet.</p>
-        </div>
-      </div>
-
-      <!-- Netlify Forms -->
-      <form name="ajsee_waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/coming-soon/thanks" id="waitlistForm">
-        <input type="hidden" name="form-name" value="ajsee_waitlist">
-        <p class="hide"><label>Don’t fill this out: <input name="bot-field"></label></p>
-
-        <label for="email" data-i18n-key="form.emailLabel">E-mail</label>
-        <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" aria-required="true" data-i18n-placeholder="form.emailPlaceholder" placeholder="Váš e-mail" />
-
-        <div class="row">
-          <input type="checkbox" id="consent" name="consent" required aria-required="true" />
-          <label for="consent" data-i18n-key="form.consent">
-            Souhlasím se zpracováním e-mailu za účelem zasílání novinek o AJSEE a spuštění prodeje vstupenek.
-          </label>
-        </div>
-
-        <!-- Hidden meta fields (UTM + context) -->
-        <input type="hidden" name="utm_source" id="utm_source">
-        <input type="hidden" name="utm_medium" id="utm_medium">
-        <input type="hidden" name="utm_campaign" id="utm_campaign">
-        <input type="hidden" name="referrer" id="referrer">
-        <input type="hidden" name="lang_selected" id="lang_selected" value="cs">
-
-        <div class="actions">
-          <button class="btn" type="submit" data-i18n-key="form.submit">Přidat se na čekací listinu</button>
-          <span class="note" data-i18n-key="form.note">Double opt-in zapnutý. Odhlášení kdykoli.</span>
-        </div>
+        <div class="help" data-i18n-key="comingSoon.hint">Double opt-in zapnutý. Odhlášení kdykoli.</div>
       </form>
 
       <div class="faq">
-        <h3 data-i18n-key="faq.title">Krátké FAQ</h3>
-
+        <h2 data-i18n-key="comingSoon.faqTitle">Krátké FAQ</h2>
         <details>
-          <summary data-i18n-key="faq.q1">Kdy spustíte prodej?</summary>
-          <p class="tiny" data-i18n-key="faq.a1">Jakmile potvrdíme první partnerství. Priorita je kvalita a bezpečí.</p>
+          <summary data-i18n-key="comingSoon.faq1q">Kdy spustíte?</summary>
+          <p data-i18n-key="comingSoon.faq1a">První vlnu předprodeje…</p>
         </details>
-
         <details>
-          <summary data-i18n-key="faq.q2">Kolik to bude stát?</summary>
-          <p class="tiny" data-i18n-key="faq.a2">Platíte cenu partnera. Žádné skryté poplatky na naší straně.</p>
+          <summary data-i18n-key="comingSoon.faq2q">Co získám po přihlášení?</summary>
+          <p data-i18n-key="comingSoon.faq2a">Brzký přístup…</p>
         </details>
-
         <details>
-          <summary data-i18n-key="faq.q3">Co získám po přihlášení?</summary>
-          <p class="tiny" data-i18n-key="faq.a3">Občasný e-mail: noví partneři, spuštění, a „AJSEE vysvětluje“ tipy. Odhlášení jedním klikem.</p>
-        </details>
-
-        <details>
-          <summary data-i18n-key="faq.q4">Je nákup bezpečný?</summary>
-          <p class="tiny" data-i18n-key="faq.a4">AJSEE zprostředkuje nákup u ověřených partnerů. Platbu řeší přímo partner, ne my.</p>
+          <summary data-i18n-key="comingSoon.faq3q">Je to bezpečné?</summary>
+          <p data-i18n-key="comingSoon.faq3a">Spolupracujeme jen s ověřenými partnery…</p>
         </details>
       </div>
-    </section>
 
-    <footer>
-      <span data-i18n-key="footer.contact">
-        Máte otázky? Napište nám: <a href="mailto:ajseeofficial@gmail.com">ajseeofficial@gmail.com</a>
-      </span>
-    </footer>
+      <a class="back" href="/?lang=cs" data-i18n-key="blog-show-all">Zpět na web</a>
+    </div>
   </div>
 
   <script>
-    // --- Mini i18n slovník (6 jazyků) ---
-    const I18N = {
-      cs: {
-        "page.title": "AJSEE – Coming Soon / Čekací listina",
-        "hero.title": "Snadné vstupenky na světové akce.",
-        "hero.subtitle": "Kurátorské tipy v češtině/slovenštině. Bezproblémový nákup přes ověřené partnery — spustíme brzy.",
-        "values.understand.title": "Rozumíme ti",
-        "values.understand.desc": "Vše v CZ/SK, jasně a bez žargonu.",
-        "values.safe.title": "Bezpečně",
-        "values.safe.desc": "Jen ověření partneři a férové podmínky.",
-        "values.smart.title": "Chytře",
-        "values.smart.desc": "Tipy, jak vybrat sedadla, čas i rozpočet.",
-        "form.emailLabel": "E-mail",
-        "form.emailPlaceholder": "Váš e-mail",
-        "form.consent": "Souhlasím se zpracováním e-mailu za účelem zasílání novinek o AJSEE a spuštění prodeje vstupenek.",
-        "form.submit": "Přidat se na čekací listinu",
-        "form.note": "Double opt-in zapnutý. Odhlášení kdykoli.",
-        "faq.title": "Krátké FAQ",
-        "faq.q1": "Kdy spustíte prodej?",
-        "faq.a1": "Jakmile potvrdíme první partnerství. Priorita je kvalita a bezpečí.",
-        "faq.q2": "Kolik to bude stát?",
-        "faq.a2": "Platíte cenu partnera. Žádné skryté poplatky na naší straně.",
-        "faq.q3": "Co získám po přihlášení?",
-        "faq.a3": "Občasný e-mail: noví partneři, spuštění, a „AJSEE vysvětluje“ tipy. Odhlášení jedním klikem.",
-        "faq.q4": "Je nákup bezpečný?",
-        "faq.a4": "AJSEE zprostředkuje nákup u ověřených partnerů. Platbu řeší přímo partner, ne my.",
-        "footer.contact": "Máte otázky? Napište nám: <a href=\"mailto:ajseeofficial@gmail.com\">ajseeofficial@gmail.com</a>",
-      },
-      en: {
-        "page.title": "AJSEE – Coming Soon / Waitlist",
-        "hero.title": "Easy tickets to global events.",
-        "hero.subtitle": "Curated tips in CZ/SK. Seamless ticketing via trusted partners — launching soon.",
-        "values.understand.title": "We speak your language",
-        "values.understand.desc": "Clear guidance in CZ/SK, no jargon.",
-        "values.safe.title": "Safe",
-        "values.safe.desc": "Verified partners and fair terms.",
-        "values.smart.title": "Smart",
-        "values.smart.desc": "Tips for seats, timing & budget.",
-        "form.emailLabel": "Email",
-        "form.emailPlaceholder": "Your email",
-        "form.consent": "I agree to receive AJSEE updates and launch notices about ticket sales.",
-        "form.submit": "Join the waitlist",
-        "form.note": "Double opt-in enabled. Unsubscribe anytime.",
-        "faq.title": "Quick FAQ",
-        "faq.q1": "When do you launch ticketing?",
-        "faq.a1": "As soon as the first partnerships are confirmed. Quality and safety first.",
-        "faq.q2": "How much will it cost?",
-        "faq.a2": "You pay the partner’s price. No hidden fees from us.",
-        "faq.q3": "What do I get by joining?",
-        "faq.a3": "Occasional emails: partner news, launch updates and short “AJSEE explains” guides. One-click unsubscribe.",
-        "faq.q4": "Is it safe?",
-        "faq.a4": "AJSEE routes you to verified partners. Payment is processed by the partner, not us.",
-        "footer.contact": "Questions? Email us: <a href=\"mailto:ajseeofficial@gmail.com\">ajseeofficial@gmail.com</a>",
-      },
-      de: {
-        "page.title": "AJSEE – Bald verfügbar / Warteliste",
-        "hero.title": "Einfache Tickets für Events weltweit.",
-        "hero.subtitle": "Kuratiere Tipps auf CZ/SK. Nahtloser Ticketkauf über vertrauenswürdige Partner — Start bald.",
-        "values.understand.title": "Wir verstehen dich",
-        "values.understand.desc": "Alles auf CZ/SK, klar und ohne Fachjargon.",
-        "values.safe.title": "Sicher",
-        "values.safe.desc": "Nur verifizierte Partner und faire Bedingungen.",
-        "values.smart.title": "Smart",
-        "values.smart.desc": "Tipps zu Sitzplätzen, Timing und Budget.",
-        "form.emailLabel": "E-Mail",
-        "form.emailPlaceholder": "Ihre E-Mail-Adresse",
-        "form.consent": "Ich stimme zu, E-Mails mit AJSEE-Neuigkeiten und Startinformationen zu Ticketverkäufen zu erhalten.",
-        "form.submit": "Zur Warteliste",
-        "form.note": "Double-Opt-In aktiviert. Abmeldung jederzeit.",
-        "faq.title": "Kurz-FAQ",
-        "faq.q1": "Wann startet ihr mit dem Ticketverkauf?",
-        "faq.a1": "Sobald die ersten Partnerschaften bestätigt sind. Qualität und Sicherheit zuerst.",
-        "faq.q2": "Was kostet es?",
-        "faq.a2": "Sie zahlen den Partnerpreis. Keine versteckten Gebühren von uns.",
-        "faq.q3": "Was bekomme ich nach der Anmeldung?",
-        "faq.a3": "Gelegentliche E-Mails: Partner-News, Startupdates und kurze „AJSEE erklärt“-Guides. Ein Klick zum Abmelden.",
-        "faq.q4": "Ist es sicher?",
-        "faq.a4": "AJSEE leitet zu verifizierten Partnern weiter. Die Zahlung erfolgt direkt beim Partner.",
-        "footer.contact": "Fragen? Schreiben Sie uns: <a href=\"mailto:ajseeofficial@gmail.com\">ajseeofficial@gmail.com</a>",
-      },
-      sk: {
-        "page.title": "AJSEE – Už čoskoro / Čakacia listina",
-        "hero.title": "Ľahké vstupenky na svetové podujatia.",
-        "hero.subtitle": "Kurátorské tipy v češtine/slovenčine. Bezproblémový nákup cez overených partnerov — spúšťame čoskoro.",
-        "values.understand.title": "Rozumieme ti",
-        "values.understand.desc": "Všetko v CZ/SK, jasne a bez žargónu.",
-        "values.safe.title": "Bezpečne",
-        "values.safe.desc": "Len overení partneri a férové podmienky.",
-        "values.smart.title": "Múdro",
-        "values.smart.desc": "Tipy na sedadlá, čas a rozpočet.",
-        "form.emailLabel": "E-mail",
-        "form.emailPlaceholder": "Váš e-mail",
-        "form.consent": "Súhlasím so spracovaním e-mailu na zasielanie noviniek o AJSEE a spustení predaja vstupeniek.",
-        "form.submit": "Pridať sa na čakaciu listinu",
-        "form.note": "Double opt-in zapnutý. Odhlásenie kedykoľvek.",
-        "faq.title": "Krátke FAQ",
-        "faq.q1": "Kedy spustíte predaj?",
-        "faq.a1": "Hneď po potvrdení prvých partnerstiev. Priorita je kvalita a bezpečie.",
-        "faq.q2": "Koľko to bude stáť?",
-        "faq.a2": "Platíte cenu partnera. Žiadne skryté poplatky z našej strany.",
-        "faq.q3": "Čo získam po prihlásení?",
-        "faq.a3": "Občasný e-mail: noví partneri, spustenie a tipy „AJSEE vysvetľuje“. Odhlásenie jedným klikom.",
-        "faq.q4": "Je nákup bezpečný?",
-        "faq.a4": "AJSEE sprostredkuje nákup u overených partnerov. Platbu rieši priamo partner.",
-        "footer.contact": "Máte otázky? Napíšte nám: <a href=\"mailto:ajseeofficial@gmail.com\">ajseeofficial@gmail.com</a>",
-      },
-      pl: {
-        "page.title": "AJSEE – Wkrótce / Lista oczekujących",
-        "hero.title": "Łatwe bilety na wydarzenia na świecie.",
-        "hero.subtitle": "Kuratorskie wskazówki po czesku/słowacku. Bezproblemowy zakup u zaufanych partnerów — start wkrótce.",
-        "values.understand.title": "Rozumiemy Cię",
-        "values.understand.desc": "Wszystko po CZ/SK, jasno i bez żargonu.",
-        "values.safe.title": "Bezpiecznie",
-        "values.safe.desc": "Tylko zweryfikowani partnerzy i uczciwe warunki.",
-        "values.smart.title": "Sprytnie",
-        "values.smart.desc": "Wskazówki dot. miejsc, czasu i budżetu.",
-        "form.emailLabel": "E-mail",
-        "form.emailPlaceholder": "Twój e-mail",
-        "form.consent": "Zgadzam się na otrzymywanie informacji od AJSEE o nowościach i uruchomieniu sprzedaży biletów.",
-        "form.submit": "Dołącz do listy",
-        "form.note": "Double opt-in włączony. Wypis w każdej chwili.",
-        "faq.title": "Szybkie FAQ",
-        "faq.q1": "Kiedy uruchomicie sprzedaż?",
-        "faq.a1": "Gdy potwierdzimy pierwsze partnerstwa. Liczy się jakość i bezpieczeństwo.",
-        "faq.q2": "Ile to będzie kosztować?",
-        "faq.a2": "Płacisz cenę partnera. Bez ukrytych opłat z naszej strony.",
-        "faq.q3": "Co zyskam po dołączeniu?",
-        "faq.a3": "Okazjonalne maile: partnerzy, start, krótkie poradniki „AJSEE wyjaśnia”. Wypis jednym kliknięciem.",
-        "faq.q4": "Czy to bezpieczne?",
-        "faq.a4": "AJSEE kieruje do zaufanych partnerów. Płatność realizuje bezpośrednio partner.",
-        "footer.contact": "Masz pytania? Napisz: <a href=\"mailto:ajseeofficial@gmail.com\">ajseeofficial@gmail.com</a>",
-      },
-      hu: {
-        "page.title": "AJSEE – Hamarosan / Várólista",
-        "hero.title": "Egyszerű jegyek világszerte.",
-        "hero.subtitle": "Kurátori tippek cseh/szlovák nyelven. Zökkenőmentes vásárlás megbízható partnereken át — hamarosan indulunk.",
-        "values.understand.title": "Értjük, mire van szükséged",
-        "values.understand.desc": "Minden CZ/SK nyelven, érthetően, zsargon nélkül.",
-        "values.safe.title": "Biztonságos",
-        "values.safe.desc": "Csak ellenőrzött partnerek és tisztességes feltételek.",
-        "values.smart.title": "Okosan",
-        "values.smart.desc": "Tippek ülőhelyre, időzítésre és költségvetésre.",
-        "form.emailLabel": "E-mail",
-        "form.emailPlaceholder": "E-mail címed",
-        "form.consent": "Hozzájárulok, hogy az AJSEE értesítéseket és indulási információkat küldjön a jegyértékesítésről.",
-        "form.submit": "Csatlakozom a várólistához",
-        "form.note": "Double opt-in engedélyezve. Bármikor leiratkozhatsz.",
-        "faq.title": "Rövid GYIK",
-        "faq.q1": "Mikor indul a jegyértékesítés?",
-        "faq.a1": "Amint az első partnerségek megerősítést kapnak. A minőség és a biztonság az első.",
-        "faq.q2": "Mennyibe kerül?",
-        "faq.a2": "A partner árát fizeted. Nincsenek rejtett díjak a részünkről.",
-        "faq.q3": "Mit kapok a feliratkozás után?",
-        "faq.a3": "Alkalmankénti e-mail: partnerek, indulás és rövid „AJSEE elmagyarázza” tippek. Egy kattintással leiratkozhatsz.",
-        "faq.q4": "Biztonságos?",
-        "faq.a4": "Az AJSEE ellenőrzött partnerekhez irányít; a fizetést közvetlenül a partner kezeli.",
-        "footer.contact": "Kérdésed van? Írj nekünk: <a href=\"mailto:ajseeofficial@gmail.com\">ajseeofficial@gmail.com</a>",
-      }
-    };
-
-    // --- Aplikace překladu ---
-    const $$ = (sel,root=document)=>Array.from(root.querySelectorAll(sel));
-    function applyI18n(lang){
-      const dict = I18N[lang] || I18N.cs;
-      $$.call(null,'[data-i18n-key]').forEach(el=>{
-        const key = el.getAttribute('data-i18n-key');
-        const txt = dict[key];
-        if (txt !== undefined){
-          if (el.matches('input,textarea')) el.value = txt;
-          else el.innerHTML = txt;
-        }
+    // Přenes UTM a jazyk z URL do hidden polí
+    (function(){
+      const p = new URLSearchParams(location.search);
+      ['utm_source','utm_medium','utm_campaign'].forEach(k=>{
+        const el=document.getElementById(k); if(el) el.value=p.get(k)||'';
       });
-      $$.call(null,'[data-i18n-placeholder]').forEach(el=>{
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (dict[key] !== undefined) el.setAttribute('placeholder', dict[key]);
-      });
-      document.title = dict['page.title'] || document.title;
-      document.documentElement.lang = lang;
-      const hiddenLang = document.getElementById('lang_selected'); if (hiddenLang) hiddenLang.value = lang;
-      // toggle active state on buttons
-      $$('.lang button').forEach(b=> b.classList.toggle('active', b.dataset.lang===lang));
-    }
-
-    // --- Zjištění jazyka: ?lang= .. nebo navigator ---
-    const qpLang = (new URLSearchParams(location.search).get('lang')||'').toLowerCase();
-    let currentLang = ['cs','en','de','sk','pl','hu'].includes(qpLang) ? qpLang :
-      (navigator.language||'cs').slice(0,2).toLowerCase();
-    if (!['cs','en','de','sk','pl','hu'].includes(currentLang)) currentLang='cs';
-    applyI18n(currentLang);
-
-    // Přepínač jazyka
-    $$('.lang button').forEach(b=> b.addEventListener('click', ()=>{
-      currentLang = b.dataset.lang;
-      const url = new URL(location.href);
-      url.searchParams.set('lang', currentLang);
-      history.replaceState(null,'',url.toString());
-      applyI18n(currentLang);
-    }));
-
-    // UTM + referrer
-    const p = new URLSearchParams(location.search);
-    const setVal = (id,key)=>{ const el=document.getElementById(id); if(el) el.value = p.get(key) || ''; };
-    setVal('utm_source','utm_source'); setVal('utm_medium','utm_medium'); setVal('utm_campaign','utm_campaign');
-    const ref = document.getElementById('referrer'); if (ref) ref.value = document.referrer || '';
-
-    // GA4 event na submitu – vyžaduje gtag na stránce
-    document.getElementById('waitlistForm').addEventListener('submit', () => {
-      if (window.gtag) window.gtag('event','form_submit_waitlist',{event_category:'engagement',event_label:'coming_soon',method:'netlify_form'});
-    });
+      const lang = (p.get('lang')||'').toLowerCase();
+      const elLang=document.getElementById('lang'); if(elLang) elLang.value=lang||'cs';
+    })();
   </script>
 </body>
 </html>

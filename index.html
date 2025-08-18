@@ -208,11 +208,21 @@
     <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form">Filtry</button>
     <div class="filters-overlay" id="filtersOverlay" hidden></div>
 
-    <!-- 🔹 Demo badge -->
-    <div class="event-demo-badge">
-      <p data-i18n-key="event-demo-badge">
-        Ukázkové události – připravujeme reálný prodej vstupenek. Sledujte nás!
+    <!-- 🔹 Demo badge (moderní pill + i18n) -->
+    <div class="event-demo-badge" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
+      <div class="ib-icon" aria-hidden="true">🎟️</div>
+      <p class="ib-text">
+        <strong data-i18n-key="event-demo.title">Ukázkové události.</strong>
+        <span data-i18n-key="event-demo.body">Připravujeme reálný prodej vstupenek. Sledujte nás!</span>
       </p>
+      <a
+        class="ib-cta"
+        id="demoBadgeCta"
+        href="/coming-soon?utm_source=site&utm_medium=pill&utm_campaign=demo_badge"
+        data-i18n-key="event-demo.cta"
+      >
+        Sleduj novinky
+      </a>
     </div>
 
     <!-- 🔹 Events list -->
@@ -514,6 +524,56 @@
   })();
 </script>
 
+<!-- Inline skript: Demo badge (lokální i18n + doplnění ?lang + GA event) -->
+<script>
+  (function(){
+    const pill = document.querySelector('.event-demo-badge');
+    if (!pill) return;
+
+    const SUPPORTED = ['cs','en','de','sk','pl','hu'];
+    const qs = new URLSearchParams(location.search);
+    let lang = (qs.get('lang') || '').toLowerCase();
+    if (!SUPPORTED.includes(lang)) lang = (document.documentElement.getAttribute('lang') || 'cs').toLowerCase();
+    if (!SUPPORTED.includes(lang)) lang = 'cs';
+
+    // Bezpečný getter z objektu
+    const get = (obj, path) => {
+      try { return path.split('.').reduce((o,k)=>(o && typeof o==='object') ? o[k] : undefined, obj); }
+      catch { return undefined; }
+    };
+
+    // Lokální i18n aplikace jen na demo pill (pokud runtime má window.translations)
+    (function applyI18n(){
+      const dict = window.translations || null;
+      if (!dict) return;
+
+      pill.querySelectorAll('[data-i18n-key]').forEach(el=>{
+        const key = el.getAttribute('data-i18n-key');
+        const val = get(dict, key);
+        if (typeof val === 'string') el.textContent = val;
+      });
+
+      const ariaKey = pill.getAttribute('data-i18n-aria');
+      const ariaVal = ariaKey ? get(dict, ariaKey) : null;
+      if (typeof ariaVal === 'string') {
+        pill.setAttribute('aria-label', ariaVal);
+        pill.setAttribute('title', ariaVal);
+      }
+    })();
+
+    // CTA: doplň ?lang a pošli GA event
+    const cta = document.getElementById('demoBadgeCta');
+    if (cta) {
+      const url = new URL(cta.href, location.origin);
+      url.searchParams.set('lang', lang);
+      cta.href = url.toString();
+
+      cta.addEventListener('click', function(){
+        if (window.gtag) window.gtag('event','click_demo_badge', { source: 'home_demo_pill', lang });
+      });
+    }
+  })();
+</script>
 
 </body>
 </html>

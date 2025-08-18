@@ -223,6 +223,12 @@
   "heading": "Dziękujemy, jesteś na liście.",
   "lead": "Potwierdź proszę zapis w e-mailu (double opt-in). Wkrótce wyślemy informacje o starcie i partnerach.",
   "back": "Wróć do AJSEE.cz"
+},
+"event-demo": {
+  "ariaLabel": "Informacja o trybie demo – wkrótce uruchomimy realną sprzedaż biletów.",
+  "title": "Przykładowe wydarzenia.",
+  "body": "Przygotowujemy uruchomienie realnej sprzedaży biletów. Śledź nas!",
+  "cta": "Śledź aktualności"
 }
 
 }

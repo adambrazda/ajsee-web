@@ -4,17 +4,19 @@
    Backward-compatible with current markup and new <form>-based layout
    --------------------------------------------------------- */
 @use '../globals' as *;
+@use './pills' as pills; // ⬅️ správná relativní cesta (pills je sourozenec)
 /* Utility (pro ARIA live region v typeaheadu) */
 .sr-only {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0 0 0 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Section wrapper */
@@ -59,8 +61,7 @@
 
 /* Works for both .events-filters (div) and <form id="events-filters-form"> */
 .events-filters {
-  /* už ne grid – grid je uvnitř fieldsetu */
-  display: block;
+  display: block; /* grid je uvnitř fieldsetu */
   margin-bottom: 2.5rem;
   padding: 1.2rem 1.5rem;
   background: #f5f9fc;
@@ -394,18 +395,67 @@
   cursor: not-allowed;
 }
 
-/* Demo badge/info */
-.event-demo-badge {
-  background: #eaf4ff;
-  color: #004a88;
-  padding: 14px 22px;
-  margin: 2rem auto 0 auto;
-  border-left: 5px solid #0078d7;
-  font-weight: 600;
-  border-radius: 8px;
-  text-align: center;
-  max-width: 800px;
-  font-size: 1rem;
+/* ------------------------
+   DEMO BADGE – moderní pill (glass + gradient)
+   ------------------------ */
+.event-demo-badge{
+  --ib-bg: radial-gradient(120% 120% at 0% 0%, #f5fbff 0%, #eef7ff 40%, #ffffff 100%);
+  --ib-border: rgba(7, 38, 77, .09);
+  --ib-shadow: 0 10px 30px rgba(8, 60, 130, .08);
+  --ib-text: #0d2235;
+  --ib-accent: #0b74e5;
+  --ib-accent-hover: #085ab5;
+
+  display: grid;
+  grid-template-columns: minmax(36px,auto) 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--ib-bg);
+  border: 1px solid var(--ib-border);
+  box-shadow: var(--ib-shadow);
+  backdrop-filter: saturate(120%) blur(6px);
+  -webkit-backdrop-filter: saturate(120%) blur(6px);
+  margin: 16px 0 0;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .ib-icon{
+    width: 36px;height: 36px; display:grid; place-items:center;
+    border-radius: 999px;
+    background: linear-gradient(180deg,#e4f0ff, #d0e7ff);
+    color: #08407a; font-size: 18px; font-weight: 700;
+    box-shadow: inset 0 0 0 1px rgba(8,64,122,.05), 0 2px 8px rgba(8,64,122,.12);
+  }
+  .ib-text{
+    margin: 0; color: var(--ib-text); line-height: 1.35;
+    font-weight: 600;
+  }
+  .ib-cta{
+    display:inline-block; white-space:nowrap;
+    padding: 12px 18px; border-radius: 999px; line-height:1;
+    background: var(--ib-accent); color: #fff; font-weight: 800; text-decoration:none;
+    box-shadow: 0 10px 22px rgba(11,116,229,.28);
+    transition: transform .1s, box-shadow .15s, background .15s;
+    &:hover,&:focus-visible{ background: var(--ib-accent-hover); transform: translateY(-1px); outline: none; }
+    &:active{ transform: translateY(0); }
+  }
+
+  /* Tablet */
+  @media (max-width: 900px){
+    grid-template-columns: 1fr auto;
+    .ib-icon{ display:none; }
+  }
+  /* Mobile */
+  @media (max-width: 520px){
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+    text-align: left;
+    position: relative;
+    .ib-cta{ width:100%; text-align:center; }
+  }
 }
 
 /* Aktivní chipy (sekce pod toolbar) */
@@ -540,7 +590,7 @@
 }
 
 /* Utilities */
-.hidden { display: none !important; }
+.hidden { display: none; }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes scaleIn { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -658,12 +708,12 @@
    ------------------------ */
 
 .input-error {
-  border-color: #e63946 !important;
-  background-color: #fff5f5 !important;
+  border-color: #e63946;
+  background-color: #fff5f5;
   box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.15);
 
   &:focus {
-    border-color: #d62828 !important;
+    border-color: #d62828;
     box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.25);
     background-color: #fff;
   }
@@ -675,9 +725,7 @@
   margin-top: 0.35rem;
   display: none;
 
-  &.active {
-    display: block;
-  }
+  &.active { display: block; }
 }
 
 /* AURORA FILTER DOCK + BOTTOM SHEET

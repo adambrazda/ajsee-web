@@ -223,7 +223,12 @@
   "heading": "Köszönjük, felkerültél a listára.",
   "lead": "Kérjük, erősítsd meg a feliratkozást az e-mailben (double opt-in). Hamarosan híreket küldünk az indulásról és partnerekről.",
   "back": "Vissza az AJSEE.cz oldalra"
+},
+"event-demo": {
+  "ariaLabel": "Információk demó módról – hamarosan indul a valós jegyértékesítés.",
+  "title": "Mintaesemények.",
+  "body": "Készülünk az éles jegyértékesítésre. Kövess minket!",
+  "cta": "Kövesd a híreket"
 }
-
 }
 

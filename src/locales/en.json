@@ -225,6 +225,11 @@
   "heading": "Thanks, you’re on the list.",
   "lead": "Please confirm your subscription in the email (double opt-in). We’ll send launch and partner updates soon.",
   "back": "Back to AJSEE.cz"
+},
+"event-demo": {
+  "ariaLabel": "Demo mode info — real ticket sales coming soon.",
+  "title": "Sample events.",
+  "body": "We’re preparing real ticket sales. Follow us!",
+  "cta": "Follow updates"
 }
-
 }

@@ -226,6 +226,12 @@
   "heading": "Děkujeme, jsi na seznamu.",
   "lead": "Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.",
   "back": "Zpět na AJSEE.cz"
+},
+"event-demo": {
+  "ariaLabel": "Informace o demo režimu – chystáme reálný prodej vstupenek.",
+  "title": "Ukázkové události.",
+  "body": "Připravujeme reálný prodej vstupenek. Sledujte nás!",
+  "cta": "Sleduj novinky"
 }
 
 }

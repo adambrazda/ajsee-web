@@ -1,4 +1,5 @@
 @use '../globals' as *;
+@use './pills' as pills; // ⬅️ správná relativní cesta (pills je sourozenec)
 
 /* --- HP Waitlist banner (glass + gradient) --- */
 .hp-waitlist{

@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title data-i18n-key="events-page-title">Události</title>
   <!-- (styly bundlu se natahují přes Vite/Netlify v /src/main.js) -->
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-K0ZS0D9JLK');
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-K0ZS0D9JLK');
+  </script>
 </head>
 <body>
   <!-- Header a navigace -->
@@ -171,6 +170,18 @@
         </button>
         <div class="filters-overlay" id="filtersOverlay" hidden aria-hidden="true"></div>
 
+        <!-- Demo badge (moderní pill) -->
+        <div class="event-demo-badge" id="demoBadge" role="note" aria-live="polite" aria-label="" data-i18n-aria="event-demo.ariaLabel">
+          <span class="ib-icon" aria-hidden="true">✨</span>
+          <p class="ib-text">
+            <strong data-i18n-key="event-demo.title">Ukázkové události.</strong>
+            <span data-i18n-key="event-demo.body">Připravujeme reálný prodej vstupenek. Sledujte nás!</span>
+          </p>
+          <a class="ib-cta" id="demoBadgeCta"
+             href="/coming-soon?utm_source=site&utm_medium=demo_badge&utm_campaign=waitlist"
+             data-i18n-key="event-demo.cta">Sleduj novinky</a>
+        </div>
+
         <h2 class="events-upcoming-title" id="events-upcoming-title" data-i18n-key="events-upcoming-title">Nejbližší události</h2>
 
         <!-- seznam karet; JS doplní skeleton, paginaci a “Load more” -->
@@ -178,32 +189,6 @@
         <!-- “Load more” tlačítko se vkládá dynamicky JS (ensureLoadMore) -->
       </div>
     </section>
-
-    <!-- Kategorie událostí (funkční dlaždice – aplikují filtr) -->
-     <!--
-    <section class="events-categories categories-section" aria-labelledby="events-categories-title">
-      <div class="container">
-        <h3 id="events-categories-title" data-i18n-key="events-categories-title">Kategorie</h3>
-        <div class="events-categories-list" id="eventsCategories">
-          <button class="category-card" data-category="concert" type="button" aria-pressed="false">
-            <span class="category-icon icon-concert" aria-hidden="true"></span>
-            <span data-i18n-key="events-category-concert">Koncerty</span>
-          </button>
-          <button class="category-card" data-category="festival" type="button" aria-pressed="false">
-            <span class="category-icon icon-festival" aria-hidden="true"></span>
-            <span data-i18n-key="events-category-festival">Festivaly</span>
-          </button>
-          <button class="category-card" data-category="theatre" type="button" aria-pressed="false">
-            <span class="category-icon icon-theatre" aria-hidden="true"></span>
-            <span data-i18n-key="events-category-theatre">Divadlo</span>
-          </button>
-          <button class="category-card" data-category="sport" type="button" aria-pressed="false">
-            <span class="category-icon icon-sport" aria-hidden="true"></span>
-            <span data-i18n-key="events-category-sport">Sport</span>
-          </button>
-        </div>
-      </div>
-    </section>-->
 
     <!-- Výhody (sekce je na /events spíš volitelná; lze skrýt přes JS/SCSS) -->
     <section class="events-benefits why-us-section" aria-labelledby="events-benefits-title">
@@ -290,5 +275,35 @@
   </footer>
 
   <script type="module" src="/src/main.js"></script>
+
+  <!-- Inline skript: Demo badge CTA (doplnění ?lang + GA event + aria i18n) -->
+  <script>
+    (function(){
+      const cta = document.getElementById('demoBadgeCta');
+      const root = document.getElementById('demoBadge');
+      if (!cta) return;
+
+      const qs = new URLSearchParams(location.search);
+      const lang = (qs.get('lang') || '').toLowerCase();
+      if (['cs','en','de','sk','pl','hu'].includes(lang)) {
+        const url = new URL(cta.href, location.origin);
+        url.searchParams.set('lang', lang);
+        cta.href = url.toString();
+      }
+
+      cta.addEventListener('click', function(){
+        if (window.gtag) window.gtag('event','click_waitlist', { source: 'events_demo_badge' });
+      });
+
+      // i18n aria-label pokud existuje window.translations
+      if (root && window.translations) {
+        try {
+          const path = 'event-demo.ariaLabel';
+          const val = path.split('.').reduce((o,k)=> (o && typeof o==='object') ? o[k] : undefined, window.translations);
+          if (typeof val === 'string' && val.trim()) root.setAttribute('aria-label', val);
+        } catch(e) {}
+      }
+    })();
+  </script>
 </body>
 </html>

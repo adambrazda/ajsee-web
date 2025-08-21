@@ -232,8 +232,18 @@
   "title": "Ukázkové události.",
   "body": "Připravujeme reálný prodej vstupenek. Sledujte nás!",
   "cta": "Sleduj novinky"
+},
+"mg.backToBlog": "Zpět na blog",
+"mg.breadcrumb": "AJSEE vysvětluje",
+"mg": {
+  "card": { "badge": "Mikroprůvodce" },
+  "guides": {
+    "seating-map": {
+      "title": "Jak číst seating mapu",
+      "summary": "Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst."
+    }
+  }
 }
-
 }
 
   

@@ -1,0 +1,55 @@
+{
+  "slug": "seating-map",
+  "title": "Jak číst seating mapu",
+  "summary": "Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst.",
+  "readingMinutes": 5,
+  "cover": "/images/microguides/seating-map/cover.webp",
+  "coverAlt": "Ilustrační foto hlediště",
+  "category": "theatre",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Intro k mikroprůvodci",
+      "body": "Vybrané sedadlo rozhoduje o zážitku víc než samotná cena. Správné čtení mapy ti pomůže prověřit výhled, akustiku i komfort – a vybrat nejlepší poměr cena/zážitek. Níže najdeš rychlé signály, které se vyplatí zkontrolovat před nákupem.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Přehledová ikona"
+    },
+    {
+      "id": "s1",
+      "heading": "Sleduj „restricted view“ a překážky",
+      "body": "Ikonky sloupů, zábradlí, kamer či zvukové věže znamenají riziko omezeného výhledu. Obzvlášť u koncertů si všímej umístění mixpultu a světelné konstrukce – místa přímo za nimi mívají horší výhled i zvuk. Pokud je v popisu sektoru výstraha, ber ji vážně.",
+      "image": "/images/microguides/seating-map/icon-restricted-view.svg",
+      "alt": "Ikona omezeného výhledu"
+    },
+    {
+      "id": "s2",
+      "heading": "Balkon není vždy nejlepší",
+      "body": "Balkon umí skvěle fungovat, ale záleží na sklonu a úhlu na scénu. Příliš plochý balkon = víc hlav v zorném poli a slabší pocit blízkosti. Jistota bývá středové bloky a první řady balkonu; rohy ber jen při výrazně lepší ceně.<div class='mg-callout -tip'><span class='callout-label'>Pro tip</span><p>Středová osa a zhruba 2/3 hloubky sálu bývá nejjistější kombinace výhledu i zvuku.</p></div>",
+      "image": "/images/microguides/seating-map/icon-balkon.svg",
+      "alt": "Ikona balkonu"
+    },
+    {
+      "id": "s3",
+      "heading": "Legroom a akustika rozlišují zážitek",
+      "body": "Starší sály mívají menší rozteč řad – u delších programů se komfort opravdu vyplácí. Akusticky je bezpečná volba střed cca v 2/3 hloubky sálu; úplně vpředu může být zvuk přepálený, u stěn se víc odráží. Stalls vs. lóže se liší charakterem zvuku i prostorem.",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Ikona sedadla – prostor na nohy"
+    },
+    {
+      "id": "s4",
+      "heading": "Drž středovou osu",
+      "body": "Ve většině sálů poskytuje středová osa nejlepší vyvážení zvuku i obrazu. Postupuj spíš do hloubky téhož bloku než do extrémně bočních sektorů. „Zlatý střed“ bývá střední výška sálu a středový blok.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Ikona středové osy"
+    },
+    {
+      "id": "s5",
+      "heading": "Uličkové vs. prostřední místo",
+      "body": "Ulička = víc prostoru na nohy a jednodušší odchod, ale i víc rušení. Prostředek řady mívá klid a lepší soustředění, ovšem horší přístup. Přizpůsob volbě typu akce a tomu, jestli často vstáváš.",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Ikona uličkového místa"
+    }
+  ],
+  "ctaQuestion": "Tvůj tip na nejlepší řadu? Napiš do komentářů.",
+  "status": "published"
+}

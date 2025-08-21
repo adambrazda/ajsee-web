@@ -1,23 +1,25 @@
-// /src/adapters/demo.js
-import demoEvents from '../content/events-demo.json';
+// src/adapters/demo.js
+// Dev adaptér pro ukázková data událostí bez dynamických importů (bez Vite warningu).
 
-// Exportuj tuto funkci přesně pod tímto názvem
-export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
-  // (Filtry zatím ignorujeme)
-  return (demoEvents.events || []).map(event => ({
-    id: `demo-${event.title}-${event.date}`,
-    title: { [locale]: event.title },
-    description: { [locale]: event.description || "" },
-    category: event.category || "other",
-    datetime: event.date,
-    location: {
-      city: event.city || event.location,
-      country: event.country || "CZ"
-    },
-    image: event.image || "",
-    partner: "demo",
-    url: event.url || "",
-    priceFrom: event.priceFrom || null,
-    promo: event.promo || null
-  }));
+/**
+ * Vrátí pole demo událostí.
+ * Preferuje `src/events-demo.json`, fallback na `src/content/events-demo.json`
+ * (kvůli zpětné kompatibilitě).
+ */
+export async function getDemoEvents() {
+  // Vite načte matchnuté soubory už při bundlu (eager), vrací rovnou jejich default export.
+  const mods = import.meta.glob(
+    ['../events-demo.json', '../content/events-demo.json'],
+    { eager: true, import: 'default' }
+  );
+
+  // Pořadí preference: src/events-demo.json -> src/content/events-demo.json
+  const data =
+    mods['../events-demo.json'] ??
+    mods['../content/events-demo.json'] ??
+    [];
+
+  return Array.isArray(data) ? data : [];
 }
+
+export default getDemoEvents;

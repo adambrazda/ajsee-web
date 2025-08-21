@@ -1,0 +1,40 @@
+{
+  "events": [
+    {
+      "id": "mock-1",
+      "title": { "cs": "Fantom Opery", "en": "Phantom of the Opera" },
+      "description": { "cs": "Legendární muzikál v srdci Londýna.", "en": "Legendary musical in London." },
+      "category": "theatre",
+      "image": "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+      "datetime": "2025-11-22T19:00:00+01:00",
+      "location": {
+        "city": "Londýn",
+        "country": "UK",
+        "venue": "Her Majesty’s Theatre",
+        "address": "Haymarket, St. James's, London"
+      },
+      "url": "https://www.todaytix.com/london/shows/phantom-of-the-opera",
+      "partner": "todaytix",
+      "price": { "min": 990, "currency": "CZK" },
+      "promo": true
+    },
+    {
+      "id": "mock-2",
+      "title": { "cs": "Wimbledon Finále", "en": "Wimbledon Final" },
+      "description": { "cs": "Vrcholný zápas tenisové sezóny.", "en": "The tennis season's grand finale." },
+      "category": "sport",
+      "image": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+      "datetime": "2025-07-14T14:00:00+01:00",
+      "location": {
+        "city": "Londýn",
+        "country": "UK",
+        "venue": "All England Club",
+        "address": "Church Rd, Wimbledon"
+      },
+      "url": "https://www.seetickets.com/event/wimbledon-finals",
+      "partner": "seetickets",
+      "price": { "min": 3400, "currency": "CZK" },
+      "promo": false
+    }
+  ]
+}

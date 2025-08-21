@@ -1,0 +1,55 @@
+{
+  "slug": "seating-map",
+  "title": "Hogyan olvasd az ülőhelytérképet",
+  "summary": "AJSEE mini útmutató: olvasd magabiztosan az ülőhelytérképet és válassz jobb helyeket.",
+  "readingMinutes": 5,
+  "cover": "/images/microguides/seating-map/cover.webp",
+  "coverAlt": "Nézőtér illusztráció",
+  "category": "theatre",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Bevezetés",
+      "body": "A választott ülés gyakran jobban meghatározza az élményt, mint az ár. A térkép gyors átnézése segít ellenőrizni a rálátást, az akusztikát és a kényelmet – így jobb ár/élmény arányt kapsz. Alább a legfontosabb szempontok, amelyeket érdemes vásárlás előtt megnézni.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Áttekintő ikon"
+    },
+    {
+      "id": "s1",
+      "heading": "Figyelj a \"korlátozott kilátásra\" és az akadályokra",
+      "body": "Az oszlopokra, korlátokra, kamera- vagy hangtoronyra utaló ikonok korlátozott rálátást jeleznek. Koncerteknél nézd meg a keverőpult (FOH) és a fényhidak helyét is – közvetlenül mögöttük a látvány és a hang is gyengébb lehet. Ha egy szektor figyelmeztetést kapott, vedd komolyan.",
+      "image": "/images/microguides/seating-map/icon-restricted-view.svg",
+      "alt": "Ikon: korlátozott kilátás"
+    },
+    {
+      "id": "s2",
+      "heading": "Az erkély nem mindig a legjobb",
+      "body": "Az erkély szuper lehet, de a lejtés és a látószög döntő. Ha túl lapos, több fejet látsz és távolibbnak érzed a színpadot. Biztos választás általában a középső blokkok és az első sorok; a sarkok inkább akkor érik meg, ha az ár sokkal jobb.",
+      "image": "/images/microguides/seating-map/icon-balkon.svg",
+      "alt": "Ikon: erkély"
+    },
+    {
+      "id": "s3",
+      "heading": "Lábtér és akusztika – ez dönt",
+      "body": "A régebbi helyszíneken gyakran szűkebb a sorköz – hosszabb műsoroknál a kényelem sokat számít. Akusztikailag biztos választás a nézőtér közepe, nagyjából a kétharmadánál; elöl élesebb lehet a hang, az oldalfalaknál több a visszaverődés. Földszint és páholy hangképe és tere is eltér.\n\n<div class=\"mg-callout -tip\">\n  <span class=\"callout-label\">Tipp</span>\n  <p>A középvonal és a nézőtér kb. kétharmadánál lévő rész akusztikailag általában a legbiztonságosabb.</p>\n</div>",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Ikon: lábtér"
+    },
+    {
+      "id": "s4",
+      "heading": "Maradj a középvonal közelében",
+      "body": "A legtöbb teremben a középvonal adja a legjobb egyensúlyt kép és hang között. Inkább menj hátrébb ugyanabban a középső blokkban, mint a szélső szekciókba. A „sweet spot” többnyire középmagasságban, középen van.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Ikon: középvonal"
+    },
+    {
+      "id": "s5",
+      "heading": "Sorfelőli (aisle) vs. középső hely",
+      "body": "Sorfelőli hely = könnyebb kijárat és több lábtér, de nagyobb átjárás. Középső hely csendesebb és jobb a fókusz, viszont nehezebb megközelíteni. Válassz az előadás típusa és a felállások gyakorisága alapján.",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Ikon: folyosó melletti hely"
+    }
+  ],
+  "ctaQuestion": "Melyik sor a kedvenced? Írd meg kommentben.",
+  "status": "published"
+}

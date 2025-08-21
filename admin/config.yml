@@ -2,55 +2,42 @@ backend:
   name: git-gateway
   branch: main
 
-media_folder: "public/images/uploads"
-public_folder: "/images/uploads"
+media_folder: "public/images/microguides"    # kam se ukládají uploady v repu
+public_folder: "/images/microguides"         # jak budou dostupné na webu
+
+locales: [cs, en, de, sk, pl, hu]            # pro pohodlí v UI
+i18n:
+  structure: multiple_files                   # každý jazyk samostatný soubor
+  locales: [cs, en, de, sk, pl, hu]
+  default_locale: cs
 
 collections:
-  - name: "hero"
-    label: "Hero sekce"
-    files:
-      - file: "content/hero.json"
-        label: "Hero obsah"
-        name: "hero"
-        fields:
-          - { label: "Nadpis", name: "headline", widget: "string" }
-          - { label: "Popis", name: "intro", widget: "text" }
-          - { label: "Obrázek", name: "image", widget: "image" }
-          - { label: "CTA (spolupráce)", name: "cta_collab", widget: "string" }
-          - { label: "CTA (víc info)", name: "cta_info", widget: "string" }
-  - name: "events"
-    label: "Události"
-    file: "content/events.json"
-    fields:
-      - { label: "Eventy", name: "events", widget: "list", fields: [
-        {label: "Název", name: "title", widget: "string"},
-        {label: "Datum", name: "date", widget: "string"},
-        {label: "Místo", name: "location", widget: "string"},
-        {label: "Obrázek", name: "image", widget: "image"},
-        {label: "Odkaz", name: "url", widget: "string"}
-      ] }
-  - name: "partners"
-    label: "Partneři"
-    file: "content/partners.json"
-    fields:
-      - { label: "Nadpis sekce", name: "headline", widget: "string" }
-      - { label: "Popis", name: "description", widget: "text" }
-      - label: "Partneři"
-        name: "items"
-        widget: "list"
-        fields:
-          - { label: "Jméno partnera", name: "name", widget: "string" }
-          - { label: "Popis", name: "bio", widget: "text" }
-          - { label: "Logo", name: "logo", widget: "image" }
-          - { label: "Odkaz", name: "url", widget: "string" }
-  - name: "blog"
-    label: "Blog & Reference"
-    folder: "content/blog"
+  - name: "microguides"
+    label: "Micro-guides"
+    label_singular: "Micro-guide"
+    folder: "content/microguides"
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    format: "json"
+    extension: "json"
+    slug: "{{slug}}.{{locale}}"
+    i18n: true
     fields:
-      - { label: "Titulek", name: "title", widget: "string" }
-      - { label: "Datum", name: "date", widget: "datetime" }
-      - { label: "Perex", name: "excerpt", widget: "text" }
-      - { label: "Obrázek", name: "image", widget: "image", required: false }
-      - { label: "Obsah", name: "body", widget: "markdown" }
+      - { label: "Slug", name: "slug", widget: "string", i18n: duplicate, hint: "např. seating-map" }
+      - { label: "Název / Title", name: "title", widget: "string", i18n: translate }
+      - { label: "Perex (krátký popis)", name: "summary", widget: "text", i18n: translate }
+      - { label: "Čas čtení (min)", name: "readingMinutes", widget: "number", value_type: "int", min: 1, max: 15, i18n: duplicate }
+      - { label: "OG/Hero obrázek", name: "cover", widget: "image", allow_multiple: false, i18n: duplicate }
+      - { label: "Alt k hero obrázku", name: "coverAlt", widget: "string", i18n: translate }
+      - { label: "Kategorie", name: "category", widget: "select", options: ["theatre", "concerts", "sports", "travel"], i18n: translate, required: false }
+      - label: "Kroky / Steps"
+        name: "steps"
+        widget: "list"
+        i18n: true
+        fields:
+          - { label: "ID kroku (kotva)", name: "id", widget: "string" }
+          - { label: "Nadpis kroku", name: "heading", widget: "string" }
+          - { label: "Text kroku (Markdown)", name: "body", widget: "markdown" }
+          - { label: "Ilustrace", name: "image", widget: "image", required: false, i18n: duplicate }
+          - { label: "Alt obrázku", name: "alt", widget: "string", required: false, i18n: translate }
+      - { label: "CTA – otázka pod článkem", name: "ctaQuestion", widget: "string", i18n: translate, required: false }
+      - { label: "Stav", name: "status", widget: "select", options: ["draft","published"], default: "draft", i18n: duplicate }

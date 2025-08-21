@@ -1,0 +1,24 @@
+{
+  "events": [
+    {
+      "title": "Letní koncert",
+      "date": "2025-08-15",
+      "city": "Praha",
+      "country": "CZ",
+      "category": "concert",
+      "description": "Hudba pod širým nebem.",
+      "image": "",
+      "url": "https://example.com"
+    },
+    {
+      "title": "Letní festival",
+      "date": "2025-07-10",
+      "city": "Brno",
+      "country": "CZ",
+      "category": "festival",
+      "description": "Zábava, jídlo a hudba.",
+      "image": "",
+      "url": "https://example.com"
+    }
+  ]
+}

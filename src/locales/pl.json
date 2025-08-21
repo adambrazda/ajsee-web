@@ -229,7 +229,17 @@
   "title": "Przykładowe wydarzenia.",
   "body": "Przygotowujemy uruchomienie realnej sprzedaży biletów. Śledź nas!",
   "cta": "Śledź aktualności"
-}
-
+},
+  "mg.backToBlog": "Wróć do bloga",
+  "mg.breadcrumb": "AJSEE wyjaśnia",
+  "mg": {
+    "card": { "badge": "Mikroprzewodnik" },
+    "guides": {
+      "seating-map": {
+        "title": "Jak czytać mapę miejsc",
+        "summary": "Krótki mikroprzewodnik AJSEE: jak czytać mapę miejsc i nie popełnić błędu przy wyborze miejsc."
+      }
+    }
+  }
 }
 

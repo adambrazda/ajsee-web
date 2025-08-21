@@ -231,7 +231,17 @@
   "title": "Ukážkové podujatia.",
   "body": "Pripravujeme reálny predaj vstupeniek. Sledujte nás!",
   "cta": "Sledujte novinky"
-}
-
+},
+  "mg.backToBlog": "Späť na blog",
+  "mg.breadcrumb": "AJSEE vysvetľuje",
+  "mg": {
+    "card": { "badge": "Mikro-sprievodca" },
+    "guides": {
+      "seating-map": {
+        "title": "Ako čítať seating mapu",
+        "summary": "Krátky mikrosprievodca AJSEE: ako čítať seating mapu a neurobiť chybu pri výbere miest."
+      }
+    }
+  }
 }
 

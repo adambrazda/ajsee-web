@@ -1,0 +1,55 @@
+{
+  "slug": "seating-map",
+  "title": "Ako čítať plán sedenia",
+  "summary": "Mikrosprievodca AJSEE: čítaj mapu sedenia s istotou a vyber si lepšie miesta.",
+  "readingMinutes": 5,
+  "cover": "/images/microguides/seating-map/cover.webp",
+  "coverAlt": "Ilustračné foto hľadiska",
+  "category": "theatre",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Úvod",
+      "body": "Miesto, ktoré si vyberieš, ovplyvní zážitok viac než samotná cena. Rýchla kontrola mapy ti pomôže overiť výhľad, akustiku aj komfort – a nájsť najlepší pomer cena/zážitok. Nižšie sú kľúčové signály, ktoré sa oplatí skontrolovať pred nákupom.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Prehľadové ikonka"
+    },
+    {
+      "id": "s1",
+      "heading": "Sleduj „restricted view“ a prekážky",
+      "body": "Ikony stĺpov, zábradlí, kamier či zvukových veží upozorňujú na obmedzený výhľad. Pri koncertoch si všímaj aj polohu FOH/mixpultu a svetelných konštrukcií – miesta priamo za nimi často trpia výhľadom aj zvukom. Ak je pri sektore varovanie, ber ho vážne.",
+      "image": "/images/microguides/seating-map/icon-restricted-view.svg",
+      "alt": "Ikona obmedzeného výhľadu"
+    },
+    {
+      "id": "s2",
+      "heading": "Balkón nie je vždy najlepší",
+      "body": "Balkón vie byť super, ale záleží od sklonu a uhla na scénu. Príliš plochý znamená viac hláv v zornom poli a slabší kontakt s javiskom. Istota býva stredové bloky a prvé rady; rohy ber skôr pri citeľne lepšej cene.",
+      "image": "/images/microguides/seating-map/icon-balkon.svg",
+      "alt": "Ikona balkóna"
+    },
+    {
+      "id": "s3",
+      "heading": "Priestor na nohy a akustika rozhodujú",
+      "body": "Staršie sály mávajú menšiu rozteč radov – pri dlhších programoch sa komfort naozaj oplatí. Akusticky je bezpečná voľba stred približne v 2/3 hĺbky sály; úplný predok môže znieť ostro, pri stenách je viac odrazov. Parter vs. lóže sa líšia charakterom zvuku aj priestorom.\n\n<div class=\"mg-callout -tip\">\n  <span class=\"callout-label\">Tip profíka</span>\n  <p>Stredová os a cca 2/3 hĺbky sály bývajú akusticky najistejšie.</p>\n</div>",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Ikona sedadla – priestor na nohy"
+    },
+    {
+      "id": "s4",
+      "heading": "Drž sa stredovej osi",
+      "body": "Vo väčšine sálov dáva stredová os najlepšiu rovnováhu zvuku aj obrazu. Choď radšej hlbšie v tom istom stredovom bloku než do extrémnych bočných sektorov. „Zlatý stred“ býva stredná výška a centrum.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Ikona stredovej osi"
+    },
+    {
+      "id": "s5",
+      "heading": "Uličkové vs. stredné miesto",
+      "body": "Ulička = viac priestoru na nohy a jednoduchší odchod, ale aj viac rušenia. Stredné miesto býva pokojnejšie a lepšie na sústredenie, no ťažšie prístupné. Zohľadni typ podujatia a to, či budeš často vstávať.",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Ikona uličkového miesta"
+    }
+  ],
+  "ctaQuestion": "Tvoj tip na najlepšiu radu? Napíš do komentárov.",
+  "status": "published"
+}

@@ -25,3 +25,27 @@
 @mixin fluid-type($minSize, $maxSize) {
   font-size: clamp(#{$minSize}, 2.5vw, #{$maxSize});
 }
+// src/styles/utils/_mixins.scss
+
+// Reset pro <button>, <a role="button"> apod.
+@mixin button-reset($cursor: pointer) {
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  text-align: left;
+  cursor: $cursor;
+}
+
+// (volitelné) obecný focus ring pro a11y
+@mixin focus-ring($color: rgba(0,0,0,.3), $width: 2px, $offset: 2px) {
+  &:focus-visible {
+    outline: $width solid $color;
+    outline-offset: $offset;
+  }
+}

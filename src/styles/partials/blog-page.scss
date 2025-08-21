@@ -2,221 +2,167 @@
 // BLOG PAGE + BLOG CARDS (blog.html, blog-detail.html)
 // =============================================
 @use '../globals' as *;
+
 .blog-hero {
   background: linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%);
-  padding: 2.5rem 0 1.6rem 0;
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  h1 {
-    color: #184469;
-    font-size: 2.3rem;
-    font-weight: 800;
-    margin-bottom: 0.8rem;
-    letter-spacing: -0.5px;
-  }
-  .blog-lead {
-    font-size: 1.15rem;
-    color: #184469;
-    margin-bottom: 0;
-    line-height: 1.5;
-  }
+  padding: 2.5rem 0 1.6rem;
+  .container { max-width: 800px; margin: 0 auto; text-align: center; }
+  h1 { color: #184469; font-size: 2.3rem; font-weight: 800; margin-bottom: .8rem; letter-spacing: -.5px; }
+  .blog-lead { font-size: 1.15rem; color: #184469; margin: 0; line-height: 1.5; }
 }
 
 .blog-filters {
-  padding: 1.2rem 0 0.5rem 0;
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-  }
+  padding: 1.2rem 0 .5rem;
+  .container { max-width: 800px; margin: 0 auto; }
   .filter-categories {
-    display: flex;
-    gap: 0.7rem;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: flex; gap: .7rem; flex-wrap: wrap; justify-content: center;
     button {
-      background: #fff;
-      border: 2px solid #14c2c5;
-      color: #14c2c5;
-      font-weight: 600;
-      font-size: 1rem;
-      padding: 0.4rem 1.1rem;
-      border-radius: 1.1em;
-      cursor: pointer;
-      transition: all 0.14s;
-      &:hover, &.active {
-        background: #14c2c5;
-        color: #fff;
-      }
+      background: #fff; border: 2px solid #14c2c5; color: #14c2c5;
+      font-weight: 600; font-size: 1rem; padding: .4rem 1.1rem;
+      border-radius: 1.1em; cursor: pointer; transition: all .14s;
+      &:hover, &.active { background: #14c2c5; color: #fff; }
     }
   }
 }
 
 .blog-list {
-  padding: 2rem 0 2rem 0;
-  .container {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
+  --blog-card-img-h: 180px;
+  padding: 2rem 0;
+
+  .container { max-width: 1000px; margin: 0 auto; }
+
   .blog-cards {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    justify-content: center;
+    display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center;
   }
+
+  /* ---------- JEDNOTNÁ KARTA (výchozí) -------------------------------- */
   .blog-card {
+    position: relative;
     background: #fff;
     border-radius: 1.2em;
     box-shadow: 0 3px 16px #14c2c51c;
-    max-width: 340px;
-    min-width: 220px;
-    flex: 1 1 300px;
-    display: flex;
-    flex-direction: column;
+    max-width: 340px; min-width: 220px; flex: 1 1 300px;
+
+    /* Grid drží fixní výšku náhledu nahoře */
+    display: grid;
+    grid-template-rows: var(--blog-card-img-h) 1fr;
     overflow: hidden;
-    transition: transform 0.16s, box-shadow 0.17s;
-    &:hover, &:focus-within {
-      transform: translateY(-4px) scale(1.03);
-      box-shadow: 0 8px 26px #0077cc22;
-    }
-    img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
+    transition: transform .16s, box-shadow .17s;
+
+    &:hover, &:focus-within { transform: translateY(-4px) scale(1.03); box-shadow: 0 8px 26px #0077cc22; }
+
+    /* Obrázek – když je <img> přímo v kartě */
+    > img.blog-card-img {
+      grid-row: 1;
+      inline-size: 100%;
+      block-size: var(--blog-card-img-h);
       display: block;
+      object-fit: cover;
+      object-position: center;
       border-radius: 1.2em 1.2em 0 0;
+      margin: 0; padding: 0; line-height: 0;
     }
+
+    /* Historický fallback: .card-media přímo pod .blog-card */
+    > .card-media {
+      grid-row: 1;
+      position: relative;
+      inline-size: 100%;
+      block-size: var(--blog-card-img-h);
+      border-radius: 1.2em 1.2em 0 0;
+      overflow: hidden;
+      > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+    }
+
     .blog-card-body {
-      padding: 1.1rem 1.2rem 1rem 1.2rem;
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 0;
+      grid-row: 2;
+      padding: 1.1rem 1.2rem 1rem;
+      display: flex; flex-direction: column;
     }
-    .blog-card-meta {
-      font-size: 0.98rem;
-      color: #14c2c5;
-      margin-bottom: 0.6rem;
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+
     .blog-card-title {
-      font-size: 1.16rem;
-      font-weight: 800;
-      color: #184469;
-      margin-bottom: 0.5rem;
-      letter-spacing: -0.3px;
-      line-height: 1.22;
+      font-size: 1.16rem; font-weight: 800; color: #184469;
+      margin-bottom: .5rem; letter-spacing: -.3px; line-height: 1.22;
     }
-    .blog-card-lead {
-      color: #334b69;
-      font-size: 1rem;
-      margin-bottom: 0.7rem;
-      flex: 1 1 0;
-    }
+
+    .blog-card-lead { color: #334b69; font-size: 1rem; margin-bottom: .7rem; flex: 1 1 0; }
+
     .blog-card-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: auto;
+      display: flex; justify-content: flex-end; margin-top: auto;
       .blog-readmore {
         background: linear-gradient(90deg, #14c2c5 30%, #0077cc 100%);
-        color: #fff;
-        font-weight: 700;
-        padding: 0.55em 1.3em;
-        border-radius: 1em;
-        border: none;
-        font-size: 1rem;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.13s, transform 0.13s;
-        &:hover, &:focus {
-          background: linear-gradient(90deg, #0077cc 30%, #14c2c5 100%);
-          transform: scale(1.05);
-        }
+        color: #fff; font-weight: 700; padding: .55em 1.3em; border-radius: 1em;
+        border: none; font-size: 1rem; cursor: pointer; text-decoration: none;
+        transition: background .13s, transform .13s;
+        &:hover, &:focus { background: linear-gradient(90deg, #0077cc 30%, #14c2c5 100%); transform: scale(1.05); }
       }
+    }
+  }
+
+  /* ---------- MICRO-GUIDE (markup: <a><div.card-media/><div.body/></a>) --- */
+  .blog-card.is-microguide {
+    /* ZACHOVÁME grid na .blog-card; <a> „zmizí“ a propustí děti jako grid-itemy */
+    > a.card-link {
+      display: contents;
+      color: inherit; text-decoration: none;
+    }
+
+    /* Okénko pro náhled sedí v 1. řádku gridu a má fixní výšku */
+    .card-media {
+      grid-row: 1;
+      inline-size: 100%;
+      block-size: var(--blog-card-img-h);
+      margin: 0; padding: 0;
+      border-radius: 1.2em 1.2em 0 0;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(180deg, #eef3f7, #e7eff6);
+    }
+
+    .card-media > img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      display: block;
+      object-fit: cover; object-position: center;
+      margin: 0; padding: 0; border: 0;
+    }
+
+    /* Textová část je druhý grid-item (2. řádek), má svůj padding */
+    .blog-card-body {
+      grid-row: 2;
+      padding: 1.1rem 1.2rem 1rem;
+    }
+
+    .card-badge {
+      position: absolute; left: .5rem; top: .5rem;
+      padding: .25rem .5rem; border-radius: 999px;
+      background: rgba(0,0,0,.6); color: #fff; font-size: .75rem;
+      z-index: 1; pointer-events: none;
     }
   }
 }
 
 .blog-empty {
-  text-align: center;
-  color: #b54d4d;
-  font-weight: 600;
-  font-size: 1.13rem;
-  padding: 2.3rem 0;
+  text-align: center; color: #b54d4d; font-weight: 600; font-size: 1.13rem; padding: 2.3rem 0;
 }
 
-// Blog detail page
+/* -------- DETAIL ------------------------------------------------------- */
 .blog-detail {
-  padding: 2.5rem 0 2.5rem 0;
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 1.3em;
-    box-shadow: 0 2px 14px #14c2c514;
-    padding: 2rem 1.2rem;
-  }
-  .back-link {
-    display: inline-block;
-    margin-bottom: 1.2rem;
-    font-size: 1.01rem;
-    color: #14c2c5;
-    font-weight: 700;
-    text-decoration: none;
-    &:hover { text-decoration: underline; }
-  }
-  .blog-title {
-    font-size: 2rem;
-    color: #184469;
-    font-weight: 800;
-    margin-bottom: 0.3rem;
-  }
-  .blog-meta {
-    color: #14c2c5;
-    font-size: 1rem;
-    margin-bottom: 1.4rem;
-  }
-  .blog-lead {
-    font-size: 1.15rem;
-    margin-bottom: 1.2rem;
-    color: #184469;
-    font-weight: 500;
-  }
-  .blog-image {
-    width: 100%;
-    max-height: 340px;
-    object-fit: cover;
-    border-radius: 1em;
-    margin-bottom: 1.2rem;
-    box-shadow: 0 2px 18px #0077cc19;
-  }
-  .blog-content {
-    font-size: 1.08rem;
-    color: #334b69;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-    p { margin-bottom: 1.1em; }
-  }
+  padding: 2.5rem 0;
+  .container { max-width: 800px; margin: 0 auto; background: #fff; border-radius: 1.3em; box-shadow: 0 2px 14px #14c2c514; padding: 2rem 1.2rem; }
+  .back-link { display: inline-block; margin-bottom: 1.2rem; font-size: 1.01rem; color: #14c2c5; font-weight: 700; text-decoration: none; &:hover { text-decoration: underline; } }
+  .blog-title { font-size: 2rem; color: #184469; font-weight: 800; margin-bottom: .3rem; }
+  .blog-meta { color: #14c2c5; font-size: 1rem; margin-bottom: 1.4rem; }
+  .blog-lead { font-size: 1.15rem; margin-bottom: 1.2rem; color: #184469; font-weight: 500; }
+  .blog-image { width: 100%; max-height: 340px; object-fit: cover; border-radius: 1em; margin-bottom: 1.2rem; box-shadow: 0 2px 18px #0077cc19; }
+  .blog-content { font-size: 1.08rem; color: #334b69; line-height: 1.7; margin-bottom: 1.5rem; p { margin-bottom: 1.1em; } }
 }
 
+/* -------- RESPONZIVITA ------------------------------------------------ */
 @media (max-width: 600px) {
-  .blog-hero,
-  .blog-filters,
-  .blog-list,
-  .blog-detail {
-    padding-left: 0.2rem;
-    padding-right: 0.2rem;
-  }
-  .blog-card img {
-    height: 120px;
-  }
-  .blog-detail .container {
-    padding: 1.1rem 0.3rem;
-  }
+  .blog-hero, .blog-filters, .blog-list, .blog-detail { padding-left: .2rem; padding-right: .2rem; }
+  .blog-list { --blog-card-img-h: 120px; }
+  .blog-detail .container { padding: 1.1rem .3rem; }
   .blog-title { font-size: 1.15rem; }
-  .blog-lead, .blog-content { font-size: 0.97rem; }
+  .blog-lead, .blog-content { font-size: .97rem; }
 }

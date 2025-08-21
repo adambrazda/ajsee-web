@@ -229,5 +229,16 @@
     "title": "Beispielveranstaltungen.",
     "body": "Wir bereiten den echten Ticketverkauf vor. Folge unseren Updates!",
     "cta": "Neuigkeiten verfolgen"
+  },
+  "mg.backToBlog": "Zurück zum Blog",
+  "mg.breadcrumb": "AJSEE erklärt",
+  "mg": {
+    "card": { "badge": "Mikro-Guide" },
+    "guides": {
+      "seating-map": {
+        "title": "Wie man den Sitzplan liest",
+        "summary": "Kurzer Mikro-Guide von AJSEE: den Sitzplan richtig lesen und Fehler bei der Platzwahl vermeiden."
+      }
+    }
   }
 }

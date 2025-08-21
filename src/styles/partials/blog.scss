@@ -122,3 +122,34 @@
     .homepage-blog-more { font-size: 1.01rem; }
   }
 }
+/* --- Micro-guide fallback pro homepage karty --------------------------- */
+/* Zaplní 16:9 výřez i tehdy, když karta nemá .card-media wrapper
+   a obsahuje jen <img> resp. .blog-card-img */
+.homepage-blog {
+  .blog-card-homepage.is-microguide {
+    position: relative;
+
+    > img,
+    .blog-card-img {
+      width: 100%;
+      height: 190px;           /* odpovídá vaší homepage výšce */
+      display: block;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 1.2em 1.2em 0 0;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .homepage-blog .blog-card-homepage.is-microguide > img,
+  .homepage-blog .blog-card-homepage.is-microguide .blog-card-img {
+    height: 150px;
+  }
+}
+@media (max-width: 600px) {
+  .homepage-blog .blog-card-homepage.is-microguide > img,
+  .homepage-blog .blog-card-homepage.is-microguide .blog-card-img {
+    height: 120px;
+  }
+}

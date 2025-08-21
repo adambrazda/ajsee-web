@@ -229,6 +229,17 @@
   "title": "Mintaesemények.",
   "body": "Készülünk az éles jegyértékesítésre. Kövess minket!",
   "cta": "Kövesd a híreket"
-}
+},
+  "mg.backToBlog": "Vissza a blogra",
+  "mg.breadcrumb": "AJSEE magyaráz",
+  "mg": {
+    "card": { "badge": "Mini útmutató" },
+    "guides": {
+      "seating-map": {
+        "title": "Hogyan olvassuk a helytérképet",
+        "summary": "Rövid AJSEE mini útmutató: hogyan olvasd a helytérképet, és hogyan kerüld el a hibákat a helyválasztásnál."
+      }
+    }
+  }
 }
 

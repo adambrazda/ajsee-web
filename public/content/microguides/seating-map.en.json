@@ -1,0 +1,55 @@
+{
+  "slug": "seating-map",
+  "title": "How to read a seating map",
+  "summary": "AJSEE micro-guide: read seating maps with confidence and pick better seats.",
+  "readingMinutes": 5,
+  "cover": "/images/microguides/seating-map/cover.webp",
+  "coverAlt": "Auditorium overview",
+  "category": "theatre",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Introduction",
+      "body": "The seat you choose shapes the experience more than the price tag. A quick scan of the map helps you verify sightlines, acoustics and comfort – and find the best value for money. Below are the key signals to check before you buy.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Overview icon"
+    },
+    {
+      "id": "s1",
+      "heading": "Watch for “restricted view” and obstructions",
+      "body": "Icons for pillars, railings, camera or sound towers warn about blocked sightlines. For concerts, also note the FOH/mix position and lighting rigs – seats right behind them often suffer in both view and sound. If a sector carries a warning, take it seriously.",
+      "image": "/images/microguides/seating-map/icon-restricted-view.svg",
+      "alt": "Restricted view icon"
+    },
+    {
+      "id": "s2",
+      "heading": "Balcony isn’t always best",
+      "body": "Balcony can be great, but rake and viewing angle matter. If it’s too flat, you’ll see more heads and feel less connected to the stage. The middle blocks and first balcony rows are usually safe; corners are fine mainly when the price is notably better.<div class='mg-callout -tip'><span class='callout-label'>Pro tip</span><p>The centre line and roughly two-thirds back usually give the most reliable mix of sight and sound.</p></div>",
+      "image": "/images/microguides/seating-map/icon-balkon.svg",
+      "alt": "Balcony icon"
+    },
+    {
+      "id": "s3",
+      "heading": "Legroom & acoustics make a difference",
+      "body": "Older venues often have tighter row spacing – comfort really pays off during longer shows. A safe acoustic choice is the middle, roughly two-thirds back; front rows can sound harsh, side walls bring reflections. Stalls vs. boxes differ in sound character and space.",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Seat/legroom icon"
+    },
+    {
+      "id": "s4",
+      "heading": "Stay close to the centre line",
+      "body": "In most venues the centre line gives the best balance of sound and picture. Move deeper within the same central block rather than to extreme side sections. The “sweet spot” is usually mid-height and centred.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Centre line icon"
+    },
+    {
+      "id": "s5",
+      "heading": "Aisle vs. middle seats",
+      "body": "Aisle seats = easier exit and more legroom, but also more foot traffic. Middle seats are calmer and better for focus, but harder to access. Choose based on the show type and whether you’ll need to stand up often.",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Aisle seat icon"
+    }
+  ],
+  "ctaQuestion": "What’s your go-to row? Share below.",
+  "status": "published"
+}

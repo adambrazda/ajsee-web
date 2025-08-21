@@ -231,5 +231,16 @@
   "title": "Sample events.",
   "body": "We’re preparing real ticket sales. Follow us!",
   "cta": "Follow updates"
-}
+},
+  "mg.backToBlog": "Back to blog",
+  "mg.breadcrumb": "AJSEE explains",
+  "mg": {
+    "card": { "badge": "Micro-guide" },
+    "guides": {
+      "seating-map": {
+        "title": "How to read a seating map",
+        "summary": "A short AJSEE micro-guide: how to read seating maps and avoid mistakes when choosing seats."
+      }
+    }
+  }
 }

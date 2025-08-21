@@ -60,7 +60,8 @@
 
   </div>
 </header>
-<main>
+
+<main id="blog">
   <!-- BLOG HERO -->
   <section class="blog-hero">
     <div class="container">
@@ -70,6 +71,7 @@
       </p>
     </div>
   </section>
+
   <!-- BLOG FILTERS -->
   <section class="blog-filters">
     <div class="container">
@@ -84,15 +86,18 @@
       </div>
     </div>
   </section>
+
   <!-- BLOG ARTICLES LIST -->
   <section class="blog-list">
     <div class="container">
-      <div class="blog-cards">
-        <!-- Tady budou články generované JS (nebo později Netlify CMS) -->
+      <!-- podporujeme obě třídy kvůli stávajícím stylům/skriptům -->
+      <div class="blog-cards blog-grid">
+        <!-- Karty se doplní z /src/blog-mg-list.js + případně z CMS článků -->
       </div>
     </div>
   </section>
 </main>
+
 <footer>
   <div class="footer-social">
     <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
@@ -110,7 +115,11 @@
   </div>
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
+
 <script type="module" src="/src/main.js"></script>
+<!-- DŮLEŽITÉ: nejdřív načti karty micro-guides -->
+<script type="module" src="/src/blog-mg-list.js"></script>
+<!-- pak tvůj stávající blog skript (filtry apod.) -->
 <script type="module" src="/src/blog.js"></script>
 </body>
 </html>

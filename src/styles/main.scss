@@ -1,13 +1,9 @@
 // ------------------------------------------------------
 // AJSEE – MAIN SCSS ENTRY POINT (Modular Architecture)
 // ------------------------------------------------------
+@use './globals' as *;
+@use './utils/reset';
 
-// 🔁 UTILITIES (globální symboly dostupné v tomto souboru přes `as *` – jen tady!)
-@use './globals' as *;   // proměnné + mixiny
-@use './utils/reset';    // skutečné CSS resetu (jen jednou)
-
-// 🔁 LAYOUT & SECTIONS (každý partial, který používá proměnné/mixiny,
-// musí mít na svém začátku:  @use '../globals' as *; )
 @use './partials/layout';
 @use './partials/header';
 @use './partials/hero';
@@ -19,19 +15,13 @@
 @use './partials/footer';
 @use './partials/events-page';
 @use './partials/about-section';
+@use '@styles/partials/microguides';
 @use './partials/blog-page';
 @use './partials/faq';
 @use './partials/typeahead';
 @use './partials/waitlist-banner';
 @use './partials/coming-soon';
 
-// ----- Global bits (můžou zůstat takto) -----
-html, body {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 9999;
-}
+
+html, body { overflow-x: hidden; overflow-y: auto; }
+.site-header { position: sticky; top: 0; z-index: 9999; }

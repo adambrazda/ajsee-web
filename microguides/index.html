@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="cs" data-page="mg-detail">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AJSEE – Micro-guides</title>
+  <meta name="description" content="AJSEE vysvětluje: praktické mikroprůvodce." />
+  <link rel="icon" href="/images/logo-ajsee.png" />
+  <meta name="theme-color" content="#0077cc" />
+  <link rel="stylesheet" href="/styles/globals.css" />
+
+  <!-- Nastavení jazyka co nejdříve -->
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var langParam = params.get('lang');
+      var htmlLang = document.documentElement.getAttribute('lang') || 'cs';
+      var lang = (langParam || htmlLang).toLowerCase().split(/[-_]/)[0];
+      document.documentElement.setAttribute('lang', lang);
+      window.AJSEE_LANG = lang;
+    })();
+  </script>
+
+  <!-- dataLayer init (pro GTM) -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    (function () {
+      var params = new URLSearchParams(location.search);
+      window.dataLayer.push({
+        event: 'mg_init',
+        pageType: 'microguide-detail',
+        'mg.slug': params.get('slug') || '',
+        'mg.lang': window.AJSEE_LANG || 'cs'
+      });
+    })();
+  </script>
+
+  <!-- Google Tag Manager -->
+  <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','G-K0ZS0D9JLK'); /* ← nahraď svým ID */
+  </script>
+  <!-- End Google Tag Manager -->
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=G-K0ZS0D9JLK"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <header class="site-header"></header>
+
+  <main class="mg" id="mgRoot" hidden>
+    <!-- sem runtime vykreslí titulek, kroky, progres, mobilní nav… -->
+  </main>
+
+  <noscript>Pro zobrazení mikroprůvodce povol JavaScript.</noscript>
+
+  <footer class="site-footer"></footer>
+
+  <!-- i18n (pokud používáš) -->
+  <script type="module" src="/src/i18n.js"></script>
+
+  <!-- runtime pro micro-guides -->
+  <script type="module" src="/src/mg-runtime.js"></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

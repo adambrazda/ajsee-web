@@ -1,0 +1,55 @@
+{
+  "slug": "seating-map",
+  "title": "Saalplan richtig lesen",
+  "summary": "AJSEE Mikro-Guide: Saalpläne sicher lesen und bessere Plätze wählen.",
+  "readingMinutes": 5,
+  "cover": "/images/microguides/seating-map/cover.webp",
+  "coverAlt": "Blick in den Saal",
+  "category": "theatre",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Einführung",
+      "body": "Die Platzwahl prägt das Erlebnis oft stärker als der Preis. Ein schneller Blick auf den Saalplan hilft, Sichtlinien, Akustik und Komfort zu prüfen – und das beste Preis-Leistungs-Verhältnis zu finden. Unten findest du die wichtigsten Punkte, die du vor dem Kauf checken solltest.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Übersichts-Icon"
+    },
+    {
+      "id": "s1",
+      "heading": "Achte auf \"eingeschränkte Sicht\" und Hindernisse",
+      "body": "Symbole für Säulen, Geländer sowie Kamera- oder Ton­türme warnen vor blockierten Sichtlinien. Bei Konzerten beachte auch FOH/Mischpult und Lichttraversen – Plätze direkt dahinter leiden oft bei Sicht und Klang. Wenn ein Sektor eine Warnung trägt, nimm sie ernst.",
+      "image": "/images/microguides/seating-map/icon-restricted-view.svg",
+      "alt": "Icon: eingeschränkte Sicht"
+    },
+    {
+      "id": "s2",
+      "heading": "Balkon ist nicht immer der beste Platz",
+      "body": "Ein Balkon kann großartig sein, aber Neigung und Blickwinkel sind entscheidend. Ist er zu flach, siehst du mehr Köpfe und fühlst dich weiter weg von der Bühne. Mittlere Blöcke und die ersten Reihen sind meist sicher; Ecken lohnen eher nur bei deutlich besserem Preis.",
+      "image": "/images/microguides/seating-map/icon-balkon.svg",
+      "alt": "Icon: Balkon"
+    },
+    {
+      "id": "s3",
+      "heading": "Beinfreiheit & Akustik machen den Unterschied",
+      "body": "Ältere Häuser haben oft engere Reihen – bei längeren Shows zahlt sich Komfort aus. Akustisch ist die Mitte in etwa auf den hinteren zwei Dritteln meist eine sichere Wahl; ganz vorne kann es scharf klingen, seitlich reflektieren die Wände stärker. Parkett vs. Logen unterscheiden sich im Klang und im Platzangebot.\n\n<div class=\"mg-callout -tip\">\n  <span class=\"callout-label\">Profi-Tipp</span>\n  <p>Mittelachse und hinteres mittleres Drittel sind akustisch meist am sichersten.</p>\n</div>",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Icon: Beinfreiheit"
+    },
+    {
+      "id": "s4",
+      "heading": "Bleib nahe der Mittelachse",
+      "body": "Meistens liefert die Mittelachse das beste Gleichgewicht aus Klang und Sicht. Gehe lieber tiefer im selben Mittelblock, als in extreme Seitenbereiche zu rutschen. Der „Sweet Spot“ liegt oft auf mittlerer Höhe, zentriert.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Icon: Mittelachse"
+    },
+    {
+      "id": "s5",
+      "heading": "Gang- vs. Mittelplätze",
+      "body": "Gangplätze = einfacher Ausstieg und mehr Beinfreiheit, aber auch mehr Laufverkehr. Mittelplätze sind ruhiger und besser fürs Fokussieren, jedoch schwerer erreichbar. Wähle je podľa Show-typs und danach, ob du öfter aufstehen musst.",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Icon: Gangplatz"
+    }
+  ],
+  "ctaQuestion": "Deine Lieblingsreihe? Schreib’s in die Kommentare.",
+  "status": "published"
+}

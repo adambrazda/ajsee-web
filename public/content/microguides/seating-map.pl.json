@@ -1,0 +1,55 @@
+{
+  "slug": "seating-map",
+  "title": "Jak czytać plan sali",
+  "summary": "Mikroprzewodnik AJSEE: czytaj mapy miejsc pewniej i wybieraj lepsze siedzenia.",
+  "readingMinutes": 5,
+  "cover": "/images/microguides/seating-map/cover.webp",
+  "coverAlt": "Widok audytorium",
+  "category": "theatre",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Wprowadzenie",
+      "body": "Wybrane miejsce wpływa na wrażenia częściej niż cena. Krótkie sprawdzenie planu sali pozwala ocenić widoczność, akustykę i wygodę – dzięki temu łatwiej znaleźć najlepszy stosunek jakości do ceny. Poniżej najważniejsze sygnały do sprawdzenia przed zakupem.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Ikona przeglądu"
+    },
+    {
+      "id": "s1",
+      "heading": "Zwracaj uwagę na „restricted view” i przeszkody",
+      "body": "Ikony kolumn, poręczy, kamer czy wież dźwiękowych ostrzegają przed ograniczoną widocznością. Na koncertach sprawdzaj też pozycję FOH/mix oraz kratownice oświetleniowe – miejsca tuż za nimi często cierpią na gorszy widok i dźwięk. Jeśli sektor ma ostrzeżenie, potraktuj je poważnie.",
+      "image": "/images/microguides/seating-map/icon-restricted-view.svg",
+      "alt": "Ikona ograniczonej widoczności"
+    },
+    {
+      "id": "s2",
+      "heading": "Balkon nie zawsze jest najlepszy",
+      "body": "Balkon bywa świetny, ale liczy się nachylenie i kąt widzenia. Zbyt płaski oznacza więcej głów w polu widzenia i mniejsze poczucie bliskości sceny. Bezpieczne są zwykle środkowe bloki i pierwsze rzędy; narożniki bierz głównie wtedy, gdy cena jest wyraźnie lepsza.",
+      "image": "/images/microguides/seating-map/icon-balkon.svg",
+      "alt": "Ikona balkonu"
+    },
+    {
+      "id": "s3",
+      "heading": "Miejsce na nogi i akustyka mają znaczenie",
+      "body": "Starsze obiekty mają często ciaśniejsze rzędy – przy dłuższych występach komfort naprawdę się opłaca. Akustycznie bezpieczny wybór to środek mniej więcej na 2/3 głębokości sali; przód bywa ostry, przy ścianach słychać więcej odbić. Parter vs. loże różnią się brzmieniem i przestrzenią.\n\n<div class=\"mg-callout -tip\">\n  <span class=\"callout-label\">Wskazówka</span>\n  <p>Oś centralna i około 2/3 głębokości sali zwykle dają najpewniejszą akustykę.</p>\n</div>",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Ikona miejsca/legroom"
+    },
+    {
+      "id": "s4",
+      "heading": "Trzymaj się osi centralnej",
+      "body": "W większości sal oś centralna zapewnia najlepszą równowagę obrazu i dźwięku. Lepiej iść głębiej w tym samym środkowym bloku niż na skrajne sektory boczne. „Sweet spot” to zwykle środkowa wysokość i centrum.",
+      "image": "/images/microguides/seating-map/icon-overview.svg",
+      "alt": "Ikona osi centralnej"
+    },
+    {
+      "id": "s5",
+      "heading": "Miejsce przy przejściu vs. środek rzędu",
+      "body": "Miejsce przy przejściu = łatwiejsze wyjście i więcej miejsca na nogi, ale też większy ruch. Środek rzędu jest spokojniejszy i sprzyja skupieniu, lecz trudniej do niego dotrzeć. Dobierz do rodzaju wydarzenia i tego, czy będziesz często wstawać.",
+      "image": "/images/microguides/seating-map/icon-legroom.svg",
+      "alt": "Ikona miejsca przy przejściu"
+    }
+  ],
+  "ctaQuestion": "Jaki rząd polecasz? Daj znać w komentarzach.",
+  "status": "published"
+}

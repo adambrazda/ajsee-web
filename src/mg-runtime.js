@@ -1,25 +1,15 @@
-// --- helpers ---
+// --- helpers ---------------------------------------------------------------
 const urlLang = new URLSearchParams(location.search).get('lang');
-const lang = (urlLang || document.documentElement.getAttribute('lang') || 'cs').toLowerCase();
+const lang = (urlLang || document.documentElement.getAttribute('lang') || 'cs')
+  .toLowerCase().split(/[-_]/)[0];
 
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-function dlEvent(action, extra = {}) {
-  // Google Tag Manager dataLayer
-  try {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: action, language: lang, ...extra });
-  } catch {}
-}
-
 function gEvent(action, extra = {}) {
-  // GA4 (gtag) + dataLayer
-  try { if (window.gtag) gtag('event', action, { language: lang, ...extra }); } catch {}
-  dlEvent(action, extra);
+  if (window.gtag) gtag('event', action, { language: lang, ...extra });
 }
 
-// Dev i prod: 1) ?slug=..., 2) /microguides/{slug}
 function currentSlug() {
   const u = new URL(location.href);
   const q = (u.searchParams.get('slug') || '').trim();
@@ -29,34 +19,35 @@ function currentSlug() {
   return '';
 }
 
+async function fetchJson(url) {
+  const r = await fetch(url, { cache: 'no-store' });
+  if (!r.ok) throw new Error(String(r.status));
+  return r.json();
+}
+
 async function loadGuide(slug, langCode) {
   const primary  = `/content/microguides/${slug}.${langCode}.json`;
-  const fallback = `/content/microguides/${slug}.cs.json`;
-
-  const fetchJson = async (url) => {
-    const r = await fetch(url, { cache: 'no-store' });
-    if (!r.ok) throw new Error(String(r.status));
-    return r.json();
-  };
-
+  const fallbacks = [
+    `/content/microguides/${slug}.en.json`,
+    `/content/microguides/${slug}.cs.json`,
+  ];
   try { return await fetchJson(primary); }
   catch {
-    try { return await fetchJson(fallback); }
-    catch { return null; }
+    for (const f of fallbacks) {
+      try { return await fetchJson(f); } catch {}
+    }
+    return null;
   }
 }
 
 function escapeHtml(str = '') {
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
 function mdToHtml(md = '') {
-  // velmi lehký, bezpečný převod – nejdřív escape, pak základní markdown
   const e = escapeHtml(md.trim());
   return e
     .replace(/^### (.*)$/gm, '<h4>$1</h4>')
@@ -75,9 +66,7 @@ function withLang(url) {
     const u = new URL(url, location.origin);
     u.searchParams.set('lang', lang);
     return u.pathname + u.search + u.hash;
-  } catch {
-    return url;
-  }
+  } catch { return url; }
 }
 
 const prefersReduced = () =>
@@ -89,52 +78,190 @@ const scrollToId = (id) => {
   el.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
 };
 
-// --- render ---
+function openPopup(url, w = 620, h = 540) {
+  const y = window.top.outerHeight / 2 + window.top.screenY - ( h / 2);
+  const x = window.top.outerWidth  / 2 + window.top.screenX - ( w / 2);
+  return window.open(url, '_blank', `width=${w},height=${h},left=${x},top=${y},noopener`);
+}
+
+// --- UI builders -----------------------------------------------------------
+function renderSharePanel({title, summary}) {
+  const url = location.href;
+  const enc = encodeURIComponent;
+
+  const xUrl  = `https://twitter.com/intent/tweet?url=${enc(url)}&text=${enc(title)}`;
+  const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`;
+
+  const el = document.createElement('div');
+  el.className = 'mg-sharepanel';
+  el.setAttribute('role', 'group');
+  el.setAttribute('aria-label', 'Sdílet');
+
+  el.innerHTML = `
+    <button type="button" class="sp-btn sp-copy" aria-label="Kopírovat odkaz">
+      <span>🔗</span><span class="sp-label">Kopírovat</span>
+    </button>
+    <a class="sp-btn sp-x"   href="${xUrl}"  target="_blank" rel="noopener" aria-label="Sdílet na X">
+      <span>𝕏</span><span class="sp-label">X</span>
+    </a>
+    <a class="sp-btn sp-fb"  href="${fbUrl}" target="_blank" rel="noopener" aria-label="Sdílet na Facebook">
+      <span>f</span><span class="sp-label">Facebook</span>
+    </a>
+  `;
+
+  const copyBtn = el.querySelector('.sp-copy');
+  copyBtn?.addEventListener('click', async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = url; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); ta.remove();
+      }
+      copyBtn.classList.add('is-done');
+      copyBtn.querySelector('.sp-label').textContent = 'Zkopírováno';
+      setTimeout(()=>{ copyBtn.classList.remove('is-done'); copyBtn.querySelector('.sp-label').textContent = 'Kopírovat'; }, 1200);
+      gEvent('mg_share_click', { channel: 'copy' });
+    } catch {}
+  });
+
+  el.querySelector('.sp-x')?.addEventListener('click', () => gEvent('mg_share_click', { channel: 'x'  }));
+  el.querySelector('.sp-fb')?.addEventListener('click', () => gEvent('mg_share_click', { channel: 'fb' }));
+
+  return el;
+}
+
+function renderCta(linkHref) {
+  const wrap = document.createElement('div');
+  wrap.className = 'mg-cta';
+  wrap.innerHTML = `
+    <a class="ib-cta" href="${linkHref}" id="mgCta">Sleduj novinky</a>
+  `;
+  return wrap;
+}
+
+async function loadRelated(slug, category, lang) {
+  // 1) ideálně blog, 2) fallback – jiné microguidy
+  let blog = [];
+  try {
+    blog = await fetchJson('/content/blog/index.json');
+  } catch {}
+
+  if (Array.isArray(blog) && blog.length) {
+    // prefer stejné kategorie; jinak cokoliv
+    let rel = blog.filter(b => b.category === category && b.slug !== slug);
+    if (rel.length < 3) {
+      rel = [...rel, ...blog.filter(b => b.slug !== slug)]
+        .filter((v, i, a) => a.findIndex(x => x.slug === v.slug) === i);
+    }
+    return rel.slice(0, 3).map(b => ({
+      href: withLang(`/blog-detail?slug=${encodeURIComponent(b.slug)}`),
+      title: b.title, cover: b.cover
+    }));
+  }
+
+  // fallback – microguides
+  try {
+    const mg = await fetchJson('/content/microguides/index.json');
+    let rel = mg.filter(x => x.slug !== slug && x.category === category);
+    if (rel.length < 3) rel = [...rel, ...mg.filter(x => x.slug !== slug)];
+    return rel.slice(0, 3).map(x => ({
+      href: withLang(`/microguides/?slug=${encodeURIComponent(x.slug)}`),
+      title: x.title || x.slug, cover: x.cover || `/images/microguides/${x.slug}/cover.webp`
+    }));
+  } catch { return []; }
+}
+
+function renderRelated(list) {
+  if (!list.length) return '';
+  return `
+    <section class="mg-related" aria-label="Z blogu">
+      <h3>Souvisí z blogu</h3>
+      <ul class="mg-related-list">
+        ${list.map(item => `
+          <li class="mg-related-item">
+            <a class="mg-related-link" href="${item.href}">
+              <div class="mg-related-media">
+                <img src="${item.cover}" alt="" loading="lazy">
+              </div>
+              <div class="mg-related-title">${escapeHtml(item.title)}</div>
+            </a>
+          </li>
+        `).join('')}
+      </ul>
+    </section>
+  `;
+}
+
+// --- main render ------------------------------------------------------------
 (async function init() {
   const slug = currentSlug();
-  if (!slug) { location.href = withLang('/blog.html'); return; }
+  if (!slug) { location.href = withLang('/blog'); return; }
 
   const data = await loadGuide(slug, lang);
-  if (!data) { location.href = withLang('/blog.html'); return; }
+  if (!data) { location.href = withLang('/blog'); return; }
 
-  // <head> doplnit titulek/OG (runtime – OK pro sdílení)
+  // <head> meta / OG / LD
   document.title = `${data.title} – AJSEE`;
   const desc = data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.';
-  const setMeta = (p, c) => {
-    let m = document.querySelector(`meta[${p}]`);
-    if (!m) {
-      m = document.createElement('meta');
-      const [attr, val] = p.split('=');
-      m.setAttribute(attr, val.replace(/"/g, ''));
-      document.head.appendChild(m);
-    }
-    m.setAttribute('content', c);
+  const ensureMeta = (sel, attr, val) => {
+    let m = document.querySelector(sel);
+    if (!m) { m = document.createElement('meta'); const [a, v] = sel.split('='); m.setAttribute(a, v.replace(/"/g,'')); document.head.appendChild(m); }
+    m.setAttribute(attr, val);
   };
-  setMeta('name="description"', desc);
-  setMeta('property="og:title"', data.title);
-  setMeta('property="og:description"', desc);
-  setMeta('property="og:image"', data.cover || '');
+  ensureMeta('meta[name="description"]', 'content', desc);
+  ensureMeta('meta[property="og:title"]', 'content', data.title);
+  ensureMeta('meta[property="og:description"]', 'content', desc);
+  ensureMeta('meta[property="og:image"]', 'content', data.cover || '');
 
-  // skeleton DOM
+  // canonical + alternates
+  const canon = document.createElement('link');
+  canon.rel = 'canonical';
+  canon.href = location.origin + `/microguides/?slug=${encodeURIComponent(slug)}&lang=${lang}`;
+  document.head.appendChild(canon);
+  ['cs','en','de','sk','pl','hu'].forEach(hreflang=>{
+    const ln = document.createElement('link');
+    ln.rel = 'alternate';
+    ln.hreflang = hreflang;
+    ln.href = location.origin + `/microguides/?slug=${encodeURIComponent(slug)}&lang=${hreflang}`;
+    document.head.appendChild(ln);
+  });
+
+  // JSON-LD Article
+  const ld = {
+    "@context":"https://schema.org",
+    "@type":"Article",
+    "headline": data.title,
+    "description": desc,
+    "image": data.cover || undefined,
+    "inLanguage": lang,
+    "author": { "@type":"Organization", "name":"AJSEE" },
+    "publisher": { "@type":"Organization", "name":"AJSEE" },
+    "datePublished": new Date().toISOString()
+  };
+  const ldS = document.createElement('script');
+  ldS.type = 'application/ld+json'; ldS.textContent = JSON.stringify(ld);
+  document.head.appendChild(ldS);
+
+  // skeleton
   const root = $('#mgRoot');
   if (!root) return;
 
-  const coverImgTag = data.cover
-    ? `<img src="${data.cover}"
-            alt="${escapeHtml(data.coverAlt || '')}"
-            width="1280" height="720"
-            loading="eager" decoding="async" fetchpriority="high"
-            sizes="(max-width: 860px) 100vw, 980px">`
-    : '';
-
   const heroMedia = `
-    <figure class="mg-hero-media">
-      ${coverImgTag}
+    <figure class="mg-hero-media"${data.cover ? '':' hidden'}>
+      ${data.cover ? `<img src="${data.cover}" alt="${escapeHtml(data.coverAlt || '')}" width="1280" height="720" loading="eager">` : ''}
     </figure>`;
+
+  // CTA A/B – varianta A (nad foldem) vs B (ve footeru)
+  const stored = localStorage.getItem('mg_cta_variant');
+  const variant = stored === 'A' || stored === 'B' ? stored : (Math.random() < 0.5 ? 'A' : 'B');
+  localStorage.setItem('mg_cta_variant', variant);
+  gEvent('mg_ab_assign', { experiment: 'cta_position', variant });
 
   root.innerHTML = `
     <nav class="mg-breadcrumb" aria-label="Breadcrumb">
-      <a href="${withLang('/blog.html')}" data-i18n="mg.backToBlog">Zpět na blog</a>
+      <a href="${withLang('/blog')}" data-i18n="mg.backToBlog">Zpět na blog</a>
       <span aria-hidden="true">/</span>
       <span data-i18n="mg.breadcrumb">AJSEE vysvětluje</span>
     </nav>
@@ -145,18 +272,14 @@ const scrollToId = (id) => {
           <p class="mg-kicker">AJSEE vysvětluje</p>
           <h1 class="mg-title" itemprop="headline">${escapeHtml(data.title)}</h1>
           <p class="mg-meta"><span>${Number(data.readingMinutes || 5)} min čtení</span></p>
-          <div class="mg-actions">
-            <button class="btn-share" type="button" data-label="Sdílet" data-copied="Zkopírováno">Sdílet</button>
-          </div>
+          <div class="mg-sharepanel-slot"></div>
+          <div class="mg-actions mg-cta-slot ${variant === 'A' ? '' : 'is-hidden'}"></div>
         </div>
         ${heroMedia}
       </header>
 
       <aside class="mg-progress" aria-label="Postup průvodcem">
-        <ol>${(data.steps || [])
-          .map((s, i) => `<li><a href="#${escapeHtml(s.id)}"${i === 0 ? ' aria-current="true"' : ''}>${escapeHtml(s.heading)}</a></li>`)
-          .join('')}
-        </ol>
+        <ol>${(data.steps || []).map(s => `<li><a href="#${escapeHtml(s.id)}">${escapeHtml(s.heading)}</a></li>`).join('')}</ol>
       </aside>
 
       <div class="mg-content">
@@ -167,19 +290,15 @@ const scrollToId = (id) => {
             ${s.image ? `
               <figure class="mg-figure">
                 <div class="mg-media-frame">
-                  <img src="${s.image}"
-                       alt="${escapeHtml(s.alt || '')}"
-                       loading="lazy" decoding="async" fetchpriority="low"
-                       width="640" height="480"
-                       sizes="(max-width: 860px) 100vw, 38vw">
+                  <img src="${s.image}" alt="${escapeHtml(s.alt || '')}" loading="lazy">
                 </div>
               </figure>` : ``}
           </section>
         `).join('')}
 
-        <footer class="mg-footer-cta">
+        <footer class="mg-footer-cta ${variant === 'B' ? '' : 'is-hidden'}">
           ${data.ctaQuestion ? `<p>${escapeHtml(data.ctaQuestion)}</p>` : ``}
-          <a class="ib-cta" href="${withLang('/coming-soon')}">Chci na čekací listinu</a>
+          <div class="mg-cta-slot"></div>
         </footer>
       </div>
 
@@ -192,13 +311,31 @@ const scrollToId = (id) => {
   `;
   root.hidden = false;
 
-  // pokud je v URL hash, po renderu na něj sjeď
-  if (location.hash) {
-    const id = location.hash.slice(1);
-    requestAnimationFrame(() => setTimeout(() => scrollToId(id), 50));
+  // Share panel
+  $('.mg-sharepanel-slot')?.appendChild(
+    renderSharePanel({ title: data.title, summary: data.summary })
+  );
+
+  // CTA (A/B) – render a vlož
+  const ctaEl = renderCta(withLang('/coming-soon'));
+  $('.mg-cta-slot')?.appendChild(ctaEl);
+
+  // CTA – view/click měření
+  const cta = $('#mgCta');
+  if (cta) {
+    const ioCta = new IntersectionObserver((ents) => {
+      ents.forEach(e => {
+        if (e.isIntersecting) {
+          gEvent('mg_cta_view', { variant });
+          ioCta.disconnect();
+        }
+      });
+    }, { rootMargin: '0px 0px -30% 0px', threshold: 0.01 });
+    ioCta.observe(cta);
+    cta.addEventListener('click', () => gEvent('mg_cta_click', { variant }));
   }
 
-  // progress highlight (throttle duplicit)
+  // progress highlight
   const links = $$('.mg-progress a');
   const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
   let lastSentId = null;
@@ -209,7 +346,6 @@ const scrollToId = (id) => {
         const id = e.target.id;
         map.forEach(a => a.removeAttribute('aria-current'));
         map.get(id)?.setAttribute('aria-current', 'true');
-
         if (lastSentId !== id) {
           lastSentId = id;
           gEvent('mg_step_view', { step_id: id, slug: data.slug });
@@ -220,7 +356,7 @@ const scrollToId = (id) => {
 
   $$('.mg-section').forEach(sec => io.observe(sec));
 
-  // progress clicks (smooth scroll & keep hash)
+  // progress clicks
   links.forEach(a => {
     a.addEventListener('click', (ev) => {
       ev.preventDefault();
@@ -230,7 +366,7 @@ const scrollToId = (id) => {
     });
   });
 
-  // mobile nav + dots
+  // mobile nav + dots (lepší ARIA)
   const sections = $$('.mg-section');
   const ids = sections.map(s => s.id);
   const prevBtn = $('.mg-prev');
@@ -241,7 +377,8 @@ const scrollToId = (id) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'mg-dot';
-    b.setAttribute('aria-label', `Step ${i + 1}`);
+    const heading = sections[i]?.querySelector('h2')?.textContent?.trim() || `Krok ${i+1}`;
+    b.setAttribute('aria-label', `Přejít na: ${heading}`);
     b.addEventListener('click', () => scrollToId(id));
     dots.appendChild(b);
   });
@@ -277,19 +414,20 @@ const scrollToId = (id) => {
     gEvent('mg_nav_next', { from_step: ids[i], slug: data.slug });
   });
 
-  // share
-  const shareBtn = $('.btn-share');
-  shareBtn?.addEventListener('click', async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: data.title, text: data.summary, url: location.href });
-      } else {
-        await navigator.clipboard.writeText(location.href);
-        const orig = shareBtn.textContent;
-        shareBtn.textContent = shareBtn.dataset?.copied || 'Zkopírováno';
-        setTimeout(() => { shareBtn.textContent = shareBtn.dataset?.label || orig || 'Sdílet'; }, 1200);
-      }
-      gEvent('mg_share', { slug: data.slug });
-    } catch {}
-  });
+  // Deep-link posun (když přijdu s #id)
+  if (location.hash) {
+    const id = location.hash.slice(1);
+    setTimeout(() => scrollToId(id), 80);
+  }
+
+  // Related (blog/microguides)
+  try {
+    const related = await loadRelated(slug, data.category, lang);
+    if (related.length) {
+      const host = document.createElement('div');
+      host.innerHTML = renderRelated(related);
+      $('.mg-content')?.appendChild(host.firstElementChild);
+    }
+  } catch {}
+
 })();

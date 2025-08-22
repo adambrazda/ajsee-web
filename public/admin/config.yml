@@ -1,6 +1,7 @@
 backend:
   name: git-gateway
   branch: main
+  base_url: https://ajsee.cz/
 
 site_url: https://ajsee.cz
 display_url: https://ajsee.cz

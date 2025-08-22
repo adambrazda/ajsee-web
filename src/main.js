@@ -10,6 +10,7 @@ import './styles/main.scss';
 import { getAllEvents } from './api/eventsApi.js';
 import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity } from './city/canonical.js';
+import './identity-init.js';
 
 // ------- Global state -------
 let currentFilters = {

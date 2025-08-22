@@ -1,0 +1,67 @@
+backend:
+  name: git-gateway
+  branch: main
+
+site_url: https://ajsee.cz
+display_url: https://ajsee.cz
+
+media_folder: "public/uploads"   # kam se uloží soubory v repo
+public_folder: "/uploads"        # jak budou dostupné na webu
+
+publish_mode: editorial_workflow  # volitelné: návrh -> schválení -> publikace
+locale: cs
+
+# Rychlý přístup k indexu mikroprůvodců (seznam karet)
+collections:
+  - name: "microguide_index"
+    label: "Micro-guides: Index (výpis na blogu)"
+    files:
+      - name: "list"
+        label: "Položky indexu"
+        file: "content/microguides/index.json"
+        format: json
+        fields:
+          - label: "Položky"
+            name: "items"
+            widget: list
+            summary: "{{fields.slug}} — {{fields.status}}"
+            fields:
+              - { label: "Slug", name: "slug", widget: "string", hint: "např. seating-map", pattern: ['^[a-z0-9-]+$', 'pouze malá písmena a pomlčky'] }
+              - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "published" }
+              - { label: "Cover (volitelně)", name: "cover", widget: "image", required: false }
+              - { label: "Titulek (fallback)", name: "title", widget: "string", required: false }
+              - { label: "Perex (fallback)", name: "summary", widget: "text", required: false }
+
+  # Lokalizovaný obsah průvodců – jeden soubor = 1 jazyk daného slugu
+  - name: "microguides"
+    label: "Micro-guides (lokalizace)"
+    label_singular: "Micro-guide (jazyk)"
+    folder: "content/microguides"
+    create: true
+    format: json
+    slug: "{{fields.slug}}.{{fields.lang}}"
+    path: "content/microguides/{{fields.slug}}.{{fields.lang}}"
+    fields:
+      - { label: "Slug", name: "slug", widget: "string", hint: "musí sedět s položkou v indexu", pattern: ['^[a-z0-9-]+$', 'pouze malá písmena a pomlčky'] }
+      - { label: "Jazyk", name: "lang", widget: "select", options: ["cs","en","de","sk","pl","hu"], default: "cs" }
+      - { label: "Titulek", name: "title", widget: "string" }
+      - { label: "Perex", name: "summary", widget: "text" }
+      - { label: "Čas čtení (min)", name: "readingMinutes", widget: "number", min: 1, max: 30, default: 5 }
+      - { label: "Cover obrázek", name: "cover", widget: "image", allow_multiple: false }
+      - { label: "Cover alt", name: "coverAlt", widget: "string", required: false }
+      - { label: "Kategorie", name: "category", widget: "select", options: ["theatre","concert","festival","sport"], default: "theatre" }
+
+      - label: "Kroky (kapitoly)"
+        name: "steps"
+        widget: "list"
+        label_singular: "Kapitola"
+        summary: "{{fields.heading}}"
+        fields:
+          - { label: "ID", name: "id", widget: "string", hint: "např. s1, intro, drs-stred; používá se v kotvách", pattern: ['^[a-z0-9-]+$', 'malá písmena/čísla/pomlčky'] }
+          - { label: "Nadpis", name: "heading", widget: "string" }
+          - { label: "Text", name: "body", widget: "markdown", hint: "Podporuje **tučně**, *kurzíva*, seznamy. (HTML se z bezpečnostních důvodů nenačítá)" }
+          - { label: "Obrázek", name: "image", widget: "image", required: false }
+          - { label: "Alt", name: "alt", widget: "string", required: false }
+
+      - { label: "Závěrečná otázka/CTA", name: "ctaQuestion", widget: "string", required: false }
+      - { label: "Status", name: "status", widget: "select", options: ["draft","published"], default: "published" }

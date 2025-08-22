@@ -16,8 +16,8 @@
 
   // Lokální texty
   const dict = {
-    badge: { cs:'Mikroprůvodce', en:'Micro-guide', de:'Mikro-Guide', sk:'Mikro-sprievodca', pl:'Mikroprzewodnik', hu:'Mini útmutató' },
-    readMore: { cs:'Číst dál', en:'Read more', de:'Weiterlesen', sk:'Čítať ďalej', pl:'Czytaj dalej', hu:'Tovább' }
+    badge: { cs: 'Mikroprůvodce', en: 'Micro-guide', de: 'Mikro-Guide', sk: 'Mikro-sprievodca', pl: 'Mikroprzewodnik', hu: 'Mini útmutató' },
+    readMore: { cs: 'Číst dál', en: 'Read more', de: 'Weiterlesen', sk: 'Čítať ďalej', pl: 'Czytaj dalej', hu: 'Tovább' }
   };
   const t = (k) => (dict[k]?.[lang]) || dict[k]?.en || dict[k]?.cs || '';
 
@@ -28,11 +28,14 @@
     return r.json();
   };
 
-  // Načti index micro-guidů
+  // Načti index micro-guidů (podpora pole i objektu { items: [...] })
   let list = [];
   try {
     const r = await fetch('/content/microguides/index.json', { cache: 'no-store' });
-    if (r.ok) list = await r.json();
+    if (r.ok) {
+      const raw = await r.json();
+      list = Array.isArray(raw) ? raw : Array.isArray(raw?.items) ? raw.items : [];
+    }
   } catch {}
   if (!Array.isArray(list) || !list.length) return;
 

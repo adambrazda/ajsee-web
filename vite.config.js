@@ -33,9 +33,11 @@ export default defineConfig({
           blog: resolve(__dirname, 'blog.html'),
           'blog-detail': resolve(__dirname, 'blog-detail.html'),
           faq: resolve(__dirname, 'faq.html'),
+          // ✅ Micro-guides – MUSÍ být ve vstupu, jinak se stránka v produkci negeneruje
+          microguides: resolve(__dirname, 'microguides/index.html'),
         }
 
-        // Přidej waitlist stránky jen pokud nejsou v /public
+        // Přidej waitlist stránky jen pokud existují (např. v dev)
         addIfExists(inputs, 'coming-soon', resolve(__dirname, 'coming-soon/index.html'))
         addIfExists(inputs, 'coming-soon-thanks', resolve(__dirname, 'coming-soon/thanks.html'))
 
@@ -56,8 +58,12 @@ export default defineConfig({
   plugins: [
     viteStaticCopy({
       targets: [
+        // i18n JSONy do /locales (pokud nejsou v /public)
         { src: 'src/locales/*.json', dest: 'locales' },
-        // Pozn.: cokoliv v /public se kopíruje automaticky
+
+        // ✅ Micro-guides obsah (JSONy + cokoliv uvnitř složek) do /content/microguides
+        // Pokud už máš /content pod /public, tohle klidně smaž – public se kopíruje automaticky.
+        { src: 'content/microguides/**/*', dest: 'content/microguides' },
       ],
     }),
   ],

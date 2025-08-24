@@ -9,11 +9,14 @@ display_url: https://ajsee.cz
 media_folder: "public/uploads"   # kam se uloží soubory v repo
 public_folder: "/uploads"        # jak budou dostupné na webu
 
-publish_mode: editorial_workflow  # volitelné: návrh -> schválení -> publikace
+publish_mode: editorial_workflow
 locale: cs
 
-# Rychlý přístup k indexu mikroprůvodců (seznam karet)
+# ---------------------------------------------------------
+# Kolekce
+# ---------------------------------------------------------
 collections:
+  # —— Index karet pro výpis na blogu ——
   - name: "microguide_index"
     label: "Micro-guides: Index (výpis na blogu)"
     files:
@@ -21,36 +24,96 @@ collections:
         label: "Položky indexu"
         file: "content/microguides/index.json"
         format: json
+        editor:
+          preview: false
+        sortable_fields: ['slug', 'language', 'status']
         fields:
           - label: "Položky"
             name: "items"
-            widget: list
-            summary: "{{fields.slug}} — {{fields.status}}"
+            widget: "list"
+            label_singular: "Položka"
+            summary: "{{fields.slug}} • {{fields.language}} • {{fields.status}}"
+            allow_add: true
             fields:
-              - { label: "Slug", name: "slug", widget: "string", hint: "např. seating-map", pattern: ['^[a-z0-9-]+$', 'pouze malá písmena a pomlčky'] }
-              - { label: "Status", name: "status", widget: "select", options: ["draft", "published"], default: "published" }
-              - { label: "Cover (volitelně)", name: "cover", widget: "image", required: false }
-              - { label: "Titulek (fallback)", name: "title", widget: "string", required: false }
-              - { label: "Perex (fallback)", name: "summary", widget: "text", required: false }
+              - label: "Slug"
+                name: "slug"
+                widget: "string"
+                hint: "např. seating-map"
+                pattern: ['^[a-z0-9-]+$', 'pouze malá písmena a pomlčky']
+              - label: "Jazyk karty (primární)"
+                name: "language"
+                widget: "select"
+                options: ["cs","en","de","sk","pl","hu"]
+                default: "cs"
+              - label: "Status"
+                name: "status"
+                widget: "select"
+                options: ["draft", "published"]
+                default: "published"
+              - label: "Cover (volitelné)"
+                name: "cover"
+                widget: "image"
+                required: false
+                choose_url: true
+                hint: "Můžeš vložit URL (např. /images/microguides/slug/cover.webp) nebo nahrát soubor."
+              - label: "Titulek (fallback)"
+                name: "title"
+                widget: "string"
+                required: false
+                hint: "Použije se, pokud chybí lokalizovaný soubor pro daný jazyk."
+              - label: "Perex (fallback)"
+                name: "summary"
+                widget: "text"
+                required: false
+              - label: "Kategorie"
+                name: "category"
+                widget: "select"
+                options: ["theatre","concert","festival","sport"]
+                default: "theatre"
 
-  # Lokalizovaný obsah průvodců – jeden soubor = 1 jazyk daného slugu
+  # —— Lokalizovaný obsah průvodců ——
   - name: "microguides"
     label: "Micro-guides (lokalizace)"
     label_singular: "Micro-guide (jazyk)"
     folder: "content/microguides"
     create: true
     format: json
+    identifier_field: "title"
     slug: "{{fields.slug}}.{{fields.lang}}"
     path: "content/microguides/{{fields.slug}}.{{fields.lang}}"
+    sortable_fields: ['slug', 'lang', 'title']
+    search_fields: ['slug', 'title', 'summary']
     fields:
-      - { label: "Slug", name: "slug", widget: "string", hint: "musí sedět s položkou v indexu", pattern: ['^[a-z0-9-]+$', 'pouze malá písmena a pomlčky'] }
-      - { label: "Jazyk", name: "lang", widget: "select", options: ["cs","en","de","sk","pl","hu"], default: "cs" }
+      - label: "Slug"
+        name: "slug"
+        widget: "string"
+        hint: "musí sedět s položkou v indexu (např. seating-map)"
+        pattern: ['^[a-z0-9-]+$', 'pouze malá písmena a pomlčky']
+      - label: "Jazyk"
+        name: "lang"
+        widget: "select"
+        options: ["cs","en","de","sk","pl","hu"]
+        default: "cs"
       - { label: "Titulek", name: "title", widget: "string" }
       - { label: "Perex", name: "summary", widget: "text" }
-      - { label: "Čas čtení (min)", name: "readingMinutes", widget: "number", min: 1, max: 30, default: 5 }
-      - { label: "Cover obrázek", name: "cover", widget: "image", allow_multiple: false }
+      - label: "Čas čtení (min)"
+        name: "readingMinutes"
+        widget: "number"
+        min: 1
+        max: 30
+        default: 5
+      - label: "Cover obrázek"
+        name: "cover"
+        widget: "image"
+        allow_multiple: false
+        choose_url: true
+        hint: "Můžeš vložit URL (např. /images/microguides/slug/cover.webp) nebo nahrát soubor."
       - { label: "Cover alt", name: "coverAlt", widget: "string", required: false }
-      - { label: "Kategorie", name: "category", widget: "select", options: ["theatre","concert","festival","sport"], default: "theatre" }
+      - label: "Kategorie"
+        name: "category"
+        widget: "select"
+        options: ["theatre","concert","festival","sport"]
+        default: "theatre"
 
       - label: "Kroky (kapitoly)"
         name: "steps"
@@ -58,10 +121,17 @@ collections:
         label_singular: "Kapitola"
         summary: "{{fields.heading}}"
         fields:
-          - { label: "ID", name: "id", widget: "string", hint: "např. s1, intro, drs-stred; používá se v kotvách", pattern: ['^[a-z0-9-]+$', 'malá písmena/čísla/pomlčky'] }
+          - label: "ID"
+            name: "id"
+            widget: "string"
+            hint: "např. intro, s1, s2 … používá se v kotvách (#id)"
+            pattern: ['^[a-z0-9-]+$', 'malá písmena/čísla/pomlčky']
           - { label: "Nadpis", name: "heading", widget: "string" }
-          - { label: "Text", name: "body", widget: "markdown", hint: "Podporuje **tučně**, *kurzíva*, seznamy. (HTML se z bezpečnostních důvodů nenačítá)" }
-          - { label: "Obrázek", name: "image", widget: "image", required: false }
+          - label: "Text"
+            name: "body"
+            widget: "markdown"
+            hint: "Podporuje **tučně**, *kurzíva*, seznamy."
+          - { label: "Obrázek", name: "image", widget: "image", required: false, choose_url: true }
           - { label: "Alt", name: "alt", widget: "string", required: false }
 
       - { label: "Závěrečná otázka/CTA", name: "ctaQuestion", widget: "string", required: false }

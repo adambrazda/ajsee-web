@@ -14,6 +14,13 @@
       "body": "Základní cena + service fee + případně payment/delivery → počítá se finální částka.\n\nDynamic pricing (u koncertů běžné): cena se mění podle poptávky.\n\nZkontroluj měnu / DPH / převodní kurz.\n\nTip: Porovnávej finální cenu, ne jen „od“ částky.",
       "image": "/uploads/step-02.svg",
       "alt": "Ikona účtenky/poplatků"
+    },
+    {
+      "id": "s2",
+      "heading": "Přenos a vrácení vstupenek",
+      "body": "Transfer = změna držitele; sleduj, zda je povolený a do kdy.\n\nName on ticket: někdy nutná shoda s dokladem.\n\nRefund policy: zrušení vs. odložení (často bez nároku na vrácení).\n\nPojištění / storno přidej jen pokud dává smysl; chargeback je až poslední možnost.",
+      "image": "/uploads/step-03.svg",
+      "alt": "Ikona přenosu (šipky)"
     }
   ],
   "slug": "fees-refund",

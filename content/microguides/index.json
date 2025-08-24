@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "status": "published",
+      "slug": "seating-map",
+      "title": "How to read a seating map",
+      "summary": "AJSEE micro-guide: how to read a seating map and choose the right seats.",
+      "cover": "/uploads/cover.webp"
+    },
+    {
+      "status": "published",
+      "slug": "fees-refund",
+      "cover": "/uploads/fees-refund-cover.webp",
+      "title": "Fees & transfer/refund rules",
+      "summary": "How fees shape the final price and why transfer/refund terms matter."
+    }
+  ]
+}

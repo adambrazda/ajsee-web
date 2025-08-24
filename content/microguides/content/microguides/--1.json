@@ -10,10 +10,10 @@
     },
     {
       "id": "fees",
-      "heading": "Poplatky, které umí překvapit",
-      "body": "- servisní/platební/doručovací poplatky (a **kdy** se přičítají),\n- rozdíl mezi cenou v košíku a rekapitulací,\n- měna a kurz (konverzní poplatky).\n",
+      "heading": "Fees that add up",
+      "body": "- service/payment/delivery fees (and **when** they appear),\n- cart price vs. final recap,\n- currency & FX conversion fees.\n",
       "image": "step-02.svg",
-      "alt": "Ikona poplatků (servisní, platební, doručení)."
+      "alt": "Icon: service, payment and delivery fees."
     },
     {
       "id": "transfer-refund",

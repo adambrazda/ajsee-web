@@ -14,6 +14,20 @@
       "body": "- servisní/platební/doručovací poplatky (a **kdy** se přičítají),\n- rozdíl mezi cenou v košíku a rekapitulací,\n- měna a kurz (konverzní poplatky).\n",
       "image": "step-02.svg",
       "alt": "Ikona poplatků (servisní, platební, doručení)."
+    },
+    {
+      "id": "transfer-refund",
+      "heading": "Převod jména & refundace",
+      "body": "- lze **převést** vstupenku na jiné jméno? (dokdy a za kolik),\n- **refund** při zrušení/změně termínu,\n- kdo je „merchant of record“ (pořadatel vs. marketplace) a kdo peníze vrací.\n",
+      "image": "step-03.svg",
+      "alt": "Ikona převodu vstupenky a refundace."
+    },
+    {
+      "id": "evidence",
+      "heading": "Důkaz se hodí (Tip)",
+      "body": "> **Tip:** Udělej si **screenshot** souhrnu ceny a podmínek — hodí se při případné reklamaci.",
+      "image": "step-05.svg",
+      "alt": "Ikona screenshotu s potvrzením."
     }
   ],
   "slug": "fees-refund",

@@ -7,6 +7,13 @@
       "body": "Preferuj oficiální web akce / pořadatele / venue nebo primární ticketing (autorizovaný partner).\n\nOvěř doménu (správný název, HTTPS), IČO/fakturační údaje, kontakty a podmínky.\n\n„Verified resale“ je OK, bazar a inzerce ne (riziko podvodu / duplicitních PDF).\n\nPozor na „příliš výhodné“ ceny a platby mimo bránu.",
       "alt": "Ikona bezpečného nákupu (štít/pojíšťka)",
       "image": "/uploads/step-04.svg"
+    },
+    {
+      "id": "s1",
+      "heading": "Poplatky, které mění finální cenu",
+      "body": "Základní cena + service fee + případně payment/delivery → počítá se finální částka.\n\nDynamic pricing (u koncertů běžné): cena se mění podle poptávky.\n\nZkontroluj měnu / DPH / převodní kurz.\n\nTip: Porovnávej finální cenu, ne jen „od“ částky.",
+      "image": "/uploads/step-02.svg",
+      "alt": "Ikona účtenky/poplatků"
     }
   ],
   "slug": "fees-refund",

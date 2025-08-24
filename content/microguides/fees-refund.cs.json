@@ -21,6 +21,13 @@
       "body": "Transfer = změna držitele; sleduj, zda je povolený a do kdy.\n\nName on ticket: někdy nutná shoda s dokladem.\n\nRefund policy: zrušení vs. odložení (často bez nároku na vrácení).\n\nPojištění / storno přidej jen pokud dává smysl; chargeback je až poslední možnost.",
       "image": "/uploads/step-03.svg",
       "alt": "Ikona přenosu (šipky)"
+    },
+    {
+      "id": "s3",
+      "heading": "Checklist před zaplacením",
+      "body": "Jasný prodejce, kontakty, obchodní podmínky, GDPR.\n\nPlatební brána s 3-D Secure, karta > převod.\n\nShrnutí objednávky (sektory/řady/místa, datum, měna, poplatky).\n\nPo nákupu: potvrzovací e-mail, ulož do Wallet / stáhni oficiální app.\n\nRed flags: komunikace jen přes WhatsApp, požadavek na fotku dokladu, podezřele levné „screeshoty“ PDF, poplatky >30 %, žádné podmínky/kontakty.",
+      "image": "/uploads/step-05.svg",
+      "alt": "Ikona kalendáře/vrácení"
     }
   ],
   "slug": "fees-refund",
@@ -28,6 +35,7 @@
   "coverAlt": "ikona bezpečí",
   "status": "published",
   "readingMinutes": 5,
+  "ctaQuestion": "Máš tip na ověřené prodejce nebo varování, co ti pomohlo? Napiš nám!",
   "cover": "/uploads/fees-refund-cover.webp",
   "title": "Kde koupit bezpečně",
   "category": "theatre"

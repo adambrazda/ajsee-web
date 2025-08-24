@@ -5,7 +5,8 @@
       "id": "intro",
       "heading": "Úvod",
       "body": "test\ntest",
-      "image": "step-01.svg"
+      "image": "step-01.svg",
+      "alt": "test"
     }
   ],
   "slug": "fees-refund",

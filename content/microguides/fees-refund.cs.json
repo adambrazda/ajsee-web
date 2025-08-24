@@ -1,10 +1,18 @@
 {
-  "lang": "cs",
-  "readingMinutes": 5,
-  "category": "theatre",
-  "status": "published",
-  "slug": "fees-refund",
-  "title": "tesst",
   "summary": "test",
-  "cover": "/uploads/fees-refund-cover.webp"
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "test",
+      "body": "test",
+      "alt": "test"
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "cs",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/fees-refund-cover.webp",
+  "title": "tesst",
+  "category": "theatre"
 }

@@ -21,7 +21,7 @@
     })();
   </script>
 
-  <!-- dataLayer init (pro GTM) -->
+  <!-- dataLayer init (pro GA4 i budoucí GTM) + mg_init -->
   <script>
     window.dataLayer = window.dataLayer || [];
     (function () {
@@ -35,26 +35,30 @@
     })();
   </script>
 
-  <!-- Google Tag Manager -->
+  <!-- GA4 (gtag.js) – správné použití Measurement ID: G-K0ZS0D9JLK -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
   <script>
-    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','G-K0ZS0D9JLK'); /* ← nahraď svým ID */
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-K0ZS0D9JLK', {
+      page_path: location.pathname + location.search
+    });
   </script>
-  <!-- End Google Tag Manager -->
 </head>
 <body>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=G-K0ZS0D9JLK"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
+  <!-- (GTM noscript byl odstraněn; používáme čisté GA4 přes gtag.js) -->
 
   <header class="site-header"></header>
 
   <main class="mg" id="mgRoot" hidden>
-    <!-- sem runtime vykreslí titulek, kroky, progres, mobilní nav… -->
+    <!-- Runtime sem vykreslí breadcrumb, hero, TOC, kroky, mobilní navigaci… -->
+
+    <!-- Mount point pro Share panel.
+         POZOR: mg-runtime.js tento element po vyrenderování <section class="mg-hero"> přesune
+         přímo ZA hero (pomocí insertAdjacentElement('afterend', ...)), případně vytvoří nový,
+         pokud by nebyl k dispozici. -->
+    <div id="mg-share" aria-hidden="true"></div>
   </main>
 
   <noscript>Pro zobrazení mikroprůvodce povol JavaScript.</noscript>
@@ -64,8 +68,10 @@
   <!-- i18n (pokud používáš) -->
   <script type="module" src="/src/i18n.js"></script>
 
-  <!-- runtime pro micro-guides -->
+  <!-- runtime pro micro-guides (uvnitř importuje a volá renderSharePanel z /src/mg-share.js) -->
   <script type="module" src="/src/mg-runtime.js"></script>
+
+  <!-- globální skripty webu -->
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>

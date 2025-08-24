@@ -1,3 +1,6 @@
+import { renderSharePanel } from './mg-share.js';
+import { renderRelatedMicroguides } from './mg-related.js';
+
 // --- helpers ---
 const urlLang = new URLSearchParams(location.search).get('lang');
 const lang = (urlLang || document.documentElement.getAttribute('lang') || 'cs').toLowerCase();
@@ -6,7 +9,12 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
 function gEvent(action, extra = {}) {
-  if (window.gtag) gtag('event', action, { language: lang, ...extra });
+  if (typeof window.dataLayer?.push === 'function') {
+    window.dataLayer.push({ event: action, language: lang, ...extra });
+  }
+  if (typeof window.gtag === 'function') {
+    gtag('event', action, { language: lang, ...extra });
+  }
 }
 
 // Dev i prod: 1) ?slug=..., 2) /microguides/{slug}
@@ -19,9 +27,14 @@ function currentSlug() {
   return '';
 }
 
+// Fallback pořadí: current → en → cs
 async function loadGuide(slug, langCode) {
-  const primary = `/content/microguides/${slug}.${langCode}.json`;
-  const fallback = `/content/microguides/${slug}.cs.json`;
+  const urls = [];
+  const pushOnce = (p) => { if (!urls.includes(p)) urls.push(p); };
+
+  pushOnce(`/content/microguides/${slug}.${langCode}.json`);
+  if (langCode !== 'en') pushOnce(`/content/microguides/${slug}.en.json`);
+  if (langCode !== 'cs') pushOnce(`/content/microguides/${slug}.cs.json`);
 
   const fetchJson = async (url) => {
     const r = await fetch(url, { cache: 'no-store' });
@@ -29,11 +42,10 @@ async function loadGuide(slug, langCode) {
     return r.json();
   };
 
-  try { return await fetchJson(primary); }
-  catch {
-    try { return await fetchJson(fallback); }
-    catch { return null; }
+  for (const url of urls) {
+    try { return await fetchJson(url); } catch { /* try next */ }
   }
+  return null;
 }
 
 function escapeHtml(str = '') {
@@ -170,8 +182,63 @@ function upsertMeta(attr, value, content) {
   `;
   root.hidden = false;
 
-  // progress highlight
-  const links = $$('.mg-progress a');
+  // --- SHARE MINI-PANEL (pod hero) ---
+  const heroEl = $('.mg-hero', root);
+  // Použij placeholder z HTML, nebo vytvoř nový
+  let shareMount = document.getElementById('mg-share');
+  if (!shareMount) {
+    shareMount = document.createElement('div');
+    shareMount.id = 'mg-share';
+  } else {
+    shareMount.removeAttribute('aria-hidden');
+  }
+  // Přesuň mount point hned za hero
+  if (heroEl) heroEl.insertAdjacentElement('afterend', shareMount);
+
+  // Vyrenderuj panel
+  renderSharePanel({
+    slug: data.slug || slug,
+    language: lang,
+    title: data.title,
+    container: shareMount
+  });
+
+  // Zároveň zachováme stávající tlačítko v hero:
+  const shareBtn = $('.btn-share', root);
+  shareBtn?.addEventListener('click', async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: data.title, text: data.summary, url: location.href });
+        gEvent('mg_share_click', { network: 'system', slug: data.slug || slug });
+      } else if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(location.href);
+        shareBtn.textContent = 'Zkopírováno';
+        gEvent('mg_share_click', { network: 'copy', slug: data.slug || slug });
+        setTimeout(() => { shareBtn.textContent = 'Sdílet'; }, 1200);
+      } else {
+        // Fallback (ne-secure kontext)
+        window.prompt('Zkopírujte odkaz:', location.href);
+        gEvent('mg_share_click', { network: 'copy', slug: data.slug || slug });
+      }
+    } catch { /* zavření sdílení je OK */ }
+  });
+
+  // --- RELATED (pod content/footer CTA, před mobile nav) ---
+  const relatedMount = document.createElement('section');
+  relatedMount.id = 'mg-related';
+  const mobileNav = root.querySelector('.mg-mobile-nav');
+  const contentEl = root.querySelector('.mg-content');
+  if (mobileNav) mobileNav.insertAdjacentElement('beforebegin', relatedMount);
+  else if (contentEl) contentEl.insertAdjacentElement('afterend', relatedMount);
+  renderRelatedMicroguides({
+    slug: data.slug || slug,
+    language: lang,
+    container: relatedMount,
+    max: 3
+  });
+
+  // --- progress highlight ---
+  const links = $$('.mg-progress a', root);
   const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
   let lastSentId = null;
 
@@ -184,14 +251,14 @@ function upsertMeta(attr, value, content) {
             map.get(id)?.setAttribute('aria-current', 'true');
             if (lastSentId !== id) {
               lastSentId = id;
-              gEvent('mg_step_view', { step_id: id, slug: data.slug });
+              gEvent('mg_step_view', { step_id: id, slug: data.slug || slug });
             }
           }
         });
       }, { rootMargin: '-40% 0% -55% 0%', threshold: 0.01 })
     : null;
 
-  $$('.mg-section').forEach(sec => io?.observe(sec));
+  $$('.mg-section', root).forEach(sec => io?.observe(sec));
 
   // progress clicks
   links.forEach(a => {
@@ -204,11 +271,11 @@ function upsertMeta(attr, value, content) {
   });
 
   // mobile nav + dots
-  const sections = $$('.mg-section');
+  const sections = $$('.mg-section', root);
   const ids = sections.map(s => s.id);
-  const prevBtn = $('.mg-prev');
-  const nextBtn = $('.mg-next');
-  const dots = $('.mg-dots');
+  const prevBtn = $('.mg-prev', root);
+  const nextBtn = $('.mg-next', root);
+  const dots = $('.mg-dots', root);
 
   ids.forEach((id, i) => {
     const b = document.createElement('button');
@@ -241,27 +308,12 @@ function upsertMeta(attr, value, content) {
   prevBtn?.addEventListener('click', () => {
     const i = activeIndex();
     if (i > 0) scrollToId(ids[i - 1]);
-    gEvent('mg_nav_prev', { from_step: ids[i], slug: data.slug });
+    gEvent('mg_nav_prev', { from_step: ids[i], slug: data.slug || slug });
   });
 
   nextBtn?.addEventListener('click', () => {
     const i = activeIndex();
     if (i < ids.length - 1) scrollToId(ids[i + 1]);
-    gEvent('mg_nav_next', { from_step: ids[i], slug: data.slug });
-  });
-
-  // share
-  const shareBtn = $('.btn-share');
-  shareBtn?.addEventListener('click', async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: data.title, text: data.summary, url: location.href });
-      } else {
-        await navigator.clipboard.writeText(location.href);
-        shareBtn.textContent = 'Zkopírováno';
-        setTimeout(() => { shareBtn.textContent = 'Sdílet'; }, 1200);
-      }
-      gEvent('mg_share', { slug: data.slug });
-    } catch {}
+    gEvent('mg_nav_next', { from_step: ids[i], slug: data.slug || slug });
   });
 })();

@@ -205,45 +205,55 @@
     "ariaLabel": "Informace: spustíme brzy – čekací listina"
   },
   "comingSoon": {
-  "title": "Čekací listina AJSEE",
-  "lead": "Zanech e-mail a pošleme ti pozvánku do předprodeje. Bez spamu.",
-  "emailLabel": "E-mail",
-  "emailPh": "tvuj@email.cz",
-  "consent": "Souhlasím se zasíláním informací o AJSEE a předprodeji vstupenek.",
-  "submit": "Přidat se na čekací listinu",
-  "hint": "Double opt-in zapnutý. Odhlášení kdykoli.",
-  "faqTitle": "Krátké FAQ",
-  "faq1q": "Kdy spustíte?",
-  "faq1a": "První vlnu předprodeje otevřeme s omezeným počtem pozvánek. Datum pošleme e-mailem.",
-  "faq2q": "Co získám?",
-  "faq2a": "Brzký přístup, kurátorské tipy a prostředí přívětivé pro češtinu/slovenštinu.",
-  "faq3q": "Je to bezpečné?",
-  "faq3a": "Spolupracujeme pouze s ověřenými partnery a férovými podmínkami.",
-  "back": "Zpět na AJSEE.cz"
-},
-"thanks": {
-  "title": "Díky – AJSEE",
-  "heading": "Děkujeme, jsi na seznamu.",
-  "lead": "Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.",
-  "back": "Zpět na AJSEE.cz"
-},
-"event-demo": {
-  "ariaLabel": "Informace o demo režimu – chystáme reálný prodej vstupenek.",
-  "title": "Ukázkové události.",
-  "body": "Připravujeme reálný prodej vstupenek. Sledujte nás!",
-  "cta": "Sleduj novinky"
-},
-"mg.backToBlog": "Zpět na blog",
-"mg.breadcrumb": "AJSEE vysvětluje",
-"mg": {
-  "card": { "badge": "Mikroprůvodce" },
-  "guides": {
-    "seating-map": {
-      "title": "Jak číst seating mapu",
-      "summary": "Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst."
+    "title": "Čekací listina AJSEE",
+    "lead": "Zanech e-mail a pošleme ti pozvánku do předprodeje. Bez spamu.",
+    "emailLabel": "E-mail",
+    "emailPh": "tvuj@email.cz",
+    "consent": "Souhlasím se zasíláním informací o AJSEE a předprodeji vstupenek.",
+    "submit": "Přidat se na čekací listinu",
+    "hint": "Double opt-in zapnutý. Odhlášení kdykoli.",
+    "faqTitle": "Krátké FAQ",
+    "faq1q": "Kdy spustíte?",
+    "faq1a": "První vlnu předprodeje otevřeme s omezeným počtem pozvánek. Datum pošleme e-mailem.",
+    "faq2q": "Co získám?",
+    "faq2a": "Brzký přístup, kurátorské tipy a prostředí přívětivé pro češtinu/slovenštinu.",
+    "faq3q": "Je to bezpečné?",
+    "faq3a": "Spolupracujeme pouze s ověřenými partnery a férovými podmínkami.",
+    "back": "Zpět na AJSEE.cz"
+  },
+  "thanks": {
+    "title": "Díky – AJSEE",
+    "heading": "Děkujeme, jsi na seznamu.",
+    "lead": "Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.",
+    "back": "Zpět na AJSEE.cz"
+  },
+  "event-demo": {
+    "ariaLabel": "Informace o demo režimu – chystáme reálný prodej vstupenek.",
+    "title": "Ukázkové události.",
+    "body": "Připravujeme reálný prodej vstupenek. Sledujte nás!",
+    "cta": "Sleduj novinky"
+  },
+
+  "mg.backToBlog": "Zpět na blog",
+  "mg.breadcrumb": "AJSEE vysvětluje",
+
+  "mg": {
+    "card": { "badge": "Mikroprůvodce" },
+    "guides": {
+      "seating-map": {
+        "title": "Jak číst seating mapu",
+        "summary": "Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst."
+      }
+    },
+    "share": {
+      "label": "Sdílet",
+      "system": "Sdílet…",
+      "twitter": "Sdílet na X",
+      "facebook": "Sdílet na Facebook",
+      "linkedin": "Sdílet na LinkedIn",
+      "whatsapp": "Sdílet na WhatsApp",
+      "copy": "Zkopírovat odkaz",
+      "copied": "Odkaz zkopírován"
     }
   }
 }
-}
-
-  

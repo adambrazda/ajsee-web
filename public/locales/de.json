@@ -240,5 +240,15 @@
         "summary": "Kurzer Mikro-Guide von AJSEE: den Sitzplan richtig lesen und Fehler bei der Platzwahl vermeiden."
       }
     }
-  }
+  },
+  "share": {
+      "label": "Teilen",
+      "system": "Teilen…",
+      "twitter": "Auf X teilen",
+      "facebook": "Auf Facebook teilen",
+      "linkedin": "Auf LinkedIn teilen",
+      "whatsapp": "Auf WhatsApp teilen",
+      "copy": "Link kopieren",
+      "copied": "Link kopiert"
+    }
 }

@@ -240,6 +240,16 @@
         "summary": "Rövid AJSEE mini útmutató: hogyan olvasd a helytérképet, és hogyan kerüld el a hibákat a helyválasztásnál."
       }
     }
-  }
+  },
+   "share": {
+      "label": "Megosztás",
+      "system": "Megosztás…",
+      "twitter": "Megosztás X-en",
+      "facebook": "Megosztás Facebookon",
+      "linkedin": "Megosztás LinkedInen",
+      "whatsapp": "Megosztás WhatsAppon",
+      "copy": "Hivatkozás másolása",
+      "copied": "Hivatkozás másolva"
+    }
 }
 

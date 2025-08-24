@@ -240,6 +240,16 @@
         "summary": "Krótki mikroprzewodnik AJSEE: jak czytać mapę miejsc i nie popełnić błędu przy wyborze miejsc."
       }
     }
-  }
+  },
+      "share": {
+      "label": "Udostępnij",
+      "system": "Udostępnij…",
+      "twitter": "Udostępnij na X",
+      "facebook": "Udostępnij na Facebooku",
+      "linkedin": "Udostępnij na LinkedIn",
+      "whatsapp": "Udostępnij na WhatsApp",
+      "copy": "Kopiuj link",
+      "copied": "Skopiowano link"
+    }
 }
 

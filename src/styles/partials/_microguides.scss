@@ -371,3 +371,46 @@
   margin: 0;
   padding: 0;
 }
+/* ——— Related micro-guides ——— */
+.mg-related {
+  margin-block: clamp(24px, 3vw, 40px);
+  padding-block: clamp(8px, 1.5vw, 12px);
+
+  .mg-related__title {
+    font-size: clamp(18px, 2vw, 22px);
+    font-weight: 700;
+    margin: 0 0 clamp(12px, 1.8vw, 18px);
+  }
+
+  .mg-related__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(12px, 2vw, 20px);
+
+    @media (max-width: 900px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 600px) { grid-template-columns: 1fr; }
+  }
+
+  .mg-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    text-decoration: none;
+    background: #fff;
+    transition: transform .15s ease, box-shadow .15s ease;
+
+    @media (prefers-color-scheme: dark) {
+      background: #121212;
+      border-color: rgba(255,255,255,0.14);
+    }
+
+    &:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+
+        .mg-card__media {
+          aspect-ratio: 16 / 9;
+          /* Add background or other properties here if needed */
+        }
+      }
+    }

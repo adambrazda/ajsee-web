@@ -242,6 +242,16 @@
         "summary": "Krátky mikrosprievodca AJSEE: ako čítať seating mapu a neurobiť chybu pri výbere miest."
       }
     }
-  }
+  },
+      "share": {
+      "label": "Zdieľať",
+      "system": "Zdieľať…",
+      "twitter": "Zdieľať na X",
+      "facebook": "Zdieľať na Facebooku",
+      "linkedin": "Zdieľať na LinkedIne",
+      "whatsapp": "Zdieľať na WhatsApp",
+      "copy": "Skopírovať odkaz",
+      "copied": "Odkaz skopírovaný"
+    }
 }
 

@@ -242,5 +242,15 @@
         "summary": "A short AJSEE micro-guide: how to read seating maps and avoid mistakes when choosing seats."
       }
     }
-  }
+  },
+  "share": {
+      "label": "Share",
+      "system": "Share…",
+      "twitter": "Share on X",
+      "facebook": "Share on Facebook",
+      "linkedin": "Share on LinkedIn",
+      "whatsapp": "Share on WhatsApp",
+      "copy": "Copy link",
+      "copied": "Link copied"
+    }
 }

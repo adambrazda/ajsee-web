@@ -144,7 +144,7 @@ function upsertMeta(attr, value, content) {
           <p class="mg-kicker">AJSEE vysvětluje</p>
           <h1 class="mg-title" itemprop="headline">${escapeHtml(data.title)}</h1>
           <p class="mg-meta"><span>${Number(data.readingMinutes || 5)} min čtení</span></p>
-          <div class="mg-actions"><button class="btn-share" type="button">Sdílet</button></div>
+          <div class="mg-actions"></div>
         </div>
         ${heroMedia}
       </header>
@@ -182,46 +182,18 @@ function upsertMeta(attr, value, content) {
   `;
   root.hidden = false;
 
-  // --- SHARE MINI-PANEL (pod hero) ---
-  const heroEl = $('.mg-hero', root);
-  // Použij placeholder z HTML, nebo vytvoř nový
-  let shareMount = document.getElementById('mg-share');
-  if (!shareMount) {
-    shareMount = document.createElement('div');
-    shareMount.id = 'mg-share';
-  } else {
-    shareMount.removeAttribute('aria-hidden');
+  // --- SHARE (inline v hero actions, bez duplicit) ---
+  const actionsEl = root.querySelector('.mg-actions');
+  if (actionsEl) {
+    actionsEl.textContent = '';
+    renderSharePanel({
+      slug: data.slug || slug,
+      language: lang,
+      title: data.title,
+      container: actionsEl,
+      variant: 'inline'
+    });
   }
-  // Přesuň mount point hned za hero
-  if (heroEl) heroEl.insertAdjacentElement('afterend', shareMount);
-
-  // Vyrenderuj panel
-  renderSharePanel({
-    slug: data.slug || slug,
-    language: lang,
-    title: data.title,
-    container: shareMount
-  });
-
-  // Zároveň zachováme stávající tlačítko v hero:
-  const shareBtn = $('.btn-share', root);
-  shareBtn?.addEventListener('click', async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: data.title, text: data.summary, url: location.href });
-        gEvent('mg_share_click', { network: 'system', slug: data.slug || slug });
-      } else if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(location.href);
-        shareBtn.textContent = 'Zkopírováno';
-        gEvent('mg_share_click', { network: 'copy', slug: data.slug || slug });
-        setTimeout(() => { shareBtn.textContent = 'Sdílet'; }, 1200);
-      } else {
-        // Fallback (ne-secure kontext)
-        window.prompt('Zkopírujte odkaz:', location.href);
-        gEvent('mg_share_click', { network: 'copy', slug: data.slug || slug });
-      }
-    } catch { /* zavření sdílení je OK */ }
-  });
 
   // --- RELATED (pod content/footer CTA, před mobile nav) ---
   const relatedMount = document.createElement('section');

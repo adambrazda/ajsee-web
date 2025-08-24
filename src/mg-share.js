@@ -1,5 +1,5 @@
 // /src/mg-share.js
-export function renderSharePanel({ slug, language, title, container }) {
+export function renderSharePanel({ slug, language, title, container, variant = 'block' }) {
   if (!container) return;
 
   // Lokální (namespacované) styly – ochrana proti globálnímu svg { width:100% } apod.
@@ -14,13 +14,11 @@ export function renderSharePanel({ slug, language, title, container }) {
     window.location.origin
   ).toString();
 
-  // i18n helper s fallbacky (když loader vrátí původní klíč nebo prázdno)
+  // i18n helper s fallbacky
   const i18n = window.i18n ? window.i18n(language) : (k) => k;
   const t = (key, fallback) => {
-    try {
-      const v = i18n(key);
-      return !v || v === key ? fallback : v;
-    } catch { return fallback; }
+    try { const v = i18n(key); return !v || v === key ? fallback : v; }
+    catch { return fallback; }
   };
 
   const labelShare    = t('mg.share.label',    'Share');
@@ -33,29 +31,30 @@ export function renderSharePanel({ slug, language, title, container }) {
   const labelSystem   = t('mg.share.system',   'Share…');
 
   const el = document.createElement('div');
-  el.className = 'mg-share';
+  const isInline = variant === 'inline';
+  el.className = 'mg-share' + (isInline ? ' mg-share--inline' : '');
   el.setAttribute('role', 'region');
   el.setAttribute('aria-label', labelShare);
 
   const btns = document.createElement('div');
   btns.className = 'mg-share__btns';
 
-  const label = document.createElement('span');
-  label.className = 'mg-share__label';
-  label.textContent = labelShare;
+  // Label renderuj jen v „block“ variantě (pod hero); v inline je skrytý
+  if (!isInline) {
+    const label = document.createElement('span');
+    label.className = 'mg-share__label';
+    label.textContent = labelShare;
+    el.appendChild(label);
+  }
 
   // --- Analytics helper
   function sendAnalytics(network) {
     const payload = { event: 'mg_share_click', network, slug, language };
-    if (window.dataLayer && typeof window.dataLayer.push === 'function') {
-      window.dataLayer.push(payload);
-    }
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'mg_share_click', { network, slug, language });
-    }
+    if (window.dataLayer?.push) window.dataLayer.push(payload);
+    if (typeof window.gtag === 'function') window.gtag('event', 'mg_share_click', payload);
   }
 
-  // --- Copy helper (se secure + non-secure fallbackem)
+  // --- Copy helper
   async function copyToClipboard(text) {
     try {
       if (navigator.clipboard && window.isSecureContext) {
@@ -72,10 +71,7 @@ export function renderSharePanel({ slug, language, title, container }) {
         document.body.removeChild(ta);
       }
       toast(labelCopied);
-    } catch {
-      // poslední možnost
-      window.prompt(labelCopy, text);
-    }
+    } catch { window.prompt(labelCopy, text); }
   }
 
   // --- Toast
@@ -177,11 +173,10 @@ export function renderSharePanel({ slug, language, title, container }) {
   });
   btns.appendChild(bCopy);
 
-  el.appendChild(label);
   el.appendChild(btns);
   container.appendChild(el);
 
-  // --- SVG ikony (inline, bez závislostí)
+  // --- SVG ikony
   function xIcon() {
     return `<svg viewBox="0 0 24 24" class="mg-share__icon" aria-hidden="true"><path d="M18.9 3H21l-6.54 7.47L22 21h-5.98l-4.68-5.67L5.9 21H3l7.03-8.03L2 3h6.1l4.22 5.11L18.9 3Zm-2.1 16h1.65L8.27 5H6.57l10.23 14Z"/></svg>`;
   }
@@ -208,6 +203,7 @@ export function renderSharePanel({ slug, language, title, container }) {
     if (document.getElementById('mg-share-styles')) return;
     const css = `
       .mg-share{display:flex;align-items:center;gap:12px;margin:12px 0 0}
+      .mg-share--inline{margin:0} /* inline v hero bez extra mezery */
       .mg-share__label{font-weight:600;font-size:14px;opacity:.9}
       .mg-share__btns{display:flex;flex-wrap:wrap;gap:8px}
       .mg-share__btn{appearance:none;border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:999px;
@@ -216,7 +212,7 @@ export function renderSharePanel({ slug, language, title, container }) {
       .mg-share__btn:hover{box-shadow:0 2px 10px rgba(0,0,0,.08);transform:translateY(-1px)}
       .mg-share__btn:active{transform:translateY(0)}
       .mg-share__btn--system{border-style:dashed}
-      .mg-share svg{width:auto;height:auto} /* neutralizace globálního svg {width:100%} */
+      .mg-share svg{width:auto;height:auto}
       .mg-share__icon{width:20px;height:20px;display:block}
       .mg-share__toast{position:fixed;inset:auto 16px 16px auto;background:#111;color:#fff;
         padding:8px 10px;border-radius:10px;font-size:12px;opacity:0;transform:translateY(6px);

@@ -11,21 +11,21 @@
     {
       "id": "s1",
       "heading": "Poplatky, které mění finální cenu",
-      "body": "- Základní cena + service fee + případně payment/delivery → počítá se finální částka.\n\n- Dynamic pricing (u koncertů běžné): cena se mění podle poptávky.\n\n- Zkontroluj měnu / DPH / převodní kurz.\n\n- Tip: Porovnávej finální cenu, ne jen „od“ částky.",
+      "body": "- Základní cena + service fee + případně payment/delivery → počítá se finální částka.\n- Dynamic pricing (u koncertů běžné): cena se mění podle poptávky.\n- Zkontroluj měnu / DPH / převodní kurz.\n- Tip: Porovnávej finální cenu, ne jen „od“ částky.",
       "image": "/uploads/step-02.svg",
       "alt": "Ikona účtenky/poplatků"
     },
     {
       "id": "s2",
       "heading": "Přenos a vrácení vstupenek",
-      "body": "- Transfer = změna držitele; sleduj, zda je povolený a do kdy.\n\n- Name on ticket: někdy nutná shoda s dokladem.\n\n- Refund policy: zrušení vs. odložení (často bez nároku na vrácení).\n\n- Pojištění / storno přidej jen pokud dává smysl; chargeback je až poslední možnost.",
+      "body": "- Transfer = změna držitele; sleduj, zda je povolený a do kdy.\n- Name on ticket: někdy nutná shoda s dokladem.\n- Refund policy: zrušení vs. odložení (často bez nároku na vrácení).\n- Pojištění / storno přidej jen pokud dává smysl; chargeback je až poslední možnost.",
       "image": "/uploads/step-03.svg",
       "alt": "Ikona přenosu (šipky)"
     },
     {
       "id": "s3",
       "heading": "Checklist před zaplacením",
-      "body": "- Jasný prodejce, kontakty, obchodní podmínky, GDPR.\n\n- Platební brána s 3-D Secure, karta > převod.\n\n- Shrnutí objednávky (sektory/řady/místa, datum, měna, poplatky).\n\n- Po nákupu: potvrzovací e-mail, ulož do Wallet / stáhni oficiální app.\n\n- Red flags: komunikace jen přes WhatsApp, požadavek na fotku dokladu, podezřele levné „screeshoty“ PDF, poplatky >30 %, žádné podmínky/kontakty.",
+      "body": "- Jasný prodejce, kontakty, obchodní podmínky, GDPR.\n- Platební brána s 3-D Secure, karta > převod.\n- Shrnutí objednávky (sektory/řady/místa, datum, měna, poplatky).\n- Po nákupu: potvrzovací e-mail, ulož do Wallet / stáhni oficiální app.\n- Red flags: komunikace jen přes WhatsApp, požadavek na fotku dokladu, podezřele levné „screeshoty“ PDF, poplatky >30 %, žádné podmínky/kontakty.",
       "image": "/uploads/step-05.svg",
       "alt": "Ikona kalendáře/vrácení"
     }

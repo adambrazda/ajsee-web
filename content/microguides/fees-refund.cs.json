@@ -1,0 +1,18 @@
+{
+  "summary": "test",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "test",
+      "body": "test",
+      "alt": "test"
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "cs",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/fees-refund-cover.webp",
+  "title": "tesst",
+  "category": "theatre"
+}

@@ -1,0 +1,41 @@
+{
+  "summary": "Jak wybrać zaufanego sprzedawcę, uniknąć ukrytych opłat i znać zasady przeniesienia/zwrotu.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Dlaczego to ważne",
+      "body": "Patrz nie tylko na cenę nominalną — sprawdź **cenę końcową** i warunki. Przed zakupem zweryfikuj sprzedawcę, limity oraz co dzieje się przy zmianie terminu.",
+      "image": "step-04.svg",
+      "alt": "Ikona: opłaty i zasady przeniesienia/zwrotu."
+    },
+    {
+      "id": "fees",
+      "heading": "Opłaty, które potrafią zaskoczyć",
+      "body": "- opłaty serwisowe/płatnicze/dostawy (i **kiedy** są doliczane),\n- różnica między koszykiem a podsumowaniem,\n- waluta i przewalutowanie (FX).",
+      "image": "step-02.svg",
+      "alt": "Ikona: opłaty serwisowe, płatnicze i dostawy."
+    },
+    {
+      "id": "transfer-refund",
+      "heading": "Przeniesienie biletu i zwrot",
+      "body": "- czy można **przenieść** bilet na inne nazwisko? (do kiedy i za ile),\n- **zwroty** przy odwołaniu/przesunięciu,\n- kto jest „merchant of record” i kto zwraca pieniądze.",
+      "image": "step-03.svg",
+      "alt": "Ikona: przeniesienie biletu i zwrot."
+    },
+    {
+      "id": "evidence",
+      "heading": "Zachowaj dowód (Wskazówka)",
+      "body": "> **Wskazówka:** Zrób **zrzut ekranu** ceny końcowej i warunków — przyda się przy reklamacji.",
+      "image": "step-05.svg",
+      "alt": "Ikona: zrzut ekranu/potwierdzenie."
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "pl",
+  "coverAlt": "Ilustracja: opłaty oraz zasady przeniesienia/zwrotu.",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "fees-refund-cover.webp",
+  "title": "Gdzie kupić bezpiecznie",
+  "category": "theatre"
+}

@@ -1,0 +1,42 @@
+{
+  "summary": "How to choose a trustworthy seller, understand fees that change the final price, and when to consider transfer or refunds.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Where to buy (official channels)",
+      "body": "Prefer official event/organiser/venue sites or primary ticketing partners.\n\nVerify the domain (correct brand, HTTPS), company details, contacts & T&Cs.\n\nVerified resale can be fine; classifieds/marketplaces are risky (duplicate PDFs, scams).\n\nBe wary of too-cheap prices and payments outside the gateway.",
+      "alt": "Secure purchase icon (shield)",
+      "image": "/uploads/step-04.svg"
+    },
+    {
+      "id": "s1",
+      "heading": "Fees that change the final price",
+      "body": "Base price + service fee + possible payment/delivery fees → watch the final amount.\n\nDynamic pricing is common for concerts.\n\nCheck currency / VAT / FX rate used.\n\nTip: Compare the final price, not the “from” price.",
+      "image": "/uploads/step-02.svg",
+      "alt": "Receipt/fees icon"
+    },
+    {
+      "id": "s2",
+      "heading": "Transfers & refunds",
+      "body": "Transfer = changing the ticket holder; check if allowed and the deadline.\n\nName on ticket may need to match an ID.\n\nRefund policy: cancellation vs postponement (often no refund).\n\nConsider insurance only if useful; chargeback is a last resort.",
+      "image": "/uploads/step-03.svg",
+      "alt": "Transfer (arrows) icon"
+    },
+    {
+      "id": "s3",
+      "heading": "Pre-payment checklist",
+      "body": "Clear seller identity, contacts, T&Cs, privacy.\n\n3-D Secure card payment preferred.\n\nOrder summary (blocks/rows/seats, date, currency, all fees).\n\nAfter purchase: confirmation email, add to Wallet / official app.\n\nRed flags: WhatsApp-only, asking for ID photo, suspicious PDFs, fees >30%, no T&Cs or contacts.",
+      "image": "/uploads/step-05.svg",
+      "alt": "Calendar/refund icon"
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "en",
+  "coverAlt": "safe icon",
+  "status": "published",
+  "readingMinutes": 5,
+  "ctaQuestion": "Your trusted sellers or red flags to share? Tell us!",
+  "cover": "/uploads/fees-refund-cover.webp",
+  "title": "Where to buy safely",
+  "category": "theatre"
+}

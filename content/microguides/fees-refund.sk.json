@@ -1,0 +1,42 @@
+{
+  "summary": "Ako si vybrať dôveryhodného predajcu, aké poplatky menia výslednú cenu a kedy riešiť prenos či vrátenie.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Kde nakupovať (oficiálne kanály)",
+      "body": "Uprednostni oficiálny web podujatia / organizátora / haly alebo primárny ticketing.\n\nSkontroluj doménu (značka, HTTPS), údaje firmy, kontakt a podmienky.\n\nOverený resale môže byť v poriadku; bazoše/inzeráty sú riziko.\n\nPozor na príliš nízke ceny a platby mimo brány.",
+      "alt": "Ikona bezpečného nákupu (štít)",
+      "image": "/uploads/step-04.svg"
+    },
+    {
+      "id": "s1",
+      "heading": "Poplatky, ktoré hýbu cenou",
+      "body": "Základ + service fee + prípadné payment/delivery → rozhoduje finálna suma.\n\nDynamic pricing je pri koncertoch bežný.\n\nPozri menu / DPH / kurz.\n\nTip: porovnávaj finálnu cenu, nie „od“.",
+      "image": "/uploads/step-02.svg",
+      "alt": "Ikona účtenky/poplatkov"
+    },
+    {
+      "id": "s2",
+      "heading": "Prenos a vrátenie",
+      "body": "Transfer = zmena držiteľa; zisti, či je povolený a dokedy.\n\nMeno na lístku môže musieť sedieť s dokladom.\n\nRefund policy: zrušenie vs preloženie (často bez nároku).\n\nPoistenie len keď dáva zmysel; chargeback je posledná možnosť.",
+      "image": "/uploads/step-03.svg",
+      "alt": "Ikona prenosu (šípky)"
+    },
+    {
+      "id": "s3",
+      "heading": "Kontrolný zoznam pred platbou",
+      "body": "Jasný predajca, kontakt, obchodné podmienky, GDPR.\n\n3-D Secure platba kartou.\n\nZhrnutie objednávky (bloky/rady/miesta, dátum, mena, poplatky).\n\nPo nákupe: potvrdzovací e-mail, pridaj do Wallet / oficiálnej appky.\n\nČervené vlajky: len WhatsApp, žiadosť o fotku dokladu, podozrivé PDF, poplatky >30 %, bez podmienok/kontaktu.",
+      "image": "/uploads/step-05.svg",
+      "alt": "Ikona kalendára/vrátenia"
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "sk",
+  "coverAlt": "safe icon",
+  "status": "published",
+  "readingMinutes": 5,
+  "ctaQuestion": "Máš tip na overených predajcov alebo varovania? Podeľ sa!",
+  "cover": "/uploads/fees-refund-cover.webp",
+  "title": "Kde kúpiť bezpečne",
+  "category": "theatre"
+}

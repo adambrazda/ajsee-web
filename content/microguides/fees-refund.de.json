@@ -4,28 +4,28 @@
     {
       "id": "intro",
       "heading": "Wo kaufen (offizielle Kanäle)",
-      "body": "Bevorzuge offizielle Event-/Veranstalter-/Venue-Seiten oder primäre Ticketpartner.\n\nDomain prüfen (Marke, HTTPS), Firmendaten, Kontakt & AGB.\n\nVerifizierter Weiterverkauf ist okay; Kleinanzeigen/Foren sind riskant.\n\nVorsicht bei zu günstigen Preisen oder Zahlungen außerhalb der Zahlungsseite.",
+      "body": "- Bevorzuge offizielle Event-/Veranstalter-/Venue-Seiten oder primäre Ticketpartner.\n- Domain prüfen (Marke, HTTPS), Firmendaten, Kontakt & AGB.\n- Verifizierter Weiterverkauf ist okay; Kleinanzeigen/Foren sind riskant.\n- Vorsicht bei zu günstigen Preisen oder Zahlungen außerhalb der Zahlungsseite.",
       "alt": "Sicherheit/Shield-Icon",
       "image": "/uploads/step-04.svg"
     },
     {
       "id": "s1",
       "heading": "Gebühren, die den Endpreis ändern",
-      "body": "Basispreis + Service Fee + ggf. Zahlungs-/Versandgebühren → entscheidend ist der Endbetrag.\n\nDynamic Pricing bei Konzerten üblich.\n\nWährung / MwSt. / Wechselkurs prüfen.\n\nTipp: Immer den Endpreis vergleichen.",
+      "body": "- Basispreis + Service Fee + ggf. Zahlungs-/Versandgebühren → entscheidend ist der Endbetrag.\n- Dynamic Pricing bei Konzerten üblich.\n- Währung / MwSt. / Wechselkurs prüfen.\n- Tipp: Immer den Endpreis vergleichen.",
       "image": "/uploads/step-02.svg",
       "alt": "Beleg/Gebühren-Icon"
     },
     {
       "id": "s2",
       "heading": "Transfer & Erstattungen",
-      "body": "Transfer = Ticketinhaber ändern; prüfen, ob erlaubt und bis wann.\n\nName auf dem Ticket kann mit Ausweis übereinstimmen müssen.\n\nRefund Policy: Absage vs. Verschiebung (oft kein Anspruch).\n\nVersicherung nur bei Bedarf; Chargeback ist die letzte Option.",
+      "body": "- Transfer = Ticketinhaber ändern; prüfen, ob erlaubt und bis wann.\n- Name auf dem Ticket kann mit Ausweis übereinstimmen müssen.\n- Refund Policy: Absage vs. Verschiebung (oft kein Anspruch).\n- Versicherung nur bei Bedarf; Chargeback ist die letzte Option.",
       "image": "/uploads/step-03.svg",
       "alt": "Transfer/ Pfeile-Icon"
     },
     {
       "id": "s3",
       "heading": "Checkliste vor der Zahlung",
-      "body": "Klarer Verkäufer, Kontakt, AGB, Datenschutz.\n\n3-D-Secure-Zahlung bevorzugen.\n\nBestellübersicht (Blöcke/Reihen/Plätze, Datum, Währung, Gebühren).\n\nDanach: Bestätigungsmail, in Wallet / offizielle App.\n\nRed Flags: nur WhatsApp, Ausweiskopie verlangt, PDF-Screenshots, Gebühren >30 %, keine AGB/Kontakte.",
+      "body": "- Klarer Verkäufer, Kontakt, AGB, Datenschutz.\n- 3-D-Secure-Zahlung bevorzugen.\n- Bestellübersicht (Blöcke/Reihen/Plätze, Datum, Währung, Gebühren).\n- Danach: Bestätigungsmail, in Wallet / offizielle App.\n- Red Flags: nur WhatsApp, Ausweiskopie verlangt, PDF-Screenshots, Gebühren >30 %, keine AGB/Kontakte.",
       "image": "/uploads/step-05.svg",
       "alt": "Kalender/Erstattung-Icon"
     }

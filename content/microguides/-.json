@@ -1,0 +1,19 @@
+{
+  "summary": "Jak vybrat důvěryhodného prodejce, nejčastější poplatky a jak jim předejít.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Úvod",
+      "body": "test\ntest",
+      "image": "step-01.svg"
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "cs",
+  "coverAlt": "Ilustrační foto bezpečnosti a zámku",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "fees-refund-cover.webp",
+  "title": "Kde koupit bezpečně",
+  "category": "theatre"
+}

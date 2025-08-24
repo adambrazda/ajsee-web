@@ -1,0 +1,42 @@
+{
+  "summary": "Hogyan válassz megbízható eladót, milyen díjak növelik a végösszeget, és mikor érdemes átadásról vagy visszatérítésről dönteni.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Hol vásárolj (hivatalos csatornák)",
+      "body": "Előnyben a hivatalos esemény/szervező/venue oldal és a primer jegyértékesítők.\n\nEllenőrizd a domaint (HTTPS, márkanév), cégadatokat, elérhetőséget és ÁSZF-et.\n\nHitelesített resale rendben lehet; apróhirdetések/ fórumok kockázatosak.\n\nGyanús a túl olcsó ár és a kapun kívüli fizetés.",
+      "alt": "Biztonságos vásárlás ikon (pajzs)",
+      "image": "/uploads/step-04.svg"
+    },
+    {
+      "id": "s1",
+      "heading": "Díjak, amelyek módosítják a végösszeget",
+      "body": "Alapár + szolgáltatási díj + esetleges fizetési/szállítási díj → a végösszeg számít.\n\nDinamikus árazás koncerteknél gyakori.\n\nNézd meg a valutát / áfát / árfolyamot.\n\nTipp: mindig a végösszeget hasonlítsd.",
+      "image": "/uploads/step-02.svg",
+      "alt": "Nyugta/díjak ikon"
+    },
+    {
+      "id": "s2",
+      "heading": "Átadás és visszatérítés",
+      "body": "Transfer = jegytulajdonos csere; engedélyezett-e és meddig?\n\nNév a jegyen: kérhetik az igazolvánnyal való egyezést.\n\nVisszatérítési szabályok: lemondás vs halasztás (gyakran nincs vissza).\n\nBiztosítás csak ha kell; chargeback a legutolsó opció.",
+      "image": "/uploads/step-03.svg",
+      "alt": "Átadás/nyilak ikon"
+    },
+    {
+      "id": "s3",
+      "heading": "Fizetés előtti ellenőrzőlista",
+      "body": "Egyértelmű eladó, elérhetőség, ÁSZF, adatvédelem.\n\n3-D Secure kártyás fizetés.\n\nRendelés összegzése (szektor/sor/ülés, dátum, valuta, díjak).\n\nVásárlás után: visszaigazoló e-mail, add a Wallethez / hivatalos apphoz.\n\nVeszélyjelek: csak WhatsApp, személyi-fotó kérése, gyanús PDF, >30% díjak, nincs ÁSZF/kapcsolat.",
+      "image": "/uploads/step-05.svg",
+      "alt": "Naptár/visszatérítés ikon"
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "hu",
+  "coverAlt": "safe icon",
+  "status": "published",
+  "readingMinutes": 5,
+  "ctaQuestion": "Van bevált eladód vagy intő jel, amit megosztanál? Írd meg!",
+  "cover": "/uploads/fees-refund-cover.webp",
+  "title": "Hol vásárolj biztonságosan",
+  "category": "theatre"
+}

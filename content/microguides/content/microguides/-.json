@@ -7,6 +7,13 @@
       "body": "Neřeš jen nominální cenu — sleduj \\*\\*celkovou\\*\\* částku a podmínky. Ještě před nákupem si ověř, kdo je obchodník, jaké jsou limity a co se děje při změně termínu.",
       "image": "step-04.svg",
       "alt": "Ikona poplatků a pravidel převodu/refundu."
+    },
+    {
+      "id": "fees",
+      "heading": "Poplatky, které umí překvapit",
+      "body": "- servisní/platební/doručovací poplatky (a **kdy** se přičítají),\n- rozdíl mezi cenou v košíku a rekapitulací,\n- měna a kurz (konverzní poplatky).\n",
+      "image": "step-02.svg",
+      "alt": "Ikona poplatků (servisní, platební, doručení)."
     }
   ],
   "slug": "fees-refund",

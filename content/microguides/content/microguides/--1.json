@@ -17,17 +17,17 @@
     },
     {
       "id": "transfer-refund",
-      "heading": "Převod jména & refundace",
-      "body": "- lze **převést** vstupenku na jiné jméno? (dokdy a za kolik),\n- **refund** při zrušení/změně termínu,\n- kdo je „merchant of record“ (pořadatel vs. marketplace) a kdo peníze vrací.\n",
+      "heading": "Transfer & refund",
+      "body": "- can you **transfer** the ticket to another name? (deadline and fee),\n- **refunds** on cancellation/reschedule,\n- who is the merchant of record (organiser vs. marketplace) and who issues the refund.",
       "image": "step-03.svg",
-      "alt": "Ikona převodu vstupenky a refundace."
+      "alt": "Icon: ticket transfer and refund."
     },
     {
       "id": "evidence",
-      "heading": "Důkaz se hodí (Tip)",
-      "body": "> **Tip:** Udělej si **screenshot** souhrnu ceny a podmínek — hodí se při případné reklamaci.",
+      "heading": "Keep proof (Tip)",
+      "body": "> **Tip:** Take a **screenshot** of the final price and terms — it helps if you need to dispute later.",
       "image": "step-05.svg",
-      "alt": "Ikona screenshotu s potvrzením."
+      "alt": "Icon: screenshot/confirmation."
     }
   ],
   "slug": "fees-refund",

@@ -1,18 +1,20 @@
 {
-  "summary": "test",
+  "summary": "Jak vybrat důvěryhodného prodejce, jaké poplatky hýbou cenou a kdy řešit přenos či vrácení vstupenky.",
   "steps": [
     {
       "id": "intro",
-      "heading": "test",
-      "body": "test",
-      "alt": "test"
+      "heading": "Kde nakupovat (oficiální kanály)",
+      "body": "Preferuj oficiální web akce / pořadatele / venue nebo primární ticketing (autorizovaný partner).\n\nOvěř doménu (správný název, HTTPS), IČO/fakturační údaje, kontakty a podmínky.\n\n„Verified resale“ je OK, bazar a inzerce ne (riziko podvodu / duplicitních PDF).\n\nPozor na „příliš výhodné“ ceny a platby mimo bránu.",
+      "alt": "Ikona bezpečného nákupu (štít/pojíšťka)",
+      "image": "/uploads/step-04.svg"
     }
   ],
   "slug": "fees-refund",
   "lang": "cs",
+  "coverAlt": "ikona bezpečí",
   "status": "published",
   "readingMinutes": 5,
   "cover": "/uploads/fees-refund-cover.webp",
-  "title": "tesst",
+  "title": "Kde koupit bezpečně",
   "category": "theatre"
 }

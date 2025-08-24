@@ -1,0 +1,41 @@
+{
+  "summary": "Ako si vybrať dôveryhodného predajcu, nepreplatiť poplatky a poznať pravidlá prevodu/refundácie.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Prečo to riešiť",
+      "body": "Nezeraj len na nominálnu cenu — kontroluj **finálnu** sumu a podmienky. Pred nákupom over obchodníka, limity a čo sa deje pri zmene termínu.",
+      "image": "step-04.svg",
+      "alt": "Ikona: poplatky a pravidlá prevodu/refundácie."
+    },
+    {
+      "id": "fees",
+      "heading": "Poplatky, ktoré vedia prekvapiť",
+      "body": "- servisné/platobné/doručovacie poplatky (a **kedy** sa pripočítajú),\n- rozdiel medzi košíkom a rekapituláciou,\n- mena a kurz (konverzné poplatky).",
+      "image": "step-02.svg",
+      "alt": "Ikona: servisné, platobné a doručovacie poplatky."
+    },
+    {
+      "id": "transfer-refund",
+      "heading": "Prevod mena & refundácia",
+      "body": "- dá sa vstupenka **previesť** na iné meno? (dokedy a za koľko),\n- **refundácia** pri zrušení/presune,\n- kto je „merchant of record“ a kto peniaze vracia.",
+      "image": "step-03.svg",
+      "alt": "Ikona: prevod vstupenky a refundácia."
+    },
+    {
+      "id": "evidence",
+      "heading": "Dôkaz sa zíde (Tip)",
+      "body": "> **Tip:** Urob si **screenshot** finálnej ceny a podmienok — pomôže pri reklamácii.",
+      "image": "step-05.svg",
+      "alt": "Ikona: screenshot/potvrdenie."
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "sk",
+  "coverAlt": "Ilustrácia: poplatky a pravidlá prevodu/refundácie.",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "fees-refund-cover.webp",
+  "title": "Kde kúpiť bezpečne",
+  "category": "theatre"
+}

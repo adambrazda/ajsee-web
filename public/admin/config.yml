@@ -26,7 +26,7 @@ collections:
         format: json
         editor:
           preview: false
-        sortable_fields: ['slug', 'language', 'status']
+        sortable_fields: ["slug", "language", "status"]
         fields:
           - label: "Položky"
             name: "items"
@@ -79,10 +79,10 @@ collections:
     create: true
     format: json
     identifier_field: "title"
-    slug: "{{fields.slug}}.{{fields.lang}}"
-    path: "content/microguides/{{fields.slug}}.{{fields.lang}}"
-    sortable_fields: ['slug', 'lang', 'title']
-    search_fields: ['slug', 'title', 'summary']
+    slug: "{{fields.slug}}.{{fields.lang}}"     # výsledný název souboru, např. fees-refund.cs.json
+    # POZOR: žádné 'path:' zde – 'folder' už určuje cestu. Soubor skončí v content/microguides/.
+    sortable_fields: ["slug", "lang", "title"]
+    search_fields: ["slug", "title", "summary"]
     fields:
       - label: "Slug"
         name: "slug"

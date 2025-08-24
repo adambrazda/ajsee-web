@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "language": "cs",
+      "status": "published",
+      "category": "theatre",
+      "slug": "seating-map",
+      "cover": "/uploads/cover.webp",
+      "title": "Jak číst seating mapu",
+      "summary": "Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst."
+    }
+  ]
+}

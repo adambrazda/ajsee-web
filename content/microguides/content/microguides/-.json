@@ -1,5 +1,14 @@
 {
   "summary": "Jak vybrat důvěryhodného prodejce, nepřepálit poplatky a mít jistotu převodu/refundu.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Proč to řešit",
+      "body": "Neřeš jen nominální cenu — sleduj \\*\\*celkovou\\*\\* částku a podmínky. Ještě před nákupem si ověř, kdo je obchodník, jaké jsou limity a co se děje při změně termínu.",
+      "image": "step-04.svg",
+      "alt": "Ikona poplatků a pravidel převodu/refundu."
+    }
+  ],
   "slug": "fees-refund",
   "lang": "cs",
   "coverAlt": "Ilustrace: poplatky a převod/refundace vstupenek.",

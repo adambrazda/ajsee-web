@@ -1,0 +1,14 @@
+# Základ – Git normalizuje text soubory na LF v repozitáři
+* text=auto
+
+# Vynucení LF pro textové soubory
+*.{js,ts,jsx,tsx,css,scss,sass,html,md,json,yml,yaml} text eol=lf
+*.svg text eol=lf
+
+# Binárky
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.pdf binary

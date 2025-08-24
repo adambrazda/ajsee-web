@@ -1,0 +1,42 @@
+{
+  "summary": "Jak rozpoznać wiarygodnego sprzedawcę, jakie opłaty wpływają na cenę i kiedy rozważyć transfer lub zwrot biletu.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Gdzie kupować (oficjalne kanały)",
+      "body": "Stawiaj na oficjalne strony wydarzenia / organizatora / obiektu lub pierwotnych partnerów biletowych.\n\nSprawdź domenę (HTTPS, poprawna marka), dane firmy, kontakt i regulamin.\n\nZweryfikowany resale bywa OK; ogłoszenia/bazarki są ryzykowne.\n\nUważaj na zbyt tanie oferty i płatności poza bramką.",
+      "alt": "Ikona bezpiecznego zakupu (tarcza)",
+      "image": "/uploads/step-04.svg"
+    },
+    {
+      "id": "s1",
+      "heading": "Opłaty zmieniające cenę końcową",
+      "body": "Cena bazowa + service fee + ewentualne opłaty płatnicze/dostawy → liczy się kwota końcowa.\n\nDynamic pricing często przy koncertach.\n\nSprawdź walutę / VAT / kurs wymiany.\n\nWskazówka: porównuj cenę końcową, nie tylko „od”.",
+      "image": "/uploads/step-02.svg",
+      "alt": "Ikona paragonu/opłat"
+    },
+    {
+      "id": "s2",
+      "heading": "Transfer i zwroty",
+      "body": "Transfer = zmiana posiadacza; sprawdź, czy dozwolone i do kiedy.\n\nImię na bilecie może wymagać zgodności z dokumentem.\n\nPolityka zwrotów: odwołanie vs przełożenie (często bez zwrotu).\n\nUbezpieczenie tylko gdy ma sens; chargeback to ostateczność.",
+      "image": "/uploads/step-03.svg",
+      "alt": "Ikona transferu (strzałki)"
+    },
+    {
+      "id": "s3",
+      "heading": "Lista kontrolna przed zapłatą",
+      "body": "Wiarygodny sprzedawca, kontakt, regulamin, RODO.\n\nPłatność 3-D Secure kartą.\n\nPodsumowanie zamówienia (sektory/rzędy/miejsca, data, waluta, opłaty).\n\nPo zakupie: e-mail potwierdzający, dodaj do Wallet / oficjalnej aplikacji.\n\nCzerwone flagi: tylko WhatsApp, prośba o zdjęcie dokumentu, podejrzane PDF-y, opłaty >30%, brak regulaminu/kontaktu.",
+      "image": "/uploads/step-05.svg",
+      "alt": "Ikona kalendarza/zwrotu"
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "pl",
+  "coverAlt": "safe icon",
+  "status": "published",
+  "readingMinutes": 5,
+  "ctaQuestion": "Masz sprawdzonych sprzedawców lub ostrzeżenia? Podziel się!",
+  "cover": "/uploads/fees-refund-cover.webp",
+  "title": "Gdzie kupować bezpiecznie",
+  "category": "theatre"
+}

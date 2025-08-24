@@ -1,0 +1,41 @@
+{
+  "summary": "Hogyan válassz megbízható eladót, kerüld el a rejtett díjakat, és ismerd az átírás/visszatérítés szabályait.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Miért fontos",
+      "body": "Ne csak a névleges árat nézd — ellenőrizd a **végösszeget** és a feltételeket. Vásárlás előtt nézd meg, ki a kereskedő, milyen limitek vannak, és mi történik időpontváltozáskor.",
+      "image": "step-04.svg",
+      "alt": "Ikon: díjak és átírás/visszatérítés."
+    },
+    {
+      "id": "fees",
+      "heading": "Díjak, amelyek összeadódnak",
+      "body": "- szolgáltatási/fizetési/kézbesítési díjak (és **mikor** jelennek meg),\n- kosárár vs. végső összesítés,\n- deviza és átváltási költségek.",
+      "image": "step-02.svg",
+      "alt": "Ikon: szolgáltatási, fizetési és kézbesítési díjak."
+    },
+    {
+      "id": "transfer-refund",
+      "heading": "Átírás és visszatérítés",
+      "body": "- **átírható**-e a jegy más névre? (meddig és mennyiért),\n- **visszatérítés** lemondás/áthelyezés esetén,\n- ki a „merchant of record” és ki téríti vissza a pénzt.",
+      "image": "step-03.svg",
+      "alt": "Ikon: jegyátírás és visszatérítés."
+    },
+    {
+      "id": "evidence",
+      "heading": "Őrizd meg a bizonyítékot (Tipp)",
+      "body": "> **Tipp:** Készíts **képernyőmentést** a végösszegről és a feltételekről — vitás esetben jól jön.",
+      "image": "step-05.svg",
+      "alt": "Ikon: képernyőmentés/megerősítés."
+    }
+  ],
+  "slug": "fees-refund",
+  "lang": "hu",
+  "coverAlt": "Illusztráció: díjak és átírás/visszatérítés szabályai.",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "fees-refund-cover.webp",
+  "title": "Hol vásárolj biztonságosan",
+  "category": "theatre"
+}

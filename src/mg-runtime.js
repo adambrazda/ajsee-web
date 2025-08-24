@@ -57,18 +57,64 @@ function escapeHtml(str = '') {
     .replace(/'/g, '&#39;');
 }
 
+/**
+ * Robustní a bezpečný převod velmi jednoduchého MD:
+ * - nadpisy # ## ###
+ * - seznamy s "- " (každá položka na vlastní řádce)
+ * - odstavce (oddělené prázdným řádkem)
+ * - inline **bold** a *italic*
+ * - CRLF → LF normalizace
+ * Zachovává správnou HTML strukturu (žádné <p> uvnitř <ul>).
+ */
 function mdToHtml(md = '') {
-  const e = escapeHtml(md.trim());
-  return e
-    .replace(/^### (.*)$/gm, '<h4>$1</h4>')
-    .replace(/^## (.*)$/gm, '<h3>$1</h3>')
-    .replace(/^# (.*)$/gm, '<h2>$1</h2>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^\- (.*)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/\n{2,}/g, '</p><p>')
-    .replace(/^(?!<h\d|<ul|<p|<\/p>)(.+)$/gm, '<p>$1</p>');
+  const norm = String(md).replace(/\r\n?/g, '\n').trim();
+
+  const escapeInline = (s) =>
+    escapeHtml(s)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  const lines = norm.split('\n');
+  const out = [];
+  let list = [];
+
+  const flushList = () => {
+    if (list.length) {
+      out.push('<ul>' + list.map(item => `<li>${escapeInline(item)}</li>`).join('') + '</ul>');
+      list = [];
+    }
+  };
+
+  for (let raw of lines) {
+    const line = raw.trim();
+
+    // prázdný řádek = konec bloku
+    if (!line) { flushList(); out.push(''); continue; }
+
+    // nadpisy
+    let m;
+    if ((m = line.match(/^###\s+(.*)$/))) { flushList(); out.push(`<h4>${escapeInline(m[1])}</h4>`); continue; }
+    if ((m = line.match(/^##\s+(.*)$/)))  { flushList(); out.push(`<h3>${escapeInline(m[1])}</h3>`); continue; }
+    if ((m = line.match(/^#\s+(.*)$/)))   { flushList(); out.push(`<h2>${escapeInline(m[1])}</h2>`); continue; }
+
+    // seznam: "- " na začátku řádku
+    if (/^- /.test(line)) {
+      // odstraníme prefix "- " (případně víc pomlček s mezerou)
+      list.push(line.replace(/^-+\s+/, '').trim());
+      continue;
+    }
+
+    // obyčejný odstavec
+    flushList();
+    out.push(`<p>${escapeInline(line)}</p>`);
+  }
+
+  flushList();
+
+  // odstraníme přebytečné prázdné bloky mezi odstavci
+  return out
+    .filter((chunk, i, arr) => !(chunk === '' && arr[i - 1] === ''))
+    .join('\n');
 }
 
 function withLang(url) {

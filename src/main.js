@@ -669,6 +669,11 @@ function initFilterSheet() {
    HOMEPAGE – BLOG: TOP 3 nejnovější (články + micro-guides)
    ========================================================= */
 async function renderHomeTop3Blog(lang = 'cs') {
+  // 🚫 Nikdy nespouštěj na /blog stránce
+  const onBlogPage =
+    /\/blog(\.html)?$/i.test(location.pathname) ||
+    !!document.querySelector('main#blog');
+  if (onBlogPage) return;
   const host =
     document.querySelector('[data-home-blog]') ||
     document.querySelector('#blog .blog-cards') ||

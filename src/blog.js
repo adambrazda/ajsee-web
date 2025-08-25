@@ -52,12 +52,12 @@ function translateExistingFilters() {
   });
 }
 
-/** Načti micro-guides index z public a normalizuj na karty */
+/** Načti micro-guides index a normalizuj na karty */
 async function loadMicroguideCards() {
   try {
     const r = await fetch('/content/microguides/index.json', { cache: 'no-store' });
     if (!r.ok) throw new Error(String(r.status));
-    const arr = await r.json();  // pole
+    const arr = await r.json();
     return (Array.isArray(arr) ? arr : [])
       .filter(it => (it.language || 'cs').toLowerCase() === LANG)
       .map(it => ({
@@ -70,9 +70,7 @@ async function loadMicroguideCards() {
         category: 'microguide',
         ts: Date.parse(it.publishedAt || 0) || 0
       }));
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
 /** Sjednoť články i průvodce a seřaď DESC */
@@ -97,7 +95,7 @@ function cardHref(card) {
     : `/blog-detail.html?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
 }
 
-// === RENDER – 2 různé větve markupu podle typu karty ===
+// === RENDER – micro-guidy už NEMAJÍ <a> kolem celé karty ===
 function renderCards(cards) {
   const grid = gridEl();
   if (!grid) return;
@@ -106,27 +104,25 @@ function renderCards(cards) {
     const titleEsc = (card.title || '').replace(/"/g, '&quot;');
 
     if (card.type === 'microguide') {
-      // ⬇ micro-guide: celé je klikací a karta má .is-microguide
+      // tělo je mimo odkaz → žádné skrytí textu starými styly
       return `
-        <article class="blog-card is-microguide" data-type="microguide">
-          <a class="card-link" href="${cardHref(card)}">
-            <div class="card-media">
-              ${card.image ? `<img src="${card.image}" alt="${titleEsc}">` : ''}
-              <span class="card-badge">${tBadge()}</span>
+        <article class="blog-card is-microguide" data-type="microguide" data-href="${cardHref(card)}">
+          <div class="card-media">
+            ${card.image ? `<img src="${card.image}" alt="${titleEsc}">` : ''}
+            <span class="card-badge">${tBadge()}</span>
+          </div>
+          <div class="blog-card-body">
+            <h3 class="blog-card-title">${card.title}</h3>
+            <div class="blog-card-lead">${card.lead || ''}</div>
+            <div class="blog-card-actions">
+              <a class="blog-readmore" href="${cardHref(card)}">${tReadMore()}</a>
             </div>
-            <div class="blog-card-body">
-              <h3 class="blog-card-title">${card.title}</h3>
-              <div class="blog-card-lead">${card.lead || ''}</div>
-              <div class="blog-card-actions">
-                <span class="blog-readmore">${tReadMore()}</span>
-              </div>
-            </div>
-          </a>
+          </div>
         </article>
       `;
     }
 
-    // ⬇ článek: body není uvnitř <a>, „Číst dál“ je odkaz
+    // článek – beze změny
     return `
       <article class="blog-card" data-type="article">
         <div class="card-media">
@@ -145,14 +141,12 @@ function renderCards(cards) {
 
   grid.innerHTML = html;
 
-  // Hard navigate pro micro-guidy (kdyby někdo volal preventDefault)
-  document.querySelectorAll('.blog-card.is-microguide .card-link').forEach((a) => {
-    a.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-      window.location.assign(a.href);
-    }, { capture: true });
+  // Umožni klik na celou micro-guide kartu (mimo odkaz)
+  grid.addEventListener('click', (ev) => {
+    const card = ev.target.closest('.blog-card.is-microguide[data-href]');
+    if (!card) return;
+    if (ev.target.closest('a')) return; // nech klasické odkazy
+    window.location.assign(card.dataset.href);
   });
 
   setReadMoreTexts();

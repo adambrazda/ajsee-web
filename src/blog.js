@@ -23,9 +23,9 @@ const i18n = {
     microguide: { cs: 'Průvodce',  en: 'Guides',    de: 'Leitfäden',     sk: 'Sprievodcovia', pl: 'Poradniki', hu: 'Útmutatók' }
   }
 };
-
 const tReadMore = () => i18n.readMore[LANG] || i18n.readMore.cs;
-const tFilter  = (key) => (i18n.filters[key] && (i18n.filters[key][LANG] || i18n.filters[key].cs)) || '';
+const tBadge    = () => i18n.badge[LANG]    || i18n.badge.cs;
+const tFilter   = (key) => (i18n.filters[key] && (i18n.filters[key][LANG] || i18n.filters[key].cs)) || '';
 
 const gridEl = () => document.querySelector('.blog-cards');
 
@@ -52,18 +52,14 @@ function translateExistingFilters() {
   });
 }
 
-/** Načti micro-guides index z public a normalizuj na karty (aktuální jazyk) */
+/** Načti micro-guides index z public a normalizuj na karty */
 async function loadMicroguideCards() {
   try {
     const r = await fetch('/content/microguides/index.json', { cache: 'no-store' });
     if (!r.ok) throw new Error(String(r.status));
-    const arr = await r.json();
-
-    const seen = new Set(); // deduplikace slugů
+    const arr = await r.json();  // array
     return (Array.isArray(arr) ? arr : [])
       .filter(it => (it.language || 'cs').toLowerCase() === LANG)
-      .filter(it => it.status === 'published')
-      .filter(it => (seen.has(it.slug) ? false : seen.add(it.slug)))
       .map(it => ({
         type: 'microguide',
         slug: it.slug,
@@ -79,7 +75,7 @@ async function loadMicroguideCards() {
   }
 }
 
-/** Sjednoť články i průvodce, deduplikuj a seřaď DESC */
+/** Sjednoť články i průvodce a seřaď DESC */
 async function loadAllCards() {
   const mg = await loadMicroguideCards();
   const arts = getSortedBlogArticles(LANG).map(a => ({
@@ -92,15 +88,7 @@ async function loadAllCards() {
     category: a.category || '',
     ts: a._ts
   }));
-
-  // unikátní kombinace type|slug|lang
-  const uniq = [];
-  const seen = new Set();
-  for (const c of [...mg, ...arts]) {
-    const key = `${c.type}|${c.slug}|${c.lang}`;
-    if (!seen.has(key)) { seen.add(key); uniq.push(c); }
-  }
-  return uniq.sort((a, b) => b.ts - a.ts);
+  return [...mg, ...arts].sort((a, b) => b.ts - a.ts);
 }
 
 function cardHref(card) {
@@ -109,62 +97,26 @@ function cardHref(card) {
     : `/blog-detail.html?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
 }
 
+// === DŮLEŽITÉ: markup přizpůsobený tvým stylům (body je SOUROZENEC media, ne uvnitř <a>) ===
 function renderCards(cards) {
   const grid = gridEl();
   if (!grid) return;
 
-  const badge = i18n.badge[LANG] || i18n.badge.en || i18n.badge.cs;
-  const placeholder = '/images/microguides/_placeholder.webp';
-
-  grid.innerHTML = cards.map(card => {
-    if (card.type === 'microguide') {
-      // ⬇ přesně ten markup, který očekává CSS pro micro-guidy
-      return `
-        <article class="blog-card is-microguide" data-type="microguide" data-slug="${card.slug}">
-          <a class="card-link" href="${cardHref(card)}" data-mg-link="true">
-            <div class="card-media">
-              <img class="card-img-cover" src="${card.image || ''}" alt="" loading="lazy" width="640" height="360" />
-              <span class="card-badge">${badge}</span>
-            </div>
-            <div class="blog-card-body">
-              <h3 class="blog-card-title">${card.title}</h3>
-              <div class="blog-card-lead">${card.lead}</div>
-              <div class="blog-card-actions"><span class="blog-readmore">${tReadMore()}</span></div>
-            </div>
-          </a>
-        </article>
-      `;
-    }
-    // běžný blogový článek – původní markup
-    return `
-      <div class="blog-card" data-type="article">
-        <a href="${cardHref(card)}">
-          ${card.image ? `<div class="card-media"><img src="${card.image}" alt=""></div>` : ''}
-          <div class="blog-card-body">
-            <h3 class="blog-card-title">${card.title}</h3>
-            <div class="blog-card-lead">${card.lead}</div>
-            <div class="blog-card-actions"><span class="blog-readmore">${tReadMore()}</span></div>
-          </div>
-        </a>
+  grid.innerHTML = cards.map(card => `
+    <article class="blog-card" data-type="${card.type}">
+      <div class="card-media">
+        ${card.image ? `<img src="${card.image}" alt="${card.title ? card.title.replace(/"/g,'&quot;') : ''}">` : ''}
+        ${card.type === 'microguide' ? `<span class="card-badge">${tBadge()}</span>` : ''}
       </div>
-    `;
-  }).join('');
-
-  // placeholdery + pojistka navigace pro micro-guidy
-  grid.querySelectorAll('.blog-card.is-microguide img').forEach(img => {
-    img.addEventListener('error', () => {
-      img.src = placeholder;
-      img.closest('.blog-card')?.classList.add('has-placeholder');
-    });
-  });
-  grid.querySelectorAll('.blog-card.is-microguide a.card-link').forEach(link => {
-    link.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-      window.location.assign(link.href);
-    }, { capture: true });
-  });
+      <div class="blog-card-body">
+        <h3 class="blog-card-title">${card.title}</h3>
+        <div class="blog-card-lead">${card.lead}</div>
+        <div class="blog-card-actions">
+          <a href="${cardHref(card)}" class="blog-readmore">${tReadMore()}</a>
+        </div>
+      </div>
+    </article>
+  `).join('');
 
   setReadMoreTexts();
 }
@@ -176,11 +128,8 @@ async function renderBlogArticles(category = 'all') {
 
   let list = [...ALL_CARDS];
   if (category !== 'all') {
-    if (category === 'microguide') {
-      list = list.filter(c => c.type === 'microguide');
-    } else {
-      list = list.filter(c => c.type === 'article' && c.category === category);
-    }
+    if (category === 'microguide') list = list.filter(c => c.type === 'microguide');
+    else list = list.filter(c => c.category === category && c.type === 'article');
   }
   renderCards(list);
 }
@@ -205,7 +154,7 @@ function setupCategoryFilters() {
 document.addEventListener('DOMContentLoaded', async () => {
   ensureMicroguideFilter();
   translateExistingFilters();
-  await renderBlogArticles('all');   // sjednocený seznam, seřazený dle data (DESC)
+  await renderBlogArticles('all');   // načte, sjednotí, seřadí DESC
   setupCategoryFilters();
   setReadMoreTexts();
 });

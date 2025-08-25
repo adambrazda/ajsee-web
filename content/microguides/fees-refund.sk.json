@@ -4,28 +4,28 @@
     {
       "id": "intro",
       "heading": "Kde nakupovať (oficiálne kanály)",
-      "body": "Uprednostni oficiálny web podujatia / organizátora / haly alebo primárny ticketing.\n\nSkontroluj doménu (značka, HTTPS), údaje firmy, kontakt a podmienky.\n\nOverený resale môže byť v poriadku; bazoše/inzeráty sú riziko.\n\nPozor na príliš nízke ceny a platby mimo brány.",
+      "body": "- Uprednostni oficiálny web podujatia / organizátora / haly alebo primárny ticketing.\n- Skontroluj doménu (značka, HTTPS), údaje firmy, kontakt a podmienky.\n- Overený resale môže byť v poriadku; bazoše/inzeráty sú riziko.\n- Pozor na príliš nízke ceny a platby mimo brány.",
       "alt": "Ikona bezpečného nákupu (štít)",
       "image": "/uploads/step-04.svg"
     },
     {
       "id": "s1",
       "heading": "Poplatky, ktoré hýbu cenou",
-      "body": "Základ + service fee + prípadné payment/delivery → rozhoduje finálna suma.\n\nDynamic pricing je pri koncertoch bežný.\n\nPozri menu / DPH / kurz.\n\nTip: porovnávaj finálnu cenu, nie „od“.",
+      "body": "- Základ + service fee + prípadné payment/delivery → rozhoduje finálna suma.\n- Dynamic pricing je pri koncertoch bežný.\n- Pozri menu / DPH / kurz.\n- Tip: porovnávaj finálnu cenu, nie „od“.",
       "image": "/uploads/step-02.svg",
       "alt": "Ikona účtenky/poplatkov"
     },
     {
       "id": "s2",
       "heading": "Prenos a vrátenie",
-      "body": "Transfer = zmena držiteľa; zisti, či je povolený a dokedy.\n\nMeno na lístku môže musieť sedieť s dokladom.\n\nRefund policy: zrušenie vs preloženie (často bez nároku).\n\nPoistenie len keď dáva zmysel; chargeback je posledná možnosť.",
+      "body": "- Transfer = zmena držiteľa; zisti, či je povolený a dokedy.\n- Meno na lístku môže musieť sedieť s dokladom.\n- Refund policy: zrušenie vs preloženie (často bez nároku).\n- Poistenie len keď dáva zmysel; chargeback je posledná možnosť.",
       "image": "/uploads/step-03.svg",
       "alt": "Ikona prenosu (šípky)"
     },
     {
       "id": "s3",
       "heading": "Kontrolný zoznam pred platbou",
-      "body": "Jasný predajca, kontakt, obchodné podmienky, GDPR.\n\n3-D Secure platba kartou.\n\nZhrnutie objednávky (bloky/rady/miesta, dátum, mena, poplatky).\n\nPo nákupe: potvrdzovací e-mail, pridaj do Wallet / oficiálnej appky.\n\nČervené vlajky: len WhatsApp, žiadosť o fotku dokladu, podozrivé PDF, poplatky >30 %, bez podmienok/kontaktu.",
+      "body": "- Jasný predajca, kontakt, obchodné podmienky, GDPR.\n- 3-D Secure platba kartou.\n- Zhrnutie objednávky (bloky/rady/miesta, dátum, mena, poplatky).\n- Po nákupe: potvrdzovací e-mail, pridaj do Wallet / oficiálnej appky.\n- Červené vlajky: len WhatsApp, žiadosť o fotku dokladu, podozrivé PDF, poplatky >30 %, bez podmienok/kontaktu.",
       "image": "/uploads/step-05.svg",
       "alt": "Ikona kalendára/vrátenia"
     }

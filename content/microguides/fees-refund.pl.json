@@ -4,28 +4,28 @@
     {
       "id": "intro",
       "heading": "Gdzie kupować (oficjalne kanały)",
-      "body": "Stawiaj na oficjalne strony wydarzenia / organizatora / obiektu lub pierwotnych partnerów biletowych.\n\nSprawdź domenę (HTTPS, poprawna marka), dane firmy, kontakt i regulamin.\n\nZweryfikowany resale bywa OK; ogłoszenia/bazarki są ryzykowne.\n\nUważaj na zbyt tanie oferty i płatności poza bramką.",
+      "body": "- Stawiaj na oficjalne strony wydarzenia / organizatora / obiektu lub pierwotnych partnerów biletowych.\n- Sprawdź domenę (HTTPS, poprawna marka), dane firmy, kontakt i regulamin.\n- Zweryfikowany resale bywa OK; ogłoszenia/bazarki są ryzykowne.\n- Uważaj na zbyt tanie oferty i płatności poza bramką.",
       "alt": "Ikona bezpiecznego zakupu (tarcza)",
       "image": "/uploads/step-04.svg"
     },
     {
       "id": "s1",
       "heading": "Opłaty zmieniające cenę końcową",
-      "body": "Cena bazowa + service fee + ewentualne opłaty płatnicze/dostawy → liczy się kwota końcowa.\n\nDynamic pricing często przy koncertach.\n\nSprawdź walutę / VAT / kurs wymiany.\n\nWskazówka: porównuj cenę końcową, nie tylko „od”.",
+      "body": "- Cena bazowa + service fee + ewentualne opłaty płatnicze/dostawy → liczy się kwota końcowa.\n- Dynamic pricing często przy koncertach.\n- Sprawdź walutę / VAT / kurs wymiany.\n- Wskazówka: porównuj cenę końcową, nie tylko „od”.",
       "image": "/uploads/step-02.svg",
       "alt": "Ikona paragonu/opłat"
     },
     {
       "id": "s2",
       "heading": "Transfer i zwroty",
-      "body": "Transfer = zmiana posiadacza; sprawdź, czy dozwolone i do kiedy.\n\nImię na bilecie może wymagać zgodności z dokumentem.\n\nPolityka zwrotów: odwołanie vs przełożenie (często bez zwrotu).\n\nUbezpieczenie tylko gdy ma sens; chargeback to ostateczność.",
+      "body": "- Transfer = zmiana posiadacza; sprawdź, czy dozwolone i do kiedy.\n- Imię na bilecie może wymagać zgodności z dokumentem.\n- Polityka zwrotów: odwołanie vs przełożenie (często bez zwrotu).\n- Ubezpieczenie tylko gdy ma sens; chargeback to ostateczność.",
       "image": "/uploads/step-03.svg",
       "alt": "Ikona transferu (strzałki)"
     },
     {
       "id": "s3",
       "heading": "Lista kontrolna przed zapłatą",
-      "body": "Wiarygodny sprzedawca, kontakt, regulamin, RODO.\n\nPłatność 3-D Secure kartą.\n\nPodsumowanie zamówienia (sektory/rzędy/miejsca, data, waluta, opłaty).\n\nPo zakupie: e-mail potwierdzający, dodaj do Wallet / oficjalnej aplikacji.\n\nCzerwone flagi: tylko WhatsApp, prośba o zdjęcie dokumentu, podejrzane PDF-y, opłaty >30%, brak regulaminu/kontaktu.",
+      "body": "- Wiarygodny sprzedawca, kontakt, regulamin, RODO.\n- Płatność 3-D Secure kartą.\n- Podsumowanie zamówienia (sektory/rzędy/miejsca, data, waluta, opłaty).\n- Po zakupie: e-mail potwierdzający, dodaj do Wallet / oficjalnej aplikacji.\n- Czerwone flagi: tylko WhatsApp, prośba o zdjęcie dokumentu, podejrzane PDF-y, opłaty >30%, brak regulaminu/kontaktu.",
       "image": "/uploads/step-05.svg",
       "alt": "Ikona kalendarza/zwrotu"
     }

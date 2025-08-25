@@ -11,6 +11,7 @@ const LANG = detectLang();
 // --- překlady ---
 const i18n = {
   readMore: { cs: 'Číst dál', en: 'Read more', de: 'Weiterlesen', sk: 'Čítať ďalej', pl: 'Czytaj dalej', hu: 'Tovább' },
+  badge:    { cs: 'Mikroprůvodce', en: 'Micro-guide', de: 'Mikro-Guide', sk: 'Mikro-sprievodca', pl: 'Mikroprzewodnik', hu: 'Mini útmutató' },
   filters: {
     all:        { cs: 'Vše',       en: 'All',       de: 'Alle',          sk: 'Všetko',       pl: 'Wszystko',   hu: 'Mind' },
     concert:    { cs: 'Koncerty',  en: 'Concerts',  de: 'Konzerte',      sk: 'Koncerty',     pl: 'Koncerty',   hu: 'Koncertek' },
@@ -112,19 +113,58 @@ function renderCards(cards) {
   const grid = gridEl();
   if (!grid) return;
 
-  // Vyčisti celý grid – blog.js je „single source of truth“ na /blog
-  grid.innerHTML = cards.map(card => `
-    <div class="blog-card" data-type="${card.type}">
-      <a href="${cardHref(card)}">
-        ${card.image ? `<div class="card-media"><img src="${card.image}" alt=""></div>` : ''}
-        <div class="blog-card-body">
-          <h3 class="blog-card-title">${card.title}</h3>
-          <div class="blog-card-lead">${card.lead}</div>
-          <div class="blog-card-actions"><span class="blog-readmore">${tReadMore()}</span></div>
-        </div>
-      </a>
-    </div>
-  `).join('');
+  const badge = i18n.badge[LANG] || i18n.badge.en || i18n.badge.cs;
+  const placeholder = '/images/microguides/_placeholder.webp';
+
+  grid.innerHTML = cards.map(card => {
+    if (card.type === 'microguide') {
+      // ⬇ přesně ten markup, který očekává CSS pro micro-guidy
+      return `
+        <article class="blog-card is-microguide" data-type="microguide" data-slug="${card.slug}">
+          <a class="card-link" href="${cardHref(card)}" data-mg-link="true">
+            <div class="card-media">
+              <img class="card-img-cover" src="${card.image || ''}" alt="" loading="lazy" width="640" height="360" />
+              <span class="card-badge">${badge}</span>
+            </div>
+            <div class="blog-card-body">
+              <h3 class="blog-card-title">${card.title}</h3>
+              <div class="blog-card-lead">${card.lead}</div>
+              <div class="blog-card-actions"><span class="blog-readmore">${tReadMore()}</span></div>
+            </div>
+          </a>
+        </article>
+      `;
+    }
+    // běžný blogový článek – původní markup
+    return `
+      <div class="blog-card" data-type="article">
+        <a href="${cardHref(card)}">
+          ${card.image ? `<div class="card-media"><img src="${card.image}" alt=""></div>` : ''}
+          <div class="blog-card-body">
+            <h3 class="blog-card-title">${card.title}</h3>
+            <div class="blog-card-lead">${card.lead}</div>
+            <div class="blog-card-actions"><span class="blog-readmore">${tReadMore()}</span></div>
+          </div>
+        </a>
+      </div>
+    `;
+  }).join('');
+
+  // placeholdery + pojistka navigace pro micro-guidy
+  grid.querySelectorAll('.blog-card.is-microguide img').forEach(img => {
+    img.addEventListener('error', () => {
+      img.src = placeholder;
+      img.closest('.blog-card')?.classList.add('has-placeholder');
+    });
+  });
+  grid.querySelectorAll('.blog-card.is-microguide a.card-link').forEach(link => {
+    link.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      window.location.assign(link.href);
+    }, { capture: true });
+  });
 
   setReadMoreTexts();
 }

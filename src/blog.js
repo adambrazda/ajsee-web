@@ -57,7 +57,7 @@ async function loadMicroguideCards() {
   try {
     const r = await fetch('/content/microguides/index.json', { cache: 'no-store' });
     if (!r.ok) throw new Error(String(r.status));
-    const arr = await r.json();  // array
+    const arr = await r.json();  // pole
     return (Array.isArray(arr) ? arr : [])
       .filter(it => (it.language || 'cs').toLowerCase() === LANG)
       .map(it => ({
@@ -97,34 +97,56 @@ function cardHref(card) {
     : `/blog-detail.html?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
 }
 
-// === MARKUP shodný se styly: <a.card-link> obaluje media i body ===
+// === RENDER – 2 různé větve markupu podle typu karty ===
 function renderCards(cards) {
   const grid = gridEl();
   if (!grid) return;
 
-  grid.innerHTML = cards.map(card => {
+  const html = cards.map(card => {
     const titleEsc = (card.title || '').replace(/"/g, '&quot;');
-    return `
-      <article class="blog-card" data-type="${card.type}">
-        <a class="card-link" href="${cardHref(card)}">
-          <div class="card-media">
-            ${card.image ? `<img src="${card.image}" alt="${titleEsc}">` : ''}
-            ${card.type === 'microguide' ? `<span class="card-badge">${tBadge()}</span>` : ''}
-          </div>
-          <div class="blog-card-body">
-            <h3 class="blog-card-title">${card.title}</h3>
-            <div class="blog-card-lead">${card.lead}</div>
-            <div class="blog-card-actions">
-              <span class="blog-readmore">${tReadMore()}</span>
+
+    if (card.type === 'microguide') {
+      // ⬇ micro-guide: celé je klikací a karta má .is-microguide
+      return `
+        <article class="blog-card is-microguide" data-type="microguide">
+          <a class="card-link" href="${cardHref(card)}">
+            <div class="card-media">
+              ${card.image ? `<img src="${card.image}" alt="${titleEsc}">` : ''}
+              <span class="card-badge">${tBadge()}</span>
             </div>
+            <div class="blog-card-body">
+              <h3 class="blog-card-title">${card.title}</h3>
+              <div class="blog-card-lead">${card.lead || ''}</div>
+              <div class="blog-card-actions">
+                <span class="blog-readmore">${tReadMore()}</span>
+              </div>
+            </div>
+          </a>
+        </article>
+      `;
+    }
+
+    // ⬇ článek: body není uvnitř <a>, „Číst dál“ je odkaz
+    return `
+      <article class="blog-card" data-type="article">
+        <div class="card-media">
+          ${card.image ? `<img src="${card.image}" alt="${titleEsc}">` : ''}
+        </div>
+        <div class="blog-card-body">
+          <h3 class="blog-card-title">${card.title}</h3>
+          <div class="blog-card-lead">${card.lead || ''}</div>
+          <div class="blog-card-actions">
+            <a class="blog-readmore" href="${cardHref(card)}">${tReadMore()}</a>
           </div>
-        </a>
+        </div>
       </article>
     `;
   }).join('');
 
-  // Hard-navigate (pro případ, že nějaký globální handler dává preventDefault)
-  document.querySelectorAll('.blog-card .card-link').forEach((a) => {
+  grid.innerHTML = html;
+
+  // Hard navigate pro micro-guidy (kdyby někdo volal preventDefault)
+  document.querySelectorAll('.blog-card.is-microguide .card-link').forEach((a) => {
     a.addEventListener('click', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
@@ -169,7 +191,7 @@ function setupCategoryFilters() {
 document.addEventListener('DOMContentLoaded', async () => {
   ensureMicroguideFilter();
   translateExistingFilters();
-  await renderBlogArticles('all');   // načte, sjednotí, seřadí DESC
+  await renderBlogArticles('all');   // sjednoceno + seřazeno DESC
   setupCategoryFilters();
   setReadMoreTexts();
 });

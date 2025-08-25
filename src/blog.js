@@ -97,26 +97,41 @@ function cardHref(card) {
     : `/blog-detail.html?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
 }
 
-// === DŮLEŽITÉ: markup přizpůsobený tvým stylům (body je SOUROZENEC media, ne uvnitř <a>) ===
+// === MARKUP shodný se styly: <a.card-link> obaluje media i body ===
 function renderCards(cards) {
   const grid = gridEl();
   if (!grid) return;
 
-  grid.innerHTML = cards.map(card => `
-    <article class="blog-card" data-type="${card.type}">
-      <div class="card-media">
-        ${card.image ? `<img src="${card.image}" alt="${card.title ? card.title.replace(/"/g,'&quot;') : ''}">` : ''}
-        ${card.type === 'microguide' ? `<span class="card-badge">${tBadge()}</span>` : ''}
-      </div>
-      <div class="blog-card-body">
-        <h3 class="blog-card-title">${card.title}</h3>
-        <div class="blog-card-lead">${card.lead}</div>
-        <div class="blog-card-actions">
-          <a href="${cardHref(card)}" class="blog-readmore">${tReadMore()}</a>
-        </div>
-      </div>
-    </article>
-  `).join('');
+  grid.innerHTML = cards.map(card => {
+    const titleEsc = (card.title || '').replace(/"/g, '&quot;');
+    return `
+      <article class="blog-card" data-type="${card.type}">
+        <a class="card-link" href="${cardHref(card)}">
+          <div class="card-media">
+            ${card.image ? `<img src="${card.image}" alt="${titleEsc}">` : ''}
+            ${card.type === 'microguide' ? `<span class="card-badge">${tBadge()}</span>` : ''}
+          </div>
+          <div class="blog-card-body">
+            <h3 class="blog-card-title">${card.title}</h3>
+            <div class="blog-card-lead">${card.lead}</div>
+            <div class="blog-card-actions">
+              <span class="blog-readmore">${tReadMore()}</span>
+            </div>
+          </div>
+        </a>
+      </article>
+    `;
+  }).join('');
+
+  // Hard-navigate (pro případ, že nějaký globální handler dává preventDefault)
+  document.querySelectorAll('.blog-card .card-link').forEach((a) => {
+    a.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
+      window.location.assign(a.href);
+    }, { capture: true });
+  });
 
   setReadMoreTexts();
 }

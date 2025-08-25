@@ -51,14 +51,18 @@ function translateExistingFilters() {
   });
 }
 
-/** Načti micro-guides index z public a normalizuj na karty */
+/** Načti micro-guides index z public a normalizuj na karty (aktuální jazyk) */
 async function loadMicroguideCards() {
   try {
     const r = await fetch('/content/microguides/index.json', { cache: 'no-store' });
     if (!r.ok) throw new Error(String(r.status));
-    const arr = await r.json();  // array
+    const arr = await r.json();
+
+    const seen = new Set(); // deduplikace slugů
     return (Array.isArray(arr) ? arr : [])
       .filter(it => (it.language || 'cs').toLowerCase() === LANG)
+      .filter(it => it.status === 'published')
+      .filter(it => (seen.has(it.slug) ? false : seen.add(it.slug)))
       .map(it => ({
         type: 'microguide',
         slug: it.slug,
@@ -66,7 +70,7 @@ async function loadMicroguideCards() {
         title: it.title || '',
         lead: it.summary || '',
         image: it.cover || '',
-        category: it.category || 'microguide',
+        category: 'microguide',
         ts: Date.parse(it.publishedAt || 0) || 0
       }));
   } catch {
@@ -74,7 +78,7 @@ async function loadMicroguideCards() {
   }
 }
 
-/** Sjednoť články i průvodce a seřaď DESC */
+/** Sjednoť články i průvodce, deduplikuj a seřaď DESC */
 async function loadAllCards() {
   const mg = await loadMicroguideCards();
   const arts = getSortedBlogArticles(LANG).map(a => ({
@@ -87,7 +91,15 @@ async function loadAllCards() {
     category: a.category || '',
     ts: a._ts
   }));
-  return [...mg, ...arts].sort((a, b) => b.ts - a.ts);
+
+  // unikátní kombinace type|slug|lang
+  const uniq = [];
+  const seen = new Set();
+  for (const c of [...mg, ...arts]) {
+    const key = `${c.type}|${c.slug}|${c.lang}`;
+    if (!seen.has(key)) { seen.add(key); uniq.push(c); }
+  }
+  return uniq.sort((a, b) => b.ts - a.ts);
 }
 
 function cardHref(card) {
@@ -100,6 +112,7 @@ function renderCards(cards) {
   const grid = gridEl();
   if (!grid) return;
 
+  // Vyčisti celý grid – blog.js je „single source of truth“ na /blog
   grid.innerHTML = cards.map(card => `
     <div class="blog-card" data-type="${card.type}">
       <a href="${cardHref(card)}">
@@ -107,9 +120,7 @@ function renderCards(cards) {
         <div class="blog-card-body">
           <h3 class="blog-card-title">${card.title}</h3>
           <div class="blog-card-lead">${card.lead}</div>
-          <div class="blog-card-actions">
-            <span class="blog-readmore">${tReadMore()}</span>
-          </div>
+          <div class="blog-card-actions"><span class="blog-readmore">${tReadMore()}</span></div>
         </div>
       </a>
     </div>
@@ -125,8 +136,11 @@ async function renderBlogArticles(category = 'all') {
 
   let list = [...ALL_CARDS];
   if (category !== 'all') {
-    if (category === 'microguide') list = list.filter(c => c.type === 'microguide');
-    else list = list.filter(c => c.category === category && c.type === 'article');
+    if (category === 'microguide') {
+      list = list.filter(c => c.type === 'microguide');
+    } else {
+      list = list.filter(c => c.type === 'article' && c.category === category);
+    }
   }
   renderCards(list);
 }
@@ -151,7 +165,7 @@ function setupCategoryFilters() {
 document.addEventListener('DOMContentLoaded', async () => {
   ensureMicroguideFilter();
   translateExistingFilters();
-  await renderBlogArticles('all');   // ⬅️ načte, sjednotí, seřadí DESC
+  await renderBlogArticles('all');   // sjednocený seznam, seřazený dle data (DESC)
   setupCategoryFilters();
   setReadMoreTexts();
 });

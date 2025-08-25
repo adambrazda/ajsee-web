@@ -2,57 +2,86 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 const ROOT = process.cwd();
-const SRC = path.join(ROOT, 'content/microguides');
-const OUT = path.join(ROOT, 'public/content/microguides');
+const SRC_DIR = path.join(ROOT, 'content/microguides');       // lokalizované JSONy + index.json (CMS)
+const OUT_DIR = path.join(ROOT, 'public/content/microguides'); // public výstup (runtime načítá odsud)
 
 async function ensureDir(p) { await fs.mkdir(p, { recursive: true }); }
 
-async function run() {
-  await ensureDir(OUT);
+async function readJsonSafe(p, fallback = null) {
+  try { return JSON.parse(await fs.readFile(p, 'utf8')); }
+  catch { return fallback; }
+}
 
-  const files = (await fs.readdir(SRC)).filter(f => f.endsWith('.json'));
-  if (files.length === 0) {
-    console.warn('No micro-guide files found in content/microguides');
-    await fs.writeFile(path.join(OUT, 'index.json'), '[]');
-    return;
+async function run() {
+  await ensureDir(OUT_DIR);
+
+  // 1) všechny lokalizované JSONy (zkopírujeme do public)
+  const allFiles = (await fs.readdir(SRC_DIR)).filter(f => f.endsWith('.json'));
+  const localeFiles = allFiles.filter(f => f !== 'index.json');
+
+  if (localeFiles.length === 0) {
+    console.warn('No micro-guide locale files found in content/microguides');
   }
 
-  // zkopíruj všechny JSON do public (aby je mohl načítat runtime)
   await Promise.all(
-    files.map(async (f) => {
-      await fs.copyFile(path.join(SRC, f), path.join(OUT, f));
+    localeFiles.map(async (f) => {
+      await fs.copyFile(path.join(SRC_DIR, f), path.join(OUT_DIR, f));
     })
   );
 
-  // poskládej index ze cs mutace (fallback na první existující)
-  const slugs = [...new Set(files.map(f => f.split('.').shift()))];
+  // 2) načti CMS index (seznam karet) a postav public index seřazený DESC dle publishedAt
+  const cmsIndex = await readJsonSafe(path.join(SRC_DIR, 'index.json'), { items: [] });
+  const items = Array.isArray(cmsIndex?.items) ? cmsIndex.items : [];
 
-  const index = [];
-  for (const slug of slugs) {
-    const csName = `${slug}.cs.json`;
-    let fileName = files.includes(csName) ? csName : null;
-    if (!fileName) {
-      const any = files.find(x => x.startsWith(slug + '.'));
-      if (!any) {
-        console.warn(`No locale files for slug "${slug}", skipping in index.`);
-        continue;
-      }
-      fileName = any;
-    }
-    const raw = await fs.readFile(path.join(SRC, fileName), 'utf8');
-    const data = JSON.parse(raw);
+  // helper: vyber titulek/perex/cover z preferované lokalizace (language), případně fallback
+  async function pickLocalizedFields(slug, primaryLang) {
+    const prefer = [
+      `${slug}.${primaryLang}.json`,
+      `${slug}.en.json`,
+      `${slug}.cs.json`
+    ];
+    let file = prefer.find((f) => localeFiles.includes(f));
+    if (!file) file = localeFiles.find(f => f.startsWith(`${slug}.`));
+    if (!file) return { title: '', summary: '', cover: '' };
 
-    index.push({
-      slug: data.slug,
-      title: data.title,
+    const data = await readJsonSafe(path.join(SRC_DIR, file), {});
+    return {
+      title: data.title || '',
       summary: data.summary || '',
-      cover: data.cover || '',
-      status: data.status || 'draft'
+      cover: data.cover || ''
+    };
+  }
+
+  const indexRecords = [];
+  for (const it of items) {
+    const status = it.status || 'draft';
+    if (status !== 'published') continue;
+
+    const slug = String(it.slug || '').trim();
+    const language = String(it.language || 'cs').toLowerCase();
+    if (!slug) continue;
+
+    const { title, summary, cover } = await pickLocalizedFields(slug, language);
+
+    const ts = Date.parse(it.publishedAt || 0) || 0; // 0 = spadne na konec
+    indexRecords.push({
+      slug,
+      language,
+      title,
+      summary,
+      cover,
+      category: it.category || 'theatre',
+      status,
+      publishedAt: it.publishedAt || null,
+      _ts: ts
     });
   }
 
-  await fs.writeFile(path.join(OUT, 'index.json'), JSON.stringify(index, null, 2));
-  console.log(`Micro-guides index generated (${index.length} items).`);
+  indexRecords.sort((a, b) => b._ts - a._ts);
+  const finalIndex = indexRecords.map(({ _ts, ...rest }) => rest);
+
+  await fs.writeFile(path.join(OUT_DIR, 'index.json'), JSON.stringify(finalIndex, null, 2));
+  console.log(`Micro-guides index generated (${finalIndex.length} items, sorted desc).`);
 }
 
 run().catch(e => { console.error(e); process.exit(1); });

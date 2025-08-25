@@ -11,6 +11,7 @@ import { getAllEvents } from './api/eventsApi.js';
 import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity } from './city/canonical.js';
 import './identity-init.js';
+import { blogArticles, getSortedBlogArticles } from './blogArticles.js';   // ⬅️ pro homepage TOP3
 
 // ------- Global state -------
 let currentFilters = {
@@ -221,33 +222,6 @@ function updateFilterLocaleTexts() {
   // Filters toggle (runtime)
   const toggleBtn = qs('#filtersToggle');
   if (toggleBtn) setBtnLabel(toggleBtn, filtersCollapsed ? toggleLabel('show') : toggleLabel('hide'));
-}
-
-async function applyTranslations(lang) {
-  const translations = await loadTranslations(lang);
-  window.translations = translations;
-
-  document.querySelectorAll('[data-i18n-key]').forEach((el) => {
-    const key = el.getAttribute('data-i18n-key');
-    let value = t(key);
-    if (value !== undefined) {
-      if (['p', 'span'].includes(el.tagName.toLowerCase())) {
-        value = fixNonBreakingShortWords(value, lang);
-      }
-      if (/<[a-z][\s\S]*>/i.test(value)) el.innerHTML = value;
-      else el.textContent = value;
-    }
-  });
-
-  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    const value = t(key);
-    if (value !== undefined) {
-      el.setAttribute('placeholder', fixNonBreakingShortWords(String(value), lang));
-    }
-  });
-
-  updateFilterLocaleTexts();
 }
 
 // ------- Nav -------
@@ -655,6 +629,66 @@ function initFilterSheet() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 }
 
+/* =========================================================
+   HOMEPAGE – BLOG: TOP 3 nejnovější
+   ========================================================= */
+async function renderHomeTop3Blog(lang = 'cs') {
+  const host =
+    document.querySelector('[data-home-blog]') ||
+    document.querySelector('#blog .blog-cards') ||
+    document.querySelector('.blog .blog-cards');
+  if (!host) return;
+
+  // micro-guides z public indexu
+  let micro = [];
+  try {
+    const r = await fetch('/content/microguides/index.json', { cache: 'no-store' });
+    const arr = r.ok ? await r.json() : [];
+    micro = (Array.isArray(arr) ? arr : [])
+      .filter(it => (it.language || 'cs').toLowerCase() === lang)
+      .map(it => ({
+        type: 'microguide',
+        slug: it.slug,
+        lang: it.language || lang,
+        title: it.title || '',
+        lead: it.summary || '',
+        image: it.cover || '',
+        ts: Date.parse(it.publishedAt || 0) || 0
+      }));
+  } catch { /* ignore */ }
+
+  // články
+  const arts = getSortedBlogArticles(lang).map(a => ({
+    type: 'article',
+    slug: a.slug,
+    lang,
+    title: a.titleText,
+    lead: a.leadText,
+    image: a.image,
+    ts: a._ts
+  }));
+
+  const all = [...micro, ...arts].sort((a,b) => b.ts - a.ts).slice(0, 3);
+
+  const href = (c) =>
+    c.type === 'microguide'
+      ? `/microguides/?slug=${encodeURIComponent(c.slug)}&lang=${encodeURIComponent(c.lang)}`
+      : `/blog-detail.html?slug=${encodeURIComponent(c.slug)}&lang=${encodeURIComponent(c.lang)}`;
+
+  host.innerHTML = all.map(c => `
+    <div class="blog-card" data-type="${c.type}">
+      <a href="${href(c)}">
+        ${c.image ? `<div class="card-media"><img src="${c.image}" alt=""></div>` : ''}
+        <div class="blog-card-body">
+          <h3 class="blog-card-title">${c.title}</h3>
+          <div class="blog-card-lead">${c.lead}</div>
+          <div class="blog-card-actions"><span class="blog-readmore">${t('blog-read-more', 'Read more')}</span></div>
+        </div>
+      </a>
+    </div>
+  `).join('');
+}
+
 // ------- DOM Ready -------
 document.addEventListener('DOMContentLoaded', async () => {
   ensureRuntimeStyles();
@@ -872,6 +906,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // spodní sheet (mobil)
   initFilterSheet();
+
+  // ------- BLOG TOP 3 na homepage -------
+  await renderHomeTop3Blog(currentLang);
 
   // ------- Contact form validation -------
   const form = qs('#contact-form');

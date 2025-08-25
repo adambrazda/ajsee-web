@@ -26,13 +26,13 @@ collections:
         format: json
         editor:
           preview: false
-        sortable_fields: ["slug", "language", "status"]
+        sortable_fields: ["publishedAt", "slug", "language", "status"]  # ⬅️ přidán publishedAt pro řazení
         fields:
           - label: "Položky"
             name: "items"
             widget: "list"
             label_singular: "Položka"
-            summary: "{{fields.slug}} • {{fields.language}} • {{fields.status}}"
+            summary: "{{fields.publishedAt}} • {{fields.slug}} • {{fields.language}} • {{fields.status}}"
             allow_add: true
             fields:
               - label: "Slug"
@@ -50,6 +50,11 @@ collections:
                 widget: "select"
                 options: ["draft", "published"]
                 default: "published"
+              - label: "Publikováno"
+                name: "publishedAt"
+                widget: "datetime"
+                picker_utc: true
+                format: "YYYY-MM-DDTHH:mm:ss[Z]"   # ISO v UTC, bezpečné pro řazení
               - label: "Cover (volitelné)"
                 name: "cover"
                 widget: "image"

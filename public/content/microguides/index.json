@@ -5,7 +5,7 @@
       "status": "published",
       "category": "theatre",
       "slug": "seating-map",
-      "cover": "/images/microguides/seating-map/cover.webp",
+      "cover": "/uploads/cover.webp",
       "title": "Jak číst seating mapu",
       "summary": "Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst."
     },
@@ -16,7 +16,7 @@
       "slug": "fees-refund",
       "cover": "/uploads/fees-refund-cover.webp",
       "title": "Kde koupit bezpečně",
-      "summary": "Jak vybrat důvěryhodného prodejce, nejčastější poplatky a jak jim předejít."
+      "summary": "Jak vybrat důvěryhodného prodejce, nejčastější poplatky a proč záleží převod/vrácení."
     }
   ]
 }

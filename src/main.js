@@ -4,6 +4,7 @@
 // quick chips (Today/Weekend/Clear), active-filter chips,
 // URL sync, calendar links, mobile sheet, geolocation w/ IP fallback,
 // CLICK-ONLY pagination (Load more), collapsible filter dock, typeahead live-region fix
+// + Homepage: TOP 3 blog cards (articles + micro-guides)
 // ---------------------------------------------------------
 
 import './styles/main.scss';
@@ -11,7 +12,7 @@ import { getAllEvents } from './api/eventsApi.js';
 import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity } from './city/canonical.js';
 import './identity-init.js';
-import { blogArticles, getSortedBlogArticles } from './blogArticles.js';   // ⬅️ pro homepage TOP3
+import { blogArticles, getSortedBlogArticles } from './blogArticles.js';   // pro homepage TOP3
 
 // ------- Global state -------
 let currentFilters = {
@@ -222,6 +223,41 @@ function updateFilterLocaleTexts() {
   // Filters toggle (runtime)
   const toggleBtn = qs('#filtersToggle');
   if (toggleBtn) setBtnLabel(toggleBtn, filtersCollapsed ? toggleLabel('show') : toggleLabel('hide'));
+}
+
+/**
+ * A P P L Y   T R A N S L A T I O N S
+ * Bezpečné nasazení překladů: neprázdné hodnoty -> nahradit, prázdné -> ponechat HTML fallback
+ */
+async function applyTranslations(lang) {
+  const translations = await loadTranslations(lang);
+  window.translations = translations;
+
+  document.querySelectorAll('[data-i18n-key]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-key');
+    let value = t(key);
+
+    // NEPŘEPISUJ, pokud je undefined/null/jen whitespace (chrání např. hero při prázdných hodnotách v JSON)
+    if (value === undefined || value === null || String(value).trim() === '') return;
+
+    // drobná typografická úprava pro běžné textové bloky
+    const tag = el.tagName.toLowerCase();
+    if (['p', 'span', 'h1', 'h2', 'h3', 'h4', 'li', 'a', 'button'].includes(tag)) {
+      value = fixNonBreakingShortWords(String(value), lang);
+    }
+
+    if (/<[a-z][\s\S]*>/i.test(value)) el.innerHTML = value;
+    else el.textContent = value;
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    let value = t(key);
+    if (value === undefined || value === null || String(value).trim() === '') return;
+    el.setAttribute('placeholder', fixNonBreakingShortWords(String(value), lang));
+  });
+
+  updateFilterLocaleTexts();
 }
 
 // ------- Nav -------
@@ -630,7 +666,7 @@ function initFilterSheet() {
 }
 
 /* =========================================================
-   HOMEPAGE – BLOG: TOP 3 nejnovější
+   HOMEPAGE – BLOG: TOP 3 nejnovější (články + micro-guides)
    ========================================================= */
 async function renderHomeTop3Blog(lang = 'cs') {
   const host =
@@ -639,13 +675,14 @@ async function renderHomeTop3Blog(lang = 'cs') {
     document.querySelector('.blog .blog-cards');
   if (!host) return;
 
-  // micro-guides z public indexu
+  // micro-guides z public indexu (podporujeme jak pole, tak objekt s .items)
   let micro = [];
   try {
     const r = await fetch('/content/microguides/index.json', { cache: 'no-store' });
-    const arr = r.ok ? await r.json() : [];
+    const raw = r.ok ? await r.json() : [];
+    const arr = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.items) ? raw.items : []);
     micro = (Array.isArray(arr) ? arr : [])
-      .filter(it => (it.language || 'cs').toLowerCase() === lang)
+      .filter(it => ((it.language || lang) || '').toLowerCase() === lang)
       .map(it => ({
         type: 'microguide',
         slug: it.slug,
@@ -657,7 +694,7 @@ async function renderHomeTop3Blog(lang = 'cs') {
       }));
   } catch { /* ignore */ }
 
-  // články
+  // články (pomocná utilita z blogArticles.js)
   const arts = getSortedBlogArticles(lang).map(a => ({
     type: 'article',
     slug: a.slug,
@@ -680,8 +717,8 @@ async function renderHomeTop3Blog(lang = 'cs') {
       <a href="${href(c)}">
         ${c.image ? `<div class="card-media"><img src="${c.image}" alt=""></div>` : ''}
         <div class="blog-card-body">
-          <h3 class="blog-card-title">${c.title}</h3>
-          <div class="blog-card-lead">${c.lead}</div>
+          <h3 class="blog-card-title">${fixNonBreakingShortWords(c.title, lang)}</h3>
+          <div class="blog-card-lead">${fixNonBreakingShortWords(c.lead, lang)}</div>
           <div class="blog-card-actions"><span class="blog-readmore">${t('blog-read-more', 'Read more')}</span></div>
         </div>
       </a>
@@ -1213,8 +1250,8 @@ async function openEventModal(eventData, locale = 'cs') {
   const categoryKey = eventData.category || '';
   const categoryTranslated = fixNonBreakingShortWords(t(`category-${categoryKey}`, categoryKey), locale);
 
-  const title = pickLocalized(eventData.title, preferredLocales) || 'Untitled';
-  const description = fixNonBreakingShortWords(pickLocalized(eventData.description, preferredLocales) || '', locale);
+  const title = pickLocalized(event.title, preferredLocales) || 'Untitled';
+  const description = fixNonBreakingShortWords(pickLocalized(event.description, preferredLocales) || '', locale);
   const image = eventData.image || '/images/fallbacks/concert0.jpg';
   const dateVal = eventData.datetime || eventData.date;
   const date = dateVal

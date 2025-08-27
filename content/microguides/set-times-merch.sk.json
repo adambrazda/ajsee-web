@@ -1,0 +1,42 @@
+{
+  "summary": "Kedy prísť, kedy ísť po merch bez čakania a kedy si dať pauzu – tak, aby ti nič dôležité neušlo.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Prečo riešiť načasovanie",
+      "body": "- Rady zhltnú čas zo samotnej show – **vstup, šatňa, bar, merch**.\n- Niekoľko návykov znamená viac hudby a menej čakania.",
+      "image": "/uploads/01.svg",
+      "alt": "calendar"
+    },
+    {
+      "id": "arrive",
+      "heading": "Príchod: **30–45 min pred headlinerom**",
+      "body": "- **Klub:** príď skôr (šatňa, zorientovanie).\n- **Aréna/festival:** sleduj oficiálne *set times*.\n- Najväčší nápor býva ~20–30 min pred headlinerom – doraz **tesne pred** ním.",
+      "image": "/uploads/02.svg",
+      "alt": "door"
+    },
+    {
+      "id": "merch-early",
+      "heading": "Merch: **prvých 10 minút** po štarte",
+      "body": "- Úvodný hype rýchlo **opadne**. Ak zvládneš vynechať prvú skladbu, vezmi merch teraz a vráť sa.\n- So supportom zvaž **merch počas supportu**.",
+      "image": "/uploads/03.svg",
+      "alt": "merch"
+    },
+    {
+      "id": "breaks",
+      "heading": "Prestávky: počas tichších častí, nie pri hitoch",
+      "body": "- WC/bar rieš v **pokojnejších** pasážach, nie pri hitoch ani počas **encore**.\n- Pozri si posledné setlisty a vyčkaj na „deep cuts“.",
+      "image": "/uploads/04.svg",
+      "alt": "pause"
+    }
+  ],
+  "slug": "set-times-merch",
+  "lang": "sk",
+  "coverAlt": "merch line",
+  "status": "published",
+  "readingMinutes": 4,
+  "ctaQuestion": "Chceš viac chytrých tipov? Prihlás sa na novinky AJSEE.",
+  "cover": "/uploads/cover-03.webp",
+  "title": "Načasovanie: príchod & merch (bez radu)",
+  "category": "concert"
+}

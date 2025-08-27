@@ -1,0 +1,42 @@
+{
+  "summary": "Mikor érkezz, mikor vedd meg a merchet sor nélkül, és mikor tarts szünetet – úgy, hogy semmi fontosról ne maradj le.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Miért számít az időzítés",
+      "body": "- A sorok elveszik az élményt – **beléptetés, ruhatár, pult, merch**.\n- Néhány szokással több zene, kevesebb várakozás jut.",
+      "image": "/uploads/01.svg",
+      "alt": "calendar"
+    },
+    {
+      "id": "arrive",
+      "heading": "Érkezés: **30–45 perccel** a headliner előtt",
+      "body": "- **Klub:** gyere korábban (ruhatár, tájékozódás).\n- **Aréna/fesztivál:** nézd meg a hivatalos *set times*-t.\n- A beléptetési csúcs ~20–30 perccel a headliner előtt van – érkezz **kicsivel előtte**.",
+      "image": "/uploads/02.svg",
+      "alt": "door"
+    },
+    {
+      "id": "merch-early",
+      "heading": "Merch: az első **10 percben** a kezdés után",
+      "body": "- A nyitó lelkesedés gyorsan **lecseng**. Ha belefér, hogy az első dalt kihagyd, most vedd meg a merchet és menj vissza.\n- Support esetén próbáld a **merchet a support alatt**.",
+      "image": "/uploads/03.svg",
+      "alt": "merch"
+    },
+    {
+      "id": "breaks",
+      "heading": "Szünetek: a nyugodtabb részekben, nem a slágereknél",
+      "body": "- Mosdó/pult **csendesebb** részekben, ne a slágereknél vagy az **encore** alatt.\n- Nézz rá a legutóbbi setlistekre és várd a „mélyvágásokat”.",
+      "image": "/uploads/04.svg",
+      "alt": "pause"
+    }
+  ],
+  "slug": "set-times-merch",
+  "lang": "hu",
+  "coverAlt": "merch line",
+  "status": "published",
+  "readingMinutes": 4,
+  "ctaQuestion": "Jöhet még több okos koncert-tipp? Iratkozz fel az AJSEE híreire.",
+  "cover": "/uploads/cover-03.webp",
+  "title": "Időzítés: érkezés és merch (sorban állás nélkül)",
+  "category": "concert"
+}

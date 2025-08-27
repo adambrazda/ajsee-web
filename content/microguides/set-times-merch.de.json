@@ -1,0 +1,42 @@
+{
+  "summary": "Ankunft richtig timen, Merch ohne lange Schlangen holen und Pausen clever setzen – ohne Highlights zu verpassen.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Warum Timing zählt",
+      "body": "- Schlangen kosten Show-Zeit – **Einlass, Garderobe, Bar, Merch**.\n- Mit ein paar Gewohnheiten siehst du mehr Musik und weniger Menschenmassen.",
+      "image": "/uploads/01.svg",
+      "alt": "calendar"
+    },
+    {
+      "id": "arrive",
+      "heading": "Ankunft: **30–45 Min. vor dem Headliner**",
+      "body": "- **Club:** etwas früher da sein (Garderobe, Orientierung).\n- **Arena/Festival:** offizielle *Set Times* prüfen.\n- Der Einlass-Peak liegt ~20–30 Min. vor dem Headliner – komm **knapp davor**.",
+      "image": "/uploads/02.svg",
+      "alt": "door"
+    },
+    {
+      "id": "merch-early",
+      "heading": "Merch: die **ersten 10 Minuten** nach Beginn",
+      "body": "- Der Anfangs-Hype flacht schnell ab. Wenn du den ersten Song verschmerzen kannst, hol dir jetzt Merch und kehre zurück.\n- Mit Support lohnt sich **Merch während des Supports**.",
+      "image": "/uploads/03.svg",
+      "alt": "merch"
+    },
+    {
+      "id": "breaks",
+      "heading": "Pausen: in ruhigeren Parts, nicht bei den Hits",
+      "body": "- WC/Bar in **ruhigen Passagen**, nicht bei Hits oder **Encore**.\n- Schau dir aktuelle Setlists an und warte auf die „Deep Cuts“.",
+      "image": "/uploads/04.svg",
+      "alt": "pause"
+    }
+  ],
+  "slug": "set-times-merch",
+  "lang": "de",
+  "coverAlt": "merch line",
+  "status": "published",
+  "readingMinutes": 4,
+  "ctaQuestion": "Mehr clevere Tipps? Abonniere AJSEE-Updates.",
+  "cover": "/uploads/cover-03.webp",
+  "title": "Timing: Ankunft & Merch (ohne Schlange stehen)",
+  "category": "concert"
+}

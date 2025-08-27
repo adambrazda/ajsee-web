@@ -19,6 +19,16 @@
       "title": "Kde koupit bezpečně",
       "summary": "Jak vybrat důvěryhodného prodejce, nejčastější poplatky a proč záleží převod/vrácení.",
       "publishedAt": "2025-08-24T10:55:00Z"
+    },
+    {
+      "language": "cs",
+      "status": "published",
+      "category": "concert",
+      "slug": "set-times-merch",
+      "publishedAt": "2025-08-27T12:18:00Z",
+      "cover": "/uploads/cover-03.webp",
+      "title": "Časový plán: příchod & merch (bez front)",
+      "summary": "Kdy dorazit, abys stihl headlinera, kdy jít pro merch bez front a kdy si dát pauzu. Rychlá taháková verze pro koncerty i festivaly."
     }
   ]
 }

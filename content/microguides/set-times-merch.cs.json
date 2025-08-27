@@ -1,0 +1,42 @@
+{
+  "summary": "Jak chytře načasovat příchod, kdy vyrazit pro merch bez front a kdy si dát pauzu – a přitom nic důležitého nepropásnout.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Proč řešit načasování",
+      "body": "Fronty ukusují čas ze samotného zážitku – **vstup, šatna, bar, merch**. S pár jednoduchými pravidly uvidíš víc hudby a méně lidí před sebou.",
+      "image": "/uploads/01.svg",
+      "alt": "calendar"
+    },
+    {
+      "id": "arrive",
+      "heading": "Příchod: **30–45 min před headlinerem**",
+      "body": "- **Klub:** doraz o něco dřív kvůli šatně a orientaci.\n- **Aréna/festival:** sleduj oficiální *set times*.\n- Největší nápor u vstupu bývá ~20–30 min před headlinerem – přijď **o chlup před** ním.",
+      "image": "/uploads/02.svg",
+      "alt": "door"
+    },
+    {
+      "id": "merch-early",
+      "heading": "Merch: **prvních 10 minut** po startu",
+      "body": "- Po úvodní euforii fronta rychle **řídne**.\n- Nevadí ti vynechat první skladbu? Vezmi merch hned a vrať se.\n- Předkapela? Dává smysl **merch během předkapely**.",
+      "image": "/uploads/03.svg",
+      "alt": "merch"
+    },
+    {
+      "id": "breaks",
+      "heading": "Pauzy: klidnější pasáže, ne hitovky",
+      "body": "- WC/bar řeš v **pomalejších** částech setu – ne při hitech ani během přídavku.\n- Mrkni na minulé setlisty a počkej na „deep cuts“.",
+      "image": "/uploads/04.svg",
+      "alt": "pause"
+    }
+  ],
+  "slug": "set-times-merch",
+  "lang": "cs",
+  "coverAlt": "Fronta na merch u koncertního stánku",
+  "status": "published",
+  "readingMinutes": 4,
+  "ctaQuestion": "Chceš další chytré taháky? Přihlas se k novinkám AJSEE.",
+  "cover": "/uploads/cover-03.webp",
+  "title": "Časový plán: příchod & merch (bez front)",
+  "category": "theatre"
+}

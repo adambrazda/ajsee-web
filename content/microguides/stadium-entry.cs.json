@@ -1,0 +1,49 @@
+{
+  "summary": "Jak projít kontrolou rychleji: malá průhledná taška, bez skla a limity na tekutiny. Powerbanky obvykle ano, selfie tyče ne. Pravidla se liší – vždy si ověř stadion.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Co zrychlí vstup",
+      "body": "- Bezpečnostní kontrola řeší hlavně obsah tašek a zakázané předměty.\n- Pár drobných úprav ušetří minuty – a stres – ještě před turnikety.",
+      "image": "/uploads/01-04.svg",
+      "alt": "Piktogram kontroly u vstupu"
+    },
+    {
+      "id": "clear-bag",
+      "heading": "Malá průhledná taška = rychlejší kontrola",
+      "body": "- Průhledná taška usnadní vizuální kontrolu a často má i vyhrazené koridory.\n- Neber zbytečnosti, drobnosti dej do malého průhledného sáčku a měj je po ruce.",
+      "image": "/uploads/02-04.svg",
+      "alt": "Ikona průhledné tašky"
+    },
+    {
+      "id": "no-glass-liquids",
+      "heading": "Bez skla a limity na tekutiny",
+      "body": "- Skleněné lahve bývají zakázané.\n- Limity na tekutiny se liší – někde jen uzavřená PET, jinde nic.\n- Přelévání u vstupu zdržuje, raději kup až uvnitř.",
+      "image": "/uploads/03-04.svg",
+      "alt": "Ikona zákazu skla a tekutin"
+    },
+    {
+      "id": "tech-accessories",
+      "heading": "Powerbanky obvykle ano, selfie tyče ne",
+      "body": "- Malé powerbanky bývají v pořádku, ale selfie tyče, stativy či dlouhé tyče jsou kvůli bezpečnosti často zakázané.\n- Zkontroluj to předem a vyhneš se úschovnám.",
+      "image": "/uploads/04-04.svg",
+      "alt": "Ikona powerbanky a selfie tyče"
+    },
+    {
+      "id": "check-policy",
+      "heading": "Pravidla se liší – ověř web stadionu",
+      "body": "- Každé místo má vlastní seznam povolených a zakázaných předmětů.\n- Hledej „A–Z Guide“ nebo „Venue policies“.\n- Ušetříš si vracení u vstupu i vyhazování věcí.",
+      "image": "/uploads/05-04.svg",
+      "alt": "Ikona webu stadionu"
+    }
+  ],
+  "slug": "stadium-entry",
+  "lang": "cs",
+  "coverAlt": "Fronta u vstupu na stadion",
+  "status": "published",
+  "readingMinutes": 3,
+  "ctaQuestion": "Máš tip na rychlejší vstup? Napiš do komentářů.",
+  "cover": "/uploads/cover-04.webp",
+  "title": "Rychlejší vstup na stadion",
+  "category": "sport"
+}

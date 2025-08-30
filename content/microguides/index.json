@@ -29,6 +29,16 @@
       "cover": "/uploads/cover-03.webp",
       "title": "Časový plán: příchod & merch (bez front)",
       "summary": "Kdy dorazit, abys stihl headlinera, kdy jít pro merch bez front a kdy si dát pauzu. Rychlá taháková verze pro koncerty i festivaly."
+    },
+    {
+      "language": "cs",
+      "status": "published",
+      "category": "sport",
+      "slug": "stadium-entry",
+      "publishedAt": "2025-08-30T09:57:00Z",
+      "cover": "/uploads/cover-04.webp",
+      "title": "Rychlejší vstup na stadion",
+      "summary": "Jak projít kontrolou rychleji: malá průhledná taška, bez skla a limity na tekutiny. Powerbanky obvykle ano, selfie tyče ne. Pravidla se liší – vždy si ověř stadion."
     }
   ]
 }

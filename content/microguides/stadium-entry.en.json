@@ -1,0 +1,49 @@
+{
+  "summary": "Speed up security: small clear bag, no glass and liquid limits. Power banks are usually OK; selfie sticks aren’t. Policies vary — always check the venue website.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "What speeds up entry",
+      "body": "- Security focuses on bag contents and prohibited items.\n- A few simple tweaks save minutes (and nerves) before you reach the turnstiles.",
+      "image": "/uploads/01-04.svg",
+      "alt": "Security checkpoint pictogram"
+    },
+    {
+      "id": "clear-bag",
+      "heading": "Small clear bag = faster screening",
+      "body": "- A transparent bag makes visual checks easier — some venues even have dedicated lanes.\n- Pack light and keep small items in a clear pouch.",
+      "image": "/uploads/02-04.svg",
+      "alt": "Clear bag icon"
+    },
+    {
+      "id": "no-glass-liquids",
+      "heading": "No glass; liquid limits apply",
+      "body": "- Glass bottles are commonly banned.\n- Liquid rules differ — sealed plastic only or none at all.\n- Avoid pouring at the gate; buy drinks inside instead.",
+      "image": "/uploads/03-04.svg",
+      "alt": "No glass / liquids icon"
+    },
+    {
+      "id": "tech-accessories",
+      "heading": "Power banks usually OK; no selfie sticks",
+      "body": "- Small power banks are generally fine, but selfie sticks, tripods and long poles are often prohibited.\n- Check in advance to avoid coat-check surprises.",
+      "image": "/uploads/04-04.svg",
+      "alt": "Power bank and selfie stick icon"
+    },
+    {
+      "id": "check-policy",
+      "heading": "Policies vary — check the venue site",
+      "body": "- Each stadium has its own A–Z guide of allowed/forbidden items.\n- A quick look prevents being turned away or binning stuff at the door.",
+      "image": "/uploads/05-04.svg",
+      "alt": "Venue policy"
+    }
+  ],
+  "slug": "stadium-entry",
+  "lang": "en",
+  "coverAlt": "Queue at a stadium entry",
+  "status": "published",
+  "readingMinutes": 3,
+  "ctaQuestion": "Got a tip that saves time? Share it below.",
+  "cover": "/uploads/cover-04.webp",
+  "title": "Get in faster at the stadium",
+  "category": "sport"
+}

@@ -1,0 +1,49 @@
+{
+  "summary": "So geht’s zügiger durch die Kontrolle: kleine transparente Tasche, kein Glas und Flüssigkeitslimits. Powerbanks meist okay, Selfie-Sticks nicht. Regeln variieren – Website der Venue prüfen.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Was den Einlass beschleunigt",
+      "body": "- Sicherheitschecks schauen auf Tascheninhalt und verbotene Gegenstände.\n- Mit ein paar Kniffen sparst du Minuten vor den Drehkreuzen.",
+      "image": "/uploads/01-04.svg",
+      "alt": "Piktogramm Sicherheitskontrolle"
+    },
+    {
+      "id": "clear-bag",
+      "heading": "Kleine transparente Tasche = schnellere Kontrolle",
+      "body": "- Durchsichtige Taschen erleichtern die Sichtprüfung; manche Venues haben eigene Spuren dafür.\n- Packe nur das Nötigste und nutze einen klaren Beutel für Kleinteile.",
+      "image": "/uploads/02-04.svg",
+      "alt": "Icon transparente Tasche"
+    },
+    {
+      "id": "no-glass-liquids",
+      "heading": "Kein Glas, Limits für Flüssigkeiten",
+      "body": "- Glasflaschen sind fast überall verboten. - Flüssigkeitsregeln unterscheiden sich – teils nur versiegelte PET, teils gar nichts.\n- Kauf Getränke besser im Stadion.",
+      "image": "/uploads/03-04.svg",
+      "alt": "Icon: Glas/Flüssigkeiten verboten"
+    },
+    {
+      "id": "tech-accessories",
+      "heading": "Powerbanks meist okay, Selfie-Sticks nicht",
+      "body": "- Kleine Powerbanks sind in der Regel erlaubt, Selfie-Sticks, Stative und Stangen dagegen oft nicht.\n- Vorher nachsehen – spart Ärger an der Garderobe.",
+      "image": "/uploads/04-04.svg",
+      "alt": "Icon Powerbank und Selfie-Stick"
+    },
+    {
+      "id": "check-policy",
+      "heading": "Regeln variieren – prüfe die Venue-Website",
+      "body": "- Jedes Stadion hat eine A–Z-Liste erlaubter/verboter Gegenstände.\n- Kurz nachsehen schützt vor einer Abweisung am Eingang.",
+      "image": "/uploads/05-04.svg",
+      "alt": "Icon Website/Regeln"
+    }
+  ],
+  "slug": "stadium-entry",
+  "lang": "de",
+  "coverAlt": "Warteschlange am Stadioneingang",
+  "status": "published",
+  "readingMinutes": 3,
+  "ctaQuestion": "Hast du einen Zeit-Tipp? Teile ihn mit uns.",
+  "cover": "/uploads/cover-04.webp",
+  "title": "Schneller ins Stadion",
+  "category": "sport"
+}

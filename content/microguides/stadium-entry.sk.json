@@ -1,0 +1,49 @@
+{
+  "summary": "Ako prejsť kontrolou rýchlejšie: malá priehľadná taška, bez skla a limity na tekutiny. Powerbanky zvyčajne áno, selfie tyče nie. Pravidlá sa líšia – over si web štadióna.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Čo urýchli vstup",
+      "body": "- Kontrola rieši obsah tašiek a zakázané predmety. \n- Pár jednoduchých krokov ušetrí čas aj nervy.",
+      "image": "/uploads/01-04.svg",
+      "alt": "Piktogram bezpečnostnej kontroly"
+    },
+    {
+      "id": "clear-bag",
+      "heading": "Malá priehľadná taška = rýchlejšia kontrola",
+      "body": "- Priehľadná taška zjednoduší vizuálnu kontrolu; niektoré štadióny majú na ňu aj zvláštne koridory.\n- Ber len nevyhnutné veci a drobnosti maj pripravené.",
+      "image": "/uploads/02-04.svg",
+      "alt": "Ikona priehľadnej tašky"
+    },
+    {
+      "id": "no-glass-liquids",
+      "heading": "Bez skla a limity na tekutiny",
+      "body": "- Sklenené fľaše sú často zakázané.\n- Limity na tekutiny sa líšia – niekde iba zapečatené PET, inde vôbec nič.\n- Nápoje radšej kúp dnu.",
+      "image": "/uploads/03-04.svg",
+      "alt": "\"Ikona zákazu skla a tekutín"
+    },
+    {
+      "id": "tech-accessories",
+      "heading": "Powerbanky zvyčajne áno, selfie tyče nie",
+      "body": "- Menšie powerbanky bývajú v poriadku, no selfie tyče, statívy a dlhé tyče sú často zakázané.\n- Predídeš tak zdržaniu pri vstupe.",
+      "image": "/uploads/04-04.svg",
+      "alt": "Ikona powerbanky a selfie tyče"
+    },
+    {
+      "id": "check-policy",
+      "heading": "Pravidlá sa líšia – skontroluj web štadióna",
+      "body": "- Každé miesto má vlastné A–Z pravidlá. \n- Krátka kontrola ťa zachráni pred otočkou od dverí.",
+      "image": "/uploads/05-04.svg",
+      "alt": "Ikona webu a pravidiel"
+    }
+  ],
+  "slug": "stadium-entry",
+  "lang": "sk",
+  "coverAlt": "Rad pri vstupe na štadión",
+  "status": "published",
+  "readingMinutes": 3,
+  "ctaQuestion": "Máš šikovný tip? Napíš ho do komentárov.",
+  "cover": "/uploads/cover-04.webp",
+  "title": "Rýchlejší vstup na štadión",
+  "category": "sport"
+}

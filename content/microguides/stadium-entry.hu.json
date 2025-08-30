@@ -1,0 +1,49 @@
+{
+  "summary": "Így haladsz gyorsabban az ellenőrzésen: kis átlátszó táska, üveg tilos és folyadék-korlátok. Power bank többnyire oké, szelfibot nem. A szabályok eltérhetnek — nézd meg a helyszín honlapját.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Mi gyorsítja a beléptetést",
+      "body": "- A biztonsági ellenőrzés a táskák tartalmára és tiltott tárgyakra figyel.\n- Néhány apróság perc(ek)et spórolhat a kapuknál.",
+      "image": "/uploads/01-04.svg",
+      "alt": "Biztonsági ellenőrzés piktogram"
+    },
+    {
+      "id": "clear-bag",
+      "heading": "Kis átlátszó táska = gyorsabb ellenőrzés",
+      "body": "- Az átlátszó táska megkönnyíti a vizuális ellenőrzést; egyes helyeken külön sáv is van rá.\n- Csak a szükségest vidd, az apróságokat tedd átlátszó tasakba.",
+      "image": "/uploads/02-04.svg",
+      "alt": "Átlátszó táska ikon"
+    },
+    {
+      "id": "no-glass-liquids",
+      "heading": "Üveg tilos, folyadék-korlátok",
+      "body": "- Az üvegpalackot többnyire nem engedik be. \n- A folyadékszabályok eltérők — lezárt PET vagy semmi.\n- Jobb bent venni italt, mint a kapunál tölteni.",
+      "image": "/uploads/03-04.svg",
+      "alt": "Üveg és folyadék tiltás ikon"
+    },
+    {
+      "id": "tech-accessories",
+      "heading": "Power bank többnyire oké, szelfibot nem",
+      "body": "- A kisméretű power bank általában rendben van, a szelfibot, állványok és hosszú rudak viszont gyakran tiltottak.\n- Nézd meg előre a szabályzatot.",
+      "image": "/uploads/04-04.svg",
+      "alt": "Power bank és szelfibot ikon"
+    },
+    {
+      "id": "check-policy",
+      "heading": "Eltérő szabályok — nézd meg a helyszín honlapját",
+      "body": "- Minden stadionnak van A–Z útmutatója a bevihető/tiltott tárgyakról.\n- Egy gyors ellenőrzés megóv a visszafordítástól.",
+      "image": "/uploads/05-04.svg",
+      "alt": "Szabályzat / webhely ikon"
+    }
+  ],
+  "slug": "stadium-entry",
+  "lang": "hu",
+  "coverAlt": "Sor a stadion bejáratánál",
+  "status": "published",
+  "readingMinutes": 3,
+  "ctaQuestion": "Van egy bevált trükköd? Oszd meg velünk!",
+  "cover": "/uploads/cover-04.webp",
+  "title": "Gyorsabb bejutás a stadionba",
+  "category": "sport"
+}

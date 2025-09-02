@@ -1,0 +1,20 @@
+{
+  "summary": "Jak získat last-minute vstupenky do divadla bezpečně a oficiálně: rush, lottery a day seats. Kde hledat, kdy to padá a jaké jsou podmínky.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "O co jde",
+      "body": "- Rush, lottery a day seats** jsou **oficiální** a **legální** způsoby, jak získat last-minute vstupenky do divadel a na muzikály – často za výrazně nižší cenu.\n- Podmínky se liší podle venue a inscenace.",
+      "image": "/uploads/01-05.svg",
+      "alt": "ticket"
+    }
+  ],
+  "slug": "theatre-last-minute",
+  "lang": "cs",
+  "coverAlt": "Interiér divadla – návod AJSEE: jak legálně získat last-minute vstupenky (rush, lottery, day seats)",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-05.webp",
+  "title": "Last-minute bezpečně: rush • lottery • day seats",
+  "category": "theatre"
+}

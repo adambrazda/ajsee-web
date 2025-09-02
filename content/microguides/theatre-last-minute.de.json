@@ -1,0 +1,55 @@
+{
+  "summary": "So kommst du legal und sicher an Last-Minute-Theaterkarten: Rush, Lotterien und Day Seats. Wo suchen, wann die Drops kommen und welche Regeln gelten.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Worum es geht",
+      "body": "- **Rush, Lotterien und Day Seats** sind **offizielle** und **legale** Last-Minute-Optionen mit oft deutlichen Rabatten.\n- Bedingungen unterscheiden sich je nach Bühne/Show.",
+      "image": "/uploads/01-05.svg",
+      "alt": "ticket"
+    },
+    {
+      "id": "s1",
+      "heading": "Schnellstart",
+      "body": "- 1. **Offizielle Quelle**: Theater-Website oder verifizierte Plattform.  \n- 2. **Drop-Zeit** kennen: oft morgens; **Benachrichtigungen aktivieren**.  \n- 3. **Vorbereiten**: Konto, verifizierte E-Mail, Karte, **Ausweis**.",
+      "image": "/uploads/02-05.svg",
+      "alt": "globe"
+    },
+    {
+      "id": "s2",
+      "heading": "Schritt für Schritt",
+      "body": "- 1. *Rush* / *Lotterie* / *Day Seats* auswählen.  \n- 2. Exakte **Release-Zeiten** und **Deadlines** beachten.  \n- 3. **Limits (oft 2)** und **zugewiesene Plätze** akzeptieren.  \n- 4. Teilweise **Abholung an der Kasse** und **alle Besucher anwesend**.  \n- 5. Kein Erfolg? **Matinee**, **Wochentage** oder **Returns** prüfen.\n\n",
+      "image": "/uploads/03-05.svg",
+      "alt": "bell"
+    },
+    {
+      "id": "s3",
+      "heading": "Typische Regeln",
+      "body": "- **ID-Kontrolle** (inkl. Student/Young-Person-Angebote).  \n- **Stückzahl-Limits** (oft 2 pro Person/Konto/Tag).  \n- **Zugewiesene Plätze**, teils eingeschränkte Sicht.  \n- Häufig **nicht übertragbar**, **kein Weiterverkauf**.  \n- **Gebühren & Währung** beachten.",
+      "image": "/uploads/04-05.svg",
+      "alt": "id"
+    },
+    {
+      "id": "s4",
+      "heading": "Sicher bleiben",
+      "body": "- Nur **offizielle Kanäle** nutzen.  \n- **Schwarzmarkt** meiden, ebenso Screenshot-„Tickets“ und zweifelhafte Zahlungen.  \n- **AGB** und Rückerstattungen lesen.  \n- Für **barrierefreie Plätze** direkt das **Theater** kontaktieren.",
+      "image": "/uploads/06-05.svg",
+      "alt": "lock"
+    },
+    {
+      "id": "s5",
+      "heading": "FAQ",
+      "body": "- **Unterschiede?** Rush = wer zuerst kauft; Lotterie = Losverfahren; Day Seats = begrenzte Tageskontingente.  \n- **Sitzplatzauswahl?** Meist **nein** – Plätze werden **zugewiesen**.  \n- **Touristen?** In der Regel ja, sofern die Bedingungen es erlauben.  \n- **Ausfall/Erstattung?** Gemäß **Verkäufer/Veranstalter-Richtlinien**.\n\n",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "theatre-last-minute",
+  "lang": "de",
+  "coverAlt": "Theaterinnenraum – AJSEE-Leitfaden: legal an Last-Minute-Tickets kommen (Rush, Lotterie, Day Seats)",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-05.webp",
+  "title": "Last-Minute legal: Rush • Lotterie • Day Seats",
+  "category": "theatre"
+}

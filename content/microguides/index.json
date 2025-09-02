@@ -39,6 +39,16 @@
       "cover": "/uploads/cover-04.webp",
       "title": "Rychlejší vstup na stadion",
       "summary": "Jak projít kontrolou rychleji: malá průhledná taška, bez skla a limity na tekutiny. Powerbanky obvykle ano, selfie tyče ne. Pravidla se liší – vždy si ověř stadion."
+    },
+    {
+      "language": "cs",
+      "status": "published",
+      "category": "theatre",
+      "slug": "theatre-last-minute",
+      "publishedAt": "2025-09-02T16:52:00Z",
+      "cover": "/uploads/cover-05.webp",
+      "title": "Last-minute bezpečně: rush • lottery • day seats",
+      "summary": "Jak získat last-minute vstupenky do divadla bezpečně a oficiálně: rush, lottery a day seats. Kde hledat, kdy to padá a jaké jsou podmínky."
     }
   ]
 }

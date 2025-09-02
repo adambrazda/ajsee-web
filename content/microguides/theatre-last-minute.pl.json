@@ -1,0 +1,55 @@
+{
+  "summary": "Jak bezpiecznie i legalnie zdobyć bilety last-minute do teatru: rush, loteria i day seats. Gdzie szukać, kiedy są dropy i jakie są zasady.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Na czym to polega",
+      "body": "- **Rush, loterie i day seats** to **oficjalne**, **legalne** sposoby na last-minute bilety w niższej cenie. - Zasady różnią się w zależności od teatru i spektaklu.",
+      "image": "/uploads/01-05.svg",
+      "alt": "ticket"
+    },
+    {
+      "id": "s1",
+      "heading": "Szybki start",
+      "body": "- 1. **Oficjalne źródło:** strona teatru lub zweryfikowana platforma.  \n- 2. **Godzina udostępnienia:** często rano; **włącz powiadomienia**.  \n- 3. **Przygotuj się:** konto, zweryfikowany e-mail, karta, **dokument tożsamości**.",
+      "image": "/uploads/02-05.svg",
+      "alt": "globe"
+    },
+    {
+      "id": "s2",
+      "heading": "Krok po kroku",
+      "body": "- 1. Wybierz *rush* / *loterię* / *day seats*.  \n- 2. Pilnuj **terminów i godzin**.  \n- 3. Szanuj **limity (zwykle 2)** i **przydzielone miejsca**.  \n- 4. Czasem wymagany **odbiór w kasie** i **obecność wszystkich**.  \n- 5. Nie udało się? Spróbuj **matiné**, **dni powszednie** lub **returns**.",
+      "image": "/uploads/03-05.svg",
+      "alt": "bell"
+    },
+    {
+      "id": "s3",
+      "heading": "Typowe zasady",
+      "body": "- **Weryfikacja ID** (także oferty dla studentów/młodych).  \n- **Limity zakupu** (często 2 na osobę/konto/dzień).  \n- **Przydzielone miejsca**, czasem ograniczona widoczność.  \n- Często **bez możliwości odsprzedaży/przeniesienia**.  \n- **Opłaty i waluta** mogą się różnić.",
+      "image": "/uploads/04-05.svg",
+      "alt": "id"
+    },
+    {
+      "id": "s4",
+      "heading": "Bezpieczeństwo",
+      "body": "- Korzystaj wyłącznie z **oficjalnych kanałów**.  \n- Unikaj **odsprzedawców**, zrzutów ekranu „biletów” i podejrzanych płatności.  \n- Czytaj **regulamin** i zasady zwrotów.  \n- W sprawie **miejsc dostępnych** skontaktuj się bezpośrednio z **teatrem**.",
+      "image": "/uploads/06-05.svg",
+      "alt": "lock"
+    },
+    {
+      "id": "s5",
+      "heading": "FAQ",
+      "body": "- **Różnice?** Rush = kto pierwszy, ten lepszy; Loteria = losowanie prawa zakupu; Day seats = ograniczona pula w dniu spektaklu.  \n- **Wybór miejsc?** Zwykle **nie** — miejsca są **przydzielane**.  \n- **Turyści?** Zazwyczaj tak, jeśli regulamin nie ogranicza.  \n- **Zwroty/odwołanie?** Zgodnie z zasadami **sprzedawcy/teatru**.\n",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "theatre-last-minute",
+  "lang": "pl",
+  "coverAlt": "Wnętrze teatru — przewodnik AJSEE: legalne bilety last-minute (rush, loteria, day seats)",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-05.webp",
+  "title": "Last-minute legalnie: rush • loteria • day seats",
+  "category": "theatre"
+}

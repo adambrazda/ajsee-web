@@ -35,6 +35,13 @@
       "body": "- Drž se **oficiálních zdrojů**.  \n- Vyhni se **překupníkům**, screenshot „vstupenkám“ a podezřelým platbám.  \n- Neřeš nákup přes DM. Čti **VOP** a storno podmínky.  \n- Potřebuješ **bezbariérové** sezení? Napiš přímo **venue**.",
       "image": "/uploads/06-05.svg",
       "alt": "lock"
+    },
+    {
+      "id": "s5",
+      "heading": "FAQ",
+      "body": "- **Rush vs. lottery vs. day seats?**  \n- *Rush* = kdo dřív klikne/koupí. *Lottery* = losování o právo koupit.\n- *Day seats* = omezený počet míst v den představení.  \n\n- **Vyberu si sedadlo?**  \n- Většinou **ne** – místo je **přidělené**.  \n\n- **Můžu jako turista?**  \n- Ano, pokud pravidla neomezují věk/status (student, rezident ap.).  \n\n- **Vrácení peněz při zrušení?**  \n- Řídí se **pravidly prodejce/venue**.\n\n- Glosář\n- **Rush:** rychlý prodej posledních kusů (digitálně/na pokladně).  \n- **Lottery:** slosování o možnost koupit lístek.  \n- **Day seats:** omezené sezení prodávané v den show.  \n- **Returns/standby:** vrácené/neuplatněné lístky u pokladny.",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
     }
   ],
   "slug": "theatre-last-minute",

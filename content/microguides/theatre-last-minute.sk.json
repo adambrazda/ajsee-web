@@ -1,0 +1,55 @@
+{
+  "summary": "Ako získať last-minute lístky do divadla bezpečne a oficiálne: rush, lotéria a day seats. Kde hľadať, kedy to padá a aké sú podmienky.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "O čo ide",
+      "body": "- **Rush, lotéria a day seats** sú **oficiálne** a **legálne** spôsoby, ako získať last-minute lístky za lepšie ceny.\n- Podmienky sa líšia podľa scény.",
+      "image": "/uploads/01-05.svg",
+      "alt": "ticket"
+    },
+    {
+      "id": "s1",
+      "heading": "Rýchly štart",
+      "body": "- 1. **Oficiálny zdroj:** web divadla alebo overená platforma.  \n- 2. **Drop times:** často ráno; zapni **notifikácie**.  \n- 3. **Príprava:** účet, overený e-mail, karta, **doklad totožnosti**.",
+      "image": "/uploads/02-05.svg",
+      "alt": "globe"
+    },
+    {
+      "id": "s2",
+      "heading": "Postup",
+      "body": "- 1. Zvoľ *rush* / *lotériu* / *day seats*.  \n- 2. Sleduj presný čas spustenia a **deadliny**.  \n- 3. Rešpektuj **limity (zvyčajne 2 ks)** a **pridelené miesta**.  \n- 4. Niektoré ponuky vyžadujú **osobné vyzdvihnutie** a **prítomnosť všetkých**.  \n- 5. Nevyšlo? Skús **matiné**, **pracovné dni** alebo **returns**.",
+      "image": "/uploads/03-05.svg",
+      "alt": "bell"
+    },
+    {
+      "id": "s3",
+      "heading": "Typické pravidlá",
+      "body": "- **ID kontrola** (študentské/„young person“ ponuky).  \n- **Limity nákupu** (často 2 ks na osobu/účet/deň).  \n- **Pridelené miesta**, občas obmedzený výhľad.  \n- Zákaz **prepredaja**, niekedy **neprenosné**.  \n- **Poplatky a mena**: platformové poplatky, konverzia.",
+      "image": "/uploads/04-05.svg",
+      "alt": "id"
+    },
+    {
+      "id": "s4",
+      "heading": "Bezpečnosť",
+      "body": "- Používaj **oficiálne kanály**.  \n- Pozor na **prekupníkov**, screenshot lístkov a podozrivé platby.  \n- Čítaj **VOP** a refund podmienky.  \n- Pre **bezbariérové** miesta kontaktuj **venue**.",
+      "image": "/uploads/06-05.svg",
+      "alt": "lock"
+    },
+    {
+      "id": "s5",
+      "heading": "FAQ",
+      "body": "- **Rozdiely?** Rush = kto skôr kúpi; Lotéria = žreb; Day seats = limitované miesta v deň predstavenia.  \n- **Výber sedadiel?** Väčšinou **nie**.  \n- **Turista?** Zvyčajne áno, ak pravidlá neobmedzujú.  \n- **Zrušené predstavenie?** Podľa **podmienok predajcu/venue**.\n",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "theatre-last-minute",
+  "lang": "sk",
+  "coverAlt": "Interiér divadla – návod AJSEE: jak legálně získat last-minute vstupenky (rush, lottery, day seats)",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-05.webp",
+  "title": "Last-minute legálne: rush • lotéria • day seats",
+  "category": "theatre"
+}

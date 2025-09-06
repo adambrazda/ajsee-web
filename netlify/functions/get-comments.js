@@ -1,65 +1,109 @@
 // netlify/functions/get-comments.js
 export async function handler(event) {
   const cors = {
-    'Access-Control-Allow-Origin': '*',           // zvaž omezení na https://ajsee.cz
+    'Access-Control-Allow-Origin': '*', // pro produkci můžeš nahradit např. 'https://ajsee.cz'
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Content-Type': 'application/json; charset=utf-8',
   };
+
+  // CORS preflight
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers: cors, body: '' };
+    return { statusCode: 204, headers: cors, body: '' };
   }
   if (event.httpMethod !== 'GET') {
-    return { statusCode: 405, headers: cors, body: 'Method Not Allowed' };
+    return { statusCode: 405, headers: cors, body: JSON.stringify({ error: 'Method Not Allowed' }) };
   }
 
   try {
     const SITE_ID = process.env.NETLIFY_SITE_ID;
-    const TOKEN   = process.env.NETLIFY_API_TOKEN;
+    const TOKEN =
+      process.env.NETLIFY_ACCESS_TOKEN ||
+      process.env.NETLIFY_API_TOKEN ||
+      process.env.NETLIFY_TOKEN;
     const FORM_ID = process.env.COMMENTS_FORM_ID || null; // volitelné urychlení
 
     if (!SITE_ID || !TOKEN) {
-      return { statusCode: 500, headers: cors, body: 'Missing NETLIFY_SITE_ID or NETLIFY_API_TOKEN' };
+      return {
+        statusCode: 500,
+        headers: cors,
+        body: JSON.stringify({ error: 'Missing NETLIFY_SITE_ID or NETLIFY_ACCESS_TOKEN/NETLIFY_API_TOKEN' }),
+      };
     }
 
-    const { postId = '', postType = '' } = event.queryStringParameters || {};
+    const qs = event.queryStringParameters || {};
+    const postId   = (qs.postId || '').trim();
+    const postType = (qs.postType || '').trim();
+    const langRaw  = (qs.lang || 'cs').toLowerCase();
+    const lang     = langRaw.split(/[-_]/)[0] || 'cs';
+    const page     = Math.max(1, parseInt(qs.page || '1', 10));
+    const perPage  = Math.min(100, Math.max(1, parseInt(qs.perPage || '100', 10)));
+
     if (!postId || !postType) {
-      return { statusCode: 400, headers: cors, body: 'Missing postId or postType' };
+      return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'Missing postId or postType' }) };
     }
 
     async function api(path) {
       const res = await fetch(`https://api.netlify.com/api/v1${path}`, {
         headers: { Authorization: `Bearer ${TOKEN}` }
       });
-      if (!res.ok) throw new Error(`${res.status} ${path}`);
-      return res.json();
+      if (!res.ok) {
+        const txt = await res.text().catch(() => '');
+        throw new Error(`${res.status} ${path}: ${txt}`);
+      }
+      // Vezmeme si i Link hlavičku (na pozdější paging)
+      const link = res.headers.get('link') || res.headers.get('Link') || '';
+      const data = await res.json();
+      return { data, link };
     }
 
+    // Najdi ID formy (pokud není přes env)
     let formId = FORM_ID;
     if (!formId) {
-      // najdi form "site-comments"
-      const forms = await api(`/sites/${SITE_ID}/forms`);
-      const form = forms.find(f => f.name === 'site-comments');
-      if (!form) return { statusCode: 404, headers: cors, body: 'Form site-comments not found' };
+      const { data: forms } = await api(`/sites/${SITE_ID}/forms`);
+      const form = Array.isArray(forms) ? forms.find(f => f.name === 'site-comments') : null;
+      if (!form) {
+        return { statusCode: 200, headers: cors, body: JSON.stringify({ items: [], pagination: { page, perPage, hasMore: false } }) };
+      }
       formId = form.id;
     }
 
-    // načti submissions (prvních 100; případně stránkuj per_page & page)
-    const subs = await api(`/forms/${formId}/submissions?per_page=100`);
-    // filtr + map
-    const filtered = subs
-      .filter(s => s.data && s.data.postId === postId && s.data.postType === postType && !s.spam)
+    // Stáhni submissions pro danou formu
+    const { data: subs, link } = await api(`/forms/${formId}/submissions?per_page=${perPage}&page=${page}`);
+
+    // Filtrování + mapování na veřejná data
+    const items = (Array.isArray(subs) ? subs : [])
+      .filter(s => !s.spam)
+      .filter(s => {
+        const sLang = String(s.data?.lang || 'cs').toLowerCase().split(/[-_]/)[0] || 'cs';
+        return (
+          String(s.data?.postId || '') === postId &&
+          String(s.data?.postType || '') === postType &&
+          sLang === lang
+        );
+      })
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
       .map(s => ({
         id: s.id,
-        name: String(s.data.name || '').slice(0, 120),
-        website: String(s.data.website || ''),
-        comment: String(s.data.comment || ''),
-        created_at: s.created_at
-      }))
-      // seřadit od nejstaršího
-      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        name: String(s.data?.name || '').slice(0, 120),
+        // E-mail a website NEzveřejňujeme (požadavek)
+        comment: String(s.data?.comment || '').slice(0, 5000),
+        createdAt: s.created_at,
+      }));
 
-    return { statusCode: 200, headers: { ...cors, 'Content-Type': 'application/json' }, body: JSON.stringify(filtered) };
+    // Hrubý odhad hasMore z Link hlavičky (není nutné používat na FE)
+    const hasMore = /\brel="?next"?/i.test(link || '');
+
+    return {
+      statusCode: 200,
+      headers: cors,
+      body: JSON.stringify({ items, pagination: { page, perPage, hasMore } }),
+    };
   } catch (err) {
-    return { statusCode: 500, headers: cors, body: `Error: ${err.message}` };
+    return {
+      statusCode: 500,
+      headers: cors,
+      body: JSON.stringify({ error: String(err && err.message || err) }),
+    };
   }
 }

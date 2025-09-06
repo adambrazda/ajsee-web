@@ -7,8 +7,6 @@
   <meta name="description" content="AJSEE vysvětluje: praktické mikroprůvodce." />
   <link rel="icon" href="/images/logo-ajsee.png" />
   <meta name="theme-color" content="#0077cc" />
-
-  <!-- Hlavní styly -->
   <link rel="stylesheet" href="/styles/globals.css" />
 
   <!-- Nastavení jazyka co nejdříve -->
@@ -37,7 +35,7 @@
     })();
   </script>
 
-  <!-- GA4 (gtag.js) – správné použití Measurement ID: G-K0ZS0D9JLK -->
+  <!-- GA4 (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -49,14 +47,10 @@
   </script>
 </head>
 <body>
-  <!-- (GTM noscript byl odstraněn; používáme čisté GA4 přes gtag.js) -->
-
   <header class="site-header"></header>
 
   <main class="mg" id="mgRoot" hidden>
     <!-- Runtime sem vykreslí breadcrumb, hero, TOC, kroky, mobilní navigaci… -->
-
-    <!-- Mount point pro Share panel (mg-runtime.js si ho přesune za hero) -->
     <div id="mg-share" aria-hidden="true"></div>
   </main>
 
@@ -111,7 +105,7 @@
                     placeholder="Napiš svůj komentář…" data-i18n-placeholder="comments.commentPh"></textarea>
         </div>
 
-        <!-- reCAPTCHA placeholder – Netlify ji sem vloží ve výrobě -->
+        <!-- reCAPTCHA placeholder – Netlify ji sem vloží -->
         <div data-netlify-recaptcha="true"></div>
 
         <div class="form-actions">
@@ -121,7 +115,7 @@
       </div>
     </form>
 
-    <!-- sem budeme renderovat komentáře z Netlify Functions (další krok) -->
+    <!-- sem budeme renderovat komentáře z Netlify Functions -->
     <div id="commentsList" class="comments-list" aria-live="polite"></div>
   </section>
   <!-- COMMENTS: end -->
@@ -133,16 +127,15 @@
   <!-- i18n (pokud používáš) -->
   <script type="module" src="/src/i18n.js"></script>
 
-  <!-- runtime pro micro-guides (uvnitř importuje a volá renderSharePanel z /src/mg-share.js) -->
+  <!-- runtime pro micro-guides -->
   <script type="module" src="/src/mg-runtime.js"></script>
 
   <!-- globální skripty webu -->
   <script type="module" src="/src/main.js"></script>
 
-  <!-- Inline init pro komentáře: nastaví lang/postId/postType a odešle přes fetch -->
+  <!-- Inline init pro komentáře: nastaví lang/postId/postType, načte a odesílá -->
   <script>
     (function () {
-      // Jazyk z URL nebo z <html lang>
       const qs = new URLSearchParams(location.search);
       const lang =
         (qs.get('lang') || document.documentElement.getAttribute('lang') || 'cs')
@@ -155,10 +148,57 @@
       document.getElementById('commentPostType').value = postType;
       document.getElementById('commentPostId').value = postId;
 
-      // Hezčí async submit (stále kompatibilní s Netlify Forms)
-      const form = document.getElementById('commentForm');
       const statusEl = document.getElementById('commentStatus');
+      const listEl = document.getElementById('commentsList');
 
+      const escape = (s='') =>
+        String(s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+
+      function fmtDate(iso) {
+        try {
+          const d = new Date(iso);
+          return d.toLocaleString(lang, { year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+        } catch { return iso; }
+      }
+
+      function renderComments(items) {
+        if (!Array.isArray(items) || !items.length) {
+          listEl.innerHTML = '<p class="comments-empty" data-i18n-key="comments.empty">Zatím žádné komentáře.</p>';
+          return;
+        }
+        listEl.innerHTML = items.map(it => `
+          <article class="comment-item" data-id="${escape(it.id)}">
+            <header class="comment-head">
+              <strong class="comment-author">${escape(it.name || 'Anonym')}</strong>
+              <time class="comment-date" datetime="${escape(it.createdAt)}">${escape(fmtDate(it.createdAt))}</time>
+            </header>
+            <div class="comment-body"><p>${escape(it.comment).replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>')}</p></div>
+          </article>
+        `).join('');
+      }
+
+      async function loadComments() {
+        try {
+          const url = new URL('/.netlify/functions/get-comments', location.origin);
+          url.searchParams.set('postId', postId);
+          url.searchParams.set('postType', postType);
+          url.searchParams.set('lang', lang);
+          const r = await fetch(url.toString(), { headers: { 'Accept': 'application/json' } });
+          const data = await r.json();
+          renderComments(data.items || []);
+        } catch (e) {
+          listEl.innerHTML = '<p class="comments-error">Komentáře nelze načíst.</p>';
+        }
+      }
+
+      // Načíst hned po otevření
+      loadComments();
+
+      // Odeslání (stále kompatibilní s Netlify Forms)
+      const form = document.getElementById('commentForm');
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         const fd = new FormData(form);
@@ -172,7 +212,7 @@
         .then(() => {
           statusEl.textContent = (lang === 'cs') ? 'Díky! Komentář byl odeslán.' : 'Thanks! Your comment was submitted.';
           form.reset();
-          // TODO: po napojení Functions: refresh komentářů
+          setTimeout(loadComments, 1200);
         })
         .catch(() => {
           statusEl.textContent = (lang === 'cs') ? 'Odeslání se nepodařilo.' : 'Submission failed.';

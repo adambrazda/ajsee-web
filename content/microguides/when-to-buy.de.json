@@ -1,0 +1,41 @@
+{
+  "summary": "Mit dem richtigen Timing das Dynamic Pricing zu deinem Vorteil nutzen.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Worum es geht",
+      "body": "- Preise reagieren auf **Nachfrage, Datum und Auslastung**.\n- Mit gutem Timing spielt Dynamic Pricing **für** dich.",
+      "image": "/uploads/06-01.svg",
+      "alt": "ikona grafu"
+    },
+    {
+      "id": "s1",
+      "heading": "Kurzfazit",
+      "body": "- **Di/Mi** oft bestes Preis-Leistungs-Verhältnis; **Premieren/Wochenenden** teurer.  \n- **Früh buchen** oder **offizielles Last-Minute** erwägen.  \n- **Flexibilität** (Datum/Uhrzeit/Sektion) spart **viel**.",
+      "image": "/uploads/06-02.svg",
+      "alt": "ikona kalendáře"
+    },
+    {
+      "id": "s2",
+      "heading": "Fallstricke",
+      "body": "- Panikkäufe beim ersten Preissprung.\n- Inoffizielle Quellen und Angebote per DM/Privatnachricht.\n- Überteuerte „Pakete“ ohne klare Bedingungen.\n- AGB, Gebühren und Erstattungs-möglichkeiten ignorieren.",
+      "image": "/uploads/06-03.svg",
+      "alt": "avoid"
+    },
+    {
+      "id": "s3",
+      "heading": "FAQ, glossar",
+      "body": "- **Welcher Wochentag ist am günstigsten?** Oft Dienstag/Mittwoch, letztlich entscheidet die Nachfrage.\n- **Lieber auf einen Rabatt warten?** Manchmal, aber bei gefragten Shows steigen Preise oft weiter.\n- **Hilft ein Sitzplan?** Ja — prüfe eine Sektion mit ähnlicher Sicht zu besserem Preis.\n- **Benötige ich barrierefreie Plätze – was tun?** Direkt den Veranstaltungsort/Theater kontaktieren.\n- **Dynamic Pricing** – automatische Preisanpassungen je nach Nachfrage.\n- **Rush/Lotterie/Day Seats** – offizielle Last-Minute-Optionen.\n- **Returns** – zurückgegebene Karten, oft an der Kasse.",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "when-to-buy",
+  "lang": "de",
+  "coverAlt": "Theatersitze und Preiskurve – AJSEE-Leitfaden: wann kaufen, damit Dynamic Pricing für dich arbeitet.",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-06.jpg",
+  "title": "Wann kaufen: Dynamic Pricing & beste Zeitfenster",
+  "category": "theatre"
+}

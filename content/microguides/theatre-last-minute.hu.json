@@ -1,0 +1,55 @@
+{
+  "summary": "Hogyan szerezz last minute színházjegyet biztonságosan és legálisan: rush, lottó és day seats. Hol keresd, mikor vannak dropok és milyen szabályok érvényesek.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Miről van szó",
+      "body": "- A **rush**, a **lottó** és a **day seats** **hivatalos**, **legális** last minute jegylehetőségek, gyakran kedvezményes áron.\n- A szabályok színházanként és előadásonként eltérhetnek.",
+      "image": "/uploads/01-05.svg",
+      "alt": "ticket"
+    },
+    {
+      "id": "s1",
+      "heading": "Gyors indulás",
+      "body": "- 1. **Hivatalos forrás:** a színház weboldala vagy hitelesített platform.  \n- 2. **Kiadási idő:** gyakran reggel; **értesítések bekapcsolása**.  \n- 3. **Felkészülés:** fiók, megerősített e-mail, bankkártya, **személyi igazolvány**.",
+      "image": "/uploads/02-05.svg",
+      "alt": "globe"
+    },
+    {
+      "id": "s2",
+      "heading": "Lépésről lépésre",
+      "body": "- 1. Válassz *rush* / *lottó* / *day seats* opciót.  \n- 2. Figyeld a pontos **időpontokat** és **határidőket**.  \n- 3. Tartsd be a **limitet (gyakran 2 db)** és fogadd el a **kijelölt helyeket**.  \n- 4. Előfordulhat, hogy **pénztári átvétel** és **minden látogató jelenléte** kötelező.  \n- 5. Nem sikerült? Próbáld **matinét**, **hétköznapokat** vagy a **returns** lehetőséget.\n",
+      "image": "/uploads/03-05.svg",
+      "alt": "bell"
+    },
+    {
+      "id": "s3",
+      "heading": "Tipikus szabályok",
+      "body": "- **Személyazonosítás** (diák/young-person ajánlatoknál is).  \n- **Darabszám-korlát** (gyakran 2/fő/fiók/nap).  \n- **Kijelölt ülőhelyek**, időnként korlátozott rálátással.  \n- Gyakran **nem átruházható**, **átértékesítés tilos**.  \n- **Díjak & deviza**: platformdíjak, átváltás előfordulhat.",
+      "image": "/uploads/04-05.svg",
+      "alt": "id"
+    },
+    {
+      "id": "s4",
+      "heading": "Biztonság",
+      "body": "- Csak **hivatalos csatornákat** használj.  \n- Kerüld a **viszonteladókat**, képernyőfotó-„jegyeket” és gyanús fizetéseket.  \n- Olvasd el az **ÁSZF-et** és a visszatérítési szabályokat.  \n- **Akadálymentes helyek** ügyében vedd fel a kapcsolatot a **színházzal**.",
+      "image": "/uploads/06-05.svg",
+      "alt": "lock"
+    },
+    {
+      "id": "s5",
+      "heading": "GYIK",
+      "body": "- **Különbségek?** Rush = aki gyors, nyer; Lottó = sorsolás a vásárlási jogért; Day seats = korlátozott napi helyek.  \n- **Helyválasztás?** Többnyire **nem** — a helyeket **kiosztják**.  \n- **Turisták?** Általában igen, ha a feltételek engedik.  \n- **Lemondás/visszatérítés?** A **forgalmazó/színház** szabályai szerint.\n",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "theatre-last-minute",
+  "lang": "hu",
+  "coverAlt": "Színház belső tere — AJSEE útmutató: legális last minute jegyek (rush, lottó, day seats).",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-05.webp",
+  "title": "Last minute legálisan: rush • lottó • day seats",
+  "category": "theatre"
+}

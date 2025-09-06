@@ -1,0 +1,55 @@
+{
+  "summary": "How to get last-minute theatre tickets the safe, official way — rush, lotteries and day seats. Where to find them, when drops happen and what the rules are.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "What it is",
+      "body": "- **Rush, lotteries and day seats** are **official** and **legitimate** last-minute ticket options, often at significant discounts.\n- Terms vary by venue/show.",
+      "image": "/uploads/01-05.svg",
+      "alt": "ticket"
+    },
+    {
+      "id": "s1",
+      "heading": "Quick start",
+      "body": "- 1. **Find the official source:** theatre website or a verified platform.  \n- 2. **Know the drop time:** often mornings; **enable alerts**.  \n- 3. **Be ready:** account, verified email, card, **ID**.",
+      "image": "/uploads/02-05.svg",
+      "alt": "globe"
+    },
+    {
+      "id": "s2",
+      "heading": "Step-by-step",
+      "body": "- 1. Choose *rush* / *lottery* / *day seats*.  \n- 2. Track exact **release times** and **deadlines**.  \n- 3. Respect **limits (often 2)** and **assigned seating**.  \n- 4. Some offers require **box-office pickup** and **all attendees present**.  \n- 5. Didn’t get it? Try **matinees**, **weekdays**, or **returns**.\n",
+      "image": "/uploads/03-05.svg",
+      "alt": "bell"
+    },
+    {
+      "id": "s3",
+      "heading": "Typical rules",
+      "body": "- **ID checks** (incl. student/young-person offers).  \n- **Purchase limits** (often 2 per person/account/day).  \n- **Assigned seats**, sometimes restricted view.  \n- **No resale / non-transferable** in many cases.  \n- **Fees & currency** may apply.",
+      "image": "/uploads/04-05.svg",
+      "alt": "id"
+    },
+    {
+      "id": "s4",
+      "heading": "Safety",
+      "body": "- Use **official channels** only.  \n- Avoid **resellers**, screenshot “tickets”, and suspicious payment methods.  \n- Read **T&Cs** and refund policies.  \n- For **accessible seating**, contact the **venue** directly.",
+      "image": "/uploads/06-05.svg",
+      "alt": "lock"
+    },
+    {
+      "id": "s5",
+      "heading": "FAQ",
+      "body": "- **Rush vs lottery vs day seats?** Rush = fastest purchase; Lottery = draw for the right to buy; Day seats = limited day-of seats.  \n- **Seat selection?** Usually **no** — seats are **assigned**.  \n- **Tourists?** Usually yes unless restricted by terms.  \n- **Cancellations/refunds?** Per **seller/venue** policy.\n\n",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "theatre-last-minute",
+  "lang": "en",
+  "coverAlt": " Theatre interior — AJSEE guide to getting last-minute tickets legally (rush, lottery, day seats).",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-05.webp",
+  "title": "Last-minute the right way: rush • lottery • day seats",
+  "category": "theatre"
+}

@@ -1,0 +1,55 @@
+{
+  "summary": "Jak získat last-minute vstupenky do divadla bezpečně a oficiálně: rush, lottery a day seats. Kde hledat, kdy to padá a jaké jsou podmínky.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "O co jde",
+      "body": "- **Rush, lottery a day seats** jsou **oficiální** a **legální** způsoby, jak získat last-minute vstupenky do divadel a na muzikály – často za výrazně nižší cenu.\n- Podmínky se liší podle venue a inscenace.",
+      "image": "/uploads/01-05.svg",
+      "alt": "ticket"
+    },
+    {
+      "id": "s1",
+      "heading": "Rychlý start (3 kroky)",
+      "body": "- 1. **Najdi oficiální zdroj:** web divadla nebo ověřenou platformu show.  \n- 2. **Sleduj drop time:** často ráno. Zapni si **upozornění**.  \n- 3. **Připrav se:** účet, ověřený e-mail, karta, **ID** u sebe.\n",
+      "image": "/uploads/02-05.svg",
+      "alt": "globe"
+    },
+    {
+      "id": "s2",
+      "heading": "Jak na to — krok za krokem",
+      "body": "- 1. **Vyber nabídku:** *rush*, *lottery* nebo *day seats* (viz glosář).  \n- 2. **Časování:** zkontroluj přesný čas spuštění; u loterie dodrž **uzávěrku**.  \n- 3. **Nákup / vstup do loterie:** respektuj limity (často **max 2 ks**) a **přidělená místa**.  \n- 4. **Potvrzení & vyzvednutí:** některé nabídky vyžadují **osobní vyzvednutí** v box office a **přítomnost všech návštěvníků**.  \n- 5. **Plán B:** nevyšlo to? Zkus **matiné, všední dny**, **returns** nebo další den.\n",
+      "image": "/uploads/03-05.svg",
+      "alt": "bell"
+    },
+    {
+      "id": "s3",
+      "heading": "Pravidla se liší (typicky)",
+      "body": "- **ID kontrola** (včetně studentských/„young person“ nabídek).  \n- **Limit kusů** (často 2 na osobu/účet/den).  \n- **Přidělená místa** (někdy omezený výhled).  \n- **Bez převodu:** zákaz přeprodeje, někdy **nutná osobní přítomnost kupujícího**.  \n- **Poplatky & měna:** platformní poplatky, měnová konverze.",
+      "image": "/uploads/04-05.svg",
+      "alt": "id"
+    },
+    {
+      "id": "s4",
+      "heading": "Bezpečně & bez rizika",
+      "body": "- Drž se **oficiálních zdrojů**.  \n- Vyhni se **překupníkům**, screenshot „vstupenkám“ a podezřelým platbám.  \n- Neřeš nákup přes DM. Čti **VOP** a storno podmínky.  \n- Potřebuješ **bezbariérové** sezení? Napiš přímo **venue**.",
+      "image": "/uploads/06-05.svg",
+      "alt": "lock"
+    },
+    {
+      "id": "s5",
+      "heading": "FAQ",
+      "body": "- **Rush vs. lottery vs. day seats?**  \n- *Rush* = kdo dřív klikne/koupí. *Lottery* = losování o právo koupit.\n- *Day seats* = omezený počet míst v den představení.  \n- **Vyberu si sedadlo?**  \n- Většinou **ne** – místo je **přidělené**.  \n- **Můžu jako turista?**  \n- Ano, pokud pravidla neomezují věk/status (student, rezident ap.).  \n- **Vrácení peněz při zrušení?**  \n- Řídí se **pravidly prodejce/venue**.\n- Glosář\n- **Rush:** rychlý prodej posledních kusů (digitálně/na pokladně).  \n- **Lottery:** slosování o možnost koupit lístek.  \n- **Day seats:** omezené sezení prodávané v den show.  \n- **Returns/standby:** vrácené/neuplatněné lístky u pokladny.",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "theatre-last-minute",
+  "lang": "cs",
+  "coverAlt": "Interiér divadla – návod AJSEE: jak legálně získat last-minute vstupenky (rush, lottery, day seats)",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-05.webp",
+  "title": "Last-minute bezpečně: rush • lottery • day seats",
+  "category": "theatre"
+}

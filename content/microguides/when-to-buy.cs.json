@@ -1,0 +1,41 @@
+{
+  "summary": "Jak načasovat nákup vstupenek, porozumět poptávkové křivce a využít dynamické ceny ve svůj prospěch.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "O co jde",
+      "body": "- Ceny vstupenek se mění podle **poptávky, termínu a obsazenosti**.\n- Dobrá zpráva: načasování umí pracovat **pro vás**, ne proti vám.",
+      "image": "/uploads/06-01.svg",
+      "alt": "ikona grafu"
+    },
+    {
+      "id": "s1",
+      "heading": "Rychlá doporučení (TL;DR)",
+      "body": "- **Út/St bývají nejvýhodnější**, premiéry/víkendy nejdražší.  \n- Zvažte **velký předstih** nebo **legální last-minute** – podle poptávky.  \n- **Flexibilita** v datu/čase/sekci = **úspora**.  \n- Sledujte **poplatky a měnu**; nastavte si **upozornění**.",
+      "image": "/uploads/06-02.svg",
+      "alt": "ikona kalendáře"
+    },
+    {
+      "id": "s2",
+      "heading": "Čemu se vyhnout",
+      "body": "- Panické nákupy při prvním zdražení.  \n- Neoficiální zdroje a DM nabídky.  \n- Předražené „balíčky“ bez jasných podmínek.  \n- Ignorování **VOP**, poplatků a možností **refundace**.",
+      "image": "/uploads/06-03.svg",
+      "alt": "avoid"
+    },
+    {
+      "id": "s3",
+      "heading": "FAQ, glosář",
+      "body": "- **Který den v týdnu je nejlevnější?** Často **úterý/středa**, ale řídí se to poptávkou.  \n- **Je lepší čekat na slevu?** Někdy ano, ale u populárních titulů může cena dál růst.  \n- **Pomůže seating map?** Ano — zvažte sekci s podobným výhledem za lepší cenu.  \n- **Co když potřebuji bezbariérové místo?** Kontaktujte přímo **venue**.\n- **Dynamické ceny** – automatické úpravy ceny podle poptávky.  \n- **Rush/Lottery/Day seats** – oficiální last-minute možnosti.  \n- **Returns** – vrácené lístky, často u pokladny.\n",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "when-to-buy",
+  "lang": "cs",
+  "coverAlt": "Sedadla v divadle a graf ceny – průvodce AJSEE: kdy koupit, aby dynamické ceny pracovaly pro vás",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-06.jpg",
+  "title": "Kdy koupit: dynamické ceny a nejlepší časová okna",
+  "category": "theatre"
+}

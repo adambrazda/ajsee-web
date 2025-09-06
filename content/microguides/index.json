@@ -19,6 +19,46 @@
       "title": "Kde koupit bezpečně",
       "summary": "Jak vybrat důvěryhodného prodejce, nejčastější poplatky a proč záleží převod/vrácení.",
       "publishedAt": "2025-08-24T10:55:00Z"
+    },
+    {
+      "language": "cs",
+      "status": "published",
+      "category": "concert",
+      "slug": "set-times-merch",
+      "publishedAt": "2025-08-27T12:18:00Z",
+      "cover": "/uploads/cover-03.webp",
+      "title": "Časový plán: příchod & merch (bez front)",
+      "summary": "Kdy dorazit, abys stihl headlinera, kdy jít pro merch bez front a kdy si dát pauzu. Rychlá taháková verze pro koncerty i festivaly."
+    },
+    {
+      "language": "cs",
+      "status": "published",
+      "category": "sport",
+      "slug": "stadium-entry",
+      "publishedAt": "2025-08-30T09:57:00Z",
+      "cover": "/uploads/cover-04.webp",
+      "title": "Rychlejší vstup na stadion",
+      "summary": "Jak projít kontrolou rychleji: malá průhledná taška, bez skla a limity na tekutiny. Powerbanky obvykle ano, selfie tyče ne. Pravidla se liší – vždy si ověř stadion."
+    },
+    {
+      "language": "cs",
+      "status": "published",
+      "category": "theatre",
+      "slug": "theatre-last-minute",
+      "publishedAt": "2025-09-02T16:52:00Z",
+      "cover": "/uploads/cover-05.webp",
+      "title": "Last-minute bezpečně: rush • lottery • day seats",
+      "summary": "Jak získat last-minute vstupenky do divadla bezpečně a oficiálně: rush, lottery a day seats. Kde hledat, kdy to padá a jaké jsou podmínky."
+    },
+    {
+      "language": "cs",
+      "status": "published",
+      "category": "theatre",
+      "slug": "when-to-buy",
+      "publishedAt": "2025-09-06T14:27:00Z",
+      "cover": "/uploads/cover-06.jpg",
+      "title": "Kdy koupit: dynamické ceny a nejlepší časová okna",
+      "summary": "Jak načasovat nákup vstupenek, porozumět poptávkové křivce a využít dynamické ceny ve svůj prospěch."
     }
   ]
 }

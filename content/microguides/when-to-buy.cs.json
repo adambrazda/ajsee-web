@@ -1,5 +1,14 @@
 {
   "summary": "Jak načasovat nákup vstupenek, porozumět poptávkové křivce a využít dynamické ceny ve svůj prospěch.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "O co jde",
+      "body": "- Ceny vstupenek se mění podle **poptávky, termínu a obsazenosti**.\n- Dobrá zpráva: načasování umí pracovat **pro vás**, ne proti vám.",
+      "image": "/uploads/06-01.svg",
+      "alt": "ikona grafu"
+    }
+  ],
   "slug": "when-to-buy",
   "lang": "cs",
   "coverAlt": "Sedadla v divadle a graf ceny – průvodce AJSEE: kdy koupit, aby dynamické ceny pracovaly pro vás",

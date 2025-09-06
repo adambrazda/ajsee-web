@@ -1,0 +1,41 @@
+{
+  "summary": "Időzítés, kereslet és rugalmasság – így dolgoznak a dinamikus árak neked.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Miről van szó",
+      "body": "- A jegyárak **kereslet és időpont** szerint változnak.\n- A jó **időzítés** a te oldaladra állíthatja a rendszert.",
+      "image": "/uploads/06-01.svg",
+      "alt": "ikona grafu"
+    },
+    {
+      "id": "s1",
+      "heading": "Gyors tippek",
+      "body": "- **Kedd/Szerda** gyakran a legjobb ár/élmény; **premierek/hétvégék** drágábbak.  \n- **Elővét** vagy **hivatalos last-minute** – helyzettől függően mindkettő nyerő.  \n- **Rugalmasság** (dátum/idő/szekció) = **megtakarítás**.",
+      "image": "/uploads/06-02.svg",
+      "alt": "ikona kalendáře"
+    },
+    {
+      "id": "s2",
+      "heading": "Mit érdemes elkerülni",
+      "body": "- Pánikvásárlás az első áremelésnél.\n- Nem hivatalos források és DM-ben érkező ajánlatok.\n- Túlárazott „csomagok” tiszta feltételek nélkül.\n- ÁSZF, díjak és visszatérítési lehetőségek figyelmen kívül hagyása.",
+      "image": "/uploads/06-03.svg",
+      "alt": "avoid"
+    },
+    {
+      "id": "s3",
+      "heading": "GYIK, szójegyzék",
+      "body": "- **A hét melyik napja a legolcsóbb?** Gyakran kedd/szerda, de a kereslet dönt.\n- **Érdemes megvárni az akciót?** Néha igen, de felkapott előadásoknál az ár tovább nőhet.\n- **Segít az ülésrend/üléstérkép?** Igen — válassz hasonló rálátású szekciót jobb áron.\n- **Akadálymentes helyet keresek – hogyan?** Vedd fel a kapcsolatot közvetlenül a színházzal.\n- **Dinamikus árképzés** – automatikus árváltozás a kereslet szerint.\n- **Rush/Lottó/Day seats** – hivatalos last-minute lehetőségek.\n- **Returns** – visszavitt/újra kiadott jegyek, gyakran a pénztárnál.",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "when-to-buy",
+  "lang": "hu",
+  "coverAlt": "Nézőtér és árdiagram — AJSEE útmutató: mikor vásárolj, hogy a dinamikus árak neked kedvezzenek",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-06.jpg",
+  "title": "Mikor érdemes venni: dinamikus árak és ideális időablakok",
+  "category": "theatre"
+}

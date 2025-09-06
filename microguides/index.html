@@ -7,6 +7,8 @@
   <meta name="description" content="AJSEE vysvětluje: praktické mikroprůvodce." />
   <link rel="icon" href="/images/logo-ajsee.png" />
   <meta name="theme-color" content="#0077cc" />
+
+  <!-- Hlavní styly -->
   <link rel="stylesheet" href="/styles/globals.css" />
 
   <!-- Nastavení jazyka co nejdříve -->
@@ -54,10 +56,7 @@
   <main class="mg" id="mgRoot" hidden>
     <!-- Runtime sem vykreslí breadcrumb, hero, TOC, kroky, mobilní navigaci… -->
 
-    <!-- Mount point pro Share panel.
-         POZOR: mg-runtime.js tento element po vyrenderování <section class="mg-hero"> přesune
-         přímo ZA hero (pomocí insertAdjacentElement('afterend', ...)), případně vytvoří nový,
-         pokud by nebyl k dispozici. -->
+    <!-- Mount point pro Share panel (mg-runtime.js si ho přesune za hero) -->
     <div id="mg-share" aria-hidden="true"></div>
   </main>
 
@@ -112,7 +111,7 @@
                     placeholder="Napiš svůj komentář…" data-i18n-placeholder="comments.commentPh"></textarea>
         </div>
 
-        <!-- reCAPTCHA placeholder – Netlify ji sem vloží -->
+        <!-- reCAPTCHA placeholder – Netlify ji sem vloží ve výrobě -->
         <div data-netlify-recaptcha="true"></div>
 
         <div class="form-actions">

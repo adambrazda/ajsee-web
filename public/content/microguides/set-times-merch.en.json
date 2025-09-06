@@ -1,0 +1,42 @@
+{
+  "summary": "Time your arrival, grab merch without queues, and take breaks at the right moment — without missing the good stuff.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Why timing matters",
+      "body": "- Queues steal showtime — **entry, cloakroom, bar, merch**.\n- A few simple habits mean more music and fewer lines.",
+      "image": "/uploads/01.svg",
+      "alt": "calendar"
+    },
+    {
+      "id": "arrive",
+      "heading": "Arrival: **30–45 min before the headliner**",
+      "body": "- **Clubs:** arrive earlier for cloakroom and bearings.\n- **Arenas/Festivals:** check official *set times*.\n- Entry peak hits ~20–30 min pre-headliner — come **slightly ahead** of it.",
+      "image": "/uploads/02.svg",
+      "alt": "door"
+    },
+    {
+      "id": "merch-early",
+      "heading": "Merch: the **first 10 minutes** after start",
+      "body": "- The opening hype fades fast.\n- If you can skip the first song, grab merch now and head back.\n- With a support act, consider **merch during support**.",
+      "image": "/uploads/03.svg",
+      "alt": "merch"
+    },
+    {
+      "id": "breaks",
+      "heading": "Breaks: quieter parts, not the hits",
+      "body": "- WC/bar during **slow numbers**, not during hits or the **encore**.\n- Skim recent setlists and wait for the \\\"deep cuts\\\".",
+      "image": "/uploads/04.svg",
+      "alt": "pause"
+    }
+  ],
+  "slug": "set-times-merch",
+  "lang": "en",
+  "coverAlt": "merch line",
+  "status": "published",
+  "readingMinutes": 4,
+  "ctaQuestion": "Want more smart concert tips? Join AJSEE updates.",
+  "cover": "/uploads/cover-03.webp",
+  "title": "Set times: arrival & merch (no-queue plan)",
+  "category": "theatre"
+}

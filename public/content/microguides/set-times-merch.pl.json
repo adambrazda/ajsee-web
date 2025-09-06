@@ -1,0 +1,42 @@
+{
+  "summary": "Kiedy przyjść, kiedy iść po merch bez czekania i kiedy zrobić przerwę — tak, by nie stracić najważniejszych momentów.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Dlaczego timing ma znaczenie",
+      "body": "- Kolejki zjadają czas koncertu — **wejście, szatnia, bar, merch**.\n- Kilka nawyków to więcej muzyki, mniej stania.",
+      "image": "/uploads/01.svg",
+      "alt": "calendar"
+    },
+    {
+      "id": "arrive",
+      "heading": "Wejście: **30–45 min przed headlinerem**",
+      "body": "- **Klub:** przyjdź wcześniej (szatnia, orientacja).\n- **Arena/festiwal:** sprawdź oficjalne *set times*.\n- Największy tłok jest ~20–30 min przed headlinerem — bądź **odrobinę wcześniej**.",
+      "image": "/uploads/02.svg",
+      "alt": "door"
+    },
+    {
+      "id": "merch-early",
+      "heading": "Merch: **pierwsze 10 minut** po starcie",
+      "body": "- Początkowy hype szybko **opada**. Jeśli możesz odpuścić pierwszy utwór, zrób **merch teraz** i wróć pod scenę.\n- Z supportem rozważ **merch podczas supportu**.",
+      "image": "/uploads/03.svg",
+      "alt": "merch"
+    },
+    {
+      "id": "breaks",
+      "heading": "Przerwy: w spokojniejszych momentach, nie na hitach",
+      "body": "- Toaleta/bar w **cichszych** partiach, nie podczas hitów ani **encore**.\n- Zerknij na ostatnie setlisty i poczekaj na „deep cuts”.",
+      "image": "/uploads/04.svg",
+      "alt": "pause"
+    }
+  ],
+  "slug": "set-times-merch",
+  "lang": "pl",
+  "coverAlt": "merch line",
+  "status": "published",
+  "readingMinutes": 4,
+  "ctaQuestion": "Chcesz więcej sprytnych porad? Zapisz się na aktualności AJSEE.",
+  "cover": "/uploads/cover-03.webp",
+  "title": "Timing: wejście i merch (bez kolejek)",
+  "category": "concert"
+}

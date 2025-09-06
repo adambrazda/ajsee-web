@@ -1,0 +1,49 @@
+{
+  "summary": "Jak przejść kontrolę szybciej: mała przezroczysta torba, bez szkła i limity płynów. Powerbanki zwykle OK, kije do selfie – nie. Zasady się różnią — sprawdź stronę obiektu.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "Co przyspiesza wejście",
+      "body": "- Kontrola skupia się na zawartości toreb i przedmiotach zabronionych.\n- Kilka prostych decyzji oszczędzi ci czasu i nerwów.",
+      "image": "/uploads/01-04.svg",
+      "alt": "Piktogram kontroli bezpieczeństwa"
+    },
+    {
+      "id": "clear-bag",
+      "heading": "\"Mała przezroczysta torba = szybsza kontrola",
+      "body": "- Przezroczysta torba ułatwia sprawdzenie zawartości; czasem są nawet osobne bramki.\n- Spakuj tylko niezbędne rzeczy, drobiazgi włóż do przezroczystej saszetki.",
+      "image": "/uploads/02-04.svg",
+      "alt": "Ikona przezroczystej torby"
+    },
+    {
+      "id": "no-glass-liquids",
+      "heading": "Bez szkła, limity płynów",
+      "body": "- Szklane butelki są zazwyczaj zabronione.\n- Zasady dotyczące płynów różnią się — tylko zaplombowane PET albo wcale.\n- Lepiej kupić napój w środku.",
+      "image": "/uploads/03-04.svg",
+      "alt": "Ikona zakazu szkła i płynów"
+    },
+    {
+      "id": "tech-accessories",
+      "heading": "Powerbanki zwykle OK, kije do selfie – nie",
+      "body": "- Małe powerbanki są na ogół dozwolone, ale kije do selfie, statywy i długie tyczki – często nie.\n- Sprawdź to wcześniej, by uniknąć problemów przy wejściu.",
+      "image": "/uploads/04-04.svg",
+      "alt": "Ikona powerbanku i kija do selfie"
+    },
+    {
+      "id": "check-policy",
+      "heading": "Zasady się różnią — sprawdź stronę obiektu",
+      "body": "- Każdy stadion publikuje listę dozwolonych/zakazanych przedmiotów (A–Z guide).\n- Minuta lektury oszczędzi zawrotkę od wejścia.",
+      "image": "/uploads/05-04.svg",
+      "alt": "Ikona strony z zasadami obiektu"
+    }
+  ],
+  "slug": "stadium-entry",
+  "lang": "pl",
+  "coverAlt": "Kolejka przy wejściu na stadion",
+  "status": "published",
+  "readingMinutes": 3,
+  "ctaQuestion": "Masz swój patent na szybkie wejście? Podziel się nim.",
+  "cover": "/uploads/cover-04.webp",
+  "title": "Szybsze wejście na stadion",
+  "category": "sport"
+}

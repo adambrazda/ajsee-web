@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <title data-i18n-key="blog-detail-title">Blog | AJSEE®</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Hlavní styly bundlované přes Vite (SASS import v main.scss řeší i _comments.scss) -->
   <link rel="stylesheet" href="/src/styles/main.scss">
+
   <link rel="icon" href="/images/logo-ajsee.png">
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
   <script>
@@ -80,7 +84,7 @@
                         placeholder="Napiš svůj komentář…" data-i18n-placeholder="comments.commentPh"></textarea>
             </div>
 
-            <!-- reCAPTCHA placeholder – Netlify ji sem vloží -->
+            <!-- reCAPTCHA placeholder – Netlify ji sem vloží ve výrobě -->
             <div data-netlify-recaptcha="true"></div>
 
             <div class="form-actions">

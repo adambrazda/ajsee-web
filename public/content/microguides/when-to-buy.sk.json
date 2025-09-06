@@ -1,0 +1,41 @@
+{
+  "summary": "Ako načasovať nákup lístkov, využiť dopytovú krivku a ušetriť vďaka flexibilite.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "O čo ide",
+      "body": "- Ceny sa hýbu podľa **dopytu a termínu**.\n- Správnym načasovaním viete získať viac za menej.",
+      "image": "/uploads/06-01.svg",
+      "alt": "ikona grafu"
+    },
+    {
+      "id": "s1",
+      "heading": "Rýchle tipy",
+      "body": "- **Ut/St** bývajú výhodnejšie; **premiéry/víkendy** drahšie.  \n- Zvážte **veľký predstih** alebo **legálne last-minute**.  \n- **Flexibilita** (dátum/čas/sekcia) = **úspora**.\n",
+      "image": "/uploads/06-02.svg",
+      "alt": "ikona kalendáře"
+    },
+    {
+      "id": "s2",
+      "heading": "Čomu sa vyhnúť",
+      "body": "- Panickým nákupom pri prvom zdražení.\n- Neoficiálnym zdrojom a ponukám cez DM/súkromné správy.\n- Predraženým „balíčkom“ bez jasných podmienok.\n- Ignorovaniu VOP, poplatkov a možností refundácie.",
+      "image": "/uploads/06-03.svg",
+      "alt": "avoid"
+    },
+    {
+      "id": "s3",
+      "heading": "FAQ, glosár",
+      "body": "- **Ktorý deň v týždni je najlacnejší?** Často utorok/streda, no riadi sa to dopytom.\n- **Je lepšie čakať na zľavu?** Niekedy áno, ale pri populárnych tituloch môže cena ďalej rásť.\n- **Pomôže plán sály (mapa sedenia)?** Áno — zváž sekciu s podobným výhľadom za lepšiu cenu.\n- **Čo ak potrebujem bezbariérové miesto?** Kontaktuj priamo venue/divadlo.\n- **Dynamické ceny** – automatické úpravy podľa dopytu.\n- **Rush/Lotéria/Day seats** – oficiálne last-minute možnosti.\n- **Returns** – vrátené lístky, často pri pokladni.",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "when-to-buy",
+  "lang": "sk",
+  "coverAlt": "Sedadlá v sále a graf – sprievodca AJSEE: kedy kúpiť, aby dynamické ceny pracovali pre vás",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-06.jpg",
+  "title": "Kedy kúpiť: dynamické ceny a ideálne časové okná",
+  "category": "theatre"
+}

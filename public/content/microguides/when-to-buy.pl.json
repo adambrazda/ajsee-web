@@ -1,0 +1,41 @@
+{
+  "summary": "Jak zaplanować zakup, czytać popyt i oszczędzać dzięki elastyczności.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "O co chodzi",
+      "body": "- Ceny zmieniają się wraz z **popytem i terminem**.\n- Dobre **timing** sprawia, że system działa na twoją korzyść.",
+      "image": "/uploads/06-01.svg",
+      "alt": "ikona grafu"
+    },
+    {
+      "id": "s1",
+      "heading": "Szybkie wnioski",
+      "body": "- **Wt/Śr** często najlepsza wartość; **premiery/weekendy** droższe.  \n- Warto rozważyć **duże wyprzedzenie** lub **oficjalne last-minute**.  \n- **Elastyczność** daty/godziny/sekcji = **oszczędność**.",
+      "image": "/uploads/06-02.svg",
+      "alt": "ikona kalendáře"
+    },
+    {
+      "id": "s2",
+      "heading": "Czego unikać",
+      "body": "- Zakupów „w panice” przy pierwszej podwyżce.\n- Nieoficjalnych źródeł i ofert przez DM/prywatne wiadomości.\n- Przepłaconych „pakietów” bez jasnych warunków.\n- Pomijania regulaminu, opłat i zasad zwrotów.",
+      "image": "/uploads/06-03.svg",
+      "alt": "avoid"
+    },
+    {
+      "id": "s3",
+      "heading": "FAQ, glosariusz",
+      "body": "- **Który dzień tygodnia jest najtańszy?**\nCzęsto wtorek/środa, ale decyduje popyt.\n- **Lepiej czekać na obniżkę?** Bywa, lecz przy popularnych tytułach ceny mogą dalej rosnąć.\n- **Czy pomaga plan sali (seat map)?** Tak — rozważ sektor o podobnym widoku w lepszej cenie.\n- **Potrzebuję miejsca dostępnego/bez barier – co zrobić?** Skontaktuj się bezpośrednio z teatrem/venue.",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "when-to-buy",
+  "lang": "pl",
+  "coverAlt": "Widownia i wykres ceny — przewodnik AJSEE: kiedy kupować, aby dynamiczne ceny działały na twoją korzyść.",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-06.jpg",
+  "title": "Kiedy kupować: dynamiczne ceny i najlepsze okna",
+  "category": "theatre"
+}

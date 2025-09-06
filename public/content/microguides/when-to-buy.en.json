@@ -1,0 +1,41 @@
+{
+  "summary": "Time your purchase, read demand and use flexibility to make dynamic pricing work for you.",
+  "steps": [
+    {
+      "id": "intro",
+      "heading": "What it means",
+      "body": "- Ticket prices shift with **demand, date and availability**.\n- With the right timing, dynamic pricing can work **for** you.",
+      "image": "/uploads/06-01.svg",
+      "alt": "ikona grafu"
+    },
+    {
+      "id": "s1",
+      "heading": "Quick takeaways",
+      "body": "- **Tue/Wed** often best value; **premieres/weekends** cost more.  \n- Consider **far-ahead** booking or **official last-minute**.  \n- **Flexibility** on date/time/section = **savings**.",
+      "image": "/uploads/06-02.svg",
+      "alt": "ikona kalendáře"
+    },
+    {
+      "id": "s2",
+      "heading": "Pitfalls",
+      "body": "- Panic buying at the first price increase.\n- Unofficial sources and offers via DMs/private messages.\n- Overpriced “bundles” with unclear terms.\n- Skipping the T&Cs, fees and refund options.",
+      "image": "/uploads/06-03.svg",
+      "alt": "avoid"
+    },
+    {
+      "id": "s3",
+      "heading": "FAQ, glossary",
+      "body": "- **Cheapest day of the week?** Often Tuesday/Wednesday, but demand rules.\n- **Better to wait for a discount?** Sometimes, but for hot titles prices may keep rising.\n- **Will a seat map help?** Yes — consider a section with a similar view at a better price.\n- **Need accessible seating?** Contact the venue directly.\n- **Dynamic pricing** – automatic price changes based on demand.\n- **Rush/Lottery/Day seats** – official last-minute options.\n- **Returns** – returned tickets, often at the box office.",
+      "image": "/uploads/05-05.svg",
+      "alt": "faq"
+    }
+  ],
+  "slug": "when-to-buy",
+  "lang": "en",
+  "coverAlt": "Auditorium seats and a price graph — AJSEE guide: when to buy so dynamic pricing works for you",
+  "status": "published",
+  "readingMinutes": 5,
+  "cover": "/uploads/cover-06.jpg",
+  "title": "When to buy: dynamic pricing & best windows",
+  "category": "theatre"
+}

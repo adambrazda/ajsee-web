@@ -1,0 +1,95 @@
+/* ==== Comments (AJSEE) ==== */
+.comments {
+  margin-top: 1.6rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(0,0,0,.12);
+
+  .comments-title {
+    font-weight: 800;
+    color: #184469;
+    margin: 0 0 .8rem;
+    letter-spacing: -.01em;
+  }
+
+  form {
+    margin-bottom: 1.2rem;
+  }
+
+  .comments-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .9rem 1rem;
+  }
+  .form-row--full { grid-column: 1 / -1; }
+
+  label {
+    font-size: .94rem;
+    color: #184469;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: .25rem;
+  }
+  input, textarea {
+    width: 100%;
+    border: 1px solid rgba(0,0,0,.14);
+    border-radius: .6rem;
+    padding: .65rem .8rem;
+    font: inherit;
+    line-height: 1.4;
+    &:focus { outline: 2px solid #cfeaff; border-color: #99cef7; }
+  }
+  .hint {
+    display: block;
+    font-size: .8rem;
+    color: rgba(0,0,0,.55);
+    margin-top: .25rem;
+  }
+
+  .form-actions {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: .8rem; margin-top: .2rem;
+    .btn-primary {
+      background: linear-gradient(90deg, #14c2c5 30%, #0077cc 100%);
+      color: #fff; font-weight: 800; border: 0; border-radius: .9rem;
+      padding: .6rem 1.1rem; cursor: pointer;
+      &:hover { transform: translateY(-1px); }
+    }
+    .form-status { font-size: .92rem; color: #184469; }
+  }
+
+  .comments-loading,
+  .comments-empty { color: rgba(0,0,0,.6); }
+
+  .comments-count {
+    margin: .4rem 0 .6rem;
+    font-weight: 800; color: #184469;
+  }
+  .comments-items {
+    list-style: none; padding: 0; margin: 0;
+  }
+  .cmt {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: .6rem .8rem;
+    padding: .75rem 0;
+    border-top: 1px solid rgba(0,0,0,.06);
+    &:first-child { border-top: none; }
+  }
+  .cmt-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-weight: 800; color: #184469;
+    background: #e7f3ff; border: 1px solid #cfeaff;
+  }
+  .cmt-meta {
+    display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap;
+    .cmt-name { font-weight: 700; color: #184469; }
+    .cmt-dot { color: rgba(0,0,0,.35); }
+    .cmt-time { font-size: .85rem; color: rgba(0,0,0,.55); }
+  }
+  .cmt-text { margin: .2rem 0 0; color: #2e455f; line-height: 1.6; }
+
+  @media (max-width: 720px) {
+    .comments-grid { grid-template-columns: 1fr; }
+  }
+}

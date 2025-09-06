@@ -61,6 +61,72 @@
     <div id="mg-share" aria-hidden="true"></div>
   </main>
 
+  <!-- COMMENTS: begin (Netlify Forms – registrace při buildu) -->
+  <section class="comments" id="comments">
+    <h3 class="comments-title" data-i18n-key="comments.title">Komentáře</h3>
+
+    <form
+      id="commentForm"
+      name="site-comments"
+      method="POST"
+      data-netlify="true"
+      data-netlify-recaptcha="true"
+      netlify-honeypot="bot-field"
+    >
+      <!-- Netlify potřebuje form-name -->
+      <input type="hidden" name="form-name" value="site-comments" />
+      <!-- Hidden pole pro identifikaci příspěvku a jazyk -->
+      <input type="hidden" name="postId" id="commentPostId" value="" />
+      <input type="hidden" name="postType" id="commentPostType" value="microguide" />
+      <input type="hidden" name="lang" id="commentLang" value="" />
+
+      <!-- Honeypot -->
+      <p class="hp" hidden>
+        <label>Don’t fill this out: <input name="bot-field" /></label>
+      </p>
+
+      <div class="comments-grid">
+        <div class="form-row">
+          <label for="c_name" data-i18n-key="comments.name">Jméno</label>
+          <input id="c_name" name="name" type="text" required autocomplete="name"
+                 placeholder="Tvoje jméno" data-i18n-placeholder="comments.namePh" />
+        </div>
+
+        <div class="form-row">
+          <label for="c_email" data-i18n-key="comments.email">E-mail</label>
+          <input id="c_email" name="email" type="email" required autocomplete="email"
+                 placeholder="tvuj@email.cz" data-i18n-placeholder="comments.emailPh" />
+          <small class="hint" data-i18n-key="comments.emailHint">E-mail se nezobrazuje veřejně.</small>
+        </div>
+
+        <div class="form-row">
+          <label for="c_website" data-i18n-key="comments.website">Web (nepovinné)</label>
+          <input id="c_website" name="website" type="url"
+                 placeholder="https://tvoje-stranka.cz" data-i18n-placeholder="comments.websitePh" />
+          <small class="hint" data-i18n-key="comments.websiteHint">Web se veřejně nezobrazuje.</small>
+        </div>
+
+        <div class="form-row form-row--full">
+          <label for="c_comment" data-i18n-key="comments.comment">Komentář</label>
+          <textarea id="c_comment" name="comment" rows="5" required
+                    placeholder="Napiš svůj komentář…" data-i18n-placeholder="comments.commentPh"></textarea>
+        </div>
+
+        <!-- reCAPTCHA placeholder – Netlify ji sem vloží -->
+        <div data-netlify-recaptcha="true"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" data-i18n-key="comments.submit">Odeslat komentář</button>
+          <p class="form-status" id="commentStatus" aria-live="polite"></p>
+        </div>
+      </div>
+    </form>
+
+    <!-- sem budeme renderovat komentáře z Netlify Functions (další krok) -->
+    <div id="commentsList" class="comments-list" aria-live="polite"></div>
+  </section>
+  <!-- COMMENTS: end -->
+
   <noscript>Pro zobrazení mikroprůvodce povol JavaScript.</noscript>
 
   <footer class="site-footer"></footer>
@@ -73,5 +139,47 @@
 
   <!-- globální skripty webu -->
   <script type="module" src="/src/main.js"></script>
+
+  <!-- Inline init pro komentáře: nastaví lang/postId/postType a odešle přes fetch -->
+  <script>
+    (function () {
+      // Jazyk z URL nebo z <html lang>
+      const qs = new URLSearchParams(location.search);
+      const lang =
+        (qs.get('lang') || document.documentElement.getAttribute('lang') || 'cs')
+          .toLowerCase().split(/[-_]/)[0];
+      document.getElementById('commentLang').value = lang;
+
+      // Identifikace micro-guide: ?slug=..., fallback pathname
+      let postType = 'microguide';
+      let postId = qs.get('slug') || location.pathname;
+      document.getElementById('commentPostType').value = postType;
+      document.getElementById('commentPostId').value = postId;
+
+      // Hezčí async submit (stále kompatibilní s Netlify Forms)
+      const form = document.getElementById('commentForm');
+      const statusEl = document.getElementById('commentStatus');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const fd = new FormData(form);
+        if (!fd.get('form-name')) fd.set('form-name', 'site-comments');
+
+        fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(fd).toString()
+        })
+        .then(() => {
+          statusEl.textContent = (lang === 'cs') ? 'Díky! Komentář byl odeslán.' : 'Thanks! Your comment was submitted.';
+          form.reset();
+          // TODO: po napojení Functions: refresh komentářů
+        })
+        .catch(() => {
+          statusEl.textContent = (lang === 'cs') ? 'Odeslání se nepodařilo.' : 'Submission failed.';
+        });
+      }, { passive: false });
+    })();
+  </script>
 </body>
 </html>

@@ -6,34 +6,146 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="/src/styles/main.scss">
   <link rel="icon" href="/images/logo-ajsee.png">
-   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-K0ZS0D9JLK');
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-K0ZS0D9JLK');
+  </script>
 </head>
 <body>
 <header class="site-header">
   <!-- ... stejný header jako jinde ... -->
 </header>
+
 <main>
   <section class="blog-detail">
     <div class="container">
-    <a href="/blog.html?lang=cs" class="back-link" data-i18n-key="blog-back">← Zpět na blog</a>
+      <a href="/blog.html?lang=cs" class="back-link" data-i18n-key="blog-back">← Zpět na blog</a>
+
       <article id="blogArticle">
         <!-- Zde dynamicky vkládáme článek podle JS -->
       </article>
+
+      <!-- COMMENTS: begin (Netlify Forms – registrace při buildu) -->
+      <section class="comments" id="comments">
+        <h3 class="comments-title" data-i18n-key="comments.title">Komentáře</h3>
+
+        <form
+          id="commentForm"
+          name="site-comments"
+          method="POST"
+          data-netlify="true"
+          data-netlify-recaptcha="true"
+          netlify-honeypot="bot-field"
+        >
+          <!-- Netlify potřebuje form-name -->
+          <input type="hidden" name="form-name" value="site-comments" />
+          <!-- Hidden pole pro identifikaci příspěvku a jazyk -->
+          <input type="hidden" name="postId" id="commentPostId" value="" />
+          <input type="hidden" name="postType" id="commentPostType" value="blog" />
+          <input type="hidden" name="lang" id="commentLang" value="" />
+
+          <!-- Honeypot (skryté, boty to vyplní) -->
+          <p class="hp" hidden>
+            <label>Don’t fill this out: <input name="bot-field" /></label>
+          </p>
+
+          <div class="comments-grid">
+            <div class="form-row">
+              <label for="c_name" data-i18n-key="comments.name">Jméno</label>
+              <input id="c_name" name="name" type="text" required autocomplete="name"
+                     placeholder="Tvoje jméno" data-i18n-placeholder="comments.namePh" />
+            </div>
+
+            <div class="form-row">
+              <label for="c_email" data-i18n-key="comments.email">E-mail</label>
+              <input id="c_email" name="email" type="email" required autocomplete="email"
+                     placeholder="tvuj@email.cz" data-i18n-placeholder="comments.emailPh" />
+              <small class="hint" data-i18n-key="comments.emailHint">E-mail se nezobrazuje veřejně.</small>
+            </div>
+
+            <div class="form-row">
+              <label for="c_website" data-i18n-key="comments.website">Web (nepovinné)</label>
+              <input id="c_website" name="website" type="url"
+                     placeholder="https://tvoje-stranka.cz" data-i18n-placeholder="comments.websitePh" />
+              <small class="hint" data-i18n-key="comments.websiteHint">Web se veřejně nezobrazuje.</small>
+            </div>
+
+            <div class="form-row form-row--full">
+              <label for="c_comment" data-i18n-key="comments.comment">Komentář</label>
+              <textarea id="c_comment" name="comment" rows="5" required
+                        placeholder="Napiš svůj komentář…" data-i18n-placeholder="comments.commentPh"></textarea>
+            </div>
+
+            <!-- reCAPTCHA placeholder – Netlify ji sem vloží -->
+            <div data-netlify-recaptcha="true"></div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" data-i18n-key="comments.submit">Odeslat komentář</button>
+              <p class="form-status" id="commentStatus" aria-live="polite"></p>
+            </div>
+          </div>
+        </form>
+
+        <!-- sem budeme renderovat komentáře z Netlify Functions (další krok) -->
+        <div id="commentsList" class="comments-list" aria-live="polite"></div>
+      </section>
+      <!-- COMMENTS: end -->
     </div>
   </section>
 </main>
+
 <footer>
   <!-- ... footer ... -->
 </footer>
+
 <script type="module" src="/src/main.js"></script>
 <script type="module" src="/src/blog-detail.js"></script>
+
+<!-- Inline init pro komentáře: nastaví lang/postId/postType a odešle přes fetch -->
+<script>
+  (function () {
+    // Jazyk z URL nebo z <html lang>
+    const qs = new URLSearchParams(location.search);
+    const lang =
+      (qs.get('lang') || document.documentElement.getAttribute('lang') || 'cs')
+        .toLowerCase().split(/[-_]/)[0];
+    document.getElementById('commentLang').value = lang;
+
+    // Identifikace příspěvku
+    // blog-detail typicky používá ?id=..., fallback je pathname
+    let postType = 'blog';
+    let postId = qs.get('id') || location.pathname;
+    document.getElementById('commentPostType').value = postType;
+    document.getElementById('commentPostId').value = postId;
+
+    // Hezčí async submit (stále kompatibilní s Netlify Forms)
+    const form = document.getElementById('commentForm');
+    const statusEl = document.getElementById('commentStatus');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const fd = new FormData(form);
+      if (!fd.get('form-name')) fd.set('form-name', 'site-comments');
+
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(fd).toString()
+      })
+      .then(() => {
+        statusEl.textContent = (lang === 'cs') ? 'Díky! Komentář byl odeslán.' : 'Thanks! Your comment was submitted.';
+        form.reset();
+        // TODO: po napojení Functions: refresh komentářů
+      })
+      .catch(() => {
+        statusEl.textContent = (lang === 'cs') ? 'Odeslání se nepodařilo.' : 'Submission failed.';
+      });
+    }, { passive: false });
+  })();
+</script>
 </body>
 </html>

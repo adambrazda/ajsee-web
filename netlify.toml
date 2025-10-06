@@ -1,7 +1,6 @@
 # netlify.toml
 
 [build]
-  # Uprav podle svého build toolu (Vite apod.)
   command = "npm run build"
   publish = "dist"
 
@@ -9,17 +8,25 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# CORS pro Functions
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+
+# DEV: Vite přes Netlify Dev (reverse proxy na běžící Vite)
 [dev]
-  functions = "netlify/functions"
-  edge_functions = "netlify/edge-functions"
+  command    = "npm run dev -- --port 5173 --strictPort"
+  port       = 8888
+  targetPort = 5173
+  framework  = "vite"
+  autoLaunch = false
 
-# Zapne Edge funkci geo-country pro všechny HTML requesty
-[[edge_functions]]
-  path = "/*"
-  function = "geo-country"
-
-# (Volitelné) Pokud máš čistě SPA routování, odkomentuj fallback:
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200
+# SPA fallback pouze v produkci (v dev proxy necháváme čisté)
+[context.production]
+  [[context.production.redirects]]
+    from = "/*"
+    to   = "/index.html"
+    status = 200

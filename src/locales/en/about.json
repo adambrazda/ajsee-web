@@ -1,0 +1,42 @@
+{
+  "about": {
+    "headline": "About us",
+    "title": "About us | AJSEE®",
+    "hero": {
+      "headlineFull": "Our story. Our vision.",
+      "text": "Experiences know no boundaries. That’s why AJSEE was born.",
+      "subtext": "Our goal is to make cultural, entertainment, and sports events from around the world accessible – clearly, understandably, and without unnecessary barriers when choosing and purchasing tickets.",
+      "claim": "AJSEE<sup>®</sup> is a modern platform for everyone who wants to experience the world to the fullest – without obstacles."
+    },
+    "story": {
+      "headline": "How it all began",
+      "p1": "It was autumn <strong>2024</strong>. We were sitting in a pub, having a beer – and as it happens, <strong>one ordinary conversation sparked something that soon turned into a real idea.</strong>",
+      "p2": "That same evening, the <strong>name AJSEE</strong>, the first logo draft, and the vision were born: <strong>to make global experiences accessible without language barriers.</strong>",
+      "p3": "Then came the hardest part: <strong>to actually start.</strong>",
+      "p4": "We both had full-time jobs, lived <strong>180 kilometers</strong> apart, and time was short. The project stalled before it could even get going.",
+      "p5": "Until one day, one of us <strong>just launched it</strong>. Without a perfect plan, but with the certainty that it made sense. And that’s when AJSEE started becoming real."
+    },
+    "team": {
+      "headline": "Who’s behind it?",
+      "adam": {
+        "name": "Adam Brázda",
+        "role": "Co-founder of AJSEE®",
+        "claim": "Part of AJSEE® from the very first idea. He believes in simple solutions that open the world of experiences without unnecessary barriers.",
+        "linkedin": "LinkedIn profile"
+      },
+      "jan": {
+        "name": "Jan Oujezdský",
+        "role": "Co-founder of AJSEE®",
+        "claim": "From day one, he has shared the vision to make culture, sports and entertainment accessible to as many people as possible. At AJSEE®, he connects ideas, accessibility, and attention to detail.",
+        "linkedin": "LinkedIn profile"
+      }
+    },
+    "future": {
+      "headline": "🎯 Where we're heading",
+      "p1": "We aim to launch the production version of the website by the end of 2025.",
+      "p2": "We're expanding language versions and partnering with international platforms.",
+      "p3": "We're preparing a mobile app and broadening the range of events as well as their accessibility for a wider audience.",
+      "p4": "We want AJSEE to be the first choice for anyone seeking world-class experiences — whether in London, Barcelona, or at home in Brno."
+    }
+  }
+}

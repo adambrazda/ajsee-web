@@ -4,32 +4,84 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title data-i18n-key="events-page-title">Události</title>
-  <!-- (styly bundlu se natahují přes Vite/Netlify v /src/main.js) -->
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+
+  <!-- Favicona: umlčí 404 v dev/prod i bez souborů -->
+  <link rel="icon" href="data:,">
+
+  <!-- Google tag (gtag.js) – jen na HTTPS / produkci -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-K0ZS0D9JLK');
+    (function(){
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1/i.test(location.hostname);
+      if (!isProdHttps) {
+        console.info('[GA] Skipping on non-HTTPS/dev.');
+        return;
+      }
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
+      s.onload = function(){
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-K0ZS0D9JLK');
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <!-- (Varianta C) PRODUKČNÍ origin pro Netlify Functions (vyplň svojí doménou) -->
+  <!-- Příklad: https://tvoje-domena.netlify.app -->
+  <meta name="tm-proxy-base" content="">
+
+  <script>
+    // načti tm-proxy-base z <meta> a dej do globálu
+    (function(){
+      const meta = document.querySelector('meta[name="tm-proxy-base"]');
+      const val = (meta && meta.content || '').trim();
+      window.__TM_PROXY_BASE = val || '';
+      if (!window.__TM_PROXY_BASE) {
+        console.info('[TM] No explicit prod proxy base configured (meta tm-proxy-base is empty).');
+      } else {
+        console.info('[TM] Using explicit prod proxy base:', window.__TM_PROXY_BASE);
+      }
+    })();
+  </script>
+
+  <!-- Zapne inline Ticketmaster render (vypne core events pipeline v main.js) -->
+  <script>window.__AJSEE_SKIP_CORE_EVENTS = true;</script>
+
+  <!-- Modulový loader: v Netlify Dev (8888) načti HMR klient + main.js přímo z Vite (5173) -->
+  <script type="module">
+    (() => {
+      const insertModule = (src) => {
+        const s = document.createElement('script');
+        s.type = 'module';
+        s.src = src;
+        document.head.appendChild(s);
+      };
+      const isNetlifyDev = location.hostname === 'localhost' && location.port === '8888';
+      if (isNetlifyDev) {
+        insertModule('http://localhost:5173/@vite/client');
+        insertModule('http://localhost:5173/src/main.js');
+      } else {
+        insertModule('/src/main.js');
+      }
+    })();
   </script>
 </head>
 <body>
   <!-- Header a navigace -->
   <header class="site-header">
     <div class="header-inner">
-
-      <!-- Logo -->
       <a href="/" class="logo-link" aria-label="Domů">
         <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
       </a>
 
-      <!-- Hamburger menu (pouze mobil) -->
       <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
         <span></span><span></span><span></span>
       </button>
 
-      <!-- Navigace (hlavní menu) -->
       <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
         <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
         <ul>
@@ -63,9 +115,7 @@
         <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
       </div>
 
-      <!-- Overlay pozadí menu -->
       <div class="menu-overlay-bg" aria-hidden="true"></div>
-
     </div>
   </header>
 
@@ -91,12 +141,11 @@
     </section>
 
     <!-- Sekce: Nejbližší události -->
-    <section id="upcoming-events" class="events-upcoming-section" aria-labelledby="events-upcoming-title">
+    <section id="upcoming-events" class="events-upcoming-section" aria-labelledby="events-upcoming-title" aria-busy="true" data-tm-size="6">
       <div class="container">
 
         <!-- FILTRY -->
         <form id="events-filters-form" class="events-filters filter-dock" novalidate data-behavior="sheet" role="search">
-          <!-- TOOLBAR S CHIPY (sticky) -->
           <div class="filters-toolbar" aria-label="Rychlé filtry">
             <div class="chips">
               <button type="button" class="chip" id="chipToday" data-i18n-key="filters.today">Dnes</button>
@@ -160,17 +209,14 @@
             </div>
           </fieldset>
 
-          <!-- CLOSE BTN pro bottom sheet (zobrazí se jen na mobilu) -->
           <button type="button" class="filters-close" id="filtersClose" aria-label="Zavřít filtry"></button>
         </form>
 
-        <!-- FAB pro mobil -->
         <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form" data-i18n-key="filters.open">
           Filtry
         </button>
         <div class="filters-overlay" id="filtersOverlay" hidden aria-hidden="true"></div>
 
-        <!-- Demo badge (moderní pill) -->
         <div class="event-demo-badge" id="demoBadge" role="note" aria-live="polite" aria-label="" data-i18n-aria="event-demo.ariaLabel">
           <span class="ib-icon" aria-hidden="true">✨</span>
           <p class="ib-text">
@@ -184,13 +230,14 @@
 
         <h2 class="events-upcoming-title" id="events-upcoming-title" data-i18n-key="events-upcoming-title">Nejbližší události</h2>
 
-        <!-- seznam karet; JS doplní skeleton, paginaci a “Load more” -->
+        <p id="tm-status" role="status" aria-live="polite" class="events-status"></p>
+        <div id="tm-error" class="events-error" hidden></div>
+
         <div id="eventsList" class="events-list" aria-live="polite"></div>
-        <!-- “Load more” tlačítko se vkládá dynamicky JS (ensureLoadMore) -->
+        <noscript>Pro zobrazení událostí povolte JavaScript.</noscript>
       </div>
     </section>
 
-    <!-- Výhody (sekce je na /events spíš volitelná; lze skrýt přes JS/SCSS) -->
     <section class="events-benefits why-us-section" aria-labelledby="events-benefits-title">
       <div class="container">
         <h3 id="events-benefits-title" data-i18n-key="events-benefits-title">Proč s námi?</h3>
@@ -274,9 +321,197 @@
     <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
   </footer>
 
-  <script type="module" src="/src/main.js"></script>
+  <!-- Ticketmaster – inline s proxy fallbacky (Varianta C) -->
+  <script type="module">
+    // --- helpers
+    const t = (dict, lang) => dict[lang] || dict.en || '';
+    const pickImage = (images = []) => {
+      if (!images.length) return null;
+      const best = images
+        .filter(i => i && i.ratio === '16_9' && (i.width || 0) >= 640)
+        .sort((a,b) => (b.width||0) - (a.width||0))[0];
+      return best || images[0];
+    };
+    const fmt = (start = {}, locale = 'en-GB') => {
+      const d = start.dateTime ||
+        (start.localDate && (start.localTime
+          ? (start.localDate + 'T' + start.localTime)
+          : (start.localDate + 'T00:00:00')));
+      if (!d) return '';
+      const dt = new Date(d);
+      const day  = new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(dt);
+      const date = new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short', year: 'numeric' }).format(dt);
+      const time = start.noSpecificTime ? '' : new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(dt);
+      return [day, date, time].filter(Boolean).join(' • ');
+    };
+    function renderCard(event, { lang, locale }) {
+      const el = document.createElement('article'); el.className = 'event-card';
+      const h = document.createElement('h3'); h.className = 'event-title'; h.textContent = event?.name || ''; el.appendChild(h);
+      const when = fmt(event?.dates?.start || {}, locale); if (when) { const p = document.createElement('p'); p.className = 'event-datetime'; p.textContent = when; el.appendChild(p); }
+      const v = event?._embedded?.venues?.[0]; if (v) { const p = document.createElement('p'); p.className = 'event-venue'; p.textContent = [v?.city?.name, v?.name].filter(Boolean).join(' • '); el.appendChild(p); }
+      const img = pickImage(event?.images); if (img) { const i = document.createElement('img'); i.className = 'event-image'; i.src = img.url; i.alt = event?.name || 'Event'; i.loading = 'lazy'; el.appendChild(i); }
+      const a = document.createElement('a'); a.className = 'buy-link'; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.textContent = t({ cs: 'Koupit vstupenky', sk: 'Kúpiť vstupenky', de: 'Tickets kaufen', pl: 'Kup bilety', hu: 'Jegyvásárlás', en: 'Buy tickets' }, lang);
+      a.href = event?.url || '#'; el.appendChild(a);
+      return el;
+    }
 
-  <!-- Inline skript: Demo badge CTA (doplnění ?lang + GA event + aria i18n) -->
+    // Timeout wrapper
+    async function fetchWithTimeout(url, { timeout = 7000, ...opts } = {}) {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), timeout);
+      try {
+        const r = await fetch(url.toString(), { ...opts, signal: ctrl.signal });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r;
+      } finally { clearTimeout(tid); }
+    }
+    async function fetchJSON(url, opts) {
+      const r = await fetchWithTimeout(url, opts);
+      return r.json();
+    }
+
+    // --- init
+    (async () => {
+      const listEl   = document.querySelector('#eventsList');
+      const statusEl = document.querySelector('#tm-status');
+      const errorEl  = document.querySelector('#tm-error');
+      const section  = document.querySelector('#upcoming-events');
+
+      const setBusy   = b => section?.setAttribute('aria-busy', String(b));
+      const setStatus = m => { if (statusEl) statusEl.textContent = m || ''; };
+
+      const qs   = new URLSearchParams(location.search);
+      const lang = (qs.get('lang') || document.documentElement.lang || 'en').toLowerCase();
+      const localeMap = { cs:'cs-CZ', sk:'sk-SK', en:'en-GB', de:'de-DE', pl:'pl-PL', hu:'hu-HU' };
+      const locale = localeMap[lang] || 'en-GB';
+      const defaultCountryByLang = { cs:'CZ', sk:'SK', en:'GB', de:'DE', pl:'PL', hu:'HU' };
+      const country = (qs.get('country') || defaultCountryByLang[lang] || 'GB').toUpperCase();
+      const size = Number(section?.dataset?.tmSize || 6);
+
+      setBusy(true);
+      setStatus(t({
+        cs:'Načítám události…', sk:'Načítavam podujatia…', de:'Lade Events…',
+        pl:'Wczytywanie wydarzeń…', hu:'Események betöltése…', en:'Loading events…'
+      }, lang));
+
+      // Čas bez milisekund (TM je na to citlivý)
+      const start = new Date().toISOString().split('.')[0] + 'Z';
+
+      // Přímý TM endpoint
+      const API_KEY = 'b4BHSTzR1GEhE1bcGbQC5k696Dj1oA0D'; // AJSEE-test (Public APIs)
+      const direct = new URL('https://app.ticketmaster.com/discovery/v2/events.json');
+      direct.searchParams.set('apikey', API_KEY);
+      direct.searchParams.set('size', String(size));
+      direct.searchParams.set('sort', 'date,asc');
+      direct.searchParams.set('startDateTime', start);
+      direct.searchParams.set('countryCode', country);
+
+      // Proxy fallbacky
+      const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
+
+      // (C) explicitní produkční proxy, pokud je nastavená
+      const explicit = (window.__TM_PROXY_BASE && /^https?:\/\//i.test(window.__TM_PROXY_BASE))
+        ? new URL('/.netlify/functions/tm', window.__TM_PROXY_BASE)
+        : null;
+
+      const proxyBases = [
+        ...(explicit ? [explicit] : []),
+        new URL('/.netlify/functions/tm', location.origin),
+        ...(isLocal ? [
+          new URL('http://localhost:8888/.netlify/functions/tm'),
+          new URL('http://127.0.0.1:8888/.netlify/functions/tm'),
+        ] : []),
+      ];
+
+      const buildProxyUrl = (base) => {
+        const u = new URL(base);
+        u.searchParams.set('path', '/discovery/v2/events.json');
+        u.searchParams.set('size', String(size));
+        u.searchParams.set('sort', 'date,asc');
+        u.searchParams.set('startDateTime', start);
+        u.searchParams.set('countryCode', country);
+        return u;
+      };
+
+      async function tryProxies() {
+        let lastErr;
+        for (const base of proxyBases) {
+          const url = buildProxyUrl(base);
+          try {
+            console.info('[TM] Trying proxy:', url.toString());
+            return await fetchJSON(url, { mode: 'cors' });
+          } catch (e) { lastErr = e; }
+        }
+        throw lastErr || new Error('No proxy available');
+      }
+
+      // Proxy-first v dev / ne-HTTPS, jinak direct s timeoutem
+      const PROXY_FIRST = isLocal || location.protocol !== 'https:';
+
+      try {
+        let data;
+        if (PROXY_FIRST) {
+          console.info('[TM] Proxy-first mode');
+          try {
+            data = await tryProxies();
+          } catch (proxyErr) {
+            console.info('[TM] Proxies failed – trying direct as last resort…');
+            data = await fetchJSON(direct, { mode: 'cors', timeout: 7000 });
+          }
+        } else {
+          try {
+            console.info('[TM] Trying direct TM request…');
+            data = await fetchJSON(direct, { mode: 'cors', timeout: 5000 });
+          } catch (e) {
+            console.info('[TM] Direct failed (', e?.message || 'unknown', ') – trying proxies…');
+            data = await tryProxies();
+          }
+        }
+
+        const events = data?._embedded?.events || [];
+        if (!events.length) {
+          setStatus(t({
+            cs:'V tomto výběru nejsou žádné nadcházející události.',
+            sk:'V tomto výbere nie sú žiadne nadchádzajúce podujatia.',
+            de:'Keine anstehenden Events in dieser Auswahl.',
+            pl:'Brak nadchodzących wydarzeń w tym wyborze.',
+            hu:'Nincs közelgő esemény ebben a nézetben.',
+            en:'No upcoming events for this selection.'
+          }, lang));
+          setBusy(false);
+          return;
+        }
+
+        listEl.innerHTML = '';
+        events.forEach(ev => listEl.appendChild(renderCard(ev, { lang, locale })));
+        setStatus('');
+      } catch (e) {
+        console.error('[TM] fetch error', e);
+        if (errorEl) {
+          errorEl.hidden = false;
+          const msg = t({
+            cs:'Nepodařilo se načíst data z Ticketmasteru. Zkuste to prosím později.',
+            sk:'Nepodarilo sa načítať dáta z Ticketmasteru. Skúste to neskôr.',
+            de:'Ticketmaster-Daten konnten nicht geladen werden. Bitte später erneut versuchen.',
+            pl:'Nie udało się załadować danych z Ticketmastera. Spróbuj ponownie później.',
+            hu:'Nem sikerült betölteni a Ticketmaster adatait. Próbáld újra később.',
+            en:'Could not load Ticketmaster data. Please try again later.'
+          }, lang);
+
+          const hintLocal = (isLocal)
+            ? '\n\nTip: Spusť `netlify dev` (port 8888) NEBO vyplň <meta name="tm-proxy-base" content="https://tvoje-domena.netlify.app">.'
+            : '';
+
+          errorEl.textContent = msg + hintLocal;
+        }
+      } finally {
+        setBusy(false);
+      }
+    })();
+  </script>
+
+  <!-- Demo badge CTA -->
   <script>
     (function(){
       const cta = document.getElementById('demoBadgeCta');
@@ -295,11 +530,11 @@
         if (window.gtag) window.gtag('event','click_waitlist', { source: 'events_demo_badge' });
       });
 
-      // i18n aria-label pokud existuje window.translations
       if (root && window.translations) {
         try {
-          const path = 'event-demo.ariaLabel';
-          const val = path.split('.').reduce((o,k)=> (o && typeof o==='object') ? o[k] : undefined, window.translations);
+          const path = 'event-demo.ariaLabel'.split('.');
+          let val = window.translations;
+          for (const k of path) { val = val && typeof val === 'object' ? val[k] : undefined; }
           if (typeof val === 'string' && val.trim()) root.setAttribute('aria-label', val);
         } catch(e) {}
       }

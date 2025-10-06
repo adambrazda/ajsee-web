@@ -1,0 +1,42 @@
+{
+  "about": {
+    "headline": "O nás",
+    "title": "O nás | AJSEE®",
+    "hero": {
+      "headlineFull": "Náš príbeh. Naša vízia.",
+      "text": "Zážitky nemajú hranice. A práve preto vzniklo AJSEE.",
+      "subtext": "Naším cieľom je sprístupniť ľuďom kultúrne, zábavné aj športové podujatia z celého sveta – jasne, zrozumiteľne a bez zbytočných bariér pri výbere aj nákupe vstupeniek.",
+      "claim": "AJSEE<sup>®</sup> je moderná platforma pre všetkých, ktorí chcú zažívať svet naplno – bez prekážok."
+    },
+    "story": {
+      "headline": "Ako to celé začalo",
+      "p1": "Bol jeseň <strong>2024</strong>. Sedeli sme v krčme, dali si pivo — a ako to už býva, <strong>jedno obyčajné rozprávanie odštartovalo niečo, čo sa čoskoro zmenilo na skutočný nápad.</strong>",
+      "p2": "Ešte v ten večer vznikol <strong>názov AJSEE</strong>, prvý návrh loga aj vízia: <strong>uľahčiť ľuďom prístup k svetovým zážitkom bez jazykových bariér.</strong>",
+      "p3": "Potom však prišla najťažšia fáza: <strong>naozaj začať.</strong>",
+      "p4": "Obaja sme mali prácu na plný úväzok, delilo nás <strong>180 kilometrov</strong> a času bolo málo. Projekt sa na chvíľu zastavil ešte predtým, než sa stihol rozbehnúť.",
+      "p5": "Až raz to jeden z nás <strong>proste spustil</strong>. Bez dokonalého plánu, ale s istotou, že to dáva zmysel. Vtedy sa AJSEE začalo stávať skutočnosťou."
+    },
+    "team": {
+      "headline": "Kto za tým stojí?",
+      "adam": {
+        "name": "Adam Brázda",
+        "role": "Spoluzakladateľ AJSEE®",
+        "claim": "Stojí pri zrode AJSEE® od prvej myšlienky. Verí v silu jednoduchých riešení, ktoré ľuďom otvárajú svet zážitkov bez zbytočných bariér.",
+        "linkedin": "LinkedIn profil"
+      },
+      "jan": {
+        "name": "Jan Oujezdský",
+        "role": "Spoluzakladateľ AJSEE®",
+        "claim": "Od prvého dňa zdieľa víziu sprístupniť svet kultúry, športu a zábavy čo najširšiemu publiku. V AJSEE® prepája nápady, prístupnosť a zmysel pre detail.",
+        "linkedin": "LinkedIn profil"
+      }
+    },
+    "future": {
+      "headline": "🎯 Kam smerujeme",
+      "p1": "Do konca roka 2025 chceme spustiť ostrú verziu webu.",
+      "p2": "Pracujeme na rozšírení jazykových mutácií a na spolupráci s medzinárodnými platformami.",
+      "p3": "Chystáme mobilnú aplikáciu a rozširujeme ponuku podujatí aj ich dostupnosť pre širšie publikum.",
+      "p4": "Chceme, aby bol AJSEE prvou voľbou pre každého, kto hľadá cestu k svetovým zážitkom – či už v Londýne, Barcelone alebo doma v Brne."
+    }
+  }
+}

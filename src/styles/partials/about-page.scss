@@ -2,56 +2,120 @@
 // ABOUT PAGE (about.html)
 // =============================================
 @use '../globals' as *;
+
+/* širší text + menší mezera + konzistentní pravý vizuál */
+:root{
+  /* text může být opravdu široký, ale zůstává fluidní */
+  --about-measure: clamp(78ch, 84ch + 6vw, 110ch);
+  /* vizuál držíme kompaktní, aby nepřekážel textu (hero default) */
+  --about-visual-w: clamp(220px, 22vw, 360px);
+  /* větší vizuál jen pro STORY (zvětšené schody) */
+  --about-story-visual-w: clamp(360px, 34vw, 560px);
+  /* o něco menší mezera mezi sloupci */
+  --about-gap: clamp(18px, 2.6vw, 32px);
+  /* FUTURE: vizuál může být o chloupek větší */
+  --about-future-visual-w: clamp(420px, 40vw, 640px);
+}
+
+/* -------------------------------
+   Přístupnost: focus stavy nav + jazykové přepínače
+----------------------------------*/
+.language-switcher .lang-btn{
+  border: 0;
+  background: transparent;
+  padding: 2px;
+  border-radius: 6px;
+}
+.language-switcher .lang-btn:focus-visible{
+  outline: 2px solid #14c2c5;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.main-nav a[aria-current="page"]{
+  color:#0077cc;
+  font-weight: 700;
+  position: relative;
+}
+.main-nav a[aria-current="page"]::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-6px;
+  height:2px;
+  background:#14c2c5;
+  border-radius:2px;
+  opacity:.9;
+}
+
+/* lokální focus pro CTA v about sekcích */
+.about-cta .btn-primary:focus-visible,
+.about-back-link .btn-secondary:focus-visible,
+.about-team .team-linkedin:focus-visible{
+  outline: 2px solid #14c2c5;
+  outline-offset: 3px;
+  border-radius: 1em;
+}
+
 .about-hero {
   background: linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%);
   padding: 3.2rem 1rem 2.4rem 1rem;
 
   .about-hero-inner {
-    display: flex;
+    /* grid (text | vizuál) */
+    display: grid;
+    grid-template-columns:
+      /* text zabere veškeré zbývající místo až do bezpečného maxima */
+      minmax(0, clamp(72ch, calc(100% - var(--about-visual-w) - var(--about-gap)), 120ch))
+      /* vizuál vpravo */
+      minmax(0, var(--about-visual-w));
+    grid-template-areas: "text visual";
     align-items: center;
-    gap: 3.5rem;
-    max-width: 1200px;
+    gap: var(--about-gap);
+    max-width: 1500px;  /* povol víc šířky rozložení */
     margin: 0 auto;
-    flex-wrap: wrap;
-
-    @media (max-width: 900px) {
-      flex-direction: column;
-      gap: 2.2rem;
-    }
   }
+
   .about-hero-visual {
-    flex: 0 0 300px;
-    max-width: 340px;
+    grid-area: visual;
+    justify-self: end;
+    width: var(--about-visual-w);
+    max-width: var(--about-visual-w);
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
+
     .hero-globe {
-      width: 90%;
+      width: 100%;
       min-width: 180px;
-      max-width: 320px;
+      max-width: 100%;
       height: auto;
       display: block;
       filter: drop-shadow(0 6px 32px #14c2c52a);
     }
   }
+
   .about-hero-textblock {
-    flex: 1 1 350px;
+    grid-area: text;
     min-width: 0;
+    max-width: var(--about-measure); /* stejné jako ve story */
+
     h1 {
-      font-size: 2.4rem;
+      font-size: 2.6rem;
       color: #0077cc;
-      font-weight: 800;
-      margin-bottom: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 1.2rem;
       letter-spacing: -0.5px;
     }
+
     .about-hero-text {
       font-size: 1.18rem;
       color: #224;
       line-height: 1.65;
       margin-bottom: 0;
+
       strong {
         display: block;
-        color: #14c2c5;
+        color: #0f9aa0; /* lepší kontrast než #14c2c5 */
         font-weight: 800;
         font-size: 1.13em;
         margin-top: 1.6rem;
@@ -61,31 +125,35 @@
   }
 }
 
-// ============================================= 
-
+// =============================================
+// HERO – mobile
 @media (max-width: 600px) {
   .about-hero {
     padding: 0.7rem 0.1rem 0.3rem 0.1rem;
-    min-height: 0;
-    height: auto;
+
     .about-hero-inner {
-      flex-direction: column;
+      grid-template-columns: 1fr;
+      grid-template-areas: "text"; /* vizuál pryč */
       gap: 0.2rem;
-      align-items: center; // Zarovnání na střed
-      min-height: 0;
-      height: auto;
+      align-items: center;
     }
+
     .about-hero-textblock {
       order: 1;
       text-align: center;
-      margin-bottom: 0.1rem; // Minimální mezera
+      margin-bottom: 0.1rem;
       width: 100%;
+      max-width: none;
+
+      h1 { font-size: 1.48rem; margin-bottom: 1rem; }
+      .about-hero-text { font-size: 1.02rem; }
     }
-    .about-hero-visual {
-      display: none; // Skrytí vizuálního prvku na mobilu
+
+    .about-hero-visual { /* schovat na mobilu – původní chování */
+      display: none;
       order: 2;
       max-width: 130px;
-      margin: 0.1rem auto 0.1rem auto;
+
       .hero-globe {
         min-width: 80px;
         max-width: 120px;
@@ -97,31 +165,140 @@
     }
   }
 }
-// ============================================= 
 
+// =============================================
+// ABOUT STORY (text vlevo, SVG vpravo – větší schody)
+// =============================================
+.about-story {
+  background: #fff;
+  padding: 3rem 1rem 2.5rem;
+
+  .container {
+    max-width: 1500px;   /* více prostoru i ve story */
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  h2 {
+    color: #0077cc;
+    text-align: left;
+    margin-bottom: 2.2rem;
+    font-size: 2.1rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    max-width: var(--about-measure); /* zarovná se na stejnou stopu jako text */
+  }
+
+  /* dvousloupcový layout – stejně jako v HERO, jen větší vizuál */
+  .about-story-inner {
+    display: grid;
+    grid-template-columns:
+      minmax(0, clamp(72ch, calc(100% - var(--about-story-visual-w) - var(--about-gap)), 120ch))
+      minmax(0, var(--about-story-visual-w)); /* text | vizuál */
+    grid-template-areas: "text visual";
+    align-items: center;
+    gap: var(--about-gap);
+  }
+
+  .about-story-textblock {
+    grid-area: text;
+    max-width: var(--about-measure);
+    min-width: 0;
+  }
+
+  .about-story-visual {
+    grid-area: visual;
+    justify-self: end;
+    width: var(--about-story-visual-w);
+    height: auto;
+
+    .story-badge, .story-ticket {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 6px 32px #14c2c52a);
+    }
+  }
+
+  .about-story-text {
+    font-size: 1.18rem;
+    color: #184469;
+    line-height: 1.7;
+    letter-spacing: -0.1px;
+
+    p { margin-bottom: 0rem; }
+
+    strong {
+      color: #000;
+      font-weight: 700;
+    }
+  }
+}
+
+/* STORY – breakpoints */
+/* <= 900px: vizuál vůbec nezobrazovat, jen text */
+@media (max-width: 900px) {
+  .about-story {
+    .about-story-inner {
+      grid-template-columns: 1fr;
+      grid-template-areas: "text";
+    }
+    .about-story-visual { display: none !important; }
+    h2 { max-width: none; }
+  }
+}
+
+/* <= 700px: centrovat obsah */
+@media (max-width: 700px) {
+  .about-story {
+    padding: 2rem 0.8rem 1.5rem;
+
+    .container { padding: 0 1rem; }
+
+    h2 { font-size: 1.22rem; margin-bottom: 1.2rem; text-align: center; }
+
+    .about-story-textblock {
+      text-align: center;
+      margin-inline: auto;
+    }
+
+    .about-story-text {
+      font-size: 1.02rem;
+      text-align: center;
+      p { margin-bottom: 1.1rem; }
+    }
+  }
+}
+
+// =============================================
 .about-values {
   background: #fff;
   padding: 3rem 1rem 2rem;
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
   }
+
   h2 {
     color: #0077cc;
     margin-bottom: 2rem;
     font-size: 2rem;
     text-align: center;
   }
+
   .about-values-grid {
     display: flex;
     gap: 2.2rem;
     justify-content: flex-start;
     flex-wrap: wrap;
+
     @media (max-width: 900px) {
       justify-content: center;
       gap: 1.2rem;
     }
   }
+
   .about-value {
     background: #f6faff;
     border-radius: 1.1rem;
@@ -131,6 +308,7 @@
     max-width: 340px;
     text-align: center;
     transition: transform 0.18s;
+
     .about-value-icon {
       width: 54px;
       height: 54px;
@@ -139,12 +317,15 @@
       transition: filter 0.18s;
       display: inline-block;
     }
+
     &:hover {
       transform: translateY(-4px) scale(1.03);
+
       .about-value-icon {
         filter: drop-shadow(0 6px 16px #0077cc4d);
       }
     }
+
     div {
       font-size: 1.13rem;
       color: #184469;
@@ -155,6 +336,7 @@
 .about-motto {
   background: none;
   padding: 1.5rem 0 2.4rem;
+
   blockquote {
     font-size: 1.5rem;
     color: #0077cc;
@@ -167,6 +349,7 @@
 .about-back-link {
   text-align: center;
   margin: 2.5rem 0 1rem 0;
+
   .btn-secondary {
     display: inline-block;
     margin: 1rem auto 0;
@@ -178,7 +361,9 @@
     color: #14c2c5;
     font-weight: 600;
     transition: background 0.18s, color 0.18s;
-    &:hover, &:focus {
+
+    &:hover,
+    &:focus {
       background: #14c2c5;
       color: #fff;
       text-decoration: none;
@@ -186,27 +371,15 @@
   }
 }
 
-// Základní responsivita pro mobil
+// =============================================
+// GLOBAL MOBILE TWEAKS (bez duplicit pro .about-hero)
+// =============================================
 @media (max-width: 600px) {
-  .about-hero {
-    padding: 1.6rem 0.2rem 1.2rem;
-    .about-founder-photo {
-      width: 120px;
-      height: 120px;
-    }
-    h1 {
-      font-size: 1.48rem;
-      margin-bottom: 1rem;
-    }
-    .about-hero-text {
-      font-size: 1.02rem;
-    }
-  }
   .about-values {
     padding: 2rem 0.2rem 1rem;
-    h2 {
-      font-size: 1.3rem;
-    }
+
+    h2 { font-size: 1.3rem; }
+
     .about-value {
       padding: 1rem 0.7rem;
       min-width: 150px;
@@ -214,14 +387,13 @@
       font-size: 1rem;
     }
   }
-  .about-motto blockquote {
-    font-size: 1.05rem;
-  }
+
+  .about-motto blockquote { font-size: 1.05rem; }
 }
+
 // =============================================
 // ABOUT TIMELINE SECTION
 // =============================================
-
 .about-timeline {
   background: linear-gradient(120deg, #e8f4fc 0%, #f6faff 100%);
   padding: 3rem 1rem 2.5rem 1rem;
@@ -269,7 +441,7 @@
     }
 
     &:last-child::before {
-      display: none; // u posledního milníku neprotahovat čáru dolů
+      display: none;
     }
   }
 
@@ -314,10 +486,7 @@
       margin-bottom: 1.4rem;
     }
 
-    .timeline-list {
-      gap: 1.15rem;
-      padding-left: 0;
-    }
+    .timeline-list { gap: 1.15rem; padding-left: 0; }
 
     .timeline-item {
       gap: 1.1rem;
@@ -334,16 +503,17 @@
     }
   }
 }
-// =============================================
-// ABOUT TEAM SECTION
-// =============================================
 
+// =============================================
+// ABOUT TEAM SECTION  (REPLACE CELÝ BLOK)
+// =============================================
 .about-team {
   background: linear-gradient(120deg, #f8fcff 0%, #e1f5fb 100%);
   padding: 3rem 1rem 2.5rem 1rem;
 
   .container {
-    max-width: 800px;
+    /* širší kontejner, aby se vešly dvě karty */
+    max-width: 1120px;
     margin: 0 auto;
   }
 
@@ -351,16 +521,17 @@
     color: #0077cc;
     text-align: center;
     margin-bottom: 2.2rem;
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
     letter-spacing: -0.5px;
   }
 
+  /* GRID se dvěma sloupci */
   .team-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2.2rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+    gap: 2rem 2.2rem;
+    align-items: start;
   }
 
   .team-member {
@@ -371,16 +542,21 @@
     align-items: center;
     gap: 2.1rem;
     padding: 2.2rem 2.6rem;
-    min-width: 320px;
-    max-width: 540px;
-    margin: 0 auto;
+
+    /* důležité: ať karta vyplní buňku gridu */
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 0;
+
     position: relative;
     transition: transform 0.18s, box-shadow 0.18s;
 
     &:hover,
     &:focus-within {
       transform: translateY(-4px) scale(1.02);
-      box-shadow: 0 8px 32px #14c2c526, 0 2px 14px #0077cc24;
+      /* jemnější hover stín */
+      box-shadow: 0 8px 24px #14c2c51f, 0 2px 10px #0077cc1a;
     }
   }
 
@@ -406,29 +582,9 @@
     gap: 0.45rem;
   }
 
-  .team-name {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #184469;
-    margin-bottom: 0.1em;
-    letter-spacing: -0.3px;
-  }
-
-  .team-role {
-    font-size: 1.02rem;
-    font-weight: 600;
-    color: #14c2c5;
-    margin-bottom: 0.3em;
-    letter-spacing: -0.2px;
-  }
-
-  .team-claim {
-    font-size: 1.08rem;
-    color: #334b69;
-    margin-bottom: 0.7em;
-    line-height: 1.5;
-    letter-spacing: -0.1px;
-  }
+  .team-name { font-size: 1.25rem; font-weight: 700; color: #184469; margin-bottom: 0.1em; letter-spacing: -0.3px; }
+  .team-role { font-size: 1.02rem; font-weight: 600; color: #14c2c5; margin-bottom: 0.3em; letter-spacing: -0.2px; }
+  .team-claim { font-size: 1.08rem; color: #334b69; margin-bottom: 0.7em; line-height: 1.5; letter-spacing: -0.1px; }
 
   .team-linkedin {
     margin-top: 0.3em;
@@ -438,14 +594,10 @@
     transition: filter 0.14s;
     filter: grayscale(60%) brightness(0.86);
 
-    &:hover,
-    &:focus {
-      filter: none;
-    }
+    &:hover, &:focus { filter: none; }
 
     img {
-      width: 26px;
-      height: 26px;
+      width: 26px; height: 26px;
       border-radius: 0.6em;
       box-shadow: 0 1px 5px #0077cc14;
       background: #eaf5fc;
@@ -453,71 +605,132 @@
     }
 
     .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+      position: absolute; width: 1px; height: 1px; padding: 0;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
   }
 }
 
-// --- MOBILE VERSION ---
+/* --- breakpoint: pod 900px jedna kolona --- */
+@media (max-width: 900px) {
+  .about-team {
+    .team-list { grid-template-columns: 1fr; }
+  }
+}
+
+/* --- MOBILE VERSION (ponecháno, jen navazuje na 1 sloupec) --- */
 @media (max-width: 700px) {
   .about-team {
     padding: 2rem 0.2rem 1.2rem 0.2rem;
 
-    h2 {
-      font-size: 1.19rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .team-list {
-      gap: 1.3rem;
-    }
+    h2 { font-size: 1.19rem; margin-bottom: 1.2rem; }
 
     .team-member {
       flex-direction: column;
       align-items: center;
       padding: 1.3rem 0.8rem;
-      min-width: 0;
-      max-width: 100%;
       gap: 1.1rem;
     }
 
-    .team-photo {
-      width: 84px;
-      height: 84px;
+    .team-photo { width: 84px; height: 84px; }
+    .team-info { align-items: center; text-align: center; gap: 0.2rem; }
+    .team-name { font-size: 1.08rem; }
+    .team-role { font-size: 0.97rem; }
+    .team-claim { font-size: 0.98rem; }
+    .team-linkedin img { width: 22px; height: 22px; }
+  }
+}
+
+// =============================================
+// ABOUT FUTURE (🎯 Kam míříme)
+// =============================================
+.about-future {
+  background: linear-gradient(120deg, #f8fcff 0%, #e9f3ff 100%);
+  padding: 3rem 1rem 2.6rem;
+
+  .about-future-inner{
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 2rem;
+
+    display: grid;
+    grid-template-columns:
+      minmax(0, clamp(72ch, calc(100% - var(--about-future-visual-w) - var(--about-gap)), 120ch))
+      minmax(0, var(--about-future-visual-w));
+    grid-template-areas: "text visual";
+    align-items: center;
+    gap: var(--about-gap);
+  }
+
+  .about-future-textblock{
+    grid-area: text;
+    max-width: var(--about-measure);
+    min-width: 0;
+
+    h2{
+      color: #0077cc;
+      text-align: left;
+      margin-bottom: 1.2rem;
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
     }
 
-    .team-info {
-      align-items: center;
-      text-align: center;
-      gap: 0.2rem;
-    }
+    .about-future-text{
+      font-size: 1.18rem;
+      color: #184469;
+      line-height: 1.7;
 
-    .team-name {
-      font-size: 1.08rem;
+      p{ margin-bottom: 0.1rem; }
+      strong{ color:#000; font-weight:700; }
     }
-    .team-role {
-      font-size: 0.97rem;
-    }
-    .team-claim {
-      font-size: 0.98rem;
-    }
-    .team-linkedin img {
-      width: 22px;
-      height: 22px;
+  }
+
+  .about-future-visual{
+    grid-area: visual;
+    justify-self: end;
+    width: var(--about-future-visual-w);
+    height: auto;
+
+    svg{
+      width: 100%;
+      height: auto; /* render přes CSS, aby držel poměr */
+      display: block;
+      filter: drop-shadow(0 6px 28px #2F84D626);
     }
   }
 }
+
+/* FUTURE – breakpoints */
+/* <= 900px: vizuál vůbec nezobrazovat, jen text */
+@media (max-width: 900px){
+  .about-future{
+    .about-future-inner{
+      grid-template-columns: 1fr;
+      grid-template-areas: "text";
+    }
+    .about-future-visual{ display: none !important; }
+  }
+}
+
+/* <= 700px: centrovat obsah */
+@media (max-width: 700px){
+  .about-future{
+    padding: 2rem 0.8rem 1.6rem;
+
+    .about-future-inner{ padding: 0 1rem; }
+
+    .about-future-textblock{
+      text-align: center;
+      h2{ font-size: 1.22rem; margin-bottom: 0.9rem; text-align: center; }
+      .about-future-text{ font-size: 1.02rem; text-align: center; }
+    }
+  }
+}
+
 // =============================================
 // ABOUT CTA SECTION
 // =============================================
-
 .about-cta {
   background: linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%);
   padding: 3.2rem 1rem 2.5rem 1rem;
@@ -565,7 +778,8 @@
       display: inline-block;
       margin-bottom: 0.3em;
 
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         background: linear-gradient(90deg, #0077cc 30%, #14c2c5 100%);
         box-shadow: 0 6px 24px #0077cc2a;
         transform: translateY(-2px) scale(1.03);
@@ -580,19 +794,8 @@
   .about-cta {
     padding: 1.7rem 0.15rem 1.3rem 0.15rem;
 
-    h2 {
-      font-size: 1.17rem;
-      margin-bottom: 0.85rem;
-    }
-
-    .about-cta-text {
-      font-size: 1.01rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .about-cta-actions .btn-primary {
-      font-size: 0.97rem;
-      padding: 0.7em 1.3em;
-    }
+    h2 { font-size: 1.17rem; margin-bottom: 0.85rem; }
+    .about-cta-text { font-size: 1.01rem; margin-bottom: 1.2rem; }
+    .about-cta-actions .btn-primary { font-size: 0.97rem; padding: 0.7em 1.3em; }
   }
 }

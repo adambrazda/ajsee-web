@@ -5,25 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AJSEE® – Refine culture.</title>
   <meta name="description" content="Vstupenky na koncerty, festivaly a sportovní události z celého světa – česky, přehledně a bez překážek." />
-  <link rel="icon" href="/images/logo-ajsee.png" />
   <meta name="theme-color" content="#0077cc" />
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+
+  <!-- Favicona -->
+  <link rel="icon" href="data:," />
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Google tag jen na HTTPS/produkci -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-K0ZS0D9JLK');
+    (function(){
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1/i.test(location.hostname);
+      if (!isProdHttps) return;
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
+      s.onload = function(){
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-K0ZS0D9JLK');
+      };
+      document.head.appendChild(s);
+    })();
   </script>
-  <script type="module" crossorigin src="/assets/main-BN255SJK.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/demo-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/main-C7amOD58.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-y-QiAS1f.css">
+  <script type="module" crossorigin src="/assets/main-BfcW6M-g.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/assets/main-BMhhwhRE.js">
+  <link rel="stylesheet" crossorigin href="/assets/main-D894CchJ.css">
 </head>
 <body>
 <header class="site-header">
   <div class="header-inner">
-
     <!-- Logo -->
     <a href="/" class="logo-link" aria-label="Domů">
       <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
@@ -68,378 +81,233 @@
     </div>
 
     <!-- Overlay pozadí menu -->
-    <div class="menu-overlay-bg"></div>
-
+    <div class="menu-overlay-bg" aria-hidden="true"></div>
   </div>
 </header>
+
 <main>
- <!-- HERO SEKCE -->
-<section class="hero-section" id="hero">
-  <div class="container hero-flex">
-    <div class="hero-content">
-      <a href="/partners.html" class="hero-badge" tabindex="0">
-        <span class="badge-icon" aria-hidden="true">🤝</span>
-        <span data-i18n-key="hero.badge"></span>
-      </a>
-      <h1 data-i18n-key="hero.headline"></h1>
-      <p data-i18n-key="hero.intro"></p>
-      <div class="hero-buttons">
-        <a href="/partners.html" class="btn-primary" data-i18n-key="hero.cta-collab"></a>
-        <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-info"></a>
+  <!-- HERO -->
+  <section class="hero-section" id="hero">
+    <div class="container hero-flex">
+      <div class="hero-content">
+        <a href="/partners.html" class="hero-badge" tabindex="0">
+          <span class="badge-icon" aria-hidden="true">🤝</span>
+          <span data-i18n-key="hero.badge"></span>
+        </a>
+        <h1 data-i18n-key="hero.headline"></h1>
+        <p data-i18n-key="hero.intro"></p>
+        <div class="hero-buttons">
+          <a href="/partners.html" class="btn-primary" data-i18n-key="hero.cta-collab"></a>
+          <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-info"></a>
+        </div>
+      </div>
+      <div class="hero-image-wrapper">
+        <img src="/images/hero-bg.png" class="hero-image" data-i18n-alt="hero.imageAlt" alt="" loading="eager" />
       </div>
     </div>
-    <div class="hero-image-wrapper">
-      <img src="/images/hero-bg.png"
-           class="hero-image"
-           data-i18n-alt="hero.imageAlt"
-           alt=""
-           loading="eager" />
-    </div>
-  </div>
-</section>
-<!-- KONEC HERO SEKCE -->
+  </section>
 
-<!-- SEKCE UDÁLOSTÍ -->
-<section class="section-events" id="events">
-  <div class="container">
-
-    <!-- 🔹 Waitlist banner (i18n 6 jazyků) -->
-    <div id="hpWaitlist"
-         class="hp-waitlist"
-         role="region"
-         aria-live="polite"
-         aria-label=""
-         data-i18n-aria="hp-waitlist.ariaLabel">
-      <div class="wl-icon" aria-hidden="true">✨</div>
-      <p class="wl-text">
-        <strong data-i18n-key="hp-waitlist.lead">Spouštíme brzy.</strong>
-        <span data-i18n-key="hp-waitlist.text">Přidej se na čekací listinu a získáš pozvánku mezi prvními.</span>
-      </p>
-      <a class="hp-waitlist-cta"
-         id="hpWaitlistCta"
-         href="/coming-soon?utm_source=site&utm_medium=banner&utm_campaign=waitlist"
-         data-i18n-key="hp-waitlist.cta">Chci pozvánku</a>
-      <button type="button"
-             class="hp-waitlist-close"
-             id="hpWaitlistClose"
-              aria-label=""
-              data-i18n-aria="hp-waitlist.dismissAria"
-             title="">
-       <svg viewBox="0 0 24 24" aria-hidden="true">
-         <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-       </svg>
-     </button>
-    </div>
-
-    <!-- 🔹 Nadpis sekce -->
-    <div class="events-header">
-      <h2 class="events-title" data-i18n-key="section-events-title">Nejbližší události</h2>
-      <p class="events-subtitle" data-i18n-key="section-events-subtitle">
-        Získejte vstupenky na nejlepší kulturní zážitky ve vašem okolí
-      </p>
-    </div>
-
-    <!-- 🔹 Filters -->
-    <form id="events-filters-form" class="events-filters filter-dock" novalidate data-behavior="sheet">
-      <!-- TOOLBAR S CHIPY -->
-      <div class="filters-toolbar" aria-label="Rychlé filtry">
-        <div class="chips">
-          <button type="button" class="chip" id="chipToday"   data-i18n-key="filters.today">Dnes</button>
-          <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend">Tento víkend</button>
-          <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
-        </div>
-        <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>
-          <span data-i18n-key="filters.nearMe">V mém okolí</span>
+  <!-- UDÁLOSTI -->
+  <section class="section-events" id="events">
+    <div class="container">
+      <div id="hpWaitlist" class="hp-waitlist" role="region" aria-live="polite" aria-label="" data-i18n-aria="hp-waitlist.ariaLabel">
+        <div class="wl-icon" aria-hidden="true">✨</div>
+        <p class="wl-text">
+          <strong data-i18n-key="hp-waitlist.lead">Spouštíme brzy.</strong>
+          <span data-i18n-key="hp-waitlist.text">Přidej se na čekací listinu a získáš pozvánku mezi prvními.</span>
+        </p>
+        <a class="hp-waitlist-cta" id="hpWaitlistCta" href="/coming-soon?utm_source=site&utm_medium=banner&utm_campaign=waitlist" data-i18n-key="hp-waitlist.cta">Chci pozvánku</a>
+        <button type="button" class="hp-waitlist-close" id="hpWaitlistClose" aria-label="" data-i18n-aria="hp-waitlist.dismissAria" title="">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
         </button>
       </div>
 
-      <fieldset class="filters-fieldset">
-        <legend>Filtry</legend>
-
-        <div class="filter-group">
-          <label for="filter-category" data-i18n-key="filters.category">Kategorie</label>
-          <select id="filter-category" class="styled-select">
-            <option value="all" data-i18n-key="filters.all">Vše</option>
-            <option value="concert" data-i18n-key="category-concert">Koncerty</option>
-            <option value="festival" data-i18n-key="category-festival">Festivaly</option>
-            <option value="sport" data-i18n-key="category-sport">Sport</option>
-            <option value="theatre" data-i18n-key="category-theatre">Divadlo</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-sort" data-i18n-key="filters.sort">Řazení</label>
-          <select id="filter-sort" class="styled-select">
-            <option value="nearest" data-i18n-key="filters.nearest">Nejbližší</option>
-            <option value="latest" data-i18n-key="filters.latest">Nejnovější</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-city" data-i18n-key="filters.city">Město</label>
-          <input id="filter-city" type="text" class="styled-input"
-                 placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-date-from" data-i18n-key="filters.dateFrom">Od</label>
-          <input id="filter-date-from" type="date" class="styled-input">
-        </div>
-
-        <div class="filter-group">
-          <label for="filter-date-to" data-i18n-key="filters.dateTo">Do</label>
-          <input id="filter-date-to" type="date" class="styled-input">
-        </div>
-
-        <div class="filter-group filter-keyword">
-          <label for="filter-keyword" data-i18n-key="filters.keyword">Klíčové slovo</label>
-          <input id="filter-keyword" type="search" class="styled-input"
-                 placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
-        </div>
-
-        <div class="filter-actions">
-          <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe">V mém okolí</button>
-          <button type="submit" class="btn btn-primary" data-i18n-key="filters.apply">Použít filtry</button>
-          <button type="reset" class="btn btn-ghost" data-i18n-key="filters.reset">Vymazat</button>
-        </div>
-      </fieldset>
-
-      <!-- CLOSE BTN pro bottom sheet (zobrazí se jen na mobilu) -->
-      <button type="button" class="filters-close" id="filtersClose" aria-label="Zavřít filtry"></button>
-    </form>
-
-    <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form">Filtry</button>
-    <div class="filters-overlay" id="filtersOverlay" hidden></div>
-
-    <!-- 🔹 Demo badge (moderní pill + i18n) -->
-    <div class="event-demo-badge" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
-      <div class="ib-icon" aria-hidden="true">🎟️</div>
-      <p class="ib-text">
-        <strong data-i18n-key="event-demo.title">Ukázkové události.</strong>
-        <span data-i18n-key="event-demo.body">Připravujeme reálný prodej vstupenek. Sledujte nás!</span>
-      </p>
-      <a
-        class="ib-cta"
-        id="demoBadgeCta"
-        href="/coming-soon?utm_source=site&utm_medium=pill&utm_campaign=demo_badge"
-        data-i18n-key="event-demo.cta"
-      >
-        Sleduj novinky
-      </a>
-    </div>
-
-    <!-- 🔹 Events list -->
-    <div id="eventsList" class="events-list" aria-live="polite"></div>
-
-  </div>
-</section>
-
-<!-- O NÁS – modernizovaná sekce -->
-<section id="about" class="about-section fancy-bg">
-  <div class="container about-flex">
-
-    <!-- Textová část vlevo -->
-    <div class="about-text-content">
-      <h2 class="about-headline" data-i18n-key="about-headline">O nás</h2>
-      <p class="about-lead" data-i18n-key="about-lead">
-        Věříme, že kultura spojuje lidi.
-      </p>
-      <div class="about-text" data-i18n-key="about-text">
-        <p>
-          <strong>AJSEE<sup>®</sup></strong> vám otevírá cestu ke světovým akcím bez jazykových bariér – s nadšením pro autentické zážitky!
-        </p>
+      <div class="events-header">
+        <h2 class="events-title" data-i18n-key="section-events-title">Nejbližší události</h2>
+        <p class="events-subtitle" data-i18n-key="section-events-subtitle">Získejte vstupenky na nejlepší kulturní zážitky ve vašem okolí</p>
       </div>
-      <a href="/about.html" class="btn-main btn-with-icon" data-i18n-key="about-btn">
-        <span>
-          Zjisti více o <strong>AJSEE<sup>®</sup></strong>
-        </span>
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="11" cy="11" r="11" fill="#14c2c5"/>
-          <path d="M8 11H14M14 11L11.5 8.5M14 11L11.5 13.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    </div>
 
-    <!-- Vizuál: glóbus bez badge -->
-    <div class="about-visual">
-      <div class="about-globe-anim">
-        <svg width="160" height="160" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-          <circle cx="40" cy="40" r="38" stroke="#14c2c5" stroke-width="3"/>
-          <ellipse cx="40" cy="40" rx="31" ry="38" stroke="#14c2c5" stroke-width="2"/>
-          <ellipse cx="40" cy="40" rx="38" ry="16" stroke="#14c2c5" stroke-width="2"/>
-          <ellipse cx="40" cy="40" rx="22" ry="38" stroke="#14c2c5" stroke-width="1"/>
-        </svg>
-      </div>
-    </div>
-
-  </div>
-</section>
-<!--KONEC SEKCE O NÁS-->
-
-<!-- SEKCE BLOG -->
-<section class="homepage-blog" id="blog">
-  <div class="container">
-    <h2 data-i18n-key="blog-headline-home">Blog & Recenze</h2>
-    <div class="homepage-blog-cards" id="homepage-blog-list">
-      <!-- Tady budou generované články -->
-    </div>
-    <a href="/blog.html" class="homepage-blog-more" data-i18n-key="blog-show-all">Zobrazit všechny články</a>
-  </div>
-</section>
-<!-- KONEC SEKCE BLOG -->
-
-<!-- KONTAKTNÍ SEKCE -->
-<section id="contact" class="contact-section">
-  <div class="container">
-    <h2 data-i18n-key="contact-headline">Kontaktujte nás</h2>
-    <div class="contact-content">
-      <form
-        name="contact"
-        method="POST"
-        data-netlify="true"
-        netlify-honeypot="bot-field"
-        action="/thank-you.html"
-        class="contact-form"
-        id="contact-form"
-        autocomplete="on"
-      >
-        <input type="hidden" name="form-name" value="contact" />
-        <!-- Honeypot antispam (skryté pole pro roboty) -->
-        <div style="display:none">
-          <label>Don’t fill this out: <input name="bot-field" /></label>
+      <form id="events-filters-form" class="events-filters filter-dock" novalidate data-behavior="sheet">
+        <div class="filters-toolbar" aria-label="Rychlé filtry">
+          <div class="chips">
+            <button type="button" class="chip" id="chipToday" data-i18n-key="filters.today">Dnes</button>
+            <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend">Tento víkend</button>
+            <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
+          </div>
+          <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>
+            <span data-i18n-key="filters.nearMe">V mém okolí</span>
+          </button>
         </div>
 
-        <div class="form-group">
-          <label for="name" data-i18n-key="contact-label-name">Jméno</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            required
-            placeholder="Vaše jméno"
-            data-i18n-placeholder="contact-placeholder-name"
-            autocomplete="name"
-          />
-          <div class="form-error" id="error-name"></div>
-        </div>
-        <div class="form-group">
-          <label for="email" data-i18n-key="contact-label-email">E-mail</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            required
-            placeholder="Váš e-mail"
-            data-i18n-placeholder="contact-placeholder-email"
-            autocomplete="email"
-          />
-          <div class="form-error" id="error-email"></div>
-        </div>
-        <div class="form-group">
-          <label for="message" data-i18n-key="contact-label-message">Zpráva</label>
-          <textarea
-            id="message"
-            name="message"
-            required
-            placeholder="Vaše zpráva"
-            data-i18n-placeholder="contact-placeholder-message"
-            rows="5"
-          ></textarea>
-          <div class="form-error" id="error-message"></div>
-        </div>
-        <button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
+        <fieldset class="filters-fieldset">
+          <legend>Filtry</legend>
+          <div class="filter-group">
+            <label for="filter-category" data-i18n-key="filters.category">Kategorie</label>
+            <select id="filter-category" class="styled-select">
+              <option value="all" data-i18n-key="filters.all">Vše</option>
+              <option value="concert" data-i18n-key="category-concert">Koncerty</option>
+              <option value="festival" data-i18n-key="category-festival">Festivaly</option>
+              <option value="sport" data-i18n-key="category-sport">Sport</option>
+              <option value="theatre" data-i18n-key="category-theatre">Divadlo</option>
+            </select>
+          </div>
 
-        <!-- Dynamické error hlášky -->
-        <div class="contact-error" id="contact-error" style="display:none;">
-          <p data-i18n-key="contact-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
-        </div>
+          <div class="filter-group">
+            <label for="filter-sort" data-i18n-key="filters.sort">Řazení</label>
+            <select id="filter-sort" class="styled-select">
+              <option value="nearest" data-i18n-key="filters.nearest">Nejbližší</option>
+              <option value="latest" data-i18n-key="filters.latest">Nejnovější</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-city" data-i18n-key="filters.city">Město</label>
+            <input id="filter-city" type="text" class="styled-input" placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-date-from" data-i18n-key="filters.dateFrom">Od</label>
+            <input id="filter-date-from" type="date" class="styled-input">
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-date-to" data-i18n-key="filters.dateTo">Do</label>
+            <input id="filter-date-to" type="date" class="styled-input">
+          </div>
+
+          <div class="filter-group filter-keyword">
+            <label for="filter-keyword" data-i18n-key="filters.keyword">Klíčové slovo</label>
+            <input id="filter-keyword" type="search" class="styled-input" placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
+          </div>
+
+          <div class="filter-actions">
+            <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe">V mém okolí</button>
+            <button type="submit" class="btn btn-primary" data-i18n-key="filters.apply">Použít filtry</button>
+            <button type="reset" class="btn btn-ghost" data-i18n-key="filters.reset">Vymazat</button>
+          </div>
+        </fieldset>
+
+        <button type="button" class="filters-close" id="filtersClose" aria-label="Zavřít filtry"></button>
       </form>
-      <!--
-      <div class="contact-illustration">
-        <img src="/images/contact-illustration.png" alt="Kontaktujte AJSEE" />
-      </div>
-      !-->
-    </div>
-    <div class="contact-success" style="display:none;" id="contact-success">
-      <p data-i18n-key="contact-success-msg">Děkujeme za zprávu! Ozveme se vám co nejdříve.</p>
-    </div>
-  </div>
-</section>
 
+      <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form">Filtry</button>
+      <div class="filters-overlay" id="filtersOverlay" hidden></div>
+
+      <div class="event-demo-badge" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
+        <div class="ib-icon" aria-hidden="true">🎟️</div>
+        <p class="ib-text">
+          <strong data-i18n-key="event-demo.title">Ukázkové události.</strong>
+          <span data-i18n-key="event-demo.body">Připravujeme reálný prodej vstupenek. Sledujte nás!</span>
+        </p>
+        <a class="ib-cta" id="demoBadgeCta" href="/coming-soon?utm_source=site&utm_medium=pill&utm_campaign=demo_badge" data-i18n-key="event-demo.cta">Sleduj novinky</a>
+      </div>
+
+      <div id="eventsList" class="events-list" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- O NÁS -->
+  <section id="about" class="about-section fancy-bg">
+    <div class="container about-flex">
+      <div class="about-text-content">
+        <h2 class="about-headline" data-i18n-key="about-headline">O nás</h2>
+        <p class="about-lead" data-i18n-key="about-lead">Věříme, že kultura spojuje lidi.</p>
+        <div class="about-text" data-i18n-key="about-text">
+          <p><strong>AJSEE<sup>®</sup></strong> vám otevírá cestu ke světovým akcím bez jazykových bariér – s nadšením pro autentické zážitky!</p>
+        </div>
+        <a href="/about.html" class="btn-main btn-with-icon" data-i18n-key="about-btn">
+          <span>Zjisti více o <strong>AJSEE<sup>®</sup></strong></span>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="11" cy="11" r="11" fill="#14c2c5"/>
+            <path d="M8 11H14M14 11L11.5 8.5M14 11L11.5 13.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="about-visual">
+        <div class="about-globe-anim">
+          <svg width="160" height="160" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+            <circle cx="40" cy="40" r="38" stroke="#14c2c5" stroke-width="3"/>
+            <ellipse cx="40" cy="40" rx="31" ry="38" stroke="#14c2c5" stroke-width="2"/>
+            <ellipse cx="40" cy="40" rx="38" ry="16" stroke="#14c2c5" stroke-width="2"/>
+            <ellipse cx="40" cy="40" rx="22" ry="38" stroke="#14c2c5" stroke-width="1"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG -->
+  <section class="homepage-blog" id="blog">
+    <div class="container">
+      <h2 data-i18n-key="blog-headline-home">Blog & Recenze</h2>
+      <div class="homepage-blog-cards" id="homepage-blog-list"></div>
+      <a href="/blog.html" class="homepage-blog-more" data-i18n-key="blog-show-all">Zobrazit všechny články</a>
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section id="contact" class="contact-section">
+    <div class="container">
+      <h2 data-i18n-key="contact-headline">Kontaktujte nás</h2>
+      <div class="contact-content">
+        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thank-you.html" class="contact-form" id="contact-form" autocomplete="on">
+          <input type="hidden" name="form-name" value="contact" />
+          <div style="display:none"><label>Don’t fill this out: <input name="bot-field" /></label></div>
+
+          <div class="form-group">
+            <label for="name" data-i18n-key="contact-label-name">Jméno</label>
+            <input type="text" id="name" name="name" required placeholder="Vaše jméno" data-i18n-placeholder="contact-placeholder-name" autocomplete="name" />
+            <div class="form-error" id="error-name"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="email" data-i18n-key="contact-label-email">E-mail</label>
+            <input type="email" id="email" name="email" required placeholder="Váš e-mail" data-i18n-placeholder="contact-placeholder-email" autocomplete="email" />
+            <div class="form-error" id="error-email"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="message" data-i18n-key="contact-label-message">Zpráva</label>
+            <textarea id="message" name="message" required placeholder="Vaše zpráva" data-i18n-placeholder="contact-placeholder-message" rows="5"></textarea>
+            <div class="form-error" id="error-message"></div>
+          </div>
+
+          <button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
+
+          <div class="contact-error" id="contact-error" style="display:none;">
+            <p data-i18n-key="contact-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
+          </div>
+        </form>
+      </div>
+      <div class="contact-success" style="display:none;" id="contact-success">
+        <p data-i18n-key="contact-success-msg">Děkujeme za zprávu! Ozveme se vám co nejdříve.</p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
   <div class="footer-social">
-    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
-      <img src="/images/icons/instagram.svg" alt="Instagram" />
-    </a>
-    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
-      <img src="/images/icons/facebook.svg" alt="Facebook" />
-    </a>
-    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
-      <img src="/images/icons/twitter.svg" alt="Twitter" />
-    </a>
-    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
-      <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
-    </a>
+    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener"><img src="/images/icons/instagram.svg" alt="Instagram" /></a>
+    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener"><img src="/images/icons/facebook.svg" alt="Facebook" /></a>
+    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener"><img src="/images/icons/twitter.svg" alt="Twitter" /></a>
+    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener"><img src="/images/icons/linkedin.svg" alt="LinkedIn" /></a>
   </div>
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
 
-<!-- MODAL: Detail události -->
-<div id="eventModal" class="event-modal hidden">
-  <div class="event-modal-content">
-    <button id="modalClose" class="event-modal-close" aria-label="Zavřít" tabindex="0">
-      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
-        <line x1="18" y1="6" x2="6" y2="18"/>
-        <line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
+<!-- Vite moduly – Vite si je v DEV i PROD obslouží (v PROD přepíše na /assets/*.js) -->
 
-    <img id="modalImage" class="modal-image" alt="" />
-
-    <div class="modal-details">
-      <h2 id="modalTitle" class="modal-title">Název události</h2>
-      <p class="modal-meta">
-        <span id="modalDate" class="modal-date"></span> |
-        <span id="modalLocation" class="modal-location"></span>
-      </p>
-      <p id="modalDescription" class="modal-description"></p>
-      <p class="modal-category">
-        <span data-i18n-key="event-category">Kategorie:</span>
-        <span id="modalCategory"></span>
-      </p>
-      <div class="calendar-buttons">
-        <span class="calendar-label" data-i18n-key="add-to-calendar">Přidat do kalendáře:</span>
-        <div class="calendar-btns-wrap">
-          <a href="#" id="googleCalendarLink" class="calendar-btn calendar-btn--google" target="_blank" rel="noopener">
-            <span class="calendar-btn-icon"></span>
-            <span class="calendar-btn-label" data-i18n-key="calendar-google">Google</span>
-          </a>
-          <a href="#" id="outlookCalendarLink" class="calendar-btn calendar-btn--outlook" target="_blank" rel="noopener">
-            <span class="calendar-btn-icon"></span>
-            <span class="calendar-btn-label" data-i18n-key="calendar-outlook">Outlook</span>
-          </a>
-          <a href="#" id="appleCalendarLink" class="calendar-btn calendar-btn--apple" download="event.ics">
-            <span class="calendar-btn-icon"></span>
-            <span class="calendar-btn-label" data-i18n-key="calendar-apple">Apple / ICS</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Skripty -->
-
-<!-- Inline skript: chování waitlist banneru (UTM + lang, zavření bez ukládání, lokální i18n apply) -->
+<!-- Inline skript: chování waitlist banneru (počká i na překlady) -->
 <script>
   (function () {
     const box = document.getElementById('hpWaitlist');
     if (!box) return;
 
-    // --- helpers -------------------------------------------------------------
     const qs = new URLSearchParams(location.search);
     const getLang = () => {
       const urlLang = (qs.get('lang') || '').toLowerCase();
@@ -450,25 +318,21 @@
     const LANG = getLang();
     const SUPPORTED = ['cs','en','de','sk','pl','hu'];
 
-    // i18n lookup proti window.translations (aktuální jazyk musí být už nahrán runtimem)
     function t(path) {
       try {
-        const dict = window.translations || null; // očekáváme aktuální jazyk
+        const dict = window.translations || null;
         if (!dict) return null;
         return path.split('.').reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), dict) ?? null;
       } catch { return null; }
     }
 
-    // Aplikuj i18n jen v rámci banneru (bez ohledu na zbytek stránky)
     function applyBannerI18n(root) {
-      // textové uzly
-      root.querySelectorAll('[data-i18n-key]').forEach(el => {
+      root.querySelectorAll('[data-i18n-key]').forEach((el) => {
         const key = el.getAttribute('data-i18n-key');
         const val = t(key);
         if (typeof val === 'string') el.textContent = val;
       });
-      // aria labely / title
-      root.querySelectorAll('[data-i18n-aria]').forEach(el => {
+      root.querySelectorAll('[data-i18n-aria]').forEach((el) => {
         const key = el.getAttribute('data-i18n-aria');
         const val = t(key);
         if (typeof val === 'string') {
@@ -476,18 +340,16 @@
           el.setAttribute('title', val);
         }
       });
-      // alt/placeholder (pro případné prvky uvnitř)
-      root.querySelectorAll('[data-i18n-alt]').forEach(el => {
+      root.querySelectorAll('[data-i18n-alt]').forEach((el) => {
         const key = el.getAttribute('data-i18n-alt');
         const val = t(key);
         if (typeof val === 'string') el.setAttribute('alt', val);
       });
-      root.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      root.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
         const key = el.getAttribute('data-i18n-placeholder');
         const val = t(key);
         if (typeof val === 'string') el.setAttribute('placeholder', val);
       });
-      // region aria-label
       const regionKey = root.getAttribute('data-i18n-aria');
       if (regionKey) {
         const val = t(regionKey);
@@ -495,7 +357,18 @@
       }
     }
 
-    // --- CTA URL: doplň ?lang (pokud je podporovaný) -------------------------
+    // malý helper: pokud překlady ještě nejsou, zkus to znovu
+    function whenTranslationsReady(fn){
+      if (window.translations) return fn();
+      const start = Date.now();
+      const id = setInterval(() => {
+        if (window.translations || Date.now() - start > 1500) {
+          clearInterval(id);
+          fn();
+        }
+      }, 50);
+    }
+
     const cta = document.getElementById('hpWaitlistCta');
     if (cta) {
       const url = new URL(cta.href, location.origin);
@@ -506,11 +379,9 @@
       });
     }
 
-    // --- Zavírání: pouze pro aktuální zobrazení ------------------------------
     const btnClose = document.getElementById('hpWaitlistClose');
     if (btnClose) {
       btnClose.addEventListener('click', function () { box.remove(); });
-      // i18n aria-label pro close
       const closeKey = btnClose.getAttribute('data-i18n-aria') || btnClose.getAttribute('data-i18n-key');
       if (closeKey) {
         const val = t(closeKey);
@@ -521,12 +392,11 @@
       }
     }
 
-    // --- Lokální i18n pro banner --------------------------------------------
-    applyBannerI18n(box);
+    whenTranslationsReady(() => applyBannerI18n(box));
   })();
 </script>
 
-<!-- Inline skript: Demo badge (lokální i18n + doplnění ?lang + GA event) -->
+<!-- Inline skript: Demo badge (počká i na překlady) -->
 <script>
   (function(){
     const pill = document.querySelector('.event-demo-badge');
@@ -538,14 +408,12 @@
     if (!SUPPORTED.includes(lang)) lang = (document.documentElement.getAttribute('lang') || 'cs').toLowerCase();
     if (!SUPPORTED.includes(lang)) lang = 'cs';
 
-    // Bezpečný getter z objektu
     const get = (obj, path) => {
       try { return path.split('.').reduce((o,k)=>(o && typeof o==='object') ? o[k] : undefined, obj); }
       catch { return undefined; }
     };
 
-    // Lokální i18n aplikace jen na demo pill (pokud runtime má window.translations)
-    (function applyI18n(){
+    function applyI18n(){
       const dict = window.translations || null;
       if (!dict) return;
 
@@ -561,9 +429,19 @@
         pill.setAttribute('aria-label', ariaVal);
         pill.setAttribute('title', ariaVal);
       }
-    })();
+    }
 
-    // CTA: doplň ?lang a pošli GA event
+    function whenTranslationsReady(fn){
+      if (window.translations) return fn();
+      const start = Date.now();
+      const id = setInterval(() => {
+        if (window.translations || Date.now() - start > 1500) {
+          clearInterval(id);
+          fn();
+        }
+      }, 50);
+    }
+
     const cta = document.getElementById('demoBadgeCta');
     if (cta) {
       const url = new URL(cta.href, location.origin);
@@ -574,6 +452,8 @@
         if (window.gtag) window.gtag('event','click_demo_badge', { source: 'home_demo_pill', lang });
       });
     }
+
+    whenTranslationsReady(applyI18n);
   })();
 </script>
 

@@ -2,6 +2,15 @@
 // HEADER / NAVIGATION / LANGUAGE SWITCHERS
 // =============================================
 @use '../globals' as *;
+
+/* --- brandové proměnné pro aktivní stav nav --- */
+:root{
+  --nav-accent: #14c2c5;
+  --nav-active-text: #0a2d4a;
+  --nav-active-bg-start: #e9f5ff;
+  --nav-active-bg-end: #dff0ff;
+}
+
 .site-header {
   width: 100%;
   background: linear-gradient(108deg, #eafcffcc 0%, #53e0f6cc 70%, #139dcfbb 100%);
@@ -15,14 +24,17 @@
   transition: background 0.18s;
 }
 
+/* GRID (logo | nav | jazyky) – brání kolizi s vlaječkami */
 .header-inner {
   max-width: 1300px;
   margin: 0 auto;
   padding: 0.6rem 2.2rem;
-  display: flex;
+
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto; /* logo | NAV 1fr | jazyky */
   align-items: center;
-  justify-content: space-between;
-  gap: 2.2rem;
+  column-gap: clamp(1rem, 3vw, 2.2rem);
+
   min-height: 96px;
   position: relative;
 }
@@ -52,14 +64,12 @@
   align-items: center;
 
   &.desktop-switcher {
-    @media (max-width: 950px) {
-      display: none;
-    }
+    justify-self: end;
+    @media (max-width: 950px) { display: none; }
   }
 
   &.mobile-switcher {
     display: none;
-
     @media (max-width: 950px) {
       display: flex;
       flex-wrap: wrap;
@@ -82,9 +92,7 @@
   padding: 0.22em 0.5em;
   line-height: 1;
 
-  &:hover {
-    transform: scale(1.11);
-  }
+  &:hover { transform: scale(1.11); }
 }
 
 /* ------------------------
@@ -117,13 +125,11 @@
     transition: all 0.25s;
   }
 
-  @media (max-width: 950px) {
-    display: flex;
-  }
+  @media (max-width: 950px) { display: flex; }
 }
 
 /* ------------------------
-   OVERLAY FOR MOBILE MENU (single, clean definition)
+   OVERLAY FOR MOBILE MENU
    ------------------------ */
 
 /* default: neviditelné, neklikací, bez blur */
@@ -137,7 +143,7 @@
   pointer-events: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  display: block;          /* držíme v DOM bez layout skoků */
+  display: block;
   transition: opacity .2s ease, visibility .2s ease;
 }
 
@@ -155,37 +161,64 @@
    ------------------------ */
 
 .main-nav {
+  justify-self: center;
+  min-width: 0;
+  z-index: 2000;
+
   display: flex;
   align-items: center;
-  z-index: 2000;
 
   ul {
     display: flex;
-    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap; /* žádné zalamování (před 950px přepneme na hamburger) */
+    gap: clamp(0.9rem, 2.2vw, 1.6rem);
     list-style: none;
     padding: 0;
     margin: 0;
   }
 
+  /* základní vzhled odkazů (pill-ready) */
   a {
     font-size: 1.12rem;
     font-weight: 600;
     color: #222;
-    text-decoration: none;
-    transition: color 0.18s;
     letter-spacing: 0.01em;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    position: relative;
+    padding: .55rem clamp(.5rem, 1.4vw, .9rem);
+    white-space: nowrap;
+    border-radius: 999px; /* „pill“ */
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .15s ease;
 
     &:hover,
-    &.active {
-      color: #0077cc;
-      text-decoration: underline;
+    &:focus {
+      color: #0a2d4a;
+      background: #f0f7ff;
+      text-decoration: none;
+    }
+
+    &:focus-visible{
+      outline: 2px solid var(--nav-accent);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+
+    &.active{
+      color: var(--nav-active-text);
+      background: linear-gradient(180deg, var(--nav-active-bg-start) 0%, var(--nav-active-bg-end) 100%);
+      box-shadow: 0 2px 10px #0077cc14 inset, 0 1px 6px #0077cc0d;
+      text-decoration: none !important;
     }
   }
 
-  .menu-close {
-    display: none;
-  }
+  .menu-close { display: none; }
 
+  /* ===== Mobilní panel ===== */
   @media (max-width: 950px) {
     position: fixed;
     top: 0;
@@ -194,7 +227,6 @@
     max-width: 340px;
     height: 100vh;
 
-    /* neprůhledné pozadí panelu (ne „skleněné“) */
     background: linear-gradient(108deg, #eafcff 0%, #53e0f6 70%, #139dcf 100%);
 
     flex-direction: column;
@@ -233,6 +265,50 @@
   }
 }
 
-.main-nav.open {
-  transform: translateX(0%);
+/* otevřený posuvník */
+.main-nav.open { transform: translateX(0%); }
+
+/* =========================================================
+   JEDNOTNÝ AKTIVNÍ STAV (pill + spodní indikátor) – DESKTOP
+   ========================================================= */
+.main-nav a[aria-current]{
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+.site-header .main-nav a[aria-current]{
+  color: var(--nav-active-text);
+  background: linear-gradient(180deg, var(--nav-active-bg-start) 0%, var(--nav-active-bg-end) 100%);
+  box-shadow: 0 2px 10px #0077cc14 inset, 0 1px 6px #0077cc0d;
+}
+
+.site-header .main-nav a[aria-current]::after{
+  content:"";
+  position:absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -6px;
+  height: 2px;
+  background: var(--nav-accent);
+  border-radius: 2px;
+  opacity: .95;
+  pointer-events: none;
+}
+
+/* ===== Mobile/Hamburger: BEZ underline/badge (dle přání) ===== */
+@media (max-width: 950px){
+  .site-header .main-nav a[aria-current]::after{ content: none; }
+  .site-header .main-nav a[aria-current]::before{ content: none; }
+}
+
+/* Vysoký kontrast / forced-colors */
+@media (forced-colors: active){
+  .site-header .main-nav a[aria-current]{
+    outline: 2px solid SelectedItem;
+    background: Canvas;
+    box-shadow: none;
+  }
+  .site-header .main-nav a[aria-current]::after{
+    background: SelectedItem;
+  }
 }

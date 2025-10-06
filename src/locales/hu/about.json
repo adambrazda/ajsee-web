@@ -1,0 +1,42 @@
+{
+  "about": {
+    "headline": "Rólunk",
+    "title": "Rólunk | AJSEE®",
+    "hero": {
+      "headlineFull": "Történetünk. Víziónk.",
+      "text": "Az élményeknek nincsenek határaik. Ezért született meg az AJSEE.",
+      "subtext": "Célunk, hogy a kulturális, szórakoztató és sporteseményeket az egész világról elérhetővé tegyük – érthetően és felesleges akadályok nélkül a választás és a jegyvásárlás során.",
+      "claim": "Az AJSEE<sup>®</sup> egy modern platform mindenkinek, aki a világot a lehető legteljesebben szeretné megélni – akadályok nélkül."
+    },
+    "story": {
+      "headline": "Hogyan kezdődött minden",
+      "p1": "<strong>2024</strong> őszén történt. Egy kocsmában ültünk, ittunk egy sört – és ahogy lenni szokott, <strong>egy hétköznapi beszélgetésből hamar valódi ötlet lett.</strong>",
+      "p2": "Még aznap este megszületett az <strong>AJSEE név</strong>, az első logóterv és a vízió: <strong>a világ élményeit nyelvi akadályok nélkül elérhetővé tenni.</strong>",
+      "p3": "Ezután jött a legnehezebb rész: <strong>valóban elkezdeni.</strong>",
+      "p4": "Mindketten teljes állásban dolgoztunk, <strong>180 kilométer</strong> választott el minket, és kevés volt az idő. A projekt megakadt, mielőtt igazán beindulhatott volna.",
+      "p5": "Egészen addig, míg egy nap egyikünk <strong>egyszerűen elindította</strong>. Nem tökéletes tervvel, de azzal a bizonyossággal, hogy ennek van értelme. Ekkor kezdett az AJSEE valósággá válni."
+    },
+    "team": {
+      "headline": "Kik állnak mögötte?",
+      "adam": {
+        "name": "Adam Brázda",
+        "role": "Az AJSEE® társalapítója",
+        "claim": "Az első gondolattól kezdve részese az AJSEE®-nek. Hisz az egyszerű megoldások erejében, amelyek felesleges akadályok nélkül nyitják meg az élmények világát.",
+        "linkedin": "LinkedIn-profil"
+      },
+      "jan": {
+        "name": "Jan Oujezdský",
+        "role": "Az AJSEE® társalapítója",
+        "claim": "Első naptól osztozik a vízión, hogy a kultúrát, a sportot és a szórakozást a lehető legtöbb ember számára elérhetővé tegye. Az AJSEE®-nél az ötleteket, a hozzáférhetőséget és a részletek iránti figyelmet kapcsolja össze.",
+        "linkedin": "LinkedIn-profil"
+      }
+    },
+    "future": {
+      "headline": "🎯 Merre tartunk",
+      "p1": "2025 végéig el szeretnénk indítani az éles weboldalt.",
+      "p2": "Bővítjük a nyelvi verziókat, és nemzetközi platformokkal dolgozunk együtt.",
+      "p3": "Készül a mobilalkalmazás, és bővítjük az eseménykínálatot, illetve annak elérhetőségét a szélesebb közönség számára.",
+      "p4": "Azt szeretnénk, ha az AJSEE lenne az első választás mindenkinek, aki világklasszis élményeket keres – legyen az Londonban, Barcelonában vagy otthon, Brnóban."
+    }
+  }
+}

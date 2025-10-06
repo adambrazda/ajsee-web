@@ -5,6 +5,10 @@
 // URL sync, calendar links, mobile sheet, geolocation w/ IP fallback,
 // CLICK-ONLY pagination (Load more), collapsible filter dock, typeahead live-region fix
 // + Homepage: TOP 3 blog cards (articles + micro-guides)
+//
+// POZOR: pokud je na stránce nastaveno window.__AJSEE_SKIP_CORE_EVENTS === true,
+// NEBUDE se spouštět core events pipeline (getAllEvents/renderEvents).
+// Používá se při inline Ticketmaster řešení na /events.
 // ---------------------------------------------------------
 
 import './styles/main.scss';
@@ -13,6 +17,12 @@ import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity } from './city/canonical.js';
 import './identity-init.js';
 import { blogArticles, getSortedBlogArticles } from './blogArticles.js';   // pro homepage TOP3
+
+// --- feature flag: skip core events pipeline (nastav v HTML před načtením main.js) ---
+const SKIP_CORE_EVENTS = !!window.__AJSEE_SKIP_CORE_EVENTS;
+if (SKIP_CORE_EVENTS) {
+  console.info('[AJSEE] Core events pipeline SKIPPED (inline Ticketmaster handles rendering).');
+}
 
 // ------- Global state -------
 let currentFilters = {
@@ -127,20 +137,98 @@ function syncURLFromFilters() {
 }
 
 // ------- i18n -------
-async function loadTranslations(lang) {
-  const resp = await fetch(`/locales/${lang}.json`);
-  return await resp.json();
+
+// malá deep-merge utilita (stačí na naše JSONy)
+function deepMerge(a = {}, b = {}) {
+  const out = Array.isArray(a) ? [...a] : { ...a };
+  for (const [k, v] of Object.entries(b || {})) {
+    if (v && typeof v === 'object' && !Array.isArray(v) && typeof out[k] === 'object' && !Array.isArray(out[k])) {
+      out[k] = deepMerge(out[k], v);
+    } else {
+      out[k] = v;
+    }
+  }
+  return out;
 }
+
+// načtení JSON s fallbackem (nejdřív /locales, pak /src/locales – užitečné v netlify dev)
+async function fetchJSONWithFallback(path1, path2) {
+  try {
+    const r1 = await fetch(path1, { cache: 'no-store' });
+    if (r1.ok) return await r1.json();
+  } catch {}
+  if (path2) {
+    try {
+      const r2 = await fetch(path2, { cache: 'no-store' });
+      if (r2.ok) return await r2.json();
+    } catch {}
+  }
+  return null;
+}
+
+// Načte překlady podle jazyka (base + page-specific)
+async function loadTranslations(lang) {
+  const page = window.location.pathname.split('/').pop();
+
+  const base =
+    (await fetchJSONWithFallback(`/locales/${lang}.json`, `/src/locales/${lang}.json`)) || {};
+
+  // page-level
+  let pagePart = {};
+  if (page === 'about.html') {
+    pagePart =
+      (await fetchJSONWithFallback(`/locales/${lang}/about.json`, `/src/locales/${lang}/about.json`)) || {};
+  }
+
+  return deepMerge(base, pagePart);
+}
+
+// bezpečné vytažení hodnoty z objektu podle cesty (vnořený klíč)
 function getByPath(obj, path) {
   if (!obj || !path) return undefined;
   return path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
 }
+
+// alias klíčů pro About – podpora starých tvarů: about-hero-text, about-headline-full apod.
+function aboutAlias(key) {
+  if (!key || !key.startsWith('about-')) return null;
+  const rest = key.slice('about-'.length); // např. "hero-text" | "headline-full"
+
+  // podvětev hero.*
+  if (rest.startsWith('hero-')) {
+    const sub = rest.slice('hero-'.length); // "text" | "subtext" | "claim" | "headline-full"
+    const parts = sub.split('-');
+    const camel = parts.map((s, i) => (i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1))).join('');
+    return `about.hero.${camel}`;
+  }
+
+  // podvětev story.*
+  if (rest.startsWith('story-')) {
+    const sub = rest.slice('story-'.length); // "headline" apod.
+    const parts = sub.split('-');
+    const camel = parts.map((s, i) => (i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1))).join('');
+    return `about.story.${camel}`;
+  }
+
+  return null;
+}
+
+// vrací překlad podle klíče nebo fallback
 function t(key, fallback) {
   const tr = window.translations || {};
 
+  // 1) přesná shoda + vnořená notace "a.b.c"
   const exact = getByPath(tr, key) ?? tr[key];
   if (exact !== undefined) return exact;
 
+  // 2) aliasy pro About (starý tvar data-i18n-key="about-hero-text" atd.)
+  const alias = aboutAlias(key);
+  if (alias) {
+    const aliased = getByPath(tr, alias);
+    if (aliased !== undefined) return aliased;
+  }
+
+  // 3) fallbacky na starý formát filtrů / kategorií
   if (key.startsWith('filter-')) {
     const tail = key.replace(/^filter-/, '');
     const v = getByPath(tr, `filters.${tail}`) ?? tr[`filters.${tail}`];
@@ -156,6 +244,7 @@ function t(key, fallback) {
     const v = getByPath(tr, `filters.${key.replace('category-', '')}`);
     if (v !== undefined) return v;
   }
+
   return fallback;
 }
 
@@ -261,20 +350,130 @@ async function applyTranslations(lang) {
 }
 
 // ------- Nav -------
+// pomocná: jsme na homepage?
+function onHomePage() {
+  return location.pathname === '/' || location.pathname.endsWith('index.html');
+}
+
+// robustní označení aktivní položky – používá aria-current="page"
 function activateNavLink() {
   const path = window.location.pathname;
+  const hash = window.location.hash || '';
+  const isHomePath = (path === '/' || path.endsWith('index.html'));
+
+  const state = {
+    home:     () => isHomePath && (hash === '' || hash === '#top' || hash === '#'),
+    events:   () => /\/events(\.html)?$/i.test(path),
+    partners: () => /\/partners(\.html)?$/i.test(path),
+    about:    () => /\/about(\.html)?$/i.test(path),
+    blog:     () => /\/blog(\.html)?$/i.test(path) || (isHomePath && hash === '#blog'),
+    faq:      () => /\/faq(\.html)?$/i.test(path)  || (isHomePath && hash === '#faq'),
+    contact:  () => /\/contact(\.html)?$/i.test(path) || (isHomePath && hash === '#contact'),
+  };
+
+  const keyForLink = (href) => {
+    if (!href) return null;
+    if (href.includes('events')) return 'events';
+    if (href.includes('partners')) return 'partners';
+    if (href.includes('about')) return 'about';
+    if (href.includes('faq')) return 'faq';
+    if (href.includes('#blog') || /\/blog(\.html)?$/i.test(href)) return 'blog';
+    if (href.includes('#contact') || /\/contact(\.html)?$/i.test(href)) return 'contact';
+    if (href === '/' || href.includes('index.html')) return 'home';
+    return null;
+  };
+
   document.querySelectorAll('.main-nav a').forEach((link) => {
     const href = link.getAttribute('href') || '';
-    const isHome = (path === '/' || path.endsWith('index.html')) && (href === '/' || href === '/index.html');
-    const match =
-      isHome ||
-      (path.endsWith('partners.html') && href.includes('partners')) ||
-      (path.endsWith('about.html') && href.includes('about')) ||
-      (path.endsWith('events.html') && href.includes('events'));
-    link.classList.toggle('active', !!match);
+    const key = keyForLink(href);
+    const isCurrent = key ? !!state[key]() : false;
+
+    link.classList.toggle('active', isCurrent); // backward compatibility
+    if (isCurrent) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
   });
 }
+
+// Bezpečně doplní FAQ odkaz do .main-nav, pokud chybí.
+// Detekce ignoruje query string a zachová <li> obal kvůli stylům.
+function ensureFaqNavLink() {
+  const nav = document.querySelector('.main-nav');
+  if (!nav) return;
+
+  const links = Array.from(nav.querySelectorAll('a'));
+  const alreadyHasFaq = links.some(a => {
+    const raw = (a.getAttribute('href') || '').toLowerCase();
+    const h = raw.split('?')[0]; // ignoruj query
+    return /(^|\/)faq(\.html)?$/.test(h) || raw.endsWith('#faq');
+  });
+  if (alreadyHasFaq) return;
+
+  // klon tříd z existujícího odkazu (vezmeme "Kontakt" nebo první)
+  const proto = nav.querySelector('a[href*="contact"]') || nav.querySelector('a');
+
+  const a = document.createElement('a');
+  if (proto) a.className = proto.className;
+
+  a.setAttribute('data-i18n-key', 'nav-faq');
+  a.textContent = t('nav-faq', 'FAQ');
+
+  // href dle kontextu
+  const lang = (typeof currentLang === 'string' ? currentLang : 'cs');
+  a.href = onHomePage() ? `/index.html?lang=${lang}#faq` : `/faq.html?lang=${lang}`;
+
+  // vlož s respektem k <li> struktuře
+  const contact = nav.querySelector('a[href*="contact"], a[href$="#contact"]');
+  const useList = !!nav.querySelector('li > a');
+  const nodeToInsert = useList ? (()=>{
+    const li = document.createElement('li'); li.appendChild(a); return li;
+  })() : a;
+
+  const contactItem = contact?.closest('li') || contact;
+  if (contactItem && contactItem.parentElement) {
+    contactItem.parentElement.insertBefore(nodeToInsert, contactItem);
+  } else {
+    (useList ? (nav.querySelector('ul') || nav) : nav).appendChild(nodeToInsert);
+  }
+}
+
+// Normalizace FAQ v menu: 1× FAQ, správný href a pozice před „Kontakt“ (zachovat styly)
+function normalizeFaqInNav(lang) {
+  const nav = document.querySelector('.main-nav');
+  if (!nav) return;
+
+  const faqLinks = Array.from(nav.querySelectorAll('a')).filter(a => {
+    const raw = (a.getAttribute('href') || '').toLowerCase();
+    const base = raw.split('?')[0];
+    return /(^|\/)faq(\.html)?$/.test(base) || raw.endsWith('#faq');
+  });
+  if (faqLinks.length === 0) return;
+
+  const preferAnchor = onHomePage();
+  let keep = preferAnchor
+    ? faqLinks.find(a => (a.getAttribute('href') || '').toLowerCase().endsWith('#faq'))
+    : faqLinks.find(a => /(^|\/)faq(\.html)?($|\?)/.test((a.getAttribute('href') || '').toLowerCase()));
+  if (!keep) keep = faqLinks[0];
+
+  // kanonický href
+  keep.setAttribute('href', preferAnchor ? `/index.html?lang=${lang}#faq` : `/faq.html?lang=${lang}`);
+
+  // odstranit duplicity (včetně <li> obalu)
+  faqLinks.forEach(a => {
+    if (a !== keep) (a.closest('li') || a).remove();
+  });
+
+  // přesunout před „Kontakt“ – na úrovni <li>, pokud existuje
+  const contact = nav.querySelector('a[href*="contact"], a[href$="#contact"]');
+  const keepItem = keep.closest('li') || keep;
+  const contactItem = contact?.closest('li') || contact;
+  if (contactItem && contactItem.parentElement && keepItem !== contactItem.previousSibling) {
+    contactItem.parentElement.insertBefore(keepItem, contactItem);
+  }
+}
+
 function updateMenuLinksWithLang(lang) {
+  const isHome = onHomePage();
+
   document.querySelectorAll('.main-nav a').forEach((link) => {
     let href = link.getAttribute('href') || '';
     if (!href || href.startsWith('mailto:') || href.startsWith('http')) return;
@@ -283,6 +482,9 @@ function updateMenuLinksWithLang(lang) {
       href = `/index.html?lang=${lang}#blog`;
     } else if (href.endsWith('#contact')) {
       href = `/index.html?lang=${lang}#contact`;
+    } else if (href.endsWith('#faq')) {
+      // na homepage chceme kotvu, jinde stránku
+      href = isHome ? `/index.html?lang=${lang}#faq` : `/faq.html?lang=${lang}`;
     } else {
       href = href.replace(/\?lang=[a-z]{2}/, '').replace(/&lang=[a-z]{2}/, '');
       href = href.includes('?') ? `${href}&lang=${lang}` : `${href}?lang=${lang}`;
@@ -626,6 +828,18 @@ function toggleFilters() { (filtersCollapsed ? expandFilters : collapseFilters)(
 async function renderAndSync({ resetPage = true } = {}) {
   if (resetPage) pagination.page = 1;
   syncURLFromFilters();
+
+  // --- KLÍČOVÁ STRÁŽ: pokud jedeme inline Ticketmaster, nepouštěj core render ---
+  if (SKIP_CORE_EVENTS) {
+    renderFilterChips(); // chips UI necháme fungovat
+    // informuj inline Ticketmaster o změně filtrů + jazyka
+    window.dispatchEvent(new CustomEvent('ajsee:filters', {
+      detail: { filters: { ...currentFilters }, lang: currentLang }
+    }));
+    if (hasActiveFilters()) collapseFilters();
+    return;
+  }
+
   await renderEvents(currentLang, currentFilters);
   renderFilterChips();
   if (hasActiveFilters()) collapseFilters();
@@ -744,9 +958,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   const ccCookie = getCookie('aj_country');
   currentFilters.countryCode = (ccCookie || langToCountry[currentLang] || 'CZ').toUpperCase();
 
-  updateMenuLinksWithLang(currentLang);
+  // Překlady napřed, aby fungovalo t() i pro právě vkládaný FAQ odkaz
   await applyTranslations(currentLang);
+
+  // FAQ link – bezpečně doplnit, pokud chybí
+  ensureFaqNavLink();
+
+  // Všem odkazům doplnit ?lang=…
+  updateMenuLinksWithLang(currentLang);
+
+  // ⚙️ Normalizace: 1× FAQ, správný href a pozice před „Kontakt“
+  normalizeFaqInNav(currentLang);
+
+  // Aktivní záložka + reagovat i na změnu kotvy (#faq/#blog/#contact)
   activateNavLink();
+  window.addEventListener('hashchange', activateNavLink);
 
   // Jazykové přepínače
   qsa('.lang-btn').forEach((btn) => {
@@ -759,11 +985,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // Zachování lang v odkazech
+  // Zachování lang v odkazech (a bezpečné zavření menu před přesměrováním)
   ['events.html', 'about.html'].forEach((page) => {
     qsa(`a[href="/${page}"], a.btn-secondary[href="/${page}"]`).forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
+        window.__ajseeCloseMenu?.(); // pojistka pro hamburger
         window.location.href = `/${page}?lang=${currentLang}`;
       });
     });
@@ -774,6 +1001,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (homeLink) {
     homeLink.addEventListener('click', async (e) => {
       e.preventDefault();
+      window.__ajseeCloseMenu?.(); // zavři případné otevřené mobilní menu
       if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
         window.location.href = `/?lang=${currentLang}`;
         return;
@@ -784,45 +1012,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Mobile menu
-  const hamburger = document.querySelector('.hamburger-btn');
-  const nav = document.querySelector('.main-nav');
-  const overlayNav = document.querySelector('.menu-overlay-bg');
-  const closeBtnNav = document.querySelector('.menu-close');
+  // Mobile menu (robustní init – nevyžaduje .menu-close)
+  {
+    const hamburger = document.querySelector('.hamburger-btn');
+    const nav       = document.querySelector('.main-nav');
+    const overlay   = document.querySelector('.menu-overlay-bg');
+    const closeBtn  = document.querySelector('.menu-close'); // může i nebýt
 
-  if (hamburger && nav && overlayNav && closeBtnNav) {
-    nav.classList.remove('open');
-    overlayNav.classList.remove('active');
-    overlayNav.style.pointerEvents = 'none';
-    overlayNav.style.opacity = '0';
-    document.body.classList.remove('nav-open');
-    document.body.style.overflow = '';
-
-    const openMenu = () => {
-      nav.classList.add('open');
-      overlayNav.classList.add('active');
-      overlayNav.style.pointerEvents = 'auto';
-      overlayNav.style.opacity = '1';
-      document.body.classList.add('nav-open');
-      document.body.style.overflow = 'hidden';
-      updateHeaderOffset(); // header může změnit výšku
-    };
-
-    const closeMenu = () => {
+    if (hamburger && nav && overlay) {
+      // čistý start
       nav.classList.remove('open');
-      overlayNav.classList.remove('active');
-      overlayNav.style.pointerEvents = 'none';
-      overlayNav.style.opacity = '0';
+      overlay.classList.remove('active');
+      overlay.style.pointerEvents = 'none';
+      overlay.style.opacity = '0';
       document.body.classList.remove('nav-open');
       document.body.style.overflow = '';
-      updateHeaderOffset();
-    };
 
-    hamburger.addEventListener('click', openMenu);
-    closeBtnNav.addEventListener('click', closeMenu);
-    overlayNav.addEventListener('click', closeMenu);
-    document.querySelectorAll('.main-nav a').forEach((link) => link.addEventListener('click', closeMenu));
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+      const openMenu = () => {
+        nav.classList.add('open');
+        overlay.classList.add('active');
+        overlay.style.pointerEvents = 'auto';
+        overlay.style.opacity = '1';
+        document.body.classList.add('nav-open');
+        document.body.style.overflow = 'hidden';
+        updateHeaderOffset();
+      };
+
+      const closeMenu = () => {
+        nav.classList.remove('open');
+        overlay.classList.remove('active');
+        overlay.style.pointerEvents = 'none';
+        overlay.style.opacity = '0';
+        document.body.classList.remove('nav-open');
+        document.body.style.overflow = '';
+        updateHeaderOffset();
+      };
+
+      // vystavíme pro jiné handlery (např. linky co přepisují URL kvůli ?lang=)
+      window.__ajseeCloseMenu = closeMenu;
+
+      hamburger.addEventListener('click', openMenu);
+      overlay.addEventListener('click', closeMenu);
+      closeBtn?.addEventListener('click', closeMenu);
+      document.querySelectorAll('.main-nav a').forEach((link) => link.addEventListener('click', closeMenu));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+    }
   }
 
   // ------- Filters -------

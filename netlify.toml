@@ -1,32 +1,61 @@
 # netlify.toml
 
 [build]
-  command = "npm run build"
-  publish = "dist"
+  command   = "npm run build"
+  publish   = "dist"
+  functions = "netlify/functions" # explicitně, i když níže je [functions].directory
+
+[build.environment]
+  NODE_VERSION = "20"
 
 [functions]
-  directory = "netlify/functions"
+  directory    = "netlify/functions"
   node_bundler = "esbuild"
 
-# CORS pro Functions
+# CORS pro Functions (záloha k odpovědím z funkce)
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
-    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Origin  = "*"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
 
-# DEV: Vite přes Netlify Dev (reverse proxy na běžící Vite)
+# Fingerprintované bundly od Vite
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# HTML nikdy necacheovat – kořenové *.html
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# HTML nikdy necacheovat – index.html v podsložkách (např. /coming-soon/index.html)
+[[headers]]
+  for = "/*/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# (Volitelné) lehká cache pro nefingerprintované obrázky
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# Základní security hlavičky
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# DEV: Netlify Dev reverse-proxy na běžící Vite
 [dev]
   command    = "npm run dev -- --port 5173 --strictPort"
   port       = 8888
   targetPort = 5173
-  framework  = "vite"
   autoLaunch = false
-
-# SPA fallback pouze v produkci (v dev proxy necháváme čisté)
-[context.production]
-  [[context.production.redirects]]
-    from = "/*"
-    to   = "/index.html"
-    status = 200

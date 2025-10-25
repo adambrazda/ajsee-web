@@ -1,0 +1,621 @@
+/* filters-premium.scss
+   Prémiové/glass filtry pro homepage i events.html
+   – hlubší glass, gradient border, sjednocený focus ring
+   – segmented s posuvným indikátorem
+   – Kompaktní „Dates“ combo (button + popover s Od/Do)
+*/
+
+/* ─── Design tokens ─── */
+:root{
+  --flt-bg: rgba(255,255,255,.62);
+  --flt-blur: 14px;
+  --flt-brd: rgba(255,255,255,.50);
+  --flt-brd-2: rgba(13,30,60,.08);
+  --flt-shadow: 0 24px 48px rgba(12,36,80,.12), 0 2px 6px rgba(12,36,80,.06);
+  --flt-radius: 20px;
+
+  --ink-1:#071a2b;
+  --ink-2:#173a62;
+  --ink-3:#6a86a8;
+
+  --chip-bg:#f4f8ff;
+  --chip-text:#0b2640;
+  --chip-shadow:0 8px 18px rgba(12,36,80,.10);
+
+  --cta-1:#0e88f0; --cta-2:#0b5ed7;
+
+  --seg-bg:#eef3fb;
+  --seg-shadow:0 12px 22px rgba(12,36,80,.12);
+
+  --near-1:#006fbe; --near-2:#00c0d9;
+
+  --focus:#69b3ff;
+
+  --font-sans:"Plus Jakarta Sans","Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+
+  /* Controls (bridge na --ctrl-*, fallback) */
+  --control-h: var(--ctrl-h, 56px);
+  --control-radius: var(--ctrl-radius, 14px);
+  --control-pad-x: 1rem;
+  --control-pad-y: .7rem;
+  --control-gap: .8rem;
+
+  /* Datové šířky */
+  --date-ch: 12ch;      /* dd.mm.rrrr */
+  --keyword-max: 36ch;  /* max šířka Keyword na desktopu */
+
+  /* Popover positioning (plní JS) */
+  --ajsee-popover-left: 16px;
+  --ajsee-popover-top:  16px;
+  --ajsee-popover-width: 520px;  /* JS to přepisuje */
+  --ajsee-popover-height: 420px;
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --flt-bg: rgba(17,21,32,.58);
+    --flt-brd: rgba(255,255,255,.08);
+    --flt-brd-2: rgba(255,255,255,.10);
+    --chip-bg: rgba(255,255,255,.08);
+    --chip-text:#e8f0ff;
+    --seg-bg: rgba(255,255,255,.08);
+
+    --ink-1:#eaf0ff;
+    --ink-2:#d6e6ff;
+    --ink-3:#a6b7d7;
+  }
+}
+
+/* ─── Panel filtrů (oba světy) ─── */
+:where(.events-filters.filter-dock),
+:where(form.filter-dock){
+  position:relative;
+  padding: 1.25rem 1.25rem 1.35rem;
+  border-radius: var(--flt-radius);
+  background:
+    radial-gradient(60% 80% at 30% 0%, rgba(255,255,255,.55), transparent 60%),
+    var(--flt-bg);
+  -webkit-backdrop-filter: blur(var(--flt-blur));
+          backdrop-filter: blur(var(--flt-blur));
+  border:1px solid var(--flt-brd);
+  box-shadow: var(--flt-shadow), inset 0 1px 0 rgba(255,255,255,.4);
+  font-family: var(--font-sans);
+  isolation:isolate;
+
+  .filters-toolbar{ display:flex; flex-wrap:wrap; gap:var(--control-gap); margin-bottom:.75rem; }
+
+  /* Chips */
+  .chip{
+    display:inline-flex; align-items:center; gap:.6rem;
+    padding:.6rem 1rem; border-radius:999px;
+    border:1px solid var(--flt-brd-2);
+    background: var(--chip-bg);
+    color: var(--chip-text);
+    font-weight: 800;
+    box-shadow: var(--chip-shadow);
+    transition: transform .15s ease, filter .2s ease, opacity .2s ease;
+    min-height: var(--control-h);
+  }
+  .chip:hover{ transform: translateY(-1px); filter:brightness(1.03); }
+  .chip:focus-visible{ outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px; }
+  .chip[disabled], .chip[aria-busy="true"]{ opacity:.6; pointer-events:none; }
+
+  .chip.ghost{
+    background:
+      linear-gradient(#fff,#fff) padding-box,
+      linear-gradient(135deg,#e8f1ff,#f9fbff) border-box;
+    border:1px solid transparent;
+    box-shadow: 0 8px 18px rgba(12,36,80,.08);
+  }
+
+  /* Toggle badge */
+  #filtersToggle .badge,
+  .filters-toggle .badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:28px; height:22px; padding:0 .55rem; margin-left:.4rem;
+    border-radius:999px; background:var(--cta-2); color:#fff;
+    font-size:.8rem; font-weight:900;
+    box-shadow:0 10px 20px rgba(14,136,240,.25), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+
+  /* Near-me CTA */
+  #chipNearMe, #filter-nearme{
+    border:0; color:#fff; font-weight:900; letter-spacing:.01em;
+    padding:.95rem 1.25rem; border-radius:999px;
+    background: linear-gradient(135deg,var(--near-1),var(--near-2));
+    box-shadow:
+      0 20px 42px rgba(0,160,200,.22),
+      0 3px 8px rgba(0,160,200,.18),
+      inset 0 1px 0 rgba(255,255,255,.4);
+    transition: transform .2s ease, filter .2s ease, opacity .2s ease;
+    min-height: var(--control-h);
+  }
+  #chipNearMe::before, #filter-nearme::before{ content:"✨"; margin-right:.5rem; }
+  #chipNearMe:hover, #filter-nearme:hover{ transform: translateY(-1px); filter:brightness(1.04); }
+  #chipNearMe:focus-visible, #filter-nearme:focus-visible{ outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px; }
+  #chipNearMe[aria-busy="true"], #filter-nearme[aria-busy="true"]{ opacity:.7; pointer-events:none; }
+
+  /* Labely */
+  label{
+    color: var(--ink-2);
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    margin-bottom:.5rem;
+    display:block;
+  }
+  .filter-group{ position:relative; display:grid; gap:var(--gap,.5rem); }
+
+  /* Inputs & selects */
+  input.styled-input, select.styled-select,
+  input[type="date"], input[type="search"], input[type="text"]{
+    min-height: var(--control-h);
+    border-radius: var(--control-radius);
+    padding: var(--control-pad-y) var(--control-pad-x);
+    color: var(--ink-1);
+    background:
+      linear-gradient(#ffffff, #ffffff) padding-box,
+      linear-gradient(135deg, #d8e8ff, #eef4ff) border-box;
+    border: 1.25px solid transparent;
+    box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 12px 22px rgba(12,36,80,.10);
+    transition: box-shadow .18s ease, background .18s ease, filter .18s ease;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  input.styled-input::placeholder,
+  input[type="date"]::placeholder,
+  input[type="search"]::placeholder,
+  input[type="text"]::placeholder{ color: var(--ink-3); opacity:.88; }
+  input.styled-input:focus, select.styled-select:focus,
+  input[type="date"]:focus, input[type="search"]:focus, input[type="text"]:focus{
+    box-shadow:
+      0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent),
+      0 14px 26px rgba(12,36,80,.12);
+    background:
+      linear-gradient(#fff,#fff) padding-box,
+      linear-gradient(135deg, #c4ddff, #e4efff) border-box;
+    outline: none;
+  }
+  input.styled-input:focus-visible,
+  select.styled-select:focus-visible,
+  input[type="date"]:focus-visible,
+  input[type="search"]:focus-visible,
+  input[type="text"]:focus-visible{ outline:none; }
+
+  /* with-icon */
+  .with-icon{ position: relative; }
+  .with-icon .icon{
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; opacity:.65; pointer-events:none;
+  }
+  .with-icon input.styled-input,
+  .with-icon select.styled-select{ padding-left: 40px; }
+
+  /* trailing kalendář */
+  .with-calendar-icon{ position: relative; }
+  .with-calendar-icon input{
+    padding-right: 2.25rem;
+    background-image: url("/icons/calendar.svg");
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    background-size: 1.05rem 1.05rem;
+  }
+
+  @media (prefers-color-scheme: dark){
+    input.styled-input, select.styled-select,
+    input[type="date"], input[type="search"], input[type="text"]{
+      background:
+        linear-gradient(rgba(255,255,255,.10), rgba(255,255,255,.10)) padding-box,
+        linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.10)) border-box;
+      color:#f2f6ff;
+    }
+    input.styled-input::placeholder,
+    input[type="date"]::placeholder,
+    input[type="search"]::placeholder,
+    input[type="text"]::placeholder{ color: #cfe0ff; opacity:.92; }
+  }
+
+  /* Buttons */
+  .btn{ border-radius:16px; font-weight:700; padding:.95rem 1.35rem; min-height: var(--control-h); }
+  .btn-primary,
+  .filter-actions .btn.btn-primary,
+  .filter-actions [type="submit"].btn{
+    color:#fff; border:0; font-weight:700; font-size:15px;
+    background: linear-gradient(180deg, var(--cta-1), var(--cta-2));
+    box-shadow:
+      0 22px 44px rgba(14,136,240,.24),
+      0 3px 10px rgba(14,136,240,.20),
+      inset 0 1px 0 rgba(255,255,255,.35);
+    transition: transform .15s ease, filter .2s ease, box-shadow .2s ease;
+  }
+  .btn-primary:hover,
+  .filter-actions .btn.btn-primary:hover,
+  .filter-actions [type="submit"].btn:hover{
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow:
+      0 28px 56px rgba(14,136,240,.28),
+      0 5px 12px rgba(14,136,240,.22),
+      inset 0 1px 0 rgba(255,255,255,.42);
+  }
+  .btn-primary:focus-visible,
+  .filter-actions .btn.btn-primary:focus-visible,
+  .filter-actions [type="submit"].btn:focus-visible{
+    outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px;
+  }
+  .btn-ghost{
+    color:#0b2640;
+    background:
+      linear-gradient(#fff,#fff) padding-box,
+      linear-gradient(135deg,#e8f1ff,#f9fbff) border-box;
+    border:1px solid transparent;
+    box-shadow: 0 8px 18px rgba(12,36,80,.08);
+  }
+  .btn-ghost:focus-visible{ outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px; }
+
+  /* Aktivní chips */
+  .chips.chips-active{
+    display:flex; flex-wrap:wrap; gap:.6rem; margin:.6rem 0 0;
+  }
+  .chips.chips-active .chip{ background:#fff; }
+
+  /* Segmented */
+  .segmented{
+    position:relative; display:inline-flex; gap:6px;
+    background: var(--seg-bg);
+    border-radius: 16px; padding:6px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 0 0 1px rgba(10,50,80,.06);
+    isolation:isolate;
+    min-height: var(--control-h);
+    align-items: center;
+  }
+  .segmented .seg-indicator{
+    position:absolute; left: var(--indi-left, 6px); top:6px; bottom:6px;
+    width: var(--indi-width, 128px);
+    background:
+      linear-gradient(#fff,#fff) padding-box,
+      linear-gradient(135deg,#f7faff,#eef4ff) border-box;
+    border:1px solid transparent;
+    border-radius:12px;
+    box-shadow: var(--seg-shadow), inset 0 1px 0 rgba(255,255,255,.55);
+    transition: left .22s cubic-bezier(.2,.7,.3,1), width .22s cubic-bezier(.2,.7,.3,1);
+    z-index:0;
+  }
+  .segmented button{
+    position:relative; z-index:1;
+    border:0; background:transparent; padding:.62rem 1.15rem; border-radius:10px;
+    font-weight:900; color:#123; opacity:.8; cursor:pointer; user-select:none;
+    min-height: var(--control-h);
+    display:inline-flex; align-items:center;
+  }
+  .segmented button:focus-visible{ outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px; }
+  .segmented button.is-active{ opacity:1; color:#0b2640; text-shadow:0 1px 0 rgba(255,255,255,.45); }
+
+  /* skrytý select (a11y) */
+  select[data-upgraded="segmented"]{
+    position:absolute; width:1px; height:1px;
+    clip:rect(0 0 0 0); clip-path:inset(50%);
+    overflow:hidden; white-space:nowrap; border:0; padding:0; margin:-1px;
+  }
+
+  /* Vizuál sheetu */
+  &[data-behavior="sheet"].is-open{ box-shadow: 0 32px 66px rgba(12,36,80,.26); }
+
+  /* odstranění duplicitního resetu v action baru */
+  .filter-actions button[type="reset"]{ display:none; }
+
+  /* Fallback: dvojice Od/Do */
+  .date-range{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width: 900px){ .date-range{ grid-template-columns: 1fr; } }
+
+  /* NEW: Dates combo */
+  .date-combo{
+    inline-size: clamp(220px, 26vw, 340px);
+    max-inline-size: 100%;
+    min-inline-size: 220px;
+    position:relative;
+    box-sizing:border-box;
+  }
+  .date-combo .combo-button{
+    display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+    height:var(--control-h); border-radius: var(--control-radius); padding:var(--control-pad-y) var(--control-pad-x);
+    font-weight:800; letter-spacing:.2px; color:var(--ink-1);
+    cursor:pointer; user-select:none;
+    background:
+      linear-gradient(#ffffff,#ffffff) padding-box,
+      linear-gradient(135deg,#d8e8ff,#eef4ff) border-box;
+    border:1.25px solid transparent;
+    box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 12px 22px rgba(12,36,80,.10);
+    transition: box-shadow .18s ease, background .18s ease, filter .18s ease, transform .12s ease;
+    background-image:none;
+    position:relative;
+    width:100%;
+    box-sizing:border-box;
+  }
+  .date-combo .combo-button:hover{ transform: translateY(-1px); }
+  .date-combo .combo-button::after{
+    content:""; width:14px; height:14px; flex:0 0 14px;
+    background: currentColor; opacity:.85;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23153a60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center / 14px 14px;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23153a60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center / 14px 14px;
+    transition: transform .18s ease;
+  }
+  .date-combo .combo-button[aria-expanded="true"]::after{ transform: rotate(180deg); }
+  .date-combo .combo-button:focus{
+    outline: none;
+    box-shadow:
+      0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent),
+      0 14px 26px rgba(12,36,80,.12);
+    background:
+      linear-gradient(#fff,#fff) padding-box,
+      linear-gradient(135deg, #c4ddff, #e4efff) border-box;
+  }
+  .date-combo .combo-text{
+    display:block; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; padding-right:.25rem;
+  }
+
+  /* Inline popover (uvnitř dock panelu – nepoužíváme pro tenhle picker) */
+  .date-combo .combo-popover{ display:none; }
+
+  /* Kolaps panelu */
+  &.is-collapsed .filters-fieldset{ display:none; }
+
+  .filter-group.is-hidden{ display:none; }
+}
+
+/* omezení animací */
+@media (prefers-reduced-motion: reduce){
+  #chipNearMe, #filter-nearme{ transition:none; }
+  .segmented .seg-indicator{ transition:none; }
+}
+
+/* glass halo */
+:where(.events-filters.filter-dock),
+:where(form.filter-dock){
+  position: relative; isolation: isolate;
+}
+:where(.events-filters.filter-dock)::before,
+:where(form.filter-dock)::before{
+  content:""; position:absolute; inset:0; border-radius: inherit;
+  background:
+    radial-gradient(140% 100% at 20% -10%, rgba(14,136,240,.08), transparent 55%),
+    radial-gradient(120% 80% at 85% 10%, rgba(0,192,217,.08), transparent 60%);
+  pointer-events:none; z-index:0;
+}
+
+/* Label typografie + ikonky */
+:where(.events-filters.filter-dock, form.filter-dock) label{
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-family: var(--font-sans);
+  font-size:12.5px; line-height:1.1; text-transform:uppercase;
+  letter-spacing:.28px; font-weight:900;
+  color: color-mix(in oklab, var(--ink-2) 92%, #000 8%);
+}
+:where(.events-filters.filter-dock, form.filter-dock) label::before{
+  content:""; flex:0 0 18px; height:18px; opacity:.7; background: currentColor;
+  -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:18px 18px;
+          mask-repeat:no-repeat;         mask-position:center;         mask-size:18px 18px;
+}
+:where(.events-filters.filter-dock, form.filter-dock) label[for="filter-city"]::before{
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z'/%3E%3C/svg%3E");
+          mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z'/%3E%3C/svg%3E");
+}
+:where(.events-filters.filter-dock, form.filter-dock) label[for="filter-date-from"]::before,
+:where(.events-filters.filter-dock, form.filter-dock) label[for="filter-date-to"]::before,
+:where(.events-filters.filter-dock, form.filter-dock) label[for="date-combo-button"]::before{
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2v3m10-3v3M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+          mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2v3m10-3v3M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+}
+
+/* Fallback: schovat mask ikony */
+@supports not ((-webkit-mask: url("")) or (mask: url(""))){
+  :where(.events-filters.filter-dock, form.filter-dock) label::before{ display:none; }
+}
+
+/* Kategorie select caret */
+:where(.events-filters.filter-dock, form.filter-dock) select.styled-select,
+:where(.events-filters.filter-dock, form.filter-dock) #filter-category,
+:where(.events-filters.filter-dock, form.filter-dock) #events-category-filter{
+  appearance:none; -webkit-appearance:none;
+  font-weight:800; letter-spacing:.2px;
+  background:
+    linear-gradient(#ffffff,#ffffff) padding-box,
+    linear-gradient(135deg,#d8e8ff,#eef4ff) border-box;
+  border:1.5px solid transparent;
+  padding-right:2.6rem;
+  min-height: var(--control-h);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23153a60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 14px center; background-size:14px;
+}
+:where(.events-filters.filter-dock, form.filter-dock) select.styled-select:focus,
+:where(.events-filters.filter-dock, form.filter-dock) #filter-category:focus,
+:where(.events-filters.filter-dock, form.filter-dock) #events-category-filter:focus{
+  box-shadow:
+    0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent),
+    0 16px 28px rgba(12,36,80,.14);
+}
+
+/* Chrome kalendář indikátor pryč */
+:where(.events-filters.filter-dock, form.filter-dock) input[type="date"]::-webkit-calendar-picker-indicator{
+  opacity:0; pointer-events:none;
+}
+
+/* Datum šířky */
+:where(.events-filters.filter-dock, form.filter-dock) input.styled-input[id$="from"],
+:where(.events-filters.filter-dock, form.filter-dock) input.styled-input[name$="from"],
+:where(.events-filters.filter-dock, form.filter-dock) input.styled-input[id$="to"],
+:where(.events-filters.filter-dock, form.filter-dock) input.styled-input[name$="to"]{
+  font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+  inline-size: var(--date-ch);
+  width: auto;
+  max-inline-size: 100%;
+  flex: 0 0 auto;
+}
+@media (max-width: 720px){
+  :where(.events-filters.filter-dock, form.filter-dock) input.styled-input[id$="from"],
+  :where(.events-filters.filter-dock, form.filter-dock) input.styled-input[name$="from"],
+  :where(.events-filters.filter-dock, form.filter-dock) input.styled-input[id$="to"],
+  :where(.events-filters.filter-dock, form.filter-dock) input.styled-input[name$="to"]{
+    inline-size: 100%;
+    width: 100%;
+  }
+}
+
+/* Sdílený obrys pro .date-range */
+:where(.events-filters.filter-dock, form.filter-dock) .date-range{ position:relative; }
+:where(.events-filters.filter-dock, form.filter-dock) .date-range:focus-within::after{
+  content:""; position:absolute; inset:-6px;
+  border-radius: calc(var(--control-radius) + 6px);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--focus) 20%, transparent);
+  pointer-events:none;
+}
+
+/* Keyword max-šířka */
+:where(.events-filters.filter-dock, form.filter-dock) .filter-keyword .styled-input{
+  font-weight:700; letter-spacing:.1px;
+  inline-size: min(100%, var(--keyword-max));
+  width: min(100%, var(--keyword-max));
+  justify-self: start;
+}
+
+/* CTA „Použít“ & Toggle */
+:where(.events-filters.filter-dock, form.filter-dock) .filter-actions .btn.btn-primary{
+  border-radius:18px; padding:1rem 1.45rem;
+  background: linear-gradient(180deg, var(--cta-1), var(--cta-2));
+  box-shadow:
+    0 26px 52px rgba(14,136,240,.26),
+    0 4px 12px rgba(14,136,240,.22),
+    inset 0 1px 0 rgba(255,255,255,.38);
+}
+:where(.events-filters.filter-dock, form.filter-dock) .filters-toggle{
+  display:inline-flex; align-items:center; gap:.6rem;
+  padding:.65rem 1rem; border-radius:999px;
+  background:
+    linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(135deg,#e8f1ff,#f9fbff) border-box;
+  border:1px solid transparent;
+  box-shadow:0 8px 18px rgba(12,36,80,.08);
+  font-weight:900; color:#0b2640;
+  min-height: var(--control-h);
+}
+:where(.events-filters.filter-dock, form.filter-dock) .filters-toggle .label{ min-width:max-content; }
+
+/* spacing tweak */
+:where(.events-filters.filter-dock, form.filter-dock) .filter-group{ --gap: .35rem; }
+
+/* čištění inline ikonek */
+:where(.events-filters.filter-dock, form.filter-dock) label + :is(.icon,.ico,.fi,svg,i,[class*="icon"]){ display:none; }
+:where(.events-filters.filter-dock, form.filter-dock) .filter-group :is(.icon,.ico,.fi,svg,i,[class*="icon"]){ display:none; }
+
+/* a11y: legend hidden */
+:where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset > legend{
+  position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px);
+  clip-path:inset(50%); white-space:nowrap;
+}
+
+/* typeahead nad ostatními, pod popoverem */
+:where(.events-filters.filter-dock, form.filter-dock)
+  :is(.tt-menu,.typeahead-list,.autocomplete-list,.suggestions){
+  position:relative; z-index: 2000;
+}
+
+/* badge sekundární vzhled */
+:where(.events-filters.filter-dock, form.filter-dock) .filters-toggle .badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:28px; height:22px; padding:0 .55rem;
+  border-radius:999px; background:var(--cta-2); color:#fff; font-size:.8rem; font-weight:900;
+  box-shadow:0 10px 20px rgba(14,136,240,.25), inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+/* HOTFIX: nepřetékat v gridu */
+:where(.events-filters.filter-dock, form.filter-dock) .filter-group{ min-width: 0; }
+
+/* date-combo wrapper vpravo */
+:where(.events-filters.filter-dock, form.filter-dock) .date-combo{
+  inline-size: min(100%, 340px);
+  max-inline-size: 100%;
+  min-inline-size: 220px;
+  justify-self: end;
+}
+:where(.events-filters.filter-dock, form.filter-dock) .date-combo .combo-button{ inline-size: 100%; }
+@media (max-width: 1280px){
+  :where(.events-filters.filter-dock, form.filter-dock) .date-combo{ inline-size: min(100%, 300px); }
+}
+
+/* ───────── SINGLE, sjednocený blok popoveru ───────── */
+.ajsee-date-popover{
+  position: fixed;
+  z-index: 10010;
+  --safe: 16px;
+  width: min(max(480px, var(--ajsee-popover-width, 560px)), calc(100vw - var(--safe)*2));
+  max-width: 720px;
+  max-height: min(var(--ajsee-popover-height, 420px), calc(100vh - var(--safe)*2));
+  overflow: auto;
+
+  /* right-aligned coords dodá JS; tady je jen clamping */
+  left: clamp(var(--safe), var(--ajsee-popover-left, var(--safe)),  calc(100vw - 100% - var(--safe)));
+  top:  clamp(var(--safe), var(--ajsee-popover-top,  var(--safe)),  calc(100vh - 100% - var(--safe)));
+
+  background:
+    radial-gradient(60% 80% at 30% 0%, rgba(255,255,255,.55), transparent 60%),
+    var(--flt-bg);
+  -webkit-backdrop-filter: blur(var(--flt-blur));
+          backdrop-filter: blur(var(--flt-blur));
+  border:1px solid var(--flt-brd);
+  border-radius: 16px;
+  box-shadow: var(--flt-shadow), inset 0 1px 0 rgba(255,255,255,.35);
+  box-sizing:border-box;
+  color:#0f172a;
+  padding: 14px;
+}
+
+.ajsee-date-inner{ display:flex; flex-direction:column; gap:12px; }
+.ajsee-date-top{ display:flex; align-items:center; gap:12px; }
+.ajsee-date-top .date-inputs{ display:flex; align-items:center; gap:8px; flex:1; }
+.ajsee-date-top .di{
+  height: 40px; border-radius: 10px; padding: 0 10px; border: 1px solid #e5e7eb; width: 160px; background:#f8fafc;
+  font-weight: 600;
+}
+.ajsee-date-top .di-sep{ opacity:.6; }
+.ajsee-date-top .nav{ display:flex; gap:6px; }
+.ajsee-date-top .nav-btn{ width:36px; height:36px; border-radius:8px; border:1px solid #e5e7eb; background:#fff; font-size:18px; }
+
+/* two months grid (narrower than before) */
+.cal-wrap{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; min-width: 480px; }
+.cal-head{ font-weight:800; margin: 4px 4px 6px; text-transform: capitalize; }
+.dow{ display:grid; grid-template-columns: repeat(7, 1fr); gap:3px; padding:0 4px; color:#64748b; font-size:12px; }
+.dow span{ text-align:center; padding:6px 0; }
+
+.grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:3px; padding:0 4px 8px; }
+.grid .day,
+.grid .empty{
+  height: 34px; border-radius: 8px; border: 1px solid transparent; background:#fff; text-align:center;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.grid .day > span{ pointer-events:none; }
+.grid .day:hover{ background:#f1f5f9; }
+.grid .empty{ cursor:default; }
+
+/* selection */
+.grid .in{ background: #e0f2fe; }
+.grid .start, .grid .end{ background:#0284c7; color:#fff; }
+
+/* today ring */
+.grid .today{
+  box-shadow: 0 0 0 2px #0ea5e9 inset;
+  border-color:#bae6fd;
+}
+
+/* action bar */
+.ajsee-date-actions{
+  display:flex; align-items:center; gap:10px; padding-top:6px; border-top:1px solid #eef2f7;
+}
+.flex-spacer{ flex:1; }
+.btn{
+  height: 40px; border-radius: 10px; padding: 0 14px; border:1px solid #e5e7eb; background:#fff; font-weight:700;
+}
+.btn.ghost{ background:#fff; }
+.btn.primary{ background: linear-gradient(90deg, #14c2c5, #0ea5e9); border:none; color:#fff; }

@@ -5,17 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title data-i18n-key="events-page-title">Události</title>
 
-  <!-- Favicona: umlčí 404 v dev/prod i bez souborů -->
-  <link rel="icon" href="data:,">
+  <!-- Favicona -->
+  <link rel="icon" href="data:," />
+  <link rel="icon" href="/images/logo-ajsee.png" />
 
-  <!-- Google tag (gtag.js) – jen na HTTPS / produkci -->
+  <!-- Prémiové fonty (sladěné s filtrovacím UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Unified FE render ON (events-home.js). Inline TM zakázán. -->
+  <script>
+    // Necháváme render přes /src/events-home.js
+    // ⚠️ NEdefinujeme zde __AJSEE_SKIP_CORE_EVENTS (events-home.js by pak nerenedroval)
+    window.__TM_INLINE_DISABLED = true;
+    // Vlastnictví filtrů/událostí sjednoceným rendererem
+    window.__AJSEE_EVENTS_OWNS_FILTERS = true;
+
+    // Impact tracking – zvol jednu variantu (A doporučeno) a druhou smaž:
+    // VARIANTA A (redirector, doporučeno):
+    // window.__impact = { clickBase: 'https://YOUR-IMPACT-REDIRECTOR/?url=' };
+
+    // VARIANTA B (přidání paramu do URL) – základní fallback:
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
+  </script>
+
+  <!-- Google tag (jen HTTPS/prod) -->
   <script>
     (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1/i.test(location.hostname);
-      if (!isProdHttps) {
-        console.info('[GA] Skipping on non-HTTPS/dev.');
-        return;
-      }
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(location.hostname);
+      if (!isProdHttps) { console.info('[GA] Skipping on non-HTTPS/dev.'); return; }
       const s = document.createElement('script');
       s.async = true;
       s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
@@ -30,47 +49,54 @@
     })();
   </script>
 
-  <!-- (Varianta C) PRODUKČNÍ origin pro Netlify Functions (vyplň svojí doménou) -->
-  <!-- Příklad: https://tvoje-domena.netlify.app -->
-  <meta name="tm-proxy-base" content="">
-
+  <!-- i18n fallback, kdyby engine v main.js nebyl k dispozici včas -->
   <script>
-    // načti tm-proxy-base z <meta> a dej do globálu
     (function(){
-      const meta = document.querySelector('meta[name="tm-proxy-base"]');
-      const val = (meta && meta.content || '').trim();
-      window.__TM_PROXY_BASE = val || '';
-      if (!window.__TM_PROXY_BASE) {
-        console.info('[TM] No explicit prod proxy base configured (meta tm-proxy-base is empty).');
-      } else {
-        console.info('[TM] Using explicit prod proxy base:', window.__TM_PROXY_BASE);
+      function detectLang(){
+        try {
+          const qs = new URLSearchParams(location.search);
+          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+        } catch { return 'cs'; }
       }
-    })();
-  </script>
+      function applyI18nFallback(lang){
+        const root = window.translations || null;
+        if (!root) return;
+        const dict = root[lang] || root;
+        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
 
-  <!-- Zapne inline Ticketmaster render (vypne core events pipeline v main.js) -->
-  <script>window.__AJSEE_SKIP_CORE_EVENTS = true;</script>
-
-  <!-- Modulový loader: v Netlify Dev (8888) načti HMR klient + main.js přímo z Vite (5173) -->
-  <script type="module">
-    (() => {
-      const insertModule = (src) => {
-        const s = document.createElement('script');
-        s.type = 'module';
-        s.src = src;
-        document.head.appendChild(s);
-      };
-      const isNetlifyDev = location.hostname === 'localhost' && location.port === '8888';
-      if (isNetlifyDev) {
-        insertModule('http://localhost:5173/@vite/client');
-        insertModule('http://localhost:5173/src/main.js');
-      } else {
-        insertModule('/src/main.js');
+        document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          const key = el.getAttribute('data-i18n-key');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
+        });
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-i18n-aria');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('aria-label', val);
+        });
       }
+
+      // Po načtení DOM vždy zkus oficiální applyTranslations, jinak fallback
+      window.addEventListener('DOMContentLoaded', () => {
+        const lang = detectLang();
+        document.documentElement.lang = lang;
+
+        if (typeof window.applyTranslations === 'function') {
+          try { window.applyTranslations(lang); }
+          catch(e){ console.warn('[i18n] applyTranslations failed, using fallback.', e); applyI18nFallback(lang); }
+        } else {
+          applyI18nFallback(lang);
+        }
+      });
     })();
   </script>
 </head>
-<body>
+<body data-page="events">
   <!-- Header a navigace -->
   <header class="site-header">
     <div class="header-inner">
@@ -321,215 +347,24 @@
     <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
   </footer>
 
-  <!-- Ticketmaster – inline s proxy fallbacky (Varianta C) -->
-  <script type="module">
-    // --- helpers
-    const t = (dict, lang) => dict[lang] || dict.en || '';
-    const pickImage = (images = []) => {
-      if (!images.length) return null;
-      const best = images
-        .filter(i => i && i.ratio === '16_9' && (i.width || 0) >= 640)
-        .sort((a,b) => (b.width||0) - (a.width||0))[0];
-      return best || images[0];
-    };
-    const fmt = (start = {}, locale = 'en-GB') => {
-      const d = start.dateTime ||
-        (start.localDate && (start.localTime
-          ? (start.localDate + 'T' + start.localTime)
-          : (start.localDate + 'T00:00:00')));
-      if (!d) return '';
-      const dt = new Date(d);
-      const day  = new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(dt);
-      const date = new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short', year: 'numeric' }).format(dt);
-      const time = start.noSpecificTime ? '' : new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(dt);
-      return [day, date, time].filter(Boolean).join(' • ');
-    };
-    function renderCard(event, { lang, locale }) {
-      const el = document.createElement('article'); el.className = 'event-card';
-      const h = document.createElement('h3'); h.className = 'event-title'; h.textContent = event?.name || ''; el.appendChild(h);
-      const when = fmt(event?.dates?.start || {}, locale); if (when) { const p = document.createElement('p'); p.className = 'event-datetime'; p.textContent = when; el.appendChild(p); }
-      const v = event?._embedded?.venues?.[0]; if (v) { const p = document.createElement('p'); p.className = 'event-venue'; p.textContent = [v?.city?.name, v?.name].filter(Boolean).join(' • '); el.appendChild(p); }
-      const img = pickImage(event?.images); if (img) { const i = document.createElement('img'); i.className = 'event-image'; i.src = img.url; i.alt = event?.name || 'Event'; i.loading = 'lazy'; el.appendChild(i); }
-      const a = document.createElement('a'); a.className = 'buy-link'; a.target = '_blank'; a.rel = 'noopener noreferrer';
-      a.textContent = t({ cs: 'Koupit vstupenky', sk: 'Kúpiť vstupenky', de: 'Tickets kaufen', pl: 'Kup bilety', hu: 'Jegyvásárlás', en: 'Buy tickets' }, lang);
-      a.href = event?.url || '#'; el.appendChild(a);
-      return el;
-    }
-
-    // Timeout wrapper
-    async function fetchWithTimeout(url, { timeout = 7000, ...opts } = {}) {
-      const ctrl = new AbortController();
-      const tid = setTimeout(() => ctrl.abort(), timeout);
-      try {
-        const r = await fetch(url.toString(), { ...opts, signal: ctrl.signal });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r;
-      } finally { clearTimeout(tid); }
-    }
-    async function fetchJSON(url, opts) {
-      const r = await fetchWithTimeout(url, opts);
-      return r.json();
-    }
-
-    // --- init
-    (async () => {
-      const listEl   = document.querySelector('#eventsList');
-      const statusEl = document.querySelector('#tm-status');
-      const errorEl  = document.querySelector('#tm-error');
-      const section  = document.querySelector('#upcoming-events');
-
-      const setBusy   = b => section?.setAttribute('aria-busy', String(b));
-      const setStatus = m => { if (statusEl) statusEl.textContent = m || ''; };
-
-      const qs   = new URLSearchParams(location.search);
-      const lang = (qs.get('lang') || document.documentElement.lang || 'en').toLowerCase();
-      const localeMap = { cs:'cs-CZ', sk:'sk-SK', en:'en-GB', de:'de-DE', pl:'pl-PL', hu:'hu-HU' };
-      const locale = localeMap[lang] || 'en-GB';
-      const defaultCountryByLang = { cs:'CZ', sk:'SK', en:'GB', de:'DE', pl:'PL', hu:'HU' };
-      const country = (qs.get('country') || defaultCountryByLang[lang] || 'GB').toUpperCase();
-      const size = Number(section?.dataset?.tmSize || 6);
-
-      setBusy(true);
-      setStatus(t({
-        cs:'Načítám události…', sk:'Načítavam podujatia…', de:'Lade Events…',
-        pl:'Wczytywanie wydarzeń…', hu:'Események betöltése…', en:'Loading events…'
-      }, lang));
-
-      // Čas bez milisekund (TM je na to citlivý)
-      const start = new Date().toISOString().split('.')[0] + 'Z';
-
-      // Přímý TM endpoint
-      const API_KEY = 'b4BHSTzR1GEhE1bcGbQC5k696Dj1oA0D'; // AJSEE-test (Public APIs)
-      const direct = new URL('https://app.ticketmaster.com/discovery/v2/events.json');
-      direct.searchParams.set('apikey', API_KEY);
-      direct.searchParams.set('size', String(size));
-      direct.searchParams.set('sort', 'date,asc');
-      direct.searchParams.set('startDateTime', start);
-      direct.searchParams.set('countryCode', country);
-
-      // Proxy fallbacky
-      const isLocal = ['localhost','127.0.0.1'].includes(location.hostname);
-
-      // (C) explicitní produkční proxy, pokud je nastavená
-      const explicit = (window.__TM_PROXY_BASE && /^https?:\/\//i.test(window.__TM_PROXY_BASE))
-        ? new URL('/.netlify/functions/tm', window.__TM_PROXY_BASE)
-        : null;
-
-      const proxyBases = [
-        ...(explicit ? [explicit] : []),
-        new URL('/.netlify/functions/tm', location.origin),
-        ...(isLocal ? [
-          new URL('http://localhost:8888/.netlify/functions/tm'),
-          new URL('http://127.0.0.1:8888/.netlify/functions/tm'),
-        ] : []),
-      ];
-
-      const buildProxyUrl = (base) => {
-        const u = new URL(base);
-        u.searchParams.set('path', '/discovery/v2/events.json');
-        u.searchParams.set('size', String(size));
-        u.searchParams.set('sort', 'date,asc');
-        u.searchParams.set('startDateTime', start);
-        u.searchParams.set('countryCode', country);
-        return u;
-      };
-
-      async function tryProxies() {
-        let lastErr;
-        for (const base of proxyBases) {
-          const url = buildProxyUrl(base);
-          try {
-            console.info('[TM] Trying proxy:', url.toString());
-            return await fetchJSON(url, { mode: 'cors' });
-          } catch (e) { lastErr = e; }
-        }
-        throw lastErr || new Error('No proxy available');
-      }
-
-      // Proxy-first v dev / ne-HTTPS, jinak direct s timeoutem
-      const PROXY_FIRST = isLocal || location.protocol !== 'https:';
-
-      try {
-        let data;
-        if (PROXY_FIRST) {
-          console.info('[TM] Proxy-first mode');
-          try {
-            data = await tryProxies();
-          } catch (proxyErr) {
-            console.info('[TM] Proxies failed – trying direct as last resort…');
-            data = await fetchJSON(direct, { mode: 'cors', timeout: 7000 });
-          }
-        } else {
-          try {
-            console.info('[TM] Trying direct TM request…');
-            data = await fetchJSON(direct, { mode: 'cors', timeout: 5000 });
-          } catch (e) {
-            console.info('[TM] Direct failed (', e?.message || 'unknown', ') – trying proxies…');
-            data = await tryProxies();
-          }
-        }
-
-        const events = data?._embedded?.events || [];
-        if (!events.length) {
-          setStatus(t({
-            cs:'V tomto výběru nejsou žádné nadcházející události.',
-            sk:'V tomto výbere nie sú žiadne nadchádzajúce podujatia.',
-            de:'Keine anstehenden Events in dieser Auswahl.',
-            pl:'Brak nadchodzących wydarzeń w tym wyborze.',
-            hu:'Nincs közelgő esemény ebben a nézetben.',
-            en:'No upcoming events for this selection.'
-          }, lang));
-          setBusy(false);
-          return;
-        }
-
-        listEl.innerHTML = '';
-        events.forEach(ev => listEl.appendChild(renderCard(ev, { lang, locale })));
-        setStatus('');
-      } catch (e) {
-        console.error('[TM] fetch error', e);
-        if (errorEl) {
-          errorEl.hidden = false;
-          const msg = t({
-            cs:'Nepodařilo se načíst data z Ticketmasteru. Zkuste to prosím později.',
-            sk:'Nepodarilo sa načítať dáta z Ticketmasteru. Skúste to neskôr.',
-            de:'Ticketmaster-Daten konnten nicht geladen werden. Bitte später erneut versuchen.',
-            pl:'Nie udało się załadować danych z Ticketmastera. Spróbuj ponownie później.',
-            hu:'Nem sikerült betölteni a Ticketmaster adatait. Próbáld újra később.',
-            en:'Could not load Ticketmaster data. Please try again later.'
-          }, lang);
-
-          const hintLocal = (isLocal)
-            ? '\n\nTip: Spusť `netlify dev` (port 8888) NEBO vyplň <meta name="tm-proxy-base" content="https://tvoje-domena.netlify.app">.'
-            : '';
-
-          errorEl.textContent = msg + hintLocal;
-        }
-      } finally {
-        setBusy(false);
-      }
-    })();
-  </script>
-
-  <!-- Demo badge CTA -->
+  <!-- Demo badge CTA (propaguje lang do URL + GA event) -->
   <script>
     (function(){
       const cta = document.getElementById('demoBadgeCta');
       const root = document.getElementById('demoBadge');
       if (!cta) return;
-
       const qs = new URLSearchParams(location.search);
-      const lang = (qs.get('lang') || '').toLowerCase();
+      const lang = (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
       if (['cs','en','de','sk','pl','hu'].includes(lang)) {
-        const url = new URL(cta.href, location.origin);
-        url.searchParams.set('lang', lang);
-        cta.href = url.toString();
+        try {
+          const url = new URL(cta.href, location.origin);
+          url.searchParams.set('lang', lang);
+          cta.href = url.toString();
+        } catch {}
       }
-
       cta.addEventListener('click', function(){
         if (window.gtag) window.gtag('event','click_waitlist', { source: 'events_demo_badge' });
       });
-
       if (root && window.translations) {
         try {
           const path = 'event-demo.ariaLabel'.split('.');
@@ -540,5 +375,9 @@
       }
     })();
   </script>
+
+  <!-- ⛔️ DŮLEŽITÉ: Žádný runtime loader! Nechť Vite tyto tagy při buildu přepíše na /assets/*.js -->
+  <script type="module" src="/src/main.js"></script>
+  <script type="module" src="/src/events-home.js"></script>
 </body>
 </html>

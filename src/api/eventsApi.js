@@ -4,6 +4,8 @@
 // - aliasy měst (vícejazyčně – Evropa + velká světová města)
 // - sloučení městských částí (Praha 1..10 / Prague 5 -> Prague / Paris 11e -> Paris)
 // - volitelný Near Me filtr (funguje pro zdroje s lat/lon)
+// - bezpečnější práce s daty (čísla místo řetězců), deduplikace
+// - OPRAVA: při filtrování dateFrom/dateTo brát "YYYY-MM-DD" jako celý lokální den
 // ---------------------------------------------------------
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
@@ -16,11 +18,32 @@ const isDev =
   (typeof import.meta !== 'undefined' && import.meta?.env?.DEV);
 
 // ------- Utils -------
-function inRangeISO(dateStr, fromISO, toISO) {
-  if (!dateStr) return false;
-  const d = new Date(dateStr).toISOString();
-  if (fromISO && d < new Date(fromISO).toISOString()) return false;
-  if (toISO && d > new Date(toISO).toISOString()) return false;
+function ts(val) {
+  // robustní převod na timestamp (ms); vrací NaN, pokud nelze převést
+  return new Date(val).getTime();
+}
+
+/** Parse hranici dne z ISO "YYYY-MM-DD" v lokálním čase. */
+function boundaryMs(iso, isEnd = false) {
+  if (!iso) return NaN;
+  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) {
+    const y = +m[1], mo = +m[2] - 1, d = +m[3];
+    return isEnd
+      ? new Date(y, mo, d, 23, 59, 59, 999).getTime()
+      : new Date(y, mo, d, 0, 0, 0, 0).getTime();
+  }
+  // pokud je tam čas, necháme na nativním parseru
+  return ts(iso);
+}
+
+function inRange(dateStr, fromStr, toStr) {
+  const t = ts(dateStr);
+  if (!Number.isFinite(t)) return false;
+  const f = boundaryMs(fromStr, false);
+  const to = boundaryMs(toStr, true);
+  if (Number.isFinite(f) && t < f) return false;
+  if (Number.isFinite(to) && t > to) return false;
   return true;
 }
 
@@ -39,8 +62,14 @@ const normalizeStr = normalizeText;
 
 // Haversine distance in km
 function haversineKm(lat1, lon1, lat2, lon2) {
-  if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) return Infinity;
-  const toRad = (x) => (Number(x) * Math.PI) / 180;
+  if (
+    lat1 == null || lon1 == null ||
+    lat2 == null || lon2 == null ||
+    !Number.isFinite(+lat1) || !Number.isFinite(+lon1) ||
+    !Number.isFinite(+lat2) || !Number.isFinite(+lon2)
+  ) return Infinity;
+
+  const toRad = (x) => (+x * Math.PI) / 180;
   const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
@@ -52,9 +81,8 @@ function haversineKm(lat1, lon1, lat2, lon2) {
 }
 
 // ------- Multilingual city aliases (client-side equality only) -------
-// NOTE: Cílem je trefit uživatelské dotazy typu "Londýn/Paris/ Нью-Йорк" na EN štítky, které posílá adapter.
 const CITY_ALIASES = {
-  // CZ / SK / PL (already supported core)
+  // CZ / SK / PL
   Praha: ['Praha','Prague','Prag','Praga','Praag','Prága'],
   Brno: ['Brno','Brünn'],
   Ostrava: ['Ostrava'],
@@ -175,7 +203,7 @@ const CITY_ALIASES = {
   Kyiv: ['Kyiv','Kyjev','Kiev'],
   Lviv: ['Lviv','Lvov'],
   Odesa: ['Odesa','Odessa'],
-  Kharkiv: ['Kharkiv','Charkov'],
+  Kharkiv: ['Kharkiv'],
   Minsk: ['Minsk'],
 
   // UK & Ireland
@@ -313,8 +341,12 @@ function eventCityCandidates(ev) {
 }
 
 function detectLang() {
-  const qs = new URLSearchParams(location.search);
-  return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+  try {
+    const qs = new URLSearchParams(location.search);
+    return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+  } catch {
+    return 'cs';
+  }
 }
 function mapLangToLocale(lang) {
   const m = { cs: 'cs', sk: 'sk', en: 'en', de: 'de', pl: 'pl', hu: 'hu' };
@@ -349,8 +381,8 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     city: upstreamCity, // ← nikdy nezmizí, pokud něco uživatel zadal
   };
 
+  // Má-li uživatel city, nenuť countryCode (adapter to řeší sám a TM to tak doporučuje)
   if (upstreamFilters.city) {
-    // Nepřivazuj k countryCode (jinak je hledání globální a funguje pro exonyma)
     delete upstreamFilters.countryCode;
   }
 
@@ -380,7 +412,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     }
   }
 
-  // ---- Client-side filtry (obrana, hlavní filtr probíhá v adapteru/API) ----
+  // ---- Client-side filtry ----
   const {
     category = 'all',
     city = '',
@@ -393,10 +425,20 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     nearMeRadiusKm = 50,
   } = filters;
 
-  console.debug('[eventsApi] total before city filter:', all.length, 'city filter =', city || '(none)');
+  // Dedup podle `id` (nebo fallback hash)
+  const seen = new Set();
+  all = all.filter((ev, idx) => {
+    const id =
+      ev.id ||
+      `${ev.partner || 'x'}-${ev.datetime || ev.date || idx}-${(ev.title?.[loc] ?? ev.title?.cs ?? ev.title ?? '').slice(0, 50)}`;
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
 
   if (category && category !== 'all') {
-    all = all.filter((ev) => normalizeStr(ev.category) === normalizeStr(category));
+    const want = normalizeStr(category);
+    all = all.filter((ev) => normalizeStr(ev.category) === want);
   }
 
   if (city) {
@@ -413,7 +455,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     });
   }
 
-  // Near Me (fallback – pokud událost nemá lat/lon, filtr ji vyřadí)
+  // Near Me (jen když jsou lat/lon)
   if (nearMeLat != null && nearMeLon != null && Number.isFinite(nearMeRadiusKm)) {
     all = all.filter((ev) => {
       const lat = ev?.location?.lat ?? ev?.location?.latitude ?? ev?.lat;
@@ -428,24 +470,29 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     all = all.filter((ev) => {
       const title = ev?.title?.[loc] ?? ev?.title?.cs ?? ev?.title ?? '';
       const desc  = ev?.description?.[loc] ?? ev?.description?.cs ?? ev?.description ?? '';
-      return normalizeStr(title).includes(q) || normalizeStr(desc).includes(q);
+      const cityL = ev?.location?.city ?? '';
+      return (
+        normalizeStr(title).includes(q) ||
+        normalizeStr(desc).includes(q) ||
+        normalizeStr(cityL).includes(q)
+      );
     });
   }
 
-  const fromISO = dateFrom ? new Date(dateFrom).toISOString() : '';
-  const toISO   = dateTo   ? new Date(dateTo).toISOString()   : '';
-  if (fromISO || toISO) {
-    all = all.filter((ev) => inRangeISO(ev.datetime || ev.date, fromISO, toISO));
+  if (dateFrom || dateTo) {
+    all = all.filter((ev) => inRange(ev.datetime || ev.date, dateFrom, dateTo));
   }
 
-  // Třídění podle data
+  // Řazení dle data
   all.sort((a, b) => {
-    const da = new Date(a.datetime || a.date);
-    const db = new Date(b.datetime || b.date);
+    const da = ts(a.datetime || a.date);
+    const db = ts(b.datetime || b.date);
+    if (!Number.isFinite(da) && !Number.isFinite(db)) return 0;
+    if (!Number.isFinite(da)) return 1;
+    if (!Number.isFinite(db)) return -1;
     return sort === 'latest' ? db - da : da - db; // default nearest (ASC)
   });
 
-  console.debug('[eventsApi] total after city filter:', all.length);
   return all;
 }
 

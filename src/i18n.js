@@ -1,77 +1,150 @@
-const supportedLangs = ["cs", "en", "de", "sk", "pl", "hu"];
+// /src/i18n.js
+// Modul i18n pro statické stránky (about.html, thank-you, apod.)
+// Exportuje: translations (živý objekt), applyTranslations, t, detectLang.
 
-// Detekce jazyka z URL nebo prohlížeče
-export function detectLang() {
-  const urlLang = new URLSearchParams(window.location.search).get("lang");
-  if (urlLang && supportedLangs.includes(urlLang)) return urlLang;
+export const translations = {}; // živý objekt – neměň referenci
 
-  const navLang = (navigator.language || "cs").slice(0, 2).toLowerCase();
-  if (supportedLangs.includes(navLang)) return navLang;
-
-  return "cs";
-}
-
-// Načtení JSON překladů – hybridně: nejprve sekce (např. "about"), fallback do root JSON (např. cs.json)
-export async function loadTranslations(lang, section = null) {
-  if (!supportedLangs.includes(lang)) lang = "cs";
-
-  let translations = {};
-  let sectionLoaded = false;
-
-  if (section) {
-    try {
-      const sectionResp = await fetch(`/locales/${lang}/${section}.json`);
-      if (sectionResp.ok) {
-        const sectionData = await sectionResp.json();
-        translations = sectionData[lang] || {};
-        sectionLoaded = true;
-      }
-    } catch (e) {
-      console.warn(`⚠️ Nepodařilo se načíst sekci: /locales/${lang}/${section}.json`);
-    }
+/* ───────── utils ───────── */
+function deepMerge(a = {}, b = {}) {
+  const o = { ...a };
+  for (const [k, v] of Object.entries(b)) {
+    o[k] = v && typeof v === 'object' && !Array.isArray(v)
+      ? deepMerge(o[k] || {}, v)
+      : v;
   }
-
-  // Fallback do základního JSON jen pokud není sekce, nebo v ní něco chybí
+  return o;
+}
+async function fetchJSON(p) {
   try {
-    const rootResp = await fetch(`/locales/${lang}.json`);
-    if (rootResp.ok) {
-      const rootData = await rootResp.json();
-      translations = {
-        ...rootData,
-        ...translations // Sekce má přednost
-      };
-    }
-  } catch (e) {
-    console.error("❌ Chyba při načítání root překladů:", e);
+    const r = await fetch(p, { cache: 'no-store' });
+    if (r.ok) return await r.json();
+  } catch {}
+  return null;
+}
+function getPageKey() {
+  // preferuj <body data-page="...">, jinak z názvu souboru
+  const dp = document.body?.dataset?.page;
+  if (dp && typeof dp === 'string') return dp.toLowerCase();
+  const fn = (location.pathname.split('/').pop() || '').toLowerCase();
+  const base = fn.replace(/\.[^.]+$/, '') || 'index';
+  return base === 'index' ? 'home' : base;
+}
+
+/* ───────── veřejné API ───────── */
+export function detectLang() {
+  const urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+  const htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+  const supported = ['cs','en','de','sk','pl','hu'];
+  const pick = urlLang || htmlLang || 'cs';
+  return supported.includes(pick) ? pick : 'cs';
+}
+
+function getByPath(o, p) {
+  return p?.split('.').reduce((a, k) => a?.[k], o);
+}
+
+export function t(key, fb) {
+  const v = getByPath(translations, key) ?? translations[key];
+  if (v !== undefined) return v;
+
+  // aliasy pro filtry (kompat s main.js)
+  if (key.startsWith('filter-')) {
+    const tail = key.replace(/^filter-/, '');
+    const alt = getByPath(translations, `filters.${tail}`);
+    if (alt !== undefined) return alt;
   }
-
-  return translations;
+  if (key.startsWith('filters.')) {
+    const flat = key.replace(/^filters\./, 'filter-');
+    const alt = translations[flat];
+    if (alt !== undefined) return alt;
+  }
+  if (key.startsWith('category-')) {
+    const alt = getByPath(translations, `filters.${key.replace('category-', '')}`);
+    if (alt !== undefined) return alt;
+  }
+  return fb;
 }
 
-// Získání hodnoty z vnořeného objektu pomocí klíče s tečkami (např. about.story.p1.a)
-function getNestedValue(obj, key) {
-  return key.split(".").reduce((o, i) => (o ? o[i] : null), obj);
+async function loadTranslations(lang) {
+  const pageKey = getPageKey();
+
+  const baseCandidates = [
+    `/locales/${lang}.json`,
+    `/src/locales/${lang}.json`,
+  ];
+  const pageCandidates = [
+    `/locales/${lang}/${pageKey}.json`,
+    `/src/locales/${lang}/${pageKey}.json`,
+    `/locales/${lang}-${pageKey}.json`,
+    `/src/locales/${lang}-${pageKey}.json`,
+    `/locales/${pageKey}.${lang}.json`,
+    `/src/locales/${pageKey}.${lang}.json`,
+    `/locales/${pageKey}-${lang}.json`,
+    `/src/locales/${pageKey}-${lang}.json`,
+  ];
+
+  const firstOk = async (arr) => {
+    for (const p of arr) {
+      const j = await fetchJSON(p);
+      if (j && Object.keys(j).length) return j;
+    }
+    return {};
+  };
+
+  const base = await firstOk(baseCandidates);
+  const page = await firstOk(pageCandidates);
+  return deepMerge(base, page);
 }
 
-// Aplikace překladů do DOM
-export async function applyTranslations(lang, section = null) {
-  const translations = await loadTranslations(lang, section);
+export async function applyTranslations(lang = detectLang()) {
+  // 1) načti překlady a MUTUJ živý objekt
+  const data = await loadTranslations(lang);
+  for (const k of Object.keys(translations)) delete translations[k];
+  Object.assign(translations, data || {});
 
-  document.querySelectorAll("[data-i18n-key]").forEach((el) => {
-    const key = el.getAttribute("data-i18n-key");
-    const value = getNestedValue(translations, key);
+  // 2) přepiš texty v DOM
+  document.querySelectorAll('[data-i18n-key]').forEach((el) => {
+    const k = el.getAttribute('data-i18n-key');
+    const v = t(k);
+    if (v === undefined || String(v).trim() === '') return;
+    if (/[<][a-z]/i.test(v)) el.innerHTML = v;
+    else el.textContent = v;
+  });
 
-    if (value !== null && value !== undefined) {
-      // Pokud hodnota obsahuje HTML, použij innerHTML
-      if (/<[a-z][\s\S]*>/i.test(value)) {
-        el.innerHTML = value;
-      } else {
-        el.textContent = value;
-      }
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const k = el.getAttribute('data-i18n-placeholder');
+    const v = t(k);
+    if (!v) return;
+    el.setAttribute('placeholder', String(v));
+  });
+
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+    const k = el.getAttribute('data-i18n-aria');
+    const v = t(k);
+    if (typeof v === 'string' && v.trim()) {
+      el.setAttribute('aria-label', v);
+      el.setAttribute('title', v);
     }
   });
+
+  document.querySelectorAll('[data-i18n-alt]').forEach((el) => {
+    const k = el.getAttribute('data-i18n-alt');
+    const v = t(k);
+    if (!v) return;
+    el.setAttribute('alt', String(v));
+  });
+
+  // 3) pokud je v globálu UI helper z main.js, nech ho přepsat popisky filtrů
+  try {
+    if (typeof window.updateFilterLocaleTexts === 'function') {
+      window.updateFilterLocaleTexts();
+    }
+    if (typeof window.updateDateComboLabel === 'function') {
+      window.updateDateComboLabel();
+    }
+  } catch {}
 }
 
-// Volání ručně (např. po změně jazyka)
-// const lang = detectLang();
-// applyTranslations(lang, "about");
+// zpřístupni i do window (pro in-page skripty)
+if (!window.applyTranslations) window.applyTranslations = applyTranslations;
+if (!window.translations) window.translations = translations;

@@ -1,30 +1,59 @@
-// src/main.js
+// /src/main.js
 // ---------------------------------------------------------
-// AJSEE – Events UI, i18n & filters (+ city typeahead, "Near me",
-// quick chips (Today/Weekend/Clear), active-filter chips,
-// URL sync, calendar links, mobile sheet, geolocation w/ IP fallback,
-// CLICK-ONLY pagination (Load more), collapsible filter dock, typeahead live-region fix
-// + Homepage: TOP 3 blog cards (articles + micro-guides)
-//
-// POZOR: pokud je na stránce nastaveno window.__AJSEE_SKIP_CORE_EVENTS === true,
-// NEBUDE se spouštět core events pipeline (getAllEvents/renderEvents).
-// Používá se při inline Ticketmaster řešení na /events.
+// AJSEE – Events UI, i18n & filters (sjednocení s homepage)
 // ---------------------------------------------------------
 
 import './styles/main.scss';
+import './identity-init.js';
+import './filters/date-combo.js';     // Ticketmaster-like date picker (auto-upgrade)
+import './utils/date-popover.old.js';     // globální window.ajseePositionDatePopover(anchor, popover)
+
 import { getAllEvents } from './api/eventsApi.js';
 import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity } from './city/canonical.js';
-import './identity-init.js';
-import { blogArticles, getSortedBlogArticles } from './blogArticles.js';   // pro homepage TOP3
 
-// --- feature flag: skip core events pipeline (nastav v HTML před načtením main.js) ---
-const SKIP_CORE_EVENTS = !!window.__AJSEE_SKIP_CORE_EVENTS;
-if (SKIP_CORE_EVENTS) {
-  console.info('[AJSEE] Core events pipeline SKIPPED (inline Ticketmaster handles rendering).');
+import { getSortedBlogArticles } from './blogArticles.js';
+import { initNav } from './nav-core.js';
+import { initContactFormValidation } from './contact-validate.js';
+import { initEventModal } from './event-modal.js';
+
+import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
+import { attachNearMeButton } from './filters/near-me.js';
+import { renderFilterChips as renderActiveChips } from './filters/active-chips.js';
+
+/* ───────── global guard ───────── */
+(function ensureGlobals(){
+  window.__ajsee = window.__ajsee || {};
+  const g = window.__ajsee;
+  g.flags = g.flags || {};
+  g.once  = g.once  || new Set();
+  g.locks = g.locks || {};
+  g.state = g.state || {};
+  g.bus   = g.bus   || (type => detail => { try { window.dispatchEvent(new CustomEvent(type, { detail })); } catch {} });
+})();
+const G = window.__ajsee;
+
+G.state._wiredMap = G.state._wiredMap || new WeakMap();
+const _wiredMap = G.state._wiredMap;
+function wireOnce(el, evt, handler, key=''){
+  if (!el) return;
+  const id = `${evt}:${key||''}`;
+  let set = _wiredMap.get(el);
+  if (!set) { set = new Set(); _wiredMap.set(el, set); }
+  if (set.has(id)) return;
+  set.add(id);
+  el.addEventListener(evt, handler);
 }
 
-// ------- Global state -------
+if (G.flags.mainInitialized) {
+  console.info('[main] module reloaded — functions replaced, boot will skip.');
+} else {
+  G.flags.mainInitialized = true;
+}
+
+const SKIP_CORE_EVENTS = !!window.__AJSEE_SKIP_CORE_EVENTS;
+
+/* ───────── state ───────── */
 let currentFilters = {
   category: 'all',
   sort: 'nearest',
@@ -37,1516 +66,1003 @@ let currentFilters = {
   nearMeLon: null,
   nearMeRadiusKm: 50
 };
-let currentLang = 'cs';
 
-// pagination (click-only)
+// — jazyk: vždy preferuj ?lang → <html lang> → cs
+function getUILang(){
+  const urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
+  const htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+  const supported = ['cs','en','de','sk','pl','hu'];
+  const pick = urlLang || htmlLang || 'cs';
+  return supported.includes(pick) ? pick : 'cs';
+}
+let currentLang = getUILang();
+
 const pagination = { page: 1, perPage: 12 };
-
-// collapsible dock
 let filtersCollapsed = false;
 
-// Store last opened event for modal (optional future use)
-let selectedEvent = null;
+/* ───────── utils ───────── */
+const qs  = (s, r=document)=>r.querySelector(s);
+const qsa = (s, r=document)=>Array.from(r.querySelectorAll(s));
+const debounce = (fn, ms=200)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; };
+const isHome = () => location.pathname==='/' || location.pathname.endsWith('index.html');
+const ridle = (cb)=> (window.requestIdleCallback ? window.requestIdleCallback(cb, { timeout: 1200 }) : setTimeout(cb, 0));
+function getCookie(name){ return document.cookie.split('; ').find(r=>r.startsWith(name+'='))?.split('=')[1]; }
+function esc(s=''){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function pad2(n){ return String(n).padStart(2,'0'); }
+function toLocalISO(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 
-// ------- Small helpers -------
-function debounce(fn, wait = 200) {
-  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
-}
-function getCookie(name) {
-  return document.cookie.split('; ').find(r => r.startsWith(name + '='))?.split('=')[1];
-}
-function qs(sel, root = document) { return root.querySelector(sel); }
-function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
-const isMobile = () => window.matchMedia('(max-width: 720px)').matches;
+/* small store for UI prefs */
+const store = {
+  get(k, d=null){ try{ return JSON.parse(sessionStorage.getItem(k)) ?? d; }catch{ return d; } },
+  set(k, v){ try{ sessionStorage.setItem(k, JSON.stringify(v)); }catch{} }
+};
 
-function fetchWithTimeout(url, { timeout = 8000, ...opts } = {}) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), timeout);
-  return fetch(url, { signal: ctrl.signal, ...opts }).finally(() => clearTimeout(t));
-}
-
-// Inject minimal CSS (runtime) – sr-only + collapsed dock + dynamic sticky top
-function ensureRuntimeStyles() {
-  if (!document.getElementById('ajsee-runtime-style')) {
-    const style = document.createElement('style');
-    style.id = 'ajsee-runtime-style';
-    style.textContent = `
-      /* vizuálně skryté (pro live regiony) */
-      .sr-only{
-        position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
-        clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;
-      }
-      /* sbalený filter dock */
-      .filter-dock.is-collapsed .filters-fieldset{display:none;}
-      .filter-dock.is-collapsed{padding-bottom:.6rem;}
-      .filter-dock.is-collapsed .filters-toolbar{margin-bottom:0;}
-      .filters-toggle.chip{display:inline-flex;align-items:center;gap:.5rem;}
-      /* dynamický offset pod header (řeší "useknutí") */
-      .events-upcoming-section .filter-dock{top:var(--header-offset, 88px);}
-    `;
-    document.head.appendChild(style);
+/* live region for announcements (a11y) */
+function ensureLiveRegion(){
+  let r = document.getElementById('ajsee-live');
+  if (!r){
+    r = document.createElement('div');
+    r.id='ajsee-live';
+    r.setAttribute('aria-live','polite');
+    r.setAttribute('aria-atomic','true');
+    r.style.position='absolute';
+    r.style.width='1px';
+    r.style.height='1px';
+    r.style.overflow='hidden';
+    r.style.clip='rect(1px,1px,1px,1px)';
+    r.style.clipPath='inset(50%)';
+    r.style.whiteSpace='nowrap';
+    document.body.appendChild(r);
   }
+  return r;
 }
+const announce = (msg)=>{ ensureLiveRegion().textContent = msg||''; };
 
-// dynamický offset podle výšky headeru
-function updateHeaderOffset() {
-  const header = qs('.site-header');
-  const h = header ? Math.ceil(header.getBoundingClientRect().height) : 80;
-  // malý bezpečný rozestup
-  const safe = Math.max(56, h + 8);
-  document.documentElement.style.setProperty('--header-offset', `${safe}px`);
-}
-
-// ------- Helpers: typography -------
-function fixNonBreakingShortWords(text, lang = 'cs') {
-  if (!text || typeof text !== 'string') return text;
-  switch (lang) {
-    case 'cs':
-    case 'sk': return text.replace(/ ([aAiIkoOsSuUvVzZ]) /g, '\u00a0$1\u00a0');
-    case 'pl': return text.replace(/ ([aAiIoOuUwWzZ]) /g, '\u00a0$1\u00a0');
-    case 'hu': return text.replace(/ ([aAiIsS]) /g, '\u00a0$1\u00a0');
-    case 'de':
-    case 'en': return text.replace(/ ([aI]) /g, '\u00a0$1\u00a0');
-    default:   return text;
+/* busy state helpers */
+function setBusy(v){
+  const form = qs('form.filter-dock') || qs('.events-filters');
+  const list = qs('#eventsList');
+  if (form){
+    form.setAttribute('aria-busy', v?'true':'false');
+    qsa('input,select,button', form).forEach(el=> el.disabled = !!v && !el.classList.contains('filters-toggle'));
   }
+  if (list) list.setAttribute('aria-busy', v?'true':'false');
 }
 
-// ------- Helpers: language detection -------
-function detectLang() {
-  const urlLang = new URLSearchParams(window.location.search).get('lang');
-  if (urlLang && ['cs', 'en', 'de', 'sk', 'pl', 'hu'].includes(urlLang)) return urlLang;
-  const lang = (navigator.language || 'cs').slice(0, 2).toLowerCase();
-  return ['cs', 'en', 'de', 'sk', 'pl', 'hu'].includes(lang) ? lang : 'cs';
-}
-
-// ------- Helpers: dates & URL -------
-function toISODate(d) {
-  if (!d) return '';
-  try { return new Date(d).toISOString().slice(0, 10); } catch { return ''; }
-}
-function syncURLFromFilters() {
-  const u = new URL(window.location.href);
-  const p = u.searchParams;
-  (currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city'));
-  (currentFilters.dateFrom ? p.set('from', toISODate(currentFilters.dateFrom)) : p.delete('from'));
-  (currentFilters.dateTo ? p.set('to', toISODate(currentFilters.dateTo)) : p.delete('to'));
-  (currentFilters.category && currentFilters.category !== 'all' ? p.set('segment', currentFilters.category) : p.delete('segment'));
-  (currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q'));
-  (currentFilters.sort && currentFilters.sort !== 'nearest' ? p.set('sort', currentFilters.sort) : p.delete('sort'));
-  history.replaceState(null, '', u.toString());
-}
-
-// ------- i18n -------
-
-// malá deep-merge utilita (stačí na naše JSONy)
-function deepMerge(a = {}, b = {}) {
-  const out = Array.isArray(a) ? [...a] : { ...a };
-  for (const [k, v] of Object.entries(b || {})) {
-    if (v && typeof v === 'object' && !Array.isArray(v) && typeof out[k] === 'object' && !Array.isArray(out[k])) {
-      out[k] = deepMerge(out[k], v);
-    } else {
-      out[k] = v;
-    }
-  }
-  return out;
-}
-
-// načtení JSON s fallbackem (nejdřív /locales, pak /src/locales – užitečné v netlify dev)
-async function fetchJSONWithFallback(path1, path2) {
-  try {
-    const r1 = await fetch(path1, { cache: 'no-store' });
-    if (r1.ok) return await r1.json();
-  } catch {}
-  if (path2) {
-    try {
-      const r2 = await fetch(path2, { cache: 'no-store' });
-      if (r2.ok) return await r2.json();
-    } catch {}
-  }
-  return null;
-}
-
-// Načte překlady podle jazyka (base + page-specific)
-async function loadTranslations(lang) {
-  const page = window.location.pathname.split('/').pop();
-
-  const base =
-    (await fetchJSONWithFallback(`/locales/${lang}.json`, `/src/locales/${lang}.json`)) || {};
-
-  // page-level
-  let pagePart = {};
-  if (page === 'about.html') {
-    pagePart =
-      (await fetchJSONWithFallback(`/locales/${lang}/about.json`, `/src/locales/${lang}/about.json`)) || {};
-  }
-
+/* ───────── i18n ───────── */
+function deepMerge(a={},b={}){ const o={...a}; for(const[k,v]of Object.entries(b)) o[k]=v&&typeof v==='object'&&!Array.isArray(v)?deepMerge(o[k]||{},v):v; return o; }
+async function fetchJSON(p){ try{ const r=await fetch(p,{cache:'no-store'}); if(r.ok) return await r.json(); }catch{} return null; }
+async function loadTranslations(lang){
+  const base = (await fetchJSON(`/locales/${lang}.json`)) || (await fetchJSON(`/src/locales/${lang}.json`)) || {};
+  const page = location.pathname.split('/').pop();
+  const pagePart = page==='about.html'
+    ? (await fetchJSON(`/locales/${lang}/about.json`)) || (await fetchJSON(`/src/locales/${lang}/about.json`)) || {}
+    : {};
   return deepMerge(base, pagePart);
 }
-
-// bezpečné vytažení hodnoty z objektu podle cesty (vnořený klíč)
-function getByPath(obj, path) {
-  if (!obj || !path) return undefined;
-  return path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
-}
-
-// alias klíčů pro About – podpora starých tvarů: about-hero-text, about-headline-full apod.
-function aboutAlias(key) {
-  if (!key || !key.startsWith('about-')) return null;
-  const rest = key.slice('about-'.length); // např. "hero-text" | "headline-full"
-
-  // podvětev hero.*
-  if (rest.startsWith('hero-')) {
-    const sub = rest.slice('hero-'.length); // "text" | "subtext" | "claim" | "headline-full"
-    const parts = sub.split('-');
-    const camel = parts.map((s, i) => (i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1))).join('');
-    return `about.hero.${camel}`;
-  }
-
-  // podvětev story.*
-  if (rest.startsWith('story-')) {
-    const sub = rest.slice('story-'.length); // "headline" apod.
-    const parts = sub.split('-');
-    const camel = parts.map((s, i) => (i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1))).join('');
-    return `about.story.${camel}`;
-  }
-
-  return null;
-}
-
-// vrací překlad podle klíče nebo fallback
-function t(key, fallback) {
+function getByPath(o,p){ return p?.split('.').reduce((a,k)=>a?.[k],o); }
+function t(key, fb){
   const tr = window.translations || {};
-
-  // 1) přesná shoda + vnořená notace "a.b.c"
-  const exact = getByPath(tr, key) ?? tr[key];
-  if (exact !== undefined) return exact;
-
-  // 2) aliasy pro About (starý tvar data-i18n-key="about-hero-text" atd.)
-  const alias = aboutAlias(key);
-  if (alias) {
-    const aliased = getByPath(tr, alias);
-    if (aliased !== undefined) return aliased;
-  }
-
-  // 3) fallbacky na starý formát filtrů / kategorií
+  const v = getByPath(tr, key) ?? tr[key];
+  if (v !== undefined) return v;
   if (key.startsWith('filter-')) {
-    const tail = key.replace(/^filter-/, '');
-    const v = getByPath(tr, `filters.${tail}`) ?? tr[`filters.${tail}`];
-    if (v !== undefined) return v;
+    const tail = key.replace(/^filter-/, ''); const alt = getByPath(tr, `filters.${tail}`); if (alt !== undefined) return alt;
   }
   if (key.startsWith('filters.')) {
-    const tail = key.replace(/^filters\./, '');
-    const flat = `filter-${tail}`;
-    const v = tr[flat];
-    if (v !== undefined) return v;
+    const flat = key.replace(/^filters\./,'filter-'); const alt = tr[flat]; if (alt !== undefined) return alt;
   }
   if (key.startsWith('category-')) {
-    const v = getByPath(tr, `filters.${key.replace('category-', '')}`);
-    if (v !== undefined) return v;
+    const alt = getByPath(tr, `filters.${key.replace('category-','')}`); if (alt !== undefined) return alt;
   }
-
-  return fallback;
+  return fb;
 }
 
-// Fallback překlady pro toggle (když v JSON chybí)
+// fallbacky pro toggle — čteme VŽDY z aktuálního <html lang>
 const toggleFallback = {
-  cs: { show: 'Zobrazit filtry', hide: 'Skrýt filtry' },
-  en: { show: 'Show filters',     hide: 'Hide filters' },
-  de: { show: 'Filter anzeigen',  hide: 'Filter ausblenden' },
-  sk: { show: 'Zobraziť filtre',  hide: 'Skryť filtre' },
-  pl: { show: 'Pokaż filtry',     hide: 'Ukryj filtry' },
-  hu: { show: 'Szűrők megjelenítése', hide: 'Szűrők elrejtése' }
+  cs:{show:'Zobrazit filtry',hide:'Skrýt filtry'},
+  en:{show:'Show filters',hide:'Hide filters'},
+  de:{show:'Filter anzeigen',hide:'Filter ausblenden'},
+  sk:{show:'Zobraziť filtre',hide:'Skryť filtre'},
+  pl:{show:'Pokaż filtry',hide:'Ukryj filtry'},
+  hu:{show:'Szűrők megjelenítése',hide:'Szűrők elrejtése'}
 };
-function toggleLabel(mode) { // 'show' | 'hide'
-  const fb = (toggleFallback[currentLang] || toggleFallback.en)[mode];
-  const key = mode === 'show' ? 'filters.show' : 'filters.hide';
-  return t(key, fb);
-}
-
-/**
- * Bezpečně vybere nejlepší lokalizovaný text z mapy
- */
-function pickLocalized(map, preferred = []) {
-  if (!map) return '';
-  if (typeof map === 'string') return map;
-  if (typeof map !== 'object') return '';
-  for (const k of preferred) {
-    const v = map?.[k];
-    if (v) return String(v);
+const toggleLabel = (mode)=>{
+  const lang = getUILang();
+  const tryKeys = [
+    `filters.toggle.${mode}`,
+    mode==='show' ? 'filters.show' : 'filters.hide'
+  ];
+  for (const k of tryKeys){
+    const v = t(k);
+    if (v !== undefined && String(v).trim() !== '') return v;
   }
-  const any = Object.values(map).find(Boolean);
-  return any ? String(any) : '';
+  return (toggleFallback[lang]||toggleFallback.cs)[mode];
+};
+
+// a11y hlášky pro rozbalení/sbalení panelu
+const ariaToggleFallback = {
+  cs:{collapsed:'Filtry jsou skryté.', expanded:'Filtry jsou zobrazené.'},
+  en:{collapsed:'Filters are hidden.',  expanded:'Filters are visible.'},
+  de:{collapsed:'Filter sind ausgeblendet.', expanded:'Filter sind sichtbar.'},
+  sk:{collapsed:'Filtre sú skryté.', expanded:'Filtre sú zobrazené.'},
+  pl:{collapsed:'Filtry są ukryte.', expanded:'Filtry są widoczne.'},
+  hu:{collapsed:'A szűrők rejtve vannak.', expanded:'A szűrők láthatók.'}
+};
+const ariaToggleText = (state)=> {
+  const lang = getUILang();
+  return state==='collapsed'
+    ? (t('filters.aria.collapsed',  (ariaToggleFallback[lang]||ariaToggleFallback.cs).collapsed))
+    : (t('filters.aria.expanded',   (ariaToggleFallback[lang]||ariaToggleFallback.cs).expanded));
+};
+
+const setBtnLabel = (el,txt)=>{ if(!el)return; const n=el.querySelector('[data-i18n-label],.label,.btn-label'); (n||el).textContent=txt; };
+
+function updateFilterLocaleTexts(){
+  setBtnLabel(qs('#chipToday'), t('filters.today','Today'));
+  setBtnLabel(qs('#chipWeekend'), t('filters.weekend','This weekend'));
+  setBtnLabel(qs('#chipNearMe'), t('filters.nearMe','Near me'));
+  setBtnLabel(qs('#filter-nearme'), t('filters.nearMe','Near me'));
+  const city = qs('#filter-city') || qs('#events-city-filter');
+  if (city) city.placeholder = t('filters.cityPlaceholder','Prague, Brno...');
+  const kw = qs('#filter-keyword'); if (kw) kw.placeholder = t('filters.keywordPlaceholder','Artist, venue, event…');
+  const applyBtn = qs('#events-apply-filters') || qs('.filter-actions .btn.btn-primary'); if (applyBtn) setBtnLabel(applyBtn, t('filters.apply','Apply filters'));
+  const resetBtn = qs('#events-clear-filters') || qs('.filter-actions button[type="reset"]'); if (resetBtn) setBtnLabel(resetBtn, t('filters.reset','Clear'));
+  const tog = qs('#filtersToggle'); if (tog) setBtnLabel(tog, filtersCollapsed ? toggleLabel('show') : toggleLabel('hide'));
+
+  const seg = qs('.segmented');
+  if (seg) {
+    const [b0, b1] = seg.querySelectorAll('button');
+    if (b0) b0.textContent = t('filters.nearest','Nearest');
+    if (b1) b1.textContent = t('filters.latest','Latest');
+  }
+
+  // label „DATUM“ u combo ovladače + samotný text tlačítka
+  const dateLbl = qs('label[for="date-combo-button"]');
+  if (dateLbl) dateLbl.textContent = t('filters.date','Datum');
+  updateDateComboLabel();
 }
+// zpřístupnit pro i18n modul (pokud se načte dřív)
+if (!window.updateFilterLocaleTexts) window.updateFilterLocaleTexts = updateFilterLocaleTexts;
 
-/** Set texts/labels/placeholders for filter UI that don't have data-i18n-* attributes */
-function setBtnLabel(el, text) {
-  if (!el) return;
-  const lbl = el.querySelector('[data-i18n-label], .label, .btn-label');
-  if (lbl) lbl.textContent = text;
-  else el.textContent = text;
-}
-function updateFilterLocaleTexts() {
-  // Quick chips
-  setBtnLabel(qs('#chipToday'),   t('filters.today',   'Today'));
-  setBtnLabel(qs('#chipWeekend'), t('filters.weekend', 'This weekend'));
-  // Near Me – both chip and fallback ghost button
-  setBtnLabel(qs('#chipNearMe'),    t('filters.nearMe', 'Near me'));
-  setBtnLabel(qs('#filter-nearme'), t('filters.nearMe', 'Near me'));
+if (!window.applyTranslations) window.applyTranslations = applyTranslations;
 
-  // Placeholders
-  const cityInput = qs('#filter-city') || qs('#events-city-filter');
-  const cityPh = t('filters.cityPlaceholder') ?? t('filters.searchCityPlaceholder') ?? 'Prague, Brno...';
-  if (cityInput) cityInput.placeholder = cityPh;
+/* --- i18n guard: reaguj na změnu <html lang> --- */
+(function observeLangAttr(){
+  try{
+    const mo = new MutationObserver(async () => {
+      currentLang = getUILang();
+      await ensureTranslations(currentLang);
+    });
+    mo.observe(document.documentElement, { attributes:true, attributeFilter:['lang'] });
+  }catch{}
+})();
 
-  const kwInput = qs('#filter-keyword');
-  const kwPh = t('filters.keywordPlaceholder') ?? t('filters.searchPlaceholder') ?? 'Artist, venue, event...';
-  if (kwInput) kwInput.placeholder = kwPh;
-
-  // Action buttons
-  const applyBtn = qs('#events-apply-filters') || qs('.filter-actions .btn.btn-primary');
-  if (applyBtn) setBtnLabel(applyBtn, t('filters.apply', 'Apply filters'));
-
-  const resetBtn = qs('#events-clear-filters') || qs('.filter-actions button[type="reset"]');
-  if (resetBtn) setBtnLabel(resetBtn, t('filters.reset', 'Clear'));
-
-  // Filters toggle (runtime)
-  const toggleBtn = qs('#filtersToggle');
-  if (toggleBtn) setBtnLabel(toggleBtn, filtersCollapsed ? toggleLabel('show') : toggleLabel('hide'));
-}
-
-/**
- * A P P L Y   T R A N S L A T I O N S
- * Bezpečné nasazení překladů: neprázdné hodnoty -> nahradit, prázdné -> ponechat HTML fallback
- */
-async function applyTranslations(lang) {
-  const translations = await loadTranslations(lang);
-  window.translations = translations;
-
-  document.querySelectorAll('[data-i18n-key]').forEach((el) => {
-    const key = el.getAttribute('data-i18n-key');
-    let value = t(key);
-
-    // NEPŘEPISUJ, pokud je undefined/null/jen whitespace (chrání např. hero při prázdných hodnotách v JSON)
-    if (value === undefined || value === null || String(value).trim() === '') return;
-
-    // drobná typografická úprava pro běžné textové bloky
-    const tag = el.tagName.toLowerCase();
-    if (['p', 'span', 'h1', 'h2', 'h3', 'h4', 'li', 'a', 'button'].includes(tag)) {
-      value = fixNonBreakingShortWords(String(value), lang);
-    }
-
-    if (/<[a-z][\s\S]*>/i.test(value)) el.innerHTML = value;
-    else el.textContent = value;
+async function applyTranslations(lang){
+  window.translations = await loadTranslations(lang);
+  document.querySelectorAll('[data-i18n-key]').forEach(el=>{
+    const k=el.getAttribute('data-i18n-key'); const v=t(k);
+    if (v===undefined || String(v).trim()==='') return;
+    if (/[<][a-z]/i.test(v)) el.innerHTML=v; else el.textContent=v;
   });
-
-  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    let value = t(key);
-    if (value === undefined || value === null || String(value).trim() === '') return;
-    el.setAttribute('placeholder', fixNonBreakingShortWords(String(value), lang));
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const k=el.getAttribute('data-i18n-placeholder'); const v=t(k); if(!v) return; el.setAttribute('placeholder', String(v));
   });
-
+  updateFilterLocaleTexts();
+}
+async function ensureTranslations(lang){
+  if (typeof window.applyTranslations === 'function') return window.applyTranslations(lang);
+  window.translations = await loadTranslations(lang);
   updateFilterLocaleTexts();
 }
 
-// ------- Nav -------
-// pomocná: jsme na homepage?
-function onHomePage() {
-  return location.pathname === '/' || location.pathname.endsWith('index.html');
+/* ───────── UI helpers ───────── */
+function findChipsHost(){
+  const toolbar = qs('.filters-toolbar');
+  if (toolbar?.parentNode) return { parent: toolbar.parentNode, after: toolbar };
+  const list = qs('#eventsList');
+  if (list?.parentElement) return { parent: list.parentElement, before: list };
+  return null;
 }
-
-// robustní označení aktivní položky – používá aria-current="page"
-function activateNavLink() {
-  const path = window.location.pathname;
-  const hash = window.location.hash || '';
-  const isHomePath = (path === '/' || path.endsWith('index.html'));
-
-  const state = {
-    home:     () => isHomePath && (hash === '' || hash === '#top' || hash === '#'),
-    events:   () => /\/events(\.html)?$/i.test(path),
-    partners: () => /\/partners(\.html)?$/i.test(path),
-    about:    () => /\/about(\.html)?$/i.test(path),
-    blog:     () => /\/blog(\.html)?$/i.test(path) || (isHomePath && hash === '#blog'),
-    faq:      () => /\/faq(\.html)?$/i.test(path)  || (isHomePath && hash === '#faq'),
-    contact:  () => /\/contact(\.html)?$/i.test(path) || (isHomePath && hash === '#contact'),
-  };
-
-  const keyForLink = (href) => {
-    if (!href) return null;
-    if (href.includes('events')) return 'events';
-    if (href.includes('partners')) return 'partners';
-    if (href.includes('about')) return 'about';
-    if (href.includes('faq')) return 'faq';
-    if (href.includes('#blog') || /\/blog(\.html)?$/i.test(href)) return 'blog';
-    if (href.includes('#contact') || /\/contact(\.html)?$/i.test(href)) return 'contact';
-    if (href === '/' || href.includes('index.html')) return 'home';
-    return null;
-  };
-
-  document.querySelectorAll('.main-nav a').forEach((link) => {
-    const href = link.getAttribute('href') || '';
-    const key = keyForLink(href);
-    const isCurrent = key ? !!state[key]() : false;
-
-    link.classList.toggle('active', isCurrent); // backward compatibility
-    if (isCurrent) link.setAttribute('aria-current', 'page');
-    else link.removeAttribute('aria-current');
-  });
+function collapseFilters(){
+  const dock = qs('form.filter-dock') || qs('.events-filters'); if (!dock) return;
+  filtersCollapsed = true; dock.classList.add('is-collapsed');
+  const tgl = qs('#filtersToggle'); if (tgl){ tgl.setAttribute('aria-pressed','true'); setBtnLabel(tgl, toggleLabel('show')); }
+  store.set('filtersCollapsed', true);
+  announce(ariaToggleText('collapsed'));
 }
+function expandFilters(){
+  const dock = qs('form.filter-dock') || qs('.events-filters'); if (!dock) return;
+  filtersCollapsed = false; dock.classList.remove('is-collapsed');
+  const tgl = qs('#filtersToggle'); if (tgl){ tgl.setAttribute('aria-pressed','false'); setBtnLabel(tgl, toggleLabel('hide')); }
+  store.set('filtersCollapsed', false);
+  announce(ariaToggleText('expanded'));
+}
+const toggleFilters = ()=> (filtersCollapsed ? expandFilters() : collapseFilters());
 
-// Bezpečně doplní FAQ odkaz do .main-nav, pokud chybí.
-// Detekce ignoruje query string a zachová <li> obal kvůli stylům.
-function ensureFaqNavLink() {
-  const nav = document.querySelector('.main-nav');
-  if (!nav) return;
-
-  const links = Array.from(nav.querySelectorAll('a'));
-  const alreadyHasFaq = links.some(a => {
-    const raw = (a.getAttribute('href') || '').toLowerCase();
-    const h = raw.split('?')[0]; // ignoruj query
-    return /(^|\/)faq(\.html)?$/.test(h) || raw.endsWith('#faq');
-  });
-  if (alreadyHasFaq) return;
-
-  // klon tříd z existujícího odkazu (vezmeme "Kontakt" nebo první)
-  const proto = nav.querySelector('a[href*="contact"]') || nav.querySelector('a');
-
-  const a = document.createElement('a');
-  if (proto) a.className = proto.className;
-
-  a.setAttribute('data-i18n-key', 'nav-faq');
-  a.textContent = t('nav-faq', 'FAQ');
-
-  // href dle kontextu
-  const lang = (typeof currentLang === 'string' ? currentLang : 'cs');
-  a.href = onHomePage() ? `/index.html?lang=${lang}#faq` : `/faq.html?lang=${lang}`;
-
-  // vlož s respektem k <li> struktuře
-  const contact = nav.querySelector('a[href*="contact"], a[href$="#contact"]');
-  const useList = !!nav.querySelector('li > a');
-  const nodeToInsert = useList ? (()=>{
-    const li = document.createElement('li'); li.appendChild(a); return li;
-  })() : a;
-
-  const contactItem = contact?.closest('li') || contact;
-  if (contactItem && contactItem.parentElement) {
-    contactItem.parentElement.insertBefore(nodeToInsert, contactItem);
-  } else {
-    (useList ? (nav.querySelector('ul') || nav) : nav).appendChild(nodeToInsert);
+/* badge – počet aktivních filtrů */
+function computeActiveFiltersCount(f=currentFilters){
+  let c = 0;
+  if (f.category && f.category !== 'all') c++;
+  if (f.city) c++;
+  if (f.keyword) c++;
+  if (f.sort && f.sort !== 'nearest') c++;
+  if (f.dateFrom || f.dateTo) c++;
+  if (f.nearMeLat && f.nearMeLon) c++;
+  return c;
+}
+function updateToggleBadge(){
+  const btn = qs('#filtersToggle');
+  if (!btn) return;
+  const cnt = computeActiveFiltersCount();
+  let badge = btn.querySelector('.badge');
+  if (!badge){
+    badge = document.createElement('span');
+    badge.className = 'badge';
+    btn.appendChild(badge);
   }
+  badge.textContent = String(cnt);
+  const base = filtersCollapsed ? toggleLabel('show') : toggleLabel('hide');
+  btn.setAttribute('aria-label', cnt ? `${base} (${cnt})` : base);
 }
 
-// Normalizace FAQ v menu: 1× FAQ, správný href a pozice před „Kontakt“ (zachovat styly)
-function normalizeFaqInNav(lang) {
-  const nav = document.querySelector('.main-nav');
-  if (!nav) return;
-
-  const faqLinks = Array.from(nav.querySelectorAll('a')).filter(a => {
-    const raw = (a.getAttribute('href') || '').toLowerCase();
-    const base = raw.split('?')[0];
-    return /(^|\/)faq(\.html)?$/.test(base) || raw.endsWith('#faq');
-  });
-  if (faqLinks.length === 0) return;
-
-  const preferAnchor = onHomePage();
-  let keep = preferAnchor
-    ? faqLinks.find(a => (a.getAttribute('href') || '').toLowerCase().endsWith('#faq'))
-    : faqLinks.find(a => /(^|\/)faq(\.html)?($|\?)/.test((a.getAttribute('href') || '').toLowerCase()));
-  if (!keep) keep = faqLinks[0];
-
-  // kanonický href
-  keep.setAttribute('href', preferAnchor ? `/index.html?lang=${lang}#faq` : `/faq.html?lang=${lang}`);
-
-  // odstranit duplicity (včetně <li> obalu)
-  faqLinks.forEach(a => {
-    if (a !== keep) (a.closest('li') || a).remove();
-  });
-
-  // přesunout před „Kontakt“ – na úrovni <li>, pokud existuje
-  const contact = nav.querySelector('a[href*="contact"], a[href$="#contact"]');
-  const keepItem = keep.closest('li') || keep;
-  const contactItem = contact?.closest('li') || contact;
-  if (contactItem && contactItem.parentElement && keepItem !== contactItem.previousSibling) {
-    contactItem.parentElement.insertBefore(keepItem, contactItem);
+/* results count in header */
+function updateResultsCount(n){
+  const host = qs('.events-header') || qs('#events') || document;
+  let el = qs('#eventsResultsCount', host);
+  if (!el){
+    el = document.createElement('div');
+    el.id = 'eventsResultsCount';
+    el.className = 'events-results-count';
+    host.appendChild(el);
   }
+  const label = t('events-found','Nalezeno') || 'Nalezeno';
+  el.textContent = `${label}: ${n}`;
 }
 
-function updateMenuLinksWithLang(lang) {
-  const isHome = onHomePage();
-
-  document.querySelectorAll('.main-nav a').forEach((link) => {
-    let href = link.getAttribute('href') || '';
-    if (!href || href.startsWith('mailto:') || href.startsWith('http')) return;
-
-    if (href.endsWith('#blog')) {
-      href = `/index.html?lang=${lang}#blog`;
-    } else if (href.endsWith('#contact')) {
-      href = `/index.html?lang=${lang}#contact`;
-    } else if (href.endsWith('#faq')) {
-      // na homepage chceme kotvu, jinde stránku
-      href = isHome ? `/index.html?lang=${lang}#faq` : `/faq.html?lang=${lang}`;
-    } else {
-      href = href.replace(/\?lang=[a-z]{2}/, '').replace(/&lang=[a-z]{2}/, '');
-      href = href.includes('?') ? `${href}&lang=${lang}` : `${href}?lang=${lang}`;
-    }
-    link.setAttribute('href', href);
-  });
-}
-
-/* =========================================================
-   Quick chips (Today / Weekend / Clear) + Active chips + Near Me
-   ========================================================= */
-
-// --- Quick chips (Today / Weekend / Clear) ---
-function pad2(n){ return String(n).padStart(2,'0'); }
-function toLocalISO(d){
-  const y = d.getFullYear(), m = pad2(d.getMonth()+1), day = pad2(d.getDate());
-  return `${y}-${m}-${day}`;
-}
-function setTodayRange() {
-  const today = new Date();
-  const iso = toLocalISO(today);
-  currentFilters.dateFrom = iso;
-  currentFilters.dateTo   = iso;
-}
-function setWeekendRange() {
-  const now = new Date();              // 0=Ne ... 6=So
-  const day = now.getDay();
-  const diffToSat = (6 - day + 7) % 7; // nejbližší sobota
-  const sat = new Date(now); sat.setDate(now.getDate() + diffToSat);
-  const sun = new Date(sat); sun.setDate(sat.getDate() + 1);
-  currentFilters.dateFrom = toLocalISO(sat);
-  currentFilters.dateTo   = toLocalISO(sun);
-}
-function applyDatesToInputs(){
-  const $from = qs('#filter-date-from') || qs('#events-date-from');
-  const $to   = qs('#filter-date-to')   || qs('#events-date-to');
-  if ($from) $from.value = currentFilters.dateFrom || '';
-  if ($to)   $to.value   = currentFilters.dateTo   || '';
-}
-function setupQuickChips(formEl){
-  const chipToday = document.getElementById('chipToday');
-  const chipWknd  = document.getElementById('chipWeekend');
-  const chipClear = document.getElementById('chipClear');
-  const resetBtn  = formEl?.querySelector('.filter-actions button[type="reset"]');
-
-  if (chipClear && resetBtn) chipClear.remove();
-
-  chipToday?.addEventListener('click', async () => {
-    setTodayRange();
-    applyDatesToInputs();
-    await renderAndSync();
-  });
-
-  chipWknd?.addEventListener('click', async () => {
-    setWeekendRange();
-    applyDatesToInputs();
-    await renderAndSync();
-  });
-
-  chipClear?.addEventListener('click', async () => {
-    const cc = currentFilters.countryCode;
-    currentFilters = {
-      category:'all', sort:'nearest', city:'', dateFrom:'', dateTo:'',
-      keyword:'', countryCode: cc, nearMeLat: null, nearMeLon: null, nearMeRadiusKm: 50
-    };
+/* swap dates if reversed */
+function normalizeDates(){
+  if (!currentFilters.dateFrom || !currentFilters.dateTo) return;
+  const a = new Date(currentFilters.dateFrom);
+  const b = new Date(currentFilters.dateTo);
+  if (a > b){
+    const tmp = currentFilters.dateFrom;
+    currentFilters.dateFrom = currentFilters.dateTo;
+    currentFilters.dateTo = tmp;
     setFilterInputsFromState();
-    expandFilters(); // po resetu rozbal
-    await renderAndSync();
-  });
-}
-
-// --- Reverse geocode lat/lon -> city label (best effort) ---
-async function reverseGeocode(lat, lon) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/reverse?${new URLSearchParams({
-      format: 'jsonv2',
-      lat: String(lat),
-      lon: String(lon),
-      zoom: '10',
-      addressdetails: '1'
-    }).toString()}`;
-    const r = await fetchWithTimeout(url, { timeout: 6500, headers: { 'Accept-Language': currentLang } });
-    if (!r.ok) return null;
-    const j = await r.json();
-    const a = j.address || {};
-    return a.city || a.town || a.village || a.municipality || a.county || null;
-  } catch { return null; }
-}
-
-// --- Geolocation (HTML5) with IP fallback ---
-async function getPositionWithFallback() {
-  try {
-    const pos = await new Promise((res, rej) => {
-      if (!navigator.geolocation) return rej(new Error('UNSUPPORTED'));
-      navigator.geolocation.getCurrentPosition(res, (err) => {
-        if (err && typeof err.code === 'number') {
-          if (err.code === 1) rej(new Error('PERMISSION_DENIED'));
-          else if (err.code === 2) rej(new Error('POSITION_UNAVAILABLE'));
-          else if (err.code === 3) rej(new Error('TIMEOUT'));
-          else rej(err);
-        } else rej(err || new Error('GEO_ERROR'));
-      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
-    });
-    return { lat: pos.coords.latitude, lon: pos.coords.longitude, source: 'browser' };
-  } catch (e) { /* continue with IP */ }
-
-  try {
-    const r = await fetchWithTimeout('https://ipapi.co/json/', { timeout: 7000 });
-    if (r.ok) {
-      const j = await r.json();
-      if (j && j.latitude && j.longitude) {
-        console.info('[NearMe] Using IP fallback:', { lat: j.latitude, lon: j.longitude, source: 'ipapi' });
-        return { lat: j.latitude, lon: j.longitude, source: 'ipapi' };
-      }
-    }
-  } catch { /* ignore */ }
-
-  throw new Error('POSITION_UNAVAILABLE');
-}
-
-// --- robustní handler pro geolokaci – sdílený chip/ghost tlačítky ---
-async function handleNearMeClick(btn) {
-  const allBtns = [qs('#chipNearMe'), qs('#filter-nearme')].filter(Boolean);
-
-  try {
-    allBtns.forEach(b => { b.disabled = true; b.textContent = t('filters.finding', 'Detecting location…'); });
-
-    try {
-      if (navigator.permissions?.query) {
-        const status = await navigator.permissions.query({ name: 'geolocation' });
-        if (status.state === 'denied') {
-          throw new Error('PERMISSION_DENIED');
-        }
-      }
-    } catch { /* ignore */ }
-
-    const { lat, lon } = await getPositionWithFallback();
-
-    currentFilters.nearMeLat = Number(lat);
-    currentFilters.nearMeLon = Number(lon);
-    currentFilters.nearMeRadiusKm = 50;
-
-    // vizuální vyplnění "Město" (nezapisujeme do currentFilters.city)
-    const cityInput = qs('#filter-city') || qs('#events-city-filter');
-    if (cityInput) {
-      const label = (await reverseGeocode(lat, lon)) || '';
-      if (label) {
-        cityInput.value = `${label} (okolí)`;
-        cityInput.dataset.autofromnearme = '1';
-      }
-    }
-
-    currentFilters.city = ''; // priorita je nearMe
-    setFilterInputsFromState();
-    await renderAndSync();
-  } catch (e) {
-    console.warn('Geo failed:', e);
-    let msg = t('filters.geoError', 'Location unavailable. Try again.');
-    const em = String(e?.message || '');
-    if (em.includes('PERMISSION_DENIED')) {
-      msg = t('filters.geoDenied', 'Access to location denied. Enable it in the browser settings.');
-    } else if (em.includes('TIMEOUT')) {
-      msg = t('filters.geoTimeout', 'Getting your location took too long. Please try again.');
-    }
-    alert(msg);
-  } finally {
-    allBtns.forEach(b => { if (b) { b.disabled = false; b.textContent = t('filters.nearMe', 'Near me'); } });
   }
 }
 
-function renderFilterChips() {
-  let host = qs('.chips-active');
-  if (!host) {
-    host = document.createElement('div');
-    host.className = 'chips chips-active';
-    const toolbar = qs('.filters-toolbar');
-    if (toolbar?.parentNode) {
-      toolbar.parentNode.insertBefore(host, toolbar.nextSibling);
-    } else {
-      const section = qs('.section-events .container') || qs('.events-upcoming-section .container') || document.body;
-      section.insertBefore(host, qs('#eventsList') || section.firstChild);
-    }
-  }
-
-  host.innerHTML = '';
-
-  const addChip = (label, onClear) => {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'chip is-active';
-    chip.textContent = label;
-    chip.setAttribute('aria-label', `${label} – ${t('filters.reset','Clear')}`);
-    chip.addEventListener('click', onClear);
-    host.appendChild(chip);
-  };
-
-  if (currentFilters.category && currentFilters.category !== 'all') {
-    addChip(`${t('filters.category','Category')}: ${t('category-'+currentFilters.category, currentFilters.category)}`, () => {
-      currentFilters.category = 'all';
-      setFilterInputsFromState();
-      renderAndSync();
-    });
-  }
-  if (currentFilters.city) {
-    addChip(`${t('filters.city','City')}: ${currentFilters.city}`, () => {
-      currentFilters.city = '';
-      setFilterInputsFromState();
-      renderAndSync();
-    });
-  }
-  if (currentFilters.dateFrom) {
-    addChip(`${t('filters.dateFrom','From')}: ${toISODate(currentFilters.dateFrom)}`, () => {
-      currentFilters.dateFrom = '';
-      setFilterInputsFromState();
-      renderAndSync();
-    });
-  }
-  if (currentFilters.dateTo) {
-    addChip(`${t('filters.dateTo','To')}: ${toISODate(currentFilters.dateTo)}`, () => {
-      currentFilters.dateTo = '';
-      setFilterInputsFromState();
-      renderAndSync();
-    });
-  }
-  if (currentFilters.keyword) {
-    addChip(`${t('filters.keyword','Keyword')}: ${currentFilters.keyword}`, () => {
-      currentFilters.keyword = '';
-      setFilterInputsFromState();
-      renderAndSync();
-    });
-  }
-  if (currentFilters.sort && currentFilters.sort !== 'nearest') {
-    addChip(`${t('filters.sort','Sort')}: ${t('filters.latest','Latest')}`, () => {
-      currentFilters.sort = 'nearest';
-      setFilterInputsFromState();
-      renderAndSync();
-    });
-  }
-  if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-    addChip(`${t('filters.nearMe','Near me')} ~${currentFilters.nearMeRadiusKm} km`, () => {
-      clearNearMe();
-      setFilterInputsFromState();
-      renderAndSync();
-    });
-  }
-}
-
-// Vloží / naváže „V mém okolí“ – bez duplicit
-function attachNearMeButton(formEl) {
-  if (!formEl) return;
-
-  const chipNear = qs('#chipNearMe', formEl) || qs('#chipNearMe');
-  const actions = qs('.filter-actions', formEl) || (() => {
-    const div = document.createElement('div');
-    div.className = 'filter-actions';
-    formEl.appendChild(div);
-    return div;
-  })();
-
-  const oldGhost = qs('#filter-nearme', actions);
-  if (chipNear && oldGhost) oldGhost.remove();
-
-  if (chipNear) {
-    chipNear.removeEventListener('click', chipNear.__handler || (() => {}));
-    chipNear.__handler = () => handleNearMeClick(chipNear);
-    chipNear.addEventListener('click', chipNear.__handler);
-    return;
-  }
-
-  if (!qs('#filter-nearme', actions)) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.id = 'filter-nearme';
-    btn.className = 'btn btn-ghost';
-    btn.textContent = t('filters.nearMe', 'Near me');
-    btn.addEventListener('click', () => handleNearMeClick(btn));
-    actions.prepend(btn);
-  }
-}
-
-function clearNearMe() {
-  currentFilters.nearMeLat = null;
-  currentFilters.nearMeLon = null;
-}
-
-// props -> inputy
-function setFilterInputsFromState() {
-  const $cat = qs('#filter-category') || qs('#events-category-filter');
-  const $sort = qs('#filter-sort') || qs('#events-sort-filter');
-  const $city = qs('#filter-city') || qs('#events-city-filter');
-  const $from = qs('#filter-date-from') || qs('#events-date-from');
-  const $to = qs('#filter-date-to') || qs('#events-date-to');
-  const $keyword = qs('#filter-keyword');
-
+function setFilterInputsFromState(){
+  const $cat=qs('#filter-category')||qs('#events-category-filter');
+  const $sort=qs('#filter-sort')||qs('#events-sort-filter');
+  const $city=qs('#filter-city')||qs('#events-city-filter');
+  const $from=qs('#filter-date-from')||qs('#events-date-from');
+  const $to  =qs('#filter-date-to')  ||qs('#events-date-to');
+  const $kw  =qs('#filter-keyword');
   if ($cat) $cat.value = currentFilters.category || 'all';
   if ($sort) $sort.value = currentFilters.sort || 'nearest';
   if ($city && !$city.matches('[data-autofromnearme="1"]')) $city.value = currentFilters.city || '';
   if ($from) $from.value = currentFilters.dateFrom || '';
   if ($to) $to.value = currentFilters.dateTo || '';
-  if ($keyword) $keyword.value = currentFilters.keyword || '';
+  if ($kw) $kw.value = currentFilters.keyword || '';
+  // sync i combo tlačítko
+  updateDateComboLabel();
+}
+function hasActiveFilters(){ return computeActiveFiltersCount(currentFilters) > 0; }
+
+function syncURLFromFilters(){
+  const u = new URL(location.href), p=u.searchParams;
+  (currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city'));
+  (currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from'));
+  (currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to'));
+  (currentFilters.category && currentFilters.category!=='all' ? p.set('segment', currentFilters.category) : p.delete('segment'));
+  (currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q'));
+  (currentFilters.sort && currentFilters.sort!=='nearest' ? p.set('sort', currentFilters.sort) : p.delete('sort'));
+  history.replaceState(null,'',u.toString());
 }
 
-function hasActiveFilters() {
-  return (
-    (currentFilters.category && currentFilters.category !== 'all') ||
-    !!currentFilters.city ||
-    !!currentFilters.dateFrom ||
-    !!currentFilters.dateTo ||
-    !!currentFilters.keyword ||
-    (currentFilters.sort && currentFilters.sort !== 'nearest') ||
-    (currentFilters.nearMeLat && currentFilters.nearMeLon)
-  );
+/* ───────── Elegantní SEGMENTED pro „Řazení“ ───────── */
+function upgradeSortToSegmented() {
+  const select = qs('#filter-sort') || qs('#events-sort-filter');
+  if (!select || select.dataset.upgraded === 'segmented') return;
+
+  select.dataset.upgraded = 'segmented';
+  const wrap = document.createElement('div');
+  wrap.className = 'segmented';
+  wrap.setAttribute('role','tablist');
+  wrap.setAttribute('aria-label', t('filters.sort','Řazení'));
+
+  const indicator = document.createElement('div');
+  indicator.className = 'seg-indicator';
+  wrap.appendChild(indicator);
+
+  const btnNearest = document.createElement('button');
+  const btnLatest  = document.createElement('button');
+  btnNearest.type='button'; btnLatest.type='button';
+  btnNearest.textContent = t('filters.nearest','Nearest');
+  btnLatest.textContent  = t('filters.latest','Latest');
+
+  wrap.appendChild(btnNearest);
+  wrap.appendChild(btnLatest);
+
+  select.parentElement.insertBefore(wrap, select);
+
+  function setActive(which){
+    const buttons=[btnNearest, btnLatest];
+    buttons.forEach((b,i)=> {
+      b.classList.toggle('is-active', i===which);
+      b.setAttribute('aria-selected', i===which ? 'true' : 'false');
+      b.setAttribute('role','tab');
+      b.tabIndex = i===which ? 0 : -1;
+    });
+    const target = buttons[which];
+    requestAnimationFrame(()=>{
+      const r = target.getBoundingClientRect();
+      const rw = wrap.getBoundingClientRect();
+      const left = r.left - rw.left + 6;
+      wrap.style.setProperty('--indi-left', left+'px');
+      wrap.style.setProperty('--indi-width', r.width+'px');
+    });
+  }
+
+  setActive(currentFilters.sort === 'latest' ? 1 : 0);
+
+  wireOnce(btnNearest, 'click', async ()=>{
+    currentFilters.sort = 'nearest';
+    select.value = 'nearest';
+    setActive(0);
+    await renderAndSync({ resetPage:true, autoCollapse:false });
+  }, 'seg-nearest');
+
+  wireOnce(btnLatest, 'click', async ()=>{
+    currentFilters.sort = 'latest';
+    select.value = 'latest';
+    setActive(1);
+    await renderAndSync({ resetPage:true, autoCollapse:false });
+  }, 'seg-latest');
+
+  wireOnce(wrap,'keydown', async (e)=>{
+    if(e.key!=='ArrowLeft' && e.key!=='ArrowRight') return;
+    e.preventDefault();
+    const isLatest = currentFilters.sort==='latest';
+    if (e.key==='ArrowLeft' && isLatest){
+      btnNearest.click();
+      btnNearest.focus();
+    } else if (e.key==='ArrowRight' && !isLatest){
+      btnLatest.click();
+      btnLatest.focus();
+    }
+  }, 'seg-kbd');
+
+  wireOnce(window, 'resize', ()=> setActive(currentFilters.sort==='latest'?1:0), 'seg-resize');
 }
 
-// Collapsible dock controls
-function collapseFilters() {
+/* ───────── Runtime polish: sjednocení tříd + fix ikon/duplicit ───────── */
+function injectOnce(id, css){
+  if (document.getElementById(id)) return;
+  const s = document.createElement('style'); s.id=id; s.textContent = css; document.head.appendChild(s);
+}
+
+/* ▼▼▼ NEW (bez přesunu DOM): sjednocené výšky + kompaktní šířky + date-combo fixy ▼▼▼ */
+function activateCompactFilterSizing(){
   const dock = qs('form.filter-dock') || qs('.events-filters');
   if (!dock) return;
-  filtersCollapsed = true;
-  dock.classList.add('is-collapsed');
-  const toggle = qs('#filtersToggle');
-  if (toggle) {
-    toggle.setAttribute('aria-pressed', 'true');
-    setBtnLabel(toggle, toggleLabel('show'));
-  }
-}
-function expandFilters() {
-  const dock = qs('form.filter-dock') || qs('.events-filters');
-  if (!dock) return;
-  filtersCollapsed = false;
-  dock.classList.remove('is-collapsed');
-  const toggle = qs('#filtersToggle');
-  if (toggle) {
-    toggle.setAttribute('aria-pressed', 'false');
-    setBtnLabel(toggle, toggleLabel('hide'));
-  }
-}
-function toggleFilters() { (filtersCollapsed ? expandFilters : collapseFilters)(); }
 
-// central render + url + chips
-async function renderAndSync({ resetPage = true } = {}) {
-  if (resetPage) pagination.page = 1;
+  dock.classList.add('dates-compact-mode');
+
+  injectOnce('ajsee-filters-layout-2025', `
+    :root{ --ctrl-h:56px; --ctrl-radius:14px; }
+
+    :where(.events-filters.filter-dock, form.filter-dock) .styled-input,
+    :where(.events-filters.filter-dock, form.filter-dock) .styled-select{
+      height:var(--ctrl-h); line-height:var(--ctrl-h); border-radius:var(--ctrl-radius);
+    }
+    :where(.events-filters.filter-dock, form.filter-dock) .segmented{
+      min-height:var(--ctrl-h);
+      align-items:center;
+    }
+    :where(.events-filters.filter-dock, form.filter-dock) .segmented button{
+      min-height:calc(var(--ctrl-h) - 8px);
+    }
+    :where(.events-filters.filter-dock, form.filter-dock) .filters-toolbar .chip{ min-height:44px; }
+
+    /* Klíčové slovo – příliš široké → strop */
+    :where(.events-filters.filter-dock, form.filter-dock) .filter-keyword,
+    :where(.events-filters.filter-dock, form.filter-dock) #filter-keyword{
+      max-width:min(680px, 100%);
+    }
+
+    /* DATUM (COMBO) – pole uvnitř gridu nepřetéká */
+    :where(.events-filters.filter-dock, form.filter-dock) .filter-group.date-combo{
+      flex: 0 1 340px;
+      min-width: 240px;
+      max-width: 360px;
+    }
+    :where(.events-filters.filter-dock, form.filter-dock) #date-combo-button{
+      width:100%; height:var(--ctrl-h); border-radius:var(--ctrl-radius);
+      display:flex; align-items:center; justify-content:flex-start; gap:.5rem;
+      padding: 0 16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    :where(.events-filters.filter-dock, form.filter-dock) .date-combo .combo-text{
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;
+      max-width:100%;
+    }
+
+    /* Fallback pro klasická "od/do" pole když není combo aktivní */
+    :where(.events-filters.filter-dock.dates-compact-mode, form.filter-dock.dates-compact-mode)
+      .filter-group:has(#filter-date-from),
+    :where(.events-filters.filter-dock.dates-compact-mode, form.filter-dock.dates-compact-mode)
+      .filter-group:has(#filter-date-to){
+      min-width:160px; max-width:220px;
+    }
+    :where(.events-filters.filter-dock.dates-compact-mode, form.filter-dock.dates-compact-mode)
+      #filter-date-from,
+    :where(.events-filters.filter-dock.dates-compact-mode, form.filter-dock.dates-compact-mode)
+      #filter-date-to{
+      max-width:220px;
+    }
+    :where(.events-filters.filter-dock.dates-compact-mode, form.filter-dock.dates-compact-mode)
+      label[for="filter-date-from"],
+    :where(.events-filters.filter-dock.dates-compact-mode, form.filter-dock.dates-compact-mode)
+      label[for="filter-date-to"]{
+      margin-bottom:6px;
+    }
+
+    /* === POPUP kalendář – ukotvení a rozměry po vzoru TM === */
+    .ajsee-date-popover{
+      position: fixed; z-index: 1200;
+      max-width: 720px; width: min(720px, calc(100vw - 32px));
+      background: #fff; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,.18);
+      overflow: hidden;
+    }
+    .ajsee-date-popover[data-compact="1"]{ max-width: 520px; }
+  `);
+}
+
+function normalizeFilterFormUI(){
+  // 1) sjednotit vzhled inputů/selectu (homepage i events)
+  const cat = qs('#filter-category') || qs('#events-category-filter');
+  if (cat && !cat.classList.contains('styled-select')) cat.classList.add('styled-select');
+
+  [
+    '#filter-city','#events-city-filter',
+    '#filter-date-from','#events-date-from',
+    '#filter-date-to','#events-date-to',
+    '#filter-keyword'
+  ].forEach(sel=>{
+    const el = qs(sel);
+    if (el && !el.classList.contains('styled-input')) el.classList.add('styled-input');
+  });
+
+  // 2) label-ikony: whitelist + masky
+  injectOnce('ajsee-filters-icons-whitelist', `
+    :where(.events-filters.filter-dock, form.filter-dock) label::before{ display:none; }
+    :where(.events-filters.filter-dock, form.filter-dock) label[for="filter-city"]::before,
+    :where(.events-filters.filter-dock, form.filter-dock) label[for="events-city-filter"]::before{
+      display:inline-block; content:""; flex:0 0 18px; height:18px; opacity:.7; background: currentColor;
+      -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:18px 18px;
+              mask-repeat:no-repeat;         mask-position:center;         mask-size:18px 18px;
+      -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z'/%3E%3C/svg%3E");
+              mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z'/%3E%3C/svg%3E");
+    }
+    :where(.events-filters.filter-dock, form.filter-dock) label[for="filter-date-from"]::before,
+    :where(.events-filters.filter-dock, form.filter-dock) label[for="events-date-from"]::before,
+    :where(.events-filters.filter-dock, form.filter-dock) label[for="filter-date-to"]::before,
+    :where(.events-filters.filter-dock, form.filter-dock) label[for="events-date-to"]::before{
+      display:inline-block; content:""; flex:0 0 18px; height:18px; opacity:.7; background: currentColor;
+      -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:18px 18px;
+              mask-repeat:no-repeat;         mask-position:center;         mask-size:18px 18px;
+      -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2v3m10-3v3M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+              mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2v3m10-3v3M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    }
+    :where(.events-filters.filter-dock, form.filter-dock) label[for="filter-keyword"]::before{
+      display:inline-block; content:""; flex:0 0 18px; height:18px; opacity:.7; background: currentColor;
+      -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:18px 18px;
+              mask-repeat:no-repeat;         mask-position:center;         mask-size:18px 18px;
+      -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14Zm10 16-4.3-4.3' stroke='black' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+              mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14Zm10 16-4.3-4.3' stroke='black' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+  `);
+
+  // 3) doplň 'for' na labely, pokud chybí
+  const pairs = [
+    ['filter-city','#filter-city,#events-city-filter'],
+    ['filter-date-from','#filter-date-from,#events-date-from'],
+    ['filter-date-to','#filter-date-to,#events-date-to'],
+    ['filter-keyword','#filter-keyword']
+  ];
+  pairs.forEach(([forId, selector])=>{
+    const input = qs(selector);
+    if (!input) return;
+    const group = input.closest('.filter-group') || input.parentElement;
+    const label = group ? qs('label', group) : null;
+    if (label && !label.getAttribute('for')) label.setAttribute('for', input.id || forId);
+  });
+
+  // 4) kompaktní sizing (bez přeskupení DOM)
+  activateCompactFilterSizing();
+}
+
+/* ──────────────── DATE COMBO – jen „kotva“; logiku řeší ./filters/date-combo.js ─────────────── */
+function parseISODateMidday(iso){
+  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return new Date(iso);
+  return new Date(+m[1], +m[2]-1, +m[3], 12, 0, 0, 0); // poledne → žádný UTC posun
+}
+function formatDateForLabel(iso){
+  if (!iso) return '';
+  try {
+    const d = parseISODateMidday(iso);
+    if (isNaN(d)) return String(iso);
+    return d.toLocaleDateString(getUILang(), { day:'2-digit', month:'2-digit', year:'numeric' });
+  } catch { return String(iso); }
+}
+function updateDateComboLabel(){
+  const btnTxt = qs('.date-combo .combo-text');
+  if (!btnTxt) return;
+  const all = t('filters.allDates','Všechny termíny');
+  const fromLbl = t('filters.from','Od');
+  const toLbl   = t('filters.to','Do');
+
+  const a = currentFilters.dateFrom ? `${fromLbl} ${formatDateForLabel(currentFilters.dateFrom)}` : '';
+  const b = currentFilters.dateTo   ? `${toLbl} ${formatDateForLabel(currentFilters.dateTo)}`     : '';
+  btnTxt.textContent = (a||b) ? [a,b].filter(Boolean).join(' – ') : all;
+}
+// export pro date-combo.js (pokud si potřebuje přepsat text tlačítka)
+if (!window.updateDateComboLabel) window.updateDateComboLabel = updateDateComboLabel;
+
+function ensureDateComboAnchor(){
+  const from = qs('#filter-date-from') || qs('#events-date-from');
+  const to   = qs('#filter-date-to')   || qs('#events-date-to');
+  const form = qs('form.filter-dock') || qs('.events-filters');
+  if (!form) return;
+
+  // už existuje kotva / picker si ji sám upraví
+  if (qs('.date-combo', form)) { updateDateComboLabel(); return; }
+
+  if (!from && !to) return;
+
+  // skryj původní skupiny (zůstanou pro kompatibilitu s odesláním formuláře)
+  [from, to].forEach(inp=>{
+    if (!inp) return;
+    const g = inp.closest('.filter-group'); if (g) g.classList.add('is-hidden');
+  });
+
+  // vlož prázdnou kotvu za skupinu s městem; ./filters/date-combo.js ji „upgraduje“
+  const mountAfter = (qs('#filter-city')||qs('#events-city-filter'))?.closest('.filter-group') || null;
+  const wrap = document.createElement('div');
+  wrap.className = 'filter-group date-combo';
+  wrap.style.position = 'relative';
+  if (mountAfter && mountAfter.parentElement) {
+    mountAfter.parentElement.insertBefore(wrap, mountAfter.nextElementSibling);
+  } else {
+    form.appendChild(wrap);
+  }
+}
+
+/* === Popover: detekce + umístění (smart; preferuje util) === */
+const DATE_POPOVER_SELECTORS = [
+  '.ajsee-date-popover',
+  '.date-combo-popover',
+  '.date-range-popover',
+  '.date-range-popup',
+  '.date-picker-popover',
+  '.datepicker-popover',
+  '.daterangepicker'
+];
+function findDatePopover(){
+  for (const s of DATE_POPOVER_SELECTORS){
+    const el = document.querySelector(s);
+    if (el) return el;
+  }
+  return null;
+}
+function ensurePopoverWrapper(){
+  let pop = findDatePopover();
+  if (!pop) return null;
+  if (!pop.classList.contains('ajsee-date-popover')){
+    const wrap = document.createElement('div');
+    wrap.className = 'ajsee-date-popover';
+    pop.parentNode.insertBefore(wrap, pop);
+    wrap.appendChild(pop);
+    pop = wrap;
+  }
+  return pop;
+}
+function getDateAnchor(){
+  return qs('#date-combo-button') || qs('.date-combo button, .date-combo .combo-trigger');
+}
+function positionDatePopoverInternal(){
+  const anchor = getDateAnchor();
+  let pop = ensurePopoverWrapper();
+  if (!anchor || !pop) return;
+
+  const ar = anchor.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+
+  const maxW = Math.min(720, vw - 32);
+  pop.style.maxWidth = maxW + 'px';
+  pop.style.width = `min(720px, calc(100vw - 32px))`;
+
+  const desiredLeft = ar.left + (ar.width/2) - (maxW/2);
+  const left = clamp(Math.round(desiredLeft), 16, Math.max(16, vw - maxW - 16));
+  const top = clamp(Math.round(ar.bottom + 8), 12, Math.max(12, vh - 12));
+
+  pop.style.left = left + 'px';
+  pop.style.top  = top + 'px';
+}
+function positionDatePopoverSmart(){
+  const anchor = getDateAnchor();
+  let pop = ensurePopoverWrapper();
+  if (!anchor || !pop) return;
+  if (typeof window.ajseePositionDatePopover === 'function') {
+    window.ajseePositionDatePopover(anchor, pop);
+  } else {
+    positionDatePopoverInternal();
+  }
+}
+function initDatePopoverPositioning(){
+  if (document.querySelector('.date-combo .combo-popover')) return;
+
+  const anchor = getDateAnchor();
+  if (anchor){
+    wireOnce(anchor, 'click', ()=>{
+      setTimeout(positionDatePopoverSmart, 0);
+      setTimeout(positionDatePopoverSmart, 30);
+      setTimeout(positionDatePopoverSmart, 120);
+    }, 'date-popover-open');
+  }
+
+  try{
+    const mo = new MutationObserver(() => positionDatePopoverSmart());
+    mo.observe(document.body, { childList:true, subtree:true });
+  }catch{}
+
+  wireOnce(window, 'resize', debounce(positionDatePopoverSmart, 80), 'date-popover-resize');
+  wireOnce(window, 'scroll', debounce(positionDatePopoverSmart, 80), 'date-popover-scroll');
+}
+
+/* ───────── render events ───────── */
+function mapLangToTm(l){ const m={cs:'cs-cz',sk:'sk-sk',pl:'pl-pl',de:'de-de',hu:'hu-hu',en:'en-gb'}; return m[(l||'en').slice(0,2)]||'en-gb'; }
+function safeUrl(raw){ try{ const u=new URL(raw,location.href); if(/^https?:/i.test(u.protocol)) return u.toString(); }catch{} return '#'; }
+function adjustTicketmasterLanguage(rawUrl,lang=getUILang()){ try{ const u=new URL(rawUrl,location.href); const val=mapLangToTm(lang); u.searchParams.set('language',val); if(!u.searchParams.has('locale')) u.searchParams.set('locale',val); return u.toString(); }catch{ return rawUrl; } }
+function wrapAffiliate(url){ try{ const cfg=window.__impact||window.__aff||{}; if (cfg.clickBase) return cfg.clickBase+encodeURIComponent(url); if(cfg.param&&cfg.value){ const u=new URL(url); if(!u.searchParams.has(cfg.param)) u.searchParams.set(cfg.param,cfg.value); return u.toString(); } }catch{} return url; }
+
+async function renderEvents(locale='cs',filters=currentFilters){
+  const list = document.getElementById('eventsList'); if(!list) return;
+  list.setAttribute('aria-live', 'polite');
+
+  setBusy(true);
+  try{
+    const api = { ...filters, city: filters.city ? canonForInputCity(filters.city) : '' };
+    const events = await getAllEvents({ locale, filters: api });
+
+    if (!window.translations) window.translations = await loadTranslations(locale);
+
+    let out=[...events];
+    if (filters.category && filters.category!=='all') out=out.filter(e=>e.category===filters.category);
+
+    if (filters.sort==='nearest') out.sort((a,b)=> new Date(a.datetime||a.date)-new Date(b.datetime||b.date));
+    else out.sort((a,b)=> new Date(b.datetime||b.date)-new Date(a.datetime||a.date));
+
+    updateResultsCount(out.length);
+
+    const isHp = isHome();
+    let toRender = out;
+    let showAll = false;
+
+    if (isHp) {
+      if (out.length>6) { toRender = out.slice(0,6); showAll = true; }
+    } else {
+      const end = pagination.page * pagination.perPage;
+      toRender = out.slice(0, end);
+    }
+
+    list.innerHTML = toRender.map(ev=>{
+      const titleRaw = (typeof ev.title==='string'?ev.title:(ev.title?.[locale]||ev.title?.en||ev.title?.cs||Object.values(ev.title||{})[0])) || 'Untitled';
+      const title = esc(titleRaw);
+      const dateVal = ev.datetime || ev.date;
+      const date = dateVal ? esc(new Date(dateVal).toLocaleDateString(locale,{day:'numeric',month:'long',year:'numeric'})) : '';
+      const img = ev.image || '/images/fallbacks/concert0.jpg';
+      const detailHref = safeUrl(wrapAffiliate(adjustTicketmasterLanguage(ev.url||'', locale)));
+      const ticketsHref= safeUrl(wrapAffiliate(adjustTicketmasterLanguage(ev.tickets||ev.url||'', locale)));
+      const detailLabel = esc(t('event-details','Details'));
+      const ticketLabel = esc(t('event-tickets','Tickets'));
+      return `
+        <article class="event-card">
+          <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy"/>
+          <div class="event-content">
+            <h3 class="event-title">${title}</h3>
+            <p class="event-date">${date}</p>
+            <div class="event-buttons-group">
+              <a href="${detailHref}" class="btn-event detail" target="_blank" rel="noopener noreferrer">${detailLabel}</a>
+              <a href="${ticketsHref}" class="btn-event ticket" target="_blank" rel="noopener noreferrer">${ticketLabel}</a>
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+
+    if (!isHp) {
+      const hasMore = toRender.length < out.length;
+      const wrapId='eventsLoadMoreWrap'; document.getElementById(wrapId)?.remove();
+      if (hasMore) {
+        const w=document.createElement('div'); w.id=wrapId; w.className='events-load-more-wrap';
+        w.innerHTML=`<button type="button" class="btn btn-secondary" id="btnLoadMore">${esc(t('events-load-more','Load more'))}</button>`;
+        list.parentElement.appendChild(w);
+        const btn = qs('#btnLoadMore', w);
+        wireOnce(btn,'click', async ()=>{
+          pagination.page += 1;
+          await renderAndSync({ resetPage:false, autoCollapse:false });
+          btn?.scrollIntoView({ block:'center' });
+        }, 'loadmore');
+      }
+    }
+
+    if (isHp && showAll){
+      list.insertAdjacentHTML('beforeend', `
+        <div class="events-show-all-btn">
+          <a href="/events.html?lang=${locale}" class="btn btn-primary show-all-events-btn">${esc(t('events-show-all','Show all events'))}</a>
+        </div>`);
+    }
+
+    announce(`${t('events-found','Nalezeno')||'Nalezeno'} ${out.length}`);
+  }catch(e){
+    console.error(e);
+    list.innerHTML = `<p>${esc(t('events-load-error','Unable to load events. Try again later.'))}</p>`;
+  } finally {
+    setBusy(false);
+  }
+}
+
+/* render & sync */
+async function renderAndSync({resetPage=true, autoCollapse=false}={}){
+  if (resetPage) pagination.page=1;
+  normalizeDates();
   syncURLFromFilters();
 
-  // --- KLÍČOVÁ STRÁŽ: pokud jedeme inline Ticketmaster, nepouštěj core render ---
-  if (SKIP_CORE_EVENTS) {
-    renderFilterChips(); // chips UI necháme fungovat
-    // informuj inline Ticketmaster o změně filtrů + jazyka
-    window.dispatchEvent(new CustomEvent('ajsee:filters', {
-      detail: { filters: { ...currentFilters }, lang: currentLang }
-    }));
-    if (hasActiveFilters()) collapseFilters();
+  if (SKIP_CORE_EVENTS){
+    G.bus('ajsee:filters')({ filters: { ...currentFilters }, lang: currentLang });
+    renderActiveChips({
+      t,
+      getFilters: () => {
+        const f = { ...currentFilters };
+        if (f.category === 'all') delete f.category;
+        return f;
+      },
+      setFilters: (patch)=>{ currentFilters = { ...currentFilters, ...patch }; },
+      setFilterInputsFromState,
+      renderAndSync,
+      findChipsHost
+    });
+    updateToggleBadge();
+    if (autoCollapse && hasActiveFilters()) collapseFilters();
     return;
   }
 
-  await renderEvents(currentLang, currentFilters);
-  renderFilterChips();
-  if (hasActiveFilters()) collapseFilters();
+  await renderEvents(currentLang,currentFilters);
+  renderActiveChips({
+    t,
+    getFilters: () => {
+      const f = { ...currentFilters };
+      if (f.category === 'all') delete f.category;
+      return f;
+    },
+    setFilters: (patch)=>{ currentFilters = { ...currentFilters, ...patch }; },
+    setFilterInputsFromState,
+    renderAndSync,
+    findChipsHost
+  });
+  updateToggleBadge();
+  if (autoCollapse && hasActiveFilters()) collapseFilters();
+
+  if (!isHome()) {
+    const list = qs('#eventsList');
+    if (list) list.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
 }
 
-/* =========================================================
-   Mobile bottom sheet (FAB „Filtry“)
-   ========================================================= */
-function initFilterSheet() {
-  const sheet = qs('form.filter-dock[data-behavior="sheet"]');
-  if (!sheet) return;
-  const fab = qs('#filtersOpen');
-  const closeBtn = qs('#filtersClose', sheet);
-  const overlay = qs('#filtersOverlay');
-
-  const open = () => {
-    expandFilters();
-    sheet.classList.add('is-open');
-    if (overlay) {
-      overlay.hidden = false;
-      overlay.classList.add('is-open');
-    }
-    document.body.style.overflow = 'hidden';
-  };
-  const close = () => {
-    sheet.classList.remove('is-open');
-    if (overlay) {
-      overlay.classList.remove('is-open');
-      overlay.hidden = true;
-    }
-    document.body.style.overflow = '';
-  };
-
-  fab?.addEventListener('click', open);
-  closeBtn?.addEventListener('click', close);
-  overlay?.addEventListener('click', close);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-}
-
-/* =========================================================
-   HOMEPAGE – BLOG: TOP 3 nejnovější (články + micro-guides)
-   ========================================================= */
-async function renderHomeTop3Blog(lang = 'cs') {
-  // 🚫 Nikdy nespouštěj na /blog stránce
-  const onBlogPage =
-    /\/blog(\.html)?$/i.test(location.pathname) ||
-    !!document.querySelector('main#blog');
-  if (onBlogPage) return;
-  const host =
-    document.querySelector('[data-home-blog]') ||
-    document.querySelector('#blog .blog-cards') ||
-    document.querySelector('.blog .blog-cards');
-  if (!host) return;
-
-  // micro-guides z public indexu (podporujeme jak pole, tak objekt s .items)
-  let micro = [];
-  try {
-    const r = await fetch('/content/microguides/index.json', { cache: 'no-store' });
-    const raw = r.ok ? await r.json() : [];
-    const arr = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.items) ? raw.items : []);
-    micro = (Array.isArray(arr) ? arr : [])
-      .filter(it => ((it.language || lang) || '').toLowerCase() === lang)
-      .map(it => ({
-        type: 'microguide',
-        slug: it.slug,
-        lang: it.language || lang,
-        title: it.title || '',
-        lead: it.summary || '',
-        image: it.cover || '',
-        ts: Date.parse(it.publishedAt || 0) || 0
-      }));
-  } catch { /* ignore */ }
-
-  // články (pomocná utilita z blogArticles.js)
-  const arts = getSortedBlogArticles(lang).map(a => ({
-    type: 'article',
-    slug: a.slug,
-    lang,
-    title: a.titleText,
-    lead: a.leadText,
-    image: a.image,
-    ts: a._ts
-  }));
-
-  const all = [...micro, ...arts].sort((a,b) => b.ts - a.ts).slice(0, 3);
-
-  const href = (c) =>
-    c.type === 'microguide'
-      ? `/microguides/?slug=${encodeURIComponent(c.slug)}&lang=${encodeURIComponent(c.lang)}`
-      : `/blog-detail.html?slug=${encodeURIComponent(c.slug)}&lang=${encodeURIComponent(c.lang)}`;
-
-  host.innerHTML = all.map(c => `
-    <div class="blog-card" data-type="${c.type}">
-      <a href="${href(c)}">
-        ${c.image ? `<div class="card-media"><img src="${c.image}" alt=""></div>` : ''}
-        <div class="blog-card-body">
-          <h3 class="blog-card-title">${fixNonBreakingShortWords(c.title, lang)}</h3>
-          <div class="blog-card-lead">${fixNonBreakingShortWords(c.lead, lang)}</div>
-          <div class="blog-card-actions"><span class="blog-readmore">${t('blog-read-more', 'Read more')}</span></div>
-        </div>
-      </a>
-    </div>
-  `).join('');
-}
-
-// ------- DOM Ready -------
-document.addEventListener('DOMContentLoaded', async () => {
+/* ───────── DOM Ready ───────── */
+document.addEventListener('DOMContentLoaded', async ()=>{
   ensureRuntimeStyles();
   updateHeaderOffset();
-  window.addEventListener('resize', debounce(updateHeaderOffset, 150));
+  wireOnce(window,'resize', debounce(updateHeaderOffset,150), 'hdr-offset');
 
-  currentLang = detectLang();
-
-  // Simple mapping lang -> countryCode
+  // jazyk & země
+  currentLang = getUILang();
+  document.documentElement.lang = currentLang;
   const langToCountry = { cs:'CZ', sk:'SK', de:'DE', pl:'PL', hu:'HU', en:'CZ' };
   const ccCookie = getCookie('aj_country');
   currentFilters.countryCode = (ccCookie || langToCountry[currentLang] || 'CZ').toUpperCase();
 
-  // Překlady napřed, aby fungovalo t() i pro právě vkládaný FAQ odkaz
-  await applyTranslations(currentLang);
+  await ensureTranslations(currentLang);
+  initNav({ lang: currentLang });
+  initContactFormValidation({ lang: currentLang, t });
+  initEventModal();
 
-  // FAQ link – bezpečně doplnit, pokud chybí
-  ensureFaqNavLink();
-
-  // Všem odkazům doplnit ?lang=…
-  updateMenuLinksWithLang(currentLang);
-
-  // ⚙️ Normalizace: 1× FAQ, správný href a pozice před „Kontakt“
-  normalizeFaqInNav(currentLang);
-
-  // Aktivní záložka + reagovat i na změnu kotvy (#faq/#blog/#contact)
-  activateNavLink();
-  window.addEventListener('hashchange', activateNavLink);
-
-  // Jazykové přepínače
-  qsa('.lang-btn').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const lang = btn.dataset.lang;
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', lang);
-      window.location.href = url.toString();
-    });
-  });
-
-  // Zachování lang v odkazech (a bezpečné zavření menu před přesměrováním)
-  ['events.html', 'about.html'].forEach((page) => {
-    qsa(`a[href="/${page}"], a.btn-secondary[href="/${page}"]`).forEach((link) => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.__ajseeCloseMenu?.(); // pojistka pro hamburger
-        window.location.href = `/${page}?lang=${currentLang}`;
-      });
-    });
-  });
-
-  // Home CTA
-  const homeLink = qs('a[data-i18n-key="nav-home"]');
-  if (homeLink) {
-    homeLink.addEventListener('click', async (e) => {
-      e.preventDefault();
-      window.__ajseeCloseMenu?.(); // zavři případné otevřené mobilní menu
-      if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
-        window.location.href = `/?lang=${currentLang}`;
-        return;
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      await applyTranslations(currentLang);
-      renderAndSync();
-    });
-  }
-
-  // Mobile menu (robustní init – nevyžaduje .menu-close)
-  {
-    const hamburger = document.querySelector('.hamburger-btn');
-    const nav       = document.querySelector('.main-nav');
-    const overlay   = document.querySelector('.menu-overlay-bg');
-    const closeBtn  = document.querySelector('.menu-close'); // může i nebýt
-
-    if (hamburger && nav && overlay) {
-      // čistý start
-      nav.classList.remove('open');
-      overlay.classList.remove('active');
-      overlay.style.pointerEvents = 'none';
-      overlay.style.opacity = '0';
-      document.body.classList.remove('nav-open');
-      document.body.style.overflow = '';
-
-      const openMenu = () => {
-        nav.classList.add('open');
-        overlay.classList.add('active');
-        overlay.style.pointerEvents = 'auto';
-        overlay.style.opacity = '1';
-        document.body.classList.add('nav-open');
-        document.body.style.overflow = 'hidden';
-        updateHeaderOffset();
-      };
-
-      const closeMenu = () => {
-        nav.classList.remove('open');
-        overlay.classList.remove('active');
-        overlay.style.pointerEvents = 'none';
-        overlay.style.opacity = '0';
-        document.body.classList.remove('nav-open');
-        document.body.style.overflow = '';
-        updateHeaderOffset();
-      };
-
-      // vystavíme pro jiné handlery (např. linky co přepisují URL kvůli ?lang=)
-      window.__ajseeCloseMenu = closeMenu;
-
-      hamburger.addEventListener('click', openMenu);
-      overlay.addEventListener('click', closeMenu);
-      closeBtn?.addEventListener('click', closeMenu);
-      document.querySelectorAll('.main-nav a').forEach((link) => link.addEventListener('click', closeMenu));
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-    }
-  }
-
-  // ------- Filters -------
-  const eventsList = qs('#eventsList');
   const formEl = qs('#events-filters-form');
 
-  if (eventsList) {
-    const qsUrl = new URLSearchParams(window.location.search);
-    if (qsUrl.get('city')) currentFilters.city = qsUrl.get('city') || '';
-    if (qsUrl.get('from')) currentFilters.dateFrom = qsUrl.get('from') || '';
-    if (qsUrl.get('to')) currentFilters.dateTo = qsUrl.get('to') || '';
-    if (qsUrl.get('segment')) currentFilters.category = qsUrl.get('segment') || 'all';
-    if (qsUrl.get('q')) currentFilters.keyword = qsUrl.get('q') || '';
-    if (qsUrl.get('sort')) currentFilters.sort = qsUrl.get('sort') || 'nearest';
+  // zamez duplicitnímu reset tlačítku
+  qsa('.filter-actions button[type="reset"]').forEach(btn => btn.remove());
 
-    const $cat = qs('#filter-category') || qs('#events-category-filter');
-    const $sort = qs('#filter-sort') || qs('#events-sort-filter');
-    const $city = qs('#filter-city') || qs('#events-city-filter');
-    const $from = qs('#filter-date-from') || qs('#events-date-from');
-    const $to   = qs('#filter-date-to')   || qs('#events-date-to');
-    const $keyword = qs('#filter-keyword');
-    const $form = formEl;
-    const $applyBtnOnEventsPage = qs('#events-apply-filters');
+  // toggle „Skrýt/Zobrazit filtry“
+  const toolbar = qs('.filters-toolbar');
+  if (toolbar && !qs('#filtersToggle', toolbar)) {
+    const toggle = document.createElement('button');
+    toggle.type='button';
+    toggle.id='filtersToggle';
+    toggle.className='chip ghost filters-toggle';
+    toggle.setAttribute('aria-pressed','false');
+    toggle.setAttribute('aria-controls','events-filters-form');
 
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = toggleLabel('hide');
+
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = '0';
+
+    toggle.appendChild(label);
+    toggle.appendChild(badge);
+
+    wireOnce(toggle,'click', ()=>toggleFilters(), 'filters-toggle');
+    toolbar.appendChild(toggle);
+    updateFilterLocaleTexts();
+    updateToggleBadge();
+  }
+
+  window.addEventListener('AJSEE:langChanged', async (e)=>{
+    currentLang = (e?.detail?.lang || getUILang());
+    document.documentElement.lang = currentLang;
+    await ensureTranslations(currentLang);
+  });
+
+  const savedCollapsed = store.get('filtersCollapsed', null);
+  if (savedCollapsed === true) collapseFilters();
+
+  upgradeSortToSegmented();
+
+  // sjednocení vzhledu + kompaktní šířky (bez přesunu DOM)
+  normalizeFilterFormUI();
+
+  // >>> NEW: jen vytvoř „kotvu“ pro Ticketmaster-like DATE picker
+  ensureDateComboAnchor();
+
+  // a hned nastav hlídač pro umístění/rozměry popupu (preferuje util)
+  initDatePopoverPositioning();
+
+  // ------- Events page -------
+  const eventsList = qs('#eventsList');
+  if (eventsList && !SKIP_CORE_EVENTS) {
+    const sp=new URLSearchParams(location.search);
+    if (sp.get('city')) currentFilters.city = sp.get('city')||'';
+    if (sp.get('from')) currentFilters.dateFrom = sp.get('from')||'';
+    if (sp.get('to')) currentFilters.dateTo = sp.get('to')||'';
+    if (sp.get('segment')) currentFilters.category = sp.get('segment')||'all';
+    if (sp.get('q')) currentFilters.keyword = sp.get('q')||'';
+    if (sp.get('sort')) currentFilters.sort = sp.get('sort')||'nearest';
     setFilterInputsFromState();
+    updateToggleBadge();
 
-    // Filters toggle button (runtime, no HTML change)
-    const toolbar = qs('.filters-toolbar', $form || document);
-    if (toolbar && !qs('#filtersToggle', toolbar)) {
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.id = 'filtersToggle';
-      toggle.className = 'chip ghost filters-toggle';
-      toggle.setAttribute('aria-pressed', 'false');
-      toggle.setAttribute('aria-controls', 'events-filters-form');
-      toggle.addEventListener('click', () => toggleFilters());
-      toolbar.appendChild(toggle);
-      updateFilterLocaleTexts();
-    }
-
-    // City typeahead
+    const $city = qs('#filter-city') || qs('#events-city-filter');
     if ($city) {
       setupCityTypeahead($city, {
         locale: currentLang,
         t,
         countryCodes: ['CZ','SK','PL','HU','DE','AT'],
-        onChoose: (it) => {
-          $city.value = it.city;
-          currentFilters.city = it.city;
-          clearNearMe();
-          renderAndSync().then(() => collapseFilters());
+        onChoose: (it)=>{
+          $city.value=it.city; currentFilters.city=it.city;
+          currentFilters.nearMeLat=null; currentFilters.nearMeLon=null;
+          renderAndSync({autoCollapse:false}).then(()=>expandFilters());
         }
       });
     }
 
-    // Quick chips
-    setupQuickChips($form || qs('.events-filters'));
+    wireOnce(document.getElementById('chipToday'),'click', async()=>{
+      const d=new Date(); const iso=toLocalISO(d);
+      currentFilters.dateFrom=iso; currentFilters.dateTo=iso; setFilterInputsFromState();
+      await renderAndSync({autoCollapse:true});
+    }, 'chipToday');
 
-    // Near Me – chip/ghost
-    attachNearMeButton($form || qs('.events-filters'));
+    wireOnce(document.getElementById('chipWeekend'),'click', async()=>{
+      const now=new Date(); const day=now.getDay(); const diffToSat=(6-day+7)%7;
+      const sat=new Date(now); sat.setDate(now.getDate()+diffToSat);
+      const sun=new Date(sat); sun.setDate(sat.getDate()+1);
+      currentFilters.dateFrom=toLocalISO(sat); currentFilters.dateTo=toLocalISO(sun);
+      setFilterInputsFromState(); await renderAndSync({autoCollapse:true});
+    }, 'chipWeekend');
 
-    // Pokud přicházíme s aktivními filtry (z URL), rovnou zobraz a sbal
-    await renderAndSync();
-    if (hasActiveFilters()) collapseFilters();
+    wireOnce(document.getElementById('chipClear'),'click', async()=>{
+      const cc=currentFilters.countryCode;
+      currentFilters={category:'all',sort:'nearest',city:'',dateFrom:'',dateTo:'',keyword:'',countryCode:cc,nearMeLat:null,nearMeLon:null,nearMeRadiusKm:50};
+      setFilterInputsFromState(); expandFilters(); await renderAndSync({autoCollapse:false});
+    }, 'chipClear');
 
-    // Handlery
-    $cat?.addEventListener('change', async (e) => {
-      currentFilters.category = e.target.value || 'all';
-      await renderAndSync();
+    attachNearMeButton({
+      formEl: formEl || qs('.events-filters'),
+      t,
+      wireOnce,
+      getLang: () => currentLang,
+      getFilters: () => ({ ...currentFilters }),
+      setFilters: (patch) => { currentFilters = { ...currentFilters, ...patch }; },
+      setFilterInputsFromState,
+      renderAndSync
     });
-    $sort?.addEventListener('change', async (e) => {
-      currentFilters.sort = e.target.value || 'nearest';
-      await renderAndSync();
-    });
-    $city?.addEventListener('input', async (e) => {
-      currentFilters.city = e.target.value.trim();
-      if (currentFilters.city) clearNearMe();
-      $city.removeAttribute('data-autofromnearme');
-    });
-    $from?.addEventListener('change', (e) => (currentFilters.dateFrom = e.target.value || ''));
-    $to?.addEventListener('change',   (e) => (currentFilters.dateTo   = e.target.value || ''));
-    $keyword?.addEventListener('input', (e) => (currentFilters.keyword = e.target.value.trim()));
 
-    if ($form) {
-      $form.addEventListener('submit', async (e) => {
+    const $cat=qs('#filter-category');
+    const $sort=qs('#filter-sort') || qs('#events-sort-filter');
+    const $from=qs('#filter-date-from');
+    const $to=qs('#filter-date-to');
+    const $kw=qs('#filter-keyword');
+
+    if ($cat) wireOnce($cat,'change', async e=>{ currentFilters.category=e.target.value||'all'; await renderAndSync({autoCollapse:false}); }, 'cat');
+    if ($sort) wireOnce($sort,'change', async e=>{ currentFilters.sort=e.target.value||'nearest'; await renderAndSync({autoCollapse:false}); }, 'sort');
+    if ($from) wireOnce($from,'change', e=> { currentFilters.dateFrom=e.target.value||''; updateDateComboLabel(); updateToggleBadge(); }, 'from');
+    if ($to)   wireOnce($to,'change',   e=> { currentFilters.dateTo  =e.target.value||''; updateDateComboLabel(); updateToggleBadge(); }, 'to');
+    if ($kw)   wireOnce($kw,'input',    e=> { currentFilters.keyword =e.target.value.trim(); updateToggleBadge(); }, 'kw');
+
+    if (formEl) {
+      wireOnce(formEl,'submit', async e=>{
         e.preventDefault();
-        let valid = true;
-
-        [$from, $to].forEach((input) => input?.classList.remove('input-error'));
-
-        if ($from?.value && $to?.value && new Date($from.value) > new Date($to.value)) {
-          valid = false;
-          [$from, $to].forEach((input) => input?.classList.add('input-error'));
-        }
-
-        if (valid) {
-          await renderAndSync(); // resetuje page=1
-          collapseFilters();     // po aplikaci filtrů sbal
-        }
-      });
-
-      $form.addEventListener('reset', async () => {
-        const cc = currentFilters.countryCode;
-        currentFilters = { category: 'all', sort: 'nearest', city: '', dateFrom: '', dateTo: '', keyword: '', countryCode: cc, nearMeLat: null, nearMeLon: null, nearMeRadiusKm: 50 };
-        setFilterInputsFromState();
-        expandFilters(); // po resetu rozbal
-        await renderAndSync();
-      });
+        await renderAndSync({autoCollapse:true});
+      }, 'submit');
+      wireOnce(formEl,'reset',  async ()=>{
+        const cc=currentFilters.countryCode;
+        currentFilters={category:'all',sort:'nearest',city:'',dateFrom:'',dateTo:'',keyword:'',countryCode:cc,nearMeLat:null,nearMeLon:null,nearMeRadiusKm:50};
+        setFilterInputsFromState(); expandFilters(); await renderAndSync({autoCollapse:false});
+      }, 'reset');
     }
 
-    // Events page (div + vlastní Apply button)
-    if ($applyBtnOnEventsPage) {
-      $applyBtnOnEventsPage.addEventListener('click', async () => {
-        if ($from?.value && $to?.value && new Date($from.value) > new Date($to?.value)) {
-          [$from, $to].forEach((input) => input?.classList.add('input-error'));
-          return;
-        }
-        await renderAndSync();
-        collapseFilters();
-      });
-    }
+    await renderAndSync({autoCollapse:false});
   }
 
-  // spodní sheet (mobil)
-  initFilterSheet();
+  // ------- Mobile sheet -------
+  (function initFilterSheet(){
+    const sheet = qs('form.filter-dock[data-behavior="sheet"]'); if (!sheet) return;
+    const fab=qs('#filtersOpen'); const closeBtn=qs('#filtersClose',sheet); const overlay=qs('#filtersOverlay');
+    const open=()=>{ expandFilters(); sheet.classList.add('is-open'); if(overlay){ overlay.hidden=false; overlay.classList.add('is-open'); } document.body.style.overflow='hidden'; };
+    const close=()=>{ sheet.classList.remove('is-open'); if(overlay){ overlay.classList.remove('is-open'); overlay.hidden=true; } document.body.style.overflow=''; };
+    wireOnce(fab,'click',open,'sheet-open'); wireOnce(closeBtn,'click',close,'sheet-close'); wireOnce(overlay,'click',close,'sheet-over'); wireOnce(document,'keydown',e=>{ if(e.key==='Escape') close(); },'sheet-esc');
+  })();
 
-  // ------- BLOG TOP 3 na homepage -------
-  await renderHomeTop3Blog(currentLang);
+  // ------- Home: TOP 3 blog (lazy) -------
+  ridle(async ()=>{
+    const onBlog = /\/blog(\.html)?$/i.test(location.pathname) || !!document.querySelector('main#blog');
+    if (onBlog) return;
+    const host = document.querySelector('[data-home-blog]') || document.querySelector('#blog .blog-cards') || document.querySelector('.blog .blog-cards');
+    if (!host) return;
 
-  // ------- Contact form validation -------
-  const form = qs('#contact-form');
-  const errorMsg = qs('#contact-error');
-
-  function hideAllFieldErrors(formEl) {
-    formEl.querySelectorAll('.form-error').forEach((el) => {
-      el.textContent = '';
-      el.classList.remove('active');
-    });
-    formEl.querySelectorAll('input, textarea').forEach((el) => {
-      el.classList.remove('input-error');
-    });
-  }
-  function showFieldError(formEl, fieldName, msg) {
-    const errEl = formEl.querySelector(`#error-${fieldName}`);
-    const inputEl = formEl.querySelector(`[name="${fieldName}"]`);
-    if (errEl) {
-      errEl.textContent = msg;
-      errEl.classList.add('active');
-    }
-    if (inputEl) {
-      inputEl.classList.add('input-error');
-    }
-  }
-
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      hideAllFieldErrors(form);
-      if (errorMsg) errorMsg.style.display = 'none';
-
-      let lang = 'cs';
-      const urlLang = new URLSearchParams(window.location.search).get('lang');
-      if (urlLang && ['cs', 'en', 'de', 'sk', 'pl', 'hu'].includes(urlLang)) lang = urlLang;
-      form.setAttribute('action', `/thank-you.html?lang=${lang}`);
-
-      if (form.querySelector('input[name="bot-field"]')?.value) {
-        e.preventDefault();
-        return;
-      }
-
-      const name = form.name?.value?.trim();
-      const email = form.email?.value?.trim();
-      const message = form.message?.value?.trim();
-
-      let valid = true;
-      if (!name) {
-        showFieldError(form, 'name', t('contact-error-name', 'Enter your name.'));
-        valid = false;
-      }
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showFieldError(form, 'email', t('contact-error-email', 'Enter a valid e-mail.'));
-        valid = false;
-      }
-      if (!message) {
-        showFieldError(form, 'message', t('contact-error-message', 'Write a message.'));
-        valid = false;
-      }
-      if (!valid) e.preventDefault();
-    });
-  }
-
-  // ------- Partners page -------
-  const pathname = window.location.pathname.split('/').pop();
-  if (pathname === 'partners.html') {
-    import('./partners.js');
-  }
-
-  // ------- Modal close -------
-  const closeBtnModal = qs('#modalClose');
-  const modalEl = qs('#eventModal');
-  if (closeBtnModal) closeBtnModal.addEventListener('click', closeEventModal);
-  if (modalEl) {
-    window.addEventListener('click', (e) => {
-      if (e.target === modalEl) closeEventModal();
-    });
-  }
-});
-
-// ------- Render events (with click-only pagination) -------
-async function renderEvents(locale = 'cs', filters = currentFilters) {
-  const eventsList = document.getElementById('eventsList');
-  if (!eventsList) return;
-
-  try {
-    // kanonizuj město pro Ticketmaster (Praha → Prague apod.)
-    const apiFilters = { ...filters };
-    if (apiFilters.city) {
-      apiFilters.city = canonForInputCity(apiFilters.city);
-    }
-
-    const events = await getAllEvents({ locale, filters: apiFilters });
-
-    if (!window.translations) {
-      window.translations = await loadTranslations(locale);
-    }
-
-    const fallbackImages = {
-      concert: ['/images/fallbacks/concert0.jpg', '/images/fallbacks/concert1.jpg', '/images/fallbacks/concert2.jpg'],
-      sport: ['/images/fallbacks/sport0.jpg', '/images/fallbacks/sport1.jpg'],
-      festival: ['/images/fallbacks/festival0.jpg', '/images/fallbacks/festival1.jpg'],
-      theatre: ['/images/fallbacks/theatre0.jpg', '/images/fallbacks/theatre1.jpg'],
-      default: '/images/fallbacks/concert0.jpg'
-    };
-    const getRandomFallback = (category) => {
-      const imgs = fallbackImages[category] || fallbackImages.default;
-      return Array.isArray(imgs) ? imgs[Math.floor(Math.random() * imgs.length)] : imgs;
-    };
-
-    const preferredLocales = [locale, 'en', 'cs'];
-
-    let filtered = [...events];
-    filtered.forEach((event, index) => {
-      if (!event.id) event.id = `event-${index}-${Math.random().toString(36).slice(2, 8)}`;
-    });
-
-    if (filters.category && filters.category !== 'all') {
-      filtered = filtered.filter((e) => e.category === filters.category);
-    }
-
-    if (filters.sort === 'nearest') {
-      filtered.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
-    } else if (filters.sort === 'latest') {
-      filtered.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
-    }
-
-    const isHomepage = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
-    let showAllLink = false;
-    let toRender = filtered;
-
-    if (isHomepage) {
-      if (filtered.length > 6) {
-        toRender = filtered.slice(0, 6);
-        showAllLink = true;
-      }
-    } else {
-      // events page – click-only pagination
-      const end = pagination.page * pagination.perPage;
-      toRender = filtered.slice(0, end);
-    }
-
-    eventsList.innerHTML = toRender
-      .map((event) => {
-        const title = pickLocalized(event.title, preferredLocales) || 'Untitled';
-        const description = fixNonBreakingShortWords(pickLocalized(event.description, preferredLocales) || '', locale);
-
-        const dateVal = event.datetime || event.date;
-        const date = dateVal
-          ? new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-          : '';
-
-        const image = event.image || getRandomFallback(event.category);
-        const isDemoDetail = !event.url || event.url.includes('example');
-        const isDemoTickets = !event.tickets || String(event.tickets).includes('example');
-
-        const detailLabel = fixNonBreakingShortWords(t(isDemoDetail ? 'event-details-demo' : 'event-details', 'Details'), locale);
-        const ticketLabel = fixNonBreakingShortWords(t(isDemoTickets ? 'event-tickets-demo' : 'event-tickets', 'Tickets'), locale);
-
-        const cardClasses = ['event-card'];
-        if (event.promo) cardClasses.push('event-card-promo');
-
-        return `
-          <div class="${cardClasses.join(' ')}">
-            <img src="${image}" alt="${title}" class="event-img" />
-            <div class="event-content">
-              <h3 class="event-title">${title}</h3>
-              <p class="event-date">${date}</p>
-              <p class="event-description">${description}</p>
-              <div class="event-buttons-group">
-                ${
-                  event.partner === 'ticketmaster'
-                    ? `<a href="${event.url}" class="btn-event detail" target="_blank" rel="noopener">${detailLabel}</a>`
-                    : `<button class="btn-event detail" data-event-id="${event.id}">${detailLabel}</button>`
-                }
-                ${
-                  isDemoTickets
-                    ? `<span class="btn-event ticket demo">${ticketLabel}</span>`
-                    : `<a href="${event.tickets}" class="btn-event ticket" target="_blank" rel="noopener">${ticketLabel}</a>`
-                }
-              </div>
+    const render = async () => {
+      let micro=[];
+      try{
+        const r=await fetch('/content/microguides/index.json',{cache:'no-store'}); const raw=r.ok?await r.json():[]; const arr=Array.isArray(raw)?raw:(raw?.items||[]);
+        micro=(arr||[]).filter(it=>((it.language||currentLang)||'').toLowerCase()===currentLang).map(it=>({type:'microguide',slug:it.slug,lang:it.language||currentLang,title:it.title||'',lead:it.summary||'',image:it.cover||'',ts:Date.parse(it.publishedAt||0)||0}));
+      }catch{}
+      const arts=getSortedBlogArticles(currentLang).map(a=>({type:'article',slug:a.slug,lang:currentLang,title:a.titleText,lead:a.leadText,image:a.image,ts:a._ts}));
+      const all=[...micro,...arts].sort((a,b)=>b.ts-a.ts).slice(0,3);
+      const href=(c)=> c.type==='microguide' ? `/microguides/?slug=${encodeURIComponent(c.slug)}&lang=${encodeURIComponent(c.lang)}` : `/blog-detail.html?slug=${encodeURIComponent(c.slug)}&lang=${encodeURIComponent(c.lang)}`;
+      host.innerHTML = all.map(c=>`
+        <div class="blog-card" data-type="${c.type}">
+          <a href="${href(c)}">
+            ${c.image ? `<div class="card-media"><img src="${esc(c.image)}" alt=""></div>` : ''}
+            <div class="blog-card-body">
+              <h3 class="blog-card-title">${esc(c.title)}</h3>
+              <div class="blog-card-lead">${esc(c.lead)}</div>
+              <div class="blog-card-actions"><span class="blog-readmore">${esc(t('blog-read-more','Read more'))}</span></div>
             </div>
-          </div>
-        `;
-      })
-      .join('');
-
-    // Load more (events page only)
-    if (!isHomepage) {
-      const hasMore = filtered.length > toRender.length;
-      const wrapperId = 'eventsLoadMoreWrap';
-
-      const oldWrap = document.getElementById(wrapperId);
-      if (oldWrap) oldWrap.remove();
-
-      if (hasMore) {
-        const wrap = document.createElement('div');
-        wrap.className = 'events-load-more-wrap';
-        wrap.id = wrapperId;
-        wrap.innerHTML = `
-          <button type="button" class="btn btn-secondary" id="btnLoadMore">
-            ${t('events-load-more','Load more')}
-          </button>
-        `;
-        eventsList.parentElement.appendChild(wrap);
-
-        const btn = qs('#btnLoadMore', wrap);
-        if (btn) {
-          btn.addEventListener('click', async () => {
-            pagination.page += 1;
-            await renderAndSync({ resetPage: false });
-            if (filtersCollapsed) collapseFilters();
-            btn.scrollIntoView({ block: 'center' });
-          });
-        }
-      }
-    }
-
-    if (isHomepage && showAllLink) {
-      eventsList.innerHTML += `
-        <div class="events-show-all-btn">
-          <a href="/events.html?lang=${locale}" class="btn btn-primary show-all-events-btn">
-            ${t('events-show-all', 'Show all events')}
           </a>
-        </div>
-      `;
+        </div>`).join('');
+    };
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries)=>{
+        const e = entries.find(x=>x.isIntersecting);
+        if (e){ io.disconnect(); void render(); }
+      }, { rootMargin: '200px' });
+      io.observe(host);
+    } else {
+      void render();
     }
-
-    // Detail modalu
-    qsa('.btn-event.detail').forEach((button) => {
-      if (button.tagName.toLowerCase() === 'button') {
-        button.addEventListener('click', (e) => {
-          const id = e.currentTarget.getAttribute('data-event-id');
-          const eventData = toRender.find((ev) => ev.id === id) || filtered.find((ev) => ev.id === id);
-          if (eventData) openEventModal(eventData, locale);
-        });
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    const msg = t('events-load-error', 'Unable to load events. Try again later.');
-    const list = document.getElementById('eventsList');
-    if (list) list.innerHTML = `<p>${msg}</p>`;
-  }
-}
-
-// ------- Calendar links -------
-function toCalDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}${m}${day}`;
-}
-function buildICS({ title, description, location, start, end }) {
-  const dtStart = toCalDate(start);
-  const dtEnd = toCalDate(end || start);
-  const esc = (s) => String(s || '').replace(/[\n\r]/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
-  return [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//AJSEE//Events//CS',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    'BEGIN:VEVENT',
-    `DTSTART:${dtStart}`,
-    `DTEND:${dtEnd}`,
-    `SUMMARY:${esc(title)}`,
-    `DESCRIPTION:${esc(description)}`,
-    `LOCATION:${esc(location)}`,
-    'END:VEVENT',
-    'END:VCALENDAR'
-  ].join('\r\n');
-}
-
-// ------- Modal -------
-async function openEventModal(eventData, locale = 'cs') {
-  const modal = document.getElementById('eventModal');
-  if (!modal) {
-    console.error('Modal #eventModal not found!');
-    return;
-  }
-
-  const titleEl = modal.querySelector('#modalTitle');
-  const imageEl = modal.querySelector('#modalImage');
-  const dateEl = modal.querySelector('#modalDate');
-  const locationEl = modal.querySelector('#modalLocation');
-  const descEl = modal.querySelector('#modalDescription');
-  const categoryEl = modal.querySelector('#modalCategory');
-
-  if (!titleEl || !imageEl || !dateEl || !locationEl || !descEl || !categoryEl) {
-    console.error('Missing modal element(s)', { modal, titleEl, imageEl, dateEl, locationEl, descEl, categoryEl });
-    return;
-  }
-
-  if (!window.translations) {
-    window.translations = await loadTranslations(locale);
-  }
-
-  const preferredLocales = [locale, 'en', 'cs'];
-
-  const categoryKey = eventData.category || '';
-  const categoryTranslated = fixNonBreakingShortWords(t(`category-${categoryKey}`, categoryKey), locale);
-
-  const title = pickLocalized(event.title, preferredLocales) || 'Untitled';
-  const description = fixNonBreakingShortWords(pickLocalized(event.description, preferredLocales) || '', locale);
-  const image = eventData.image || '/images/fallbacks/concert0.jpg';
-  const dateVal = eventData.datetime || eventData.date;
-  const date = dateVal
-    ? new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-    : '';
-  const location = eventData.location?.city || eventData.location || '';
-
-  titleEl.textContent = title;
-  imageEl.src = image;
-  imageEl.alt = title;
-  dateEl.textContent = date;
-  locationEl.textContent = location;
-  descEl.textContent = description;
-  categoryEl.textContent = categoryTranslated;
-
-  // Calendar links
-  try {
-    const start = toISODate(dateVal);
-    const end = start; // jednodenní
-    const details = description;
-
-    const gParams = new URLSearchParams({
-      action: 'TEMPLATE',
-      text: title,
-      dates: `${toCalDate(start)}/${toCalDate(end)}`,
-      details,
-      location
-    });
-    const gLink = modal.querySelector('#googleCalendarLink');
-    if (gLink) gLink.href = `https://calendar.google.com/calendar/render?${gParams.toString()}`;
-
-    const oParams = new URLSearchParams({
-      path: '/calendar/action/compose',
-      ri: '0',
-      subject: title,
-      body: details,
-      location
-    });
-    const oLink = modal.querySelector('#outlookCalendarLink');
-    if (oLink) oLink.href = `https://outlook.office.com/calendar/0/deeplink/compose?${oParams.toString()}`;
-
-    const icsText = buildICS({ title, description: details, location, start, end });
-    const blob = new Blob([icsText], { type: 'text/calendar;charset=utf-8' });
-    const aLink = modal.querySelector('#appleCalendarLink');
-    if (aLink) aLink.href = URL.createObjectURL(blob);
-  } catch (e) {
-    console.warn('Calendar links build failed:', e);
-  }
-
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeEventModal() {
-  const modal = document.getElementById('eventModal');
-  if (!modal) return;
-  modal.classList.remove('open');
-  document.body.style.overflow = '';
-}
+  });
+});

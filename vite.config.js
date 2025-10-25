@@ -14,6 +14,7 @@ function addIfExists(obj, key, filepath) {
 function devRedirectPlugin() {
   return {
     name: 'ajsee-dev-redirect-src-modules',
+    apply: 'serve',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (req.url === '/main.js') {
@@ -36,11 +37,10 @@ function devRedirectPlugin() {
 function devLocalesAlias() {
   return {
     name: 'ajsee-dev-locales-alias',
+    apply: 'serve',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
-        if (!req.url) return next();
-        if (!req.url.startsWith('/locales/')) return next();
-
+        if (!req.url || !req.url.startsWith('/locales/')) return next();
         const filePath = resolve(
           __dirname,
           'src',
@@ -53,6 +53,47 @@ function devLocalesAlias() {
         }
         next();
       });
+    }
+  };
+}
+
+/**
+ * DEV HTML rewrite:
+ * - pokud jsou ve stránkách natvrdo /assets/*.js (build výstup),
+ *   v DEV to přepíšeme na /src/*.js, aby Vite HMR a modulový graf fungoval.
+ * - CSS linky z /assets/ v DEV zahodíme (Vite si je injektuje sám).
+ */
+function devHtmlRewriteAssetsPlugin() {
+  return {
+    name: 'ajsee-dev-rewrite-assets-to-src',
+    apply: 'serve',
+    transformIndexHtml(html, ctx) {
+      // mapuj jen to, co ve FE opravdu používáme
+      const mappings = [
+        // main bundle
+        {
+          re: /<script[^>]+src="\/assets\/main-[^"]+\.js"[^>]*><\/script>/g,
+          replace: '<script type="module" src="/src/main.js"></script>'
+        },
+        // events-home bundle
+        {
+          re: /<script[^>]+src="\/assets\/events-home-[^"]+\.js"[^>]*><\/script>/g,
+          replace: '<script type="module" src="/src/events-home.js"></script>'
+        },
+        // modulepreload polyfill v DEV není potřeba
+        {
+          re: /<script[^>]+src="\/assets\/modulepreload-polyfill-[^"]+\.js"[^>]*><\/script>/g,
+          replace: ''
+        },
+        // buildované CSS v DEV deaktivujeme (Vite injektuje styly sám)
+        {
+          re: /<link[^>]+rel="stylesheet"[^>]+href="\/assets\/[^"]+\.css"[^>]*>/g,
+          replace: ''
+        }
+      ];
+      let out = html;
+      for (const { re, replace } of mappings) out = out.replace(re, replace);
+      return out;
     }
   };
 }
@@ -92,25 +133,29 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     proxy: {
+      // ⚠️ Funkce vždy přes Netlify Dev (8888), ne přes Vite.
       '/.netlify/functions': {
         target: 'http://localhost:8888',
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
       '/api': {
         target: 'http://localhost:8888',
         changeOrigin: true,
         secure: false,
+        ws: true,
       },
     },
   },
 
   plugins: [
-    // dev utility
+    // DEV utility
     devRedirectPlugin(),
     devLocalesAlias(),
+    devHtmlRewriteAssetsPlugin(),
 
-    // build: zkopíruj locales + microguides do dist/
+    // BUILD: zkopíruj locales + microguides do dist/
     viteStaticCopy({
       targets: [
         { src: 'src/locales/**/*', dest: 'locales' },

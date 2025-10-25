@@ -11,10 +11,29 @@
   <link rel="icon" href="data:," />
   <link rel="icon" href="/images/logo-ajsee.png" />
 
+  <!-- Prémiové fonty (sladěné s filters-premium.scss) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
+  <script>
+    // ⚠️ NEdefinujeme __AJSEE_SKIP_CORE_EVENTS, aby sjednocený FE (/src/events-home.js) normálně renderoval.
+    // Vypneme případný inline Ticketmaster renderer, pokud by byl někde vložen:
+    window.__TM_INLINE_DISABLED = true;
+
+    // Impact tracking – vyber jednu variantu a druhou smaž:
+    // VARIANTA A (redirector – doporučeno):
+    // window.__impact = { clickBase: 'https://YOUR-IMPACT-REDIRECTOR/?url=' };
+
+    // VARIANTA B (přidání paramu do URL – fallback):
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
+  </script>
+
   <!-- Google tag jen na HTTPS/produkci -->
   <script>
     (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1/i.test(location.hostname);
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
       if (!isProdHttps) return;
       const s = document.createElement('script');
       s.async = true;
@@ -29,13 +48,59 @@
       document.head.appendChild(s);
     })();
   </script>
+
+  <!-- i18n fallback, kdyby engine v main.js nebyl k dispozici včas -->
+  <script>
+    (function(){
+      function detectLang(){
+        try {
+          const qs = new URLSearchParams(location.search);
+          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+        } catch { return 'cs'; }
+      }
+      function applyI18nFallback(lang){
+        const root = window.translations || null;
+        if (!root) return;
+        const dict = root[lang] || root;
+        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
+
+        document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          const key = el.getAttribute('data-i18n-key');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
+        });
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-i18n-aria');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('aria-label', val);
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const lang = detectLang();
+        document.documentElement.lang = lang;
+
+        if (typeof window.applyTranslations === 'function') {
+          try { window.applyTranslations(lang); }
+          catch(e){ console.warn('[i18n] applyTranslations failed, using fallback.', e); applyI18nFallback(lang); }
+        } else {
+          applyI18nFallback(lang);
+        }
+      });
+    })();
+  </script>
 </head>
-<body>
+<body data-page="home">
 <header class="site-header">
   <div class="header-inner">
     <!-- Logo -->
     <a href="/" class="logo-link" aria-label="Domů">
-      <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
+      <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" loading="eager"/>
     </a>
 
     <!-- Hamburger menu (pouze mobil) -->
@@ -47,7 +112,7 @@
     <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
       <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
       <ul>
-        <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+        <li><a href="/" data-i18n-key="nav-home" aria-current="page">Domů</a></li>
         <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
         <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
         <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
@@ -161,22 +226,42 @@
 
           <div class="filter-group">
             <label for="filter-city" data-i18n-key="filters.city">Město</label>
-            <input id="filter-city" type="text" class="styled-input" placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
+            <div class="field">
+              <span class="leading" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+              </span>
+              <input id="filter-city" type="text" class="styled-input" placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
+            </div>
           </div>
 
           <div class="filter-group">
             <label for="filter-date-from" data-i18n-key="filters.dateFrom">Od</label>
-            <input id="filter-date-from" type="date" class="styled-input">
+            <div class="field">
+              <span class="leading" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/></svg>
+              </span>
+              <input id="filter-date-from" type="date" class="styled-input">
+            </div>
           </div>
 
           <div class="filter-group">
             <label for="filter-date-to" data-i18n-key="filters.dateTo">Do</label>
-            <input id="filter-date-to" type="date" class="styled-input">
+            <div class="field">
+              <span class="leading" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/></svg>
+              </span>
+              <input id="filter-date-to" type="date" class="styled-input">
+            </div>
           </div>
 
           <div class="filter-group filter-keyword">
             <label for="filter-keyword" data-i18n-key="filters.keyword">Klíčové slovo</label>
-            <input id="filter-keyword" type="search" class="styled-input" placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
+            <div class="field">
+              <span class="leading" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+              </span>
+              <input id="filter-keyword" type="search" class="styled-input" placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
+            </div>
           </div>
 
           <div class="filter-actions">
@@ -202,6 +287,7 @@
       </div>
 
       <div id="eventsList" class="events-list" aria-live="polite"></div>
+      <noscript>Pro zobrazení událostí povolte JavaScript.</noscript>
     </div>
   </section>
 
@@ -288,13 +374,18 @@
 
 <footer>
   <div class="footer-social">
-    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener"><img src="/images/icons/instagram.svg" alt="Instagram" /></a>
-    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener"><img src="/images/icons/facebook.svg" alt="Facebook" /></a>
-    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener"><img src="/images/icons/twitter.svg" alt="Twitter" /></a>
-    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener"><img src="/images/icons/linkedin.svg" alt="LinkedIn" /></a>
+    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener"><img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy"/></a>
+    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener"><img src="/images/icons/facebook.svg" alt="Facebook" loading="lazy"/></a>
+    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener"><img src="/images/icons/twitter.svg" alt="Twitter" loading="lazy"/></a>
+    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener"><img src="/images/icons/linkedin.svg" alt="LinkedIn" loading="lazy"/></a>
   </div>
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
+
+<!-- 👇 DŮLEŽITÉ: Ownership guard – events-home.js vlastní filtry/události -->
+<script>
+  window.__AJSEE_EVENTS_OWNS_FILTERS = true;
+</script>
 
 <!-- Vite moduly – Vite si je v DEV i PROD obslouží (v PROD přepíše na /assets/*.js) -->
 <script type="module" src="/src/main.js"></script>
@@ -356,7 +447,6 @@
       }
     }
 
-    // malý helper: pokud překlady ještě nejsou, zkus to znovu
     function whenTranslationsReady(fn){
       if (window.translations) return fn();
       const start = Date.now();

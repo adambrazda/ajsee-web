@@ -22,7 +22,15 @@
 @use './partials/waitlist-banner';
 @use './partials/coming-soon';
 @use './partials/comments';
+@use './partials/filters-premium';
 
-
+// --- globalní drobnosti ---
 html, body { overflow-x: hidden; overflow-y: auto; }
 .site-header { position: sticky; top: 0; z-index: 9999; }
+
+/* ------------------------------------------------------
+   PREMIUM FILTERS SKIN
+   Musí být NA KONCI, aby přebil starší styly z events.scss
+   a dalších parcialů. Platí pro homepage i /events.html.
+-------------------------------------------------------*/
+

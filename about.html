@@ -144,6 +144,7 @@
   <!-- Vite do buildu doplní assety (JS/CSS); v dev zůstane /src/main.js -->
   <script type="module" src="/src/main.js"></script>
 </head>
+
 <body data-page="about">
 <header class="site-header">
   <div class="header-inner">
@@ -171,7 +172,7 @@
         <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
-      <!-- Jazykové přepínače v mobilním menu -->
+      <!-- Jazykové přepínače v mobilním menu (ponecháno jako původní vlajky) -->
       <div class="language-switcher mobile-switcher">
         <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
         <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
@@ -182,14 +183,41 @@
       </div>
     </nav>
 
-    <!-- Jazykové přepínače – desktop -->
-    <div class="language-switcher desktop-switcher">
-      <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+    <!-- Jazykové přepínače – desktop (sjednoceno s homepage: dropdown, zachovává .lang-btn) -->
+    <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+      <div class="lang-dropdown" data-lang-dropdown>
+        <button type="button"
+                class="lang-trigger"
+                id="langTrigger"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-controls="langMenu">
+          <img class="flag" src="/images/flags/cz.svg" alt="" width="22" height="16" />
+          <span class="lang-current" data-lang-current>Čeština</span>
+          <span class="chevron" aria-hidden="true">▾</span>
+        </button>
+
+        <div class="lang-menu" id="langMenu" role="listbox" aria-label="Language" hidden>
+          <button class="lang-btn lang-option" data-lang="cs" role="option" aria-selected="true">
+            <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+          </button>
+          <button class="lang-btn lang-option" data-lang="en" role="option" aria-selected="false">
+            <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+          </button>
+          <button class="lang-btn lang-option" data-lang="de" role="option" aria-selected="false">
+            <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+          </button>
+          <button class="lang-btn lang-option" data-lang="sk" role="option" aria-selected="false">
+            <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+          </button>
+          <button class="lang-btn lang-option" data-lang="pl" role="option" aria-selected="false">
+            <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+          </button>
+          <button class="lang-btn lang-option" data-lang="hu" role="option" aria-selected="false">
+            <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Overlay pozadí menu -->
@@ -296,10 +324,9 @@
 
       <!-- Vizuál vpravo -->
       <div class="about-story-visual">
-        <!-- height="auto" odstraněno (neplatné pro SVG) -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 360" width="100%" role="img" aria-labelledby="title desc" preserveAspectRatio="xMidYMid meet">
-          <title id="title">Ilustrace: schody se čtyřmi přepracovanými ikonami</title>
-          <desc id="desc">Modré 3D schody a čtyři kruhové bubliny s moderními ikonami: chat, nápad, pauza a hotovo.</desc>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 360" width="100%" role="img" aria-labelledby="steps-title steps-desc" preserveAspectRatio="xMidYMid meet">
+          <title id="steps-title">Ilustrace: schody se čtyřmi přepracovanými ikonami</title>
+          <desc id="steps-desc">Modré 3D schody a čtyři kruhové bubliny s moderními ikonami: chat, nápad, pauza a hotovo.</desc>
 
           <style>
             :root { --ac:#2F84D6; }
@@ -427,9 +454,6 @@
     </div>
   </section>
 
-  <!-- (volitelné sekce hodnot/timeline jsou vykomentované v původě) -->
-
-  <!-- Kam míříme -->
   <section class="about-future">
     <div class="container about-future-inner">
       <div class="about-future-textblock">
@@ -443,10 +467,9 @@
         </div>
       </div>
       <div class="about-future-visual">
-        <!-- Kam míříme – SVG animace -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="100%" role="img" aria-labelledby="title desc">
-          <title id="title">Cíl – vizualizace trasy k cíli</title>
-          <desc id="desc">Křivková cesta s pohybující se šipkou a pulzujícím terčem vpravo.</desc>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="100%" role="img" aria-labelledby="goal-title goal-desc">
+          <title id="goal-title">Cíl – vizualizace trasy k cíli</title>
+          <desc id="goal-desc">Křivková cesta s pohybující se šipkou a pulzujícím terčem vpravo.</desc>
 
           <defs>
             <style>
@@ -495,13 +518,11 @@
     </div>
   </section>
 
-  <!-- Sekce TÝM -->
   <section class="about-team">
     <div class="container">
       <h2 data-i18n-key="about.team.headline">Kdo za tím stojí?</h2>
 
       <div class="team-list">
-        <!-- Adam Brázda -->
         <div class="team-member">
           <img src="/images/team/adam.png" alt="Adam Brázda" class="team-photo" width="150" height="150" loading="lazy" decoding="async" />
           <div class="team-info">
@@ -514,7 +535,6 @@
           </div>
         </div>
 
-        <!-- Jan Oujezdský -->
         <div class="team-member">
           <img src="/images/team/jan.png" alt="Jan Oujezdský" class="team-photo" width="150" height="150" loading="lazy" decoding="async" />
           <div class="team-info">

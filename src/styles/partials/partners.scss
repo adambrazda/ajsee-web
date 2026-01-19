@@ -1,94 +1,263 @@
 // =============================================
 // PARTNERS PAGE – hero, kontakt, výhody
+// (premium hero + PNG handshake overlay)
 // =============================================
 @use '../globals' as *;
 
 .partners-hero {
-  background: linear-gradient(90deg, $brand-blue 0%, $brand-blue-light 100%);
   color: #fff;
-  padding: 3rem 0 2rem;
+  position: relative;
+  overflow: hidden;
 
-  .hero-flex {
+  /* ✅ méně místa nahoře, aby se vešlo CTA i na notebooku */
+  padding: 1.6rem 0 2.2rem;
+
+  /* “viditelný” premium gradient – i když jsou brand barvy blízko */
+  background:
+    radial-gradient(1100px 620px at 78% 35%, rgba(255, 255, 255, 0.18) 0%, rgba(255,255,255,0) 58%),
+    radial-gradient(900px 520px at 18% 45%, rgba(0, 0, 0, 0.18) 0%, rgba(0,0,0,0) 62%),
+    linear-gradient(125deg, $brand-blue 0%, $brand-blue-light 55%, rgba(120, 220, 240, 0.95) 100%);
+
+  /* jemný “film” overlay pro hloubku */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(6, 20, 32, 0.22) 0%,
+      rgba(6, 20, 32, 0.06) 55%,
+      rgba(6, 20, 32, 0.12) 100%
+    );
+    opacity: 0.95;
+  }
+
+  /* decentní glow vpravo (sjednocuje media s backgroundem) */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(
+      900px 520px at 78% 58%,
+      rgba(20, 194, 197, 0.16) 0%,
+      rgba(20,194,197,0) 64%
+    );
+  }
+
+  .partners-hero-inner {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 3rem;
+    gap: 3.0rem;
 
     @include respond(sm) {
       flex-direction: column;
-      gap: 2rem;
+      gap: 1.6rem;
       text-align: center;
     }
   }
 
   .partners-hero-content {
-    flex: 1;
+    flex: 1 1 640px;
+    max-width: 720px;
 
     h1 {
-      font-size: 2.6rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      letter-spacing: -1px;
+      font-size: clamp(2.05rem, 3.5vw, 3.0rem);
+      font-weight: 800;
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+      text-shadow: 0 12px 40px rgba(0,0,0,0.22);
+      text-wrap: balance;
+      white-space: nowrap;
     }
 
     p {
-      font-size: 1.22rem;
-      margin-bottom: 1.3rem;
-      max-width: 600px;
+      font-size: clamp(1.08rem, 1.4vw, 1.22rem);
+      margin-bottom: 1.1rem;
+      max-width: 64ch;
+      color: rgba(255,255,255,0.92);
+      text-shadow: 0 8px 24px rgba(0,0,0,0.16);
+      text-wrap: pretty;
+
+      @include respond(sm) {
+        margin-left: auto;
+        margin-right: auto;
+      }
     }
 
     .partner-benefits {
-      margin-bottom: 1.5rem;
+      margin: 0 0 1.2rem 0; /* ✅ trochu méně, aby se vešlo CTA */
+      padding: 0;
+      display: grid;
+      gap: 0.65rem;
+
+      @media (min-width: 920px) {
+        grid-template-columns: 1fr;
+      }
 
       li {
-        font-size: 1.05rem;
-        margin: .35rem 0;
         list-style: none;
+        font-size: 1.05rem;
+        line-height: 1.45;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
 
         &::before {
-          content: '✔️ ';
+          content: "✓";
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 999px;
+          flex: 0 0 28px;
+          margin-top: 1px;
+
+          background: rgba(255,255,255,0.18);
+          border: 1px solid rgba(255,255,255,0.26);
+          box-shadow: 0 10px 26px rgba(0,0,0,0.10);
           color: #fff;
-          font-size: 1.1rem;
+          font-weight: 800;
         }
+      }
+
+      @include respond(sm) {
+        align-items: center;
+        justify-content: center;
       }
     }
 
     .btn-primary {
       background: #fff;
       color: $brand-blue;
-      padding: 0.85em 2em;
-      font-weight: 600;
+      padding: 0.9em 2.15em;
+      font-weight: 700;
       border-radius: 999px;
       text-decoration: none;
       border: none;
-      box-shadow: 0 2px 12px rgba($brand-blue, 0.11);
-      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.14);
+      transition: transform 0.18s, box-shadow 0.22s, background 0.18s, color 0.18s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
 
-      &:hover {
-        background: $brand-blue-light;
-        color: #fff;
+      &:hover,
+      &:focus-visible {
+        background: rgba(255,255,255,0.92);
+        transform: translateY(-2px);
+        box-shadow: 0 22px 54px rgba(0,0,0,0.18);
+        outline: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid rgba(255,255,255,0.75);
+        outline-offset: 4px;
       }
     }
   }
 
-  .partners-hero-image {
-    flex-shrink: 0;
+  /* ===== Media wrapper (PNG handshake floating) ===== */
+  .partners-hero-media {
+    flex: 0 1 560px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 
-    img {
-      max-width: 340px;
-      border-radius: 1.5rem;
-      box-shadow: 0 2px 20px rgba($brand-blue, 0.08);
+    @include respond(sm) {
+      justify-content: center;
+    }
+  }
 
-      @include respond(sm) {
-        max-width: 90vw;
-      }
+  .partners-hero-media-frame {
+    width: min(620px, 46vw);
+    position: relative;
+
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+
+    overflow: visible;
+    border-radius: 0;
+    aspect-ratio: auto;
+
+    transform: translateZ(0);
+
+    &::before,
+    &::after {
+      content: none;
+    }
+
+    @media (min-width: 1100px) {
+      margin-right: 0.35rem;
+    }
+
+    @include respond(sm) {
+      width: min(620px, 92vw);
+    }
+  }
+
+  /* PNG handshake (transparent background) */
+  .partners-hero-graphic {
+    width: 100%;
+    height: auto;
+    display: block;
+
+    object-fit: contain;
+    object-position: 68% 60%;
+
+    /* ✅ posun nahoru + zachování zmenšení ~30% */
+    transform: translateY(-10px) scale(0.70);
+    transform-origin: 68% 60%;
+
+    filter:
+      saturate(1.05)
+      contrast(1.08)
+      brightness(1.03)
+      drop-shadow(0 18px 46px rgba(0, 0, 0, 0.18))
+      drop-shadow(0 0 22px rgba(20, 194, 197, 0.16));
+  }
+
+  @supports (-webkit-mask-image: radial-gradient(#000, transparent)) {
+    .partners-hero-graphic {
+      -webkit-mask-image: radial-gradient(
+        circle at 70% 58%,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,1) 82%,
+        rgba(0,0,0,0) 100%
+      );
+      mask-image: radial-gradient(
+        circle at 70% 58%,
+        rgba(0,0,0,1) 0%,
+        rgba(0,0,0,1) 82%,
+        rgba(0,0,0,0) 100%
+      );
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
     }
   }
 }
 
-// ------------------------
-// Partner Contact Form
-// ------------------------
+/* Mobil: media vůbec nezobrazovat */
+@media (max-width: 600px) {
+  .partners-hero {
+    padding: 2.0rem 0 1.5rem;
+  }
+  .partners-hero .partners-hero-media {
+    display: none !important;
+  }
+}
+
+/* ------------------------
+   Partner Contact Form
+------------------------ */
 
 .partner-contact-section {
   background: $brand-grey-bg;
@@ -109,7 +278,7 @@
 
   h2 {
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 1.5rem;
     font-size: 2rem;
     color: $brand-blue;
@@ -129,7 +298,7 @@
         font-size: 1rem;
         color: $brand-dark;
         margin-bottom: 0.3rem;
-        font-weight: 500;
+        font-weight: 600;
       }
 
       input,
@@ -158,17 +327,26 @@
       color: #fff;
       border: none;
       border-radius: 999px;
-      font-weight: 600;
+      font-weight: 700;
       padding: 0.9em 2.3em;
       font-size: 1.05rem;
       cursor: pointer;
       align-self: flex-end;
       margin-top: 0.5rem;
       box-shadow: 0 1px 8px rgba($brand-blue, 0.07);
-      transition: background 0.18s;
+      transition: transform 0.15s, background 0.18s, box-shadow 0.2s;
 
-      &:hover {
+      &:hover,
+      &:focus-visible {
         background: $brand-blue-light;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 28px rgba($brand-blue, 0.18);
+        outline: none;
+      }
+
+      &:focus-visible {
+        outline: 2px solid rgba($brand-blue-light, 0.55);
+        outline-offset: 3px;
       }
     }
   }
@@ -177,7 +355,7 @@
     margin-top: 2rem;
     text-align: center;
     color: $brand-blue;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.18rem;
     background: #eaf7ff;
     border-radius: 0.8em;
@@ -185,8 +363,8 @@
     display: none;
   }
 }
-// ----- ERROR HLÁŠKY (form) -----
 
+// ----- ERROR HLÁŠKY (form) -----
 .contact-form .form-error,
 .partner-contact-section .form-error {
   color: #df2222;
@@ -196,27 +374,25 @@
   padding: 0.35em 1em 0.35em 0.7em;
   margin: 0.2em 0 0.3em 0;
   border-left: 3px solid #e45a5a;
-  display: none; // Skrývá se JS
+  display: none;
   position: relative;
   z-index: 1;
-  min-height: 1.4em; // kvůli "mávání" formuláře
+  min-height: 1.4em;
 }
 
-// Pokud je chyba aktivní, zobrazit
 .form-error.active {
   display: block;
 }
 
 // Lepší UX na mobilu
 @media (max-width: 520px) {
-  .partners-hero {
-    padding: 2rem 0 1.2rem;
-  }
   .partner-contact-section {
     padding: 1.5rem 0 1.7rem;
+
     .container {
       padding: 0.9rem 0.4rem 1rem;
     }
+
     h2 {
       font-size: 1.35rem;
     }
@@ -231,10 +407,10 @@
   padding-right: 2em;
   margin-top: 0.7rem;
 }
+
 // =============================================
 // PARTNERS PLACEHOLDER – budoucí partneři
 // =============================================
-
 .partners-placeholder {
   background: $brand-grey-bg;
   padding: 3.5rem 0;
@@ -242,7 +418,7 @@
   h2 {
     text-align: center;
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 800;
     color: $brand-dark;
     margin-bottom: 0.6rem;
     letter-spacing: -0.5px;
@@ -262,45 +438,45 @@
     gap: 1.6rem;
     justify-content: center;
     align-items: stretch;
-    max-width: 1000px; // Rozšířeno pro 6 boxů vedle sebe
+    max-width: 1000px;
     margin: 0 auto;
     padding: 0 1rem;
   }
 
-.partner-item {
-  background: #fff;
-  border-radius: 1.2rem;
-  padding: 1.5rem 1rem 1.2rem;
-  box-shadow: 0 2px 18px rgba($brand-blue, 0.07);
-  text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 24px rgba($brand-blue, 0.1);
-  }
-
-  img {
-    width: 64px;
-    height: 56px;
-    margin-bottom: 0.8rem;
-    object-fit: contain;
-  }
-
-  span {
-    display: block;
-    font-size: 1rem;
-    font-weight: 500;
-    color: $brand-dark;
+  .partner-item {
+    background: #fff;
+    border-radius: 1.2rem;
+    padding: 1.5rem 1rem 1.2rem;
+    box-shadow: 0 2px 18px rgba($brand-blue, 0.07);
     text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 24px rgba($brand-blue, 0.1);
+    }
+
+    img {
+      width: 64px;
+      height: 56px;
+      margin-bottom: 0.8rem;
+      object-fit: contain;
+    }
+
+    span {
+      display: block;
+      font-size: 1rem;
+      font-weight: 600;
+      color: $brand-dark;
+      text-align: center;
+    }
   }
 }
 
-}
 // Responsivita
 @media (max-width: 600px) {
   .partners-placeholder {
@@ -328,10 +504,6 @@
       min-width: 110px;
       scroll-snap-align: center;
       padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
 
       img {
         width: 64px;
@@ -343,8 +515,16 @@
       span {
         font-size: 0.95rem;
         text-align: center;
-        font-weight: 500;
+        font-weight: 600;
       }
     }
   }
 }
+.partners-hero .reg {
+  font-size: 0.62em;
+  vertical-align: super;
+  line-height: 0;
+  margin-left: 0.06em;
+  opacity: 0.95;
+}
+

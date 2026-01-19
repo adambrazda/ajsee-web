@@ -1,269 +1,431 @@
 // src/filters/date-combo.js
-// Date range combo (2 months) – FIXED positioning:
-// • right-aligned k triggeru (inline style left/top – žádné CSS var)
-// • viewport clamping, above/below volba
-// • repositions on scroll/resize (throttled via rAF)
-// • outside click + ESC to close
-// • Reset / Cancel / Apply (+ mirrors to #filter-date-from / #filter-date-to)
-// • Today ring + timezone-safe (počítáme v poledne)
+// AJSEE – Compact date-range combo (button + inline popover)
+// - Works wherever #date-combo-button + #date-combo-popover + hidden #filter-date-from/#filter-date-to exist
+// - No dependency on other engines; fully self-contained
+// - Updates native inputs (name="date_from"/"date_to") so existing filters API keeps working
 
-export function initDateCombo(opts = {}) {
-  const BUTTON_SEL = opts.buttonSelector || '#date-combo-button';
-  const FROM_SEL   = opts.fromSelector   || '#filter-date-from,#events-date-from';
-  const TO_SEL     = opts.toSelector     || '#filter-date-to,#events-date-to';
+(function () {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  const DOC = document;
 
-  const button = document.querySelector(BUTTON_SEL);
-  const fromEl = document.querySelector(FROM_SEL);
-  const toEl   = document.querySelector(TO_SEL);
-  if (!button || !fromEl || !toEl) return;
-
-  // signal pro fallback v events-home.js, že běží custom picker
-  button.setAttribute('data-date-combo','1');
-
-  let open = false;
-  let pop = null;
-  let selStart = parseISO(fromEl.value);
-  let selEnd   = parseISO(toEl.value);
-  if (selStart && selEnd && selEnd < selStart) [selStart, selEnd] = [selEnd, selStart];
-  let base = firstOfMonth(selStart || new Date());
-
-  // i18n
-  const LANG = (document.documentElement.lang || 'cs').toLowerCase().slice(0,2);
-  const DICT = ({
-    cs: { start:'Počáteční datum', end:'Koncové datum', reset:'Vymazat', cancel:'Zrušit', apply:'Použít',
-          days:['po','út','st','čt','pá','so','ne'] },
-    sk: { start:'Počiatočný dátum', end:'Koncový dátum', reset:'Vymazať', cancel:'Zrušiť', apply:'Použiť',
-          days:['po','ut','st','št','pi','so','ne'] },
-    en: { start:'Start date', end:'End date', reset:'Reset', cancel:'Cancel', apply:'Apply',
-          days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] },
-    de: { start:'Startdatum', end:'Enddatum', reset:'Zurücksetzen', cancel:'Abbrechen', apply:'Übernehmen',
-          days:['Mo','Di','Mi','Do','Fr','Sa','So'] },
-    pl: { start:'Data początkowa', end:'Data końcowa', reset:'Wyczyść', cancel:'Anuluj', apply:'Zastosuj',
-          days:['Pn','Wt','Śr','Cz','Pt','So','Nd'] },
-    hu: { start:'Kezdő dátum', end:'Záró dátum', reset:'Törlés', cancel:'Mégse', apply:'Alkalmaz',
-          days:['H','K','Sze','Cs','P','Szo','V'] }
-  })[LANG] || { start:'Start date', end:'End date', reset:'Reset', cancel:'Cancel', apply:'Apply',
-                days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] };
-
-  const toggle = () => (open ? close() : openPopover());
-  button.addEventListener('click', toggle);
-  button.addEventListener('keydown', (e)=>{ if (e.key==='Enter'||e.key===' ') { e.preventDefault(); toggle(); } });
-
-  function openPopover(){
-    selStart = parseISO(fromEl.value);
-    selEnd   = parseISO(toEl.value);
-    if (selStart && selEnd && selEnd < selStart) [selStart, selEnd] = [selEnd, selStart];
-    base = firstOfMonth(selStart || new Date());
-    renderPopover();
-    open = true;
-    button.setAttribute('aria-expanded','true');
+  function log(...args) {
+    if (window && window.console && console.debug) {
+      console.debug('[date-combo]', ...args);
+    }
   }
 
-  function renderPopover(){
-    destroy();
+  function startOfDay(d) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
 
-    pop = document.createElement('div');
-    pop.className = 'ajsee-date-popover';
-    pop.id = 'ajsee-date-popover';
-    pop.setAttribute('role','dialog');
-    pop.setAttribute('aria-modal','true');
-    pop.style.position = 'fixed';
-    pop.style.zIndex = '200000';       // nad headerem
+  function addDays(d, days) {
+    const result = new Date(d);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
 
-    // šířka/výška přes CSS var necháme (OK), ale pozici nastavíme inline
-    const vw = window.innerWidth || 1280;
-    const targetW = Math.min(560, Math.max(480, Math.floor(vw * 0.42)));
-    pop.style.setProperty('--ajsee-popover-width', `${targetW}px`);
-    pop.style.setProperty('--ajsee-popover-height', `420px`);
+  function addMonths(d, months) {
+    const result = new Date(d);
+    result.setMonth(result.getMonth() + months);
+    return result;
+  }
 
-    pop.innerHTML = `
-      <div class="ajsee-date-inner">
-        <div class="ajsee-date-top">
-          <div class="date-inputs">
-            <input class="di start" type="text" value="${fmtDisplay(selStart) || ''}" placeholder="${esc(DICT.start)}" readonly>
-            <span class="di-sep">–</span>
-            <input class="di end"   type="text" value="${fmtDisplay(selEnd)   || ''}" placeholder="${esc(DICT.end)}" readonly>
+  function isSameDate(a, b) {
+    return a && b &&
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate();
+  }
+
+  function isBefore(a, b) {
+    return a.getTime() < b.getTime();
+  }
+
+  function isBetween(date, start, end) {
+    if (!start || !end) return false;
+    const t = startOfDay(date).getTime();
+    return t >= start.getTime() && t <= end.getTime();
+  }
+
+  function formatISO(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function formatLabelRange(start, end, lang) {
+    if (!start && !end) return null;
+    const fmtDay = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'numeric' });
+    const fmtDayYear = new Intl.DateTimeFormat(lang, { day: 'numeric', month: 'numeric', year: 'numeric' });
+
+    if (start && end && isSameDate(start, end)) {
+      return fmtDayYear.format(start);
+    }
+
+    if (start && end && start.getFullYear() === end.getFullYear() &&
+        start.getMonth() === end.getMonth()) {
+      // "2.–5. 3. 2025"
+      const day1 = start.getDate();
+      const day2 = end.getDate();
+      const tail = fmtDayYear.format(end).replace(/^\d+\.?\s*/, '');
+      return `${day1}.–${day2}. ${tail}`;
+    }
+
+    // general "2. 3. – 10. 4. 2025"
+    const part1 = fmtDay.format(start);
+    const part2 = fmtDayYear.format(end);
+    return `${part1} – ${part2}`;
+  }
+
+  function upcomingWeekendRange(base) {
+    const today = startOfDay(base);
+    const weekday = today.getDay(); // 0=Sun .. 6=Sat
+    const daysToSaturday = (6 - weekday + 7) % 7;
+    const saturday = addDays(today, daysToSaturday);
+    const sunday = addDays(saturday, 1);
+    return { start: saturday, end: sunday };
+  }
+
+  function notifyChange(input) {
+    if (!input) return;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  function initDateCombo() {
+    const button = DOC.getElementById('date-combo-button');
+    const labelSpan = DOC.getElementById('date-combo-text');
+    const popover = DOC.getElementById('date-combo-popover');
+    const inputFrom = DOC.getElementById('filter-date-from');
+    const inputTo = DOC.getElementById('filter-date-to');
+
+    if (!button || !labelSpan || !popover || !inputFrom || !inputTo) {
+      log('Required elements not found – skipping init.');
+      return;
+    }
+
+    // Make container positioning context
+    const group = button.closest('.filter-group') || button.parentElement;
+    if (group && getComputedStyle(group).position === 'static') {
+      group.style.position = 'relative';
+    }
+
+    const lang = (DOC.documentElement.getAttribute('lang') || 'cs').toLowerCase();
+    const defaultLabel = labelSpan.textContent.trim() || 'Kdykoliv';
+    const today = startOfDay(new Date());
+
+    const state = {
+      viewDate: new Date(today.getFullYear(), today.getMonth(), 1),
+      start: inputFrom.value ? startOfDay(new Date(inputFrom.value)) : null,
+      end: inputTo.value ? startOfDay(new Date(inputTo.value)) : null,
+      open: false
+    };
+
+    // --- Build POPUP UI -----------------------------------------------------
+    popover.classList.add('date-combo-popover');
+    popover.hidden = true;
+    // Ensure basic positioning; SCSS can refine.
+    if (getComputedStyle(popover).position === 'static') {
+      popover.style.position = 'absolute';
+    }
+    if (!popover.style.top) popover.style.top = 'calc(100% + 8px)';
+    if (!popover.style.left) popover.style.left = '0px';
+    if (!popover.style.zIndex) popover.style.zIndex = '1000';
+
+    popover.innerHTML = `
+      <div class="dc-panel" role="dialog" aria-modal="false">
+        <header class="dc-header">
+          <button type="button" class="dc-nav dc-prev" aria-label="Předchozí měsíc">‹</button>
+          <div class="dc-month" aria-live="polite"></div>
+          <button type="button" class="dc-nav dc-next" aria-label="Další měsíc">›</button>
+        </header>
+        <div class="dc-weekdays" aria-hidden="true"></div>
+        <div class="dc-grid" role="grid"></div>
+        <footer class="dc-footer">
+          <div class="dc-quick">
+            <button type="button" class="dc-pill dc-anytime" data-mode="anytime">Kdykoliv</button>
+            <button type="button" class="dc-pill dc-today" data-mode="today">Dnes</button>
+            <button type="button" class="dc-pill dc-weekend" data-mode="weekend">Tento víkend</button>
           </div>
-          <div class="nav">
-            <button type="button" class="nav-btn prev" aria-label="Prev">‹</button>
-            <button type="button" class="nav-btn next" aria-label="Next">›</button>
-          </div>
-        </div>
-        <div class="cal-wrap">
-          <div class="cal cal-left"></div>
-          <div class="cal cal-right"></div>
-        </div>
-        <div class="ajsee-date-actions">
-          <button type="button" class="btn ghost reset">${esc(DICT.reset)}</button>
-          <span class="flex-spacer"></span>
-          <button type="button" class="btn ghost cancel">${esc(DICT.cancel)}</button>
-          <button type="button" class="btn primary apply">${esc(DICT.apply)}</button>
-        </div>
+          <button type="button" class="dc-clear">Vymazat</button>
+        </footer>
       </div>
     `;
-    document.body.appendChild(pop);
 
-    const leftHost  = pop.querySelector('.cal-left');
-    const rightHost = pop.querySelector('.cal-right');
-    renderMonth(leftHost, base);
-    renderMonth(rightHost, addMonths(base, 1));
+    const monthEl = popover.querySelector('.dc-month');
+    const gridEl = popover.querySelector('.dc-grid');
+    const weekdaysEl = popover.querySelector('.dc-weekdays');
+    const prevBtn = popover.querySelector('.dc-prev');
+    const nextBtn = popover.querySelector('.dc-next');
+    const clearBtn = popover.querySelector('.dc-clear');
+    const quickButtons = Array.from(popover.querySelectorAll('.dc-pill'));
 
-    pop.querySelector('.prev').addEventListener('click', () => { base = addMonths(base, -1); renderMonth(leftHost, base); renderMonth(rightHost, addMonths(base, 1)); position(true); });
-    pop.querySelector('.next').addEventListener('click', () => { base = addMonths(base, +1); renderMonth(leftHost, base); renderMonth(rightHost, addMonths(base, 1)); position(true); });
-
-    pop.querySelector('.reset').addEventListener('click', () => {
-      selStart = null; selEnd = null;
-      fromEl.value = ''; toEl.value = '';
-      pop.querySelector('.di.start').value = '';
-      pop.querySelector('.di.end').value = '';
-      renderMonth(leftHost, base);
-      renderMonth(rightHost, addMonths(base, 1));
-    });
-    pop.querySelector('.cancel').addEventListener('click', close);
-    pop.querySelector('.apply').addEventListener('click', () => {
-      fromEl.value = fmtISO(selStart) || '';
-      toEl.value   = fmtISO(selEnd)   || '';
-      fromEl.dispatchEvent(new Event('change', { bubbles:true }));
-      toEl.dispatchEvent(new Event('change', { bubbles:true }));
-      const form = button.closest('form') || document.getElementById('events-filters-form');
-      if (form && typeof form.requestSubmit === 'function') form.requestSubmit();
-      close();
-    });
-
-    setTimeout(()=>{ document.addEventListener('pointerdown', handleOutside, true); document.addEventListener('keydown', handleEsc, true); },0);
-
-    position(true);
-    const rafThrottle = (fn)=>{ let pid=0; return ()=>{ if (pid) return; pid=requestAnimationFrame(()=>{ pid=0; fn(); }); }; };
-    const onMove = rafThrottle(()=> position(false));
-    window.addEventListener('resize', onMove, { passive:true });
-    window.addEventListener('scroll', onMove, true);
-
-    // ulož pro cleanup
-    pop._onMove = onMove;
-  }
-
-  function renderMonth(host, dateObj){
-    const y = dateObj.getFullYear();
-    const m = dateObj.getMonth();
-    const title = dateObj.toLocaleDateString(undefined, { month:'long', year:'numeric' });
-
-    const first = new Date(y, m, 1, 12,0,0,0);
-    let startOffset = (first.getDay() + 6) % 7; // Mon=0 .. Sun=6
-    const daysIn = new Date(y, m+1, 0, 12,0,0,0).getDate();
-
-    const today = new Date(); today.setHours(12,0,0,0);
-
-    let html = `<div class="cal-head">${esc(cap(title))}</div>`;
-    html += `<div class="dow">${DICT.days.map(d=>`<span>${esc(d)}</span>`).join('')}</div>`;
-    html += `<div class="grid">`;
-    for (let i=0;i<startOffset;i++) html += `<button class="empty" tabindex="-1" aria-hidden="true"></button>`;
-    for (let d=1; d<=daysIn; d++){
-      const cur = new Date(y, m, d, 12,0,0,0);
-      const iso = fmtISO(cur);
-      const inSel = inRange(cur, selStart, selEnd);
-      const isStart = sameDay(cur, selStart);
-      const isEnd   = sameDay(cur, selEnd);
-      const isToday = sameDay(cur, today);
-      const cls = ['day', inSel&&'in', isStart&&'start', isEnd&&'end', isToday&&'today'].filter(Boolean).join(' ');
-      html += `<button type="button" class="${cls}" data-iso="${iso}"><span>${d}</span></button>`;
+    // Weekday labels (Mon–Sun)
+    try {
+      const fmt = new Intl.DateTimeFormat(lang, { weekday: 'short' });
+      const baseMonday = new Date(2024, 0, 1); // Monday
+      const frag = DOC.createDocumentFragment();
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(baseMonday);
+        d.setDate(d.getDate() + i);
+        const span = DOC.createElement('span');
+        span.textContent = fmt.format(d);
+        frag.appendChild(span);
+      }
+      weekdaysEl.innerHTML = '';
+      weekdaysEl.appendChild(frag);
+    } catch (e) {
+      weekdaysEl.textContent = 'Po Út St Čt Pá So Ne';
     }
-    html += `</div>`;
-    host.innerHTML = html;
 
-    host.querySelectorAll('.day').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const d = parseISO(btn.dataset.iso);
-        if (!selStart || (selStart && selEnd)) { selStart = d; selEnd = null; }
-        else if (d >= selStart) { selEnd = d; }
-        else { selEnd = selStart; selStart = d; }
-        pop.querySelector('.di.start').value = fmtDisplay(selStart) || '';
-        pop.querySelector('.di.end').value   = fmtDisplay(selEnd)   || '';
-        const leftHost  = pop.querySelector('.cal-left');
-        const rightHost = pop.querySelector('.cal-right');
-        renderMonth(leftHost, base);
-        renderMonth(rightHost, addMonths(base, 1));
+    function applyToInputs() {
+      if (state.start) {
+        inputFrom.value = formatISO(state.start);
+      } else {
+        inputFrom.value = '';
+      }
+      if (state.end) {
+        inputTo.value = formatISO(state.end);
+      } else {
+        inputTo.value = '';
+      }
+      notifyChange(inputFrom);
+      notifyChange(inputTo);
+    }
+
+    function updateLabel() {
+      if (!state.start || !state.end) {
+        labelSpan.textContent = defaultLabel;
+        return;
+      }
+      labelSpan.textContent = formatLabelRange(state.start, state.end, lang) || defaultLabel;
+    }
+
+    function renderMonth() {
+      const y = state.viewDate.getFullYear();
+      const m = state.viewDate.getMonth();
+      try {
+        monthEl.textContent = state.viewDate.toLocaleDateString(lang, {
+          month: 'long',
+          year: 'numeric'
+        });
+      } catch {
+        const mNum = m + 1;
+        monthEl.textContent = `${y}-${mNum.toString().padStart(2,'0')}`;
+      }
+
+      gridEl.innerHTML = '';
+
+      const firstOfMonth = new Date(y, m, 1);
+      const firstWeekday = (firstOfMonth.getDay() + 6) % 7; // 0=Mon
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+      const totalCells = 42; // 6 weeks
+      const startDate = addDays(firstOfMonth, -firstWeekday);
+
+      const frag = DOC.createDocumentFragment();
+
+      for (let i = 0; i < totalCells; i++) {
+        const dayDate = addDays(startDate, i);
+        const dayBtn = DOC.createElement('button');
+        dayBtn.type = 'button';
+        dayBtn.className = 'dc-day';
+        dayBtn.textContent = String(dayDate.getDate());
+        dayBtn.setAttribute('data-date', formatISO(dayDate));
+        dayBtn.setAttribute('role', 'gridcell');
+
+        if (dayDate.getMonth() !== m) {
+          dayBtn.classList.add('is-out');
+        }
+        if (isSameDate(dayDate, today)) {
+          dayBtn.classList.add('is-today');
+        }
+        if (state.start && isSameDate(dayDate, state.start)) {
+          dayBtn.classList.add('is-start', 'is-in-range');
+        }
+        if (state.end && isSameDate(dayDate, state.end)) {
+          dayBtn.classList.add('is-end', 'is-in-range');
+        }
+        if (isBetween(dayDate, state.start, state.end)) {
+          dayBtn.classList.add('is-in-range');
+        }
+
+        dayBtn.addEventListener('click', () => handleDayClick(dayDate));
+        frag.appendChild(dayBtn);
+      }
+
+      gridEl.appendChild(frag);
+    }
+
+    function handleDayClick(dayDate) {
+      const day = startOfDay(dayDate);
+
+      if (!state.start || (state.start && state.end)) {
+        state.start = day;
+        state.end = null;
+      } else {
+        if (isBefore(day, state.start)) {
+          state.end = state.start;
+          state.start = day;
+        } else {
+          state.end = day;
+        }
+      }
+
+      // If end is still null (user clicked the same start twice), treat as single-day range
+      if (state.start && !state.end) {
+        state.end = state.start;
+      }
+
+      applyToInputs();
+      updateLabel();
+      renderMonth();
+
+      // If full range picked, auto-close
+      if (state.start && state.end) {
+        closePopover();
+      }
+    }
+
+    function clearRange() {
+      state.start = null;
+      state.end = null;
+      applyToInputs();
+      updateLabel();
+      renderMonth();
+    }
+
+    function quickSelect(mode) {
+      if (mode === 'anytime') {
+        clearRange();
+        closePopover();
+        return;
+      }
+
+      if (mode === 'today') {
+        const d = today;
+        state.start = d;
+        state.end = d;
+      } else if (mode === 'weekend') {
+        const r = upcomingWeekendRange(today);
+        state.start = r.start;
+        state.end = r.end;
+        state.viewDate = new Date(r.start.getFullYear(), r.start.getMonth(), 1);
+      }
+
+      applyToInputs();
+      updateLabel();
+      renderMonth();
+      closePopover();
+    }
+
+    prevBtn.addEventListener('click', () => {
+      state.viewDate = addMonths(state.viewDate, -1);
+      renderMonth();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      state.viewDate = addMonths(state.viewDate, 1);
+      renderMonth();
+    });
+
+    clearBtn.addEventListener('click', clearRange);
+
+    quickButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        quickSelect(btn.getAttribute('data-mode'));
       });
     });
-  }
 
-  // RIGHT-aligned positioning + clamp
-  function position(forceMeasure = false){
-    if (!pop) return;
+    // --- OPEN/CLOSE ---------------------------------------------------------
+    function openPopover() {
+      if (state.open) return;
+      state.open = true;
+      popover.hidden = false;
+      button.setAttribute('aria-expanded', 'true');
 
-    const GAP = 8, PAD = 16;
-    const t = button.getBoundingClientRect();
-    const vw = window.innerWidth, vh = window.innerHeight;
+      positionPopover();
 
-    if (forceMeasure) {
-      pop.style.visibility = 'hidden';
-      pop.style.left = '0px'; pop.style.top = '0px';
-      // vynucení layoutu
-      void pop.offsetWidth;
+      DOC.addEventListener('click', handleDocumentClick, true);
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('resize', positionPopover);
     }
 
-    const pw = pop.offsetWidth || 560;
-    const ph = pop.offsetHeight || 420;
+    function closePopover() {
+      if (!state.open) return;
+      state.open = false;
+      popover.hidden = true;
+      button.setAttribute('aria-expanded', 'false');
 
-    // výchozí: pod triggerem
-    let top = t.bottom + GAP;
-    if (top + ph > vh - PAD) {
-      const above = t.top - GAP - ph;
-      top = (above >= PAD) ? above : clamp(top, PAD, Math.max(PAD, vh - ph - PAD));
+      DOC.removeEventListener('click', handleDocumentClick, true);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', positionPopover);
     }
 
-    // right-aligned k pravému okraji tlačítka
-    let left = t.right - pw;
-    // clamp do viewportu
-    left = clamp(left, PAD, vw - pw - PAD);
+    function handleDocumentClick(ev) {
+      if (!state.open) return;
+      const target = ev.target;
+      if (button.contains(target) || popover.contains(target)) return;
+      closePopover();
+    }
 
-    // >>> zásadní změna: inline left/top, žádné CSS var <<<
-    pop.style.left = `${Math.round(left)}px`;
-    pop.style.top  = `${Math.round(top)}px`;
-    pop.style.visibility = 'visible';
+    function handleKeyDown(ev) {
+      if (ev.key === 'Escape') {
+        closePopover();
+      }
+    }
+
+    function positionPopover() {
+      // Positioned relative to filter-group; rely on CSS for styling.
+      // Here we just ensure it does not overflow viewport horizontally.
+      // Reset left before measuring so repeated opens don't stack shifts.
+      popover.style.left = popover.style.left || '0px';
+      const rect = popover.getBoundingClientRect();
+      const vw = window.innerWidth || document.documentElement.clientWidth;
+      const overflowRight = rect.right - vw;
+      if (overflowRight > 0) {
+        const style = getComputedStyle(popover);
+        let currentLeft = parseFloat(style.left);
+        if (isNaN(currentLeft)) currentLeft = 0;
+        popover.style.left = (currentLeft - overflowRight - 8) + 'px';
+      }
+    }
+
+    button.addEventListener('click', () => {
+      if (state.open) {
+        closePopover();
+      } else {
+        openPopover();
+      }
+    });
+
+    // Hook chips, if present, so combo label stays in sync
+    const chipToday = DOC.getElementById('chipToday');
+    const chipWeekend = DOC.getElementById('chipWeekend');
+    const chipClear = DOC.getElementById('chipClear');
+
+    if (chipToday) {
+      chipToday.addEventListener('click', () => quickSelect('today'));
+    }
+    if (chipWeekend) {
+      chipWeekend.addEventListener('click', () => quickSelect('weekend'));
+    }
+    if (chipClear) {
+      chipClear.addEventListener('click', () => quickSelect('anytime'));
+    }
+
+    // Initial sync
+    applyToInputs();
+    updateLabel();
+    renderMonth();
+
+    log('Initialized.');
   }
 
-  function handleOutside(e){
-    if (!pop || !open) return;
-    if (pop.contains(e.target) || button.contains(e.target)) return;
-    close();
+  if (DOC.readyState === 'loading') {
+    DOC.addEventListener('DOMContentLoaded', initDateCombo);
+  } else {
+    initDateCombo();
   }
-  function handleEsc(e){ if (e.key === 'Escape') close(); }
-
-  function close(){
-    open = false;
-    destroy();
-    document.removeEventListener('pointerdown', handleOutside, true);
-    document.removeEventListener('keydown', handleEsc, true);
-    try { button.setAttribute('aria-expanded','false'); button.focus(); } catch{}
-  }
-
-  function destroy(){
-    if (!pop) return;
-    try {
-      window.removeEventListener('resize', pop._onMove);
-      window.removeEventListener('scroll',  pop._onMove, true);
-    } catch {}
-    if (pop.parentNode) pop.parentNode.removeChild(pop);
-    pop = null;
-  }
-
-  // utils
-  function parseISO(s){
-    if (!s) return null;
-    const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (m) return new Date(+m[1], +m[2]-1, +m[3], 12,0,0,0);
-    const d = new Date(s); return isNaN(d) ? null : d;
-  }
-  function fmtISO(d){ if(!d) return ''; const y=d.getFullYear(), m=d.getMonth()+1, dd=d.getDate();
-    return `${y}-${String(m).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; }
-  function fmtDisplay(d){ if(!d) return ''; try{
-    return d.toLocaleDateString(undefined,{ day:'2-digit', month:'2-digit', year:'numeric' });
-  }catch{ return fmtISO(d); } }
-  function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
-  function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
-  function firstOfMonth(d){ const x = d? new Date(d) : new Date(); x.setDate(1); x.setHours(12,0,0,0); return x; }
-  function addMonths(d, n){ const x = new Date(d); x.setMonth(x.getMonth()+n,1); return x; }
-  function sameDay(a,b){ if(!a||!b) return false; return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
-  function inRange(d, a, b){ if(!a||!b) return false; const t=d.getTime(), x=a.getTime(), y=b.getTime(); return t>=Math.min(x,y) && t<=Math.max(x,y); }
-}
+})();

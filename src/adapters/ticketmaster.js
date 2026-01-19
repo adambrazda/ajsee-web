@@ -113,15 +113,15 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   };
 
   // Připrav pokusy:
-  // A) city (+ country pokud známe) – nejpřesnější
+  // A) city – přesnější; (countryCode k city neposíláme)
   // B) keyword=city (+ country pokud známe)
-  // C) široké vyhledávání s country, když není city (default CZ pokud nic nezadá)
+  // C) široké vyhledávání s country, když není city (default CZ pro český web)
   const attempts = [];
   if (tmCity) {
-    attempts.push({ mode: 'city',    city: tmCity,   countryCode: explicitCountry || guessedCC || '' });
+    attempts.push({ mode: 'city',    city: tmCity,    countryCode: '' }); // k city ne
     attempts.push({ mode: 'keyword', keyword: tmCity, countryCode: explicitCountry || guessedCC || '' });
   } else {
-    attempts.push({ mode: 'broad', countryCode: explicitCountry || 'CZ' }); // bezpečný default pro český web
+    attempts.push({ mode: 'broad', countryCode: explicitCountry || 'CZ' });
   }
 
   // Dedup pokusů podle (mode, city/keyword, countryCode)
@@ -129,16 +129,18 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const seen = new Set();
   const uniqAttempts = attempts.filter(a => (seen.has(keyOf(a)) ? false : (seen.add(keyOf(a)), true)));
 
-  for (const loc of locales) {
+  const hasGeo = !!(filters.latlong || (filters.nearMeLat != null && filters.nearMeLon != null));
+
+  for (const locTry of locales) {
     for (const attempt of uniqAttempts) {
       const qs = new URLSearchParams();
       putCommonParams(qs);
-      qs.set('locale', loc);
+      qs.set('locale', locTry);
 
-      // countryCode:
-      // - v city režimu ho pošleme, pokud ho známe → disambiguace (např. London)
-      // - v ostatních režimech taky (pokud máme)
-      if (attempt.countryCode) {
+      // countryCode posíláme jen pokud:
+      // - nemáme geo
+      // - a režim není "city"
+      if (!hasGeo && attempt.countryCode && attempt.mode !== 'city') {
         qs.set('countryCode', attempt.countryCode);
       }
 
@@ -171,8 +173,10 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
           const venue   = ev?._embedded?.venues?.[0] || {};
           const city    = venue?.city?.name || '';
           const country = venue?.country?.countryCode || '';
-          const lat     = Number(venue?.location?.latitude ?? venue?.location?.lat ?? '');
-          const lon     = Number(venue?.location?.longitude ?? venue?.location?.lon ?? '');
+          const latRaw  = venue?.location?.latitude ?? venue?.location?.lat ?? '';
+          const lonRaw  = venue?.location?.longitude ?? venue?.location?.lon ?? '';
+          const lat     = Number.isFinite(+latRaw) ? +latRaw : undefined;
+          const lon     = Number.isFinite(+lonRaw) ? +lonRaw : undefined;
           const desc    = [ev?.info, ev?.pleaseNote].filter(Boolean).join(' — ');
           const price   = Array.isArray(ev?.priceRanges) && ev.priceRanges.length
             ? (ev.priceRanges[0]?.min ?? null)
@@ -180,8 +184,8 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
 
           return {
             id: `ticketmaster-${ev.id}`,
-            title: { [loc]: ev.name },
-            description: desc ? { [loc]: desc } : {},
+            title: { [locale]: ev.name },
+            description: desc ? { [locale]: desc } : {},
             category: cat,
             datetime: dt,
             location: { city, country, lat, lon },
@@ -195,7 +199,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
           };
         });
       } catch (err) {
-        console.error('[Ticketmaster adapter] fetch error for locale:', loc, attempt, err);
+        console.error('[Ticketmaster adapter] fetch error for locale:', locTry, attempt, err);
         // zkus další pokus/locale
       }
     }

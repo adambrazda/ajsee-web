@@ -14,26 +14,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Unified FE render ON (events-home.js). Inline TM zakázán. -->
+  <!-- Unified FE render ON. Inline TM zakázán. -->
   <script>
-    // Necháváme render přes /src/events-home.js
-    // ⚠️ NEdefinujeme zde __AJSEE_SKIP_CORE_EVENTS (events-home.js by pak nerenedroval)
     window.__TM_INLINE_DISABLED = true;
-    // Vlastnictví filtrů/událostí sjednoceným rendererem
     window.__AJSEE_EVENTS_OWNS_FILTERS = true;
 
-    // Impact tracking – zvol jednu variantu (A doporučeno) a druhou smaž:
-    // VARIANTA A (redirector, doporučeno):
+    // Impact tracking – vyber jednu variantu:
     // window.__impact = { clickBase: 'https://YOUR-IMPACT-REDIRECTOR/?url=' };
-
-    // VARIANTA B (přidání paramu do URL) – základní fallback:
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
   <!-- Google tag (jen HTTPS/prod) -->
   <script>
     (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(location.hostname);
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.0|0\.0\.0\.0/.test(location.hostname);
       if (!isProdHttps) { console.info('[GA] Skipping on non-HTTPS/dev.'); return; }
       const s = document.createElement('script');
       s.async = true;
@@ -79,9 +73,13 @@
           const val = get(key);
           if (typeof val === 'string' && val.trim()) el.setAttribute('aria-label', val);
         });
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+          const key = el.getAttribute('data-i18n-alt');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
+        });
       }
 
-      // Po načtení DOM vždy zkus oficiální applyTranslations, jinak fallback
       window.addEventListener('DOMContentLoaded', () => {
         const lang = detectLang();
         document.documentElement.lang = lang;
@@ -120,25 +118,69 @@
           <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
         </ul>
 
-        <!-- Jazykové přepínače v mobilním menu -->
-        <div class="language-switcher mobile-switcher">
-          <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-          <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-          <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-          <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-          <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-          <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+        <!-- Jazykové přepínače v mobilním menu (DROPDOWN) -->
+        <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+          <details class="lang-dropdown" id="langDropdownMobile">
+            <summary class="lang-current" aria-label="Změnit jazyk">
+              <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+              <span class="lang-current-label">Čeština</span>
+              <span class="lang-caret" aria-hidden="true">▾</span>
+            </summary>
+
+            <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+              <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+                <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+              </button>
+              <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+                <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+              </button>
+              <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+                <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+              </button>
+              <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+                <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+              </button>
+              <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+                <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+              </button>
+              <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+                <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+              </button>
+            </div>
+          </details>
         </div>
       </nav>
 
-      <!-- Jazykové přepínače – desktop -->
+      <!-- Jazykové přepínače – desktop (DROPDOWN) -->
       <div class="language-switcher desktop-switcher" aria-label="Jazyk">
-        <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+        <details class="lang-dropdown" id="langDropdownDesktop">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
+
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+            </button>
+          </div>
+        </details>
       </div>
 
       <div class="menu-overlay-bg" aria-hidden="true"></div>
@@ -170,15 +212,15 @@
     <section id="upcoming-events" class="events-upcoming-section" aria-labelledby="events-upcoming-title" aria-busy="true" data-tm-size="6">
       <div class="container">
 
-        <!-- FILTRY -->
-        <form id="events-filters-form" class="events-filters filter-dock" novalidate data-behavior="sheet" role="search">
+        <!-- FILTRY (trvale viditelné) -->
+        <form id="events-filters-form" class="events-filters filter-dock" novalidate role="search">
           <div class="filters-toolbar" aria-label="Rychlé filtry">
             <div class="chips">
               <button type="button" class="chip" id="chipToday" data-i18n-key="filters.today">Dnes</button>
               <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend">Tento víkend</button>
               <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
             </div>
-            <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž">
+            <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž" data-i18n-aria="filters.nearMe">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>
               <span data-i18n-key="filters.nearMe">V mém okolí</span>
             </button>
@@ -186,6 +228,17 @@
 
           <fieldset class="filters-fieldset">
             <legend class="sr-only">Filtry</legend>
+
+            <!-- ✅ Nativní date inputy pro bridge/fallback (JS je po mountu skryje) -->
+            <div class="filter-group native-date from is-hidden">
+              <label for="filter-date-from" data-i18n-key="filters.from">Od</label>
+              <input type="date" id="filter-date-from" name="date_from" class="styled-input" inputmode="none" />
+            </div>
+
+            <div class="filter-group native-date to is-hidden">
+              <label for="filter-date-to" data-i18n-key="filters.to">Do</label>
+              <input type="date" id="filter-date-to" name="date_to" class="styled-input" inputmode="none" />
+            </div>
 
             <div class="filter-group">
               <label for="filter-category" data-i18n-key="filters.category">Kategorie</label>
@@ -208,40 +261,48 @@
 
             <div class="filter-group">
               <label for="filter-city" data-i18n-key="filters.city">Město</label>
-              <input id="filter-city" type="text" class="styled-input"
-                     placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off" />
+              <div class="field">
+                <span class="leading" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+                </span>
+                <input id="filter-city" type="text" class="styled-input"
+                       placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off" />
+              </div>
             </div>
 
-            <div class="filter-group">
-              <label for="filter-date-from" data-i18n-key="filters.dateFrom">Od</label>
-              <input id="filter-date-from" type="date" class="styled-input" />
-            </div>
-
-            <div class="filter-group">
-              <label for="filter-date-to" data-i18n-key="filters.dateTo">Do</label>
-              <input id="filter-date-to" type="date" class="styled-input" />
+            <!-- NOVÝ kompaktní date-combo (button + JS popover) -->
+            <div class="filter-group date-combo">
+              <label for="date-combo-button" data-i18n-key="filters.date">Termín</label>
+              <button
+                id="date-combo-button"
+                class="combo-button"
+                type="button"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-controls="date-combo-popover">
+                <span class="combo-text" id="date-combo-text" data-i18n-key="filters.anytime">Kdykoliv</span>
+              </button>
+              <div class="combo-popover ajsee-date-popover" id="date-combo-popover" hidden></div>
             </div>
 
             <div class="filter-group filter-keyword">
               <label for="filter-keyword" data-i18n-key="filters.keyword">Klíčové slovo</label>
-              <input id="filter-keyword" type="search" class="styled-input"
-                     placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder" />
+              <div class="field">
+                <span class="leading" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+                </span>
+                <input id="filter-keyword" type="search" class="styled-input"
+                       placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder" />
+              </div>
             </div>
 
             <div class="filter-actions">
-              <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe">V mém okolí</button>
+              <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe" data-i18n-aria="filters.nearMe">V mém okolí</button>
               <button type="submit" class="btn btn-primary" data-i18n-key="filters.apply">Použít filtry</button>
               <button type="reset" class="btn btn-ghost" data-i18n-key="filters.reset">Vymazat</button>
             </div>
           </fieldset>
-
-          <button type="button" class="filters-close" id="filtersClose" aria-label="Zavřít filtry"></button>
         </form>
-
-        <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form" data-i18n-key="filters.open">
-          Filtry
-        </button>
-        <div class="filters-overlay" id="filtersOverlay" hidden aria-hidden="true"></div>
 
         <div class="event-demo-badge" id="demoBadge" role="note" aria-live="polite" aria-label="" data-i18n-aria="event-demo.ariaLabel">
           <span class="ib-icon" aria-hidden="true">✨</span>
@@ -376,8 +437,7 @@
     })();
   </script>
 
-  <!-- ⛔️ DŮLEŽITÉ: Žádný runtime loader! Nechť Vite tyto tagy při buildu přepíše na /assets/*.js -->
+  <!-- ⛔️ DŮLEŽITÉ: Pouze jeden vstup pro Vite – main.js vše zajistí (vč. events logiky) -->
   <script type="module" src="/src/main.js"></script>
-  <script type="module" src="/src/events-home.js"></script>
 </body>
 </html>

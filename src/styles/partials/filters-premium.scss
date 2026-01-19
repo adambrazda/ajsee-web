@@ -1,9 +1,56 @@
 /* filters-premium.scss
    Prémiové/glass filtry pro homepage i events.html
    – hlubší glass, gradient border, sjednocený focus ring
-   – segmented s posuvným indikátorem
    – Kompaktní „Dates“ combo (button + popover s Od/Do)
+   – Inline labely uvnitř buněk (Ticketmaster-like)
+
+   OPTIMALIZACE (bez !important):
+   - odstraněné duplicity (typeahead byl dvakrát)
+   - sjednocené z-index tokeny (menu/popover/overlay)
+   - sjednocené “glass panel” vzory + focus ring
+   - lepší izolace: panel::before halo nepřekrývá obsah
+   - native <select> dropdown se CSS nedá skutečně zasklit (ponecháno jen v rámci pole)
+
+   HOTFIX (kalendář / popover zarovnání):
+   - odstraněn problematický clamp() pro left/top (rozbíjel kotvení)
+   - popover používá přímo --ajsee-popover-left/top (JS nastaví přesné px)
+   - zrušeno potenciální centrování přes translateX (transform je jen Y/scale)
 */
+
+/* ─── Globální pojistky ─── */
+[hidden]{ display:none; }
+
+/* ─── Global layering ─── */
+:root{
+  --ajsee-popover-z: 10040;
+  --ajsee-popover-overlay-z: 10030;
+
+  /* Dropdowny (typeahead/select libs) */
+  --flt-menu-z: 10020; /* nad filtrem, pod date popoverem */
+
+  /* flag pro JS: když je 1, JS nebude injektovat CSS pro .ajsee-date-tm */
+  --ajsee-date-tm-css: 1;
+}
+
+.ajsee-date-popover{
+  position: fixed;
+  z-index: var(--ajsee-popover-z);
+  pointer-events: auto;
+  transform-origin: top left; /* lepší pro kotvení k levé hraně */
+}
+.ajsee-date-popover[hidden]{ display:none; }
+
+/* Overlay pro klik mimo (pokud ho engine používá) */
+.ajsee-date-popover-overlay,
+.ajsee-date-overlay,
+[data-ajsee-date-overlay]{
+  position: fixed;
+  inset: 0;
+  z-index: var(--ajsee-popover-overlay-z);
+  background: transparent;
+  pointer-events: auto;
+  cursor: default;
+}
 
 /* ─── Design tokens ─── */
 :root{
@@ -22,12 +69,14 @@
   --chip-text:#0b2640;
   --chip-shadow:0 8px 18px rgba(12,36,80,.10);
 
-  --cta-1:#0e88f0; --cta-2:#0b5ed7;
+  --cta-1:#0e88f0;
+  --cta-2:#0b5ed7;
 
   --seg-bg:#eef3fb;
   --seg-shadow:0 12px 22px rgba(12,36,80,.12);
 
-  --near-1:#006fbe; --near-2:#00c0d9;
+  --near-1:#006fbe;
+  --near-2:#00c0d9;
 
   --focus:#69b3ff;
 
@@ -41,14 +90,21 @@
   --control-gap: .8rem;
 
   /* Datové šířky */
-  --date-ch: 12ch;      /* dd.mm.rrrr */
-  --keyword-max: 36ch;  /* max šířka Keyword na desktopu */
+  --date-ch: 12ch;
 
-  /* Popover positioning (plní JS) */
+  /* Popover positioning (CSS fallback – primárně řídí JS) */
   --ajsee-popover-left: 16px;
   --ajsee-popover-top:  16px;
-  --ajsee-popover-width: 520px;  /* JS to přepisuje */
-  --ajsee-popover-height: 420px;
+  --ajsee-popover-height: 520px;
+
+  /* Glass nav buttons */
+  --glass-bg: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.72));
+  --glass-brd: linear-gradient(135deg,#e7f0ff,#f6f9ff);
+  --glass-shadow: 0 10px 24px rgba(12,36,80,.15), 0 1px 0 rgba(255,255,255,.7) inset;
+
+  /* Jemné zvýraznění aktivních prvků */
+  --active-pill-bg: linear-gradient(120deg,#0e88f0,#14c2c5);
+  --active-pill-shadow: 0 18px 34px rgba(14,136,240,.30);
 }
 
 @media (prefers-color-scheme: dark){
@@ -63,6 +119,10 @@
     --ink-1:#eaf0ff;
     --ink-2:#d6e6ff;
     --ink-3:#a6b7d7;
+
+    --glass-bg: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+    --glass-brd: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.10));
+    --glass-shadow: 0 10px 24px rgba(0,0,0,.40), 0 1px 0 rgba(255,255,255,.06) inset;
   }
 }
 
@@ -70,7 +130,8 @@
 :where(.events-filters.filter-dock),
 :where(form.filter-dock){
   position:relative;
-  padding: 1.25rem 1.25rem 1.35rem;
+  z-index: 20;
+  padding: 1.1rem 1.1rem 1.2rem;
   border-radius: var(--flt-radius);
   background:
     radial-gradient(60% 80% at 30% 0%, rgba(255,255,255,.55), transparent 60%),
@@ -81,24 +142,68 @@
   box-shadow: var(--flt-shadow), inset 0 1px 0 rgba(255,255,255,.4);
   font-family: var(--font-sans);
   isolation:isolate;
+  overflow: visible;
 
-  .filters-toolbar{ display:flex; flex-wrap:wrap; gap:var(--control-gap); margin-bottom:.75rem; }
+  /* glass halo */
+  &::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius: inherit;
+    background:
+      radial-gradient(140% 100% at 20% -10%, rgba(14,136,240,.08), transparent 55%),
+      radial-gradient(120% 80% at 85% 10%, rgba(0,192,217,.08), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* drž obsah nad halo */
+  > *{ position:relative; z-index:1; }
+
+  .filters-toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--control-gap);
+    margin-bottom:.65rem;
+  }
 
   /* Chips */
   .chip{
     display:inline-flex; align-items:center; gap:.6rem;
-    padding:.6rem 1rem; border-radius:999px;
+    padding:.55rem 1.05rem;
+    border-radius:999px;
     border:1px solid var(--flt-brd-2);
     background: var(--chip-bg);
     color: var(--chip-text);
     font-weight: 800;
     box-shadow: var(--chip-shadow);
-    transition: transform .15s ease, filter .2s ease, opacity .2s ease;
+    transition: transform .15s ease, filter .2s ease, opacity .2s ease, box-shadow .2s ease, background .2s ease;
     min-height: var(--control-h);
+    user-select: none;
+    white-space: nowrap;
   }
-  .chip:hover{ transform: translateY(-1px); filter:brightness(1.03); }
-  .chip:focus-visible{ outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px; }
-  .chip[disabled], .chip[aria-busy="true"]{ opacity:.6; pointer-events:none; }
+  .chip:hover{
+    transform: translateY(-1px);
+    filter:brightness(1.03);
+    box-shadow: 0 10px 22px rgba(12,36,80,.18);
+  }
+  .chip:focus-visible{
+    outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent);
+    outline-offset:2px;
+  }
+  .chip[disabled],
+  .chip[aria-busy="true"]{
+    opacity:.6;
+    pointer-events:none;
+  }
+
+  .chip.is-active,
+  .chip[data-active="true"]{
+    background: var(--active-pill-bg);
+    color:#fff;
+    box-shadow: var(--active-pill-shadow), inset 0 1px 0 rgba(255,255,255,.45);
+    border-color: transparent;
+  }
 
   .chip.ghost{
     background:
@@ -119,70 +224,92 @@
   }
 
   /* Near-me CTA */
-  #chipNearMe, #filter-nearme{
+  #chipNearMe,
+  #filter-nearme{
     border:0; color:#fff; font-weight:900; letter-spacing:.01em;
-    padding:.95rem 1.25rem; border-radius:999px;
+    padding:.9rem 1.2rem; border-radius:999px;
     background: linear-gradient(135deg,var(--near-1),var(--near-2));
-    box-shadow:
-      0 20px 42px rgba(0,160,200,.22),
-      0 3px 8px rgba(0,160,200,.18),
-      inset 0 1px 0 rgba(255,255,255,.4);
-    transition: transform .2s ease, filter .2s ease, opacity .2s ease;
+    box-shadow: 0 20px 42px rgba(0,160,200,.22), 0 3px 8px rgba(0,160,200,.18), inset 0 1px 0 rgba(255,255,255,.4);
+    transition: transform .2s ease, filter .2s ease, opacity .2s ease, box-shadow .2s ease;
     min-height: var(--control-h);
   }
-  #chipNearMe::before, #filter-nearme::before{ content:"✨"; margin-right:.5rem; }
-  #chipNearMe:hover, #filter-nearme:hover{ transform: translateY(-1px); filter:brightness(1.04); }
-  #chipNearMe:focus-visible, #filter-nearme:focus-visible{ outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px; }
-  #chipNearMe[aria-busy="true"], #filter-nearme[aria-busy="true"]{ opacity:.7; pointer-events:none; }
+  #chipNearMe:hover,
+  #filter-nearme:hover{
+    transform: translateY(-1px);
+    filter:brightness(1.06);
+    box-shadow: 0 24px 52px rgba(0,160,200,.30), 0 5px 14px rgba(0,160,200,.24);
+  }
 
-  /* Labely */
+  /* Základní label (typografie) */
   label{
     color: var(--ink-2);
-    font-size: 13.5px;
-    font-weight: 700;
+    font-size: 13.25px;
+    font-weight: 800;
     letter-spacing: .2px;
-    margin-bottom:.5rem;
+    margin-bottom:.45rem;
     display:block;
+    font-family: var(--font-sans);
   }
-  .filter-group{ position:relative; display:grid; gap:var(--gap,.5rem); }
+
+  /* Inline labely ve skupinách */
+  .filter-group{
+    position:relative;
+    display:grid;
+    gap:var(--gap,.45rem);
+    min-width:0;
+  }
+  .filter-group > label{
+    position:absolute; top:8px; left:16px; margin:0;
+    font-size:12px; line-height:1.1;
+    text-transform:uppercase; letter-spacing:.04em; font-weight:900;
+    color:#0A3D62; opacity:.85; pointer-events:none;
+    display:inline-flex; align-items:center; gap:.5rem;
+  }
 
   /* Inputs & selects */
-  input.styled-input, select.styled-select,
-  input[type="date"], input[type="search"], input[type="text"]{
+  input.styled-input,
+  select.styled-select,
+  input[type="date"],
+  input[type="search"],
+  input[type="text"]{
     min-height: var(--control-h);
     border-radius: var(--control-radius);
-    padding: var(--control-pad-y) var(--control-pad-x);
+    padding: calc(var(--control-pad-y) + 18px) var(--control-pad-x) var(--control-pad-y);
     color: var(--ink-1);
     background:
-      linear-gradient(#ffffff, #ffffff) padding-box,
+      linear-gradient(120deg, rgba(255,255,255,.96), rgba(255,255,255,1)) padding-box,
       linear-gradient(135deg, #d8e8ff, #eef4ff) border-box;
     border: 1.25px solid transparent;
     box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 12px 22px rgba(12,36,80,.10);
-    transition: box-shadow .18s ease, background .18s ease, filter .18s ease;
+    transition: box-shadow .18s ease, background .18s ease, filter .18s ease, border-color .18s ease;
     line-height: 1.2;
     display: inline-flex;
     align-items: center;
     box-sizing: border-box;
+    width: 100%;
+    inline-size: 100%;
   }
+
   input.styled-input::placeholder,
   input[type="date"]::placeholder,
   input[type="search"]::placeholder,
-  input[type="text"]::placeholder{ color: var(--ink-3); opacity:.88; }
-  input.styled-input:focus, select.styled-select:focus,
-  input[type="date"]:focus, input[type="search"]:focus, input[type="text"]:focus{
-    box-shadow:
-      0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent),
-      0 14px 26px rgba(12,36,80,.12);
+  input[type="text"]::placeholder{
+    color: var(--ink-3);
+    opacity:.88;
+  }
+
+  input.styled-input:focus,
+  select.styled-select:focus,
+  input[type="date"]:focus,
+  input[type="search"]:focus,
+  input[type="text"]:focus{
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent), 0 14px 26px rgba(12,36,80,.12);
     background:
       linear-gradient(#fff,#fff) padding-box,
       linear-gradient(135deg, #c4ddff, #e4efff) border-box;
+    border-color: transparent;
     outline: none;
   }
-  input.styled-input:focus-visible,
-  select.styled-select:focus-visible,
-  input[type="date"]:focus-visible,
-  input[type="search"]:focus-visible,
-  input[type="text"]:focus-visible{ outline:none; }
 
   /* with-icon */
   .with-icon{ position: relative; }
@@ -204,47 +331,52 @@
   }
 
   @media (prefers-color-scheme: dark){
-    input.styled-input, select.styled-select,
-    input[type="date"], input[type="search"], input[type="text"]{
+    input.styled-input,
+    select.styled-select,
+    input[type="date"],
+    input[type="search"],
+    input[type="text"]{
       background:
-        linear-gradient(rgba(255,255,255,.10), rgba(255,255,255,.10)) padding-box,
+        linear-gradient(rgba(15,23,42,.92), rgba(15,23,42,.96)) padding-box,
         linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.10)) border-box;
       color:#f2f6ff;
+      box-shadow: 0 16px 32px rgba(0,0,0,.4);
     }
     input.styled-input::placeholder,
     input[type="date"]::placeholder,
     input[type="search"]::placeholder,
-    input[type="text"]::placeholder{ color: #cfe0ff; opacity:.92; }
+    input[type="text"]::placeholder{
+      color: #cfe0ff;
+      opacity:.92;
+    }
   }
 
-  /* Buttons */
-  .btn{ border-radius:16px; font-weight:700; padding:.95rem 1.35rem; min-height: var(--control-h); }
+  /* Buttons v rámci docku */
+  .btn{
+    border-radius:16px;
+    font-weight:700;
+    padding:.95rem 1.35rem;
+    min-height: var(--control-h);
+  }
+
   .btn-primary,
   .filter-actions .btn.btn-primary,
   .filter-actions [type="submit"].btn{
     color:#fff; border:0; font-weight:700; font-size:15px;
     background: linear-gradient(180deg, var(--cta-1), var(--cta-2));
-    box-shadow:
-      0 22px 44px rgba(14,136,240,.24),
-      0 3px 10px rgba(14,136,240,.20),
-      inset 0 1px 0 rgba(255,255,255,.35);
+    box-shadow: 0 22px 44px rgba(14,136,240,.24), 0 3px 10px rgba(14,136,240,.20), inset 0 1px 0 rgba(255,255,255,.35);
     transition: transform .15s ease, filter .2s ease, box-shadow .2s ease;
   }
-  .btn-primary:hover,
-  .filter-actions .btn.btn-primary:hover,
-  .filter-actions [type="submit"].btn:hover{
+  .btn-primary:hover{
     transform: translateY(-1px);
     filter: brightness(1.05);
-    box-shadow:
-      0 28px 56px rgba(14,136,240,.28),
-      0 5px 12px rgba(14,136,240,.22),
-      inset 0 1px 0 rgba(255,255,255,.42);
+    box-shadow: 0 26px 52px rgba(14,136,240,.30), 0 4px 14px rgba(14,136,240,.24);
   }
-  .btn-primary:focus-visible,
-  .filter-actions .btn.btn-primary:focus-visible,
-  .filter-actions [type="submit"].btn:focus-visible{
-    outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px;
+  .btn-primary:focus-visible{
+    outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent);
+    outline-offset:2px;
   }
+
   .btn-ghost{
     color:#0b2640;
     background:
@@ -253,45 +385,22 @@
     border:1px solid transparent;
     box-shadow: 0 8px 18px rgba(12,36,80,.08);
   }
-  .btn-ghost:focus-visible{ outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px; }
+  .btn-ghost:focus-visible{
+    outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent);
+    outline-offset:2px;
+  }
 
   /* Aktivní chips */
   .chips.chips-active{
-    display:flex; flex-wrap:wrap; gap:.6rem; margin:.6rem 0 0;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.6rem;
+    margin:.6rem 0 0;
   }
   .chips.chips-active .chip{ background:#fff; }
 
-  /* Segmented */
-  .segmented{
-    position:relative; display:inline-flex; gap:6px;
-    background: var(--seg-bg);
-    border-radius: 16px; padding:6px;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 0 0 1px rgba(10,50,80,.06);
-    isolation:isolate;
-    min-height: var(--control-h);
-    align-items: center;
-  }
-  .segmented .seg-indicator{
-    position:absolute; left: var(--indi-left, 6px); top:6px; bottom:6px;
-    width: var(--indi-width, 128px);
-    background:
-      linear-gradient(#fff,#fff) padding-box,
-      linear-gradient(135deg,#f7faff,#eef4ff) border-box;
-    border:1px solid transparent;
-    border-radius:12px;
-    box-shadow: var(--seg-shadow), inset 0 1px 0 rgba(255,255,255,.55);
-    transition: left .22s cubic-bezier(.2,.7,.3,1), width .22s cubic-bezier(.2,.7,.3,1);
-    z-index:0;
-  }
-  .segmented button{
-    position:relative; z-index:1;
-    border:0; background:transparent; padding:.62rem 1.15rem; border-radius:10px;
-    font-weight:900; color:#123; opacity:.8; cursor:pointer; user-select:none;
-    min-height: var(--control-h);
-    display:inline-flex; align-items:center;
-  }
-  .segmented button:focus-visible{ outline:3px solid color-mix(in oklab, var(--focus) 60%, transparent); outline-offset:2px; }
-  .segmented button.is-active{ opacity:1; color:#0b2640; text-shadow:0 1px 0 rgba(255,255,255,.45); }
+  /* původní segmented – skryjeme níže */
+  .segmented{ display:inline-flex; width:100%; }
 
   /* skrytý select (a11y) */
   select[data-upgraded="segmented"]{
@@ -300,31 +409,47 @@
     overflow:hidden; white-space:nowrap; border:0; padding:0; margin:-1px;
   }
 
-  /* Vizuál sheetu */
-  &[data-behavior="sheet"].is-open{ box-shadow: 0 32px 66px rgba(12,36,80,.26); }
+  &[data-behavior="sheet"].is-open{
+    box-shadow: 0 32px 66px rgba(12,36,80,.26);
+  }
 
-  /* odstranění duplicitního resetu v action baru */
   .filter-actions button[type="reset"]{ display:none; }
 
   /* Fallback: dvojice Od/Do */
-  .date-range{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
-  @media (max-width: 900px){ .date-range{ grid-template-columns: 1fr; } }
+  .date-range{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+    position:relative;
+  }
+  @media (max-width: 900px){
+    .date-range{ grid-template-columns: 1fr; }
+  }
+  .date-range:focus-within::after{
+    content:"";
+    position:absolute; inset:-6px;
+    border-radius: calc(var(--control-radius) + 6px);
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--focus) 20%, transparent);
+    pointer-events:none;
+  }
 
-  /* NEW: Dates combo */
+  /* NEW: Dates combo – kotva */
   .date-combo{
-    inline-size: clamp(220px, 26vw, 340px);
+    inline-size: 100%;
     max-inline-size: 100%;
-    min-inline-size: 220px;
+    min-inline-size: 200px;
     position:relative;
     box-sizing:border-box;
   }
   .date-combo .combo-button{
     display:flex; align-items:center; justify-content:space-between; gap:.5rem;
-    height:var(--control-h); border-radius: var(--control-radius); padding:var(--control-pad-y) var(--control-pad-x);
+    height:var(--control-h);
+    border-radius: var(--control-radius);
+    padding: calc(var(--control-pad-y) + 18px) var(--control-pad-x) var(--control-pad-y);
     font-weight:800; letter-spacing:.2px; color:var(--ink-1);
-    cursor:pointer; user-select:none;
+    cursor:pointer; user-select:none; touch-action: manipulation;
     background:
-      linear-gradient(#ffffff,#ffffff) padding-box,
+      linear-gradient(120deg, rgba(255,255,255,.98), rgba(255,255,255,1)) padding-box,
       linear-gradient(135deg,#d8e8ff,#eef4ff) border-box;
     border:1.25px solid transparent;
     box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 12px 22px rgba(12,36,80,.10);
@@ -336,32 +461,42 @@
   }
   .date-combo .combo-button:hover{ transform: translateY(-1px); }
   .date-combo .combo-button::after{
-    content:""; width:14px; height:14px; flex:0 0 14px;
+    content:"";
+    width:14px; height:14px; flex:0 0 14px;
     background: currentColor; opacity:.85;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23153a60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center / 14px 14px;
             mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23153a60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center / 14px 14px;
     transition: transform .18s ease;
   }
   .date-combo .combo-button[aria-expanded="true"]::after{ transform: rotate(180deg); }
-  .date-combo .combo-button:focus{
+  .date-combo .combo-button:focus,
+  .date-combo .combo-button:focus-visible{
     outline: none;
-    box-shadow:
-      0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent),
-      0 14px 26px rgba(12,36,80,.12);
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent), 0 14px 26px rgba(12,36,80,.12);
     background:
       linear-gradient(#fff,#fff) padding-box,
       linear-gradient(135deg, #c4ddff, #e4efff) border-box;
   }
   .date-combo .combo-text{
-    display:block; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; padding-right:.25rem;
+    display:block;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    padding-right:.25rem;
   }
 
-  /* Inline popover (uvnitř dock panelu – nepoužíváme pro tenhle picker) */
-  .date-combo .combo-popover{ display:none; }
+  .date-combo.is-active .combo-button,
+  .date-combo[data-has-range="true"] .combo-button{
+    background:
+      linear-gradient(115deg, rgba(20,194,197,0.14), rgba(14,136,240,0.10)) padding-box,
+      linear-gradient(135deg,#14c2c5,#0e88f0) border-box;
+    box-shadow: 0 20px 40px rgba(14,136,240,.26), 0 3px 10px rgba(14,136,240,.18);
+  }
+
+  .date-combo .combo-popover[hidden]{ display:none; }
 
   /* Kolaps panelu */
   &.is-collapsed .filters-fieldset{ display:none; }
-
   .filter-group.is-hidden{ display:none; }
 }
 
@@ -369,57 +504,68 @@
 @media (prefers-reduced-motion: reduce){
   #chipNearMe, #filter-nearme{ transition:none; }
   .segmented .seg-indicator{ transition:none; }
+  .ajsee-date-popover,
+  .ajsee-date-popover-overlay,
+  .ajsee-date-overlay,
+  [data-ajsee-date-overlay]{
+    animation:none;
+    transition:none;
+  }
 }
 
-/* glass halo */
-:where(.events-filters.filter-dock),
-:where(form.filter-dock){
-  position: relative; isolation: isolate;
-}
-:where(.events-filters.filter-dock)::before,
-:where(form.filter-dock)::before{
-  content:""; position:absolute; inset:0; border-radius: inherit;
-  background:
-    radial-gradient(140% 100% at 20% -10%, rgba(14,136,240,.08), transparent 55%),
-    radial-gradient(120% 80% at 85% 10%, rgba(0,192,217,.08), transparent 60%);
-  pointer-events:none; z-index:0;
-}
-
-/* Label typografie + ikonky */
+/* Label + whitelist ikon */
 :where(.events-filters.filter-dock, form.filter-dock) label{
-  display:inline-flex; align-items:center; gap:.5rem;
-  font-family: var(--font-sans);
-  font-size:12.5px; line-height:1.1; text-transform:uppercase;
-  letter-spacing:.28px; font-weight:900;
+  font-size:12.5px;
+  line-height:1.1;
+  text-transform:uppercase;
+  letter-spacing:.28px;
+  font-weight:900;
   color: color-mix(in oklab, var(--ink-2) 92%, #000 8%);
 }
 :where(.events-filters.filter-dock, form.filter-dock) label::before{
-  content:""; flex:0 0 18px; height:18px; opacity:.7; background: currentColor;
-  -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:18px 18px;
-          mask-repeat:no-repeat;         mask-position:center;         mask-size:18px 18px;
+  content:"";
+  flex:0 0 18px;
+  height:18px;
+  opacity:.7;
+  background: currentColor;
+  -webkit-mask-repeat:no-repeat;
+  -webkit-mask-position:center;
+  -webkit-mask-size:18px 18px;
+          mask-repeat:no-repeat;
+          mask-position:center;
+          mask-size:18px 18px;
+  display:none;
 }
-:where(.events-filters.filter-dock, form.filter-dock) label[for="filter-city"]::before{
+:where(.events-filters.filter-dock, form.filter-dock) label[for="filter-city"]::before,
+:where(.events-filters.filter-dock, form.filter-dock) label[for="events-city-filter"]::before{
+  display:inline-block;
   -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z'/%3E%3C/svg%3E");
           mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z'/%3E%3C/svg%3E");
+}
+:where(.events-filters.filter-dock, form.filter-dock) label[for="filter-keyword"]::before{
+  display:inline-block;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14Zm10 16-4.3-4.3' stroke='black' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+          mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14Zm10 16-4.3-4.3' stroke='black' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 :where(.events-filters.filter-dock, form.filter-dock) label[for="filter-date-from"]::before,
 :where(.events-filters.filter-dock, form.filter-dock) label[for="filter-date-to"]::before,
 :where(.events-filters.filter-dock, form.filter-dock) label[for="date-combo-button"]::before{
-  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2v3m10-3v3M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  display:inline-block;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2v3m10-3v3M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
           mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2v3m10-3v3M3 9h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z' stroke='black' stroke-width='2' fill='none'/%3E%3C/svg%3E");
 }
-
-/* Fallback: schovat mask ikony */
 @supports not ((-webkit-mask: url("")) or (mask: url(""))){
   :where(.events-filters.filter-dock, form.filter-dock) label::before{ display:none; }
 }
 
-/* Kategorie select caret */
+/* Kategorie select caret (pole samotné – ne dropdown) */
 :where(.events-filters.filter-dock, form.filter-dock) select.styled-select,
 :where(.events-filters.filter-dock, form.filter-dock) #filter-category,
 :where(.events-filters.filter-dock, form.filter-dock) #events-category-filter{
-  appearance:none; -webkit-appearance:none;
-  font-weight:800; letter-spacing:.2px;
+  appearance:none;
+  -webkit-appearance:none;
+  font-weight:800;
+  letter-spacing:.2px;
   background:
     linear-gradient(#ffffff,#ffffff) padding-box,
     linear-gradient(135deg,#d8e8ff,#eef4ff) border-box;
@@ -428,19 +574,35 @@
   min-height: var(--control-h);
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23153a60' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 14px center; background-size:14px;
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  background-size:14px;
 }
 :where(.events-filters.filter-dock, form.filter-dock) select.styled-select:focus,
 :where(.events-filters.filter-dock, form.filter-dock) #filter-category:focus,
 :where(.events-filters.filter-dock, form.filter-dock) #events-category-filter:focus{
-  box-shadow:
-    0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent),
-    0 16px 28px rgba(12,36,80,.14);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent), 0 16px 28px rgba(12,36,80,.14);
+}
+
+/* Pozn.: nativní dropdown <select> nejde “glass” stylem spolehlivě skinovat jen přes CSS.
+   Níže alespoň zjemníme OPTION barvy (funguje hlavně ve Firefoxu). */
+:where(.events-filters.filter-dock, form.filter-dock)
+  :is(select.styled-select, #filter-category, #events-category-filter) option{
+  background: #ffffff;
+  color: var(--ink-1);
+}
+@media (prefers-color-scheme: dark){
+  :where(.events-filters.filter-dock, form.filter-dock)
+    :is(select.styled-select, #filter-category, #events-category-filter) option{
+    background:#0b1220;
+    color:#e6f0ff;
+  }
 }
 
 /* Chrome kalendář indikátor pryč */
 :where(.events-filters.filter-dock, form.filter-dock) input[type="date"]::-webkit-calendar-picker-indicator{
-  opacity:0; pointer-events:none;
+  opacity:0;
+  pointer-events:none;
 }
 
 /* Datum šířky */
@@ -448,7 +610,8 @@
 :where(.events-filters.filter-dock, form.filter-dock) input.styled-input[name$="from"],
 :where(.events-filters.filter-dock, form.filter-dock) input.styled-input[id$="to"],
 :where(.events-filters.filter-dock, form.filter-dock) input.styled-input[name$="to"]{
-  font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
   inline-size: var(--date-ch);
   width: auto;
   max-inline-size: 100%;
@@ -464,158 +627,920 @@
   }
 }
 
-/* Sdílený obrys pro .date-range */
-:where(.events-filters.filter-dock, form.filter-dock) .date-range{ position:relative; }
-:where(.events-filters.filter-dock, form.filter-dock) .date-range:focus-within::after{
-  content:""; position:absolute; inset:-6px;
-  border-radius: calc(var(--control-radius) + 6px);
-  box-shadow: 0 0 0 6px color-mix(in oklab, var(--focus) 20%, transparent);
-  pointer-events:none;
-}
-
-/* Keyword max-šířka */
+/* Keyword – necháme vyplnit dlaždici */
 :where(.events-filters.filter-dock, form.filter-dock) .filter-keyword .styled-input{
-  font-weight:700; letter-spacing:.1px;
-  inline-size: min(100%, var(--keyword-max));
-  width: min(100%, var(--keyword-max));
+  font-weight:700;
+  letter-spacing:.1px;
+  inline-size: 100%;
+  width: 100%;
   justify-self: start;
 }
 
-/* CTA „Použít“ & Toggle */
+/* CTA „Použít“ */
 :where(.events-filters.filter-dock, form.filter-dock) .filter-actions .btn.btn-primary{
-  border-radius:18px; padding:1rem 1.45rem;
+  border-radius:18px;
+  padding:1rem 1.45rem;
   background: linear-gradient(180deg, var(--cta-1), var(--cta-2));
-  box-shadow:
-    0 26px 52px rgba(14,136,240,.26),
-    0 4px 12px rgba(14,136,240,.22),
-    inset 0 1px 0 rgba(255,255,255,.38);
+  box-shadow: 0 26px 52px rgba(14,136,240,.26), 0 4px 12px rgba(14,136,240,.22), inset 0 1px 0 rgba(255,255,255,.38);
 }
-:where(.events-filters.filter-dock, form.filter-dock) .filters-toggle{
-  display:inline-flex; align-items:center; gap:.6rem;
-  padding:.65rem 1rem; border-radius:999px;
-  background:
-    linear-gradient(#fff,#fff) padding-box,
-    linear-gradient(135deg,#e8f1ff,#f9fbff) border-box;
-  border:1px solid transparent;
-  box-shadow:0 8px 18px rgba(12,36,80,.08);
-  font-weight:900; color:#0b2640;
-  min-height: var(--control-h);
+
+/* skryj staré sekční nadpisy */
+:where(.events-filters.filter-dock, form.filter-dock) .filters-section-title,
+:where(.events-filters.filter-dock, form.filter-dock) .section-title{
+  display:none;
 }
-:where(.events-filters.filter-dock, form.filter-dock) .filters-toggle .label{ min-width:max-content; }
 
-/* spacing tweak */
-:where(.events-filters.filter-dock, form.filter-dock) .filter-group{ --gap: .35rem; }
-
-/* čištění inline ikonek */
-:where(.events-filters.filter-dock, form.filter-dock) label + :is(.icon,.ico,.fi,svg,i,[class*="icon"]){ display:none; }
-:where(.events-filters.filter-dock, form.filter-dock) .filter-group :is(.icon,.ico,.fi,svg,i,[class*="icon"]){ display:none; }
+/* čistky inline ikon */
+:where(.events-filters.filter-dock, form.filter-dock) label + :is(.icon,.ico,.fi,svg,i,[class*="icon"]){
+  display:none;
+}
+:where(.events-filters.filter-dock, form.filter-dock) .filter-group :is(.icon,.ico,.fi,svg,i,[class*="icon"]){
+  display:none;
+}
 
 /* a11y: legend hidden */
 :where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset > legend{
-  position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px);
-  clip-path:inset(50%); white-space:nowrap;
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip:rect(1px,1px,1px,1px);
+  clip-path:inset(50%);
+  white-space:nowrap;
 }
 
-/* typeahead nad ostatními, pod popoverem */
-:where(.events-filters.filter-dock, form.filter-dock)
-  :is(.tt-menu,.typeahead-list,.autocomplete-list,.suggestions){
-  position:relative; z-index: 2000;
-}
-
-/* badge sekundární vzhled */
-:where(.events-filters.filter-dock, form.filter-dock) .filters-toggle .badge{
-  display:inline-flex; align-items:center; justify-content:center;
-  min-width:28px; height:22px; padding:0 .55rem;
-  border-radius:999px; background:var(--cta-2); color:#fff; font-size:.8rem; font-weight:900;
-  box-shadow:0 10px 20px rgba(14,136,240,.25), inset 0 1px 0 rgba(255,255,255,.35);
-}
-
-/* HOTFIX: nepřetékat v gridu */
-:where(.events-filters.filter-dock, form.filter-dock) .filter-group{ min-width: 0; }
-
-/* date-combo wrapper vpravo */
-:where(.events-filters.filter-dock, form.filter-dock) .date-combo{
-  inline-size: min(100%, 340px);
-  max-inline-size: 100%;
-  min-inline-size: 220px;
-  justify-self: end;
-}
-:where(.events-filters.filter-dock, form.filter-dock) .date-combo .combo-button{ inline-size: 100%; }
-@media (max-width: 1280px){
-  :where(.events-filters.filter-dock, form.filter-dock) .date-combo{ inline-size: min(100%, 300px); }
-}
-
-/* ───────── SINGLE, sjednocený blok popoveru ───────── */
-.ajsee-date-popover{
-  position: fixed;
-  z-index: 10010;
-  --safe: 16px;
-  width: min(max(480px, var(--ajsee-popover-width, 560px)), calc(100vw - var(--safe)*2));
-  max-width: 720px;
-  max-height: min(var(--ajsee-popover-height, 420px), calc(100vh - var(--safe)*2));
-  overflow: auto;
-
-  /* right-aligned coords dodá JS; tady je jen clamping */
-  left: clamp(var(--safe), var(--ajsee-popover-left, var(--safe)),  calc(100vw - 100% - var(--safe)));
-  top:  clamp(var(--safe), var(--ajsee-popover-top,  var(--safe)),  calc(100vh - 100% - var(--safe)));
-
+/* ─── PREMIUM GLASS: dropdowny knihoven (pokud je používáš) ─── */
+:where(
+  .choices__list--dropdown,
+  .choices__list[aria-expanded="true"],
+  .select2-dropdown,
+  .ts-dropdown,
+  .tomselect .ts-dropdown,
+  .nice-select .list
+){
+  z-index: var(--flt-menu-z);
+  border-radius: 18px;
+  border: 1px solid var(--flt-brd);
+  box-shadow: var(--flt-shadow), inset 0 1px 0 rgba(255,255,255,.45);
   background:
-    radial-gradient(60% 80% at 30% 0%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(80% 90% at 25% 0%, rgba(255,255,255,.88), transparent 55%),
     var(--flt-bg);
   -webkit-backdrop-filter: blur(var(--flt-blur));
           backdrop-filter: blur(var(--flt-blur));
+  overflow: hidden;
+  outline: 1px solid rgba(13,30,60,.06);
+  outline-offset: -1px;
+}
+:where(
+  .choices__list--dropdown,
+  .select2-dropdown,
+  .ts-dropdown,
+  .nice-select .list
+) :where(
+  .choices__item,
+  .select2-results__option,
+  .option,
+  .item,
+  li
+){
+  padding: 12px 12px;
+  border-radius: 14px;
+  font-weight: 800;
+  color: var(--ink-1);
+}
+:where(
+  .choices__list--dropdown,
+  .select2-dropdown,
+  .ts-dropdown,
+  .nice-select .list
+) :where(
+  .choices__item--selectable:hover,
+  .select2-results__option--highlighted,
+  .option:hover,
+  .item:hover,
+  li:hover
+){
+  background:
+    linear-gradient(120deg, rgba(20,194,197,0.12), rgba(14,136,240,0.10)) padding-box,
+    linear-gradient(135deg, rgba(20,194,197,0.55), rgba(14,136,240,0.55)) border-box;
+  box-shadow: 0 14px 28px rgba(12,36,80,.14);
+}
+
+@media (prefers-color-scheme: dark){
+  :where(
+    .choices__list--dropdown,
+    .choices__list[aria-expanded="true"],
+    .select2-dropdown,
+    .ts-dropdown,
+    .tomselect .ts-dropdown,
+    .nice-select .list
+  ){
+    border-color: rgba(255,255,255,.10);
+    outline-color: rgba(255,255,255,.08);
+  }
+}
+
+/* ─── LAYOUT ─── */
+:where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset{
+  display:flex;
+  flex-wrap:wrap;
+  column-gap:12px;
+  row-gap:12px;
+  align-items:flex-start;
+  align-content:flex-start;
+}
+:where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset .filter-group{
+  min-width:220px;
+  flex:1 1 100%;
+}
+
+/* Zrušit „Řazení“ sekci (kolabované) */
+:where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset .filter-group:has(.segmented){
+  display:none;
+  visibility:hidden;
+  height:0;
+  margin:0;
+  padding:0;
+  border:0;
+  overflow:hidden;
+}
+
+/* Tablet */
+@media (min-width: 720px) and (max-width: 1199.98px){
+  :where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset .filter-group{
+    flex:1 1 48%;
+  }
+  :where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset .filter-actions{
+    flex-basis:100%;
+    justify-content:flex-end;
+  }
+}
+
+/* Desktop ≥1200px */
+@media (min-width: 1200px){
+  :where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset{
+    flex-wrap: nowrap;
+    gap: 16px;
+    align-items: stretch;
+  }
+  :where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset .filter-group{
+    flex: 1 1 24%;
+  }
+  :where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset .filter-group:has(#filter-keyword){
+    order:40;
+    flex: 2 1 28%;
+  }
+  :where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset .filter-actions{
+    order:50;
+    flex:0 0 auto;
+    margin-left:auto;
+    align-self:center;
+    display:flex;
+    align-items:center;
+  }
+  :where(.events-filters.filter-dock, form.filter-dock) .filters-fieldset .filter-group:has(#filter-sort){
+    display:none;
+  }
+}
+
+/* ───────── Date-combo popover (TM-like) ───────── */
+@keyframes ajsee-date-popover-in{
+  from{ opacity:0; transform: translateY(4px) scale(.98); }
+  to  { opacity:1; transform: translateY(0) scale(1); }
+}
+
+/* Root popover pro date-combo – společné pro starší (.dc-*) i nové (.cal-*) markup */
+#date-combo-popover,
+.ajsee-date-popover[data-owner="date-combo"]{
+  position: fixed;
+  z-index: var(--ajsee-popover-z);
+  --safe: 16px;
+
+  width: min(calc(100vw - var(--safe)*2), 720px);
+  max-width: 720px;
+
+  max-height: min(var(--ajsee-popover-height, 520px), calc(100vh - var(--safe)*2));
+  overflow: hidden;
+  overscroll-behavior: contain;
+
+  /* ✅ HOTFIX: používej přímo JS vypočtené px (clamp v CSS rozbíjel kotvení) */
+  left: var(--ajsee-popover-left, var(--safe));
+  top:  var(--ajsee-popover-top,  var(--safe));
+
+  /* jistota: žádné right/bottom auto-centrování */
+  right: auto;
+  bottom: auto;
+
+  /* jistota: žádné translateX(-50%) z legacy/vendora */
+  transform: translateY(0) scale(1);
+
+  background:
+    radial-gradient(60% 80% at 30% 0%, rgba(255,255,255,.95), transparent 60%),
+    rgba(255,255,255,.98);
+  background-color: rgba(255,255,255,.98);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
   border:1px solid var(--flt-brd);
   border-radius: 16px;
   box-shadow: var(--flt-shadow), inset 0 1px 0 rgba(255,255,255,.35);
   box-sizing:border-box;
   color:#0f172a;
   padding: 14px;
+
+  animation: ajsee-date-popover-in .18s ease-out;
+}
+#date-combo-popover[hidden],
+.ajsee-date-popover[data-owner="date-combo"][hidden]{ display:none; }
+
+/* ───── Novější markup (.ajsee-date-inner, .cal-*) – 2 měsíce na desktopu ───── */
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-inner{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding-bottom: 60px;
 }
 
-.ajsee-date-inner{ display:flex; flex-direction:column; gap:12px; }
-.ajsee-date-top{ display:flex; align-items:center; gap:12px; }
-.ajsee-date-top .date-inputs{ display:flex; align-items:center; gap:8px; flex:1; }
-.ajsee-date-top .di{
-  height: 40px; border-radius: 10px; padding: 0 10px; border: 1px solid #e5e7eb; width: 160px; background:#f8fafc;
-  font-weight: 600;
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
 }
-.ajsee-date-top .di-sep{ opacity:.6; }
-.ajsee-date-top .nav{ display:flex; gap:6px; }
-.ajsee-date-top .nav-btn{ width:36px; height:36px; border-radius:8px; border:1px solid #e5e7eb; background:#fff; font-size:18px; }
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-top .date-inputs{ display:none; }
 
-/* two months grid (narrower than before) */
-.cal-wrap{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; min-width: 480px; }
-.cal-head{ font-weight:800; margin: 4px 4px 6px; text-transform: capitalize; }
-.dow{ display:grid; grid-template-columns: repeat(7, 1fr); gap:3px; padding:0 4px; color:#64748b; font-size:12px; }
-.dow span{ text-align:center; padding:6px 0; }
-
-.grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:3px; padding:0 4px 8px; }
-.grid .day,
-.grid .empty{
-  height: 34px; border-radius: 8px; border: 1px solid transparent; background:#fff; text-align:center;
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-top .nav{
+  display:flex;
+  gap:8px;
 }
-.grid .day > span{ pointer-events:none; }
-.grid .day:hover{ background:#f1f5f9; }
-.grid .empty{ cursor:default; }
+.ajsee-date-popover[data-owner="date-combo"] .nav-btn{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  background:
+    linear-gradient(#fff0,#fff0) padding-box,
+    var(--glass-brd) border-box;
+  border:1px solid transparent;
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-size:20px;
+  line-height:1;
+  color:#153a60;
+  cursor:pointer;
+  transition: transform .12s ease, filter .18s ease;
+}
+.ajsee-date-popover[data-owner="date-combo"] .nav-btn:hover{
+  filter:brightness(1.03);
+  transform: translateY(-1px);
+}
+.ajsee-date-popover[data-owner="date-combo"] .nav-btn:active{ transform: translateY(0); }
+.ajsee-date-popover[data-owner="date-combo"] .nav-btn[disabled]{
+  opacity:.45;
+  pointer-events:none;
+  filter:grayscale(0.2);
+}
 
-/* selection */
-.grid .in{ background: #e0f2fe; }
-.grid .start, .grid .end{ background:#0284c7; color:#fff; }
+.ajsee-date-popover[data-owner="date-combo"] .cal-wrap{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:14px;
+  overflow:auto;
+  padding-bottom:12px;
+}
+.ajsee-date-popover[data-owner="date-combo"] .cal-wrap.is-mobile{ grid-template-columns:1fr; }
 
-/* today ring */
-.grid .today{
-  box-shadow: 0 0 0 2px #0ea5e9 inset;
+.ajsee-date-popover[data-owner="date-combo"] .cal-head{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  margin: 4px 4px 6px;
+  text-transform: capitalize;
+  text-align:center;
+  min-height: 42px;
+}
+
+.ajsee-date-popover[data-owner="date-combo"] .cal-dow{
+  display:grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap:3px;
+  padding:0 4px;
+  color:#64748b;
+  font-size:12px;
+}
+.ajsee-date-popover[data-owner="date-combo"] .cal-dow span{
+  text-align:center;
+  padding:6px 0;
+}
+
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid{
+  display:grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap:6px;
+  padding:0 4px 8px;
+}
+
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .day,
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .empty{
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 8px 18px rgba(12,36,80,.06);
+  color:#0f172a;
+  font-weight:600;
+  font-size:16px;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .empty{
+  cursor:default;
+  box-shadow:none;
+  color:#94a3b8;
+}
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .day:hover{ background:#f1f5f9; }
+
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .in{ background:#e0f2fe; }
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .start,
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .end{
+  background:#0284c7;
+  color:#fff;
+}
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .today{
+  box-shadow: inset 0 0 0 2px #0ea5e9;
   border-color:#bae6fd;
 }
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .is-past,
+.ajsee-date-popover[data-owner="date-combo"] .cal-grid .day[disabled]{
+  opacity:.45;
+  cursor:default;
+  pointer-events:none;
+  filter:grayscale(.15);
+}
 
-/* action bar */
-.ajsee-date-actions{
-  display:flex; align-items:center; gap:10px; padding-top:6px; border-top:1px solid #eef2f7;
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions{
+  position: sticky;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-top:none;
+  padding:10px 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0));
+  -webkit-backdrop-filter: blur(0);
+          backdrop-filter: blur(0);
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
 }
-.flex-spacer{ flex:1; }
-.btn{
-  height: 40px; border-radius: 10px; padding: 0 14px; border:1px solid #e5e7eb; background:#fff; font-weight:700;
+.ajsee-date-popover[data-owner="date-combo"] .flex-spacer{ flex:1; }
+
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn{
+  height: 42px;
+  border-radius: 12px;
+  padding: 0 14px;
+  background:
+    linear-gradient(#fff0,#fff0) padding-box,
+    var(--glass-brd) border-box;
+  border:1px solid transparent;
+  box-shadow: var(--glass-shadow);
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+  touch-action: manipulation;
 }
-.btn.ghost{ background:#fff; }
-.btn.primary{ background: linear-gradient(90deg, #14c2c5, #0ea5e9); border:none; color:#fff; }
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn:hover{ filter:brightness(1.03); }
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn.primary{
+  background: linear-gradient(90deg, #14c2c5, #0ea5e9);
+  border:none;
+  color:#fff;
+  box-shadow: 0 16px 38px rgba(14,165,233,.28), 0 3px 10px rgba(14,165,233,.22), inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+/* Schovat „Tento víkend“ – 3. quick volbu */
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions > *:nth-child(3),
+#date-combo-popover .ajsee-date-actions > *:nth-child(3),
+#date-combo-popover .dc-quick > .dc-pill:nth-child(3),
+.ajsee-date-popover[data-owner="date-combo"] .dc-quick > .dc-pill:nth-child(3){
+  display:none;
+}
+
+/* Mobile úpravy */
+@media (max-width: 560px){
+  .ajsee-date-popover[data-owner="date-combo"]{
+    width: calc(100vw - var(--safe)*2);
+    max-height: calc(100vh - var(--safe)*2);
+    border-radius: 18px;
+    padding: 12px;
+  }
+  .ajsee-date-popover[data-owner="date-combo"] .ajsee-date-top{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:8px;
+    align-items:center;
+  }
+  .ajsee-date-popover[data-owner="date-combo"] .ajsee-date-top .date-inputs{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:8px;
+    grid-column:1 / -1;
+    order:-1;
+  }
+  .ajsee-date-popover[data-owner="date-combo"] .ajsee-date-top .nav{ display:none; }
+  .ajsee-date-popover[data-owner="date-combo"] .cal-wrap,
+  .ajsee-date-popover[data-owner="date-combo"] .cal-wrap.is-mobile{ grid-template-columns:1fr; }
+  .ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:8px;
+    padding: 10px 8px;
+  }
+  .ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn{
+    min-width:0;
+    height:44px;
+    padding:0 12px;
+    font-size:14px;
+    font-weight:800;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    overflow:hidden;
+  }
+}
+
+/* Desktop: vynutit 2 měsíce i při .is-mobile */
+@media (min-width: 720px){
+  .ajsee-date-popover[data-owner="date-combo"] .cal-wrap,
+  .ajsee-date-popover[data-owner="date-combo"] .cal-wrap.is-mobile{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+/* ───── Starší fallback markup (.dc-*) ───── */
+#date-combo-popover .dc-panel,
+.ajsee-date-popover[data-owner="date-combo"] .dc-panel{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+#date-combo-popover .dc-header,
+.ajsee-date-popover[data-owner="date-combo"] .dc-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:4px;
+}
+#date-combo-popover .dc-month,
+.ajsee-date-popover[data-owner="date-combo"] .dc-month{
+  flex:1;
+  text-align:center;
+  font-weight:700;
+  text-transform:capitalize;
+}
+#date-combo-popover .dc-nav,
+.ajsee-date-popover[data-owner="date-combo"] .dc-nav{
+  border:none;
+  background:transparent;
+  border-radius:999px;
+  width:30px;
+  height:30px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  cursor:pointer;
+  color:#0f172a;
+  transition: background-color .15s ease, color .15s ease, transform .15s ease;
+}
+#date-combo-popover .dc-nav:hover,
+.ajsee-date-popover[data-owner="date-combo"] .dc-nav:hover{
+  background:#e5f1ff;
+  color:#0b7aff;
+  transform: translateY(-1px);
+}
+#date-combo-popover .dc-weekdays,
+.ajsee-date-popover[data-owner="date-combo"] .dc-weekdays{
+  display:grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap:4px;
+  margin-bottom:4px;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:#64748b;
+}
+#date-combo-popover .dc-weekdays span,
+.ajsee-date-popover[data-owner="date-combo"] .dc-weekdays span{ text-align:center; }
+
+#date-combo-popover .dc-grid,
+.ajsee-date-popover[data-owner="date-combo"] .dc-grid{
+  display:grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap:4px;
+  margin-bottom:8px;
+}
+#date-combo-popover .dc-day,
+.ajsee-date-popover[data-owner="date-combo"] .dc-day{
+  border:none;
+  background:#fff;
+  border-radius:12px;
+  padding:6px 0;
+  text-align:center;
+  font-size:12px;
+  cursor:pointer;
+  color:#0f172a;
+  font-weight:600;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 8px 18px rgba(12,36,80,.06);
+  transition: background-color .14s ease, color .14s ease, box-shadow .14s ease;
+}
+#date-combo-popover .dc-day.is-out,
+.ajsee-date-popover[data-owner="date-combo"] .dc-day.is-out{ opacity:.35; }
+#date-combo-popover .dc-day.is-today,
+.ajsee-date-popover[data-owner="date-combo"] .dc-day.is-today{ box-shadow: inset 0 0 0 2px #0ea5e9; }
+#date-combo-popover .dc-day.is-in-range,
+.ajsee-date-popover[data-owner="date-combo"] .dc-day.is-in-range{ background:#e0f2fe; }
+#date-combo-popover .dc-day.is-start,
+#date-combo-popover .dc-day.is-end,
+.ajsee-date-popover[data-owner="date-combo"] .dc-day.is-start,
+.ajsee-date-popover[data-owner="date-combo"] .dc-day.is-end{
+  background:#0284c7;
+  color:#ffffff;
+}
+#date-combo-popover .dc-day:hover,
+.ajsee-date-popover[data-owner="date-combo"] .dc-day:hover{ background:#f1f5f9; }
+
+#date-combo-popover .dc-footer,
+.ajsee-date-popover[data-owner="date-combo"] .dc-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:2px;
+}
+#date-combo-popover .dc-quick,
+.ajsee-date-popover[data-owner="date-combo"] .dc-quick{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+}
+#date-combo-popover .dc-pill,
+.ajsee-date-popover[data-owner="date-combo"] .dc-pill{
+  border:none;
+  border-radius:999px;
+  padding:4px 10px;
+  font-size:11px;
+  line-height:1.2;
+  cursor:pointer;
+  background:#f1f5f9;
+  color:#0f172a;
+  white-space:nowrap;
+  transition: background-color .14s ease, color .14s ease, box-shadow .14s ease;
+}
+#date-combo-popover .dc-pill:hover,
+.ajsee-date-popover[data-owner="date-combo"] .dc-pill:hover{ background:#e2e8f0; }
+
+#date-combo-popover .dc-clear,
+.ajsee-date-popover[data-owner="date-combo"] .dc-clear{
+  border:none;
+  background:transparent;
+  font-size:11px;
+  color:#64748b;
+  cursor:pointer;
+  padding:4px 0;
+  white-space:nowrap;
+  text-decoration:underline;
+  text-underline-offset:2px;
+}
+
+/* Dark mode pro popover */
+@media (prefers-color-scheme: dark){
+  #date-combo-popover,
+  .ajsee-date-popover[data-owner="date-combo"]{
+    color:#e6f0ff;
+    border-color: rgba(255,255,255,.10);
+    box-shadow: 0 24px 48px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+
+  #date-combo-popover .dc-day,
+  .ajsee-date-popover[data-owner="date-combo"] .dc-day{
+    background:#0b1220;
+    color:#e6f0ff;
+    box-shadow:none;
+  }
+  #date-combo-popover .dc-day:hover,
+  .ajsee-date-popover[data-owner="date-combo"] .dc-day:hover{ background:#0f1a2d; }
+
+  .ajsee-date-popover[data-owner="date-combo"] .cal-grid .day,
+  .ajsee-date-popover[data-owner="date-combo"] .cal-grid .empty{
+    background:#0b1220;
+    border-color:#182235;
+    box-shadow:none;
+    color:#e6f0ff;
+  }
+}
+
+/* ── Date-combo quick tlačítka (Kdykoliv / Dnes / Vymazat) ── */
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions{
+  align-items: center;
+  gap: 10px;
+}
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn{
+  font-size: 13px;
+  font-weight: 800;
+}
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn:not(.primary){
+  border-radius: 999px;
+  padding-inline: 14px;
+  height: 38px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  background:
+    linear-gradient(#ffffff,#ffffff) padding-box,
+    linear-gradient(135deg,#dde8ff,#f6f9ff) border-box;
+  border: 1px solid transparent;
+  box-shadow: 0 10px 20px rgba(12,36,80,.18);
+  color:#0b2640;
+}
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn:not(.primary):hover{
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: 0 14px 26px rgba(12,36,80,.24), 0 2px 8px rgba(12,36,80,.18);
+}
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn:not(.primary):active{
+  transform: translateY(0);
+  box-shadow: 0 8px 16px rgba(12,36,80,.18), 0 1px 4px rgba(12,36,80,.18);
+}
+.ajsee-date-popover[data-owner="date-combo"] .ajsee-date-actions .btn:not(.primary):last-of-type{
+  background:
+    linear-gradient(#f8fafc,#ffffff) padding-box,
+    linear-gradient(135deg,#e2e8f0,#f9fafb) border-box;
+  color:#64748b;
+}
+
+/* ───────── New Ticketmaster-like popover (JS: .ajsee-date-popover.ajsee-date-tm) ───────── */
+.ajsee-date-popover.ajsee-date-tm{
+  background:#fff;
+  border-radius:16px;
+  border:1px solid var(--flt-brd);
+  box-shadow: var(--flt-shadow), inset 0 1px 0 rgba(255,255,255,.35);
+  overflow:hidden;
+}
+.ajsee-date-tm__tabs{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:12px 16px 0;
+}
+.ajsee-date-tm__tab{
+  border:0;
+  background:transparent;
+  padding:8px 4px;
+  font:inherit;
+  font-weight:900;
+  cursor:pointer;
+  opacity:.75;
+  border-bottom:2px solid transparent;
+}
+.ajsee-date-tm__tab.is-active{
+  opacity:1;
+  border-bottom-color: currentColor;
+}
+.ajsee-date-tm__inputs{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:14px;
+  padding:10px 16px 8px;
+}
+.ajsee-date-tm__field label{
+  display:block;
+  font-size:12px;
+  opacity:.7;
+  margin-bottom:6px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.ajsee-date-tm__field input{
+  width:100%;
+  height:44px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,.18);
+  padding:0 12px;
+  font:inherit;
+  outline:none;
+  background: #fff;
+}
+.ajsee-date-tm__field input:focus{
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--focus) 28%, transparent);
+  border-color: rgba(2,108,223,.65);
+}
+.ajsee-date-tm__cal{ padding:4px 16px 10px; }
+.ajsee-date-tm__months{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:18px;
+}
+@media (max-width: 640px){
+  .ajsee-date-tm__months{ grid-template-columns: 1fr; }
+}
+.ajsee-date-tm__month-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:4px 0 8px;
+}
+.ajsee-date-tm__title{ font-weight:900; }
+.ajsee-date-tm__nav{
+  border:1px solid transparent;
+  background: var(--glass-bg);
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: var(--glass-shadow);
+}
+.ajsee-date-tm__nav:disabled{ cursor:not-allowed; opacity:.35; }
+
+.ajsee-date-tm__dow{
+  display:grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap:4px;
+  font-size:12px;
+  opacity:.65;
+  margin-bottom:6px;
+}
+.ajsee-date-tm__dow span{ text-align:center; }
+
+.ajsee-date-tm__grid{
+  display:grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap:6px;
+}
+.ajsee-date-tm__cell{ height:44px; }
+.ajsee-date-tm__empty{ height:44px; }
+
+.ajsee-date-tm__day{
+  width:100%;
+  height:44px;
+  border:1px solid transparent;
+  border-radius:12px;
+  background:#fff;
+  cursor:pointer;
+  font:inherit;
+  font-weight:700;
+  box-shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 8px 18px rgba(12,36,80,.06);
+  position:relative;
+}
+.ajsee-date-tm__day:hover{ background:#f1f5f9; }
+.ajsee-date-tm__day.is-disabled{
+  cursor:not-allowed;
+  opacity:.45;
+  pointer-events:none;
+  filter:grayscale(.15);
+  box-shadow:none;
+}
+.ajsee-date-tm__day.is-today::after{
+  content:'';
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:7px;
+  width:16px;
+  height:2px;
+  border-radius:2px;
+  background: color-mix(in oklab, var(--cta-2) 85%, #fff 15%);
+}
+.ajsee-date-tm__day.is-in-range{
+  background: color-mix(in oklab, var(--cta-2) 12%, #fff 88%);
+}
+.ajsee-date-tm__day.is-start,
+.ajsee-date-tm__day.is-end{
+  background: linear-gradient(180deg, var(--cta-1), var(--cta-2));
+  color:#fff;
+  box-shadow: 0 16px 34px rgba(14,136,240,.22), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.ajsee-date-tm__actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:10px 16px 14px;
+  border-top:1px solid rgba(0,0,0,.08);
+}
+.ajsee-date-tm__btn{
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  padding:10px 12px;
+  border-radius:999px;
+  font:inherit;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.ajsee-date-tm__btn:hover{ background: rgba(0,0,0,.06); }
+.ajsee-date-tm__btn.primary{
+  border-radius:14px;
+  text-transform:none;
+  letter-spacing:0;
+  background: linear-gradient(180deg, var(--cta-1), var(--cta-2));
+  color:#fff;
+  padding:10px 16px;
+  box-shadow: 0 22px 44px rgba(14,136,240,.24), 0 3px 10px rgba(14,136,240,.20), inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Typeahead dropdown (Město) – GLASS (bez !important)
+   Pozn.: pokud je menu appendované do <body>, je nutné stylovat top-level.
+   ───────────────────────────────────────────────────────────── */
+html body .tt-menu.tt-menu,
+html body .typeahead-list.typeahead-list,
+html body .autocomplete-list.autocomplete-list,
+html body .suggestions.suggestions{
+  z-index: var(--flt-menu-z);
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid var(--flt-brd);
+  background:
+    radial-gradient(60% 80% at 30% 0%, rgba(255,255,255,.55), transparent 60%),
+    rgba(255,255,255,.72);
+  -webkit-backdrop-filter: blur(var(--flt-blur));
+          backdrop-filter: blur(var(--flt-blur));
+  box-shadow: var(--flt-shadow), inset 0 1px 0 rgba(255,255,255,.40);
+  overflow: auto;
+  max-height: min(420px, calc(100vh - 220px));
+  font-family: var(--font-sans);
+}
+
+/* Typeahead.js často kreslí pozadí uvnitř dataset wrapperu */
+html body .tt-menu.tt-menu .tt-dataset{ border-radius: 16px; }
+
+/* Nadpis/sekce (např. “NÁVRHY MĚST”) */
+html body .tt-menu.tt-menu .tt-header,
+html body .tt-menu.tt-menu .suggestions-title,
+html body .suggestions.suggestions .suggestions-title{
+  padding: 8px 10px 6px;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: color-mix(in oklab, var(--ink-2) 70%, #000 30%);
+  opacity: .75;
+}
+
+/* Položky */
+html body .tt-menu.tt-menu .tt-suggestion,
+html body .tt-menu.tt-menu .tt-selectable,
+html body .typeahead-list.typeahead-list li,
+html body .autocomplete-list.autocomplete-list li,
+html body .suggestions.suggestions li{
+  padding: .75rem .85rem;
+  border-radius: 14px;
+  color: var(--ink-1);
+  font-weight: 800;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Hover / aktivní (tt-cursor) */
+html body .tt-menu.tt-menu .tt-suggestion:hover,
+html body .tt-menu.tt-menu .tt-selectable:hover,
+html body .tt-menu.tt-menu .tt-cursor,
+html body .typeahead-list.typeahead-list li:hover,
+html body .autocomplete-list.autocomplete-list li:hover,
+html body .suggestions.suggestions li:hover,
+html body .tt-menu.tt-menu [aria-selected="true"],
+html body .suggestions.suggestions [aria-selected="true"]{
+  background: color-mix(in oklab, var(--cta-2) 10%, #fff 90%);
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark){
+  html body .tt-menu.tt-menu,
+  html body .typeahead-list.typeahead-list,
+  html body .autocomplete-list.autocomplete-list,
+  html body .suggestions.suggestions{
+    border-color: rgba(255,255,255,.10);
+    background:
+      radial-gradient(60% 80% at 30% 0%, rgba(255,255,255,.08), transparent 60%),
+      rgba(15,23,42,.72);
+    box-shadow: 0 24px 48px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  html body .tt-menu.tt-menu .tt-suggestion:hover,
+  html body .tt-menu.tt-menu .tt-cursor,
+  html body .tt-menu.tt-menu [aria-selected="true"]{
+    background: rgba(255,255,255,.08);
+  }
+}

@@ -9,6 +9,12 @@
   --nav-active-text: #0a2d4a;
   --nav-active-bg-start: #e9f5ff;
   --nav-active-bg-end: #dff0ff;
+
+  /* dropdown */
+  --lang-surface: rgba(255,255,255,0.78);
+  --lang-surface-strong: #ffffff;
+  --lang-border: rgba(10,45,74,0.10);
+  --lang-shadow: 0 12px 34px rgba(0, 40, 80, 0.18);
 }
 
 .site-header {
@@ -24,7 +30,7 @@
   transition: background 0.18s;
 }
 
-/* GRID (logo | nav | jazyky) – brání kolizi s vlaječkami */
+/* GRID (logo | nav | jazyky) – brání kolizi */
 .header-inner {
   max-width: 1300px;
   margin: 0 auto;
@@ -55,7 +61,7 @@
 }
 
 /* ------------------------
-   LANGUAGE SWITCHERS
+   LANGUAGE SWITCHERS (MOBILE)
    ------------------------ */
 
 .language-switcher {
@@ -77,22 +83,188 @@
       padding: 1.2rem 1rem 2rem;
       gap: 1rem;
       width: 100%;
-      background: #fff;
-      border-top: 1px solid #eee;
+      background: transparent;
+      border-top: 1px solid #24bed977;
     }
   }
 }
 
+/* base .lang-btn – společné chování */
 .lang-btn {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 1.35rem;
-  transition: transform 0.15s;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, opacity .15s;
   padding: 0.22em 0.5em;
+
+  &:hover { transform: scale(1.06); }
+}
+
+/* vlaječky v mobil switcheru (ikonové) */
+.language-switcher .lang-btn {
+  font-size: 1.25rem;
+  padding: 0.22em 0.45em;
+}
+
+/* ------------------------
+   DESKTOP LANGUAGE DROPDOWN (mamma-mia like)
+   ------------------------ */
+
+.lang-dropdown{
+  justify-self: end;
+  position: relative;
+  z-index: 3000;
+
+  @media (max-width: 950px){
+    display: none; /* desktop dropdown pryč na mobilu */
+  }
+}
+
+/* trigger pill */
+.lang-trigger{
+  appearance: none;
+  border: 1px solid var(--lang-border);
+  background: var(--lang-surface);
+  color: #0a2d4a;
+  border-radius: 999px;
+
+  display: inline-flex;
+  flex-direction: row; // <- důležité, pokud někde globálně nastavuješ button { flex-direction: column; }
+  align-items: center;
+  gap: .55rem;
+
+  padding: .52rem .72rem;
+  cursor: pointer;
+
+  box-shadow: 0 6px 18px rgba(0, 40, 80, 0.10);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+
+  white-space: nowrap;
   line-height: 1;
 
-  &:hover { transform: scale(1.11); }
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+
+  .flag{
+    display: block;
+    width: 22px;
+    height: 16px;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  }
+
+  .lang-current{
+    font-weight: 700;
+    font-size: .98rem;
+    letter-spacing: .01em;
+  }
+
+  .chevron{
+    font-size: .85rem;
+    opacity: .8;
+    transform: translateY(1px);
+    transition: transform .16s ease, opacity .16s ease;
+  }
+
+  &:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 10px 26px rgba(0, 40, 80, 0.16);
+    border-color: rgba(20,194,197,.28);
+  }
+
+  &:focus-visible{
+    outline: 2px solid var(--nav-accent);
+    outline-offset: 3px;
+  }
+}
+
+/* caret rotace při otevření (podle aria-expanded) */
+.lang-trigger[aria-expanded="true"]{
+  background: rgba(255,255,255,0.88);
+  border-color: rgba(20,194,197,.38);
+
+  .chevron{
+    transform: translateY(1px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+/* dropdown panel */
+.lang-menu{
+  position: absolute;
+  right: 0;
+  top: calc(100% + .55rem);
+
+  /* default zavřeno (i kdyby někdo omylem odstranil hidden) */
+  display: none;
+  flex-direction: column;
+  gap: .15rem;
+
+  min-width: 210px;
+  padding: .45rem;
+  border-radius: 16px;
+
+  background: var(--lang-surface-strong);
+  border: 1px solid rgba(10,45,74,0.10);
+  box-shadow: var(--lang-shadow);
+
+  z-index: 10000;
+
+  /* jemný “popover” look */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* respektuj hidden atribut */
+.lang-menu[hidden]{ display: none !important; }
+
+/* otevření – pokud JS přepíná aria-expanded */
+.lang-trigger[aria-expanded="true"] + .lang-menu{
+  display: flex;
+}
+
+/* položky v menu */
+.lang-dropdown .lang-btn.lang-option{
+  width: 100%;
+  justify-content: flex-start;
+  gap: .6rem;
+
+  padding: .58rem .62rem;
+  border-radius: 12px;
+
+  font-size: .98rem;
+  font-weight: 650;
+  color: #0a2d4a;
+
+  transition: background .14s ease, transform .14s ease;
+  transform: translateY(0);
+
+  img{
+    display: block;
+    width: 22px;
+    height: 16px;
+    border-radius: 4px;
+  }
+
+  &:hover{
+    background: #f0f7ff;
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible{
+    outline: 2px solid var(--nav-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* selected */
+.lang-dropdown .lang-btn.lang-option[aria-selected="true"]{
+  background: linear-gradient(180deg, var(--nav-active-bg-start) 0%, var(--nav-active-bg-end) 100%);
+  box-shadow: 0 2px 10px #0077cc14 inset, 0 1px 6px #0077cc0d;
 }
 
 /* ------------------------
@@ -132,11 +304,10 @@
    OVERLAY FOR MOBILE MENU
    ------------------------ */
 
-/* default: neviditelné, neklikací, bez blur */
 .site-header .menu-overlay-bg {
   position: fixed;
   inset: 0;
-  z-index: 1000;           /* pod headerem (9999), nad obsahem */
+  z-index: 1000;
   background: rgba(0,0,0,0.28);
   opacity: 0;
   visibility: hidden;
@@ -147,7 +318,6 @@
   transition: opacity .2s ease, visibility .2s ease;
 }
 
-/* aktivní stav: viditelný, klikací, s blur */
 .site-header .menu-overlay-bg.active {
   opacity: 1;
   visibility: visible;
@@ -172,14 +342,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: nowrap; /* žádné zalamování (před 950px přepneme na hamburger) */
+    flex-wrap: nowrap;
     gap: clamp(0.9rem, 2.2vw, 1.6rem);
     list-style: none;
     padding: 0;
     margin: 0;
   }
 
-  /* základní vzhled odkazů (pill-ready) */
   a {
     font-size: 1.12rem;
     font-weight: 600;
@@ -192,7 +361,7 @@
     position: relative;
     padding: .55rem clamp(.5rem, 1.4vw, .9rem);
     white-space: nowrap;
-    border-radius: 999px; /* „pill“ */
+    border-radius: 999px;
     transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .15s ease;
 
     &:hover,
@@ -218,7 +387,6 @@
 
   .menu-close { display: none; }
 
-  /* ===== Mobilní panel ===== */
   @media (max-width: 950px) {
     position: fixed;
     top: 0;
@@ -265,11 +433,10 @@
   }
 }
 
-/* otevřený posuvník */
 .main-nav.open { transform: translateX(0%); }
 
 /* =========================================================
-   JEDNOTNÝ AKTIVNÍ STAV (pill + spodní indikátor) – DESKTOP
+   AKTIVNÍ STAV (pill + indikátor) – DESKTOP
    ========================================================= */
 .main-nav a[aria-current]{
   text-decoration: none !important;
@@ -295,13 +462,11 @@
   pointer-events: none;
 }
 
-/* ===== Mobile/Hamburger: BEZ underline/badge (dle přání) ===== */
 @media (max-width: 950px){
   .site-header .main-nav a[aria-current]::after{ content: none; }
   .site-header .main-nav a[aria-current]::before{ content: none; }
 }
 
-/* Vysoký kontrast / forced-colors */
 @media (forced-colors: active){
   .site-header .main-nav a[aria-current]{
     outline: 2px solid SelectedItem;

@@ -4,10 +4,94 @@
   <meta charset="UTF-8">
   <title data-i18n-key="blog-title">Blog & Recenze | AJSEE®</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="/src/styles/main.scss">
+
+  <!-- Favicona -->
+  <link rel="icon" href="data:," />
   <link rel="icon" href="/images/logo-ajsee.png">
+
+  <!-- Prémiové fonty (sjednoceno s ostatními stránkami) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Google tag – pouze na HTTPS/produkci -->
+  <script>
+    (function(){
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(location.hostname);
+      if (!isProdHttps) return;
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
+      s.onload = function(){
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-K0ZS0D9JLK');
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <!-- i18n fallback, kdyby engine v main.js nebyl k dispozici včas -->
+  <script>
+    (function(){
+      function detectLang(){
+        try {
+          const qs = new URLSearchParams(location.search);
+          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+        } catch { return 'cs'; }
+      }
+      function applyI18nFallback(lang){
+        const root = window.translations || null;
+        if (!root) return;
+        const dict = root[lang] || root;
+        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
+
+        document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          const key = el.getAttribute('data-i18n-key');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
+        });
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-i18n-aria');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) {
+            el.setAttribute('aria-label', val);
+            el.setAttribute('title', val);
+          }
+        });
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+          const key = el.getAttribute('data-i18n-alt');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const lang = detectLang();
+        document.documentElement.lang = lang;
+
+        if (typeof window.applyTranslations === 'function') {
+          try { window.applyTranslations(lang); }
+          catch(e){ console.warn('[i18n] applyTranslations failed, using fallback.', e); applyI18nFallback(lang); }
+        } else {
+          applyI18nFallback(lang);
+        }
+      });
+    })();
+  </script>
+
+  <!-- Vite vstup – main.js doplní styly (přes import SCSS) -->
+  <script type="module" src="/src/main.js"></script>
 </head>
-<body>
+
+<body data-page="blog">
 <header class="site-header">
   <div class="header-inner">
 
@@ -29,12 +113,12 @@
         <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
         <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
         <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
-        <li><a href="#blog" data-i18n-key="nav-blog">Blog</a></li>
+        <li><a href="/blog.html" data-i18n-key="nav-blog" aria-current="page">Blog</a></li>
         <li><a href="/faq.html" data-i18n-key="nav-faq">FAQ</a></li>
-        <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+        <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
-      <!-- Jazykové přepínače v mobilním menu -->
+      <!-- Jazykové přepínače v mobilním menu (ponecháno jako původní vlajky) -->
       <div class="language-switcher mobile-switcher">
         <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
         <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
@@ -45,18 +129,45 @@
       </div>
     </nav>
 
-    <!-- Jazykové přepínače – desktop -->
-    <div class="language-switcher desktop-switcher">
-      <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+    <!-- Jazykové přepínače – desktop (sjednoceno s homepage: dropdown, zachovává .lang-btn) -->
+    <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+      <div class="lang-dropdown" data-lang-dropdown>
+        <button type="button"
+                class="lang-trigger"
+                id="langTrigger"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-controls="langMenu">
+          <img class="flag" src="/images/flags/cz.svg" alt="" width="22" height="16" />
+          <span class="lang-current" data-lang-current>Čeština</span>
+          <span class="chevron" aria-hidden="true">▾</span>
+        </button>
+
+        <div class="lang-menu" id="langMenu" role="listbox" aria-label="Language" hidden>
+          <button class="lang-btn lang-option" data-lang="cs" role="option" aria-selected="true">
+            <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+          </button>
+          <button class="lang-btn lang-option" data-lang="en" role="option" aria-selected="false">
+            <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+          </button>
+          <button class="lang-btn lang-option" data-lang="de" role="option" aria-selected="false">
+            <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+          </button>
+          <button class="lang-btn lang-option" data-lang="sk" role="option" aria-selected="false">
+            <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+          </button>
+          <button class="lang-btn lang-option" data-lang="pl" role="option" aria-selected="false">
+            <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+          </button>
+          <button class="lang-btn lang-option" data-lang="hu" role="option" aria-selected="false">
+            <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Overlay pozadí menu -->
-    <div class="menu-overlay-bg"></div>
+    <div class="menu-overlay-bg" aria-hidden="true"></div>
 
   </div>
 </header>
@@ -116,8 +227,7 @@
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
 
-<script type="module" src="/src/main.js"></script>
-<!-- pak tvůj stávající blog skript (filtry apod.) -->
+<!-- main.js už je v head; blog.js necháváme samostatně -->
 <script type="module" src="/src/blog.js"></script>
 </body>
 </html>

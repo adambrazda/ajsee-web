@@ -1,14 +1,15 @@
 // /netlify/functions/ticketmasterEvents.js
 // ---------------------------------------------------------
-// Netlify proxy pro Ticketmaster Discovery API (ESM)
+// Netlify proxy pro Ticketmaster Discovery API (ESM, single handler)
 // - Priorita geo: latlong > city > countryCode
-// - Když je city, countryCode NEPOSÍLÁME (TM to doporučuje pro cílené dotazy)
-// - Pojistky: TM_API_KEY/TICKETMASTER_API_KEY, CORS/OPTIONS,
-//   timeout (AbortController), clamping size, mapování sortu,
-//   datumy "YYYY-MM-DD" i "dd.mm.yyyy" -> ISO8601 (00:00/23:59:59Z),
-//   unit=km -> radius v mílích (TM očekává miles)
-// - Bezpečnější "locale": propouštíme jen známé, jinak nepřidáváme
-//   (některé regiony vrací 5xx, když je locale mimo whitelist).
+// - City+Country: countryCode s city neodesíláme, ale lokálně po fetchi filtrujeme
+// - CORS + OPTIONS preflight
+// - Timeout (AbortController)
+// - Clamping size, mapování sortu
+// - Datumy: "YYYY-MM-DD" / "dd.mm.yyyy" → ISO8601 Z (00:00 / 23:59:59)
+// - unit=km → radius konvertujeme na míle (TM je očekává konzistentně)
+// - Bezpečný whitelist locale (včetně plných variant cs-cz, en-gb atd.)
+// - Přijímá i countryCodes (CSV); v broad režimu pošle první CC do TM
 // ---------------------------------------------------------
 
 /** Parse UI date formats to ISO8601 Z (start/end of day). */
@@ -61,36 +62,33 @@ const CORS_HEADERS = {
   'access-control-allow-headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
 };
 
-// Bezpečnější whitelist lokálů (když přijde jiný, locale vůbec neposíláme)
+// Rozšířený whitelist lokálů (2-písmenné i plné BCP47, defensivně)
 const LOCALE_WHITELIST = new Set([
-  'en', 'en-us', 'de', 'de-de', 'pl', 'pl-pl', 'cs', 'sk', 'hu'
+  'en', 'en-us', 'en-gb',
+  'de', 'de-de',
+  'pl', 'pl-pl',
+  'cs', 'cs-cz',
+  'sk', 'sk-sk',
+  'hu', 'hu-hu'
 ]);
 
-// Malý helper na fetch — zajistí error, když runtime nemá fetch (Node < 18)
 async function safeFetch(input, init) {
   if (typeof fetch === 'function') return fetch(input, init);
-  // starší runtime → hezká chyba s návodem
-  throw new Error(
-    'Fetch is not available in this Node runtime. Set Node >= 18 (netlify.toml [functions] node_bundler / [build] environment) or provide a fetch polyfill.'
-  );
+  throw new Error('Fetch is not available in this Node runtime. Use Node >= 18 or provide a fetch polyfill.');
 }
 
 export const handler = async (event) => {
   try {
     // CORS preflight
     if (event.httpMethod === 'OPTIONS') {
-      return {
-        statusCode: 204,
-        headers: { ...CORS_HEADERS, 'content-length': '0' },
-        body: '',
-      };
+      return { statusCode: 204, headers: { ...CORS_HEADERS, 'content-length': '0' }, body: '' };
     }
 
     const q = event?.queryStringParameters || {};
 
     const API_KEY =
-      process.env.TM_API_KEY ||             // preferujeme TM_API_KEY
-      process.env.TICKETMASTER_API_KEY;     // fallback TICKETMASTER_API_KEY
+      process.env.TM_API_KEY ||
+      process.env.TICKETMASTER_API_KEY;
 
     if (!API_KEY) {
       console.error('[ticketmasterEvents] Missing API key');
@@ -101,40 +99,45 @@ export const handler = async (event) => {
     const url = new URL(`${BASE}/events.json`);
     url.searchParams.set('apikey', API_KEY);
 
-    // Locale – pouze whitelist; neznámý nepošleme (někdy dělá 5xx)
+    // Locale (jen whitelist; neznámý vůbec neposíláme)
     const rawLocale = (q.locale || '').toString().trim().toLowerCase();
     if (rawLocale && LOCALE_WHITELIST.has(rawLocale)) {
       url.searchParams.set('locale', rawLocale);
     }
 
-    // Geo prioritizace: latlong > city > countryCode
+    // Geo priorita: latlong > city > countryCode
     const latlong = (q.latlong || '').toString().trim(); // "lat,lon"
     const cityParam = (q.city || '').toString().trim();
-    const rawCountry = (q.countryCode || '').toString().trim().toUpperCase();
+
+    // countryCode / countryCodes (CSV). V broad režimu pošleme první, pro city použijeme jen lokální filtr.
+    const ccRaw = (q.countryCode || q.countryCodes || '').toString().trim();
+    const ccList = ccRaw
+      ? ccRaw.split(',').map(s => s.trim().toUpperCase()).filter(Boolean)
+      : [];
+    const countryCode = ccList[0] || '';
 
     if (latlong) {
       url.searchParams.set('latlong', latlong);
-
+      // TM je nejkonzistentnější s mílemi – konvertujeme z km, pokud přišly
       let radius = Number(q.radius);
-      if (!Number.isFinite(radius) || radius <= 0) radius = 50; // km default (z UI)
-      const unit = (q.unit || 'km').toString().toLowerCase();
-      // TM používá miles – převedeme, unit nastavíme na miles
-      const miles = unit === 'km'
+      if (!Number.isFinite(radius) || radius <= 0) radius = 50; // default z UI (km)
+      const unitIn = (q.unit || 'km').toString().toLowerCase();
+      const miles = unitIn === 'km'
         ? Math.max(1, Math.round(radius * 0.621371))
         : Math.max(1, Math.round(radius));
       url.searchParams.set('radius', String(miles));
       url.searchParams.set('unit', 'miles');
     } else if (cityParam) {
       url.searchParams.set('city', cityParam);
-      // TM doporučuje u city NEPOSÍLAT countryCode
-    } else if (rawCountry) {
-      url.searchParams.set('countryCode', rawCountry);
+      // ZÁMĚRNĚ neposíláme countryCode (viz TM doporučení) – disambiguaci vyřešíme níže lokálním filtrem
+    } else if (countryCode) {
+      url.searchParams.set('countryCode', countryCode);
     }
 
     // Řazení
     url.searchParams.set('sort', toTmSort(q.sort));
 
-    // Date range
+    // Date range (startDateTime/endDateTime mají prioritu, jinak dateFrom/dateTo)
     const startDateTime = q.startDateTime || toIsoDay(q.dateFrom, false);
     const endDateTime   = q.endDateTime   || toIsoDay(q.dateTo,   true);
     if (startDateTime) url.searchParams.set('startDateTime', startDateTime);
@@ -175,9 +178,36 @@ export const handler = async (event) => {
       clearTimeout(t);
     }
 
-    const text = await resp.text(); // předej raw JSON (frontend si s tím poradí)
+    let text = await resp.text();
 
-    // Pokud upstream selže, pošli zpět status + text (ať je vidět proč)
+    // Lokální disambiguace: pokud přišlo city i countryCode, přefiltruj výsledky na danou zemi.
+    if (resp.ok && cityParam && countryCode && text) {
+      try {
+        const json = JSON.parse(text);
+        const events = json?._embedded?.events;
+        if (Array.isArray(events)) {
+          const filtered = events.filter(ev => {
+            const v = ev?._embedded?.venues?.[0] || {};
+            const cc = (v?.country?.countryCode || v?.country?.name || '').toString().toUpperCase().slice(0, 2);
+            return cc === countryCode;
+          });
+          // Uprav pouze když se filtr opravdu použil (aby FE mohl případně spadnout na další attempt).
+          if (filtered.length !== events.length) {
+            json._embedded = json._embedded || {};
+            json._embedded.events = filtered;
+            if (json.page && typeof json.page === 'object') {
+              json.page.totalElements = filtered.length;
+              json.page.totalPages = 1;
+            }
+            text = JSON.stringify(json);
+          }
+        }
+      } catch (e) {
+        // defenzivně: když JSON nejde parse-nout, pošli upstream text
+        console.warn('[ticketmasterEvents] country filter parse fail:', e?.message || e);
+      }
+    }
+
     if (!resp.ok) {
       console.error('[ticketmasterEvents] Upstream error', resp.status, text.slice(0, 400));
     }

@@ -12,13 +12,32 @@
   directory    = "netlify/functions"
   node_bundler = "esbuild"
 
-# CORS pro Functions (záloha k odpovědím z funkce)
+# ------------ Edge Functions ------------
+# Cookie middleware podle Geo/IP nebo lang
+[[edge_functions]]
+function = "geo-country"
+path = "/*"
+
+# JSON endpoint pro NearMe fallback (context.geo → JSON)
+[[edge_functions]]
+function = "geo-lookup"
+path = "/api/geo"
+
+# ------------ HEADERS ------------
+# CORS pro Functions (záloha k odpovědím z funkce) + no-store
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
     Access-Control-Allow-Origin  = "*"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    Cache-Control                 = "no-store"
+
+# /api/geo z Edge: nikdy necacheovat
+[[headers]]
+  for = "/api/geo"
+  [headers.values]
+    Cache-Control = "no-store"
 
 # Fingerprintované bundly od Vite
 [[headers]]
@@ -48,10 +67,36 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
+    X-Frame-Options        = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+    # Povolit geolokaci na stejné doméně (Near me), mikrofon/kamera zakázat
+    Permissions-Policy     = "geolocation=(self), microphone=(), camera=()"
+
+# --- DEV přepisy: nechte Vite obsloužit svoje assety (musí být NAD SPA fallbackem) ---
+[[redirects]]
+  from = "/@vite/*"
+  to   = "/@vite/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from = "/src/*"
+  to   = "/src/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from = "/assets/*"
+  to   = "/assets/:splat"
+  status = 200
+  force  = true
+
+# SPA fallback (musí zůstat úplně dole)
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
 
 # DEV: Netlify Dev reverse-proxy na běžící Vite
 [dev]
@@ -59,3 +104,4 @@
   port       = 8888
   targetPort = 5173
   autoLaunch = false
+  framework  = "#custom"

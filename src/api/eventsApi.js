@@ -5,7 +5,7 @@
 // - sloučení městských částí (Praha 1..10 / Prague 5 -> Prague / Paris 11e -> Paris)
 // - volitelný Near Me filtr (funguje pro zdroje s lat/lon)
 // - bezpečnější práce s daty (čísla místo řetězců), deduplikace
-// - OPRAVA: při filtrování dateFrom/dateTo brát "YYYY-MM-DD" jako celý lokální den
+// - OPRAVA: při filtrování + řazení brát "YYYY-MM-DD" jako lokální den (midday)
 // ---------------------------------------------------------
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
@@ -18,12 +18,22 @@ const isDev =
   (typeof import.meta !== 'undefined' && import.meta?.env?.DEV);
 
 // ------- Utils -------
-function ts(val) {
-  // robustní převod na timestamp (ms); vrací NaN, pokud nelze převést
-  return new Date(val).getTime();
+
+/** Robustní převod na timestamp (ms); vrací NaN, pokud nelze převést. */
+function ts(raw) {
+  return new Date(raw).getTime();
 }
 
-/** Parse hranici dne z ISO "YYYY-MM-DD" v lokálním čase. */
+/** "YYYY-MM-DD" -> lokální poledne (vyhne se posunům/DST); jinak nativní parser. */
+function tsLocalMidday(raw) {
+  if (!raw) return NaN;
+  const m = String(raw).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return ts(raw);
+  const y = +m[1], mo = +m[2] - 1, d = +m[3];
+  return new Date(y, mo, d, 12, 0, 0, 0).getTime();
+}
+
+/** Hranice dne z ISO "YYYY-MM-DD" v lokálním čase (start/end). */
 function boundaryMs(iso, isEnd = false) {
   if (!iso) return NaN;
   const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -38,7 +48,7 @@ function boundaryMs(iso, isEnd = false) {
 }
 
 function inRange(dateStr, fromStr, toStr) {
-  const t = ts(dateStr);
+  const t = tsLocalMidday(dateStr);
   if (!Number.isFinite(t)) return false;
   const f = boundaryMs(fromStr, false);
   const to = boundaryMs(toStr, true);
@@ -271,7 +281,7 @@ const CITY_ALIASES = {
   Busan: ['Busan','Pusan'],
   Beijing: ['Beijing','Peking'],
   Shanghai: ['Shanghai','Šanghaj'],
-  Shenzhen: ['Shenzhen','Šen-čen','Šenčen','Šen-čen'],
+  Shenzhen: ['Shenzhen','Šenčen','Šen-čen'],
   Guangzhou: ['Guangzhou','Kanton'],
   'Hong Kong': ['Hong Kong','Hongkong'],
   Taipei: ['Taipei','Tchaj-pej'],
@@ -336,8 +346,10 @@ function cityId(raw = '') {
 }
 
 function eventCityCandidates(ev) {
-  const c = ev?.location?.city || ev?.city || '';
-  return [c].filter(Boolean);
+  const c1 = ev?.location?.city || ev?.city || '';
+  const c2 = ev?.venue?.city || ev?.place?.city || ev?.venue?.address?.city || '';
+  // držíme jednoduché – adapter by měl sjednocovat do location.city
+  return [c1, c2].filter(Boolean);
 }
 
 function detectLang() {
@@ -378,6 +390,10 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
 
   const upstreamFilters = {
     ...filters,
+    // akceptuj i alternativní názvy (from/to/segment) – sloučíme do jednotných polí
+    dateFrom: filters.dateFrom ?? filters.from ?? '',
+    dateTo: filters.dateTo ?? filters.to ?? '',
+    category: filters.category ?? filters.segment ?? 'all',
     city: upstreamCity, // ← nikdy nezmizí, pokud něco uživatel zadal
   };
 
@@ -385,8 +401,6 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   if (upstreamFilters.city) {
     delete upstreamFilters.countryCode;
   }
-
-  console.debug('[eventsApi] upstreamFilters:', upstreamFilters);
 
   // --- Ticketmaster (vždy) ---
   try {
@@ -423,14 +437,23 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     nearMeLat = null,
     nearMeLon = null,
     nearMeRadiusKm = 50,
-  } = filters;
+  } = {
+    ...filters, // sloučíme, aby FE odrážel "živé" hodnoty
+    dateFrom: filters.dateFrom ?? filters.from ?? '',
+    dateTo: filters.dateTo ?? filters.to ?? '',
+    category: filters.category ?? filters.segment ?? 'all'
+  };
 
-  // Dedup podle `id` (nebo fallback hash)
+  // Dedup podle „id“ (nebo fallback hash – přidán city hint pro menší kolize)
   const seen = new Set();
   all = all.filter((ev, idx) => {
+    const titleAny = (ev.title?.[loc] ?? ev.title?.cs ?? ev.title?.en ?? ev.title ?? '');
+    const titleStr = typeof titleAny === 'string' ? titleAny : (titleAny?.toString?.() ?? '');
+    const cityHint = ev?.location?.city || ev?.venue?.city || '';
+    const timeKey = tsLocalMidday(ev.datetime || ev.date) || idx;
     const id =
       ev.id ||
-      `${ev.partner || 'x'}-${ev.datetime || ev.date || idx}-${(ev.title?.[loc] ?? ev.title?.cs ?? ev.title ?? '').slice(0, 50)}`;
+      `${ev.partner || 'x'}-${timeKey}-${(cityHint || '').toLowerCase()}-${titleStr.slice(0, 50)}`;
     if (seen.has(id)) return false;
     seen.add(id);
     return true;
@@ -456,12 +479,23 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   }
 
   // Near Me (jen když jsou lat/lon)
-  if (nearMeLat != null && nearMeLon != null && Number.isFinite(nearMeRadiusKm)) {
+  if (nearMeLat != null && nearMeLon != null) {
+    const radius = Number.isFinite(+nearMeRadiusKm) ? +nearMeRadiusKm : 50;
     all = all.filter((ev) => {
-      const lat = ev?.location?.lat ?? ev?.location?.latitude ?? ev?.lat;
-      const lon = ev?.location?.lon ?? ev?.location?.longitude ?? ev?.lon;
-      const d = haversineKm(nearMeLat, nearMeLon, lat, lon);
-      return d <= (nearMeRadiusKm || 50);
+      const lat =
+        ev?.location?.lat ??
+        ev?.location?.latitude ??
+        ev?.venue?.location?.lat ??
+        ev?.venue?.location?.latitude ??
+        ev?.lat;
+      const lon =
+        ev?.location?.lon ??
+        ev?.location?.longitude ??
+        ev?.venue?.location?.lon ??
+        ev?.venue?.location?.longitude ??
+        ev?.lon;
+      const d = haversineKm(+nearMeLat, +nearMeLon, +lat, +lon);
+      return d <= radius;
     });
   }
 
@@ -483,10 +517,10 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     all = all.filter((ev) => inRange(ev.datetime || ev.date, dateFrom, dateTo));
   }
 
-  // Řazení dle data
+  // Řazení dle data – používejme tsLocalMidday, aby "YYYY-MM-DD" nebylo posunuté
   all.sort((a, b) => {
-    const da = ts(a.datetime || a.date);
-    const db = ts(b.datetime || b.date);
+    const da = tsLocalMidday(a.datetime || a.date);
+    const db = tsLocalMidday(b.datetime || b.date);
     if (!Number.isFinite(da) && !Number.isFinite(db)) return 0;
     if (!Number.isFinite(da)) return 1;
     if (!Number.isFinite(db)) return -1;

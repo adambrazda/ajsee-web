@@ -7,22 +7,23 @@
   <meta name="description" content="Staňte se partnerem AJSEE® – moderní platforma pro kulturu, koncerty, divadlo a sport.">
   <link rel="icon" href="/images/logo-ajsee.png" />
   <meta name="theme-color" content="#0077cc" />
-   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-K0ZS0D9JLK');
-</script>
-  <script type="module" crossorigin src="/assets/partners-lWwYti8B.js"></script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-K0ZS0D9JLK');
+  </script>
+  <script type="module" crossorigin src="/assets/partners-BZaoyRal.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="modulepreload" crossorigin href="/assets/main-DjrkBMkh.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-mTQeooG0.css">
+  <link rel="modulepreload" crossorigin href="/assets/main-DSzsxf2X.js">
+  <link rel="stylesheet" crossorigin href="/assets/main-DMl0tCYI.css">
 </head>
+
 <body>
- <header class="site-header">
+<header class="site-header">
   <div class="header-inner">
 
     <!-- Logo -->
@@ -30,7 +31,7 @@
       <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" />
     </a>
 
-  <!-- Hamburger menu (pouze mobil) -->
+    <!-- Hamburger menu (pouze mobil) -->
     <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
       <span></span><span></span><span></span>
     </button>
@@ -41,158 +42,237 @@
       <ul>
         <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
         <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
-        <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
+        <li><a href="/partners.html" data-i18n-key="nav-partners" aria-current="page">Pro partnery</a></li>
         <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
         <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
         <li><a href="/faq.html" data-i18n-key="nav-faq">FAQ</a></li>
-        <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+        <!-- FIX: na partners stránce je správně #partner-contact -->
+        <li><a href="#partner-contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
-      <!-- Jazykové přepínače v mobilním menu -->
-      <div class="language-switcher mobile-switcher">
-        <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+      <!-- Jazykové přepínače v mobilním menu (dropdown, zachovává .lang-btn) -->
+      <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+        <details class="lang-dropdown" id="langDropdownMobile">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
+
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+            </button>
+          </div>
+        </details>
       </div>
     </nav>
 
-    <!-- Jazykové přepínače – desktop -->
-    <div class="language-switcher desktop-switcher">
-      <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+    <!-- Jazykové přepínače – desktop (dropdown, zachovává .lang-btn) -->
+    <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+      <details class="lang-dropdown" id="langDropdownDesktop">
+        <summary class="lang-current" aria-label="Změnit jazyk">
+          <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+          <span class="lang-current-label">Čeština</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </summary>
+
+        <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+          <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+            <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+          </button>
+          <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+            <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+          </button>
+          <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+            <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+          </button>
+          <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+            <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+          </button>
+          <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+            <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+          </button>
+          <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+            <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+          </button>
+        </div>
+      </details>
     </div>
 
     <!-- Overlay pozadí menu -->
-    <div class="menu-overlay-bg"></div>
+    <div class="menu-overlay-bg" aria-hidden="true"></div>
 
   </div>
 </header>
-  <main>
-    <section class="partners-hero">
-      <div class="container hero-flex">
-        <div class="partners-hero-content">
-          <h1 data-i18n-key="partner-headline">Staňte se partnerem AJSEE®</h1>
-          <p data-i18n-key="partner-intro">Spolupracujte s námi na tvorbě moderní, bezpečné a uživatelsky přívětivé platformy pro kulturu, koncerty, divadlo a sport. Pomůžeme vám oslovit nové publikum a zviditelnit vaši značku.</p>
-          <ul class="partner-benefits">
-            <li data-i18n-key="partner-benefit1">Získáte nové zákazníky bez starostí</li>
-            <li data-i18n-key="partner-benefit2">Rychlá komunikace, osobní přístup</li>
-            <li data-i18n-key="partner-benefit3">Zviditelnění v rámci české i evropské komunity</li>
-            <li data-i18n-key="partner-benefit4">Jednoduché zapojení bez složitého IT</li>
-          </ul>
-          <a href="#partner-contact" class="btn-primary" data-i18n-key="partner-cta">Chci být partnerem</a>
-        </div>
-        <div class="partners-hero-image">
-          <img src="/images/partners-illustration.png" alt="AJSEE Partners" style="width:340px;max-width:100%;" />
-        </div>
-      </div>
-    </section>
-    <section class="partners-placeholder">
-  <div class="container">
-    <h2 data-i18n-key="partners-title">Připravujeme spolupráce</h2>
-    <p data-i18n-key="partners-description">
-      Naše platforma je otevřená spolupráci s kulturními institucemi, městy, producenty i technologickými partnery. Níže uvádíme příklady typických organizací, které s námi mohou spolupracovat.
-    </p>
 
-    <div class="partner-grid">
-      <div class="partner-item">
-        <img src="/images/partners/partner-placeholder-01.png" alt="Divadlo" />
-        <span data-i18n-key="partner-type-theatre">Divadlo</span>
+<main>
+  <!-- HERO -->
+  <section class="partners-hero partners-hero--premium" aria-labelledby="partners-hero-title">
+    <div class="container partners-hero-inner">
+      <div class="partners-hero-content">
+       <h1 id="partners-hero-title" data-i18n-key="partner-headline">
+  Staňte se partnerem AJSEE<span class="reg" aria-hidden="true">®</span>
+</h1>
+
+
+
+        <p data-i18n-key="partner-intro">
+          Spolupracujte s námi na tvorbě moderní, bezpečné a uživatelsky přívětivé platformy pro kulturu, koncerty, divadlo a sport. Pomůžeme vám oslovit nové publikum a zviditelnit vaši značku.
+        </p>
+
+        <ul class="partner-benefits">
+          <li data-i18n-key="partner-benefit1">Získáte nové zákazníky bez starostí</li>
+          <li data-i18n-key="partner-benefit2">Rychlá komunikace, osobní přístup</li>
+          <li data-i18n-key="partner-benefit3">Zviditelnění v rámci české i evropské komunity</li>
+          <li data-i18n-key="partner-benefit4">Jednoduché zapojení bez složitého IT</li>
+        </ul>
+
+        <a href="#partner-contact" class="btn-primary" data-i18n-key="partner-cta">Chci být partnerem</a>
       </div>
-      <div class="partner-item">
-        <img src="/images/partners/partner-placeholder-02.png" alt="Město" />
-        <span data-i18n-key="partner-type-city">Město</span>
-      </div>
-      <div class="partner-item">
-        <img src="/images/partners/partner-placeholder-03.png" alt="Festival" />
-        <span data-i18n-key="partner-type-festival">Festival</span>
-      </div>
-      <div class="partner-item">
-        <img src="/images/partners/partner-placeholder-04.png" alt="Ticketing" />
-        <span data-i18n-key="partner-type-ticketing">Ticketing</span>
-      </div>
-      <div class="partner-item">
-        <img src="/images/partners/partner-placeholder-05.png" alt="Produkce" />
-        <span data-i18n-key="partner-type-production">Produkce</span>
-      </div>
-      <div class="partner-item">
-        <img src="/images/partners/partner-placeholder-06.png" alt="Platforma" />
-        <span data-i18n-key="partner-type-platform">Platforma</span>
+
+      <!-- PREMIUM HERO GRAPHIC (dekorativní) -->
+      <div class="partners-hero-media" aria-hidden="true">
+        <div class="partners-hero-media-frame">
+          <img
+            class="partners-hero-graphic"
+            src="/images/partners-hero.png"
+            alt=""
+            loading="eager"
+            decoding="async"
+          />
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="partner-contact" class="partner-contact-section">
-  <h2 data-i18n-key="partner-contact-headline">Ozvěte se nám</h2>
-  <form
-  name="partner-contact"
-  method="POST"
-  data-netlify="true"
-  action="#partner-contact?success=1"
-  netlify-honeypot="bot-field"
-  class="contact-form"
-  id="partner-contact-form"
-  autocomplete="on"
->
-  <input type="hidden" name="form-name" value="partner-contact" />
-  <!-- Honeypot antispam -->
-  <div style="display:none">
-    <label data-i18n-key="partner-honeypot-label">Nevyplňujte toto pole: <input name="bot-field" /></label>
-  </div>
-  <div class="form-group">
-    <label for="company" data-i18n-key="partner-label-company">Název firmy / instituce</label>
-    <input type="text" id="company" name="company" required placeholder="Název firmy / instituce" data-i18n-placeholder="partner-placeholder-company" autocomplete="organization" />
-    <div class="form-error" id="error-company"></div>
-  </div>
-  <div class="form-group">
-    <label for="name" data-i18n-key="partner-label-name">Jméno</label>
-    <input type="text" id="name" name="name" required placeholder="Vaše jméno" data-i18n-placeholder="partner-placeholder-name" autocomplete="name" />
-    <div class="form-error" id="error-name"></div>
-  </div>
-  <div class="form-group">
-    <label for="email" data-i18n-key="partner-label-email">E-mail</label>
-    <input type="email" id="email" name="email" required placeholder="Váš e-mail" data-i18n-placeholder="partner-placeholder-email" autocomplete="email" />
-    <div class="form-error" id="error-email"></div>
-  </div>
-  <div class="form-group">
-    <label for="message" data-i18n-key="partner-label-message">Vzkaz</label>
-    <textarea id="message" name="message" required placeholder="Vaše zpráva" data-i18n-placeholder="partner-placeholder-message"></textarea>
-    <div class="form-error" id="error-message"></div>
-  </div>
-  <button type="submit" class="btn-primary" data-i18n-key="partner-send">Odeslat</button>
-  <div class="contact-error" id="partner-contact-error" style="display:none;">
-    <p data-i18n-key="partner-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
-  </div>
-</form>
-<div class="contact-success" style="display:none;" id="partner-contact-success">
-  <p data-i18n-key="partner-success-msg">Děkujeme za zájem o partnerství! Ozveme se vám co nejdříve.</p>
-</div>
-  </div>
-</section>
-     </main>
+  <section class="partners-placeholder">
+    <div class="container">
+      <h2 data-i18n-key="partners-title">Připravujeme spolupráce</h2>
+      <p data-i18n-key="partners-description">
+        Naše platforma je otevřená spolupráci s kulturními institucemi, městy, producenty i technologickými partnery. Níže uvádíme příklady typických organizací, které s námi mohou spolupracovat.
+      </p>
+
+      <div class="partner-grid">
+        <div class="partner-item">
+          <img src="/images/partners/partner-placeholder-01.png" alt="Divadlo" />
+          <span data-i18n-key="partner-type-theatre">Divadlo</span>
+        </div>
+        <div class="partner-item">
+          <img src="/images/partners/partner-placeholder-02.png" alt="Město" />
+          <span data-i18n-key="partner-type-city">Město</span>
+        </div>
+        <div class="partner-item">
+          <img src="/images/partners/partner-placeholder-03.png" alt="Festival" />
+          <span data-i18n-key="partner-type-festival">Festival</span>
+        </div>
+        <div class="partner-item">
+          <img src="/images/partners/partner-placeholder-04.png" alt="Ticketing" />
+          <span data-i18n-key="partner-type-ticketing">Ticketing</span>
+        </div>
+        <div class="partner-item">
+          <img src="/images/partners/partner-placeholder-05.png" alt="Produkce" />
+          <span data-i18n-key="partner-type-production">Produkce</span>
+        </div>
+        <div class="partner-item">
+          <img src="/images/partners/partner-placeholder-06.png" alt="Platforma" />
+          <span data-i18n-key="partner-type-platform">Platforma</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="partner-contact" class="partner-contact-section">
+    <div class="container">
+      <h2 data-i18n-key="partner-contact-headline">Ozvěte se nám</h2>
+
+      <form
+        name="partner-contact"
+        method="POST"
+        data-netlify="true"
+        action="#partner-contact?success=1"
+        netlify-honeypot="bot-field"
+        class="contact-form"
+        id="partner-contact-form"
+        autocomplete="on"
+      >
+        <input type="hidden" name="form-name" value="partner-contact" />
+
+        <!-- Honeypot antispam -->
+        <div style="display:none">
+          <label data-i18n-key="partner-honeypot-label">Nevyplňujte toto pole: <input name="bot-field" /></label>
+        </div>
+
+        <div class="form-group">
+          <label for="company" data-i18n-key="partner-label-company">Název firmy / instituce</label>
+          <input type="text" id="company" name="company" required placeholder="Název firmy / instituce" data-i18n-placeholder="partner-placeholder-company" autocomplete="organization" />
+          <div class="form-error" id="error-company"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="name" data-i18n-key="partner-label-name">Jméno</label>
+          <input type="text" id="name" name="name" required placeholder="Vaše jméno" data-i18n-placeholder="partner-placeholder-name" autocomplete="name" />
+          <div class="form-error" id="error-name"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="email" data-i18n-key="partner-label-email">E-mail</label>
+          <input type="email" id="email" name="email" required placeholder="Váš e-mail" data-i18n-placeholder="partner-placeholder-email" autocomplete="email" />
+          <div class="form-error" id="error-email"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="message" data-i18n-key="partner-label-message">Vzkaz</label>
+          <textarea id="message" name="message" required placeholder="Vaše zpráva" data-i18n-placeholder="partner-placeholder-message"></textarea>
+          <div class="form-error" id="error-message"></div>
+        </div>
+
+        <button type="submit" class="btn-primary" data-i18n-key="partner-send">Odeslat</button>
+
+        <div class="contact-error" id="partner-contact-error" style="display:none;">
+          <p data-i18n-key="partner-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
+        </div>
+      </form>
+
+      <div class="contact-success" style="display:none;" id="partner-contact-success">
+        <p data-i18n-key="partner-success-msg">Děkujeme za zájem o partnerství! Ozveme se vám co nejdříve.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
 <footer>
-    <div class="footer-social">
-      <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
-        <img src="/images/icons/instagram.svg" alt="Instagram" />
-      </a>
-      <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
-        <img src="/images/icons/facebook.svg" alt="Facebook" />
-      </a>
-      <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
-        <img src="/images/icons/twitter.svg" alt="Twitter" />
-      </a>
-      <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
-        <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
-      </a>
-    </div>
-    <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
-  </footer>
+  <div class="footer-social">
+    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
+      <img src="/images/icons/instagram.svg" alt="Instagram" />
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
+      <img src="/images/icons/facebook.svg" alt="Facebook" />
+    </a>
+    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
+      <img src="/images/icons/twitter.svg" alt="Twitter" />
+    </a>
+    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
+      <img src="/images/icons/linkedin.svg" alt="LinkedIn" />
+    </a>
+  </div>
+  <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
+</footer>
+
 </body>
 </html>

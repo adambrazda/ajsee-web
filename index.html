@@ -18,7 +18,7 @@
 
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
-    // ⚠️ NEdefinujeme __AJSEE_SKIP_CORE_EVENTS, aby sjednocený FE (/src/events-home.js) normálně renderoval.
+    // ⚠️ Nezapínáme __AJSEE_SKIP_CORE_EVENTS – sjednocený FE v /src/main.js vše odbaví.
     // Vypneme případný inline Ticketmaster renderer, pokud by byl někde vložen:
     window.__TM_INLINE_DISABLED = true;
 
@@ -79,6 +79,12 @@
           const val = get(key);
           if (typeof val === 'string' && val.trim()) el.setAttribute('aria-label', val);
         });
+        // ➕ alt fallback (např. hero image)
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+          const key = el.getAttribute('data-i18n-alt');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
+        });
       }
 
       window.addEventListener('DOMContentLoaded', () => {
@@ -120,25 +126,69 @@
         <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
-      <!-- Jazykové přepínače v mobilním menu -->
-      <div class="language-switcher mobile-switcher">
-        <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+      <!-- Jazykové přepínače v mobilním menu (sjednoceno: DROPDOWN jako na events.html) -->
+      <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+        <details class="lang-dropdown" id="langDropdownMobile">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
+
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+            </button>
+          </div>
+        </details>
       </div>
     </nav>
 
-    <!-- Jazykové přepínače – desktop -->
-    <div class="language-switcher desktop-switcher">
-      <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-      <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
+    <!-- Jazykové přepínače – desktop (sjednoceno: použitá .language-switcher.desktop-switcher + details dropdown) -->
+    <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+      <details class="lang-dropdown" id="langDropdownDesktop">
+        <summary class="lang-current" aria-label="Změnit jazyk">
+          <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+          <span class="lang-current-label">Čeština</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </summary>
+
+        <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+          <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+            <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+          </button>
+          <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+            <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+          </button>
+          <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+            <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+          </button>
+          <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+            <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+          </button>
+          <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+            <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+          </button>
+          <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+            <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+          </button>
+        </div>
+      </details>
     </div>
 
     <!-- Overlay pozadí menu -->
@@ -147,27 +197,25 @@
 </header>
 
 <main>
-  <!-- HERO -->
-  <section class="hero-section" id="hero">
-    <div class="container hero-flex">
-      <div class="hero-content">
-        <a href="/partners.html" class="hero-badge" tabindex="0">
-          <span class="badge-icon" aria-hidden="true">🤝</span>
-          <span data-i18n-key="hero.badge"></span>
-        </a>
-        <h1 data-i18n-key="hero.headline"></h1>
-        <p data-i18n-key="hero.intro"></p>
-        <div class="hero-buttons">
-          <a href="/partners.html" class="btn-primary" data-i18n-key="hero.cta-collab"></a>
-          <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-info"></a>
-        </div>
-      </div>
-      <div class="hero-image-wrapper">
-        <img src="/images/hero-bg.png" class="hero-image" data-i18n-alt="hero.imageAlt" alt="" loading="eager" />
+<!-- HERO -->
+<section class="hero-section hero--watermark" id="hero">
+  <div class="container hero-flex">
+    <div class="hero-content">
+      <a href="/partners.html" class="hero-badge" tabindex="0">
+        <span class="badge-icon" aria-hidden="true">🤝</span>
+        <span data-i18n-key="hero.badge"></span>
+      </a>
+
+      <h1 data-i18n-key="hero.headline"></h1>
+      <p data-i18n-key="hero.intro"></p>
+
+      <div class="hero-buttons">
+        <a href="/partners.html" class="btn-primary" data-i18n-key="hero.cta-collab"></a>
+        <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-info"></a>
       </div>
     </div>
-  </section>
-
+  </div>
+</section>
   <!-- UDÁLOSTI -->
   <section class="section-events" id="events">
     <div class="container">
@@ -190,21 +238,34 @@
         <p class="events-subtitle" data-i18n-key="section-events-subtitle">Získejte vstupenky na nejlepší kulturní zážitky ve vašem okolí</p>
       </div>
 
-      <form id="events-filters-form" class="events-filters filter-dock" novalidate data-behavior="sheet">
+      <!-- Filtry: trvale viditelné (bez show/hide prvků) -->
+      <form id="events-filters-form" class="events-filters filter-dock" novalidate role="search">
         <div class="filters-toolbar" aria-label="Rychlé filtry">
           <div class="chips">
             <button type="button" class="chip" id="chipToday" data-i18n-key="filters.today">Dnes</button>
             <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend">Tento víkend</button>
             <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
           </div>
-          <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž">
+          <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž" data-i18n-aria="filters.nearMe">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>
             <span data-i18n-key="filters.nearMe">V mém okolí</span>
           </button>
         </div>
 
         <fieldset class="filters-fieldset">
-          <legend>Filtry</legend>
+          <legend class="sr-only">Filtry</legend>
+
+          <!-- ✅ Nativní date inputy pro bridge/fallback (JS je po mountu skryje) -->
+          <div class="filter-group native-date from is-hidden">
+            <label for="filter-date-from" data-i18n-key="filters.from">Od</label>
+            <input type="date" id="filter-date-from" name="date_from" class="styled-input" inputmode="none" />
+          </div>
+
+          <div class="filter-group native-date to is-hidden">
+            <label for="filter-date-to" data-i18n-key="filters.to">Do</label>
+            <input type="date" id="filter-date-to" name="date_to" class="styled-input" inputmode="none" />
+          </div>
+
           <div class="filter-group">
             <label for="filter-category" data-i18n-key="filters.category">Kategorie</label>
             <select id="filter-category" class="styled-select">
@@ -234,24 +295,20 @@
             </div>
           </div>
 
-          <div class="filter-group">
-            <label for="filter-date-from" data-i18n-key="filters.dateFrom">Od</label>
-            <div class="field">
-              <span class="leading" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/></svg>
-              </span>
-              <input id="filter-date-from" type="date" class="styled-input">
-            </div>
-          </div>
-
-          <div class="filter-group">
-            <label for="filter-date-to" data-i18n-key="filters.dateTo">Do</label>
-            <div class="field">
-              <span class="leading" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10z"/></svg>
-              </span>
-              <input id="filter-date-to" type="date" class="styled-input">
-            </div>
+          <!-- NOVÝ kompaktní date-combo (button + JS popover) -->
+          <div class="filter-group date-combo">
+            <label for="date-combo-button" data-i18n-key="filters.date">Termín</label>
+            <button
+              id="date-combo-button"
+              class="combo-button"
+              type="button"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+              aria-controls="date-combo-popover">
+              <span class="combo-text" id="date-combo-text" data-i18n-key="filters.anytime">Kdykoliv</span>
+            </button>
+            <!-- Inline popover – držíme hidden; JS ho zvedne na <body> -->
+            <div class="combo-popover ajsee-date-popover" id="date-combo-popover" hidden></div>
           </div>
 
           <div class="filter-group filter-keyword">
@@ -265,17 +322,12 @@
           </div>
 
           <div class="filter-actions">
-            <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe">V mém okolí</button>
+            <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe" data-i18n-aria="filters.nearMe">V mém okolí</button>
             <button type="submit" class="btn btn-primary" data-i18n-key="filters.apply">Použít filtry</button>
             <button type="reset" class="btn btn-ghost" data-i18n-key="filters.reset">Vymazat</button>
           </div>
         </fieldset>
-
-        <button type="button" class="filters-close" id="filtersClose" aria-label="Zavřít filtry"></button>
       </form>
-
-      <button type="button" class="filters-fab" id="filtersOpen" aria-controls="events-filters-form">Filtry</button>
-      <div class="filters-overlay" id="filtersOverlay" hidden></div>
 
       <div class="event-demo-badge" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
         <div class="ib-icon" aria-hidden="true">🎟️</div>
@@ -291,42 +343,108 @@
     </div>
   </section>
 
-  <!-- O NÁS -->
-  <section id="about" class="about-section fancy-bg">
-    <div class="container about-flex">
-      <div class="about-text-content">
-        <h2 class="about-headline" data-i18n-key="about-headline">O nás</h2>
-        <p class="about-lead" data-i18n-key="about-lead">Věříme, že kultura spojuje lidi.</p>
-        <div class="about-text" data-i18n-key="about-text">
-          <p><strong>AJSEE<sup>®</sup></strong> vám otevírá cestu ke světovým akcím bez jazykových bariér – s nadšením pro autentické zážitky!</p>
-        </div>
-        <a href="/about.html" class="btn-main btn-with-icon" data-i18n-key="about-btn">
-          <span>Zjisti více o <strong>AJSEE<sup>®</sup></strong></span>
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- O NÁS (homepage) – sjednoceno se stylem about-hero z about.html -->
+<section id="about" class="about-hero about-hero--home">
+  <div class="container about-hero-inner">
+    <div class="about-hero-textblock">
+      <!-- Nadpis: barvu sladíme v SCSS (jako ostatní nadpisy na homepage) -->
+      <h2 class="about-home-title" data-i18n-key="about-headline">O nás</h2>
+
+      <div class="about-hero-text">
+        <!-- 2) nový „kicker“ text (tučnost/atraktivita řešit přes CSS class) -->
+        <p class="about-home-kicker" data-i18n-key="about-lead">Zážitky nemají hranice.</p>
+
+        <!-- 3) nový text – bez vnořeného HTML kvůli i18n fallback textContent -->
+        <p class="about-home-body" data-i18n-key="about-text">
+          AJSEE® vzniklo z potřeby cestovat za kulturou bez stresu a zbytečných bariér. Budujeme platformu, která ti otevře dveře ke koncertům, festivalům, divadlu i sportu – doma i v zahraničí.
+        </p>
+      </div>
+
+      <div class="about-hero-actions">
+        <!-- i18n na span, ať se nikdy nesmaže ikona -->
+        <a href="/about.html" class="about-hero-cta btn-main btn-with-icon">
+          <span data-i18n-key="about-btn">Zjisti více o AJSEE®</span>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
             <circle cx="11" cy="11" r="11" fill="#14c2c5"/>
             <path d="M8 11H14M14 11L11.5 8.5M14 11L11.5 13.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
       </div>
-
-      <div class="about-visual">
-        <div class="about-globe-anim">
-          <svg width="160" height="160" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-            <circle cx="40" cy="40" r="38" stroke="#14c2c5" stroke-width="3"/>
-            <ellipse cx="40" cy="40" rx="31" ry="38" stroke="#14c2c5" stroke-width="2"/>
-            <ellipse cx="40" cy="40" rx="38" ry="16" stroke="#14c2c5" stroke-width="2"/>
-            <ellipse cx="40" cy="40" rx="22" ry="38" stroke="#14c2c5" stroke-width="1"/>
-          </svg>
-        </div>
-      </div>
     </div>
-  </section>
+
+    <div class="about-hero-visual" aria-hidden="true">
+      <!-- Vizuál z about-hero (printscreen 2) – ID prefixed kvůli kolizím -->
+      <svg class="hero-globe" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+        <defs>
+          <clipPath id="homeAboutClip"><circle cx="110" cy="110" r="105"/></clipPath>
+          <radialGradient id="homeAboutBgGrad" cx="35%" cy="30%">
+            <stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e6f4fb"/><stop offset="100%" stop-color="#d9eef9"/>
+          </radialGradient>
+          <linearGradient id="homeAboutRingGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#14c2c5"/><stop offset="100%" stop-color="#0077cc"/>
+          </linearGradient>
+          <filter id="homeAboutSoftGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="homeAboutDrop" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity="0.35"/>
+          </filter>
+        </defs>
+
+        <style>
+          .spin-slow { animation: spin 36s linear infinite; transform-origin: 110px 110px; }
+          .spin-rev  { animation: spin 24s linear infinite reverse; transform-origin: 110px 110px; }
+          .pulse     { animation: pulse 2.8s ease-in-out infinite; }
+          .twinkle   { animation: twinkle 3.8s ease-in-out infinite; }
+          @keyframes spin { to { transform: rotate(360deg); } }
+          @keyframes pulse { 0%{ r:3; opacity:1 } 70%{ r:12; opacity:0 } 100%{ r:12; opacity:0 } }
+          @keyframes twinkle { 0%{ opacity:.25 } 100%{ opacity:.9 } }
+          @media (prefers-reduced-motion: reduce){ .spin-slow, .spin-rev, .pulse, .twinkle { animation: none !important; } }
+        </style>
+
+        <circle cx="110" cy="110" r="105" fill="url(#homeAboutBgGrad)" stroke="url(#homeAboutRingGrad)" stroke-width="3"/>
+        <circle cx="110" cy="110" r="105" fill="none" stroke="#14c2c566" stroke-width="10" opacity=".25" filter="url(#homeAboutSoftGlow)"/>
+
+        <g clip-path="url(#homeAboutClip)">
+          <g class="spin-slow" opacity=".6" stroke-linecap="round">
+            <ellipse cx="110" cy="110" rx="70" ry="30" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
+            <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
+            <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(-60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
+            <ellipse cx="110" cy="110" rx="55" ry="24" fill="none" stroke="#14c2c540" stroke-width="1"/>
+            <ellipse cx="110" cy="110" rx="40" ry="15" fill="none" stroke="#14c2c540" stroke-width="1"/>
+          </g>
+
+          <g class="spin-rev">
+            <circle cx="110" cy="110" r="74" fill="none" stroke="url(#homeAboutRingGrad)" stroke-width="2" stroke-dasharray="6 8" stroke-linecap="round"/>
+          </g>
+
+          <circle cx="110" cy="110" r="90" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="18" stroke-dasharray="60 400" transform="rotate(-35 110 110)"/>
+
+          <g filter="url(#homeAboutDrop)">
+            <g><circle cx="70" cy="70" r="4" fill="#14c2c5"/><circle cx="70" cy="70" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="70" cy="70" r="3" fill="#14c2c5" opacity=".35"/></g>
+            <g><circle cx="150" cy="80" r="4" fill="#0077cc"/><circle cx="150" cy="80" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="150" cy="80" r="3" fill="#0077cc" opacity=".35"/></g>
+            <g><circle cx="130" cy="150" r="4" fill="#14c2c5"/><circle cx="130" cy="150" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="130" cy="150" r="3" fill="#14c2c5" opacity=".35"/></g>
+            <g><circle cx="80" cy="140" r="4" fill="#0077cc"/><circle cx="80" cy="140" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="80" cy="140" r="3" fill="#0077cc" opacity=".35"/></g>
+          </g>
+
+          <g>
+            <circle class="twinkle" cx="170" cy="60" r="1.5" fill="#ffffff" style="animation-delay:-1s"/>
+            <circle class="twinkle" cx="45" cy="120" r="1.2" fill="#ffffff" style="animation-delay:-2s"/>
+            <circle class="twinkle" cx="165" cy="150" r="1.2" fill="#ffffff" style="animation-delay:-3s"/>
+            <circle class="twinkle" cx="100" cy="40" r="1.0" fill="#ffffff" style="animation-delay:-1.7s"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
 
   <!-- BLOG -->
-  <section class="homepage-blog" id="blog">
+  <section class="homepage-blog blog" id="blog">
     <div class="container">
       <h2 data-i18n-key="blog-headline-home">Blog & Recenze</h2>
-      <div class="homepage-blog-cards" id="homepage-blog-list"></div>
+      <!-- Host pro lazy render TOP 3 (viz main.js: [data-home-blog] || #blog .blog-cards) -->
+      <div class="homepage-blog-cards blog-cards" id="homepage-blog-list" data-home-blog></div>
       <a href="/blog.html" class="homepage-blog-more" data-i18n-key="blog-show-all">Zobrazit všechny články</a>
     </div>
   </section>
@@ -382,15 +500,13 @@
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
 
-<!-- 👇 DŮLEŽITÉ: Ownership guard – events-home.js vlastní filtry/události -->
+<!-- 👇 DŮLEŽITÉ: Ownership guard (neškodí, ale FE vlastní main.js) -->
 <script>
   window.__AJSEE_EVENTS_OWNS_FILTERS = true;
 </script>
 
-<!-- Vite moduly – Vite si je v DEV i PROD obslouží (v PROD přepíše na /assets/*.js) -->
+<!-- Vite vstup – JEN jeden modul, ostatní řeší main.js -->
 <script type="module" src="/src/main.js"></script>
-<script type="module" src="/src/homepage-blog.js"></script>
-<script type="module" src="/src/events-home.js"></script>
 
 <!-- Inline skript: chování waitlist banneru (počká i na překlady) -->
 <script>
@@ -417,6 +533,7 @@
     }
 
     function applyBannerI18n(root) {
+      if (!root) return;
       root.querySelectorAll('[data-i18n-key]').forEach((el) => {
         const key = el.getAttribute('data-i18n-key');
         const val = t(key);
@@ -447,41 +564,38 @@
       }
     }
 
-    function whenTranslationsReady(fn){
-      if (window.translations) return fn();
+    window.addEventListener('DOMContentLoaded', () => {
+      const cta = document.getElementById('hpWaitlistCta');
+      if (cta) {
+        const url = new URL(cta.href, location.origin);
+        if (SUPPORTED.includes(LANG)) url.searchParams.set('lang', LANG);
+        cta.href = url.toString();
+        cta.addEventListener('click', function () {
+          if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner' });
+        });
+      }
+
+      const btnClose = document.getElementById('hpWaitlistClose');
+      if (btnClose) {
+        btnClose.addEventListener('click', function () { box.remove(); });
+        const closeKey = btnClose.getAttribute('data-i18n-aria') || btnClose.getAttribute('data-i18n-key');
+        if (closeKey) {
+          const val = t(closeKey);
+          if (typeof val === 'string') {
+            btnClose.setAttribute('aria-label', val);
+            btnClose.setAttribute('title', val);
+          }
+        }
+      }
+
       const start = Date.now();
       const id = setInterval(() => {
         if (window.translations || Date.now() - start > 1500) {
           clearInterval(id);
-          fn();
+          applyBannerI18n(box);
         }
       }, 50);
-    }
-
-    const cta = document.getElementById('hpWaitlistCta');
-    if (cta) {
-      const url = new URL(cta.href, location.origin);
-      if (SUPPORTED.includes(LANG)) url.searchParams.set('lang', LANG);
-      cta.href = url.toString();
-      cta.addEventListener('click', function () {
-        if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner' });
-      });
-    }
-
-    const btnClose = document.getElementById('hpWaitlistClose');
-    if (btnClose) {
-      btnClose.addEventListener('click', function () { box.remove(); });
-      const closeKey = btnClose.getAttribute('data-i18n-aria') || btnClose.getAttribute('data-i18n-key');
-      if (closeKey) {
-        const val = t(closeKey);
-        if (typeof val === 'string') {
-          btnClose.setAttribute('aria-label', val);
-          btnClose.setAttribute('title', val);
-        }
-      }
-    }
-
-    whenTranslationsReady(() => applyBannerI18n(box));
+    });
   })();
 </script>
 

@@ -15,7 +15,7 @@
 @use './partials/footer';
 @use './partials/events-page';
 @use './partials/about-section';
-@use '@styles/partials/microguides';
+@use './partials/microguides'; // ✅ opraveno z @styles/partials/microguides
 @use './partials/blog-page';
 @use './partials/faq';
 @use './partials/typeahead';
@@ -33,4 +33,3 @@ html, body { overflow-x: hidden; overflow-y: auto; }
    Musí být NA KONCI, aby přebil starší styly z events.scss
    a dalších parcialů. Platí pro homepage i /events.html.
 -------------------------------------------------------*/
-

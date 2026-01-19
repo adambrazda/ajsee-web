@@ -6,7 +6,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": "22.19.0"
+    "node": "20.x"
   },
   "scripts": {
     "svgo:mg": "svgo -f public/images/microguides/seating-map -o public/images/microguides/seating-map --multipass",
@@ -14,6 +14,9 @@
     "mg:copy-json": "npx cpy-cli \"content/microguides/*.json\" public/content/microguides",
     "predev": "npx cpy-cli src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json",
     "dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite",
+    "dev:netlify": "netlify dev",
+    "dev:ntl": "netlify dev",
+    "start": "npm run dev",
     "prebuild": "npx cpy-cli src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json",
     "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build",
     "preview": "vite preview",

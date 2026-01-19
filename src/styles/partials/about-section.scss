@@ -2,6 +2,7 @@
 // ABOUT SECTION (homepage sekce "O nás")
 // =============================================
 @use '../globals' as *;
+
 .about-section.fancy-bg {
   background: linear-gradient(180deg, #f7f7f9 75%, #e5f9fb 100%);
   border-top: 1px solid #e0e6ec;
@@ -59,6 +60,7 @@
         color: #0077cc;
         font-size: 1.07em;
       }
+
       sup {
         font-size: 0.67em;
         top: -0.7em;
@@ -96,6 +98,7 @@
         strong {
           font-weight: 700;
           margin-left: 0.13em;
+
           sup {
             font-size: 0.6em;
             top: -0.5em;
@@ -151,63 +154,185 @@
 
   // === MOBILNÍ VERZE ===
   @media (max-width: 768px) {
-  padding: 1.5rem 0 1.2rem 0;
+    padding: 1.5rem 0 1.2rem 0;
 
-  .about-flex {
-    display: block;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    gap: 0;
-  }
+    .about-flex {
+      display: block;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      gap: 0;
+    }
 
-  .about-text-content,
-  .about-visual {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0;
-    text-align: center !important;
-  }
-
-  .about-headline,
-  .about-lead,
-  .about-text {
-    text-align: center !important;
-  }
-
-  .about-visual {
-    margin-top: 1.8em;
-    .about-globe-anim {
-      margin: 1.1em auto 0 auto;
-      max-width: 120px;
+    .about-text-content,
+    .about-visual {
       width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0;
+      text-align: center !important;
+    }
 
-      svg {
+    .about-headline,
+    .about-lead,
+    .about-text {
+      text-align: center !important;
+    }
+
+    .about-visual {
+      margin-top: 1.8em;
+
+      .about-globe-anim {
+        margin: 1.1em auto 0 auto;
         max-width: 120px;
+        width: 100%;
+
+        svg {
+          max-width: 120px;
+        }
       }
+    }
+
+    .btn-main.btn-with-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1.1em auto 1.2em auto;
+      width: 100%;
+      max-width: 340px;
+      font-size: 1.08rem;
+      padding: 0.96em 1.3em;
     }
   }
 
-  .btn-main.btn-with-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 1.1em auto 1.2em auto;
-    width: 100%;
-    max-width: 340px;
-    font-size: 1.08rem;
-    padding: 0.96em 1.3em;
+  // KEYFRAMES
+  @keyframes aboutGlobeBounce {
+    0%   { transform: translateY(0); }
+    25%  { transform: translateY(-8px); }
+    50%  { transform: translateY(0); }
+    80%  { transform: translateY(-3px); }
+    100% { transform: translateY(0); }
   }
 }
 
+/* =========================================================
+   HOMEPAGE "O nás" (NOVÝ layout)
+   - používá .about-hero z about-page.scss (printscreen 2)
+   - řeší:
+     1) barvu nadpisu jako ostatní homepage nadpisy
+     2) nový kicker "Zážitky nemají hranice." (tučný, atraktivní, menší než nadpis)
+     3) elegantní typografii odstavce
+   - pozor na i18n: žádné vnořené <strong> v i18n uzlech
+   ========================================================= */
 
-// KEYFRAMES
-@keyframes aboutGlobeBounce {
-  0%   { transform: translateY(0); }
-  25%  { transform: translateY(-8px); }
-  50%  { transform: translateY(0); }
-  80%  { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
+.about-hero--home {
+  /* 1) Nadpis "O nás" – jako ostatní homepage nadpisy (dark navy z designu) */
+  .about-home-title {
+    font-size: 2.6rem;
+    color: #192646; /* sjednoceno s homepage heading style */
+    font-weight: 900;
+    margin: 0 0 1.05rem 0;
+    letter-spacing: -0.5px;
+    text-wrap: balance;
+  }
+
+  /* 2) Kicker: tučný + atraktivní, ale menší než nadpis */
+  .about-home-kicker {
+    margin: 0 0 0.85rem 0;
+    font-size: clamp(1.05rem, 0.95rem + 0.55vw, 1.35rem);
+    font-weight: 800;
+    letter-spacing: -0.25px;
+    line-height: 1.25;
+    color: #0077cc; /* výrazný brand akcent (kontrastní) */
+  }
+
+  /* 3) Hlavní text: elegantní čitelnost */
+  .about-home-body {
+    margin: 0;
+    max-width: 68ch;
+    font-size: 1.18rem;
+    line-height: 1.7;
+    letter-spacing: -0.1px;
+    color: #184469; /* konzistentní s about-page body */
+    text-wrap: pretty;
+  }
+
+  .about-hero-actions {
+    margin-top: 1.6rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* CTA – držíme look z původní homepage button (a11y focus-visible) */
+  .about-hero-cta.btn-main.btn-with-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: linear-gradient(90deg, #0077cc, #14c2c5 80%);
+    color: #fff;
+    font-size: 1.11rem;
+    font-weight: 600;
+    padding: 0.85em 2.1em;
+    border-radius: 1.7em;
+    box-shadow: 0 4px 18px #14c2c516;
+    text-decoration: none;
+    gap: 0.38em;
+    transition: background 0.17s, box-shadow 0.19s, transform 0.15s;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: linear-gradient(90deg, #14c2c5 15%, #0077cc 100%);
+      box-shadow: 0 7px 24px #14c2c529;
+      transform: translateY(-2px) scale(1.035);
+      color: #fff;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #14c2c5;
+      outline-offset: 3px;
+    }
+
+    svg { margin-left: 0.18em; margin-bottom: 0.03em; }
+  }
 }
+
+/* Mobile tweaks pro homepage about hero */
+@media (max-width: 600px) {
+  .about-hero--home {
+    .about-hero-textblock {
+      text-align: center;
+      max-width: none;
+    }
+
+    .about-home-title {
+      font-size: 1.48rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .about-home-kicker {
+      font-size: 1.06rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .about-home-body {
+      font-size: 1.02rem;
+      max-width: none;
+      margin-inline: auto;
+    }
+
+    .about-hero-actions {
+      justify-content: center;
+    }
+
+    .about-hero-cta.btn-main.btn-with-icon {
+      width: 100%;
+      max-width: 340px;
+      justify-content: center;
+      font-size: 1.08rem;
+      padding: 0.96em 1.3em;
+    }
+  }
 }

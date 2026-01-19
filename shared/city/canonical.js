@@ -1,4 +1,4 @@
-// shared/city/canonical.js
+// /shared/city/canonical.js
 // ---------------------------------------------------------
 // Jediný "zdroj pravdy" pro práci s názvy měst napříč FE i Netlify funkcemi.
 // - robustní normalizace (bez diakritiky, lower, trim)
@@ -46,18 +46,13 @@ function collapseDistricts(s = '') {
 
 /**
  * Vrátí "základní" klíč města (slučuje městské části a pomlčky/čárky).
- * Příklady:
- *  - "Praha 7" → "prague"
- *  - "Praha-Dejvice" → "prague"
- *  - "Bratislava - Staré Mesto" → "bratislava"
- *  - "Wien" / "Vídeň" / "Vienna" / "Wiedeń" / "Viedeň" / "Bécs" → "vienna"
  */
 export function baseCityKey(input) {
   let n = normalize(input);
   n = collapseDistricts(n);
 
   // Praha – čísla, římské číslice, textové části
-  if (/^praha(?:\s*[-–]?\s*(?:\d+|[ivxlcdm]+|[a-z\u00e1-\u017e]+))?$/i.test(n)) return 'prague';
+  if (/^praha(?:\s*[-–]?\s*(?:\d+|[ivxlcdm]+|[a-z]+))?$/i.test(n)) return 'prague';
 
   // Bratislava – libovolná městská část
   if (/^bratislava(?:\s*[-–]?\s*.+)?$/.test(n)) return 'bratislava';
@@ -65,14 +60,12 @@ export function baseCityKey(input) {
   // Vídeň / Wien / Vienna / Wiedeń / Viedeň / Bécs
   if (['vienna', 'wien', 'viden', 'vieden', 'wieden', 'becs'].includes(n)) return 'vienna';
 
-  // Jednoduchý fallback: vezmi text do čárky/pomlčky (často "Město - část")
+  // Jednoduchý fallback: text do čárky/pomlčky
   return n.split(/[,-]/)[0].trim();
 }
 
 /* ---------------------------------------------------------
    Databáze aliasů (EU + významná světová města)
-   Klíč = kanonické EN, hodnota = pole aliasů (lokalizace, překlepy).
-   Udržováno konzervativně (ne "všechna" města světa).
 --------------------------------------------------------- */
 const CITY_ALIASES = {
   // CZ / SK / PL / HU (výběr)
@@ -253,11 +246,7 @@ const aliasIndex = (() => {
   return map;
 })();
 
-/* ---------------------------------------------------------
-   Fuzzy metriky a práh
---------------------------------------------------------- */
-
-// Levenshtein → normalizovaná podobnost 0..1
+/* ---------- fuzzy metriky ---------- */
 function levSimilarity(a, b) {
   a = normalizeForMatch(a);
   b = normalizeForMatch(b);
@@ -283,14 +272,14 @@ function levSimilarity(a, b) {
   return 1 - dist / Math.max(m, n);
 }
 
-// Jaro–Winkler 0..1 (dobré na transpozice)
 function jaroWinkler(s1, s2) {
   s1 = normalizeForMatch(s1);
   s2 = normalizeForMatch(s2);
   if (!s1 || !s2) return 0;
   if (s1 === s2) return 1;
 
-  const matchDistance = Math.floor(Math.max(s1.length, s2.length) / 2) - 1;
+  // clamp match distance to >= 0 (krátké řetězce)
+  const matchDistance = Math.max(0, Math.floor(Math.max(s1.length, s2.length) / 2) - 1);
   const s1Matches = new Array(s1.length).fill(false);
   const s2Matches = new Array(s2.length).fill(false);
 
@@ -330,7 +319,6 @@ function jaroWinkler(s1, s2) {
   return jaro + prefix * 0.1 * (1 - jaro);
 }
 
-// token-set ratio 0..1
 function tokenSetSim(a, b) {
   a = normalizeForMatch(a);
   b = normalizeForMatch(b);
@@ -357,30 +345,21 @@ function bestScore(query, candidate) {
 
 function dynamicThreshold(q) {
   const L = normalizeForMatch(q).length;
-  if (L <= 4) return 0.9;   // krátké dotazy musí být přesnější
+  if (L <= 4) return 0.9;
   if (L <= 7) return 0.86;
   if (L <= 12) return 0.82;
   return 0.8;
 }
 
-/* ---------------------------------------------------------
-   Veřejné API
---------------------------------------------------------- */
-
-/**
- * Najde nejlepší shodu mezi aliasy (fuzzy).
- * @returns {{ canonical: string, score: number, matchedAlias: string } | null}
- */
+/* ---------- veřejné API ---------- */
 export function findBestCityMatchInfo(input) {
   if (!input) return null;
   const norm = normalizeForMatch(collapseDistricts(input));
   if (!norm) return null;
 
-  // 1) rychlá přímá shoda
   const exact = aliasIndex.get(norm);
   if (exact) return { canonical: exact, score: 1, matchedAlias: input };
 
-  // 2) fuzzy přes všechny aliasy
   let best = { canonical: '', score: 0, matchedAlias: '' };
   for (const [aliasNorm, en] of aliasIndex.entries()) {
     const s = bestScore(norm, aliasNorm);
@@ -390,17 +369,12 @@ export function findBestCityMatchInfo(input) {
   return best.score >= th ? best : null;
 }
 
-/**
- * Převede aliasy měst na kanonický "TM-friendly" název pro dotaz do Ticketmasteru.
- * Preferujeme EN endonym/exonym, které TM chápe u parametru `city`.
- * Fallback: když nic nepoznáme, vrátíme původní vstup (TM si někdy poradí).
- */
+/** Převede aliasy na kanonický (TM-friendly) EN název. */
 export function canonForInputCity(input) {
   if (!input) return '';
   const hit = findBestCityMatchInfo(input);
   if (hit) return hit.canonical;
 
-  // bezpečný fallback z původní logiky:
   const base = baseCityKey(input);
   if (base === 'prague') return 'Prague';
   if (base === 'bratislava') return 'Bratislava';
@@ -409,9 +383,8 @@ export function canonForInputCity(input) {
   return input;
 }
 
-// Preferované popisky podle jazyka UI (používá se v typeaheadu apod.)
+// Preferované popisky pro UI
 export const CANON_LABEL = {
-  // zachování původních klíčů + pár přidaných
   prague:     { cs:'Praha',     sk:'Praha',     en:'Prague',  de:'Prag',     pl:'Praga',    hu:'Prága' },
   brno:       { cs:'Brno',      sk:'Brno',      en:'Brno',    de:'Brünn',    pl:'Brno',     hu:'Brünn' },
   ostrava:    { cs:'Ostrava',   sk:'Ostrava',   en:'Ostrava', de:'Ostrau',   pl:'Ostrawa',  hu:'Osztrava' },
@@ -427,95 +400,69 @@ export const CANON_LABEL = {
   budapest:   { cs:'Budapešť',  sk:'Budapešť',  en:'Budapest',de:'Budapest', pl:'Budapeszt',hu:'Budapest' },
 };
 
-// User-friendly label pro kanonický klíč podle jazyka UI
 export function labelForCanon(canonKey, lang = 'cs') {
   const key = normalize(canonKey);
+  const L = (lang || 'en').toString().slice(0,2).toLowerCase();
   const map = CANON_LABEL[key];
-  return map?.[lang] || canonKey;
+  return map?.[L] || canonKey;
 }
 
-/* ---------------------------------------------------------
-   Město → countryCode + helper
-   (V adapteru TM countryCode NEPOSÍLEJTE, pokud posíláte city.
-    Tohle je pro jiné případy, kde je CC užitečné.)
---------------------------------------------------------- */
-
+/* ---------- City → countryCode ---------- */
 const CITY_TO_CC = {
   // CZ
   'Prague': 'CZ', 'Brno': 'CZ', 'Ostrava': 'CZ', 'Pilsen': 'CZ', 'Olomouc': 'CZ',
-
   // SK
   'Bratislava': 'SK',
-
   // AT
   'Vienna': 'AT',
-
   // PL
   'Kraków': 'PL', 'Warsaw': 'PL', 'Wroclaw': 'PL', 'Gdansk': 'PL', 'Poznan': 'PL', 'Lodz': 'PL',
-
   // DE
   'Berlin': 'DE', 'Hamburg': 'DE', 'Cologne': 'DE', 'Frankfurt': 'DE', 'Munich': 'DE',
   'Stuttgart': 'DE', 'Dusseldorf': 'DE',
-
   // CH
   'Zurich': 'CH', 'Geneva': 'CH',
-
   // NL / BE / LU
   'Amsterdam': 'NL', 'Rotterdam': 'NL', 'The Hague': 'NL',
   'Brussels': 'BE', 'Antwerp': 'BE',
-
   // FR
   'Paris': 'FR', 'Lyon': 'FR', 'Marseille': 'FR',
-
   // ES
   'Madrid': 'ES', 'Barcelona': 'ES', 'Valencia': 'ES',
-
   // PT
   'Lisbon': 'PT', 'Porto': 'PT',
-
   // IT
   'Rome': 'IT', 'Milan': 'IT', 'Naples': 'IT', 'Turin': 'IT', 'Florence': 'IT', 'Venice': 'IT',
-
   // Nordics
   'Stockholm': 'SE', 'Gothenburg': 'SE', 'Copenhagen': 'DK', 'Oslo': 'NO', 'Helsinki': 'FI', 'Reykjavik': 'IS',
-
   // Baltics
   'Tallinn': 'EE', 'Riga': 'LV', 'Vilnius': 'LT',
-
   // SEE
   'Ljubljana': 'SI', 'Zagreb': 'HR', 'Belgrade': 'RS', 'Sofia': 'BG',
   'Bucharest': 'RO', 'Athens': 'GR', 'Thessaloniki': 'GR', 'Istanbul': 'TR',
-
   // UK / IE
   'London': 'GB', 'Manchester': 'GB', 'Birmingham': 'GB', 'Liverpool': 'GB', 'Leeds': 'GB',
   'Newcastle upon Tyne': 'GB', 'Glasgow': 'GB', 'Edinburgh': 'GB', 'Bristol': 'GB',
   'Cardiff': 'GB', 'Belfast': 'GB', 'Dublin': 'IE',
-
   // UA / BY
   'Kyiv': 'UA', 'Lviv': 'UA', 'Odesa': 'UA', 'Minsk': 'BY',
-
   // Middle East
-  'Tel Aviv': 'IL', 'Jerusalem': 'IL', 'Dubai': 'AE', 'Abu Dhabi': 'AE',
-  'Doha': 'QA', 'Riyadh': 'SA',
-
+  'Tel Aviv': 'IL', 'Jerusalem': 'IL', 'Dubai': 'AE', 'Abu Dhabi': 'AE', 'Doha': 'QA', 'Riyadh': 'SA',
   // North America
   'New York': 'US', 'Los Angeles': 'US', 'San Francisco': 'US', 'Chicago': 'US', 'Boston': 'US',
   'Miami': 'US', 'Washington': 'US', 'Seattle': 'US', 'San Diego': 'US', 'Las Vegas': 'US',
   'Dallas': 'US', 'Houston': 'US', 'Austin': 'US', 'Atlanta': 'US', 'Philadelphia': 'US',
   'Phoenix': 'US', 'Denver': 'US',
   'Toronto': 'CA', 'Vancouver': 'CA', 'Montreal': 'CA',
-
   // LatAm
   'Mexico City': 'MX', 'São Paulo': 'BR', 'Rio de Janeiro': 'BR',
   'Buenos Aires': 'AR', 'Santiago': 'CL',
-
   // Asia
   'Tokyo': 'JP', 'Osaka': 'JP', 'Kyoto': 'JP', 'Yokohama': 'JP',
   'Seoul': 'KR', 'Busan': 'KR',
   'Beijing': 'CN', 'Shanghai': 'CN', 'Shenzhen': 'CN', 'Guangzhou': 'CN', 'Hong Kong': 'HK',
   'Taipei': 'TW', 'Singapore': 'SG', 'Bangkok': 'TH', 'Kuala Lumpur': 'MY', 'Jakarta': 'ID',
   'Manila': 'PH', 'Mumbai': 'IN', 'Delhi': 'IN', 'Bengaluru': 'IN',
-
   // Oceania
   'Sydney': 'AU', 'Melbourne': 'AU', 'Brisbane': 'AU', 'Perth': 'AU', 'Adelaide': 'AU', 'Canberra': 'AU',
   'Auckland': 'NZ', 'Wellington': 'NZ',
@@ -524,6 +471,6 @@ const CITY_TO_CC = {
 /** Vrátí ISO country code pro zadané město (pokud ho známe). */
 export function guessCountryCodeFromCity(input) {
   if (!input) return '';
-  const canonCity = canonForInputCity(input); // např. "Prague", "Vienna", …
+  const canonCity = canonForInputCity(input);
   return CITY_TO_CC[canonCity] || '';
 }

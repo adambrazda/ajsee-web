@@ -1,4 +1,4 @@
-// src/city/suggestClient.js
+/* src/city/suggestClient.js
 // ---------------------------------------------------------
 // City suggest (frontend client) – volá Netlify funkci a
 // provádí bezpečné sloučení aliasů a městských částí.
@@ -6,12 +6,11 @@
 //
 // Závislosti:
 //   - src/city/canonical.js  (canonForInputCity, labelForCanon)
-// ---------------------------------------------------------
+// --------------------------------------------------------- */
 
 import { canonForInputCity, labelForCanon } from './canonical.js';
 
-// Jednotný scope pro střední Evropu (necháváme jako CSV – BE při prázdné
-// nebo neplatné kombinaci spadne na globální vyhledávání, což je v pořádku)
+// Jednotný scope pro střední Evropu (CSV je OK)
 export const CITY_SUGGEST_SCOPE = ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'];
 
 // Diacritics-less normalize
@@ -38,8 +37,9 @@ function collapseDistricts(name) {
 // Vytvoří klíč pro seskupení (Prague/Vienna/… pokud známe; jinak base city)
 function clusterKey(rawLabel) {
   const base = collapseDistricts(rawLabel);
-  const canonEn = canonForInputCity(base); // např. "Prague", "Vienna", ...
-  return norm(canonEn || base);            // fallback na base, pokud neznáme
+  let canonEn = '';
+  try { canonEn = canonForInputCity(base) || ''; } catch {}
+  return norm(canonEn || base); // fallback na base, pokud neznáme
 }
 
 /**
@@ -48,7 +48,7 @@ function clusterKey(rawLabel) {
  * @param {Object} opts
  * @param {string} opts.locale - jazyk UI (ovlivňuje popisek města)
  * @param {string} opts.keyword - hledaný výraz
- * @param {number} [opts.size=50] - max počet návrhů
+ * @param {number} [opts.size=50] - max počet návrhů (clamp 10..100)
  * @param {string[]|string} [opts.countryCodes=CITY_SUGGEST_SCOPE] - CSV nebo pole country codes
  * @returns {Promise<Array<{city:string,countryCode:string,lat?:number,lon?:number,score?:number}>>}
  */
@@ -61,10 +61,13 @@ export async function suggestCities({
   const q = (keyword || '').trim();
   if (q.length < 2) return [];
 
-  const scopeKey = Array.isArray(countryCodes) ? countryCodes.join(',') : String(countryCodes || '');
-  const cacheKey = `${locale || 'cs'}|${scopeKey || 'GLOBAL'}|${q.toLowerCase()}|${size}`;
+  // bezpečný limit
+  const limit = Math.max(10, Math.min(100, Number(size) || 50));
 
-  // Jednoduchá per-modul cache (neexportujeme)
+  const scopeKey = Array.isArray(countryCodes) ? countryCodes.join(',') : String(countryCodes || '');
+  const cacheKey = `${(locale || 'cs').toLowerCase()}|${scopeKey || 'GLOBAL'}|${q.toLowerCase()}|${limit}`;
+
+  // per-modul cache
   if (!suggestCities.__cache) suggestCities.__cache = new Map();
   const cache = suggestCities.__cache;
   if (cache.has(cacheKey)) return cache.get(cacheKey);
@@ -73,19 +76,24 @@ export async function suggestCities({
   const qsParams = new URLSearchParams({
     locale: locale || 'cs',
     keyword: q,
-    size: String(size)
+    size: String(limit)
   });
   if (scopeKey) qsParams.set('countryCode', scopeKey);
 
   let list = [];
   try {
-    const r = await fetch(`/.netlify/functions/ticketmasterCitySuggest?${qsParams.toString()}`);
+    const r = await fetch(`/.netlify/functions/ticketmasterCitySuggest?${qsParams.toString()}`, {
+      cache: 'no-store',
+      headers: { 'Accept': 'application/json' }
+    });
     if (!r.ok) {
       cache.set(cacheKey, []);
       return [];
     }
     const data = await r.json();
-    const raw = Array.isArray(data.cities) ? data.cities : [];
+
+    // ⬅️ OPRAVA: BE vrací { items }, ne { cities }
+    const raw = Array.isArray(data?.items) ? data.items : [];
 
     // 1) Základní transformace
     const tmp = raw.map((c) => ({
@@ -102,10 +110,12 @@ export async function suggestCities({
       const key = `${clusterKey(it.rawCity)}|${it.countryCode || ''}`;
 
       // Výchozí display label:
-      // - pokus o jazykový endonym/exonym přes labelForCanon
-      // - jinak base city bez obvodu
-      const canonEn = canonForInputCity(collapseDistricts(it.rawCity)); // "Prague", "Vienna", ...
-      const preferred = labelForCanon(canonEn, locale) || collapseDistricts(it.rawCity);
+      let preferred = collapseDistricts(it.rawCity);
+      try {
+        const canonEn = canonForInputCity(preferred);
+        const localized = labelForCanon(canonEn, locale);
+        preferred = localized || preferred;
+      } catch { /* noop */ }
 
       const cur = merged.get(key);
       if (!cur) {
@@ -126,7 +136,7 @@ export async function suggestCities({
     // 3) Seřazení + limit
     list = Array.from(merged.values())
       .sort((a, b) => (b.score || 0) - (a.score || 0) || a.city.localeCompare(b.city))
-      .slice(0, size);
+      .slice(0, limit);
 
     cache.set(cacheKey, list);
     return list;

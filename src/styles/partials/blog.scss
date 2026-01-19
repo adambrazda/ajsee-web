@@ -1,12 +1,15 @@
 @use '../globals' as *;
+
 .homepage-blog {
   padding: 3rem 0 3rem 0;
   background: linear-gradient(90deg, #f2f8fd 0%, #e6f4fb 100%);
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
   }
+
   h2 {
     text-align: center;
     font-size: 2.1rem;
@@ -15,15 +18,33 @@
     font-weight: 800;
     letter-spacing: -0.7px;
   }
+
+  /**
+   * ✅ FIX: layout musí odpovídat tomu, co renderuje main.js
+   * main.js renderuje: .homepage-blog-cards > a.blog-card (a uvnitř .blog-card-content)
+   * Proto:
+   * - kontejner přepínáme na GRID (computed už nebude "flex")
+   * - karty stylujeme pro nové i staré třidy (blog-card-homepage)
+   */
   .homepage-blog-cards {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 360px));
     gap: 2.3rem;
     justify-content: center;
-    flex-wrap: wrap;
+    align-items: stretch;
     min-height: 250px; // pokud nejsou články, sekce nebude "spadlá"
+    width: 100%;
   }
+
+  /* -------------------------------------------------------
+   * ✅ CARD – kompatibilní se starým i novým markupem
+   * ------------------------------------------------------- */
+  .homepage-blog-cards > a.blog-card,
+  .homepage-blog-cards > a.homepage-blog-card,
+  .homepage-blog-cards > a.blog-card-homepage,
   .blog-card-homepage {
     max-width: 360px;
+    width: 100%;
     flex: 1 1 300px;
     background: #fff;
     border-radius: 1.2em;
@@ -32,10 +53,26 @@
     flex-direction: column;
     overflow: hidden;
     transition: transform 0.16s, box-shadow 0.17s;
-    &:hover, &:focus-within {
+    text-decoration: none;
+    color: inherit;
+
+    &:hover,
+    &:focus-within,
+    &:focus-visible {
       transform: translateY(-4px) scale(1.03);
       box-shadow: 0 8px 26px #0077cc22;
     }
+
+    /* ✅ NOVÝ markup (main.js): <a> > <img ...> */
+    > img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+      border-radius: 1.2em 1.2em 0 0;
+    }
+
+    /* ✅ STARÝ markup: .blog-card-img */
     .blog-card-img {
       width: 100%;
       height: 190px;
@@ -43,12 +80,60 @@
       display: block;
       border-radius: 1.2em 1.2em 0 0;
     }
+
+    /* ✅ NOVÝ markup (main.js): .blog-card-content */
+    .blog-card-content {
+      padding: 1.2rem 1.3rem 1.1rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 0;
+
+      h3 {
+        font-size: 1.17rem;
+        font-weight: 800;
+        color: #184469;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.3px;
+        line-height: 1.24;
+      }
+
+      p {
+        color: #334b69;
+        font-size: 1.04rem;
+        margin-bottom: 0.8rem;
+        flex: 1 1 0;
+      }
+
+      /* ✅ NOVÝ markup (main.js): CTA je <span class="btn-primary"> */
+      .btn-primary {
+        align-self: flex-end;
+        background: linear-gradient(90deg, #14c2c5 30%, #0077cc 100%);
+        color: #fff;
+        font-weight: 700;
+        padding: 0.5em 1.3em;
+        border-radius: 1em;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.13s, transform 0.13s;
+
+        &:hover,
+        &:focus {
+          background: linear-gradient(90deg, #0077cc 30%, #14c2c5 100%);
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    /* ✅ STARÝ markup: .blog-card-body / title / lead / actions */
     .blog-card-body {
       padding: 1.2rem 1.3rem 1.1rem 1.3rem;
       display: flex;
       flex-direction: column;
       flex: 1 1 0;
     }
+
     .blog-card-title {
       font-size: 1.17rem;
       font-weight: 800;
@@ -57,16 +142,19 @@
       letter-spacing: -0.3px;
       line-height: 1.24;
     }
+
     .blog-card-lead {
       color: #334b69;
       font-size: 1.04rem;
       margin-bottom: 0.8rem;
       flex: 1 1 0;
     }
+
     .blog-card-actions {
       display: flex;
       justify-content: flex-end;
       margin-top: auto;
+
       .blog-readmore {
         background: linear-gradient(90deg, #14c2c5 30%, #0077cc 100%);
         color: #fff;
@@ -78,13 +166,16 @@
         cursor: pointer;
         text-decoration: none;
         transition: background 0.13s, transform 0.13s;
-        &:hover, &:focus {
+
+        &:hover,
+        &:focus {
           background: linear-gradient(90deg, #0077cc 30%, #14c2c5 100%);
           transform: scale(1.05);
         }
       }
     }
   }
+
   .homepage-blog-more {
     display: block;
     text-align: center;
@@ -93,46 +184,80 @@
     color: #14c2c5;
     font-size: 1.13rem;
     text-decoration: none;
-    &:hover { text-decoration: underline; }
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   @media (max-width: 900px) {
     .homepage-blog-cards {
+      grid-template-columns: repeat(2, minmax(0, 360px));
       gap: 1.3rem;
     }
+
+    .homepage-blog-cards > a.blog-card,
+    .homepage-blog-cards > a.homepage-blog-card,
+    .homepage-blog-cards > a.blog-card-homepage,
     .blog-card-homepage {
       max-width: 95vw;
-      .blog-card-img { height: 150px; }
+
+      > img,
+      .blog-card-img {
+        height: 150px;
+      }
     }
   }
+
   @media (max-width: 600px) {
     padding: 2.3rem 0 2.3rem 0;
+
     .homepage-blog-cards {
-      flex-direction: column;
+      grid-template-columns: 1fr;
       gap: 1.2rem;
-      align-items: center;
+      justify-items: center;
     }
+
+    .homepage-blog-cards > a.blog-card,
+    .homepage-blog-cards > a.homepage-blog-card,
+    .homepage-blog-cards > a.blog-card-homepage,
     .blog-card-homepage {
       max-width: 98vw;
       border-radius: 0.9em;
-      .blog-card-img { height: 120px; }
-      .blog-card-body { padding: 1rem 0.9rem 0.8rem 0.9rem; }
+
+      > img,
+      .blog-card-img {
+        height: 120px;
+      }
+
+      .blog-card-body,
+      .blog-card-content {
+        padding: 1rem 0.9rem 0.8rem 0.9rem;
+      }
     }
-    h2 { font-size: 1.35rem; }
-    .homepage-blog-more { font-size: 1.01rem; }
+
+    h2 {
+      font-size: 1.35rem;
+    }
+
+    .homepage-blog-more {
+      font-size: 1.01rem;
+    }
   }
 }
+
 /* --- Micro-guide fallback pro homepage karty --------------------------- */
-/* Zaplní 16:9 výřez i tehdy, když karta nemá .card-media wrapper
-   a obsahuje jen <img> resp. .blog-card-img */
+/* Zaplní výřez i tehdy, když karta nemá wrapper a obsahuje jen <img> */
 .homepage-blog {
-  .blog-card-homepage.is-microguide {
+  .blog-card-homepage.is-microguide,
+  .homepage-blog-cards > a.blog-card.is-microguide,
+  .homepage-blog-cards > a.homepage-blog-card.is-microguide {
     position: relative;
 
     > img,
     .blog-card-img {
       width: 100%;
-      height: 190px;           /* odpovídá vaší homepage výšce */
+      height: 190px; /* odpovídá homepage výšce */
       display: block;
       object-fit: cover;
       object-position: center;
@@ -143,13 +268,18 @@
 
 @media (max-width: 900px) {
   .homepage-blog .blog-card-homepage.is-microguide > img,
-  .homepage-blog .blog-card-homepage.is-microguide .blog-card-img {
+  .homepage-blog .blog-card-homepage.is-microguide .blog-card-img,
+  .homepage-blog .homepage-blog-cards > a.blog-card.is-microguide > img,
+  .homepage-blog .homepage-blog-cards > a.homepage-blog-card.is-microguide > img {
     height: 150px;
   }
 }
+
 @media (max-width: 600px) {
   .homepage-blog .blog-card-homepage.is-microguide > img,
-  .homepage-blog .blog-card-homepage.is-microguide .blog-card-img {
+  .homepage-blog .blog-card-homepage.is-microguide .blog-card-img,
+  .homepage-blog .homepage-blog-cards > a.blog-card.is-microguide > img,
+  .homepage-blog .homepage-blog-cards > a.homepage-blog-card.is-microguide > img {
     height: 120px;
   }
 }

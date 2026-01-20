@@ -8,25 +8,16 @@
   <meta name="theme-color" content="#0077cc" />
 
   <!-- Favicona -->
-  <link rel="icon" href="data:," />
   <link rel="icon" href="/images/logo-ajsee.png" />
 
-  <!-- Prémiové fonty (sladěné s filters-premium.scss) -->
+  <!-- Prémiové fonty -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
-    // ⚠️ Nezapínáme __AJSEE_SKIP_CORE_EVENTS – sjednocený FE v /src/main.js vše odbaví.
-    // Vypneme případný inline Ticketmaster renderer, pokud by byl někde vložen:
     window.__TM_INLINE_DISABLED = true;
-
-    // Impact tracking – vyber jednu variantu a druhou smaž:
-    // VARIANTA A (redirector – doporučeno):
-    // window.__impact = { clickBase: 'https://YOUR-IMPACT-REDIRECTOR/?url=' };
-
-    // VARIANTA B (přidání paramu do URL – fallback):
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
@@ -49,7 +40,7 @@
     })();
   </script>
 
-  <!-- i18n fallback, kdyby engine v main.js nebyl k dispozici včas -->
+  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
   <script>
     (function(){
       function detectLang(){
@@ -58,9 +49,11 @@
           return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
         } catch { return 'cs'; }
       }
+
       function applyI18nFallback(lang){
         const root = window.translations || null;
         if (!root) return;
+
         const dict = root[lang] || root;
         const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
 
@@ -77,9 +70,11 @@
         document.querySelectorAll('[data-i18n-aria]').forEach(el => {
           const key = el.getAttribute('data-i18n-aria');
           const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('aria-label', val);
+          if (typeof val === 'string' && val.trim()) {
+            el.setAttribute('aria-label', val);
+            el.setAttribute('title', val);
+          }
         });
-        // ➕ alt fallback (např. hero image)
         document.querySelectorAll('[data-i18n-alt]').forEach(el => {
           const key = el.getAttribute('data-i18n-alt');
           const val = get(key);
@@ -91,19 +86,24 @@
         const lang = detectLang();
         document.documentElement.lang = lang;
 
-        if (typeof window.applyTranslations === 'function') {
-          try { window.applyTranslations(lang); }
-          catch(e){ console.warn('[i18n] applyTranslations failed, using fallback.', e); applyI18nFallback(lang); }
-        } else {
+        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
+        if (typeof window.applyTranslations === 'function') return;
+
+        // Fallback zkusíme až po krátké chvíli (aby se předešlo přepisu/flash)
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
           applyI18nFallback(lang);
-        }
+        }, 250);
       });
     })();
   </script>
+
+  <!-- Vite vstup – dej do HEAD kvůli CSS (omezí FOUC/probliknutí bez stylů) -->
   <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/main-DSzsxf2X.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-DMl0tCYI.css">
+  <script type="module" crossorigin src="/assets/main-CELHwXlF.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-zzlB4RLd.css">
 </head>
+
 <body data-page="home">
 <header class="site-header">
   <div class="header-inner">
@@ -129,7 +129,7 @@
         <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
-      <!-- Jazykové přepínače v mobilním menu (sjednoceno: DROPDOWN jako na events.html) -->
+      <!-- Jazykové přepínače v mobilním menu -->
       <div class="language-switcher mobile-switcher" aria-label="Jazyk">
         <details class="lang-dropdown" id="langDropdownMobile">
           <summary class="lang-current" aria-label="Změnit jazyk">
@@ -162,7 +162,7 @@
       </div>
     </nav>
 
-    <!-- Jazykové přepínače – desktop (sjednoceno: použitá .language-switcher.desktop-switcher + details dropdown) -->
+    <!-- Jazykové přepínače – desktop -->
     <div class="language-switcher desktop-switcher" aria-label="Jazyk">
       <details class="lang-dropdown" id="langDropdownDesktop">
         <summary class="lang-current" aria-label="Změnit jazyk">
@@ -200,25 +200,26 @@
 </header>
 
 <main>
-<!-- HERO -->
-<section class="hero-section hero--watermark" id="hero">
-  <div class="container hero-flex">
-    <div class="hero-content">
-      <a href="/partners.html" class="hero-badge" tabindex="0">
-        <span class="badge-icon" aria-hidden="true">🤝</span>
-        <span data-i18n-key="hero.badge"></span>
-      </a>
+  <!-- HERO -->
+  <section class="hero-section hero--watermark" id="hero">
+    <div class="container hero-flex">
+      <div class="hero-content">
+        <a href="/partners.html" class="hero-badge" tabindex="0">
+          <span class="badge-icon" aria-hidden="true">🤝</span>
+          <span data-i18n-key="hero.badge"></span>
+        </a>
 
-      <h1 data-i18n-key="hero.headline"></h1>
-      <p data-i18n-key="hero.intro"></p>
+        <h1 data-i18n-key="hero.headline"></h1>
+        <p data-i18n-key="hero.intro"></p>
 
-      <div class="hero-buttons">
-        <a href="/partners.html" class="btn-primary" data-i18n-key="hero.cta-collab"></a>
-        <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-info"></a>
+        <div class="hero-buttons">
+          <a href="/partners.html" class="btn-primary" data-i18n-key="hero.cta-collab"></a>
+          <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-info"></a>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+
   <!-- UDÁLOSTI -->
   <section class="section-events" id="events">
     <div class="container">
@@ -241,7 +242,7 @@
         <p class="events-subtitle" data-i18n-key="section-events-subtitle">Získejte vstupenky na nejlepší kulturní zážitky ve vašem okolí</p>
       </div>
 
-      <!-- Filtry: trvale viditelné (bez show/hide prvků) -->
+      <!-- Filtry -->
       <form id="events-filters-form" class="events-filters filter-dock" novalidate role="search">
         <div class="filters-toolbar" aria-label="Rychlé filtry">
           <div class="chips">
@@ -258,7 +259,6 @@
         <fieldset class="filters-fieldset">
           <legend class="sr-only">Filtry</legend>
 
-          <!-- ✅ Nativní date inputy pro bridge/fallback (JS je po mountu skryje) -->
           <div class="filter-group native-date from is-hidden">
             <label for="filter-date-from" data-i18n-key="filters.from">Od</label>
             <input type="date" id="filter-date-from" name="date_from" class="styled-input" inputmode="none" />
@@ -298,7 +298,6 @@
             </div>
           </div>
 
-          <!-- NOVÝ kompaktní date-combo (button + JS popover) -->
           <div class="filter-group date-combo">
             <label for="date-combo-button" data-i18n-key="filters.date">Termín</label>
             <button
@@ -310,7 +309,6 @@
               aria-controls="date-combo-popover">
               <span class="combo-text" id="date-combo-text" data-i18n-key="filters.anytime">Kdykoliv</span>
             </button>
-            <!-- Inline popover – držíme hidden; JS ho zvedne na <body> -->
             <div class="combo-popover ajsee-date-popover" id="date-combo-popover" hidden></div>
           </div>
 
@@ -346,107 +344,101 @@
     </div>
   </section>
 
-<!-- O NÁS (homepage) – sjednoceno se stylem about-hero z about.html -->
-<section id="about" class="about-hero about-hero--home">
-  <div class="container about-hero-inner">
-    <div class="about-hero-textblock">
-      <!-- Nadpis: barvu sladíme v SCSS (jako ostatní nadpisy na homepage) -->
-      <h2 class="about-home-title" data-i18n-key="about-headline">O nás</h2>
+  <!-- O NÁS -->
+  <section id="about" class="about-hero about-hero--home">
+    <div class="container about-hero-inner">
+      <div class="about-hero-textblock">
+        <h2 class="about-home-title" data-i18n-key="about-headline">O nás</h2>
 
-      <div class="about-hero-text">
-        <!-- 2) nový „kicker“ text (tučnost/atraktivita řešit přes CSS class) -->
-        <p class="about-home-kicker" data-i18n-key="about-lead">Zážitky nemají hranice.</p>
+        <div class="about-hero-text">
+          <p class="about-home-kicker" data-i18n-key="about-lead">Zážitky nemají hranice.</p>
 
-        <!-- 3) nový text – bez vnořeného HTML kvůli i18n fallback textContent -->
-        <p class="about-home-body" data-i18n-key="about-text">
-          AJSEE® vzniklo z potřeby cestovat za kulturou bez stresu a zbytečných bariér. Budujeme platformu, která ti otevře dveře ke koncertům, festivalům, divadlu i sportu – doma i v zahraničí.
-        </p>
+          <p class="about-home-body" data-i18n-key="about-text">
+            AJSEE® vzniklo z potřeby cestovat za kulturou bez stresu a zbytečných bariér. Budujeme platformu, která ti otevře dveře ke koncertům, festivalům, divadlu i sportu – doma i v zahraničí.
+          </p>
+        </div>
+
+        <div class="about-hero-actions">
+          <a href="/about.html" class="about-hero-cta btn-main btn-with-icon">
+            <span data-i18n-key="about-btn">Zjisti více o AJSEE®</span>
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+              <circle cx="11" cy="11" r="11" fill="#14c2c5"/>
+              <path d="M8 11H14M14 11L11.5 8.5M14 11L11.5 13.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
       </div>
 
-      <div class="about-hero-actions">
-        <!-- i18n na span, ať se nikdy nesmaže ikona -->
-        <a href="/about.html" class="about-hero-cta btn-main btn-with-icon">
-          <span data-i18n-key="about-btn">Zjisti více o AJSEE®</span>
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <circle cx="11" cy="11" r="11" fill="#14c2c5"/>
-            <path d="M8 11H14M14 11L11.5 8.5M14 11L11.5 13.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
+      <div class="about-hero-visual" aria-hidden="true">
+        <svg class="hero-globe" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+          <defs>
+            <clipPath id="homeAboutClip"><circle cx="110" cy="110" r="105"/></clipPath>
+            <radialGradient id="homeAboutBgGrad" cx="35%" cy="30%">
+              <stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e6f4fb"/><stop offset="100%" stop-color="#d9eef9"/>
+            </radialGradient>
+            <linearGradient id="homeAboutRingGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#14c2c5"/><stop offset="100%" stop-color="#0077cc"/>
+            </linearGradient>
+            <filter id="homeAboutSoftGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <filter id="homeAboutDrop" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity="0.35"/>
+            </filter>
+          </defs>
+
+          <style>
+            .spin-slow { animation: spin 36s linear infinite; transform-origin: 110px 110px; }
+            .spin-rev  { animation: spin 24s linear infinite reverse; transform-origin: 110px 110px; }
+            .pulse     { animation: pulse 2.8s ease-in-out infinite; }
+            .twinkle   { animation: twinkle 3.8s ease-in-out infinite; }
+            @keyframes spin { to { transform: rotate(360deg); } }
+            @keyframes pulse { 0%{ r:3; opacity:1 } 70%{ r:12; opacity:0 } 100%{ r:12; opacity:0 } }
+            @keyframes twinkle { 0%{ opacity:.25 } 100%{ opacity:.9 } }
+            @media (prefers-reduced-motion: reduce){ .spin-slow, .spin-rev, .pulse, .twinkle { animation: none !important; } }
+          </style>
+
+          <circle cx="110" cy="110" r="105" fill="url(#homeAboutBgGrad)" stroke="url(#homeAboutRingGrad)" stroke-width="3"/>
+          <circle cx="110" cy="110" r="105" fill="none" stroke="#14c2c566" stroke-width="10" opacity=".25" filter="url(#homeAboutSoftGlow)"/>
+
+          <g clip-path="url(#homeAboutClip)">
+            <g class="spin-slow" opacity=".6" stroke-linecap="round">
+              <ellipse cx="110" cy="110" rx="70" ry="30" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
+              <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
+              <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(-60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
+              <ellipse cx="110" cy="110" rx="55" ry="24" fill="none" stroke="#14c2c540" stroke-width="1"/>
+              <ellipse cx="110" cy="110" rx="40" ry="15" fill="none" stroke="#14c2c540" stroke-width="1"/>
+            </g>
+
+            <g class="spin-rev">
+              <circle cx="110" cy="110" r="74" fill="none" stroke="url(#homeAboutRingGrad)" stroke-width="2" stroke-dasharray="6 8" stroke-linecap="round"/>
+            </g>
+
+            <circle cx="110" cy="110" r="90" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="18" stroke-dasharray="60 400" transform="rotate(-35 110 110)"/>
+
+            <g filter="url(#homeAboutDrop)">
+              <g><circle cx="70" cy="70" r="4" fill="#14c2c5"/><circle cx="70" cy="70" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="70" cy="70" r="3" fill="#14c2c5" opacity=".35"/></g>
+              <g><circle cx="150" cy="80" r="4" fill="#0077cc"/><circle cx="150" cy="80" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="150" cy="80" r="3" fill="#0077cc" opacity=".35"/></g>
+              <g><circle cx="130" cy="150" r="4" fill="#14c2c5"/><circle cx="130" cy="150" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="130" cy="150" r="3" fill="#14c2c5" opacity=".35"/></g>
+              <g><circle cx="80" cy="140" r="4" fill="#0077cc"/><circle cx="80" cy="140" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="80" cy="140" r="3" fill="#0077cc" opacity=".35"/></g>
+            </g>
+
+            <g>
+              <circle class="twinkle" cx="170" cy="60" r="1.5" fill="#ffffff" style="animation-delay:-1s"/>
+              <circle class="twinkle" cx="45" cy="120" r="1.2" fill="#ffffff" style="animation-delay:-2s"/>
+              <circle class="twinkle" cx="165" cy="150" r="1.2" fill="#ffffff" style="animation-delay:-3s"/>
+              <circle class="twinkle" cx="100" cy="40" r="1.0" fill="#ffffff" style="animation-delay:-1.7s"/>
+            </g>
+          </g>
+        </svg>
       </div>
     </div>
-
-    <div class="about-hero-visual" aria-hidden="true">
-      <!-- Vizuál z about-hero (printscreen 2) – ID prefixed kvůli kolizím -->
-      <svg class="hero-globe" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
-        <defs>
-          <clipPath id="homeAboutClip"><circle cx="110" cy="110" r="105"/></clipPath>
-          <radialGradient id="homeAboutBgGrad" cx="35%" cy="30%">
-            <stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e6f4fb"/><stop offset="100%" stop-color="#d9eef9"/>
-          </radialGradient>
-          <linearGradient id="homeAboutRingGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#14c2c5"/><stop offset="100%" stop-color="#0077cc"/>
-          </linearGradient>
-          <filter id="homeAboutSoftGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <filter id="homeAboutDrop" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity="0.35"/>
-          </filter>
-        </defs>
-
-        <style>
-          .spin-slow { animation: spin 36s linear infinite; transform-origin: 110px 110px; }
-          .spin-rev  { animation: spin 24s linear infinite reverse; transform-origin: 110px 110px; }
-          .pulse     { animation: pulse 2.8s ease-in-out infinite; }
-          .twinkle   { animation: twinkle 3.8s ease-in-out infinite; }
-          @keyframes spin { to { transform: rotate(360deg); } }
-          @keyframes pulse { 0%{ r:3; opacity:1 } 70%{ r:12; opacity:0 } 100%{ r:12; opacity:0 } }
-          @keyframes twinkle { 0%{ opacity:.25 } 100%{ opacity:.9 } }
-          @media (prefers-reduced-motion: reduce){ .spin-slow, .spin-rev, .pulse, .twinkle { animation: none !important; } }
-        </style>
-
-        <circle cx="110" cy="110" r="105" fill="url(#homeAboutBgGrad)" stroke="url(#homeAboutRingGrad)" stroke-width="3"/>
-        <circle cx="110" cy="110" r="105" fill="none" stroke="#14c2c566" stroke-width="10" opacity=".25" filter="url(#homeAboutSoftGlow)"/>
-
-        <g clip-path="url(#homeAboutClip)">
-          <g class="spin-slow" opacity=".6" stroke-linecap="round">
-            <ellipse cx="110" cy="110" rx="70" ry="30" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-            <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-            <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(-60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-            <ellipse cx="110" cy="110" rx="55" ry="24" fill="none" stroke="#14c2c540" stroke-width="1"/>
-            <ellipse cx="110" cy="110" rx="40" ry="15" fill="none" stroke="#14c2c540" stroke-width="1"/>
-          </g>
-
-          <g class="spin-rev">
-            <circle cx="110" cy="110" r="74" fill="none" stroke="url(#homeAboutRingGrad)" stroke-width="2" stroke-dasharray="6 8" stroke-linecap="round"/>
-          </g>
-
-          <circle cx="110" cy="110" r="90" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="18" stroke-dasharray="60 400" transform="rotate(-35 110 110)"/>
-
-          <g filter="url(#homeAboutDrop)">
-            <g><circle cx="70" cy="70" r="4" fill="#14c2c5"/><circle cx="70" cy="70" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="70" cy="70" r="3" fill="#14c2c5" opacity=".35"/></g>
-            <g><circle cx="150" cy="80" r="4" fill="#0077cc"/><circle cx="150" cy="80" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="150" cy="80" r="3" fill="#0077cc" opacity=".35"/></g>
-            <g><circle cx="130" cy="150" r="4" fill="#14c2c5"/><circle cx="130" cy="150" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="130" cy="150" r="3" fill="#14c2c5" opacity=".35"/></g>
-            <g><circle cx="80" cy="140" r="4" fill="#0077cc"/><circle cx="80" cy="140" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="80" cy="140" r="3" fill="#0077cc" opacity=".35"/></g>
-          </g>
-
-          <g>
-            <circle class="twinkle" cx="170" cy="60" r="1.5" fill="#ffffff" style="animation-delay:-1s"/>
-            <circle class="twinkle" cx="45" cy="120" r="1.2" fill="#ffffff" style="animation-delay:-2s"/>
-            <circle class="twinkle" cx="165" cy="150" r="1.2" fill="#ffffff" style="animation-delay:-3s"/>
-            <circle class="twinkle" cx="100" cy="40" r="1.0" fill="#ffffff" style="animation-delay:-1.7s"/>
-          </g>
-        </g>
-      </svg>
-    </div>
-  </div>
-</section>
+  </section>
 
   <!-- BLOG -->
   <section class="homepage-blog blog" id="blog">
     <div class="container">
       <h2 data-i18n-key="blog-headline-home">Blog & Recenze</h2>
-      <!-- Host pro lazy render TOP 3 (viz main.js: [data-home-blog] || #blog .blog-cards) -->
       <div class="homepage-blog-cards blog-cards" id="homepage-blog-list" data-home-blog></div>
       <a href="/blog.html" class="homepage-blog-more" data-i18n-key="blog-show-all">Zobrazit všechny články</a>
     </div>
@@ -486,6 +478,7 @@
           </div>
         </form>
       </div>
+
       <div class="contact-success" style="display:none;" id="contact-success">
         <p data-i18n-key="contact-success-msg">Děkujeme za zprávu! Ozveme se vám co nejdříve.</p>
       </div>
@@ -503,14 +496,11 @@
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
 
-<!-- 👇 DŮLEŽITÉ: Ownership guard (neškodí, ale FE vlastní main.js) -->
 <script>
   window.__AJSEE_EVENTS_OWNS_FILTERS = true;
 </script>
 
-<!-- Vite vstup – JEN jeden modul, ostatní řeší main.js -->
-
-<!-- Inline skript: chování waitlist banneru (počká i na překlady) -->
+<!-- Inline skript: waitlist banner -->
 <script>
   (function () {
     const box = document.getElementById('hpWaitlist');
@@ -549,16 +539,6 @@
           el.setAttribute('title', val);
         }
       });
-      root.querySelectorAll('[data-i18n-alt]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-alt');
-        const val = t(key);
-        if (typeof val === 'string') el.setAttribute('alt', val);
-      });
-      root.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        const val = t(key);
-        if (typeof val === 'string') el.setAttribute('placeholder', val);
-      });
       const regionKey = root.getAttribute('data-i18n-aria');
       if (regionKey) {
         const val = t(regionKey);
@@ -578,17 +558,7 @@
       }
 
       const btnClose = document.getElementById('hpWaitlistClose');
-      if (btnClose) {
-        btnClose.addEventListener('click', function () { box.remove(); });
-        const closeKey = btnClose.getAttribute('data-i18n-aria') || btnClose.getAttribute('data-i18n-key');
-        if (closeKey) {
-          const val = t(closeKey);
-          if (typeof val === 'string') {
-            btnClose.setAttribute('aria-label', val);
-            btnClose.setAttribute('title', val);
-          }
-        }
-      }
+      if (btnClose) btnClose.addEventListener('click', function () { box.remove(); });
 
       const start = Date.now();
       const id = setInterval(() => {
@@ -601,7 +571,7 @@
   })();
 </script>
 
-<!-- Inline skript: Demo badge (počká i na překlady) -->
+<!-- Inline skript: Demo badge -->
 <script>
   (function(){
     const pill = document.querySelector('.event-demo-badge');
@@ -652,10 +622,6 @@
       const url = new URL(cta.href, location.origin);
       url.searchParams.set('lang', lang);
       cta.href = url.toString();
-
-      cta.addEventListener('click', function(){
-        if (window.gtag) window.gtag('event','click_demo_badge', { source: 'home_demo_pill', lang });
-      });
     }
 
     whenTranslationsReady(applyI18n);

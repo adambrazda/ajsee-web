@@ -26,7 +26,7 @@
   <!-- Google tag (jen HTTPS/prod) -->
   <script>
     (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(location.hostname);
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.0|0\.0\.0\.0/.test(location.hostname);
       if (!isProdHttps) return;
       const s = document.createElement('script');
       s.async = true;
@@ -97,9 +97,8 @@
     })();
   </script>
 
-  <!-- ✅ PROD BUILD (Vite) – jediný vstup -->
-  <script type="module" crossorigin src="/assets/main-DSzsxf2X.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-DMl0tCYI.css">
+  <!-- ✅ JEDINÝ vstup (dev i prod): Vite si v produkci doplní /assets/* sám -->
+  <script type="module" src="/src/main.js"></script>
 </head>
 
 <body data-page="events">

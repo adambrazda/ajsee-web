@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
+  <script type="module" src="/@vite/client"></script>
+
   <meta charset="UTF-8">
   <title data-i18n-key="about-title">O nás | AJSEE®</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -39,69 +41,30 @@
     })();
   </script>
 
-  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
-  <script>
-    (function(){
-      function detectLang(){
-        try {
-          const qs = new URLSearchParams(location.search);
-          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
-        } catch { return 'cs'; }
+  <!-- Stabilizace layoutu: "Jak to celé začalo" drží 2 sloupce na desktopu (bez !important) -->
+  <style>
+    body[data-page="about"] .about-story-inner{
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(320px, 460px);
+      gap: 48px;
+      align-items: center;
+    }
+    @media (max-width: 900px){
+      body[data-page="about"] .about-story-inner{
+        grid-template-columns: 1fr;
+        gap: 24px;
+        align-items: start;
       }
+    }
+    body[data-page="about"] .about-story-visual svg{
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
 
-      function applyI18nFallback(lang){
-        const root = window.translations || null;
-        if (!root) return;
-
-        const dict = root[lang] || root;
-        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
-
-        document.querySelectorAll('[data-i18n-key]').forEach(el => {
-          const key = el.getAttribute('data-i18n-key');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.textContent = val;
-        });
-
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-          const key = el.getAttribute('data-i18n-placeholder');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
-        });
-
-        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-          const key = el.getAttribute('data-i18n-aria');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) {
-            el.setAttribute('aria-label', val);
-            el.setAttribute('title', val);
-          }
-        });
-
-        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
-          const key = el.getAttribute('data-i18n-alt');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
-        });
-      }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        const lang = detectLang();
-        document.documentElement.lang = lang;
-
-        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
-        if (typeof window.applyTranslations === 'function') return;
-
-        setTimeout(() => {
-          if (typeof window.applyTranslations === 'function') return;
-          applyI18nFallback(lang);
-        }, 250);
-      });
-    })();
-  </script>
-
-  <!-- ✅ PROD BUILD (Vite) – jediný vstup -->
-  <script type="module" crossorigin src="/assets/main-DSzsxf2X.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-DMl0tCYI.css">
+  <!-- ✅ JEDINÝ vstup (dev i prod) -->
+  <script type="module" src="/src/main.js"></script>
 </head>
 
 <body data-page="about">
@@ -123,11 +86,11 @@
       <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
       <ul>
         <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
-        <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
-        <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
-        <li><a href="/about.html" data-i18n-key="nav-about" aria-current="page">O nás</a></li>
-        <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
-        <li><a href="/faq.html" data-i18n-key="nav-faq">FAQ</a></li>
+        <li><a href="/events" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/partners" data-i18n-key="nav-partners">Pro partnery</a></li>
+        <li><a href="/about" data-i18n-key="nav-about" aria-current="page">O nás</a></li>
+        <li><a href="/blog" data-i18n-key="nav-blog">Blog</a></li>
+        <li><a href="/faq" data-i18n-key="nav-faq">FAQ</a></li>
         <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
@@ -193,12 +156,14 @@
             Naším cílem je zpřístupnit lidem kulturní, zábavní i sportovní události z celého světa – jasně, srozumitelně a bez zbytečných bariér při výběru i nákupu vstupenek.
           </p>
           <p>
+            <!-- Pozn.: claim může obsahovat HTML (sup), dole to ošetříme innerHTML -->
             <strong data-i18n-key="about-hero-claim">
               AJSEE<sup>®</sup> je moderní platforma pro všechny, kdo chtějí zažívat svět naplno – bez překážek.
             </strong>
           </p>
         </div>
       </div>
+
       <div class="about-hero-visual">
         <svg class="hero-globe" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stylizovaná koule s orbitami a značkami">
           <defs>
@@ -210,10 +175,14 @@
               <stop offset="0%" stop-color="#14c2c5"/><stop offset="100%" stop-color="#0077cc"/>
             </linearGradient>
             <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
-            <filter id="drop" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity="0.35"/></filter>
+            <filter id="drop" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity="0.35"/>
+            </filter>
           </defs>
+
           <style>
             .spin-slow { animation: spin 36s linear infinite; transform-origin: 110px 110px; }
             .spin-rev  { animation: spin 24s linear infinite reverse; transform-origin: 110px 110px; }
@@ -222,7 +191,9 @@
             @keyframes spin { to { transform: rotate(360deg); } }
             @keyframes pulse { 0%{ r:3; opacity:1 } 70%{ r:12; opacity:0 } 100%{ r:12; opacity:0 } }
             @keyframes twinkle { 0%{ opacity:.25 } 100%{ opacity:.9 } }
-            @media (prefers-reduced-motion: reduce){ .spin-slow, .spin-rev, .pulse, .twinkle { animation: none !important; } }
+            @media (prefers-reduced-motion: reduce){
+              .spin-slow, .spin-rev, .pulse, .twinkle { animation: none; }
+            }
           </style>
 
           <circle cx="110" cy="110" r="105" fill="url(#bgGrad)" stroke="url(#ringGrad)" stroke-width="3"/>
@@ -265,19 +236,21 @@
   <section class="about-story">
     <div class="container about-story-inner">
       <div class="about-story-textblock">
-        <h2 data-i18n-key="about.story.headline">Jak to celé začalo</h2>
+        <!-- ALIASY klíčů: nové tečkové + staré “dash” varianty -->
+        <h2 data-i18n-key="about.story.headline|about-story-headline|about-story-title">Jak to celé začalo</h2>
 
         <div class="about-story-text">
-          <p><span data-i18n-key="about.story.p1"></span></p>
-          <p><span data-i18n-key="about.story.p2"></span></p>
-          <p><span data-i18n-key="about.story.p3"></span></p>
-          <p><span data-i18n-key="about.story.p4"></span></p>
-          <p><span data-i18n-key="about.story.p5"></span></p>
+          <p data-i18n-key="about.story.p1|about-story-p1|about-story-text-1">Byl podzim 2024. Seděli jsme v hospodě, dali si pivo — a jak už to bývá, jedno obyčejné povídání odstartovalo něco, co se brzy proměnilo ve skutečný nápad.</p>
+          <p data-i18n-key="about.story.p2|about-story-p2|about-story-text-2">Ještě ten večer vznikl název AJSEE, první návrh loga i vize: usnadnit lidem přístup ke světovým zážitkům bez jazykových překážek.</p>
+          <p data-i18n-key="about.story.p3|about-story-p3|about-story-text-3">Ale pak přišla ta nejtěžší fáze: začít doopravdy.</p>
+          <p data-i18n-key="about.story.p4|about-story-p4|about-story-text-4">Oba jsme měli práci na plný úvazek, dělilo nás 180 kilometrů a času bylo málo. Projekt se na chvíli zastavil, ještě než se stihl rozběhnout.</p>
+          <p data-i18n-key="about.story.p5|about-story-p5|about-story-text-5">Až jednoho dne to jeden z nás prostě spustil. Bez dokonalého plánu, ale s jistotou, že to dává smysl.</p>
+          <p data-i18n-key="about.story.p6|about-story-p6|about-story-text-6">A tehdy se AJSEE začalo stávat skutečností.</p>
         </div>
       </div>
 
-      <!-- Vizuál vpravo -->
       <div class="about-story-visual">
+        <!-- (SVG beze změny) -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 360" width="100%" role="img" aria-labelledby="steps-title steps-desc" preserveAspectRatio="xMidYMid meet">
           <title id="steps-title">Ilustrace: schody se čtyřmi přepracovanými ikonami</title>
           <desc id="steps-desc">Modré 3D schody a čtyři kruhové bubliny s moderními ikonami: chat, nápad, pauza a hotovo.</desc>
@@ -285,7 +258,7 @@
           <style>
             :root { --ac:#2F84D6; }
             .bubble{ transform-box:fill-box; transform-origin:center; }
-            @media (prefers-reduced-motion: reduce){ .anim { display:none !important; } }
+            @media (prefers-reduced-motion: reduce){ .anim { display:none; } }
           </style>
 
           <defs>
@@ -294,7 +267,6 @@
             <linearGradient id="gSide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FC3EE"/><stop offset="1" stop-color="#6CADE4"/></linearGradient>
             <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-opacity="0.25"/></filter>
 
-            <!-- Ikony -->
             <symbol id="i-chat" viewBox="0 0 24 24">
               <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="4" y="6" width="16" height="10" rx="3"/>
@@ -411,16 +383,18 @@
   <section class="about-future">
     <div class="container about-future-inner">
       <div class="about-future-textblock">
-        <h2 data-i18n-key="about.future.headline">🎯 Kam míříme</h2>
+        <h2 data-i18n-key="about.future.headline|about-future-headline|about-future-title">🎯 Kam míříme</h2>
 
         <div class="about-future-text">
-          <p><span data-i18n-key="about.future.p1">Do konce roku 2025 chceme spustit ostrou verzi webu.</span></p>
-          <p><span data-i18n-key="about.future.p2">Pracujeme na rozšíření jazykových mutací a spolupráci s mezinárodními platformami.</span></p>
-          <p><span data-i18n-key="about.future.p3">Chystáme mobilní aplikaci a rozšiřujeme nabídku akcí i jejich dostupnost pro širší publikum.</span></p>
-          <p><span data-i18n-key="about.future.p4">Chceme, aby byl AJSEE první volbou pro každého, kdo hledá cestu ke světovým zážitkům – ať už v Londýně, Barceloně nebo doma v Brně.</span></p>
+          <p data-i18n-key="about.future.p1|about-future-p1|about-future-text-1">Do konce roku 2025 chceme spustit ostrou verzi webu.</p>
+          <p data-i18n-key="about.future.p2|about-future-p2|about-future-text-2">Pracujeme na rozšíření jazykových mutací a spolupráci s mezinárodními platformami.</p>
+          <p data-i18n-key="about.future.p3|about-future-p3|about-future-text-3">Chystáme mobilní aplikaci a rozšiřujeme nabídku akcí i jejich dostupnost pro širší publikum.</p>
+          <p data-i18n-key="about.future.p4|about-future-p4|about-future-text-4">Chceme, aby byl AJSEE první volbou pro každého, kdo hledá cestu ke světovým zážitkům – ať už v Londýně, Barceloně nebo doma v Brně.</p>
         </div>
       </div>
+
       <div class="about-future-visual">
+        <!-- (SVG beze změny) -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="100%" role="img" aria-labelledby="goal-title goal-desc">
           <title id="goal-title">Cíl – vizualizace trasy k cíli</title>
           <desc id="goal-desc">Křivková cesta s pohybující se šipkou a pulzujícím terčem vpravo.</desc>
@@ -433,7 +407,12 @@
               #arrow g{ filter:url(#lift); }
               .pulse{ transform-box:fill-box; transform-origin:center; animation:pulse 2.6s ease-out infinite; }
               .target-core{ filter:url(#lift); }
-              @media (prefers-reduced-motion: reduce){ #arrow-anim{display:none} #arrow-static{display:block} .pulse{animation:none!important} #route,#route-glow{animation:none!important;stroke-dashoffset:0} }
+              @media (prefers-reduced-motion: reduce){
+                #arrow-anim{display:none}
+                #arrow-static{display:block}
+                .pulse{animation:none}
+                #route,#route-glow{animation:none;stroke-dashoffset:0}
+              }
               @keyframes draw{ to{ stroke-dashoffset:0 } }
               @keyframes pulse{ 0%{transform:scale(1);opacity:.7} 70%,100%{transform:scale(2.15);opacity:0} }
             </style>
@@ -449,7 +428,12 @@
 
           <g id="goal" transform="translate(720, 86)">
             <g class="pulse"><circle r="34" fill="none" stroke="var(--ring)" stroke-width="2"/></g>
-            <g class="target-core"><circle r="28" fill="#ffffff" opacity=".95"/><circle r="20" fill="var(--ring)"/><circle r="12" fill="#ffffff"/><circle r="4" fill="var(--dot)"/></g>
+            <g class="target-core">
+              <circle r="28" fill="#ffffff" opacity=".95"/>
+              <circle r="20" fill="var(--ring)"/>
+              <circle r="12" fill="#ffffff"/>
+              <circle r="4" fill="var(--dot)"/>
+            </g>
           </g>
 
           <path id="route-glow" d="M64,256 C138,230 160,212 214,210 S332,234 396,206 S530,142 598,132 S720,112 720,86" pathLength="1"/>
@@ -474,17 +458,17 @@
 
   <section class="about-team">
     <div class="container">
-      <h2 data-i18n-key="about.team.headline">Kdo za tím stojí?</h2>
+      <h2 data-i18n-key="about.team.headline|about-team-headline|about-team-title">Kdo za tím stojí?</h2>
 
       <div class="team-list">
         <div class="team-member">
           <img src="/images/team/adam.png" alt="Adam Brázda" class="team-photo" width="150" height="150" loading="lazy" decoding="async" />
           <div class="team-info">
-            <div class="team-name" data-i18n-key="about.team.adam.name">Adam Brázda</div>
-            <div class="team-role" data-i18n-key="about.team.adam.role">Spoluzakladatel AJSEE®</div>
-            <div class="team-claim" data-i18n-key="about.team.adam.claim">Stojí u zrodu AJSEE® od samotné myšlenky...</div>
+            <div class="team-name" data-i18n-key="about.team.adam.name|about-team-adam-name">Adam Brázda</div>
+            <div class="team-role" data-i18n-key="about.team.adam.role|about-team-adam-role">Spoluzakladatel AJSEE®</div>
+            <div class="team-claim" data-i18n-key="about.team.adam.claim|about-team-adam-claim">Stojí u zrodu AJSEE® od samotné myšlenky...</div>
             <a href="https://www.linkedin.com/in/adam-brazda-604179a0" class="team-linkedin" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Adam Brázda">
-              <img src="/images/icons/linkedin.svg" alt="LinkedIn" /><span class="sr-only" data-i18n-key="about.team.adam.linkedin">LinkedIn profil</span>
+              <img src="/images/icons/linkedin.svg" alt="LinkedIn" /><span class="sr-only" data-i18n-key="about.team.adam.linkedin|about-team-adam-linkedin">LinkedIn profil</span>
             </a>
           </div>
         </div>
@@ -492,11 +476,11 @@
         <div class="team-member">
           <img src="/images/team/jan.png" alt="Jan Oujezdský" class="team-photo" width="150" height="150" loading="lazy" decoding="async" />
           <div class="team-info">
-            <div class="team-name" data-i18n-key="about.team.jan.name">Jan Oujezdský</div>
-            <div class="team-role" data-i18n-key="about.team.jan.role">Spoluzakladatel AJSEE®</div>
-            <div class="team-claim" data-i18n-key="about.team.jan.claim">Od prvního dne sdílí vizi zpřístupnit svět kultury...</div>
+            <div class="team-name" data-i18n-key="about.team.jan.name|about-team-jan-name">Jan Oujezdský</div>
+            <div class="team-role" data-i18n-key="about.team.jan.role|about-team-jan-role">Spoluzakladatel AJSEE®</div>
+            <div class="team-claim" data-i18n-key="about.team.jan.claim|about-team-jan-claim">Od prvního dne sdílí vizi zpřístupnit svět kultury...</div>
             <a href="https://www.linkedin.com/in/jan-oujezdsky-595875380/" class="team-linkedin" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Jan Oujezdský">
-              <img src="/images/icons/linkedin.svg" alt="LinkedIn" /><span class="sr-only" data-i18n-key="about.team.jan.linkedin">LinkedIn profil</span>
+              <img src="/images/icons/linkedin.svg" alt="LinkedIn" /><span class="sr-only" data-i18n-key="about.team.jan.linkedin|about-team-jan-linkedin">LinkedIn profil</span>
             </a>
           </div>
         </div>
@@ -531,7 +515,126 @@
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
 
-<!-- ✅ důležité: sjednocený entrypoint jako na ostatních stránkách -->
-<script type="module" src="/src/main.js"></script>
+<script>
+  (function(){
+    function detectLang(){
+      try {
+        const qs = new URLSearchParams(location.search);
+        return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+      } catch (e) { return 'cs'; }
+    }
+
+    function getVal(dict, key){
+      if (!dict || !key) return undefined;
+
+      // Podpora alternativ: "a|b|c"
+      const keys = String(key).split('|').map(s => s.trim()).filter(Boolean);
+
+      for (const k of keys){
+        if (Object.prototype.hasOwnProperty.call(dict, k)) return dict[k];
+        const nested = k.split('.').reduce((o, part) => (o && typeof o === 'object') ? o[part] : undefined, dict);
+        if (nested !== undefined) return nested;
+      }
+      return undefined;
+    }
+
+    function setElText(el, val){
+      if (typeof val !== 'string') return false;
+      const v = val.trim();
+      if (!v) return false;
+
+      // Když překlad obsahuje HTML tagy, použij innerHTML (řeší AJSEE<sup>®</sup>)
+      const looksLikeHtml = /<[^>]+>/.test(v);
+
+      if (looksLikeHtml && el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') {
+        if (el.innerHTML !== v) el.innerHTML = v;
+        return true;
+      }
+
+      if (el.textContent !== v) el.textContent = v;
+      return true;
+    }
+
+    function applyI18nSmart(lang){
+      const root = window.translations || null;
+      if (!root) return false;
+
+      const dict = root[lang] || root;
+      let touched = false;
+
+      document.querySelectorAll('[data-i18n-key]').forEach(el => {
+        const key = el.getAttribute('data-i18n-key');
+        const val = getVal(dict, key);
+        if (setElText(el, val)) touched = true;
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        const val = getVal(dict, key);
+        if (typeof val === 'string' && val.trim()) {
+          el.setAttribute('placeholder', val);
+          touched = true;
+        }
+      });
+
+      document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+        const key = el.getAttribute('data-i18n-aria');
+        const val = getVal(dict, key);
+        if (typeof val === 'string' && val.trim()) {
+          el.setAttribute('aria-label', val);
+          el.setAttribute('title', val);
+          touched = true;
+        }
+      });
+
+      document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+        const key = el.getAttribute('data-i18n-alt');
+        const val = getVal(dict, key);
+        if (typeof val === 'string' && val.trim()) {
+          el.setAttribute('alt', val);
+          touched = true;
+        }
+      });
+
+      return touched;
+    }
+
+    let timer = null;
+    function runSmartI18n(){
+      const lang = detectLang();
+      if (document.documentElement.lang !== lang) document.documentElement.lang = lang;
+
+      let tries = 0;
+      if (timer) clearInterval(timer);
+
+      // čekáme až se dotáhnou překlady (až 15s)
+      timer = setInterval(() => {
+        tries += 1;
+        const ok = applyI18nSmart(lang);
+        if (ok || tries >= 150) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }, 100);
+    }
+
+    window.addEventListener('DOMContentLoaded', runSmartI18n);
+    window.addEventListener('popstate', runSmartI18n);
+
+    // Po kliknutí na jazyk (main.js může přepnout lang async)
+    document.addEventListener('click', (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest('.lang-btn') : null;
+      if (!btn) return;
+      setTimeout(runSmartI18n, 50);
+      setTimeout(runSmartI18n, 250);
+      setTimeout(runSmartI18n, 800);
+    });
+
+    // Když main.js mění <html lang="...">, doženeme překlad i bez reloadu
+    const mo = new MutationObserver(() => runSmartI18n());
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  })();
+</script>
+
 </body>
 </html>

@@ -1,5 +1,6 @@
 // =============================================
 // HEADER / NAVIGATION / LANGUAGE SWITCHERS
+// (FIX: details dropdown styling + méně "flash")
 // =============================================
 @use '../globals' as *;
 
@@ -61,7 +62,7 @@
 }
 
 /* ------------------------
-   LANGUAGE SWITCHERS (MOBILE)
+   LANGUAGE SWITCHERS (wrappers)
    ------------------------ */
 
 .language-switcher {
@@ -76,6 +77,7 @@
 
   &.mobile-switcher {
     display: none;
+
     @media (max-width: 950px) {
       display: flex;
       flex-wrap: wrap;
@@ -89,7 +91,7 @@
   }
 }
 
-/* base .lang-btn – společné chování */
+/* base .lang-btn */
 .lang-btn {
   background: transparent;
   border: none;
@@ -111,21 +113,36 @@
 }
 
 /* ------------------------
-   DESKTOP LANGUAGE DROPDOWN (mamma-mia like)
+   DETAILS DROPDOWN (desktop + mobile variant)
+   HTML: <details class="lang-dropdown"><summary class="lang-current">...</summary><div class="lang-menu">...</div></details>
    ------------------------ */
 
 .lang-dropdown{
-  justify-self: end;
   position: relative;
   z-index: 3000;
-
-  @media (max-width: 950px){
-    display: none; /* desktop dropdown pryč na mobilu */
-  }
 }
 
-/* trigger pill */
-.lang-trigger{
+/* (desktop dropdown je vpravo nahoře) */
+.language-switcher.desktop-switcher .lang-dropdown{
+  justify-self: end;
+}
+
+/* (mobile dropdown je uvnitř otevřeného menu) */
+.language-switcher.mobile-switcher .lang-dropdown{
+  width: 100%;
+  max-width: 320px;
+}
+
+/* odstraníme default marker u summary */
+.lang-dropdown > summary {
+  list-style: none;
+}
+.lang-dropdown > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* trigger pill – summary */
+.lang-dropdown .lang-current{
   appearance: none;
   border: 1px solid var(--lang-border);
   background: var(--lang-surface);
@@ -133,7 +150,6 @@
   border-radius: 999px;
 
   display: inline-flex;
-  flex-direction: row; // <- důležité, pokud někde globálně nastavuješ button { flex-direction: column; }
   align-items: center;
   gap: .55rem;
 
@@ -149,7 +165,7 @@
 
   transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
 
-  .flag{
+  .lang-current-flag{
     display: block;
     width: 22px;
     height: 16px;
@@ -157,13 +173,13 @@
     box-shadow: 0 1px 0 rgba(0,0,0,0.06);
   }
 
-  .lang-current{
+  .lang-current-label{
     font-weight: 700;
     font-size: .98rem;
     letter-spacing: .01em;
   }
 
-  .chevron{
+  .lang-caret{
     font-size: .85rem;
     opacity: .8;
     transform: translateY(1px);
@@ -182,25 +198,24 @@
   }
 }
 
-/* caret rotace při otevření (podle aria-expanded) */
-.lang-trigger[aria-expanded="true"]{
+/* otevřené details = caret rotace + silnější pozadí */
+.lang-dropdown[open] .lang-current{
   background: rgba(255,255,255,0.88);
   border-color: rgba(20,194,197,.38);
 
-  .chevron{
+  .lang-caret{
     transform: translateY(1px) rotate(180deg);
     opacity: 1;
   }
 }
 
 /* dropdown panel */
-.lang-menu{
+.lang-dropdown .lang-menu{
   position: absolute;
   right: 0;
   top: calc(100% + .55rem);
 
-  /* default zavřeno (i kdyby někdo omylem odstranil hidden) */
-  display: none;
+  display: none; /* default */
   flex-direction: column;
   gap: .15rem;
 
@@ -214,21 +229,17 @@
 
   z-index: 10000;
 
-  /* jemný “popover” look */
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* respektuj hidden atribut */
-.lang-menu[hidden]{ display: none !important; }
-
-/* otevření – pokud JS přepíná aria-expanded */
-.lang-trigger[aria-expanded="true"] + .lang-menu{
+/* otevření menu jen když je details open */
+.lang-dropdown[open] .lang-menu{
   display: flex;
 }
 
 /* položky v menu */
-.lang-dropdown .lang-btn.lang-option{
+.lang-dropdown .lang-menu .lang-btn{
   width: 100%;
   justify-content: flex-start;
   gap: .6rem;
@@ -261,10 +272,23 @@
   }
 }
 
-/* selected */
-.lang-dropdown .lang-btn.lang-option[aria-selected="true"]{
-  background: linear-gradient(180deg, var(--nav-active-bg-start) 0%, var(--nav-active-bg-end) 100%);
-  box-shadow: 0 2px 10px #0077cc14 inset, 0 1px 6px #0077cc0d;
+/* mobile: dropdown panel jako “block” pod triggerem */
+@media (max-width: 950px){
+  .language-switcher.mobile-switcher .lang-dropdown{
+    width: 100%;
+  }
+
+  .language-switcher.mobile-switcher .lang-dropdown .lang-current{
+    width: 100%;
+    justify-content: center;
+  }
+
+  .language-switcher.mobile-switcher .lang-dropdown .lang-menu{
+    position: static;
+    width: 100%;
+    min-width: 0;
+    margin-top: .6rem;
+  }
 }
 
 /* ------------------------

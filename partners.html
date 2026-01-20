@@ -7,19 +7,96 @@
   <meta name="description" content="Staňte se partnerem AJSEE® – moderní platforma pro kulturu, koncerty, divadlo a sport.">
   <link rel="icon" href="/images/logo-ajsee.png" />
   <meta name="theme-color" content="#0077cc" />
-  <link rel="stylesheet" href="/src/styles/main.scss" />
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+  <!-- Prémiové fonty -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Unified FE render ON. Inline TM zakázán. -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-K0ZS0D9JLK');
+    window.__TM_INLINE_DISABLED = true;
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
+  </script>
+
+  <!-- Google tag jen na HTTPS/produkci -->
+  <script>
+    (function(){
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
+      if (!isProdHttps) return;
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
+      s.onload = function(){
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-K0ZS0D9JLK');
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
+  <script>
+    (function(){
+      function detectLang(){
+        try {
+          const qs = new URLSearchParams(location.search);
+          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+        } catch { return 'cs'; }
+      }
+
+      function applyI18nFallback(lang){
+        const root = window.translations || null;
+        if (!root) return;
+
+        const dict = root[lang] || root;
+        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
+
+        document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          const key = el.getAttribute('data-i18n-key');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
+        });
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-i18n-aria');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) {
+            el.setAttribute('aria-label', val);
+            el.setAttribute('title', val);
+          }
+        });
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+          const key = el.getAttribute('data-i18n-alt');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const lang = detectLang();
+        document.documentElement.lang = lang;
+
+        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
+        if (typeof window.applyTranslations === 'function') return;
+
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
+          applyI18nFallback(lang);
+        }, 250);
+      });
+    })();
   </script>
 </head>
 
-<body>
+<body data-page="partners">
 <header class="site-header">
   <div class="header-inner">
 
@@ -43,11 +120,10 @@
         <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
         <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
         <li><a href="/faq.html" data-i18n-key="nav-faq">FAQ</a></li>
-        <!-- FIX: na partners stránce je správně #partner-contact -->
         <li><a href="#partner-contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
-      <!-- Jazykové přepínače v mobilním menu (dropdown, zachovává .lang-btn) -->
+      <!-- Jazykové přepínače v mobilním menu -->
       <div class="language-switcher mobile-switcher" aria-label="Jazyk">
         <details class="lang-dropdown" id="langDropdownMobile">
           <summary class="lang-current" aria-label="Změnit jazyk">
@@ -80,7 +156,7 @@
       </div>
     </nav>
 
-    <!-- Jazykové přepínače – desktop (dropdown, zachovává .lang-btn) -->
+    <!-- Jazykové přepínače – desktop -->
     <div class="language-switcher desktop-switcher" aria-label="Jazyk">
       <details class="lang-dropdown" id="langDropdownDesktop">
         <summary class="lang-current" aria-label="Změnit jazyk">
@@ -112,9 +188,7 @@
       </details>
     </div>
 
-    <!-- Overlay pozadí menu -->
     <div class="menu-overlay-bg" aria-hidden="true"></div>
-
   </div>
 </header>
 
@@ -123,11 +197,10 @@
   <section class="partners-hero partners-hero--premium" aria-labelledby="partners-hero-title">
     <div class="container partners-hero-inner">
       <div class="partners-hero-content">
-       <h1 id="partners-hero-title" data-i18n-key="partner-headline">
-  Staňte se partnerem AJSEE<span class="reg" aria-hidden="true">®</span>
-</h1>
-
-
+        <!-- DŮLEŽITÉ: překlad je jen text, ® držíme mimo překlad (kvůli stabilitě i18n/JSON) -->
+        <h1 id="partners-hero-title">
+          <span data-i18n-key="partner-headline">Staňte se partnerem AJSEE</span><span class="reg" aria-hidden="true">®</span>
+        </h1>
 
         <p data-i18n-key="partner-intro">
           Spolupracujte s námi na tvorbě moderní, bezpečné a uživatelsky přívětivé platformy pro kulturu, koncerty, divadlo a sport. Pomůžeme vám oslovit nové publikum a zviditelnit vaši značku.
@@ -167,27 +240,27 @@
 
       <div class="partner-grid">
         <div class="partner-item">
-          <img src="/images/partners/partner-placeholder-01.png" alt="Divadlo" />
+          <img src="/images/partners/partner-placeholder-01.png" alt="" data-i18n-alt="partner-type-theatre" />
           <span data-i18n-key="partner-type-theatre">Divadlo</span>
         </div>
         <div class="partner-item">
-          <img src="/images/partners/partner-placeholder-02.png" alt="Město" />
+          <img src="/images/partners/partner-placeholder-02.png" alt="" data-i18n-alt="partner-type-city" />
           <span data-i18n-key="partner-type-city">Město</span>
         </div>
         <div class="partner-item">
-          <img src="/images/partners/partner-placeholder-03.png" alt="Festival" />
+          <img src="/images/partners/partner-placeholder-03.png" alt="" data-i18n-alt="partner-type-festival" />
           <span data-i18n-key="partner-type-festival">Festival</span>
         </div>
         <div class="partner-item">
-          <img src="/images/partners/partner-placeholder-04.png" alt="Ticketing" />
+          <img src="/images/partners/partner-placeholder-04.png" alt="" data-i18n-alt="partner-type-ticketing" />
           <span data-i18n-key="partner-type-ticketing">Ticketing</span>
         </div>
         <div class="partner-item">
-          <img src="/images/partners/partner-placeholder-05.png" alt="Produkce" />
+          <img src="/images/partners/partner-placeholder-05.png" alt="" data-i18n-alt="partner-type-production" />
           <span data-i18n-key="partner-type-production">Produkce</span>
         </div>
         <div class="partner-item">
-          <img src="/images/partners/partner-placeholder-06.png" alt="Platforma" />
+          <img src="/images/partners/partner-placeholder-06.png" alt="" data-i18n-alt="partner-type-platform" />
           <span data-i18n-key="partner-type-platform">Platforma</span>
         </div>
       </div>
@@ -212,7 +285,7 @@
 
         <!-- Honeypot antispam -->
         <div style="display:none">
-          <label data-i18n-key="partner-honeypot-label">Nevyplňujte toto pole: <input name="bot-field" /></label>
+          <label data-i18n-key="partner-honeypot-label">Nevyplňujte toto pole (antispam) <input name="bot-field" /></label>
         </div>
 
         <div class="form-group">
@@ -271,7 +344,10 @@
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
 
-<script type="module" src="/src/main.js" defer></script>
+<!-- JEDINÝ vstup – sjednoceno s ostatními stránkami (důležité pro i18n + dropdown + nav) -->
+<script type="module" src="/src/main.js"></script>
+
+<!-- Partners page logika (validace formu + success/error) -->
 <script type="module" src="/src/partners.js"></script>
 </body>
 </html>

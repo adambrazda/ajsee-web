@@ -4,19 +4,107 @@
   <meta charset="UTF-8">
   <title data-i18n-key="blog-detail-title">Blog | AJSEE®</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="/src/styles/main.scss">
+
+  <meta name="theme-color" content="#0077cc" />
   <link rel="icon" href="/images/logo-ajsee.png">
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
+
+  <!-- Prémiové fonty -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-K0ZS0D9JLK');
+    window.__TM_INLINE_DISABLED = true;
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
+
+  <!-- Google tag – pouze na HTTPS/produkci -->
+  <script>
+    (function(){
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
+      if (!isProdHttps) return;
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
+      s.onload = function(){
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-K0ZS0D9JLK');
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
+  <script>
+    (function(){
+      function detectLang(){
+        try {
+          const qs = new URLSearchParams(location.search);
+          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+        } catch { return 'cs'; }
+      }
+
+      function applyI18nFallback(lang){
+        const root = window.translations || null;
+        if (!root) return;
+
+        const dict = root[lang] || root;
+        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
+
+        document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          const key = el.getAttribute('data-i18n-key');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
+        });
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-i18n-aria');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) {
+            el.setAttribute('aria-label', val);
+            el.setAttribute('title', val);
+          }
+        });
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+          const key = el.getAttribute('data-i18n-alt');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const lang = detectLang();
+        document.documentElement.lang = lang;
+
+        // Pokud už main bundle poskytl applyTranslations, fallback nespouštěj.
+        if (typeof window.applyTranslations === 'function') return;
+
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
+          applyI18nFallback(lang);
+        }, 250);
+      });
+    })();
+  </script>
+
+  <!-- ✅ PROD BUILD (Vite) – jediný vstup + CSS -->
+  <!-- POZOR: hashe musí odpovídat tvému aktuálnímu buildu -->
+  <script type="module" crossorigin src="/assets/main-DSzsxf2X.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-DMl0tCYI.css">
 </head>
-<body>
+
+<body data-page="blog-detail">
 <header class="site-header">
+  <!-- Pokud už máš jednotný header řešený přes main.js,
+       tady nechávám placeholder jak jsi měl. -->
   <!-- ... stejný header jako jinde ... -->
 </header>
 
@@ -41,14 +129,11 @@
           data-netlify-recaptcha="true"
           netlify-honeypot="bot-field"
         >
-          <!-- Netlify potřebuje form-name -->
           <input type="hidden" name="form-name" value="site-comments" />
-          <!-- Hidden pole pro identifikaci příspěvku a jazyk -->
           <input type="hidden" name="postId" id="commentPostId" value="" />
           <input type="hidden" name="postType" id="commentPostType" value="blog" />
           <input type="hidden" name="lang" id="commentLang" value="" />
 
-          <!-- Honeypot (skryté, boty to vyplní) -->
           <p class="hp" hidden>
             <label>Don’t fill this out: <input name="bot-field" /></label>
           </p>
@@ -80,7 +165,6 @@
                         placeholder="Napiš svůj komentář…" data-i18n-placeholder="comments.commentPh"></textarea>
             </div>
 
-            <!-- reCAPTCHA placeholder – Netlify ji sem vloží -->
             <div data-netlify-recaptcha="true"></div>
 
             <div class="form-actions">
@@ -90,7 +174,6 @@
           </div>
         </form>
 
-        <!-- sem budeme renderovat komentáře z Netlify Functions -->
         <div id="commentsList" class="comments-list" aria-live="polite"></div>
       </section>
       <!-- COMMENTS: end -->
@@ -102,20 +185,18 @@
   <!-- ... footer ... -->
 </footer>
 
-<script type="module" src="/src/main.js"></script>
+<!-- blog-detail logika (ESM) -->
 <script type="module" src="/src/blog-detail.js"></script>
 
 <!-- Inline init pro komentáře: nastaví lang/postId/postType, načte a odesílá -->
 <script>
   (function () {
-    // Jazyk z URL nebo z <html lang>
     const qs = new URLSearchParams(location.search);
     const lang =
       (qs.get('lang') || document.documentElement.getAttribute('lang') || 'cs')
         .toLowerCase().split(/[-_]/)[0];
     document.getElementById('commentLang').value = lang;
 
-    // Identifikace příspěvku: ?id=..., fallback pathname
     let postType = 'blog';
     let postId = qs.get('id') || location.pathname;
     document.getElementById('commentPostType').value = postType;
@@ -167,10 +248,8 @@
       }
     }
 
-    // Načíst hned po otevření
     loadComments();
 
-    // Odeslání (stále kompatibilní s Netlify Forms)
     const form = document.getElementById('commentForm');
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -185,7 +264,6 @@
       .then(() => {
         statusEl.textContent = (lang === 'cs') ? 'Díky! Komentář byl odeslán.' : 'Thanks! Your comment was submitted.';
         form.reset();
-        // refresh výpisu po ~1s (Netlify zpracuje submission)
         setTimeout(loadComments, 1200);
       })
       .catch(() => {

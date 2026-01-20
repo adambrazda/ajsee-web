@@ -14,19 +14,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- i18n BOOTSTRAP: vystaví ESM i18n na window (funguje v dev i po buildu) -->
-  <script type="module">
-    // Vite tohle při buildu přepíše na hashed chunk.
-    // Modul MUSÍ exportovat applyTranslations a translations.
-    import { applyTranslations, translations } from '/src/i18n.js';
-    window.applyTranslations = applyTranslations;
-    window.translations = translations;
+  <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
+  <script>
+    window.__TM_INLINE_DISABLED = true;
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
   <!-- Google tag – pouze na HTTPS/produkci -->
   <script>
     (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(location.hostname);
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
       if (!isProdHttps) return;
       const s = document.createElement('script');
       s.async = true;
@@ -42,7 +39,7 @@
     })();
   </script>
 
-  <!-- i18n fallback (když engine v /src/main.js/i18n.js nepřijde včas) -->
+  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
   <script>
     (function(){
       function detectLang(){
@@ -55,24 +52,22 @@
       function applyI18nFallback(lang){
         const root = window.translations || null;
         if (!root) return;
+
         const dict = root[lang] || root;
         const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
 
-        // textové nody
         document.querySelectorAll('[data-i18n-key]').forEach(el => {
           const key = el.getAttribute('data-i18n-key');
           const val = get(key);
           if (typeof val === 'string' && val.trim()) el.textContent = val;
         });
 
-        // placeholdery
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
           const key = el.getAttribute('data-i18n-placeholder');
           const val = get(key);
           if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
         });
 
-        // aria-label + title
         document.querySelectorAll('[data-i18n-aria]').forEach(el => {
           const key = el.getAttribute('data-i18n-aria');
           const val = get(key);
@@ -82,7 +77,6 @@
           }
         });
 
-        // alt atributy
         document.querySelectorAll('[data-i18n-alt]').forEach(el => {
           const key = el.getAttribute('data-i18n-alt');
           const val = get(key);
@@ -90,59 +84,24 @@
         });
       }
 
-      // Nouzové natažení JSON locale, když není window.translations
-      async function ensureTranslations(lang){
-        if (window.translations) return true;
-        try {
-          // zkus preferovaný jazyk, pak en, pak cs
-          const chain = Array.from(new Set([lang, 'en', 'cs']));
-          for (const l of chain) {
-            const res = await fetch(`/locales/${l}.json`, { cache: 'no-store' });
-            if (res.ok) {
-              const data = await res.json();
-              window.translations = { [l]: data };
-              return true;
-            }
-          }
-        } catch (e) {
-          console.warn('[i18n] ensureTranslations fetch failed:', e);
-        }
-        return false;
-      }
-
-      function whenTranslationsReady(fn, timeout=1500){
-        const start = Date.now();
-        const id = setInterval(() => {
-          if (window.translations || typeof window.applyTranslations === 'function' || Date.now() - start > timeout) {
-            clearInterval(id);
-            fn();
-          }
-        }, 50);
-      }
-
-      window.addEventListener('DOMContentLoaded', async () => {
+      window.addEventListener('DOMContentLoaded', () => {
         const lang = detectLang();
         document.documentElement.lang = lang;
 
-        whenTranslationsReady(async () => {
-          if (typeof window.applyTranslations === 'function') {
-            try { window.applyTranslations(lang); }
-            catch(e){
-              console.warn('[i18n] applyTranslations failed, using fallback.', e);
-              await ensureTranslations(lang);
-              applyI18nFallback(lang);
-            }
-          } else {
-            await ensureTranslations(lang);
-            applyI18nFallback(lang);
-          }
-        });
+        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
+        if (typeof window.applyTranslations === 'function') return;
+
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
+          applyI18nFallback(lang);
+        }, 250);
       });
     })();
   </script>
 
-  <!-- Vite do buildu doplní assety (JS/CSS); v dev zůstane /src/main.js -->
-  <script type="module" src="/src/main.js"></script>
+  <!-- ✅ PROD BUILD (Vite) – jediný vstup -->
+  <script type="module" crossorigin src="/assets/main-DSzsxf2X.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-DMl0tCYI.css">
 </head>
 
 <body data-page="about">
@@ -183,41 +142,36 @@
       </div>
     </nav>
 
-    <!-- Jazykové přepínače – desktop (sjednoceno s homepage: dropdown, zachovává .lang-btn) -->
+    <!-- Jazykové přepínače – desktop (dropdown, jako homepage; zachovává .lang-btn) -->
     <div class="language-switcher desktop-switcher" aria-label="Jazyk">
-      <div class="lang-dropdown" data-lang-dropdown>
-        <button type="button"
-                class="lang-trigger"
-                id="langTrigger"
-                aria-haspopup="listbox"
-                aria-expanded="false"
-                aria-controls="langMenu">
-          <img class="flag" src="/images/flags/cz.svg" alt="" width="22" height="16" />
-          <span class="lang-current" data-lang-current>Čeština</span>
-          <span class="chevron" aria-hidden="true">▾</span>
-        </button>
+      <details class="lang-dropdown" id="langDropdownDesktop">
+        <summary class="lang-current" aria-label="Změnit jazyk">
+          <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+          <span class="lang-current-label">Čeština</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </summary>
 
-        <div class="lang-menu" id="langMenu" role="listbox" aria-label="Language" hidden>
-          <button class="lang-btn lang-option" data-lang="cs" role="option" aria-selected="true">
+        <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+          <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
             <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
           </button>
-          <button class="lang-btn lang-option" data-lang="en" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="en" aria-label="English">
             <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
           </button>
-          <button class="lang-btn lang-option" data-lang="de" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
             <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
           </button>
-          <button class="lang-btn lang-option" data-lang="sk" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
             <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
           </button>
-          <button class="lang-btn lang-option" data-lang="pl" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
             <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
           </button>
-          <button class="lang-btn lang-option" data-lang="hu" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
             <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
           </button>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Overlay pozadí menu -->
@@ -576,5 +530,8 @@
   </div>
   <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
 </footer>
+
+<!-- ✅ důležité: sjednocený entrypoint jako na ostatních stránkách -->
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>

@@ -6,7 +6,6 @@
   <title data-i18n-key="events-page-title">Události</title>
 
   <!-- Favicona -->
-  <link rel="icon" href="data:," />
   <link rel="icon" href="/images/logo-ajsee.png" />
 
   <!-- Prémiové fonty (sladěné s filtrovacím UI) -->
@@ -27,8 +26,8 @@
   <!-- Google tag (jen HTTPS/prod) -->
   <script>
     (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.0|0\.0\.0\.0/.test(location.hostname);
-      if (!isProdHttps) { console.info('[GA] Skipping on non-HTTPS/dev.'); return; }
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(location.hostname);
+      if (!isProdHttps) return;
       const s = document.createElement('script');
       s.async = true;
       s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
@@ -43,7 +42,7 @@
     })();
   </script>
 
-  <!-- i18n fallback, kdyby engine v main.js nebyl k dispozici včas -->
+  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
   <script>
     (function(){
       function detectLang(){
@@ -52,9 +51,11 @@
           return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
         } catch { return 'cs'; }
       }
+
       function applyI18nFallback(lang){
         const root = window.translations || null;
         if (!root) return;
+
         const dict = root[lang] || root;
         const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
 
@@ -84,16 +85,23 @@
         const lang = detectLang();
         document.documentElement.lang = lang;
 
-        if (typeof window.applyTranslations === 'function') {
-          try { window.applyTranslations(lang); }
-          catch(e){ console.warn('[i18n] applyTranslations failed, using fallback.', e); applyI18nFallback(lang); }
-        } else {
+        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
+        if (typeof window.applyTranslations === 'function') return;
+
+        // Zkus fallback až po krátké chvíli (ať nedojde k flash)
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
           applyI18nFallback(lang);
-        }
+        }, 250);
       });
     })();
   </script>
+
+  <!-- ✅ PROD BUILD (Vite) – jediný vstup -->
+  <script type="module" crossorigin src="/assets/main-DSzsxf2X.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-DMl0tCYI.css">
 </head>
+
 <body data-page="events">
   <!-- Header a navigace -->
   <header class="site-header">
@@ -110,11 +118,11 @@
         <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
         <ul>
           <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
-          <li><a href="/events.html" data-i18n-key="nav-events" aria-current="page">Události</a></li>
-          <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
-          <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
-          <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
-          <li><a href="/faq.html" data-i18n-key="nav-faq">FAQ</a></li>
+          <li><a href="/events" data-i18n-key="nav-events" aria-current="page">Události</a></li>
+          <li><a href="/partners" data-i18n-key="nav-partners">Pro partnery</a></li>
+          <li><a href="/about" data-i18n-key="nav-about">O nás</a></li>
+          <li><a href="/blog" data-i18n-key="nav-blog">Blog</a></li>
+          <li><a href="/faq" data-i18n-key="nav-faq">FAQ</a></li>
           <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
         </ul>
 
@@ -229,7 +237,6 @@
           <fieldset class="filters-fieldset">
             <legend class="sr-only">Filtry</legend>
 
-            <!-- ✅ Nativní date inputy pro bridge/fallback (JS je po mountu skryje) -->
             <div class="filter-group native-date from is-hidden">
               <label for="filter-date-from" data-i18n-key="filters.from">Od</label>
               <input type="date" id="filter-date-from" name="date_from" class="styled-input" inputmode="none" />
@@ -270,7 +277,6 @@
               </div>
             </div>
 
-            <!-- NOVÝ kompaktní date-combo (button + JS popover) -->
             <div class="filter-group date-combo">
               <label for="date-combo-button" data-i18n-key="filters.date">Termín</label>
               <button
@@ -387,6 +393,8 @@
       </div>
     </div>
 
+    <!-- Kontakt anchor, aby #contact v menu nekončilo na topu -->
+    <section id="contact" class="sr-only" aria-hidden="true"></section>
   </main>
 
   <!-- Footer -->
@@ -414,6 +422,7 @@
       const cta = document.getElementById('demoBadgeCta');
       const root = document.getElementById('demoBadge');
       if (!cta) return;
+
       const qs = new URLSearchParams(location.search);
       const lang = (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
       if (['cs','en','de','sk','pl','hu'].includes(lang)) {
@@ -423,21 +432,28 @@
           cta.href = url.toString();
         } catch {}
       }
+
       cta.addEventListener('click', function(){
         if (window.gtag) window.gtag('event','click_waitlist', { source: 'events_demo_badge' });
       });
-      if (root && window.translations) {
-        try {
-          const path = 'event-demo.ariaLabel'.split('.');
-          let val = window.translations;
-          for (const k of path) { val = val && typeof val === 'object' ? val[k] : undefined; }
-          if (typeof val === 'string' && val.trim()) root.setAttribute('aria-label', val);
-        } catch(e) {}
+
+      // aria label, až když budou překlady
+      if (root) {
+        const start = Date.now();
+        const id = setInterval(() => {
+          if (window.translations || Date.now() - start > 1500) {
+            clearInterval(id);
+            try {
+              const path = 'event-demo.ariaLabel'.split('.');
+              let val = window.translations;
+              for (const k of path) val = val && typeof val === 'object' ? val[k] : undefined;
+              if (typeof val === 'string' && val.trim()) root.setAttribute('aria-label', val);
+            } catch(e) {}
+          }
+        }, 50);
       }
     })();
   </script>
 
-  <!-- ⛔️ DŮLEŽITÉ: Pouze jeden vstup pro Vite – main.js vše zajistí (vč. events logiky) -->
-  <script type="module" src="/src/main.js"></script>
 </body>
 </html>

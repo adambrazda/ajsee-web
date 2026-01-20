@@ -16,6 +16,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
+  <script>
+    window.__TM_INLINE_DISABLED = true;
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
+  </script>
+
   <!-- Google tag – pouze na HTTPS/produkci -->
   <script>
     (function(){
@@ -35,7 +41,7 @@
     })();
   </script>
 
-  <!-- i18n fallback, kdyby engine v main.js nebyl k dispozici včas -->
+  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
   <script>
     (function(){
       function detectLang(){
@@ -79,12 +85,13 @@
         const lang = detectLang();
         document.documentElement.lang = lang;
 
-        if (typeof window.applyTranslations === 'function') {
-          try { window.applyTranslations(lang); }
-          catch(e){ console.warn('[i18n] applyTranslations failed, using fallback.', e); applyI18nFallback(lang); }
-        } else {
+        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
+        if (typeof window.applyTranslations === 'function') return;
+
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
           applyI18nFallback(lang);
-        }
+        }, 250);
       });
     })();
   </script>
@@ -130,39 +137,34 @@
 
     <!-- Jazykové přepínače – desktop (dropdown jako homepage; zachovává .lang-btn) -->
     <div class="language-switcher desktop-switcher" aria-label="Jazyk">
-      <div class="lang-dropdown" data-lang-dropdown>
-        <button type="button"
-                class="lang-trigger"
-                id="langTrigger"
-                aria-haspopup="listbox"
-                aria-expanded="false"
-                aria-controls="langMenu">
-          <img class="flag" src="/images/flags/cz.svg" alt="" width="22" height="16" />
-          <span class="lang-current" data-lang-current>Čeština</span>
-          <span class="chevron" aria-hidden="true">▾</span>
-        </button>
+      <details class="lang-dropdown" id="langDropdownDesktop">
+        <summary class="lang-current" aria-label="Změnit jazyk">
+          <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+          <span class="lang-current-label">Čeština</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </summary>
 
-        <div class="lang-menu" id="langMenu" role="listbox" aria-label="Language" hidden>
-          <button class="lang-btn lang-option" data-lang="cs" role="option" aria-selected="true">
+        <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+          <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
             <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
           </button>
-          <button class="lang-btn lang-option" data-lang="en" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="en" aria-label="English">
             <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
           </button>
-          <button class="lang-btn lang-option" data-lang="de" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
             <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
           </button>
-          <button class="lang-btn lang-option" data-lang="sk" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
             <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
           </button>
-          <button class="lang-btn lang-option" data-lang="pl" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
             <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
           </button>
-          <button class="lang-btn lang-option" data-lang="hu" role="option" aria-selected="false">
+          <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
             <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
           </button>
         </div>
-      </div>
+      </details>
     </div>
 
     <div class="menu-overlay-bg" aria-hidden="true"></div>

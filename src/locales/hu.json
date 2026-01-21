@@ -56,6 +56,20 @@
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Vissza a főoldalra",
 
+  "about-story-headline": "Hogyan kezdődött az egész",
+  "about-story-p1": "2024 ősze volt. Egy kocsmában ültünk, ittunk egy sört — és ahogy az lenni szokott, egy egyszerű beszélgetés elindított valamit, ami hamar valódi ötletté vált.",
+  "about-story-p2": "Még azon az estén megszületett az AJSEE név, az első logóterv és a vízió: megkönnyíteni az emberek számára a világ élményeihez való hozzáférést nyelvi akadályok nélkül.",
+  "about-story-p3": "De aztán jött a legnehezebb rész: tényleg elkezdeni.",
+  "about-story-p4": "Mindkettőnknek teljes állású munkája volt, 180 kilométer választott el minket, és kevés volt az idő. A projekt egy időre megállt, még mielőtt igazán beindult volna.",
+  "about-story-p5": "Aztán egy nap egyikünk egyszerűen elindította. Tökéletes terv nélkül, de azzal a biztos érzéssel, hogy van értelme.",
+  "about-story-p6": "És ekkor kezdett az AJSEE valósággá válni.",
+
+  "about-future-headline": "🎯 Merre tartunk",
+  "about-future-p1": "2025 végéig szeretnénk elindítani a weboldal éles verzióját.",
+  "about-future-p2": "Bővítjük a nyelvi verziókat és nemzetközi platformokkal való együttműködésen dolgozunk.",
+  "about-future-p3": "Mobilalkalmazást készítünk, és bővítjük az eseménykínálatot – valamint ezek elérhetőségét szélesebb közönség számára.",
+  "about-future-p4": "Azt szeretnénk, hogy az AJSEE legyen az első választás mindenkinek, aki a világ élményeihez vezető utat keresi — akár Londonban, Barcelonában, vagy otthon Brnóban.",
+
   "category-concert": "Koncertek",
   "category-sport": "Sport",
   "category-festival": "Fesztiválok",
@@ -110,11 +124,18 @@
   "about-timeline-2025": "Az AJSEE® többnyelvű weboldalának fejlesztése és programozása megkezdődik.",
   "about-timeline-2025-07-01-year": "2025. július 1.",
   "about-timeline-2025-07-01": "Az AJSEE® weboldal tesztüzemének indítása. Az oldal először nyílik meg a nyilvánosság számára – visszajelzéseket gyűjtünk.",
+
   "about-team-headline": "Kik állnak mögötte?",
   "about-team-adam-name": "Adam Brázda",
   "about-team-adam-role": "Alapító & CEO",
   "about-team-adam-claim": "Az AJSEE® mögött Adam Brázda áll. Az első ötletektől a web elindításáig ő vezeti a projektet – a kultúra világának határok nélküli összekapcsolásának víziójával.",
   "about-team-adam-linkedin": "LinkedIn profil",
+
+  "about-team-jan-name": "Jan Oujezdský",
+  "about-team-jan-role": "Társalapító",
+  "about-team-jan-claim": "Jan már az első naptól osztozik abban a vízióban, hogy a kulturális élményeket mindenki számára elérhetőbbé tegye — felesleges akadályok nélkül.",
+  "about-team-jan-linkedin": "LinkedIn profil",
+
   "about-cta-headline": "Szeretnél részese lenni?",
   "about-cta-text": "Az AJSEE® nyitott az együttműködésre, ötletekre és új partnerségekre. Ha felkeltettük az érdeklődésed, írj nekünk!",
   "about-cta-contact": "Kapcsolatfelvétel AJSEE®-vel",
@@ -193,7 +214,9 @@
   "filter-theatre": "Színház",
   "filter-nearest": "Legközelebbi",
   "filter-latest": "Legújabb",
+
   "events-load-more": "Továbbiak betöltése",
+
   "hp-waitlist": {
     "lead": "Hamarosan indulunk.",
     "text": "Iratkozz fel a várólistára, és korai meghívót kapsz.",
@@ -202,6 +225,7 @@
     "dismissAria": "Banner bezárása",
     "ariaLabel": "Értesítés: hamarosan indulunk – várólista"
   },
+
   "comingSoon": {
     "title": "AJSEE várólista",
     "lead": "Add meg az e-mailed, és küldünk előzetes meghívót. Nem küldünk spamet.",
@@ -219,20 +243,24 @@
     "faq3a": "Csak ellenőrzött partnerekkel és tisztességes feltételekkel dolgozunk.",
     "back": "Vissza az AJSEE.cz oldalra"
   },
+
   "thanks": {
-  "title": "Köszönjük – AJSEE",
-  "heading": "Köszönjük, felkerültél a listára.",
-  "lead": "Kérjük, erősítsd meg a feliratkozást az e-mailben (double opt-in). Hamarosan híreket küldünk az indulásról és partnerekről.",
-  "back": "Vissza az AJSEE.cz oldalra"
-},
-"event-demo": {
-  "ariaLabel": "Információk demó módról – hamarosan indul a valós jegyértékesítés.",
-  "title": "Mintaesemények.",
-  "body": "Készülünk az éles jegyértékesítésre. Kövess minket!",
-  "cta": "Kövesd a híreket"
-},
+    "title": "Köszönjük – AJSEE",
+    "heading": "Köszönjük, felkerültél a listára.",
+    "lead": "Kérjük, erősítsd meg a feliratkozást az e-mailben (double opt-in). Hamarosan híreket küldünk az indulásról és partnerekről.",
+    "back": "Vissza az AJSEE.cz oldalra"
+  },
+
+  "event-demo": {
+    "ariaLabel": "Információk demó módról – hamarosan indul a valós jegyértékesítés.",
+    "title": "Mintaesemények.",
+    "body": "Készülünk az éles jegyértékesítésre. Kövess minket!",
+    "cta": "Kövesd a híreket"
+  },
+
   "mg.backToBlog": "Vissza a blogra",
   "mg.breadcrumb": "AJSEE magyaráz",
+
   "mg": {
     "card": { "badge": "Mini útmutató" },
     "guides": {
@@ -242,17 +270,17 @@
       }
     }
   },
-   "share": {
-      "label": "Megosztás",
-      "system": "Megosztás…",
-      "twitter": "Megosztás X-en",
-      "facebook": "Megosztás Facebookon",
-      "linkedin": "Megosztás LinkedInen",
-      "whatsapp": "Megosztás WhatsAppon",
-      "copy": "Hivatkozás másolása",
-      "copied": "Hivatkozás másolva"
-    },
-    "mg.relatedTitle": "Kapcsolódó mikro-útmutatók"
 
+  "share": {
+    "label": "Megosztás",
+    "system": "Megosztás…",
+    "twitter": "Megosztás X-en",
+    "facebook": "Megosztás Facebookon",
+    "linkedin": "Megosztás LinkedInen",
+    "whatsapp": "Megosztás WhatsAppon",
+    "copy": "Hivatkozás másolása",
+    "copied": "Hivatkozás másolva"
+  },
+
+  "mg.relatedTitle": "Kapcsolódó mikro-útmutatók"
 }
-

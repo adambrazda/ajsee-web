@@ -56,6 +56,20 @@
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Zurück zur Startseite",
 
+  "about-story-headline": "Wie alles begann",
+  "about-story-p1": "Es war Herbst 2024. Wir saßen in einer Kneipe, tranken ein Bier — und wie so oft wurde aus einem ganz normalen Gespräch etwas, das sich bald zu einer echten Idee entwickelte.",
+  "about-story-p2": "Noch am selben Abend entstanden der Name AJSEE, ein erster Logo-Entwurf und die Vision: Menschen den Zugang zu weltweiten Erlebnissen ohne Sprachbarrieren zu erleichtern.",
+  "about-story-p3": "Doch dann kam die schwierigste Phase: wirklich anzufangen.",
+  "about-story-p4": "Wir hatten beide Vollzeitjobs, lebten 180 Kilometer auseinander und Zeit war knapp. Das Projekt legte eine Pause ein, noch bevor es richtig losging.",
+  "about-story-p5": "Bis eines Tages einer von uns es einfach startete. Ohne perfekten Plan, aber mit der Gewissheit, dass es Sinn ergibt.",
+  "about-story-p6": "Und genau da begann AJSEE, Wirklichkeit zu werden.",
+
+  "about-future-headline": "🎯 Wohin wir wollen",
+  "about-future-p1": "Bis Ende 2025 möchten wir die Live-Version der Website starten.",
+  "about-future-p2": "Wir erweitern die Sprachversionen und bauen Kooperationen mit internationalen Plattformen auf.",
+  "about-future-p3": "Wir arbeiten an einer mobilen App und erweitern das Angebot an Events – sowie deren Verfügbarkeit für ein breiteres Publikum.",
+  "about-future-p4": "Wir möchten, dass AJSEE die erste Wahl für alle ist, die den Weg zu weltweiten Erlebnissen suchen — ob in London, Barcelona oder zu Hause in Brünn.",
+
   "category-concert": "Konzerte",
   "category-sport": "Sport",
   "category-festival": "Festivals",
@@ -115,6 +129,12 @@
   "about-team-adam-role": "Gründer & CEO",
   "about-team-adam-claim": "Hinter der Plattform AJSEE® steht Adam Brázda. Von den ersten Ideen bis zur Umsetzung der Website führt er das Projekt mit der Vision, die Welt der Kultur ohne Barrieren zu verbinden.",
   "about-team-adam-linkedin": "LinkedIn-Profil",
+
+  "about-team-jan-name": "Jan Oujezdský",
+  "about-team-jan-role": "Mitgründer",
+  "about-team-jan-claim": "Von Anfang an teilt Jan die Vision, Kultur und Erlebnisse für alle zugänglicher zu machen — ohne unnötige Hürden.",
+  "about-team-jan-linkedin": "LinkedIn-Profil",
+
   "about-cta-headline": "Willst du dabei sein?",
   "about-cta-text": "AJSEE® ist offen für Zusammenarbeit, Ideen und neue Partnerschaften. Wenn dich unsere Mission anspricht, schreib uns – wir freuen uns auf deine Nachricht!",
   "about-cta-contact": "AJSEE® kontaktieren",
@@ -193,7 +213,9 @@
   "filter-theatre": "Theater",
   "filter-nearest": "Bevorstehend",
   "filter-latest": "Neueste",
+
   "events-load-more": "Mehr laden",
+
   "hp-waitlist": {
     "lead": "Start bald.",
     "text": "Trag dich in die Warteliste ein und erhalte eine frühe Einladung.",
@@ -202,6 +224,7 @@
     "dismissAria": "Banner schließen",
     "ariaLabel": "Hinweis: Start bald – Warteliste"
   },
+
   "comingSoon": {
     "title": "AJSEE Warteliste",
     "lead": "E-Mail hinterlassen – wir senden dir eine Early-Access-Einladung. Kein Spam.",
@@ -219,20 +242,24 @@
     "faq3a": "Nur verifizierte Partner und faire Bedingungen.",
     "back": "Zurück zu AJSEE.cz"
   },
+
   "thanks": {
-  "title": "Danke – AJSEE",
-  "heading": "Danke, du stehst auf der Liste.",
-  "lead": "Bitte bestätige deine Anmeldung in der E-Mail (Double-Opt-In). Wir senden bald Updates zum Start und zu Partnern.",
-  "back": "Zurück zu AJSEE.cz"
+    "title": "Danke – AJSEE",
+    "heading": "Danke, du stehst auf der Liste.",
+    "lead": "Bitte bestätige deine Anmeldung in der E-Mail (Double-Opt-In). Wir senden bald Updates zum Start und zu Partnern.",
+    "back": "Zurück zu AJSEE.cz"
   },
+
   "event-demo": {
     "ariaLabel": "Info zum Demo-Modus – echter Ticketverkauf folgt bald.",
     "title": "Beispielveranstaltungen.",
     "body": "Wir bereiten den echten Ticketverkauf vor. Folge unseren Updates!",
     "cta": "Neuigkeiten verfolgen"
   },
+
   "mg.backToBlog": "Zurück zum Blog",
   "mg.breadcrumb": "AJSEE erklärt",
+
   "mg": {
     "card": { "badge": "Mikro-Guide" },
     "guides": {
@@ -242,15 +269,17 @@
       }
     }
   },
+
   "share": {
-      "label": "Teilen",
-      "system": "Teilen…",
-      "twitter": "Auf X teilen",
-      "facebook": "Auf Facebook teilen",
-      "linkedin": "Auf LinkedIn teilen",
-      "whatsapp": "Auf WhatsApp teilen",
-      "copy": "Link kopieren",
-      "copied": "Link kopiert"
-    },
-    "mg.relatedTitle": "Verwandte Mikro-Guides"
+    "label": "Teilen",
+    "system": "Teilen…",
+    "twitter": "Auf X teilen",
+    "facebook": "Auf Facebook teilen",
+    "linkedin": "Auf LinkedIn teilen",
+    "whatsapp": "Auf WhatsApp teilen",
+    "copy": "Link kopieren",
+    "copied": "Link kopiert"
+  },
+
+  "mg.relatedTitle": "Verwandte Mikro-Guides"
 }

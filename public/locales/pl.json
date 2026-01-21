@@ -46,7 +46,7 @@
   "about-btn": "Dowiedz się więcej o AJSEE<sup>®</sup>",
   "about-title": "O nas | AJSEE®",
   "about-headline-full": "Nasza historia. Nasza wizja.",
-  "about-hero-text": "  Doświadczenia nie mają granic. I właśnie dlatego powstało AJSEE.",
+  "about-hero-text": "Doświadczenia nie mają granic. I właśnie dlatego powstało AJSEE.",
   "about-hero-subtext": "Naszym celem jest umożliwienie dostępu do wydarzeń kulturalnych, rozrywkowych i sportowych z całego świata – jasno, przejrzyście i bez zbędnych barier przy wyborze i zakupie biletów.",
   "about-hero-claim": "AJSEE<sup>®</sup> to nowoczesna platforma dla wszystkich, którzy chcą doświadczać świata – bez granic.",
   "about-values-headline": "Nasze wartości",
@@ -55,6 +55,20 @@
   "about-value-3": "<strong>Innowacje</strong> – Śledzimy trendy i wybieramy najlepsze wydarzenia oraz technologie.",
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Powrót na stronę główną",
+
+  "about-story-headline": "Jak to się zaczęło",
+  "about-story-p1": "Była jesień 2024 roku. Siedzieliśmy w pubie, wypiliśmy piwo — i jak to bywa, jedna zwykła rozmowa zapoczątkowała coś, co szybko przerodziło się w realny pomysł.",
+  "about-story-p2": "Jeszcze tego wieczoru powstała nazwa AJSEE, pierwszy projekt logo i wizja: ułatwić ludziom dostęp do światowych przeżyć bez barier językowych.",
+  "about-story-p3": "A potem nadszedł najtrudniejszy etap: naprawdę zacząć.",
+  "about-story-p4": "Obaj mieliśmy pracę na pełen etat, dzieliło nas 180 kilometrów, a czasu było mało. Projekt na chwilę stanął, zanim zdążył się rozkręcić.",
+  "about-story-p5": "Aż pewnego dnia jeden z nas po prostu wystartował. Bez idealnego planu, ale z pewnością, że to ma sens.",
+  "about-story-p6": "I wtedy AJSEE zaczęło stawać się rzeczywistością.",
+
+  "about-future-headline": "🎯 Dokąd zmierzamy",
+  "about-future-p1": "Do końca 2025 roku chcemy uruchomić produkcyjną wersję strony.",
+  "about-future-p2": "Pracujemy nad rozbudową wersji językowych oraz współpracą z międzynarodowymi platformami.",
+  "about-future-p3": "Przygotowujemy aplikację mobilną i poszerzamy ofertę wydarzeń oraz ich dostępność dla szerszej publiczności.",
+  "about-future-p4": "Chcemy, aby AJSEE było pierwszym wyborem dla każdego, kto szuka drogi do światowych przeżyć — niezależnie od tego, czy jest w Londynie, Barcelonie czy w domu w Brnie.",
 
   "category-concert": "Koncerty",
   "category-sport": "Sport",
@@ -110,11 +124,18 @@
   "about-timeline-2025": "Start programowania i rozwoju wielojęzycznej strony AJSEE®.",
   "about-timeline-2025-07-01-year": "1.07.2025",
   "about-timeline-2025-07-01": "Uruchomienie testowego działania strony AJSEE®. Strona po raz pierwszy otwarta dla publiczności – zbieramy opinie odwiedzających.",
+
   "about-team-headline": "Kto za tym stoi?",
   "about-team-adam-name": "Adam Brázda",
   "about-team-adam-role": "Założyciel & CEO",
   "about-team-adam-claim": "Za platformą AJSEE® stoi Adam Brázda. Od pierwszych pomysłów aż po uruchomienie serwisu prowadzi projekt z wizją łączenia świata kultury bez barier.",
   "about-team-adam-linkedin": "Profil na LinkedInie",
+
+  "about-team-jan-name": "Jan Oujezdský",
+  "about-team-jan-role": "Współzałożyciel",
+  "about-team-jan-claim": "Jan od pierwszego dnia współdzieli wizję ułatwienia dostępu do świata kultury — bez zbędnych barier.",
+  "about-team-jan-linkedin": "Profil na LinkedInie",
+
   "about-cta-headline": "Chcesz być częścią projektu?",
   "about-cta-text": "AJSEE® jest otwarte na współpracę, pomysły i nowe partnerstwa. Jeśli nasza misja Cię zainteresowała – napisz do nas!",
   "about-cta-contact": "Skontaktuj się z AJSEE®",
@@ -193,7 +214,9 @@
   "filter-theatre": "Teatr",
   "filter-nearest": "Najbliższe",
   "filter-latest": "Najnowsze",
+
   "events-load-more": "Wczytaj więcej",
+
   "hp-waitlist": {
     "lead": "Start już wkrótce.",
     "text": "Dołącz do listy oczekujących i otrzymaj wczesne zaproszenie.",
@@ -202,6 +225,7 @@
     "dismissAria": "Zamknij baner",
     "ariaLabel": "Informacja: start wkrótce – lista oczekujących"
   },
+
   "comingSoon": {
     "title": "Lista oczekujących AJSEE",
     "lead": "Podaj e-mail, a wyślemy zaproszenie do przedsprzedaży. Bez spamu.",
@@ -219,18 +243,21 @@
     "faq3a": "Tylko zweryfikowani partnerzy i uczciwe warunki.",
     "back": "Wróć do AJSEE.cz"
   },
+
   "thanks": {
-  "title": "Dziękujemy – AJSEE",
-  "heading": "Dziękujemy, jesteś na liście.",
-  "lead": "Potwierdź proszę zapis w e-mailu (double opt-in). Wkrótce wyślemy informacje o starcie i partnerach.",
-  "back": "Wróć do AJSEE.cz"
-},
-"event-demo": {
-  "ariaLabel": "Informacja o trybie demo – wkrótce uruchomimy realną sprzedaż biletów.",
-  "title": "Przykładowe wydarzenia.",
-  "body": "Przygotowujemy uruchomienie realnej sprzedaży biletów. Śledź nas!",
-  "cta": "Śledź aktualności"
-},
+    "title": "Dziękujemy – AJSEE",
+    "heading": "Dziękujemy, jesteś na liście.",
+    "lead": "Potwierdź proszę zapis w e-mailu (double opt-in). Wkrótce wyślemy informacje o starcie i partnerach.",
+    "back": "Wróć do AJSEE.cz"
+  },
+
+  "event-demo": {
+    "ariaLabel": "Informacja o trybie demo – wkrótce uruchomimy realną sprzedaż biletów.",
+    "title": "Przykładowe wydarzenia.",
+    "body": "Przygotowujemy uruchomienie realnej sprzedaży biletów. Śledź nas!",
+    "cta": "Śledź aktualności"
+  },
+
   "mg.backToBlog": "Wróć do bloga",
   "mg.breadcrumb": "AJSEE wyjaśnia",
   "mg": {
@@ -242,17 +269,17 @@
       }
     }
   },
-      "share": {
-      "label": "Udostępnij",
-      "system": "Udostępnij…",
-      "twitter": "Udostępnij na X",
-      "facebook": "Udostępnij na Facebooku",
-      "linkedin": "Udostępnij na LinkedIn",
-      "whatsapp": "Udostępnij na WhatsApp",
-      "copy": "Kopiuj link",
-      "copied": "Skopiowano link"
-    },
-    "mg.relatedTitle": "Powiązane mikro-poradniki"
 
+  "share": {
+    "label": "Udostępnij",
+    "system": "Udostępnij…",
+    "twitter": "Udostępnij na X",
+    "facebook": "Udostępnij na Facebooku",
+    "linkedin": "Udostępnij na LinkedIn",
+    "whatsapp": "Udostępnij na WhatsApp",
+    "copy": "Kopiuj link",
+    "copied": "Skopiowano link"
+  },
+
+  "mg.relatedTitle": "Powiązane mikro-poradniki"
 }
-

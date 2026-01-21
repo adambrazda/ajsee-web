@@ -58,6 +58,22 @@
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Zpět na hlavní stránku",
 
+  "about-story-title": "Jak to celé začalo",
+  "about-story-headline": "Jak to celé začalo",
+  "about-story-p1": "Byl podzim 2024. Seděli jsme v hospodě, dali si pivo — a jak už to bývá, jedno obyčejné povídání odstartovalo něco, co se brzy proměnilo ve skutečný nápad.",
+  "about-story-p2": "Ještě ten večer vznikl název AJSEE, první návrh loga i vize: usnadnit lidem přístup ke světovým zážitkům bez jazykových překážek.",
+  "about-story-p3": "Ale pak přišla ta nejtěžší fáze: začít doopravdy.",
+  "about-story-p4": "Oba jsme měli práci na plný úvazek, dělilo nás 180 kilometrů a času bylo málo. Projekt se na chvíli zastavil, ještě než se stihl rozběhnout.",
+  "about-story-p5": "Až jednoho dne to jeden z nás prostě spustil. Bez dokonalého plánu, ale s jistotou, že to dává smysl.",
+  "about-story-p6": "A tehdy se AJSEE začalo stávat skutečností.",
+
+  "about-future-title": "🎯 Kam míříme",
+  "about-future-headline": "🎯 Kam míříme",
+  "about-future-p1": "Do konce roku 2025 chceme spustit ostrou verzi webu.",
+  "about-future-p2": "Pracujeme na rozšíření jazykových mutací a spolupráci s mezinárodními platformami.",
+  "about-future-p3": "Chystáme mobilní aplikaci a rozšiřujeme nabídku akcí i jejich dostupnost pro širší publikum.",
+  "about-future-p4": "Chceme, aby byl AJSEE první volbou pro každého, kdo hledá cestu ke světovým zážitkům – ať už v Londýně, Barceloně nebo doma v Brně.",
+
   "category-concert": "Koncerty",
   "category-sport": "Sport",
   "category-festival": "Festivaly",
@@ -111,11 +127,18 @@
   "about-timeline-2025": "Zahájení programování a vývoje multijazyčného webu AJSEE®.",
   "about-timeline-2025-07-01-year": "1. 7. 2025",
   "about-timeline-2025-07-01": "Spuštění testovacího provozu webu AJSEE®. Web je poprvé otevřen veřejnosti a sbíráme první podněty od návštěvníků.",
+
+  "about-team-title": "Kdo za tím stojí?",
   "about-team-headline": "Kdo za tím stojí?",
   "about-team-adam-name": "Adam Brázda",
   "about-team-adam-role": "Zakladatel & CEO",
   "about-team-adam-claim": "Za platformou AJSEE® stojí Adam Brázda. Od prvních nápadů až po realizaci webu vede projekt s vizí propojit světový kulturní svět bez bariér.",
   "about-team-adam-linkedin": "LinkedIn profil",
+  "about-team-jan-name": "Jan Oujezdský",
+  "about-team-jan-role": "Spoluzakladatel AJSEE®",
+  "about-team-jan-claim": "Od prvního dne sdílí vizi zpřístupnit svět kultury bez zbytečných bariér — s důrazem na srozumitelnost a uživatelský zážitek.",
+  "about-team-jan-linkedin": "LinkedIn profil",
+
   "about-cta-headline": "Chceš být u toho?",
   "about-cta-text": "AJSEE® je otevřená spolupráci, nápadům i novým partnerstvím. Pokud tě naše mise zaujala, napiš nám – těšíme se na zprávu!",
   "about-cta-contact": "Kontaktovat AJSEE®",
@@ -194,6 +217,7 @@
   "filter-theatre": "Divadlo",
   "filter-nearest": "Nejbližší",
   "filter-latest": "Nejnovější",
+
   "footer-copyright": "© 2025 AJSEE®. Všechna práva vyhrazena.",
   "events-load-more": "Načíst další",
 
@@ -205,6 +229,7 @@
     "dismissAria": "Zavřít banner",
     "ariaLabel": "Informace: spustíme brzy – čekací listina"
   },
+
   "comingSoon": {
     "title": "Čekací listina AJSEE",
     "lead": "Zanech e-mail a pošleme ti pozvánku do předprodeje. Bez spamu.",
@@ -222,12 +247,14 @@
     "faq3a": "Spolupracujeme pouze s ověřenými partnery a férovými podmínkami.",
     "back": "Zpět na AJSEE.cz"
   },
+
   "thanks": {
     "title": "Díky – AJSEE",
     "heading": "Děkujeme, jsi na seznamu.",
     "lead": "Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.",
     "back": "Zpět na AJSEE.cz"
   },
+
   "event-demo": {
     "ariaLabel": "Informace o demo režimu – chystáme reálný prodej vstupenek.",
     "title": "Ukázkové události.",
@@ -257,5 +284,17 @@
       "copied": "Odkaz zkopírován"
     }
   },
+
+  "share": {
+    "label": "Sdílet",
+    "system": "Sdílet…",
+    "twitter": "Sdílet na X",
+    "facebook": "Sdílet na Facebook",
+    "linkedin": "Sdílet na LinkedIn",
+    "whatsapp": "Sdílet na WhatsApp",
+    "copy": "Zkopírovat odkaz",
+    "copied": "Odkaz zkopírován"
+  },
+
   "mg.relatedTitle": "Související mikroprůvodce"
 }

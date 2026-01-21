@@ -58,6 +58,20 @@
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Back to main page",
 
+  "about-story-headline": "How it all began",
+  "about-story-p1": "It was autumn 2024. We were sitting in a pub, had a beer — and as it often happens, an ordinary chat sparked something that soon turned into a real idea.",
+  "about-story-p2": "That very evening, the name AJSEE was born, along with the first logo draft and a vision: to make world experiences accessible without language barriers.",
+  "about-story-p3": "But then came the hardest phase: to actually start.",
+  "about-story-p4": "We both had full-time jobs, lived 180 kilometres apart, and time was scarce. The project paused for a while before it really took off.",
+  "about-story-p5": "Then one day, one of us simply launched it. Without a perfect plan, but with the certainty that it made sense.",
+  "about-story-p6": "And that’s when AJSEE started becoming reality.",
+
+  "about-future-headline": "🎯 Where we’re heading",
+  "about-future-p1": "By the end of 2025, we want to launch the production version of the website.",
+  "about-future-p2": "We’re expanding language versions and building partnerships with international platforms.",
+  "about-future-p3": "We’re preparing a mobile app and expanding the selection of events — and their availability for a wider audience.",
+  "about-future-p4": "We want AJSEE to be the first choice for anyone looking for a path to world-class experiences — whether in London, Barcelona, or at home in Brno.",
+
   "category-concert": "Concerts",
   "category-sport": "Sport",
   "category-festival": "Festivals",
@@ -99,6 +113,7 @@
 
   "events-show-all": "Show all events",
   "events-load-error": "Events could not be loaded. Please try again later.",
+  "events-load-more": "Load more",
 
   "thankyou-title": "Thank you for your message | AJSEE",
   "thankyou-headline": "Thank you!",
@@ -112,11 +127,18 @@
   "about-timeline-2025": "Start of programming and development of the multilingual AJSEE® website.",
   "about-timeline-2025-07-01-year": "1 July 2025",
   "about-timeline-2025-07-01": "Launch of the AJSEE® website test run. The website is opened to the public for the first time and we collect the first feedback from visitors.",
+
   "about-team-headline": "Who is behind AJSEE®?",
   "about-team-adam-name": "Adam Brázda",
   "about-team-adam-role": "Founder & CEO",
   "about-team-adam-claim": "Adam Brázda is the person behind AJSEE®. From the first ideas to the website launch, he leads the project with the vision to connect the world of culture without barriers.",
   "about-team-adam-linkedin": "LinkedIn profile",
+
+  "about-team-jan-name": "Jan Oujezdský",
+  "about-team-jan-role": "Co-founder",
+  "about-team-jan-claim": "From day one, Jan has shared the vision of making culture and experiences more accessible to everyone — without unnecessary barriers.",
+  "about-team-jan-linkedin": "LinkedIn profile",
+
   "about-cta-headline": "Want to be part of it?",
   "about-cta-text": "AJSEE® is open to collaboration, ideas and new partnerships. If our mission has caught your interest, write to us – we look forward to hearing from you!",
   "about-cta-contact": "Contact AJSEE®",
@@ -195,46 +217,51 @@
   "filter-theatre": "Theatre",
   "filter-nearest": "Upcoming",
   "filter-latest": "Newest",
-"events-load-more": "Load more",
-"hp-waitlist": {
-  "lead": "Launching soon.",
-  "text": "Join the waitlist to get an early invite.",
-  "cta": "Get invite",
-  "dismiss": "Close",
-  "dismissAria": "Close banner",
-  "ariaLabel": "Notice: launching soon – waitlist"
-},
-"comingSoon": {
-  "title": "AJSEE Waitlist",
-  "lead": "Leave your email and we’ll send you an early-access invite. No spam.",
-  "emailLabel": "Email",
-  "emailPh": "you@example.com",
-  "consent": "I agree to receive updates about AJSEE and the ticket presale.",
-  "submit": "Join the waitlist",
-  "hint": "Double opt-in enabled. Unsubscribe anytime.",
-  "faqTitle": "Quick FAQ",
-  "faq1q": "When do you launch?",
-  "faq1a": "We’re opening the first presale wave to a limited number of invites. We’ll email the date.",
-  "faq2q": "What do I get?",
-  "faq2a": "Early access, curated tips and a Czech/Slovak friendly experience.",
-  "faq3q": "Is it safe?",
-  "faq3a": "We work only with verified partners and fair terms.",
-  "back": "Back to AJSEE.cz"
-},
-"thanks": {
-  "title": "Thanks – AJSEE",
-  "heading": "Thanks, you’re on the list.",
-  "lead": "Please confirm your subscription in the email (double opt-in). We’ll send launch and partner updates soon.",
-  "back": "Back to AJSEE.cz"
-},
-"event-demo": {
-  "ariaLabel": "Demo mode info — real ticket sales coming soon.",
-  "title": "Sample events.",
-  "body": "We’re preparing real ticket sales. Follow us!",
-  "cta": "Follow updates"
-},
+
+  "hp-waitlist": {
+    "lead": "Launching soon.",
+    "text": "Join the waitlist to get an early invite.",
+    "cta": "Get invite",
+    "dismiss": "Close",
+    "dismissAria": "Close banner",
+    "ariaLabel": "Notice: launching soon – waitlist"
+  },
+
+  "comingSoon": {
+    "title": "AJSEE Waitlist",
+    "lead": "Leave your email and we’ll send you an early-access invite. No spam.",
+    "emailLabel": "Email",
+    "emailPh": "you@example.com",
+    "consent": "I agree to receive updates about AJSEE and the ticket presale.",
+    "submit": "Join the waitlist",
+    "hint": "Double opt-in enabled. Unsubscribe anytime.",
+    "faqTitle": "Quick FAQ",
+    "faq1q": "When do you launch?",
+    "faq1a": "We’re opening the first presale wave to a limited number of invites. We’ll email the date.",
+    "faq2q": "What do I get?",
+    "faq2a": "Early access, curated tips and a Czech/Slovak friendly experience.",
+    "faq3q": "Is it safe?",
+    "faq3a": "We work only with verified partners and fair terms.",
+    "back": "Back to AJSEE.cz"
+  },
+
+  "thanks": {
+    "title": "Thanks – AJSEE",
+    "heading": "Thanks, you’re on the list.",
+    "lead": "Please confirm your subscription in the email (double opt-in). We’ll send launch and partner updates soon.",
+    "back": "Back to AJSEE.cz"
+  },
+
+  "event-demo": {
+    "ariaLabel": "Demo mode info — real ticket sales coming soon.",
+    "title": "Sample events.",
+    "body": "We’re preparing real ticket sales. Follow us!",
+    "cta": "Follow updates"
+  },
+
   "mg.backToBlog": "Back to blog",
   "mg.breadcrumb": "AJSEE explains",
+
   "mg": {
     "card": { "badge": "Micro-guide" },
     "guides": {
@@ -244,15 +271,17 @@
       }
     }
   },
+
   "share": {
-      "label": "Share",
-      "system": "Share…",
-      "twitter": "Share on X",
-      "facebook": "Share on Facebook",
-      "linkedin": "Share on LinkedIn",
-      "whatsapp": "Share on WhatsApp",
-      "copy": "Copy link",
-      "copied": "Link copied"
-    },
-    "mg.relatedTitle": "Related micro-guides"
+    "label": "Share",
+    "system": "Share…",
+    "twitter": "Share on X",
+    "facebook": "Share on Facebook",
+    "linkedin": "Share on LinkedIn",
+    "whatsapp": "Share on WhatsApp",
+    "copy": "Copy link",
+    "copied": "Link copied"
+  },
+
+  "mg.relatedTitle": "Related micro-guides"
 }

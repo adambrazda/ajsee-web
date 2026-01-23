@@ -4,7 +4,15 @@
 
 export const translations = {}; // živý objekt – neměň referenci
 
+const SUPPORTED = ['cs','en','de','sk','pl','hu'];
+const LANG_KEY = 'ajsee.lang';
+
 /* ───────── utils ───────── */
+function normalizeLang(x) {
+  const v = String(x || '').trim().toLowerCase();
+  return SUPPORTED.includes(v) ? v : null;
+}
+
 function deepMerge(a = {}, b = {}) {
   const o = { ...a };
   for (const [k, v] of Object.entries(b)) {
@@ -14,6 +22,7 @@ function deepMerge(a = {}, b = {}) {
   }
   return o;
 }
+
 async function fetchJSON(p) {
   try {
     const r = await fetch(p, { cache: 'no-store' });
@@ -21,6 +30,7 @@ async function fetchJSON(p) {
   } catch {}
   return null;
 }
+
 function getPageKey() {
   // preferuj <body data-page="...">, jinak z názvu souboru
   const dp = document.body?.dataset?.page;
@@ -30,13 +40,87 @@ function getPageKey() {
   return base === 'index' ? 'home' : base;
 }
 
+function getStoredLang() {
+  try {
+    return normalizeLang(localStorage.getItem(LANG_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function persistLang(lang) {
+  const l = normalizeLang(lang) || 'cs';
+  try { localStorage.setItem(LANG_KEY, l); } catch {}
+  try { document.documentElement.setAttribute('lang', l); } catch {}
+
+  // sync URL (bez reloadu) – cs = čistá URL bez parametru
+  try {
+    const url = new URL(window.location.href);
+    if (l === 'cs') url.searchParams.delete('lang');
+    else url.searchParams.set('lang', l);
+
+    // jen když se opravdu liší, ať zbytečně nepřepisujeme historii
+    if (url.toString() !== window.location.href) {
+      history.replaceState({}, '', url.toString());
+    }
+  } catch {}
+
+  // event pro ostatní části UI (nav linky apod.)
+  try {
+    window.dispatchEvent(new CustomEvent('ajsee:lang-changed', { detail: { lang: l } }));
+  } catch {}
+}
+
+function isNavLinkCandidate(urlObj) {
+  // Nešahat na soubory (assets) – jen na stránky
+  const p = (urlObj.pathname || '').toLowerCase();
+  if (p === '/' || p.endsWith('.html')) return true;
+  // bez přípony = typicky route (/about, /blog, /events)
+  if (!p.includes('.')) return true;
+
+  // whitelist „stránek“ které mohou mít tečku (pokud by někdy byly)
+  // (jinak by to bralo např. /something.json)
+  return false;
+}
+
+export function patchInternalLinksWithLang(lang) {
+  const l = normalizeLang(lang) || 'cs';
+
+  document.querySelectorAll('a[href]').forEach(a => {
+    const raw = a.getAttribute('href');
+    if (!raw) return;
+
+    // hash-only nech (kotvy na stejné stránce)
+    if (raw.startsWith('#')) return;
+
+    // mailto/tel/js/external
+    if (/^(mailto:|tel:|javascript:)/i.test(raw)) return;
+    if (/^https?:\/\//i.test(raw)) return;
+
+    // uděláme z toho URL relativně k origin
+    let u;
+    try { u = new URL(raw, window.location.origin); } catch { return; }
+    if (u.origin !== window.location.origin) return;
+
+    if (!isNavLinkCandidate(u)) return;
+
+    if (l === 'cs') u.searchParams.delete('lang');
+    else u.searchParams.set('lang', l);
+
+    // zachovej původní „relativnost“ (href bez originu)
+    const next = u.pathname + (u.searchParams.toString() ? `?${u.searchParams.toString()}` : '') + (u.hash || '');
+    a.setAttribute('href', next);
+  });
+}
+
 /* ───────── veřejné API ───────── */
 export function detectLang() {
-  const urlLang = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
-  const htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
-  const supported = ['cs','en','de','sk','pl','hu'];
-  const pick = urlLang || htmlLang || 'cs';
-  return supported.includes(pick) ? pick : 'cs';
+  const urlLang = normalizeLang(new URLSearchParams(location.search).get('lang'));
+  const stored = getStoredLang();
+  const htmlLang = normalizeLang(document.documentElement.getAttribute('lang'));
+
+  // pořadí: URL -> storage -> <html lang> -> cs
+  return urlLang || stored || htmlLang || 'cs';
 }
 
 function getByPath(o, p) {
@@ -44,6 +128,18 @@ function getByPath(o, p) {
 }
 
 export function t(key, fb) {
+  if (!key) return fb;
+
+  // podpora aliasů ve formátu "a|b|c" (používáš na about stránce)
+  if (typeof key === 'string' && key.includes('|')) {
+    const parts = key.split('|').map(s => s.trim()).filter(Boolean);
+    for (const k of parts) {
+      const v = t(k);
+      if (v !== undefined) return v;
+    }
+    return fb;
+  }
+
   const v = getByPath(translations, key) ?? translations[key];
   if (v !== undefined) return v;
 
@@ -97,8 +193,13 @@ async function loadTranslations(lang) {
 }
 
 export async function applyTranslations(lang = detectLang()) {
+  const l = normalizeLang(lang) || 'cs';
+
+  // 0) persist + sync URL (tím opravíme “Homepage EN -> About CZ”)
+  persistLang(l);
+
   // 1) načti překlady a MUTUJ živý objekt
-  const data = await loadTranslations(lang);
+  const data = await loadTranslations(l);
   for (const k of Object.keys(translations)) delete translations[k];
   Object.assign(translations, data || {});
 
@@ -134,14 +235,13 @@ export async function applyTranslations(lang = detectLang()) {
     el.setAttribute('alt', String(v));
   });
 
+  // 2b) oprav interní odkazy (nejen menu) -> přenese lang dál
+  try { patchInternalLinksWithLang(l); } catch {}
+
   // 3) pokud je v globálu UI helper z main.js, nech ho přepsat popisky filtrů
   try {
-    if (typeof window.updateFilterLocaleTexts === 'function') {
-      window.updateFilterLocaleTexts();
-    }
-    if (typeof window.updateDateComboLabel === 'function') {
-      window.updateDateComboLabel();
-    }
+    if (typeof window.updateFilterLocaleTexts === 'function') window.updateFilterLocaleTexts();
+    if (typeof window.updateDateComboLabel === 'function') window.updateDateComboLabel();
   } catch {}
 }
 

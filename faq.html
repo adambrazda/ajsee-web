@@ -124,15 +124,37 @@
         <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
-      <!-- Jazykové přepínače v mobilním menu (vlajky) -->
-      <div class="language-switcher mobile-switcher">
-        <button class="lang-btn" data-lang="cs" aria-label="Čeština"><img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="en" aria-label="English"><img src="/images/flags/gb.svg" alt="English" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="de" aria-label="Deutsch"><img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="sk" aria-label="Slovenčina"><img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="pl" aria-label="Polski"><img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/></button>
-        <button class="lang-btn" data-lang="hu" aria-label="Magyar"><img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/></button>
-      </div>
+<!-- Jazykové přepínače v mobilním menu (DROPDOWN – stejné jako events.html) -->
+<div class="language-switcher mobile-switcher" aria-label="Jazyk">
+  <details class="lang-dropdown" id="langDropdownMobile">
+    <summary class="lang-current" aria-label="Změnit jazyk">
+      <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+      <span class="lang-current-label">Čeština</span>
+      <span class="lang-caret" aria-hidden="true">▾</span>
+    </summary>
+
+    <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+      <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+        <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+      </button>
+      <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+        <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+      </button>
+      <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+        <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+      </button>
+      <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+        <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+      </button>
+      <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+        <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+      </button>
+      <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+        <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+      </button>
+    </div>
+  </details>
+</div>
     </nav>
 
     <!-- Jazykové přepínače – desktop (dropdown jako homepage; zachovává .lang-btn) -->

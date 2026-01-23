@@ -13,6 +13,31 @@ const G = window.__ajsee;
 const qs  = (s, r=document)=>r.querySelector(s);
 const qsa = (s, r=document)=>Array.from(r.querySelectorAll(s));
 
+const SUPPORTED_LANGS = ['cs','en','de','sk','pl','hu'];
+const LANG_KEY = 'ajsee.lang';
+
+function normalizeLang(x) {
+  const v = String(x || '').trim().toLowerCase();
+  return SUPPORTED_LANGS.includes(v) ? v : null;
+}
+
+function getStoredLang() {
+  try { return normalizeLang(localStorage.getItem(LANG_KEY)); } catch { return null; }
+}
+
+function detectLangSmart(fallback='cs') {
+  const urlLang = normalizeLang(new URLSearchParams(location.search).get('lang'));
+  const stored = getStoredLang();
+  const htmlLang = normalizeLang(document.documentElement.getAttribute('lang'));
+  return urlLang || stored || htmlLang || fallback;
+}
+
+function persistLangOnly(lang) {
+  const l = normalizeLang(lang);
+  if (!l) return;
+  try { localStorage.setItem(LANG_KEY, l); } catch {}
+}
+
 function onHomePage() {
   return location.pathname === '/' || location.pathname.endsWith('index.html');
 }
@@ -82,7 +107,7 @@ function ensureFaqNavLink() {
   if (proto) a.className = proto.className;
   a.setAttribute('data-i18n-key', 'nav-faq');
   a.textContent = (window.translations?.['nav-faq']) || 'FAQ';
-  a.href = onHomePage() ? `/index.html#faq` : `/faq.html`;
+  a.href = onHomePage() ? `/index.html#faq` : `/faq`;
 
   const contact = nav.querySelector('a[href*="contact"], a[href$="#contact"]');
   const useList = !!nav.querySelector('li > a');
@@ -113,7 +138,7 @@ function normalizeFaqInNav(lang) {
     : faqLinks.find(a => /(^|\/)faq(\.html)?($|\?)/.test((a.getAttribute('href') || '').toLowerCase()));
   if (!keep) keep = faqLinks[0];
 
-  keep.setAttribute('href', preferAnchor ? `/index.html?lang=${lang}#faq` : `/faq.html?lang=${lang}`);
+  keep.setAttribute('href', preferAnchor ? `/index.html?lang=${lang}#faq` : `/faq?lang=${lang}`);
 
   faqLinks.forEach(a => {
     if (a !== keep) (a.closest('li') || a).remove();
@@ -139,7 +164,7 @@ function updateMenuLinksWithLang(lang) {
     } else if (href.endsWith('#contact')) {
       href = `/index.html?lang=${lang}#contact`;
     } else if (href.endsWith('#faq')) {
-      href = isHome ? `/index.html?lang=${lang}#faq` : `/faq.html?lang=${lang}`;
+      href = isHome ? `/index.html?lang=${lang}#faq` : `/faq?lang=${lang}`;
     } else {
       href = href.replace(/\?lang=[a-z]{2}/, '').replace(/&lang=[a-z]{2}/, '');
       href = href.includes('?') ? `${href}&lang=${lang}` : `${href}?lang=${lang}`;
@@ -193,31 +218,55 @@ function initMobileMenu() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
 }
 
+function bindLangPersistenceAndNavRefresh() {
+  if (G.flags.langWatchBound) return;
+  G.flags.langWatchBound = true;
+
+  // 1) když user klikne na .lang-btn, aspoň ulož volbu (ať About ví co má načíst)
+  document.addEventListener('click', (e) => {
+    const btn = e.target?.closest?.('.lang-btn[data-lang]');
+    if (!btn) return;
+    persistLangOnly(btn.dataset.lang);
+  });
+
+  // 2) když se změní <html lang>, aktualizuj menu linky (ať nesou ?lang)
+  let last = detectLangSmart('cs');
+  const mo = new MutationObserver(() => {
+    const cur = detectLangSmart('cs');
+    if (cur === last) return;
+    last = cur;
+
+    updateMenuLinksWithLang(cur);
+    normalizeFaqInNav(cur);
+    activateNavLink();
+  });
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+
+  // 3) pokud i18n dispatchne event, tak také
+  window.addEventListener('ajsee:lang-changed', (ev) => {
+    const cur = normalizeLang(ev?.detail?.lang) || detectLangSmart('cs');
+    updateMenuLinksWithLang(cur);
+    normalizeFaqInNav(cur);
+    activateNavLink();
+  });
+}
+
 // Inicializace celého nav stacku
-export function initNav({ lang = 'cs' } = {}) {
+export function initNav({ lang = null } = {}) {
   if (G.flags.navCoreBooted) return;
   G.flags.navCoreBooted = true;
+
+  const currentLang = normalizeLang(lang) || detectLangSmart('cs');
 
   updateHeaderOffset();
   window.addEventListener('resize', () => updateHeaderOffset());
 
   ensureFaqNavLink();
-  updateMenuLinksWithLang(lang);
-  normalizeFaqInNav(lang);
+  updateMenuLinksWithLang(currentLang);
+  normalizeFaqInNav(currentLang);
 
   activateNavLink();
   window.addEventListener('hashchange', activateNavLink);
-
-  // přesměrování pro odkazy na /events.html a /about.html s lang param
-  ['events.html', 'about.html'].forEach((page) => {
-    qsa(`a[href="/${page}"], a.btn-secondary[href="/${page}"]`).forEach((link) => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.__ajseeCloseMenu?.();
-        window.location.href = `/${page}?lang=${lang}`;
-      });
-    });
-  });
 
   // Home link smooth + lang přepis
   const homeLink = qs('a[data-i18n-key="nav-home"]');
@@ -226,7 +275,7 @@ export function initNav({ lang = 'cs' } = {}) {
       e.preventDefault();
       window.__ajseeCloseMenu?.();
       if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
-        window.location.href = `/?lang=${lang}`;
+        window.location.href = `/?lang=${currentLang}`;
         return;
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -234,6 +283,7 @@ export function initNav({ lang = 'cs' } = {}) {
   }
 
   initMobileMenu();
+  bindLangPersistenceAndNavRefresh();
 }
 
 export { updateMenuLinksWithLang, activateNavLink };

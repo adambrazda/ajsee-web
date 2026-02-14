@@ -1,0 +1,78 @@
+{
+  "nav-home": "Home",
+  "nav-events": "Events",
+  "nav-accommodation": "Accommodation",
+  "nav-partners": "For partners",
+  "nav-about": "About",
+  "nav-blog": "Blog",
+  "nav-contact": "Contact",
+  "footer-copyright": "&copy; <span id=\"year\">2025</span> AJSEE®. All rights reserved.",
+
+  "seo": {
+    "accommodation": {
+      "title": "UK Accommodation | AJSEE",
+      "description": "We handle UK accommodation exclusively via TrustedStays. You complete your booking on TrustedStays.",
+      "ogTitle": "UK Accommodation | AJSEE",
+      "ogDescription": "We handle UK accommodation exclusively via TrustedStays. You complete your booking on TrustedStays."
+    }
+  },
+
+  "accommodation": {
+    "hero": {
+      "title": "UK Accommodation",
+      "lead": "We handle accommodation in the United Kingdom exclusively via TrustedStays. You complete your booking directly on their website.",
+      "ctaPrimary": "View accommodation (UK)",
+      "ctaSecondary": "How it works",
+      "micro": "Exclusive partnership • UK only • Booking is completed on TrustedStays"
+    },
+
+    "partner": {
+      "label": "AJSEE’s exclusive accommodation partner",
+      "scope": "Note: This page is for UK accommodation only."
+    },
+
+    "trustedstays": {
+      "title": "TrustedStays at a glance",
+      "lead": "TrustedStays is a B2B platform focused on corporate stays — offering accredited, safe accommodation across the United Kingdom.",
+      "points": {
+        "1": "Accommodation across the UK (UK-only)",
+        "2": "Accredited stays with a focus on standards and safety",
+        "3": "Suitable for short and extended stays (from nights to months)"
+      },
+      "scope": "Booking and payment are completed on TrustedStays."
+    },
+
+    "support": {
+      "title": "Local AJSEE support",
+      "text": "Not sure about the steps or hit a problem? Message us — we’ll help you through the booking in your language.",
+      "textMobile": "Need help booking? Message us — we’ll help in your language.",
+      "cta": "Contact AJSEE",
+      "ctaSecondary": "↗ Open TrustedStays"
+    },
+
+    "how": {
+      "title": "How it works",
+      "steps": {
+        "1": { "title": "Open the listings", "text": "Click the button to open TrustedStays." },
+        "2": { "title": "Pick destination & dates", "text": "Search UK stays by city, dates and number of guests." },
+        "3": { "title": "Complete the booking", "text": "Payment and confirmation happen on TrustedStays." }
+      }
+    },
+
+    "faq": {
+      "title": "FAQ",
+      "q1": { "q": "Do I book on AJSEE?", "a": "No — your booking and payment are completed on TrustedStays." },
+      "q2": { "q": "Is this an affiliate link?", "a": "It can be. If a commission is generated, it shouldn’t affect your price." },
+      "q3": { "q": "Can you help if I get stuck?", "a": "Yes. Message us and we’ll help you in your language." }
+    },
+
+    "disclaimer": "AJSEE is not the accommodation provider or a payment service. Booking terms are set by TrustedStays.",
+
+    "final": {
+      "title": "Ready? Choose your UK stay.",
+      "text": "TrustedStays opens in a new window and you complete the booking with our partner.",
+      "ctaPrimary": "View accommodation (UK)",
+      "ctaSecondary": "Contact AJSEE"
+    }
+  }
+}

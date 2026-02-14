@@ -15,6 +15,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- ✅ CSS hned v HEAD (render-blocking) – zabrání probliknutí bez stylů -->
+  <link rel="stylesheet" href="/src/styles/main.scss" />
+
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
     window.__TM_INLINE_DISABLED = true;
@@ -86,10 +89,8 @@
         const lang = detectLang();
         document.documentElement.lang = lang;
 
-        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
         if (typeof window.applyTranslations === 'function') return;
 
-        // Fallback zkusíme až po krátké chvíli (aby se předešlo přepisu/flash)
         setTimeout(() => {
           if (typeof window.applyTranslations === 'function') return;
           applyI18nFallback(lang);
@@ -98,10 +99,9 @@
     })();
   </script>
 
-  <!-- Vite vstup – dej do HEAD kvůli CSS (omezí FOUC/probliknutí bez stylů) -->
+  <!-- Vite vstup -->
   <script type="module" src="/src/main.js"></script>
 </head>
-
 <body data-page="home">
 <header class="site-header">
   <div class="header-inner">
@@ -121,6 +121,7 @@
       <ul>
         <li><a href="/" data-i18n-key="nav-home" aria-current="page">Domů</a></li>
         <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/accommodation.html" data-i18n-key="nav-accommodation">Ubytování</a></li>
         <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
         <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
         <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>

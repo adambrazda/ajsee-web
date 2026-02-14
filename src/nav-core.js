@@ -49,6 +49,28 @@ function updateHeaderOffset() {
   document.documentElement.style.setProperty('--header-offset', `${safe}px`);
 }
 
+function setLangOnInternalHref(rawHref, lang) {
+  const l = normalizeLang(lang) || 'cs';
+  if (!rawHref) return rawHref;
+
+  // hash-only nech
+  if (rawHref.startsWith('#')) return rawHref;
+
+  // mailto/tel/js/external
+  if (/^(mailto:|tel:|javascript:)/i.test(rawHref)) return rawHref;
+  if (/^https?:\/\//i.test(rawHref)) return rawHref;
+
+  let u;
+  try { u = new URL(rawHref, window.location.origin); } catch { return rawHref; }
+  if (u.origin !== window.location.origin) return rawHref;
+
+  if (l === 'cs') u.searchParams.delete('lang');
+  else u.searchParams.set('lang', l);
+
+  const search = u.searchParams.toString();
+  return u.pathname + (search ? `?${search}` : '') + (u.hash || '');
+}
+
 // Aktivace aktivní položky v hlavním menu
 function activateNavLink() {
   const path = window.location.pathname;
@@ -56,19 +78,21 @@ function activateNavLink() {
   const isHomePath = (path === '/' || path.endsWith('index.html'));
 
   const state = {
-    home:     () => isHomePath && (hash === '' || hash === '#top' || hash === '#'),
-    events:   () => /\/events(\.html)?$/i.test(path),
-    partners: () => /\/partners(\.html)?$/i.test(path),
-    about:    () => /\/about(\.html)?$/i.test(path),
-    blog:     () => /\/blog(\.html)?$/i.test(path) || (isHomePath && hash === '#blog'),
-    faq:      () => /\/faq(\.html)?$/i.test(path)  || (isHomePath && hash === '#faq'),
-    contact:  () => /\/contact(\.html)?$/i.test(path) || (isHomePath && hash === '#contact'),
+    home:          () => isHomePath && (hash === '' || hash === '#top' || hash === '#'),
+    events:        () => /\/events(\.html)?$/i.test(path),
+    partners:      () => /\/partners(\.html)?$/i.test(path),
+    accommodation: () => /\/accommodation(\.html)?$/i.test(path),
+    about:         () => /\/about(\.html)?$/i.test(path),
+    blog:          () => /\/blog(\.html)?$/i.test(path) || (isHomePath && hash === '#blog'),
+    faq:           () => /\/faq(\.html)?$/i.test(path)  || (isHomePath && hash === '#faq'),
+    contact:       () => /\/contact(\.html)?$/i.test(path) || (isHomePath && hash === '#contact'),
   };
 
   const keyForLink = (href) => {
     if (!href) return null;
     if (href.includes('events')) return 'events';
     if (href.includes('partners')) return 'partners';
+    if (href.includes('accommodation')) return 'accommodation';
     if (href.includes('about')) return 'about';
     if (href.includes('faq')) return 'faq';
     if (href.includes('#blog') || /\/blog(\.html)?$/i.test(href)) return 'blog';
@@ -138,7 +162,8 @@ function normalizeFaqInNav(lang) {
     : faqLinks.find(a => /(^|\/)faq(\.html)?($|\?)/.test((a.getAttribute('href') || '').toLowerCase()));
   if (!keep) keep = faqLinks[0];
 
-  keep.setAttribute('href', preferAnchor ? `/index.html?lang=${lang}#faq` : `/faq?lang=${lang}`);
+  const target = preferAnchor ? `/index.html#faq` : `/faq`;
+  keep.setAttribute('href', setLangOnInternalHref(target, lang));
 
   faqLinks.forEach(a => {
     if (a !== keep) (a.closest('li') || a).remove();
@@ -152,23 +177,26 @@ function normalizeFaqInNav(lang) {
   }
 }
 
-// Doplnění ?lang= do odkazů v menu (včetně #blog/#contact/#faq)
+// Doplnění ?lang= do odkazů v menu (včetně #blog/#contact/#faq) + cs bez parametru
 function updateMenuLinksWithLang(lang) {
+  const l = normalizeLang(lang) || 'cs';
   const isHome = onHomePage();
+
   qsa('.main-nav a').forEach((link) => {
     let href = link.getAttribute('href') || '';
     if (!href || href.startsWith('mailto:') || href.startsWith('http')) return;
 
-    if (href.endsWith('#blog')) {
-      href = `/index.html?lang=${lang}#blog`;
-    } else if (href.endsWith('#contact')) {
-      href = `/index.html?lang=${lang}#contact`;
-    } else if (href.endsWith('#faq')) {
-      href = isHome ? `/index.html?lang=${lang}#faq` : `/faq?lang=${lang}`;
-    } else {
-      href = href.replace(/\?lang=[a-z]{2}/, '').replace(/&lang=[a-z]{2}/, '');
-      href = href.includes('?') ? `${href}&lang=${lang}` : `${href}?lang=${lang}`;
+    const lower = href.toLowerCase();
+
+    if (lower.endsWith('#blog')) {
+      href = `/index.html#blog`;
+    } else if (lower.endsWith('#contact')) {
+      href = `/index.html#contact`;
+    } else if (lower.endsWith('#faq')) {
+      href = isHome ? `/index.html#faq` : `/faq`;
     }
+
+    href = setLangOnInternalHref(href, l);
     link.setAttribute('href', href);
   });
 }
@@ -222,14 +250,14 @@ function bindLangPersistenceAndNavRefresh() {
   if (G.flags.langWatchBound) return;
   G.flags.langWatchBound = true;
 
-  // 1) když user klikne na .lang-btn, aspoň ulož volbu (ať About ví co má načíst)
+  // 1) když user klikne na .lang-btn, aspoň ulož volbu
   document.addEventListener('click', (e) => {
     const btn = e.target?.closest?.('.lang-btn[data-lang]');
     if (!btn) return;
     persistLangOnly(btn.dataset.lang);
   });
 
-  // 2) když se změní <html lang>, aktualizuj menu linky (ať nesou ?lang)
+  // 2) když se změní <html lang>, aktualizuj menu linky
   let last = detectLangSmart('cs');
   const mo = new MutationObserver(() => {
     const cur = detectLangSmart('cs');
@@ -274,10 +302,13 @@ export function initNav({ lang = null } = {}) {
     homeLink.addEventListener('click', async (e) => {
       e.preventDefault();
       window.__ajseeCloseMenu?.();
-      if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
-        window.location.href = `/?lang=${currentLang}`;
+
+      const isHome = onHomePage();
+      if (!isHome) {
+        window.location.href = (currentLang === 'cs') ? `/` : `/?lang=${currentLang}`;
         return;
       }
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }

@@ -5,6 +5,8 @@
   <title data-i18n-key="blog-title">Blog & Recenze | AJSEE®</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+  <meta name="theme-color" content="#0077cc" />
+
   <!-- Favicona -->
   <link rel="icon" href="data:," />
   <link rel="icon" href="/images/logo-ajsee.png">
@@ -13,6 +15,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ✅ CSS přes link (sjednoceno) -->
+  <link rel="stylesheet" href="/src/styles/main.scss" />
 
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
@@ -23,7 +28,7 @@
   <!-- Google tag – pouze na HTTPS/produkci -->
   <script>
     (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/.test(location.hostname);
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
       if (!isProdHttps) return;
       const s = document.createElement('script');
       s.async = true;
@@ -59,6 +64,13 @@
           const key = el.getAttribute('data-i18n-key');
           const val = get(key);
           if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+
+        // (nevadí, i kdyby tu teď nic nebylo — hodí se pro meta content do budoucna)
+        document.querySelectorAll('[data-i18n-content]').forEach(el => {
+          const key = el.getAttribute('data-i18n-content');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('content', val);
         });
 
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
@@ -98,7 +110,7 @@
     })();
   </script>
 
-  <!-- Vite vstup – main.js doplní styly (přes import SCSS) -->
+  <!-- ✅ JEDINÝ vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
 </head>
 
@@ -122,6 +134,7 @@
       <ul>
         <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
         <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/accommodation.html" data-i18n-key="nav-accommodation">Ubytování</a></li>
         <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
         <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
         <li><a href="/blog.html" data-i18n-key="nav-blog" aria-current="page">Blog</a></li>

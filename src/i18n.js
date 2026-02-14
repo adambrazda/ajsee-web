@@ -7,6 +7,18 @@ export const translations = {}; // živý objekt – neměň referenci
 const SUPPORTED = ['cs','en','de','sk','pl','hu'];
 const LANG_KEY = 'ajsee.lang';
 
+/**
+ * Vite loader pro JSON v /src/locales (např. "./locales/cs/accommodation.json")
+ * Klíče: "./locales/cs/accommodation.json" atd.
+ */
+const LOCALE_LOADERS = import.meta.glob('./locales/**/*.json', { import: 'default' });
+
+// ✅ Fetch fallback je defaultně vypnutý (aby nevznikaly 404 v dev/prod).
+// Zapni ho jen pokud máš JSONy v /public/locales a chceš fetchovat:
+// window.__AJSEE_I18N_FETCH__ = true;
+const ALLOW_FETCH_FALLBACK =
+  typeof window !== 'undefined' && window.__AJSEE_I18N_FETCH__ === true;
+
 /* ───────── utils ───────── */
 function normalizeLang(x) {
   const v = String(x || '').trim().toLowerCase();
@@ -31,10 +43,22 @@ async function fetchJSON(p) {
   return null;
 }
 
+async function importJSON(importPath) {
+  const loader = LOCALE_LOADERS[importPath];
+  if (!loader) return null;
+  try {
+    const data = await loader();
+    return data && typeof data === 'object' ? data : null;
+  } catch {
+    return null;
+  }
+}
+
 function getPageKey() {
   // preferuj <body data-page="...">, jinak z názvu souboru
   const dp = document.body?.dataset?.page;
   if (dp && typeof dp === 'string') return dp.toLowerCase();
+
   const fn = (location.pathname.split('/').pop() || '').toLowerCase();
   const base = fn.replace(/\.[^.]+$/, '') || 'index';
   return base === 'index' ? 'home' : base;
@@ -59,7 +83,6 @@ function persistLang(lang) {
     if (l === 'cs') url.searchParams.delete('lang');
     else url.searchParams.set('lang', l);
 
-    // jen když se opravdu liší, ať zbytečně nepřepisujeme historii
     if (url.toString() !== window.location.href) {
       history.replaceState({}, '', url.toString());
     }
@@ -72,14 +95,9 @@ function persistLang(lang) {
 }
 
 function isNavLinkCandidate(urlObj) {
-  // Nešahat na soubory (assets) – jen na stránky
   const p = (urlObj.pathname || '').toLowerCase();
   if (p === '/' || p.endsWith('.html')) return true;
-  // bez přípony = typicky route (/about, /blog, /events)
   if (!p.includes('.')) return true;
-
-  // whitelist „stránek“ které mohou mít tečku (pokud by někdy byly)
-  // (jinak by to bralo např. /something.json)
   return false;
 }
 
@@ -90,25 +108,22 @@ export function patchInternalLinksWithLang(lang) {
     const raw = a.getAttribute('href');
     if (!raw) return;
 
-    // hash-only nech (kotvy na stejné stránce)
     if (raw.startsWith('#')) return;
-
-    // mailto/tel/js/external
     if (/^(mailto:|tel:|javascript:)/i.test(raw)) return;
     if (/^https?:\/\//i.test(raw)) return;
 
-    // uděláme z toho URL relativně k origin
     let u;
     try { u = new URL(raw, window.location.origin); } catch { return; }
     if (u.origin !== window.location.origin) return;
-
     if (!isNavLinkCandidate(u)) return;
 
     if (l === 'cs') u.searchParams.delete('lang');
     else u.searchParams.set('lang', l);
 
-    // zachovej původní „relativnost“ (href bez originu)
-    const next = u.pathname + (u.searchParams.toString() ? `?${u.searchParams.toString()}` : '') + (u.hash || '');
+    const next =
+      u.pathname +
+      (u.searchParams.toString() ? `?${u.searchParams.toString()}` : '') +
+      (u.hash || '');
     a.setAttribute('href', next);
   });
 }
@@ -130,7 +145,7 @@ function getByPath(o, p) {
 export function t(key, fb) {
   if (!key) return fb;
 
-  // podpora aliasů ve formátu "a|b|c" (používáš na about stránce)
+  // podpora aliasů ve formátu "a|b|c"
   if (typeof key === 'string' && key.includes('|')) {
     const parts = key.split('|').map(s => s.trim()).filter(Boolean);
     for (const k of parts) {
@@ -161,41 +176,72 @@ export function t(key, fb) {
   return fb;
 }
 
+async function mergeAllImports(paths) {
+  let out = {};
+  for (const p of paths) {
+    const j = await importJSON(p);
+    if (j && Object.keys(j).length) out = deepMerge(out, j);
+  }
+  return out;
+}
+
+async function mergeAllFetch(paths) {
+  let out = {};
+  for (const p of paths) {
+    const j = await fetchJSON(p);
+    if (j && Object.keys(j).length) out = deepMerge(out, j);
+  }
+  return out;
+}
+
 async function loadTranslations(lang) {
   const pageKey = getPageKey();
 
-  const baseCandidates = [
+  // import candidates (src/locales)
+  const baseImportCandidates = [
+    `./locales/${lang}.json`,
+    `./locales/${lang}/common.json`,
+    `./locales/${lang}/base.json`,
+  ];
+
+  const pageImportCandidates = [
+    `./locales/${lang}/${pageKey}.json`,
+    `./locales/${lang}-${pageKey}.json`,
+    `./locales/${pageKey}.${lang}.json`,
+    `./locales/${pageKey}-${lang}.json`,
+  ];
+
+  // fetch fallback candidates (pouze /public/locales)
+  const baseFetchCandidates = [
     `/locales/${lang}.json`,
-    `/src/locales/${lang}.json`,
+    `/locales/${lang}/common.json`,
+    `/locales/${lang}/base.json`,
   ];
-  const pageCandidates = [
+
+  const pageFetchCandidates = [
     `/locales/${lang}/${pageKey}.json`,
-    `/src/locales/${lang}/${pageKey}.json`,
     `/locales/${lang}-${pageKey}.json`,
-    `/src/locales/${lang}-${pageKey}.json`,
     `/locales/${pageKey}.${lang}.json`,
-    `/src/locales/${pageKey}.${lang}.json`,
     `/locales/${pageKey}-${lang}.json`,
-    `/src/locales/${pageKey}-${lang}.json`,
   ];
 
-  const firstOk = async (arr) => {
-    for (const p of arr) {
-      const j = await fetchJSON(p);
-      if (j && Object.keys(j).length) return j;
-    }
-    return {};
-  };
+  // 1) primárně import (Vite build)
+  let base = await mergeAllImports(baseImportCandidates);
+  let page = await mergeAllImports(pageImportCandidates);
 
-  const base = await firstOk(baseCandidates);
-  const page = await firstOk(pageCandidates);
+  // 2) fallback fetch jen když explicitně povolíš a import nic nenašel
+  if (ALLOW_FETCH_FALLBACK && (!Object.keys(base).length || !Object.keys(page).length)) {
+    if (!Object.keys(base).length) base = deepMerge(base, await mergeAllFetch(baseFetchCandidates));
+    if (!Object.keys(page).length) page = deepMerge(page, await mergeAllFetch(pageFetchCandidates));
+  }
+
   return deepMerge(base, page);
 }
 
 export async function applyTranslations(lang = detectLang()) {
   const l = normalizeLang(lang) || 'cs';
 
-  // 0) persist + sync URL (tím opravíme “Homepage EN -> About CZ”)
+  // 0) persist + sync URL
   persistLang(l);
 
   // 1) načti překlady a MUTUJ živý objekt
@@ -235,10 +281,18 @@ export async function applyTranslations(lang = detectLang()) {
     el.setAttribute('alt', String(v));
   });
 
-  // 2b) oprav interní odkazy (nejen menu) -> přenese lang dál
+  // meta/og content překlady (content="...")
+  document.querySelectorAll('[data-i18n-content]').forEach((el) => {
+    const k = el.getAttribute('data-i18n-content');
+    const v = t(k);
+    if (v === undefined || String(v).trim() === '') return;
+    el.setAttribute('content', String(v));
+  });
+
+  // 2b) oprav interní odkazy -> přenese lang dál
   try { patchInternalLinksWithLang(l); } catch {}
 
-  // 3) pokud je v globálu UI helper z main.js, nech ho přepsat popisky filtrů
+  // 3) globální UI helpery
   try {
     if (typeof window.updateFilterLocaleTexts === 'function') window.updateFilterLocaleTexts();
     if (typeof window.updateDateComboLabel === 'function') window.updateDateComboLabel();

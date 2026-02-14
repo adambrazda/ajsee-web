@@ -13,6 +13,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- ✅ CSS přes link (sjednoceno) -->
+  <link rel="stylesheet" href="/src/styles/main.scss" />
+
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
     window.__TM_INLINE_DISABLED = true;
@@ -60,6 +63,14 @@
           const val = get(key);
           if (typeof val === 'string' && val.trim()) el.textContent = val;
         });
+
+        // ✅ překládání meta content (OG, description, apod.)
+        document.querySelectorAll('[data-i18n-content]').forEach(el => {
+          const key = el.getAttribute('data-i18n-content');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('content', val);
+        });
+
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
           const key = el.getAttribute('data-i18n-placeholder');
           const val = get(key);
@@ -98,7 +109,6 @@
   <!-- ✅ JEDINÝ vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
 </head>
-
 <body data-page="blog-detail">
 <header class="site-header">
   <!-- Pokud už máš jednotný header řešený přes main.js,

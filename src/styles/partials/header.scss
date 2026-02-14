@@ -1,84 +1,235 @@
 // =============================================
 // HEADER / NAVIGATION / LANGUAGE SWITCHERS
-// (FIX: details dropdown styling + méně "flash")
+// V3.4 – “Fix: lang double-bubble + mobile menu clipping + double active lines + hamburger right”
 // =============================================
 @use '../globals' as *;
 
-/* --- brandové proměnné pro aktivní stav nav --- */
 :root{
   --nav-accent: #14c2c5;
-  --nav-active-text: #0a2d4a;
-  --nav-active-bg-start: #e9f5ff;
-  --nav-active-bg-end: #dff0ff;
+
+  --nav-text: rgba(10,45,74,0.90);
+  --nav-active: rgba(7,92,141,1);
+
+  /* softer, premium glass (less “bubble”) */
+  --glass-bg: rgba(255,255,255,0.30);
+  --glass-bg2: rgba(255,255,255,0.18);
+  --glass-border: rgba(10,45,74,0.11);
+  --glass-shadow: 0 14px 44px rgba(0, 40, 80, 0.12);
+  --glass-inset: inset 0 1px 0 rgba(255,255,255,0.55);
+
+  --header-max: 1320px;
+
+  /* slightly lower header */
+  --header-h: 76px;
+  --rail-h: 52px;
+  --item-h: 42px;
 
   /* dropdown */
-  --lang-surface: rgba(255,255,255,0.78);
-  --lang-surface-strong: #ffffff;
-  --lang-border: rgba(10,45,74,0.10);
-  --lang-shadow: 0 12px 34px rgba(0, 40, 80, 0.18);
+  --lang-surface-strong: rgba(255,255,255,0.92);
+  --lang-shadow: 0 18px 55px rgba(0, 40, 80, 0.18);
 }
 
-.site-header {
+/* =========================
+   HEADER SHELL
+   ========================= */
+
+.site-header{
   width: 100%;
-  background: linear-gradient(108deg, #eafcffcc 0%, #53e0f6cc 70%, #139dcfbb 100%);
-  box-shadow: 0 2px 24px #0a375522;
-  border-bottom: 1px solid #46e0fa44;
   position: sticky;
   top: 0;
   z-index: 9999;
-  backdrop-filter: blur(5px) saturate(115%);
-  -webkit-backdrop-filter: blur(5px) saturate(115%);
-  transition: background 0.18s;
+
+  background: linear-gradient(108deg, #eafcffcc 0%, #53e0f6cc 70%, #139dcfbb 100%);
+  border-bottom: 1px solid rgba(70,224,250,0.28);
+  box-shadow: 0 8px 26px rgba(0, 40, 80, 0.10);
+
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
 }
 
-/* GRID (logo | nav | jazyky) – brání kolizi */
-.header-inner {
-  max-width: 1300px;
+/* ✅ Always-symmetric grid so the rail is truly centered */
+.header-inner{
+  max-width: var(--header-max);
   margin: 0 auto;
-  padding: 0.6rem 2.2rem;
+  padding: 0.45rem 1.4rem;
 
   display: grid;
-  grid-template-columns: auto minmax(0,1fr) auto; /* logo | NAV 1fr | jazyky */
+  grid-template-columns: minmax(210px, 1fr) auto minmax(210px, 1fr);
   align-items: center;
-  column-gap: clamp(1rem, 3vw, 2.2rem);
+  column-gap: clamp(0.75rem, 2.2vw, 1.5rem);
 
-  min-height: 96px;
+  min-height: var(--header-h);
   position: relative;
-}
 
-.logo-link {
-  display: flex;
-  align-items: center;
-  min-width: 170px;
-}
-
-.logo {
-  height: 82px;
-  max-width: 320px;
-  width: auto;
-  object-fit: contain;
-  display: block;
-  transition: height 0.18s;
-}
-
-/* ------------------------
-   LANGUAGE SWITCHERS (wrappers)
-   ------------------------ */
-
-.language-switcher {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-
-  &.desktop-switcher {
-    justify-self: end;
-    @media (max-width: 950px) { display: none; }
+  @media (max-width: 1120px){
+    padding: 0.45rem 1.1rem;
+    grid-template-columns: minmax(170px, 1fr) auto minmax(170px, 1fr);
   }
 
-  &.mobile-switcher {
+  /* mobile: logo | spacer | hamburger (nav je fixed, desktop switcher hidden) */
+  @media (max-width: 950px){
+    grid-template-columns: auto 1fr auto;
+  }
+}
+
+.logo-link{
+  display: flex;
+  align-items: center;
+  justify-self: start;
+  min-width: 0;
+}
+
+.logo{
+  height: 56px;
+  width: auto;
+  max-width: 320px;
+  object-fit: contain;
+  display: block;
+
+  @media (max-width: 1120px){
+    height: 52px;
+  }
+}
+
+/* =========================
+   NAV (DESKTOP)
+   ========================= */
+
+.main-nav{
+  justify-self: center;
+  min-width: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+
+  ul{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: var(--rail-h);
+    padding: 6px 8px;
+    margin: 0;
+
+    list-style: none;
+    gap: clamp(0.42rem, 1.1vw, 0.85rem);
+
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: linear-gradient(180deg, var(--glass-bg), var(--glass-bg2));
+    box-shadow: var(--glass-shadow), var(--glass-inset);
+
+    backdrop-filter: blur(14px) saturate(130%);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
+    overflow: hidden;
+  }
+
+  /* subtle sheen (lower intensity) */
+  ul::before{
+    content:"";
+    position:absolute;
+    inset:-40% -20%;
+    background:
+      radial-gradient(closest-side at 18% 45%, rgba(20,194,197,0.12), rgba(20,194,197,0) 66%),
+      radial-gradient(closest-side at 82% 55%, rgba(19,157,207,0.10), rgba(19,157,207,0) 68%);
+    filter: blur(18px);
+    opacity: 0.48;
+    pointer-events:none;
+  }
+
+  ul > li{ position: relative; z-index: 1; }
+
+  a{
+    position: relative; /* stable anchor */
+    height: var(--item-h);
+    display: inline-flex;
+    align-items: center;
+
+    font-size: 1.04rem;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+    color: var(--nav-text);
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    padding: 0 13px;
+    border-radius: 999px;
+
+    transition: background .14s ease, color .14s ease, transform .14s ease;
+
+    &:hover{
+      background: rgba(255,255,255,0.22);
+      transform: translateY(-0.5px);
+    }
+
+    &:focus-visible{
+      outline: 2px solid var(--nav-accent);
+      outline-offset: 3px;
+      border-radius: 16px;
+    }
+  }
+
+  /* ✅ active: underline only (desktop) */
+  a.active,
+  a[aria-current="page"]{
+    background: transparent;
+    color: var(--nav-active);
+    font-weight: 740;
+
+    text-decoration: underline;
+    text-decoration-color: var(--nav-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 12px;
+  }
+
+  /* ✅ kill any legacy active pseudo indicators (prevents “second green line”) */
+  .site-header & a.active::after,
+  .site-header & a[aria-current="page"]::after,
+  .site-header & a.active::before,
+  .site-header & a[aria-current="page"]::before{
+    content: none;
+    display: none;
+  }
+
+  .menu-close{ display: none; }
+
+  @media (max-width: 1120px){
+    a{
+      font-size: 1rem;
+      padding: 0 12px;
+    }
+    ul{
+      gap: clamp(0.34rem, 1vw, 0.7rem);
+    }
+  }
+}
+
+/* =========================
+   LANGUAGE SWITCHERS (desktop)
+   ========================= */
+
+.language-switcher{
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+
+  /* IMPORTANT: wrapper itself must never become a “bubble” */
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+
+  &.desktop-switcher{
+    justify-self: end;
+    @media (max-width: 950px){ display: none; }
+  }
+
+  &.mobile-switcher{
     display: none;
 
-    @media (max-width: 950px) {
+    @media (max-width: 950px){
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -86,110 +237,88 @@
       gap: 1rem;
       width: 100%;
       background: transparent;
-      border-top: 1px solid #24bed977;
+      border-top: 1px solid rgba(36,190,217,0.40);
     }
   }
 }
 
-/* base .lang-btn */
-.lang-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.15s, opacity .15s;
-  padding: 0.22em 0.5em;
-
-  &:hover { transform: scale(1.06); }
-}
-
-/* vlaječky v mobil switcheru (ikonové) */
-.language-switcher .lang-btn {
-  font-size: 1.25rem;
-  padding: 0.22em 0.45em;
-}
-
-/* ------------------------
-   DETAILS DROPDOWN (desktop + mobile variant)
-   HTML: <details class="lang-dropdown"><summary class="lang-current">...</summary><div class="lang-menu">...</div></details>
-   ------------------------ */
-
 .lang-dropdown{
   position: relative;
   z-index: 3000;
+
+  /* details itself must not look like a pill */
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
 }
 
-/* (desktop dropdown je vpravo nahoře) */
-.language-switcher.desktop-switcher .lang-dropdown{
-  justify-self: end;
-}
+.lang-dropdown > summary{ list-style: none; }
+.lang-dropdown > summary::-webkit-details-marker{ display: none; }
 
-/* (mobile dropdown je uvnitř otevřeného menu) */
-.language-switcher.mobile-switcher .lang-dropdown{
-  width: 100%;
-  max-width: 320px;
-}
-
-/* odstraníme default marker u summary */
-.lang-dropdown > summary {
-  list-style: none;
-}
-.lang-dropdown > summary::-webkit-details-marker {
-  display: none;
-}
-
-/* trigger pill – summary */
 .lang-dropdown .lang-current{
   appearance: none;
-  border: 1px solid var(--lang-border);
-  background: var(--lang-surface);
-  color: #0a2d4a;
-  border-radius: 999px;
-
+  height: var(--rail-h);
   display: inline-flex;
   align-items: center;
-  gap: .55rem;
+  gap: 10px;
+  padding: 0 15px;
 
-  padding: .52rem .72rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(180deg, var(--glass-bg), var(--glass-bg2));
+  box-shadow: 0 14px 40px rgba(0,40,80,0.12), var(--glass-inset);
+
+  color: var(--nav-text);
   cursor: pointer;
-
-  box-shadow: 0 6px 18px rgba(0, 40, 80, 0.10);
-  backdrop-filter: blur(10px) saturate(120%);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-
   white-space: nowrap;
   line-height: 1;
 
-  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+
+  transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+
+  /* ✅ prevent any “inner pill” styles from elsewhere */
+  .lang-current-label{
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  &::before,
+  &::after{
+    content: none;
+    display: none;
+  }
 
   .lang-current-flag{
-    display: block;
     width: 22px;
     height: 16px;
     border-radius: 4px;
+    display:block;
     box-shadow: 0 1px 0 rgba(0,0,0,0.06);
   }
 
   .lang-current-label{
-    font-weight: 700;
-    font-size: .98rem;
+    font-weight: 740;
+    font-size: 0.98rem;
     letter-spacing: .01em;
   }
 
   .lang-caret{
     font-size: .85rem;
-    opacity: .8;
+    opacity: .78;
     transform: translateY(1px);
     transition: transform .16s ease, opacity .16s ease;
   }
 
   &:hover{
-    transform: translateY(-1px);
-    box-shadow: 0 10px 26px rgba(0, 40, 80, 0.16);
-    border-color: rgba(20,194,197,.28);
+    transform: translateY(-0.5px);
+    box-shadow: 0 18px 52px rgba(0,40,80,0.15), var(--glass-inset);
+    border-color: rgba(20,194,197,0.26);
   }
 
   &:focus-visible{
@@ -198,28 +327,22 @@
   }
 }
 
-/* otevřené details = caret rotace + silnější pozadí */
 .lang-dropdown[open] .lang-current{
-  background: rgba(255,255,255,0.88);
-  border-color: rgba(20,194,197,.38);
-
-  .lang-caret{
-    transform: translateY(1px) rotate(180deg);
-    opacity: 1;
-  }
+  border-color: rgba(20,194,197,0.36);
+  .lang-caret{ transform: translateY(1px) rotate(180deg); opacity: 1; }
 }
 
 /* dropdown panel */
 .lang-dropdown .lang-menu{
   position: absolute;
   right: 0;
-  top: calc(100% + .55rem);
+  top: calc(100% + 10px);
 
-  display: none; /* default */
+  display: none;
   flex-direction: column;
   gap: .15rem;
 
-  min-width: 210px;
+  min-width: 215px;
   padding: .45rem;
   border-radius: 16px;
 
@@ -233,17 +356,19 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* otevření menu jen když je details open */
-.lang-dropdown[open] .lang-menu{
-  display: flex;
-}
+.lang-dropdown[open] .lang-menu{ display: flex; }
 
-/* položky v menu */
-.lang-dropdown .lang-menu .lang-btn{
-  width: 100%;
+.lang-btn{
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
   justify-content: flex-start;
   gap: .6rem;
 
+  width: 100%;
   padding: .58rem .62rem;
   border-radius: 12px;
 
@@ -252,17 +377,16 @@
   color: #0a2d4a;
 
   transition: background .14s ease, transform .14s ease;
-  transform: translateY(0);
 
   img{
-    display: block;
     width: 22px;
     height: 16px;
     border-radius: 4px;
+    display:block;
   }
 
   &:hover{
-    background: #f0f7ff;
+    background: rgba(240,247,255,0.95);
     transform: translateY(-1px);
   }
 
@@ -272,10 +396,157 @@
   }
 }
 
-/* mobile: dropdown panel jako “block” pod triggerem */
+/* =========================
+   MOBILE MENU
+   ========================= */
+
+.hamburger-btn{
+  display: none;
+  background: none;
+  border: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  margin-left: 0.8rem;
+  color: #0077cc;
+  z-index: 1001;
+  position: relative;
+
+  span{
+    display: block;
+    width: 30px;
+    height: 4px;
+    background: #0077cc;
+    margin: 4px 0;
+    border-radius: 2px;
+    transition: all 0.25s;
+  }
+
+  @media (max-width: 950px){ display: flex; }
+}
+
+/* ✅ hamburger should be on the RIGHT on mobile */
 @media (max-width: 950px){
+  .hamburger-btn{
+    grid-column: 3;
+    justify-self: end;
+    margin-left: 0;
+  }
+}
+
+.site-header .menu-overlay-bg{
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.28);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  display: block;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+
+.site-header .menu-overlay-bg.active{
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (max-width: 950px){
+  .main-nav{
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 82vw;
+    max-width: 340px;
+    height: 100vh;
+
+    background: linear-gradient(108deg, #eafcff 0%, #53e0f6 70%, #139dcf 100%);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    box-shadow: -8px 0 32px rgba(0, 40, 80, 0.14);
+
+    transform: translateX(120%);
+    transition: transform 0.26s ease-in-out;
+    padding: 1rem 1.5rem 1.6rem;
+    overflow-y: auto;
+  }
+
+  .main-nav.open{ transform: translateX(0%); }
+
+  /* ✅ reset the desktop “rail” UL completely (fixes clipping/empty menu) */
+  .site-header .main-nav ul{
+    height: auto;
+    overflow: visible;
+
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    padding: 0;
+    border-radius: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    width: 100%;
+    margin-top: 5rem;
+  }
+
+  .site-header .main-nav ul::before{ content: none; }
+
+  .site-header .main-nav a{
+    width: 100%;
+    justify-content: flex-start;
+    border-radius: 14px;
+    padding: 0.75rem 0.85rem;
+    background: rgba(255,255,255,0.18);
+    text-decoration: none; /* mobile without underline */
+  }
+
+  /* ✅ active on mobile = pill only; also kills any legacy underline/pseudo line */
+  .site-header .main-nav a.active,
+  .site-header .main-nav a[aria-current="page"]{
+    text-decoration: none;
+    background: rgba(255,255,255,0.28);
+    color: var(--nav-active);
+    font-weight: 760;
+  }
+
+  .site-header .main-nav a.active::after,
+  .site-header .main-nav a[aria-current="page"]::after,
+  .site-header .main-nav a.active::before,
+  .site-header .main-nav a[aria-current="page"]::before{
+    content: none;
+    display: none;
+  }
+
+  .main-nav .menu-close{
+    display: block;
+    position: absolute;
+    top: 1.2rem;
+    right: 2rem;
+    font-size: 2.6rem;
+    color: #0077cc;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 3000;
+  }
+
+  /* mobile: dropdown panel as block under trigger */
   .language-switcher.mobile-switcher .lang-dropdown{
     width: 100%;
+    max-width: 320px;
   }
 
   .language-switcher.mobile-switcher .lang-dropdown .lang-current{
@@ -291,213 +562,11 @@
   }
 }
 
-/* ------------------------
-   HAMBURGER BUTTON
-   ------------------------ */
-
-.hamburger-btn {
-  display: none;
-  background: none;
-  border: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 48px;
-  height: 48px;
-  font-size: 2.3rem;
-  cursor: pointer;
-  margin-left: 1rem;
-  color: #0077cc;
-  z-index: 1001;
-  position: relative;
-
-  span {
-    display: block;
-    width: 30px;
-    height: 4px;
-    background: #0077cc;
-    margin: 4px 0;
-    border-radius: 2px;
-    transition: all 0.25s;
-  }
-
-  @media (max-width: 950px) { display: flex; }
-}
-
-/* ------------------------
-   OVERLAY FOR MOBILE MENU
-   ------------------------ */
-
-.site-header .menu-overlay-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: rgba(0,0,0,0.28);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  display: block;
-  transition: opacity .2s ease, visibility .2s ease;
-}
-
-.site-header .menu-overlay-bg.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* ------------------------
-   MAIN NAVIGATION
-   ------------------------ */
-
-.main-nav {
-  justify-self: center;
-  min-width: 0;
-  z-index: 2000;
-
-  display: flex;
-  align-items: center;
-
-  ul {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: clamp(0.9rem, 2.2vw, 1.6rem);
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  a {
-    font-size: 1.12rem;
-    font-weight: 600;
-    color: #222;
-    letter-spacing: 0.01em;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: .45rem;
-    position: relative;
-    padding: .55rem clamp(.5rem, 1.4vw, .9rem);
-    white-space: nowrap;
-    border-radius: 999px;
-    transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .15s ease;
-
-    &:hover,
-    &:focus {
-      color: #0a2d4a;
-      background: #f0f7ff;
-      text-decoration: none;
-    }
-
-    &:focus-visible{
-      outline: 2px solid var(--nav-accent);
-      outline-offset: 3px;
-      border-radius: 12px;
-    }
-
-    &.active{
-      color: var(--nav-active-text);
-      background: linear-gradient(180deg, var(--nav-active-bg-start) 0%, var(--nav-active-bg-end) 100%);
-      box-shadow: 0 2px 10px #0077cc14 inset, 0 1px 6px #0077cc0d;
-      text-decoration: none !important;
-    }
-  }
-
-  .menu-close { display: none; }
-
-  @media (max-width: 950px) {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 82vw;
-    max-width: 340px;
-    height: 100vh;
-
-    background: linear-gradient(108deg, #eafcff 0%, #53e0f6 70%, #139dcf 100%);
-
-    flex-direction: column;
-    align-items: flex-start;
-    box-shadow: -8px 0 32px #00336622;
-    transform: translateX(120%);
-    transition: transform 0.26s ease-in-out;
-    padding: 1rem 1.5rem;
-    overflow-y: auto;
-
-    ul {
-      flex-direction: column;
-      gap: 1.6rem;
-      width: 100%;
-      margin-top: 5rem;
-    }
-
-    .menu-close {
-      display: block;
-      position: absolute;
-      top: 1.2rem;
-      right: 2rem;
-      font-size: 2.6rem;
-      color: #0077cc;
-      background: none;
-      border: none;
-      cursor: pointer;
-      z-index: 3000;
-    }
-
-    .language-switcher.mobile-switcher {
-      display: flex;
-      background: transparent;
-      border-top: 1px solid #24bed977;
-    }
-  }
-}
-
-.main-nav.open { transform: translateX(0%); }
-
-/* =========================================================
-   AKTIVNÍ STAV (pill + indikátor) – DESKTOP
-   ========================================================= */
-.main-nav a[aria-current]{
-  text-decoration: none !important;
-  border-bottom: none !important;
-}
-
-.site-header .main-nav a[aria-current]{
-  color: var(--nav-active-text);
-  background: linear-gradient(180deg, var(--nav-active-bg-start) 0%, var(--nav-active-bg-end) 100%);
-  box-shadow: 0 2px 10px #0077cc14 inset, 0 1px 6px #0077cc0d;
-}
-
-.site-header .main-nav a[aria-current]::after{
-  content:"";
-  position:absolute;
-  left: 12px;
-  right: 12px;
-  bottom: -6px;
-  height: 2px;
-  background: var(--nav-accent);
-  border-radius: 2px;
-  opacity: .95;
-  pointer-events: none;
-}
-
-@media (max-width: 950px){
-  .site-header .main-nav a[aria-current]::after{ content: none; }
-  .site-header .main-nav a[aria-current]::before{ content: none; }
-}
-
+/* forced colors */
 @media (forced-colors: active){
-  .site-header .main-nav a[aria-current]{
+  .main-nav a[aria-current="page"]{
     outline: 2px solid SelectedItem;
     background: Canvas;
     box-shadow: none;
-  }
-  .site-header .main-nav a[aria-current]::after{
-    background: SelectedItem;
   }
 }

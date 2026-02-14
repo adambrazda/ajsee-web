@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title data-i18n-key="events-page-title">Události</title>
 
+  <meta name="theme-color" content="#0077cc" />
+
   <!-- Favicona -->
   <link rel="icon" href="/images/logo-ajsee.png" />
 
@@ -12,6 +14,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ✅ CSS přes link (sjednoceno) -->
+  <link rel="stylesheet" href="/src/styles/main.scss" />
 
   <!-- Unified FE render ON. Inline TM zakázán. -->
   <script>
@@ -26,8 +31,12 @@
   <!-- Google tag (jen HTTPS/prod) -->
   <script>
     (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.0|0\.0\.0\.0/.test(location.hostname);
+      const isProdHttps =
+        location.protocol === 'https:' &&
+        !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
+
       if (!isProdHttps) return;
+
       const s = document.createElement('script');
       s.async = true;
       s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
@@ -72,7 +81,10 @@
         document.querySelectorAll('[data-i18n-aria]').forEach(el => {
           const key = el.getAttribute('data-i18n-aria');
           const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('aria-label', val);
+          if (typeof val === 'string' && val.trim()) {
+            el.setAttribute('aria-label', val);
+            el.setAttribute('title', val);
+          }
         });
         document.querySelectorAll('[data-i18n-alt]').forEach(el => {
           const key = el.getAttribute('data-i18n-alt');
@@ -88,7 +100,6 @@
         // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
         if (typeof window.applyTranslations === 'function') return;
 
-        // Zkus fallback až po krátké chvíli (ať nedojde k flash)
         setTimeout(() => {
           if (typeof window.applyTranslations === 'function') return;
           applyI18nFallback(lang);
@@ -100,7 +111,6 @@
   <!-- ✅ JEDINÝ vstup (dev i prod): Vite si v produkci doplní /assets/* sám -->
   <script type="module" src="/src/main.js"></script>
 </head>
-
 <body data-page="events">
   <!-- Header a navigace -->
   <header class="site-header">
@@ -118,6 +128,7 @@
         <ul>
           <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
           <li><a href="/events" data-i18n-key="nav-events" aria-current="page">Události</a></li>
+          <li><a href="/accommodation" data-i18n-key="nav-accommodation">Ubytování</a></li>
           <li><a href="/partners" data-i18n-key="nav-partners">Pro partnery</a></li>
           <li><a href="/about" data-i18n-key="nav-about">O nás</a></li>
           <li><a href="/blog" data-i18n-key="nav-blog">Blog</a></li>

@@ -6,13 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   <!-- Favicona -->
-  <link rel="icon" href="data:," />
   <link rel="icon" href="/images/logo-ajsee.png" />
 
   <!-- Prémiové fonty (sjednoceno s ostatními stránkami) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ✅ CSS hned v HEAD (render-blocking) – zabrání probliknutí bez stylů -->
+  <link rel="stylesheet" href="/src/styles/main.scss" />
 
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
@@ -64,7 +66,6 @@
   <!-- ✅ JEDINÝ vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
 </head>
-
 <body data-page="about">
 <header class="site-header">
   <div class="header-inner">
@@ -85,6 +86,7 @@
       <ul>
         <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
         <li><a href="/events" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/accommodation" data-i18n-key="nav-accommodation">Ubytování</a></li>
         <li><a href="/partners" data-i18n-key="nav-partners">Pro partnery</a></li>
         <li><a href="/about" data-i18n-key="nav-about" aria-current="page">O nás</a></li>
         <li><a href="/blog" data-i18n-key="nav-blog">Blog</a></li>

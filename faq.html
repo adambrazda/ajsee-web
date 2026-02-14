@@ -16,6 +16,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- ✅ CSS přes link (sjednoceno) -->
+  <link rel="stylesheet" href="/src/styles/main.scss" />
+
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
     window.__TM_INLINE_DISABLED = true;
@@ -96,7 +99,7 @@
     })();
   </script>
 
-  <!-- Vite vstup – main.js doplní styly (import SCSS) i společnou logiku -->
+  <!-- ✅ JEDINÝ vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
 </head>
 
@@ -117,6 +120,7 @@
       <ul>
         <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
         <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/accommodation.html" data-i18n-key="nav-accommodation">Ubytování</a></li>
         <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
         <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
         <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>

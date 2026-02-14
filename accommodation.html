@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-i18n-key="seo.accommodation.title">Ubytování v UK | AJSEE</title>
+  <meta
+    name="description"
+    data-i18n-content="seo.accommodation.description"
+    content="Ubytování v UK řešíme výhradně přes TrustedStays. Rezervaci dokončíš na webu TrustedStays."
+  />
+  <meta name="theme-color" content="#0b1020" />
+
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:title"
+    data-i18n-content="seo.accommodation.ogTitle"
+    content="Ubytování v UK | AJSEE"
+  />
+  <meta
+    property="og:description"
+    data-i18n-content="seo.accommodation.ogDescription"
+    content="Ubytování v UK řešíme výhradně přes TrustedStays. Rezervaci dokončíš na webu TrustedStays."
+  />
+
+  <!-- Favicona -->
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Fonty -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ✅ CSS hned v HEAD (render-blocking) – zabrání probliknutí -->
+  <link rel="stylesheet" href="/src/styles/main.scss" />
+  <link rel="stylesheet" href="/src/styles/pages/accommodation.scss" />
+
+  <!-- Kill-switch + Impact konfigurace -->
+  <script>
+    window.__TM_INLINE_DISABLED = true;
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
+  </script>
+
+  <!-- Google tag jen na HTTPS/produkci -->
+  <script>
+    (function(){
+      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
+      if (!isProdHttps) return;
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
+      s.onload = function(){
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-K0ZS0D9JLK');
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
+
+  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
+  <script>
+    (function(){
+      function detectLang(){
+        try {
+          const qs = new URLSearchParams(location.search);
+          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+        } catch { return 'cs'; }
+      }
+
+      function applyI18nFallback(lang){
+        const root = window.translations || null;
+        if (!root) return;
+
+        const dict = root[lang] || root;
+        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
+
+        document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          const key = el.getAttribute('data-i18n-key');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+
+        document.querySelectorAll('[data-i18n-content]').forEach(el => {
+          const key = el.getAttribute('data-i18n-content');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('content', val);
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
+        });
+
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-i18n-aria');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) {
+            el.setAttribute('aria-label', val);
+            el.setAttribute('title', val);
+          }
+        });
+
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+          const key = el.getAttribute('data-i18n-alt');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const lang = detectLang();
+        document.documentElement.lang = lang;
+
+        if (typeof window.applyTranslations === 'function') return;
+
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
+          applyI18nFallback(lang);
+        }, 250);
+      });
+    })();
+  </script>
+
+  <!-- ✅ Vite entry (bez cache-busting) -->
+  <script type="module" src="/src/pages/accommodation/accommodation.js"></script>
+</head>
+
+<body class="page-accommodation" data-page="accommodation">
+
+  <header class="site-header">
+    <div class="header-inner">
+      <!-- Logo -->
+      <a href="/" class="logo-link" aria-label="Domů">
+        <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" loading="eager"/>
+      </a>
+
+      <!-- Hamburger menu (pouze mobil) -->
+      <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- Navigace (hlavní menu) -->
+      <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+        <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+
+        <ul>
+          <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+          <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+          <li><a href="/accommodation.html" data-i18n-key="nav-accommodation" aria-current="page">Ubytování</a></li>
+          <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
+          <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
+          <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
+          <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+        </ul>
+
+        <!-- Jazykové přepínače v mobilním menu -->
+        <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+          <details class="lang-dropdown" id="langDropdownMobile">
+            <summary class="lang-current" aria-label="Změnit jazyk">
+              <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+              <span class="lang-current-label">Čeština</span>
+              <span class="lang-caret" aria-hidden="true">▾</span>
+            </summary>
+
+            <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+              <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+                <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+              </button>
+              <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+                <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+              </button>
+              <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+                <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+              </button>
+              <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+                <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+              </button>
+              <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+                <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+              </button>
+              <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+                <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+              </button>
+            </div>
+          </details>
+        </div>
+      </nav>
+
+      <!-- Jazykové přepínače – desktop -->
+      <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+        <details class="lang-dropdown" id="langDropdownDesktop">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
+
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+            </button>
+          </div>
+        </details>
+      </div>
+
+      <!-- Overlay pozadí menu -->
+      <div class="menu-overlay-bg" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- HERO -->
+    <section class="stay-hero" id="hero">
+      <div class="container">
+        <div class="stay-hero-grid">
+
+          <!-- LEFT -->
+          <div class="stay-intro">
+            <h1 class="stay-title" data-i18n-key="accommodation.hero.title">Ubytování v UK</h1>
+
+            <p class="stay-lead" data-i18n-key="accommodation.hero.lead">
+              Ubytování ve Spojeném království řešíme výhradně přes TrustedStays. Rezervaci dokončíš přímo na jejich webu.
+            </p>
+
+            <div class="stay-cta-row">
+              <a
+                id="trustedstaysCta"
+                class="stay-btn stay-btn--primary"
+                target="_blank" rel="noopener noreferrer"
+                href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch"
+                data-i18n-key="accommodation.hero.ctaPrimary"
+              >
+                <span aria-hidden="true">↗</span>
+                Zobrazit nabídku ubytování (UK)
+              </a>
+
+              <a class="stay-btn stay-btn--ghost" href="#how" data-i18n-key="accommodation.hero.ctaSecondary">
+                Jak to funguje
+              </a>
+            </div>
+
+            <p class="ts-scope" data-i18n-key="accommodation.hero.micro">
+              Exkluzivní partnerství • Pouze UK • Rezervace probíhá na TrustedStays
+            </p>
+          </div>
+
+          <!-- RIGHT -->
+          <aside class="stay-side" aria-label="TrustedStays">
+            <p class="ts-eyebrow">
+              <span data-i18n-key="accommodation.partner.label">Exkluzivní partner AJSEE pro ubytování</span>
+              <strong class="ts-brand">TrustedStays</strong>
+            </p>
+
+            <div class="ts-logo-halo">
+              <img
+                class="ts-logo"
+                src="/images/partners/trustedstays/TrustedStays_Primary_RGB_R.svg"
+                data-fallback="/images/partners/trustedstays/TrustedStays_Primary_RGB.svg"
+                data-fallback2="/images/partners/trustedstays/TrustedStays_Primary_RGB.png"
+                alt="TrustedStays"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+
+            <p class="ts-note" data-i18n-key="accommodation.partner.scope">
+              Pozn.: Tato stránka je pouze pro ubytování v UK.
+            </p>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUSTEDSTAYS INTRO -->
+    <section class="stay-section" id="trustedstays">
+      <div class="container">
+        <h2 class="stay-section-title" data-i18n-key="accommodation.trustedstays.title">TrustedStays v kostce</h2>
+
+        <div class="ts-about">
+          <p class="ts-about-text" data-i18n-key="accommodation.trustedstays.lead">
+            TrustedStays je B2B platforma zaměřená na firemní pobyty — poskytuje akreditované a bezpečné ubytování napříč Spojeným královstvím.
+          </p>
+
+          <ul class="ts-points">
+            <li data-i18n-key="accommodation.trustedstays.points.1">Ubytování napříč UK (UK-only)</li>
+            <li data-i18n-key="accommodation.trustedstays.points.2">Akreditované ubytování, důraz na standardy a bezpečnost</li>
+            <li data-i18n-key="accommodation.trustedstays.points.3">Vhodné pro krátké i delší pobyty (od několika nocí až po měsíce)</li>
+          </ul>
+
+          <p class="ts-scope" data-i18n-key="accommodation.trustedstays.scope">
+            Rezervaci a platbu dokončíš přímo na TrustedStays.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUPPORT -->
+    <section class="stay-section" id="support">
+      <div class="container">
+        <div class="stay-support-card">
+          <div class="stay-support-copy">
+            <h2 class="stay-section-title" data-i18n-key="accommodation.support.title">Lokální podpora AJSEE</h2>
+
+            <p class="stay-support-long" data-i18n-key="accommodation.support.text">
+              Nejsi si jistý/á postupem nebo narazíš na problém? Napiš nám — pomůžeme ti s rezervací v tvém jazyce.
+            </p>
+
+            <p class="stay-support-short" data-i18n-key="accommodation.support.textMobile">
+              Nejsi si jistý/á postupem? Napiš nám — pomůžeme v tvém jazyce.
+            </p>
+          </div>
+
+          <div class="stay-support-cta">
+            <a class="stay-btn stay-btn--primary" href="/#contact" data-i18n-key="accommodation.support.cta">
+              Kontaktovat AJSEE
+            </a>
+            <a
+              class="stay-btn stay-btn--ghost"
+              target="_blank" rel="noopener noreferrer"
+              href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch"
+              data-i18n-key="accommodation.support.ctaSecondary"
+            >
+              ↗ Otevřít TrustedStays
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JAK TO FUNGUJE -->
+    <section class="stay-section" id="how">
+      <div class="container">
+        <h2 class="stay-section-title" data-i18n-key="accommodation.how.title">Jak to funguje</h2>
+
+        <div class="stay-steps">
+          <div class="stay-step">
+            <div class="num" aria-hidden="true">1</div>
+            <h3 data-i18n-key="accommodation.how.steps.1.title">Otevři nabídku</h3>
+            <p data-i18n-key="accommodation.how.steps.1.text">
+              Klikni na tlačítko a přejdeš na TrustedStays.
+            </p>
+          </div>
+
+          <div class="stay-step">
+            <div class="num" aria-hidden="true">2</div>
+            <h3 data-i18n-key="accommodation.how.steps.2.title">Vyber destinaci a termín</h3>
+            <p data-i18n-key="accommodation.how.steps.2.text">
+              Vyhledej ubytování v UK podle města, termínu a počtu osob.
+            </p>
+          </div>
+
+          <div class="stay-step">
+            <div class="num" aria-hidden="true">3</div>
+            <h3 data-i18n-key="accommodation.how.steps.3.title">Dokonči rezervaci</h3>
+            <p data-i18n-key="accommodation.how.steps.3.text">
+              Platbu a potvrzení vyřešíš přímo na TrustedStays.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="stay-section" id="faq">
+      <div class="container">
+        <h2 class="stay-section-title" data-i18n-key="accommodation.faq.title">Časté dotazy</h2>
+
+        <div class="stay-faq">
+          <details class="faq-item">
+            <summary data-i18n-key="accommodation.faq.q1.q">
+              Je rezervace na AJSEE?
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+            </summary>
+            <div class="body" data-i18n-key="accommodation.faq.q1.a">
+              Ne — rezervaci a platbu dokončíš na TrustedStays.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary data-i18n-key="accommodation.faq.q2.q">
+              Je odkaz partnerský?
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+            </summary>
+            <div class="body" data-i18n-key="accommodation.faq.q2.a">
+              Může být. Pokud z odkazu vznikne provize, nemělo by to mít vliv na cenu pro tebe.
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary data-i18n-key="accommodation.faq.q3.q">
+              Pomůžete mi, když si nebudu vědět rady?
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+            </summary>
+            <div class="body" data-i18n-key="accommodation.faq.q3.a">
+              Ano. Napiš nám a pomůžeme ti v tvém jazyce.
+            </div>
+          </details>
+        </div>
+
+        <p class="stay-disclaimer" data-i18n-key="accommodation.disclaimer">
+          AJSEE není provozovatelem ubytování ani platební služby. Podmínky rezervace určuje TrustedStays.
+        </p>
+      </div>
+    </section>
+
+    <!-- FINÁLNÍ CTA -->
+    <section class="stay-final" id="final">
+      <div class="container">
+        <div class="stay-final-card">
+          <h2 data-i18n-key="accommodation.final.title">Vše připraveno? Vyber si ubytování v UK.</h2>
+          <p data-i18n-key="accommodation.final.text">
+            Otevřeš nabídku TrustedStays v novém okně a rezervaci dokončíš přímo u partnera.
+          </p>
+
+          <div class="stay-cta-row">
+            <a
+              class="stay-btn stay-btn--primary"
+              target="_blank" rel="noopener noreferrer"
+              href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch"
+              data-i18n-key="accommodation.final.ctaPrimary"
+            >
+              <span aria-hidden="true">↗</span>
+              Zobrazit nabídku ubytování (UK)
+            </a>
+
+            <a class="stay-btn stay-btn--ghost" href="/#contact" data-i18n-key="accommodation.final.ctaSecondary">
+              Kontaktovat AJSEE
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <noscript>
+      <div class="container" style="padding: 14px 0; color: rgba(234,240,255,.82);">
+        Pro plnou funkčnost (i18n + navigace) povolte JavaScript.
+      </div>
+    </noscript>
+  </main>
+
+  <footer>
+    <div class="footer-social">
+      <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener">
+        <img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy"/>
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener">
+        <img src="/images/icons/facebook.svg" alt="Facebook" loading="lazy"/>
+      </a>
+      <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener">
+        <img src="/images/icons/twitter.svg" alt="Twitter" loading="lazy"/>
+      </a>
+      <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener">
+        <img src="/images/icons/linkedin.svg" alt="LinkedIn" loading="lazy"/>
+      </a>
+    </div>
+    <p data-i18n-key="footer-copyright">
+      &copy; <span id="year">2025</span> AJSEE®. Všechna práva vyhrazena.
+    </p>
+  </footer>
+
+  <script>
+    (function(){
+      const y = document.getElementById('year');
+      if (y) y.textContent = String(new Date().getFullYear());
+
+      // SVG/PNG fallback: primárně SVG reversed, pak SVG, pak PNG
+      document.querySelectorAll('img[data-fallback]').forEach((img) => {
+        img.dataset.fallbackState = img.dataset.fallbackState || '0';
+
+        img.addEventListener('error', () => {
+          const state = img.dataset.fallbackState || '0';
+
+          if (state === '0' && img.dataset.fallback) {
+            img.dataset.fallbackState = '1';
+            img.src = img.dataset.fallback;
+            return;
+          }
+          if (state === '1' && img.dataset.fallback2) {
+            img.dataset.fallbackState = '2';
+            img.src = img.dataset.fallback2;
+            return;
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

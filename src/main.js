@@ -3,7 +3,7 @@
 // AJSEE – Events UI, i18n & filters (sjednocení s homepage)
 // ---------------------------------------------------------
 
-import './styles/main.scss';
+//import './styles/main.scss';
 
 import './identity-init.js';
 

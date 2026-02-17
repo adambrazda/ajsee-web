@@ -1,7 +1,12 @@
 /* /src/styles/pages/accommodation.scss
-   V8.3.1 – “Premium tight rhythm + stronger TS composition + refined micro-interactions + glass accents (no bubbles), hero untouched”
+   V8.3.3 – “Premium tight rhythm + stronger TS composition + refined micro-interactions + glass accents (no bubbles), hero untouched”
    Fix:
    - sjednocení šířky glass chipu pod nadpisy (Lokální podpora už nebude kratší)
+   - Reversed TS logo na tmavém pozadí: zjemnit filtry (nepřepálit white logo)
+   - + microcopy pod CTA (Rezervaci dokončíš…)
+   - + lehce vyšší čitelnost body textu (+ kontrast, + line-height)
+   - + zvětšení TS loga (scale token)
+   - + fix “tight word gaps” v nadpisech (word-spacing + jemnější letter-spacing)
    Bez !important. Bez zásahů do header/footer (bere se z main.scss).
 */
 
@@ -11,8 +16,10 @@
   --ac-bg1: #132a55;
 
   --ac-ink: #eef3ff;
-  --ac-muted: rgba(238, 243, 255, 0.82);
-  --ac-muted2: rgba(238, 243, 255, 0.66);
+
+  /* ✅ slightly brighter body copy for readability */
+  --ac-muted: rgba(238, 243, 255, 0.90);
+  --ac-muted2: rgba(238, 243, 255, 0.74);
 
   --ac-aqua: #67f2ff;
   --ac-aqua2: #1ac2c5;
@@ -26,6 +33,9 @@
   --ts-halo-mid: 0.34;
   --ts-halo-soft: 0.14;
   --ts-halo-opacity: 0.70;
+
+  /* ✅ TrustedStays logo size */
+  --ts-logo-scale: 1.08;
 
   /* separators */
   --ac-sep: rgba(255, 255, 255, 0.07);
@@ -47,7 +57,8 @@
 
   /* micro-interactions */
   --ac-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --ac-focus: 0 0 0 3px rgba(103, 242, 255, 0.22), 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  --ac-focus: 0 0 0 3px rgba(103, 242, 255, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
 
   /* ✅ Glass accents (subtle, editorial) */
   --ac-chip-bg1: rgba(255, 255, 255, 0.060);
@@ -143,7 +154,11 @@
     font-weight: 900;
     line-height: 1.02;
     font-size: clamp(38px, 4.8vw, 64px);
-    letter-spacing: -0.04em;
+
+    /* ✅ Fix tight gaps between words (letter-spacing affects spaces too) */
+    letter-spacing: -0.035em;
+    word-spacing: 0.10em;
+
     text-shadow: 0 26px 90px rgba(0, 0, 0, 0.40);
   }
 
@@ -151,7 +166,7 @@
     margin: 0 0 14px;
     color: var(--ac-muted);
     font-size: clamp(16px, 1.6vw, 18px);
-    line-height: 1.7;
+    line-height: 1.72;
     max-width: 68ch;
   }
 
@@ -161,6 +176,16 @@
     flex-wrap: wrap;
     align-items: center;
     margin-top: 8px;
+  }
+
+  /* ✅ NEW: microcopy under hero CTA */
+  .stay-cta-micro {
+    margin: 8px 0 0;
+    color: var(--ac-muted2);
+    font-size: 13px;
+    line-height: 1.65;
+    max-width: 68ch;
+    opacity: 0.96;
   }
 
   .stay-btn {
@@ -238,7 +263,7 @@
     margin: 12px 0 0;
     color: var(--ac-muted2);
     font-size: 12.5px;
-    line-height: 1.6;
+    line-height: 1.65;
     position: relative;
     padding-top: 10px;
   }
@@ -266,7 +291,7 @@
 
   .ts-eyebrow {
     margin: 0;
-    color: rgba(238, 243, 255, 0.70);
+    color: rgba(238, 243, 255, 0.72);
     font-weight: 900;
     font-size: 12px;
     letter-spacing: 0.14em;
@@ -275,6 +300,19 @@
     align-items: baseline;
     justify-content: space-between;
     gap: 14px;
+  }
+
+  /* ✅ Official small lockup (right side in eyebrow) */
+  .ts-brand-lockup {
+    flex: 0 0 auto;
+    height: 16px;
+    width: auto;
+    max-width: 210px;
+    object-fit: contain;
+    opacity: 0.96;
+    filter:
+      drop-shadow(0 0 1.0px rgba(255, 255, 255, 0.26))
+      drop-shadow(0 1px 2px rgba(0, 0, 0, 0.28));
   }
 
   .ts-brand {
@@ -348,13 +386,36 @@
     display: block;
     width: min(560px, 100%);
     height: auto;
+
+    /* ✅ make it a bit bigger without changing layout widths */
+    transform: scale(var(--ts-logo-scale));
+    transform-origin: 50% 50%;
+
+    /* base: only depth, no aggressive bright/contrast */
     filter:
-      brightness(1.06)
-      contrast(1.24)
-      saturate(1.03)
-      drop-shadow(0 0 1.2px rgba(255, 255, 255, 0.50))
+      drop-shadow(0 0 1.2px rgba(255, 255, 255, 0.28))
       drop-shadow(0 1px 2px rgba(0, 0, 0, 0.30))
-      drop-shadow(0 0 18px rgba(255, 255, 255, 0.10))
+      drop-shadow(0 26px 90px rgba(0, 0, 0, 0.48));
+  }
+
+  /* If we ever used non-reversed logo here, allow it to “read” better */
+  .ts-logo:not([src*="TrustedStays_Reversed_RGB_R"]) {
+    filter:
+      brightness(1.04)
+      contrast(1.12)
+      saturate(1.02)
+      drop-shadow(0 0 1.2px rgba(255, 255, 255, 0.34))
+      drop-shadow(0 1px 2px rgba(0, 0, 0, 0.30))
+      drop-shadow(0 0 18px rgba(255, 255, 255, 0.06))
+      drop-shadow(0 26px 90px rgba(0, 0, 0, 0.48));
+  }
+
+  /* ✅ Explicit: Reversed logo (světlé na tmavém) – keep it clean */
+  .ts-logo[src*="TrustedStays_Reversed_RGB_R"],
+  .ts-logo[src*="TrustedStays_Reversed_RGB_R.png"] {
+    filter:
+      drop-shadow(0 0 1.2px rgba(255, 255, 255, 0.26))
+      drop-shadow(0 1px 2px rgba(0, 0, 0, 0.28))
       drop-shadow(0 26px 90px rgba(0, 0, 0, 0.48));
   }
 
@@ -362,7 +423,7 @@
     margin: 0;
     color: var(--ac-muted2);
     font-size: 12.5px;
-    line-height: 1.6;
+    line-height: 1.65;
     opacity: 0.95;
   }
 
@@ -426,7 +487,11 @@
     margin: 0 0 10px;
     font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     font-weight: 900;
-    letter-spacing: -0.02em;
+
+    /* ✅ Fix tight gaps between words */
+    letter-spacing: -0.015em;
+    word-spacing: 0.06em;
+
     font-size: clamp(22px, 2.4vw, 32px);
     line-height: 1.14;
     text-shadow: 0 18px 60px rgba(0,0,0,0.20);
@@ -487,7 +552,7 @@
     grid-area: lead;
     margin: 0;
     color: var(--ac-muted);
-    line-height: 1.78;
+    line-height: 1.82;
     font-size: 15.5px;
     max-width: 74ch;
   }
@@ -506,7 +571,7 @@
     display: grid;
     gap: 10px;
     color: var(--ac-muted);
-    line-height: 1.62;
+    line-height: 1.66;
     font-size: 14.75px;
     max-width: 56ch;
 
@@ -564,7 +629,7 @@
     .stay-support-short {
       margin: 0;
       color: var(--ac-muted);
-      line-height: 1.78;
+      line-height: 1.82;
       font-size: 15.5px;
       max-width: 84ch;
     }
@@ -705,7 +770,7 @@
   .stay-step p {
     margin: 0;
     color: var(--ac-muted);
-    line-height: 1.75;
+    line-height: 1.78;
     font-size: 14.75px;
     max-width: 56ch;
   }
@@ -738,7 +803,7 @@
     justify-content: space-between;
     gap: 12px;
 
-    color: rgba(238,243,255,0.92);
+    color: rgba(238,243,255,0.94);
 
     padding: 10px 10px;
     border-radius: 14px;
@@ -808,7 +873,7 @@
   .stay-faq .body {
     padding: 8px 10px 2px;
     color: var(--ac-muted);
-    line-height: 1.78;
+    line-height: 1.82;
     font-size: 14.75px;
     max-width: 92ch;
   }
@@ -826,7 +891,7 @@
     margin-top: 10px;
     color: var(--ac-muted2);
     font-size: 13px;
-    line-height: 1.75;
+    line-height: 1.78;
     max-width: 92ch;
     opacity: 0.95;
   }
@@ -880,7 +945,11 @@
     margin: 0 0 10px;
     font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     font-weight: 900;
-    letter-spacing: -0.02em;
+
+    /* ✅ Fix tight gaps between words */
+    letter-spacing: -0.015em;
+    word-spacing: 0.06em;
+
     font-size: clamp(20px, 2.4vw, 30px);
     line-height: 1.18;
   }
@@ -888,7 +957,7 @@
   .stay-final-card p {
     margin: 0 0 14px;
     color: var(--ac-muted);
-    line-height: 1.78;
+    line-height: 1.82;
     max-width: 86ch;
     font-size: 15.25px;
   }
@@ -906,6 +975,11 @@
 
     .ts-logo-halo { padding: 10px 0 6px; }
     .ts-logo { width: min(620px, 100%); }
+
+    .ts-brand-lockup {
+      height: 15px;
+      max-width: 200px;
+    }
 
     .ts-about {
       grid-template-columns: 1fr;
@@ -948,6 +1022,9 @@
   }
 
   @media (max-width: 560px) {
+    /* slightly smaller scale on tiny screens */
+    --ts-logo-scale: 1.04;
+
     .stay-support-copy {
       .stay-support-long { display: none; }
       .stay-support-short { display: block; }
@@ -960,6 +1037,8 @@
 
     .stay-faq summary { padding: 10px 8px; }
     .stay-faq .body { padding: 8px 8px 2px; }
+
+    .stay-cta-micro { font-size: 12.75px; }
   }
 
   /* ===== Reduce motion ===== */

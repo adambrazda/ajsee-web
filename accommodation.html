@@ -8,7 +8,7 @@
   <meta
     name="description"
     data-i18n-content="seo.accommodation.description"
-    content="Ubytování v UK řešíme výhradně přes TrustedStays. Rezervaci dokončíš na webu TrustedStays."
+    content="Ubytování ve Spojeném království zajišťujeme ve spolupráci s TrustedStays. Rezervaci dokončíš přímo na jejich webu."
   />
   <meta name="theme-color" content="#0b1020" />
 
@@ -21,7 +21,7 @@
   <meta
     property="og:description"
     data-i18n-content="seo.accommodation.ogDescription"
-    content="Ubytování v UK řešíme výhradně přes TrustedStays. Rezervaci dokončíš na webu TrustedStays."
+    content="Ubytování ve Spojeném království zajišťujeme ve spolupráci s TrustedStays. Rezervaci dokončíš přímo na jejich webu."
   />
 
   <!-- Favicona -->
@@ -240,7 +240,7 @@
             <h1 class="stay-title" data-i18n-key="accommodation.hero.title">Ubytování v UK</h1>
 
             <p class="stay-lead" data-i18n-key="accommodation.hero.lead">
-              Ubytování ve Spojeném království řešíme výhradně přes TrustedStays. Rezervaci dokončíš přímo na jejich webu.
+              Ubytování ve Spojeném království zajišťujeme ve spolupráci s TrustedStays. Rezervaci dokončíš přímo na jejich webu.
             </p>
 
             <div class="stay-cta-row">
@@ -260,25 +260,26 @@
               </a>
             </div>
 
+           
             <p class="ts-scope" data-i18n-key="accommodation.hero.micro">
-              Exkluzivní partnerství • Pouze UK • Rezervace probíhá na TrustedStays
+              Partnerství s TrustedStays • Pouze UK • Rezervace probíhá na TrustedStays
             </p>
           </div>
 
           <!-- RIGHT -->
           <aside class="stay-side" aria-label="TrustedStays">
             <p class="ts-eyebrow">
-              <span data-i18n-key="accommodation.partner.label">Exkluzivní partner AJSEE pro ubytování</span>
-              <strong class="ts-brand">TrustedStays</strong>
+              <span data-i18n-key="accommodation.partner.label">Oficiální partner AJSEE pro ubytování</span>
+
             </p>
 
             <div class="ts-logo-halo">
               <img
                 class="ts-logo"
-                src="/images/partners/trustedstays/TrustedStays_Primary_RGB_R.svg"
-                data-fallback="/images/partners/trustedstays/TrustedStays_Primary_RGB.svg"
-                data-fallback2="/images/partners/trustedstays/TrustedStays_Primary_RGB.png"
-                alt="TrustedStays"
+                src="/images/partners/trustedstays/TrustedStays_Reversed_RGB_R.svg"
+                data-fallback="/images/partners/trustedstays/TrustedStays_Reversed_RGB_R.png"
+                data-fallback2="/images/partners/trustedstays/TrustedStays_Reversed_RGB_R.png"
+                alt="TrustedStays®"
                 loading="eager"
                 decoding="async"
               />
@@ -342,7 +343,8 @@
               href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch"
               data-i18n-key="accommodation.support.ctaSecondary"
             >
-              ↗ Otevřít TrustedStays
+              <span aria-hidden="true">↗</span>
+              Otevřít TrustedStays
             </a>
           </div>
         </div>
@@ -417,6 +419,17 @@
               Ano. Napiš nám a pomůžeme ti v tvém jazyce.
             </div>
           </details>
+
+          <!-- ✅ NEW: cancellation/changes question -->
+          <details class="faq-item">
+            <summary data-i18n-key="accommodation.faq.q4.q">
+              Kdo řeší storno nebo změny rezervace?
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+            </summary>
+            <div class="body" data-i18n-key="accommodation.faq.q4.a">
+              Změny, storno a podmínky řeší TrustedStays podle svých pravidel (rezervace probíhá přímo u partnera).
+            </div>
+          </details>
         </div>
 
         <p class="stay-disclaimer" data-i18n-key="accommodation.disclaimer">
@@ -485,7 +498,7 @@
       const y = document.getElementById('year');
       if (y) y.textContent = String(new Date().getFullYear());
 
-      // SVG/PNG fallback: primárně SVG reversed, pak SVG, pak PNG
+      // SVG/PNG fallback: primárně SVG, pak PNG
       document.querySelectorAll('img[data-fallback]').forEach((img) => {
         img.dataset.fallbackState = img.dataset.fallbackState || '0';
 

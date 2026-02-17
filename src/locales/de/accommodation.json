@@ -11,35 +11,35 @@
   "seo": {
     "accommodation": {
       "title": "Unterkunft in UK | AJSEE",
-      "description": "Unterkünfte in UK wickeln wir exklusiv über TrustedStays ab. Die Buchung schließt du auf TrustedStays ab.",
+      "description": "Unterkünfte im Vereinigten Königreich organisieren wir in Zusammenarbeit mit TrustedStays. Die Buchung schließt du direkt auf TrustedStays ab.",
       "ogTitle": "Unterkunft in UK | AJSEE",
-      "ogDescription": "Unterkünfte in UK wickeln wir exklusiv über TrustedStays ab. Die Buchung schließt du auf TrustedStays ab."
+      "ogDescription": "Unterkünfte im Vereinigten Königreich organisieren wir in Zusammenarbeit mit TrustedStays. Die Buchung schließt du direkt auf TrustedStays ab."
     }
   },
 
   "accommodation": {
     "hero": {
       "title": "Unterkunft in UK",
-      "lead": "Unterkünfte im Vereinigten Königreich wickeln wir exklusiv über TrustedStays ab. Deine Buchung schließt du direkt auf deren Website ab.",
+      "lead": "Unterkünfte im Vereinigten Königreich organisieren wir in Zusammenarbeit mit TrustedStays. Deine Buchung schließt du direkt auf deren Website ab.",
       "ctaPrimary": "Unterkünfte ansehen (UK)",
       "ctaSecondary": "So funktioniert’s",
-      "micro": "Exklusive Partnerschaft • Nur UK • Buchung erfolgt auf TrustedStays"
+      "micro": "Offizielle Partnerschaft • Nur UK • Buchung erfolgt auf TrustedStays"
     },
 
     "partner": {
-      "label": "Exklusiver Unterkunftspartner von AJSEE",
+      "label": "Offizieller Unterkunftspartner von AJSEE",
       "scope": "Hinweis: Diese Seite gilt nur für Unterkünfte in UK."
     },
 
     "trustedstays": {
       "title": "TrustedStays auf einen Blick",
-      "lead": "TrustedStays ist eine B2B-Plattform mit Fokus auf Corporate Stays — mit akkreditierten, sicheren Unterkünften im gesamten Vereinigten Königreich.",
+      "lead": "TrustedStays ist eine Plattform mit Fokus auf Corporate Stays — mit akkreditierten, sicheren Unterkünften im gesamten Vereinigten Königreich.",
       "points": {
         "1": "Unterkünfte im gesamten UK (nur UK)",
         "2": "Akkreditierte Unterkünfte mit Fokus auf Standards und Sicherheit",
         "3": "Geeignet für kurze und längere Aufenthalte (von Nächten bis Monaten)"
       },
-      "scope": "Buchung und Zahlung erfolgen auf TrustedStays."
+      "scope": "Buchung und Zahlung erfolgen direkt auf TrustedStays."
     },
 
     "support": {
@@ -53,9 +53,9 @@
     "how": {
       "title": "So funktioniert’s",
       "steps": {
-        "1": { "title": "Angebot öffnen", "text": "Klicke auf den Button und öffne TrustedStays." },
+        "1": { "title": "Angebot öffnen", "text": "Klicke auf den Button und öffne TrustedStays (öffnet sich in einem neuen Tab)." },
         "2": { "title": "Ort & Datum wählen", "text": "Suche UK-Unterkünfte nach Stadt, Datum und Gästezahl." },
-        "3": { "title": "Buchung abschließen", "text": "Zahlung und Bestätigung erfolgen auf TrustedStays." }
+        "3": { "title": "Buchung abschließen", "text": "Zahlung und Bestätigung erfolgen direkt auf TrustedStays." }
       }
     },
 
@@ -63,14 +63,15 @@
       "title": "FAQ",
       "q1": { "q": "Buche ich über AJSEE?", "a": "Nein — Buchung und Zahlung erfolgen auf TrustedStays." },
       "q2": { "q": "Ist das ein Partnerlink?", "a": "Kann sein. Eine Provision sollte deinen Preis nicht beeinflussen." },
-      "q3": { "q": "Helft ihr mir, wenn ich nicht weiterkomme?", "a": "Ja. Schreib uns — wir helfen dir in deiner Sprache." }
+      "q3": { "q": "Helft ihr mir, wenn ich nicht weiterkomme?", "a": "Ja. Schreib uns — wir helfen dir in deiner Sprache." },
+      "q4": { "q": "Wer kümmert sich um Storno oder Änderungen der Buchung?", "a": "Storno und Änderungen werden von TrustedStays gemäß deren Bedingungen bearbeitet. Wenn du möchtest, hilft dir AJSEE bei der Orientierung und Kommunikation." }
     },
 
     "disclaimer": "AJSEE ist weder Unterkunftsanbieter noch Zahlungsdienst. Die Buchungsbedingungen legt TrustedStays fest.",
 
     "final": {
       "title": "Bereit? Wähle deine Unterkunft in UK.",
-      "text": "TrustedStays öffnet sich in einem neuen Fenster — die Buchung schließt du beim Partner ab.",
+      "text": "TrustedStays öffnet sich in einem neuen Fenster — die Buchung schließt du direkt beim Partner ab.",
       "ctaPrimary": "Unterkünfte ansehen (UK)",
       "ctaSecondary": "AJSEE kontaktieren"
     }

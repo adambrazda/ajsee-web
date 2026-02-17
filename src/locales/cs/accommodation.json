@@ -11,29 +11,29 @@
   "seo": {
     "accommodation": {
       "title": "Ubytování v UK | AJSEE",
-      "description": "Ubytování v UK řešíme výhradně přes TrustedStays. Rezervaci dokončíš na webu TrustedStays.",
+      "description": "Ubytování ve Spojeném království zajišťujeme ve spolupráci s TrustedStays. Rezervaci dokončíš přímo na webu TrustedStays.",
       "ogTitle": "Ubytování v UK | AJSEE",
-      "ogDescription": "Ubytování v UK řešíme výhradně přes TrustedStays. Rezervaci dokončíš na webu TrustedStays."
+      "ogDescription": "Ubytování ve Spojeném království zajišťujeme ve spolupráci s TrustedStays. Rezervaci dokončíš přímo na webu TrustedStays."
     }
   },
 
   "accommodation": {
     "hero": {
       "title": "Ubytování v UK",
-      "lead": "Ubytování ve Spojeném království řešíme výhradně přes TrustedStays. Rezervaci dokončíš přímo na jejich webu.",
+      "lead": "Ubytování ve Spojeném království zajišťujeme ve spolupráci s TrustedStays. Rezervaci dokončíš přímo na jejich webu.",
       "ctaPrimary": "Zobrazit nabídku ubytování (UK)",
       "ctaSecondary": "Jak to funguje",
-      "micro": "Exkluzivní partnerství • Pouze UK • Rezervace probíhá na TrustedStays"
+      "micro": "Oficiální partnerství • Pouze UK • Rezervace probíhá na TrustedStays"
     },
 
     "partner": {
-      "label": "Exkluzivní partner AJSEE pro ubytování",
+      "label": "Oficiální partner AJSEE pro ubytování",
       "scope": "Pozn.: Tato stránka je pouze pro ubytování v UK."
     },
 
     "trustedstays": {
       "title": "TrustedStays v kostce",
-      "lead": "TrustedStays je B2B platforma zaměřená na firemní pobyty — poskytuje akreditované a bezpečné ubytování napříč Spojeným královstvím.",
+      "lead": "TrustedStays je platforma zaměřená na firemní pobyty — poskytuje akreditované a bezpečné ubytování napříč Spojeným královstvím.",
       "points": {
         "1": "Ubytování napříč UK (UK-only)",
         "2": "Akreditované ubytování, důraz na standardy a bezpečnost",
@@ -53,17 +53,18 @@
     "how": {
       "title": "Jak to funguje",
       "steps": {
-        "1": { "title": "Otevři nabídku", "text": "Klikni na tlačítko a přejdeš na TrustedStays." },
+        "1": { "title": "Otevři nabídku", "text": "Klikni na tlačítko a přejdeš na TrustedStays (otevře se v nové kartě)." },
         "2": { "title": "Vyber destinaci a termín", "text": "Vyhledej ubytování v UK podle města, termínu a počtu osob." },
-        "3": { "title": "Dokonči rezervaci", "text": "Platbu a potvrzení vyřešíš přímo na TrustedStays." }
+        "3": { "title": "Dokonči rezervaci", "text": "Platbu i potvrzení vyřešíš přímo na TrustedStays." }
       }
     },
 
     "faq": {
       "title": "Časté dotazy",
-      "q1": { "q": "Je rezervace na AJSEE?", "a": "Ne — rezervaci a platbu dokončíš na TrustedStays." },
+      "q1": { "q": "Je rezervace na AJSEE?", "a": "Ne — rezervaci i platbu dokončíš na TrustedStays." },
       "q2": { "q": "Je odkaz partnerský?", "a": "Může být. Pokud z odkazu vznikne provize, nemělo by to mít vliv na cenu pro tebe." },
-      "q3": { "q": "Pomůžete mi, když si nebudu vědět rady?", "a": "Ano. Napiš nám a pomůžeme ti v tvém jazyce." }
+      "q3": { "q": "Pomůžete mi, když si nebudu vědět rady?", "a": "Ano. Napiš nám a pomůžeme ti v tvém jazyce." },
+      "q4": { "q": "Kdo řeší storno nebo změny rezervace?", "a": "Storno a změny rezervace řeší TrustedStays podle svých podmínek. Když budeš chtít, AJSEE ti pomůže s orientací a komunikací." }
     },
 
     "disclaimer": "AJSEE není provozovatelem ubytování ani platební služby. Podmínky rezervace určuje TrustedStays.",

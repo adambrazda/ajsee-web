@@ -3,7 +3,7 @@
 [build]
   command   = "npm run build"
   publish   = "dist"
-  functions = "netlify/functions" # explicitně, i když níže je [functions].directory
+  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -13,15 +13,15 @@
   node_bundler = "esbuild"
 
 # ------------ Edge Functions ------------
-# Cookie middleware podle Geo/IP nebo lang
-[[edge_functions]]
-function = "geo-country"
-path = "/*"
-
-# JSON endpoint pro NearMe fallback (context.geo → JSON)
+# 1) JSON endpoint pro NearMe fallback (context.geo → JSON) – specifická cesta musí být první
 [[edge_functions]]
 function = "geo-lookup"
 path = "/api/geo"
+
+# 2) Cookie middleware podle Geo/IP nebo lang – až potom catch-all
+[[edge_functions]]
+function = "geo-country"
+path = "/*"
 
 # ------------ HEADERS ------------
 # CORS pro Functions (záloha k odpovědím z funkce) + no-store
@@ -31,7 +31,7 @@ path = "/api/geo"
     Access-Control-Allow-Origin  = "*"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
     Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-    Cache-Control                 = "no-store"
+    Cache-Control                = "no-store"
 
 # /api/geo z Edge: nikdy necacheovat
 [[headers]]
@@ -70,35 +70,114 @@ path = "/api/geo"
     X-Frame-Options        = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy        = "strict-origin-when-cross-origin"
-    # Povolit geolokaci na stejné doméně (Near me), mikrofon/kamera zakázat
     Permissions-Policy     = "geolocation=(self), microphone=(), camera=()"
 
-# --- DEV přepisy: nechte Vite obsloužit svoje assety (musí být NAD SPA fallbackem) ---
+# ------------ REDIRECTS (MPA "pretty URLs") ------------
+# Ubytování
 [[redirects]]
-  from = "/@vite/*"
-  to   = "/@vite/:splat"
-  status = 200
+  from = "/accommodation"
+  to   = "/accommodation.html"
+  status = 301
   force  = true
 
 [[redirects]]
-  from = "/src/*"
-  to   = "/src/:splat"
-  status = 200
+  from = "/accommodation/"
+  to   = "/accommodation.html"
+  status = 301
+  force  = true
+
+# O nás
+[[redirects]]
+  from = "/about"
+  to   = "/about.html"
+  status = 301
   force  = true
 
 [[redirects]]
-  from = "/assets/*"
-  to   = "/assets/:splat"
-  status = 200
+  from = "/about/"
+  to   = "/about.html"
+  status = 301
   force  = true
 
-# SPA fallback (musí zůstat úplně dole)
+# Události
 [[redirects]]
-  from = "/*"
-  to   = "/index.html"
-  status = 200
+  from = "/events"
+  to   = "/events.html"
+  status = 301
+  force  = true
 
-# DEV: Netlify Dev reverse-proxy na běžící Vite
+[[redirects]]
+  from = "/events/"
+  to   = "/events.html"
+  status = 301
+  force  = true
+
+# Pro partnery
+[[redirects]]
+  from = "/partners"
+  to   = "/partners.html"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from = "/partners/"
+  to   = "/partners.html"
+  status = 301
+  force  = true
+
+# FAQ
+[[redirects]]
+  from = "/faq"
+  to   = "/faq.html"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from = "/faq/"
+  to   = "/faq.html"
+  status = 301
+  force  = true
+
+# Blog (listing)
+[[redirects]]
+  from = "/blog"
+  to   = "/blog.html"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from = "/blog/"
+  to   = "/blog.html"
+  status = 301
+  force  = true
+
+# Microguides (folder index)
+[[redirects]]
+  from = "/microguides"
+  to   = "/microguides/index.html"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from = "/microguides/"
+  to   = "/microguides/index.html"
+  status = 301
+  force  = true
+
+# Thank you (pokud používáš hezkou URL)
+[[redirects]]
+  from = "/thank-you"
+  to   = "/thank-you.html"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from = "/thank-you/"
+  to   = "/thank-you.html"
+  status = 301
+  force  = true
+
+# ------------ DEV: Netlify Dev reverse-proxy na běžící Vite ------------
 [dev]
   command    = "npm run dev -- --port 5173 --strictPort"
   port       = 8888

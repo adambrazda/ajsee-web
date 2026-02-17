@@ -68,24 +68,19 @@ function devHtmlRewriteAssetsPlugin() {
     name: 'ajsee-dev-rewrite-assets-to-src',
     apply: 'serve',
     transformIndexHtml(html, ctx) {
-      // mapuj jen to, co ve FE opravdu používáme
       const mappings = [
-        // main bundle
         {
           re: /<script[^>]+src="\/assets\/main-[^"]+\.js"[^>]*><\/script>/g,
           replace: '<script type="module" src="/src/main.js"></script>'
         },
-        // events-home bundle
         {
           re: /<script[^>]+src="\/assets\/events-home-[^"]+\.js"[^>]*><\/script>/g,
           replace: '<script type="module" src="/src/events-home.js"></script>'
         },
-        // modulepreload polyfill v DEV není potřeba
         {
           re: /<script[^>]+src="\/assets\/modulepreload-polyfill-[^"]+\.js"[^>]*><\/script>/g,
           replace: ''
         },
-        // buildované CSS v DEV deaktivujeme (Vite injektuje styly sám)
         {
           re: /<link[^>]+rel="stylesheet"[^>]+href="\/assets\/[^"]+\.css"[^>]*>/g,
           replace: ''
@@ -116,6 +111,7 @@ export default defineConfig({
           about: resolve(__dirname, 'about.html'),
           events: resolve(__dirname, 'events.html'),
           partners: resolve(__dirname, 'partners.html'),
+          accommodation: resolve(__dirname, 'accommodation.html'), // ✅ DOPLNĚNO
           thankyou: resolve(__dirname, 'thank-you.html'),
           blog: resolve(__dirname, 'blog.html'),
           'blog-detail': resolve(__dirname, 'blog-detail.html'),
@@ -133,7 +129,6 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     proxy: {
-      // ⚠️ Funkce vždy přes Netlify Dev (8888), ne přes Vite.
       '/.netlify/functions': {
         target: 'http://localhost:8888',
         changeOrigin: true,
@@ -150,12 +145,10 @@ export default defineConfig({
   },
 
   plugins: [
-    // DEV utility
     devRedirectPlugin(),
     devLocalesAlias(),
     devHtmlRewriteAssetsPlugin(),
 
-    // BUILD: zkopíruj locales + microguides do dist/
     viteStaticCopy({
       targets: [
         { src: 'src/locales/**/*', dest: 'locales' },

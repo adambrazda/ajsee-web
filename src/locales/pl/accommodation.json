@@ -11,41 +11,41 @@
   "seo": {
     "accommodation": {
       "title": "Noclegi w UK | AJSEE",
-      "description": "Noclegi w UK realizujemy we współpracy z TrustedStays. Rezerwację kończysz bezpośrednio na stronie TrustedStays.",
+      "description": "Noclegi w Wielkiej Brytanii oferujemy we współpracy z TrustedStays®. Zapytanie lub rezerwację kończysz bezpośrednio na stronie TrustedStays.",
       "ogTitle": "Noclegi w UK | AJSEE",
-      "ogDescription": "Noclegi w UK realizujemy we współpracy z TrustedStays. Rezerwację kończysz bezpośrednio na stronie TrustedStays."
+      "ogDescription": "Noclegi w Wielkiej Brytanii oferujemy we współpracy z TrustedStays®. Zapytanie lub rezerwację kończysz bezpośrednio na stronie TrustedStays."
     }
   },
 
   "accommodation": {
     "hero": {
       "title": "Noclegi w UK",
-      "lead": "Noclegi w Wielkiej Brytanii realizujemy we współpracy z TrustedStays. Rezerwację kończysz bezpośrednio na ich stronie.",
+      "lead": "Noclegi w Wielkiej Brytanii oferujemy we współpracy z TrustedStays®. Zapytanie lub rezerwację kończysz bezpośrednio na ich stronie.",
       "ctaPrimary": "Zobacz ofertę noclegów (UK)",
       "ctaSecondary": "Jak to działa",
-      "micro": "Oficjalne partnerstwo • Tylko UK • Rezerwacja na TrustedStays"
+      "micro": "Aktualnie UK • Zapytanie / rezerwacja na TrustedStays"
     },
 
     "partner": {
-      "label": "Oficjalny partner AJSEE ds. noclegów",
-      "scope": "Uwaga: Ta strona dotyczy wyłącznie noclegów w UK."
+      "label": "Partner AJSEE ds. noclegów",
+      "scope": "Uwaga: Ta strona dotyczy obecnie wyłącznie noclegów w UK."
     },
 
     "trustedstays": {
       "title": "TrustedStays w skrócie",
-      "lead": "TrustedStays to platforma B2B skoncentrowana na corporate stays — z akredytowanymi i bezpiecznymi obiektami w całej Wielkiej Brytanii.",
+      "lead": "TrustedStays® oferuje akredytowane, profesjonalnie zarządzane i bezpieczne noclegi w całej Wielkiej Brytanii — popularne w podróżach służbowych i przy dłuższych pobytach.",
       "points": {
-        "1": "Noclegi w całym UK (tylko UK)",
+        "1": "Aktualnie UK (zasięg ogólnokrajowy)",
         "2": "Akredytowane obiekty z naciskiem na standardy i bezpieczeństwo",
-        "3": "Dobre na krótkie i dłuższe pobyty (od nocy po miesiące)"
+        "3": "Dobre na krótkie i dłuższe pobyty (od kilku nocy do kilku miesięcy)"
       },
-      "scope": "Rezerwacja i płatność odbywają się na TrustedStays."
+      "scope": "Zapytanie lub rezerwacja, płatność i potwierdzenie odbywają się bezpośrednio na TrustedStays."
     },
 
     "support": {
       "title": "Lokalne wsparcie AJSEE",
-      "text": "Nie jesteś pewien/-na kolejnych kroków lub napotkałeś problem? Napisz do nas — pomożemy Ci przejść przez rezerwację w Twoim języku.",
-      "textMobile": "Potrzebujesz pomocy z rezerwacją? Napisz — pomożemy w Twoim języku.",
+      "text": "Nie jesteś pewien/-na kolejnych kroków lub napotkałeś/-aś problem? Napisz do nas — pomożemy Ci przejść przez zapytanie lub rezerwację w Twoim języku.",
+      "textMobile": "Potrzebujesz pomocy z zapytaniem lub rezerwacją? Napisz — pomożemy w Twoim języku.",
       "cta": "Skontaktuj się z AJSEE",
       "ctaSecondary": "↗ Otwórz TrustedStays"
     },
@@ -55,23 +55,23 @@
       "steps": {
         "1": { "title": "Otwórz ofertę", "text": "Kliknij przycisk — TrustedStays otworzy się w nowej karcie." },
         "2": { "title": "Wybierz miejsce i termin", "text": "Wyszukaj noclegi w UK według miasta, dat i liczby gości." },
-        "3": { "title": "Dokończ rezerwację", "text": "Płatność i potwierdzenie odbywają się bezpośrednio na TrustedStays." }
+        "3": { "title": "Wyślij zapytanie lub zarezerwuj", "text": "Wyślij zapytanie lub zarezerwuj — płatność i potwierdzenie odbywają się bezpośrednio przez TrustedStays." }
       }
     },
 
     "faq": {
       "title": "FAQ",
-      "q1": { "q": "Czy rezerwuję na AJSEE?", "a": "Nie — rezerwację i płatność kończysz na TrustedStays." },
-      "q2": { "q": "Czy to link partnerski?", "a": "Może być. Jeśli powstanie prowizja, nie powinna wpływać na Twoją cenę." },
+      "q1": { "q": "Czy rezerwuję na AJSEE?", "a": "Nie — zapytanie lub rezerwację kończysz na TrustedStays." },
+      "q2": { "q": "Czy to link partnerski?", "a": "Używamy linku partnerskiego/referral do mierzenia przekierowań. Jeśli powstanie prowizja, nie powinna wpływać na Twoją cenę." },
       "q3": { "q": "Pomożecie mi, jeśli utknę?", "a": "Tak. Napisz do nas — pomożemy w Twoim języku." },
-      "q4": { "q": "Kto obsługuje anulowanie lub zmiany rezerwacji?", "a": "Anulowanie i zmiany rezerwacji obsługuje TrustedStays zgodnie ze swoimi warunkami. Jeśli chcesz, AJSEE pomoże Ci odnaleźć się w procesie i komunikacji." }
+      "q4": { "q": "Kto obsługuje anulowanie lub zmiany rezerwacji?", "a": "Anulowanie i zmiany obsługuje TrustedStays® zgodnie ze swoimi warunkami. Jeśli chcesz, AJSEE pomoże Ci odnaleźć się w procesie i komunikacji." }
     },
 
-    "disclaimer": "AJSEE nie jest dostawcą noclegu ani usługą płatniczą. Warunki rezerwacji ustala TrustedStays.",
+    "disclaimer": "AJSEE nie jest dostawcą noclegu ani operatorem płatności. Warunki rezerwacji ustala TrustedStays®.",
 
     "final": {
       "title": "Gotowe? Wybierz nocleg w UK.",
-      "text": "TrustedStays otworzy się w nowym oknie — rezerwację kończysz bezpośrednio u partnera.",
+      "text": "TrustedStays otworzy się w nowej karcie — tam wyślesz zapytanie lub zarezerwujesz bezpośrednio u partnera.",
       "ctaPrimary": "Zobacz ofertę noclegów (UK)",
       "ctaSecondary": "Skontaktuj się z AJSEE"
     }

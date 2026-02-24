@@ -72,9 +72,34 @@ function getStoredLang() {
   }
 }
 
+/* ✅ NEW: read AJSEE cookie language (shared with main.js) */
+function getCookieLang() {
+  try {
+    const raw = (document.cookie.split('; ').find(r => r.startsWith('aj_lang=')) || '').split('=')[1] || '';
+    return normalizeLang(raw);
+  } catch {
+    return null;
+  }
+}
+
+/* ✅ NEW: write AJSEE cookie language (keep in sync with main.js) */
+function setCookieLang(lang) {
+  const l = normalizeLang(lang) || 'cs';
+  try {
+    document.cookie = `aj_lang=${l};path=/;max-age=${60 * 60 * 24 * 365}`;
+  } catch {}
+}
+
 function persistLang(lang) {
   const l = normalizeLang(lang) || 'cs';
+
+  // ✅ storage (existing)
   try { localStorage.setItem(LANG_KEY, l); } catch {}
+
+  // ✅ cookie (NEW: unify language across pages)
+  setCookieLang(l);
+
+  // ✅ html lang
   try { document.documentElement.setAttribute('lang', l); } catch {}
 
   // sync URL (bez reloadu) – cs = čistá URL bez parametru
@@ -131,11 +156,12 @@ export function patchInternalLinksWithLang(lang) {
 /* ───────── veřejné API ───────── */
 export function detectLang() {
   const urlLang = normalizeLang(new URLSearchParams(location.search).get('lang'));
+  const cookieLang = getCookieLang();
   const stored = getStoredLang();
   const htmlLang = normalizeLang(document.documentElement.getAttribute('lang'));
 
-  // pořadí: URL -> storage -> <html lang> -> cs
-  return urlLang || stored || htmlLang || 'cs';
+  // ✅ pořadí sjednocené s main.js: URL -> cookie -> storage -> <html lang> -> cs
+  return urlLang || cookieLang || stored || htmlLang || 'cs';
 }
 
 function getByPath(o, p) {
@@ -241,7 +267,7 @@ async function loadTranslations(lang) {
 export async function applyTranslations(lang = detectLang()) {
   const l = normalizeLang(lang) || 'cs';
 
-  // 0) persist + sync URL
+  // 0) persist + sync URL (+ NEW: cookie sync)
   persistLang(l);
 
   // 1) načti překlady a MUTUJ živý objekt

@@ -2,7 +2,8 @@
 // FOOTER STYLES
 // ==============================
 @use '../globals' as *;
-footer {
+
+.site-footer {
   text-align: center;
   padding: 2rem 1rem;
   font-size: 0.93rem;
@@ -29,10 +30,61 @@ footer {
     background: $brand-blue;
     color: #fff;
     font-size: 1rem;
-    transition: background 0.2s;
+    transition: background 0.2s ease, transform 0.2s ease;
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       background: $brand-blue-light;
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $brand-blue;
+      outline-offset: 3px;
+    }
+  }
+}
+
+.footer-meta {
+  max-width: 820px;
+  margin: 0 auto;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.footer-copy,
+.footer-company,
+.footer-contact {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.footer-copy {
+  font-weight: 500;
+  color: #4a4a4a;
+}
+
+.footer-company {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.footer-contact {
+  font-size: 0.9rem;
+
+  a {
+    color: $brand-blue;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $brand-blue;
+      outline-offset: 2px;
+      border-radius: 4px;
     }
   }
 }
@@ -57,8 +109,30 @@ footer {
       display: block;
     }
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       transform: scale(1.1);
     }
+
+    &:focus-visible {
+      outline: 2px solid $brand-blue;
+      outline-offset: 3px;
+      border-radius: 6px;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .site-footer {
+    padding: 1.75rem 1rem;
+  }
+
+  .footer-meta {
+    gap: 0.65rem;
+  }
+
+  .footer-company,
+  .footer-contact {
+    font-size: 0.88rem;
   }
 }

@@ -1,9 +1,12 @@
 {
-  "hero.badge": "Czeski startup szuka partnerów",
-  "hero.headline": "Połącz światowe wydarzenia z czeską i słowacką publicznością",
-  "hero.intro": "AJSEE® to nowy projekt ułatwiający czeskim i słowackim fanom bezpieczny zakup biletów na zagraniczne koncerty, festiwale i wydarzenia sportowe. Obecnie szukamy partnerów i dostawców biletów z całego świata.",
-  "hero.cta-collab": "Chcę współpracować",
-  "hero.cta-info": "Dowiedz się więcej o AJSEE®",
+  "hero.badge": "Właśnie uruchomione",
+  "hero.headline": "Światowe wydarzenia bez barier",
+  "hero.intro": "Koncerty, teatr, festiwale, sport i inne wyjątkowe przeżycia w jednym miejscu, przejrzyście i prosto.",
+  "hero.cta-primary": "Odkryj wydarzenia",
+  "hero.cta-secondary": "Dowiedz się więcej o AJSEE",
+  "hero.partner-note": "Dla partnerów: Budujemy sieć partnerów w obszarze biletów i wyjątkowych doświadczeń.",
+  "hero.cta-collab": "Odkryj wydarzenia",
+  "hero.cta-info": "Dowiedz się więcej o AJSEE",
   "hero.imageAlt": "Ilustracja: światowe wydarzenia połączone z czeskimi i słowackimi fanami.",
 
   "nav-home": "Strona główna",
@@ -32,7 +35,9 @@
   "contact-send": "Wyślij",
   "contact-success-msg": "Dziękujemy za wiadomość! Skontaktujemy się tak szybko, jak to możliwe.",
   "contact-error-msg": "Nie udało się wysłać. Spróbuj ponownie później.",
+  "contact-error-name": "Wpisz swoje imię.",
   "contact-error-email": "Podaj prawidłowy adres e-mail.",
+  "contact-error-message": "Napisz wiadomość.",
   "contact-honeypot-label": "Nie wypełniaj tego pola:",
   "contact-label-name": "Imię",
   "contact-label-email": "E-mail",
@@ -83,7 +88,7 @@
   "event-details-demo": "Dowiedz się więcej (demo)",
   "event-tickets": "Bilety",
   "event-tickets-demo": "Bilety (demo)",
-  "event-demo-badge": "Przykładowe wydarzenia – prawdziwa sprzedaż biletów już wkrótce. Śledź nas!",
+  "event-demo-badge": "Teraz także noclegi z TrustedStays – planujesz wyjazd do Wielkiej Brytanii na wyjątkowe wydarzenie? Przy wybranych wydarzeniach pomożemy Ci również znaleźć nocleg.",
 
   "event-category": "Kategoria:",
   "add-to-calendar": "Dodaj do kalendarza:",
@@ -112,6 +117,7 @@
 
   "events-show-all": "Pokaż wszystkie wydarzenia",
   "events-load-error": "Nie udało się wczytać wydarzeń. Spróbuj ponownie później.",
+  "events-load-more": "Wczytaj więcej",
 
   "thankyou-title": "Dziękujemy za wiadomość | AJSEE",
   "thankyou-headline": "Dziękujemy!",
@@ -173,6 +179,9 @@
     "category": "Kategoria",
     "sort": "Sortowanie",
     "city": "Miasto",
+    "date": "Termin",
+    "from": "Od",
+    "to": "Do",
     "dateFrom": "Od",
     "dateTo": "Do",
     "keyword": "Słowo kluczowe",
@@ -181,12 +190,14 @@
     "weekend": "W ten weekend",
     "nearMe": "W mojej okolicy",
 
+    "anytime": "Kiedykolwiek",
     "cityPlaceholder": "Praga, Brno…",
     "keywordPlaceholder": "Artysta, miejsce, wydarzenie…",
 
     "searchCityPlaceholder": "Praga",
     "searchPlaceholder": "Szukaj wydarzeń…",
 
+    "all": "Wszystko",
     "allCategories": "Wszystko",
     "concert": "Koncert",
     "festival": "Festiwal",
@@ -216,15 +227,15 @@
   "filter-nearest": "Najbliższe",
   "filter-latest": "Najnowsze",
 
-  "events-load-more": "Wczytaj więcej",
+  "footer-copyright": "© 2025 AJSEE®. Wszelkie prawa zastrzeżone.",
 
   "hp-waitlist": {
-    "lead": "Start już wkrótce.",
-    "text": "Dołącz do listy oczekujących i otrzymaj wczesne zaproszenie.",
-    "cta": "Chcę zaproszenie",
+    "lead": "Właśnie uruchomione",
+    "text": "Znajdź wydarzenie, na które naprawdę chcesz się wybrać.",
+    "cta": "Odkryj wydarzenia",
     "dismiss": "Zamknij",
     "dismissAria": "Zamknij baner",
-    "ariaLabel": "Informacja: start wkrótce – lista oczekujących"
+    "ariaLabel": "Informacja: AJSEE zostało właśnie uruchomione i możesz odkrywać wydarzenia"
   },
 
   "comingSoon": {
@@ -253,16 +264,18 @@
   },
 
   "event-demo": {
-    "ariaLabel": "Informacja o trybie demo – wkrótce uruchomimy realną sprzedaż biletów.",
-    "title": "Przykładowe wydarzenia.",
-    "body": "Przygotowujemy uruchomienie realnej sprzedaży biletów. Śledź nas!",
-    "cta": "Śledź aktualności"
+    "ariaLabel": "Informacja o noclegach z TrustedStays dla wybranych wydarzeń w Wielkiej Brytanii.",
+    "title": "Teraz także noclegi z TrustedStays",
+    "body": "Planujesz wyjazd do Wielkiej Brytanii na wyjątkowe wydarzenie? Przy wybranych wydarzeniach pomożemy Ci również znaleźć nocleg.",
+    "cta": "Znajdź nocleg"
   },
 
   "mg.backToBlog": "Wróć do bloga",
   "mg.breadcrumb": "AJSEE wyjaśnia",
   "mg": {
-    "card": { "badge": "Mikroprzewodnik" },
+    "card": {
+      "badge": "Mikroprzewodnik"
+    },
     "guides": {
       "seating-map": {
         "title": "Jak czytać mapę miejsc",

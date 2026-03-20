@@ -955,6 +955,39 @@ function setFilterInputsFromState () {
   updateDateComboLabel();
 }
 
+function syncFiltersFromForm () {
+  const $cat = qs('#filter-category') || qs('#events-category-filter');
+  const $sort = qs('#filter-sort') || qs('#events-sort-filter');
+  const $city = qs('#filter-city') || qs('#events-city-filter');
+  const $from = qs('#filter-date-from') || qs('#events-date-from');
+  const $to = qs('#filter-date-to') || qs('#events-date-to');
+  const $kw = qs('#filter-keyword');
+
+  currentFilters.category = $cat?.value || 'all';
+  currentFilters.sort = $sort?.value || 'nearest';
+  currentFilters.keyword = ($kw?.value || '').trim();
+
+  // date inputs držíme synchronně s hidden/native poli
+  currentFilters.dateFrom = $from?.value || currentFilters.dateFrom || '';
+  currentFilters.dateTo = $to?.value || currentFilters.dateTo || '';
+
+  // město neprepisuj, pokud je aktivní Near Me
+  if ($city && !$city.matches('[data-autofromnearme="1"]')) {
+    const rawCity = ($city.value || '').trim();
+    currentFilters.cityLabel = rawCity;
+    currentFilters.city = rawCity ? canonPreferredCity(rawCity, currentLang) : '';
+
+    if (!rawCity) {
+      currentFilters.nearMeLat = null;
+      currentFilters.nearMeLon = null;
+      $city.removeAttribute('data-autofromnearme');
+    }
+  }
+
+  updateDateComboLabel();
+  updateToggleBadge();
+}
+
 function syncURLFromFilters () {
   const u = new URL(location.href), p = u.searchParams;
   (currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city'));
@@ -2467,6 +2500,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     setFilterInputsFromState();
     updateToggleBadge();
 
+    const $cat = qs('#filter-category') || qs('#events-category-filter');
+    if ($cat) {
+      wireOnce($cat, 'change', async () => {
+        syncFiltersFromForm();
+        await renderAndSync({ resetPage: true });
+      }, 'category-change');
+    }
+
     const $city = qs('#filter-city') || qs('#events-city-filter');
     if ($city) {
       let nativeTA = false;
@@ -2540,7 +2581,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (formEl) {
         wireOnce(formEl, 'submit', async (e) => {
           e.preventDefault();
+          syncFiltersFromForm();
           await tryNearMeFromInput();
+          syncFiltersFromForm();
           await renderAndSync({ resetPage: true });
         }, 'submit');
       }

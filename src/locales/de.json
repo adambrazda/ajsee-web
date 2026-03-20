@@ -1,9 +1,12 @@
 {
-  "hero.badge": "Tschechisches Startup sucht Partner",
-  "hero.headline": "Verbinden Sie weltweite Events mit tschechischem und slowakischem Publikum",
-  "hero.intro": "AJSEE® ist ein neues Projekt, das es tschechischen und slowakischen Fans leicht und sicher macht, Tickets für internationale Konzerte, Festivals und Sportveranstaltungen zu kaufen. Derzeit suchen wir Partner und Ticketanbieter aus der ganzen Welt.",
-  "hero.cta-collab": "Partnerschaft anbieten",
-  "hero.cta-info": "Mehr über AJSEE® erfahren",
+  "hero.badge": "Jetzt live",
+  "hero.headline": "Weltweite Events ohne Barrieren",
+  "hero.intro": "Konzerte, Theater, Festivals, Sport und weitere Erlebnisse an einem Ort – übersichtlich und einfach.",
+  "hero.cta-primary": "Events entdecken",
+  "hero.cta-secondary": "Mehr über AJSEE erfahren",
+  "hero.partner-note": "Für Partner: Wir bauen ein Partnernetzwerk rund um Tickets und Erlebnisse auf.",
+  "hero.cta-collab": "Events entdecken",
+  "hero.cta-info": "Mehr über AJSEE erfahren",
   "hero.imageAlt": "Illustration: Weltweite Events verbunden mit tschechischen und slowakischen Fans.",
 
   "nav-home": "Startseite",
@@ -32,7 +35,9 @@
   "contact-send": "Absenden",
   "contact-success-msg": "Vielen Dank für Ihre Nachricht! Wir melden uns schnellstmöglich.",
   "contact-error-msg": "Das Absenden ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal.",
+  "contact-error-name": "Bitte geben Sie Ihren Namen ein.",
   "contact-error-email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+  "contact-error-message": "Bitte geben Sie eine Nachricht ein.",
   "contact-honeypot-label": "Bitte nicht ausfüllen:",
   "contact-label-name": "Name",
   "contact-label-email": "E-Mail",
@@ -83,7 +88,7 @@
   "event-details-demo": "Mehr erfahren (Demo)",
   "event-tickets": "Tickets",
   "event-tickets-demo": "Tickets (Demo)",
-  "event-demo-badge": "Beispielveranstaltungen – Ticketverkauf kommt bald. Bleiben Sie dran!",
+  "event-demo-badge": "Neu: Unterkünfte mit TrustedStays – planst du eine Reise nach Großbritannien? Bei ausgewählten Events helfen wir dir jetzt auch mit der Unterkunft.",
 
   "event-category": "Kategorie:",
   "add-to-calendar": "Zum Kalender hinzufügen:",
@@ -112,6 +117,7 @@
 
   "events-show-all": "Alle Veranstaltungen anzeigen",
   "events-load-error": "Veranstaltungen konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+  "events-load-more": "Mehr laden",
 
   "thankyou-title": "Vielen Dank für Ihre Nachricht | AJSEE",
   "thankyou-headline": "Vielen Dank!",
@@ -125,6 +131,7 @@
   "about-timeline-2025": "Beginn der Programmierung und Entwicklung der mehrsprachigen AJSEE®-Website.",
   "about-timeline-2025-07-01-year": "1. 7. 2025",
   "about-timeline-2025-07-01": "Start des Testbetriebs der AJSEE®-Website. Die Seite wird erstmals der Öffentlichkeit zugänglich gemacht und wir sammeln erste Rückmeldungen von Besuchern.",
+
   "about-team-headline": "Wer steht hinter AJSEE®?",
   "about-team-adam-name": "Adam Brázda",
   "about-team-adam-role": "Gründer & CEO",
@@ -172,6 +179,9 @@
     "category": "Kategorie",
     "sort": "Sortieren nach",
     "city": "Stadt",
+    "date": "Datum",
+    "from": "Von",
+    "to": "Bis",
     "dateFrom": "Von",
     "dateTo": "Bis",
     "keyword": "Suchbegriff",
@@ -180,12 +190,14 @@
     "weekend": "Dieses Wochenende",
     "nearMe": "In meiner Nähe",
 
+    "anytime": "Jederzeit",
     "cityPlaceholder": "Prag, Brünn…",
     "keywordPlaceholder": "Künstler, Ort, Event…",
 
     "searchCityPlaceholder": "Prag",
     "searchPlaceholder": "Veranstaltungen suchen…",
 
+    "all": "Alle",
     "allCategories": "Alle",
     "concert": "Konzert",
     "festival": "Festival",
@@ -215,15 +227,15 @@
   "filter-nearest": "Bevorstehend",
   "filter-latest": "Neueste",
 
-  "events-load-more": "Mehr laden",
+  "footer-copyright": "© 2025 AJSEE®. Alle Rechte vorbehalten.",
 
   "hp-waitlist": {
-    "lead": "Start bald.",
-    "text": "Trag dich in die Warteliste ein und erhalte eine frühe Einladung.",
-    "cta": "Einladung sichern",
+    "lead": "Jetzt live",
+    "text": "Finde ein Event, zu dem du wirklich hinwillst.",
+    "cta": "Events entdecken",
     "dismiss": "Schließen",
     "dismissAria": "Banner schließen",
-    "ariaLabel": "Hinweis: Start bald – Warteliste"
+    "ariaLabel": "Hinweis: AJSEE ist live und du kannst Events entdecken"
   },
 
   "comingSoon": {
@@ -252,17 +264,19 @@
   },
 
   "event-demo": {
-    "ariaLabel": "Info zum Demo-Modus – echter Ticketverkauf folgt bald.",
-    "title": "Beispielveranstaltungen.",
-    "body": "Wir bereiten den echten Ticketverkauf vor. Folge unseren Updates!",
-    "cta": "Neuigkeiten verfolgen"
+    "ariaLabel": "Informationen zu Unterkünften mit TrustedStays für ausgewählte Events in Großbritannien.",
+    "title": "Neu: Unterkünfte mit TrustedStays",
+    "body": "Planst du eine Reise nach Großbritannien? Bei ausgewählten Events helfen wir dir jetzt auch mit der Unterkunft.",
+    "cta": "Unterkunft finden"
   },
 
   "mg.backToBlog": "Zurück zum Blog",
   "mg.breadcrumb": "AJSEE erklärt",
 
   "mg": {
-    "card": { "badge": "Mikro-Guide" },
+    "card": {
+      "badge": "Mikro-Guide"
+    },
     "guides": {
       "seating-map": {
         "title": "Wie man den Sitzplan liest",

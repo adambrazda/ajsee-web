@@ -203,18 +203,22 @@
   <section class="hero-section hero--watermark" id="hero">
     <div class="container hero-flex">
       <div class="hero-content">
-        <a href="/partners.html" class="hero-badge" tabindex="0">
-          <span class="badge-icon" aria-hidden="true">🤝</span>
-          <span data-i18n-key="hero.badge"></span>
-        </a>
+        <div class="hero-badge" role="status" aria-live="polite">
+          <span class="badge-icon" aria-hidden="true">✨</span>
+          <span data-i18n-key="hero.badge">Právě spuštěno</span>
+        </div>
 
-        <h1 data-i18n-key="hero.headline"></h1>
-        <p data-i18n-key="hero.intro"></p>
+        <h1 data-i18n-key="hero.headline">Světové akce bez bariér</h1>
+        <p data-i18n-key="hero.intro">Koncerty, divadlo, festivaly, sport i další zážitky na jednom místě, přehledně a jednoduše.</p>
 
         <div class="hero-buttons">
-          <a href="/partners.html" class="btn-primary" data-i18n-key="hero.cta-collab"></a>
-          <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-info"></a>
+          <a href="/events.html" class="btn-primary" data-i18n-key="hero.cta-primary">Prozkoumat události</a>
+          <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-secondary">Zjistit víc o AJSEE</a>
         </div>
+
+        <p class="hero-partner-note">
+          <a href="/partners.html" class="hero-partner-link" data-i18n-key="hero.partner-note">Pro partnery: Budujeme síť partnerů v oblasti vstupenek a zážitků.</a>
+        </p>
       </div>
     </div>
   </section>
@@ -222,18 +226,18 @@
   <!-- UDÁLOSTI -->
   <section class="section-events" id="events">
     <div class="container">
-      <div id="hpWaitlist" class="hp-waitlist" role="region" aria-live="polite" aria-label="" data-i18n-aria="hp-waitlist.ariaLabel">
-        <div class="wl-icon" aria-hidden="true">✨</div>
-        <p class="wl-text">
-          <strong data-i18n-key="hp-waitlist.lead">Spouštíme brzy.</strong>
-          <span data-i18n-key="hp-waitlist.text">Přidej se na čekací listinu a získáš pozvánku mezi prvními.</span>
-        </p>
-        <a class="hp-waitlist-cta" id="hpWaitlistCta" href="/coming-soon?utm_source=site&utm_medium=banner&utm_campaign=waitlist" data-i18n-key="hp-waitlist.cta">Chci pozvánku</a>
-        <button type="button" class="hp-waitlist-close" id="hpWaitlistClose" aria-label="" data-i18n-aria="hp-waitlist.dismissAria" title="">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
+
+      <div class="home-announcements" aria-label="Důležitá oznámení">
+        <div class="event-demo-badge hp-banner hp-banner--secondary" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
+          <div class="hp-banner__icon ib-icon" aria-hidden="true">🏨</div>
+
+          <div class="hp-banner__content">
+            <strong class="hp-banner__title" data-i18n-key="event-demo.title">Nově i ubytování s TrustedStays</strong>
+            <span class="hp-banner__body" data-i18n-key="event-demo.body">Plánuješ cestu za zážitky do UK? U vybraných akcí ti pomůžeme i s ubytováním.</span>
+          </div>
+
+          <a class="ib-cta hp-banner__cta" id="demoBadgeCta" href="/accommodation.html" data-i18n-key="event-demo.cta">Najít ubytování</a>
+        </div>
       </div>
 
       <div class="events-header">
@@ -270,7 +274,7 @@
 
           <div class="filter-group">
             <label for="filter-category" data-i18n-key="filters.category">Kategorie</label>
-            <select id="filter-category" class="styled-select">
+            <select id="filter-category" name="category" class="styled-select">
               <option value="all" data-i18n-key="filters.all">Vše</option>
               <option value="concert" data-i18n-key="category-concert">Koncerty</option>
               <option value="festival" data-i18n-key="category-festival">Festivaly</option>
@@ -281,7 +285,7 @@
 
           <div class="filter-group">
             <label for="filter-sort" data-i18n-key="filters.sort">Řazení</label>
-            <select id="filter-sort" class="styled-select">
+            <select id="filter-sort" name="sort" class="styled-select">
               <option value="nearest" data-i18n-key="filters.nearest">Nejbližší</option>
               <option value="latest" data-i18n-key="filters.latest">Nejnovější</option>
             </select>
@@ -293,7 +297,7 @@
               <span class="leading" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
               </span>
-              <input id="filter-city" type="text" class="styled-input" placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
+              <input id="filter-city" name="city" type="text" class="styled-input" placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
             </div>
           </div>
 
@@ -317,7 +321,7 @@
               <span class="leading" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
               </span>
-              <input id="filter-keyword" type="search" class="styled-input" placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
+              <input id="filter-keyword" name="keyword" type="search" class="styled-input" placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
             </div>
           </div>
 
@@ -328,15 +332,6 @@
           </div>
         </fieldset>
       </form>
-
-      <div class="event-demo-badge" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
-        <div class="ib-icon" aria-hidden="true">🎟️</div>
-        <p class="ib-text">
-          <strong data-i18n-key="event-demo.title">Ukázkové události.</strong>
-          <span data-i18n-key="event-demo.body">Připravujeme reálný prodej vstupenek. Sledujte nás!</span>
-        </p>
-        <a class="ib-cta" id="demoBadgeCta" href="/coming-soon?utm_source=site&utm_medium=pill&utm_campaign=demo_badge" data-i18n-key="event-demo.cta">Sleduj novinky</a>
-      </div>
 
       <div id="eventsList" class="events-list" aria-live="polite"></div>
       <noscript>Pro zobrazení událostí povolte JavaScript.</noscript>
@@ -497,77 +492,6 @@
 
 <script>
   window.__AJSEE_EVENTS_OWNS_FILTERS = true;
-</script>
-
-<!-- Inline skript: waitlist banner -->
-<script>
-  (function () {
-    const box = document.getElementById('hpWaitlist');
-    if (!box) return;
-
-    const qs = new URLSearchParams(location.search);
-    const getLang = () => {
-      const urlLang = (qs.get('lang') || '').toLowerCase();
-      if (urlLang) return urlLang;
-      const htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
-      return htmlLang || 'cs';
-    };
-    const LANG = getLang();
-    const SUPPORTED = ['cs','en','de','sk','pl','hu'];
-
-    function t(path) {
-      try {
-        const dict = window.translations || null;
-        if (!dict) return null;
-        return path.split('.').reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), dict) ?? null;
-      } catch { return null; }
-    }
-
-    function applyBannerI18n(root) {
-      if (!root) return;
-      root.querySelectorAll('[data-i18n-key]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-key');
-        const val = t(key);
-        if (typeof val === 'string') el.textContent = val;
-      });
-      root.querySelectorAll('[data-i18n-aria]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-aria');
-        const val = t(key);
-        if (typeof val === 'string') {
-          el.setAttribute('aria-label', val);
-          el.setAttribute('title', val);
-        }
-      });
-      const regionKey = root.getAttribute('data-i18n-aria');
-      if (regionKey) {
-        const val = t(regionKey);
-        if (typeof val === 'string') root.setAttribute('aria-label', val);
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const cta = document.getElementById('hpWaitlistCta');
-      if (cta) {
-        const url = new URL(cta.href, location.origin);
-        if (SUPPORTED.includes(LANG)) url.searchParams.set('lang', LANG);
-        cta.href = url.toString();
-        cta.addEventListener('click', function () {
-          if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner' });
-        });
-      }
-
-      const btnClose = document.getElementById('hpWaitlistClose');
-      if (btnClose) btnClose.addEventListener('click', function () { box.remove(); });
-
-      const start = Date.now();
-      const id = setInterval(() => {
-        if (window.translations || Date.now() - start > 1500) {
-          clearInterval(id);
-          applyBannerI18n(box);
-        }
-      }, 50);
-    });
-  })();
 </script>
 
 <!-- Inline skript: Demo badge -->

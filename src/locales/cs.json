@@ -1,10 +1,13 @@
 {
-  "hero.badge": "Český startup hledá partnery",
-  "hero.headline": "Spojte světové akce s českým a slovenským publikem",
-  "hero.intro": "AJSEE® je nový projekt, který umožní českým a slovenským fanouškům snadno a bezpečně kupovat vstupenky na zahraniční koncerty, festivaly a sportovní akce. Aktuálně hledáme partnery a poskytovatele vstupenek z celého světa.",
+  "hero.badge": "Právě spuštěno",
+  "hero.headline": "Světové akce bez bariér",
+  "hero.intro": "Koncerty, divadlo, festivaly, sport i další zážitky na jednom místě, přehledně a jednoduše.",
   "hero.imageAlt": "Ilustrace: světové akce propojené s českými a slovenskými fanoušky.",
-  "hero.cta-collab": "Chci spolupracovat",
-  "hero.cta-info": "Zjistit víc o AJSEE®",
+  "hero.cta-primary": "Prozkoumat události",
+  "hero.cta-secondary": "Zjistit víc o AJSEE",
+  "hero.partner-note": "Pro partnery: Budujeme síť partnerů v oblasti vstupenek a zážitků.",
+  "hero.cta-collab": "Prozkoumat události",
+  "hero.cta-info": "Zjistit víc o AJSEE",
 
   "nav-home": "Domů",
   "nav-partners": "Pro partnery",
@@ -87,7 +90,7 @@
   "event-details-demo": "Zjistit více (demo)",
   "event-tickets": "Vstupenky",
   "event-tickets-demo": "Vstupenky (demo)",
-  "event-demo-badge": "Ukázkové události – připravujeme reálný prodej vstupenek. Sledujte nás!",
+  "event-demo-badge": "Nově i ubytování s TrustedStays – plánuješ cestu za zážitky do UK? U vybraných akcí ti pomůžeme i s ubytováním.",
 
   "event-category": "Kategorie:",
   "add-to-calendar": "Přidat do kalendáře:",
@@ -176,6 +179,9 @@
     "category": "Kategorie",
     "sort": "Řazení",
     "city": "Město",
+    "date": "Termín",
+    "from": "Od",
+    "to": "Do",
     "dateFrom": "Od",
     "dateTo": "Do",
     "keyword": "Klíčové slovo",
@@ -184,12 +190,14 @@
     "weekend": "Tento víkend",
     "nearMe": "V mém okolí",
 
+    "anytime": "Kdykoliv",
     "cityPlaceholder": "Praha, Brno…",
     "keywordPlaceholder": "Umělec, místo, akce…",
 
     "searchCityPlaceholder": "Praha",
     "searchPlaceholder": "Hledat události…",
 
+    "all": "Vše",
     "allCategories": "Vše",
     "concert": "Koncert",
     "festival": "Festival",
@@ -223,12 +231,12 @@
   "events-load-more": "Načíst další",
 
   "hp-waitlist": {
-    "lead": "Spouštíme brzy.",
-    "text": "Přidej se na čekací listinu a získáš pozvánku mezi prvními.",
-    "cta": "Chci pozvánku",
+    "lead": "Spuštěno naplno",
+    "text": "Najdi si akci, na kterou budeš chtít vyrazit.",
+    "cta": "Prozkoumat události",
     "dismiss": "Zavřít",
     "dismissAria": "Zavřít banner",
-    "ariaLabel": "Informace: spustíme brzy – čekací listina"
+    "ariaLabel": "Informace: AJSEE je spuštěné a můžeš prozkoumat události"
   },
 
   "comingSoon": {
@@ -257,17 +265,19 @@
   },
 
   "event-demo": {
-    "ariaLabel": "Informace o demo režimu – chystáme reálný prodej vstupenek.",
-    "title": "Ukázkové události.",
-    "body": "Připravujeme reálný prodej vstupenek. Sledujte nás!",
-    "cta": "Sleduj novinky"
+    "ariaLabel": "Informace o ubytování s TrustedStays pro vybrané akce v UK.",
+    "title": "Nově i ubytování s TrustedStays",
+    "body": "Plánuješ cestu za zážitky do UK? U vybraných akcí ti pomůžeme i s ubytováním.",
+    "cta": "Najít ubytování"
   },
 
   "mg.backToBlog": "Zpět na blog",
   "mg.breadcrumb": "AJSEE vysvětluje",
 
   "mg": {
-    "card": { "badge": "Mikroprůvodce" },
+    "card": {
+      "badge": "Mikroprůvodce"
+    },
     "guides": {
       "seating-map": {
         "title": "Jak číst seating mapu",

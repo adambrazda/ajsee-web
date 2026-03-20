@@ -1,9 +1,12 @@
 {
-  "hero.badge": "Český startup hľadá partnerov",
-  "hero.headline": "Prepojte svetové podujatia so slovenským a českým publikom",
-  "hero.intro": "AJSEE® je nový projekt, ktorý umožní českým a slovenským fanúšikom jednoducho a bezpečne kupovať vstupenky na zahraničné koncerty, festivaly a športové akcie. Aktuálne hľadáme partnerov a poskytovateľov vstupeniek z celého sveta.",
-  "hero.cta-collab": "Chcem spolupracovať",
-  "hero.cta-info": "Zistiť viac o AJSEE®",
+  "hero.badge": "Práve spustené",
+  "hero.headline": "Svetové podujatia bez bariér",
+  "hero.intro": "Koncerty, divadlo, festivaly, šport aj ďalšie zážitky na jednom mieste, prehľadne a jednoducho.",
+  "hero.cta-primary": "Objaviť podujatia",
+  "hero.cta-secondary": "Zistiť viac o AJSEE",
+  "hero.partner-note": "Pre partnerov: Budujeme sieť partnerov v oblasti vstupeniek a zážitkov.",
+  "hero.cta-collab": "Objaviť podujatia",
+  "hero.cta-info": "Zistiť viac o AJSEE",
   "hero.imageAlt": "Ilustrácia: svetové podujatia prepojené s českými a slovenskými fanúšikmi.",
 
   "nav-home": "Domov",
@@ -32,7 +35,9 @@
   "contact-send": "Odoslať",
   "contact-success-msg": "Ďakujeme za správu! Ozveme sa čo najskôr.",
   "contact-error-msg": "Odoslanie sa nepodarilo. Skúste to neskôr.",
+  "contact-error-name": "Zadajte svoje meno.",
   "contact-error-email": "Zadajte platný e-mail.",
+  "contact-error-message": "Napíšte správu.",
   "contact-honeypot-label": "Nevypĺňajte toto pole:",
   "contact-label-name": "Meno",
   "contact-label-email": "E-mail",
@@ -57,8 +62,8 @@
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Späť na hlavnú stránku",
 
-  "about-story-headline": "Ako to celé začalo",
-  "about-story-p1": "Bol jeseň 2024. Sedeli sme v podniku, dali si pivo — a ako to už býva, jedno obyčajné rozprávanie odštartovalo niečo, čo sa čoskoro zmenilo na skutočný nápad.",
+  "about-story-headline": "Ako sa to celé začalo",
+  "about-story-p1": "Bola jeseň 2024. Sedeli sme v podniku, dali si pivo — a ako to už býva, jedno obyčajné rozprávanie odštartovalo niečo, čo sa čoskoro zmenilo na skutočný nápad.",
   "about-story-p2": "Ešte ten večer vznikol názov AJSEE, prvý návrh loga aj vízia: uľahčiť ľuďom prístup ku svetovým zážitkom bez jazykových bariér.",
   "about-story-p3": "A potom prišla tá najťažšia fáza: naozaj začať.",
   "about-story-p4": "Obaja sme mali prácu na plný úväzok, delilo nás 180 kilometrov a času bolo málo. Projekt sa na chvíľu zastavil ešte skôr, než sa stihol rozbehnúť.",
@@ -83,7 +88,7 @@
   "event-details-demo": "Zistiť viac (demo)",
   "event-tickets": "Vstupenky",
   "event-tickets-demo": "Vstupenky (demo)",
-  "event-demo-badge": "Ukážkové podujatia – pripravujeme reálny predaj vstupeniek. Sledujte nás!",
+  "event-demo-badge": "Po novom aj ubytovanie s TrustedStays – plánuješ cestu do UK za zážitkami? Pri vybraných podujatiach ti pomôžeme aj s ubytovaním.",
 
   "event-category": "Kategória:",
   "add-to-calendar": "Pridať do kalendára:",
@@ -112,6 +117,7 @@
 
   "events-show-all": "Zobraziť všetky podujatia",
   "events-load-error": "Podujatia sa nepodarilo načítať. Skúste to neskôr.",
+  "events-load-more": "Načítať ďalšie",
 
   "thankyou-title": "Ďakujeme za správu | AJSEE",
   "thankyou-headline": "Ďakujeme!",
@@ -173,6 +179,9 @@
     "category": "Kategória",
     "sort": "Triedenie",
     "city": "Mesto",
+    "date": "Termín",
+    "from": "Od",
+    "to": "Do",
     "dateFrom": "Od",
     "dateTo": "Do",
     "keyword": "Kľúčové slovo",
@@ -181,6 +190,7 @@
     "weekend": "Tento víkend",
     "nearMe": "V mojom okolí",
 
+    "anytime": "Kedykoľvek",
     "cityPlaceholder": "Bratislava, Košice…",
     "keywordPlaceholder": "Umelec, miesto, podujatie…",
 
@@ -218,15 +228,14 @@
   "filter-latest": "Najnovšie",
 
   "footer-copyright": "© 2025 AJSEE®. Všetky práva vyhradené.",
-  "events-load-more": "Načítať ďalšie",
 
   "hp-waitlist": {
-    "lead": "Spúšťame čoskoro.",
-    "text": "Pridaj sa na waitlist a dostaneš pozvánku medzi prvými.",
-    "cta": "Chcem pozvánku",
+    "lead": "Práve spustené",
+    "text": "Nájdi si podujatie, na ktoré budeš chcieť vyraziť.",
+    "cta": "Objaviť podujatia",
     "dismiss": "Zavrieť",
     "dismissAria": "Zavrieť banner",
-    "ariaLabel": "Oznámenie: spúšťame čoskoro – waitlist"
+    "ariaLabel": "Oznámenie: AJSEE je práve spustené a môžeš objavovať podujatia"
   },
 
   "comingSoon": {
@@ -255,16 +264,18 @@
   },
 
   "event-demo": {
-    "ariaLabel": "Informácia o demo režime – pripravujeme reálny predaj vstupeniek.",
-    "title": "Ukážkové podujatia.",
-    "body": "Pripravujeme reálny predaj vstupeniek. Sledujte nás!",
-    "cta": "Sledujte novinky"
+    "ariaLabel": "Informácia o ubytovaní s TrustedStays pre vybrané podujatia v UK.",
+    "title": "Po novom aj ubytovanie s TrustedStays",
+    "body": "Plánuješ cestu do UK za zážitkami? Pri vybraných podujatiach ti pomôžeme aj s ubytovaním.",
+    "cta": "Nájsť ubytovanie"
   },
 
   "mg.backToBlog": "Späť na blog",
   "mg.breadcrumb": "AJSEE vysvetľuje",
   "mg": {
-    "card": { "badge": "Mikro-sprievodca" },
+    "card": {
+      "badge": "Mikro-sprievodca"
+    },
     "guides": {
       "seating-map": {
         "title": "Ako čítať seating mapu",

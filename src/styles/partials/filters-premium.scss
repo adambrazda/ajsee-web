@@ -1544,3 +1544,658 @@ html body .suggestions.suggestions [aria-selected="true"]{
     background: rgba(255,255,255,.08);
   }
 }
+
+/* =========================================================
+   HOMEPAGE FILTERS + BANNER – CONSISTENT SHELL
+   nahradit tímto celý poslední homepage override blok
+   ========================================================= */
+
+body[data-page="home"] .section-events{
+  --home-shell-max: 1680px;
+  --home-shell-side: clamp(16px, 2.8vw, 64px);
+  --home-gap: clamp(14px, 1.25vw, 18px);
+  --home-radius: clamp(22px, 2vw, 28px);
+  --home-control-h: clamp(74px, 5vw, 84px);
+  --home-panel-pad-y: clamp(16px, 1.3vw, 18px);
+  --home-panel-pad-x: clamp(18px, 1.6vw, 22px);
+}
+
+/* společná šířka pro banner + heading + filtry */
+body[data-page="home"] .home-announcements,
+body[data-page="home"] .section-events .events-header,
+body[data-page="home"] #events-filters-form.filter-dock{
+  width: min(calc(100% - (var(--home-shell-side) * 2)), var(--home-shell-max));
+  margin-inline: auto;
+}
+
+/* =========================================================
+   Banner TrustedStays – stejný shell a rytmus
+   ========================================================= */
+
+body[data-page="home"] .home-announcements{
+  margin-bottom: clamp(1.2rem, 1.8vw, 1.9rem);
+}
+
+body[data-page="home"] .home-announcements .event-demo-badge,
+body[data-page="home"] .home-announcements .hp-banner{
+  min-height: clamp(82px, 6vw, 96px);
+  padding: 18px 22px;
+  border-radius: var(--home-radius);
+  border: 1px solid rgba(195, 217, 239, .9);
+  background:
+    linear-gradient(180deg, rgba(249,252,255,.98) 0%, rgba(243,248,253,.97) 100%);
+  box-shadow:
+    0 18px 36px rgba(12,36,80,.06),
+    inset 0 1px 0 rgba(255,255,255,.92);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px;
+  align-items: center;
+}
+
+body[data-page="home"] .home-announcements .hp-banner__icon,
+body[data-page="home"] .home-announcements .ib-icon{
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(238,245,252,.96));
+  border: 1px solid rgba(180, 208, 235, .85);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.95);
+  flex: 0 0 54px;
+}
+
+body[data-page="home"] .home-announcements .hp-banner__content{
+  min-width: 0;
+}
+
+body[data-page="home"] .home-announcements .hp-banner__title{
+  display: block;
+  margin: 0 0 4px;
+  font-size: clamp(1.18rem, 1.45vw, 1.42rem);
+  line-height: 1.12;
+  font-weight: 900;
+  color: #102840;
+}
+
+body[data-page="home"] .home-announcements .hp-banner__body{
+  display: block;
+  margin: 0;
+  font-size: clamp(1rem, 1.08vw, 1.08rem);
+  line-height: 1.45;
+  color: #516783;
+}
+
+body[data-page="home"] .home-announcements .hp-banner__cta,
+body[data-page="home"] .home-announcements .ib-cta{
+  min-width: clamp(190px, 14vw, 240px);
+  min-height: 68px;
+  padding: 0 28px;
+  border-radius: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1rem, 1vw, 1.08rem);
+  font-weight: 900;
+  text-decoration: none;
+  white-space: nowrap;
+
+  color: #0f68cf;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(242,247,253,.96));
+  border: 1px solid rgba(173, 203, 234, .9);
+  box-shadow:
+    0 10px 24px rgba(12,36,80,.06),
+    inset 0 1px 0 rgba(255,255,255,.95);
+}
+
+/* =========================================================
+   Header sekce
+   ========================================================= */
+
+body[data-page="home"] .section-events .events-header{
+  position: relative;
+  text-align: center;
+  margin-bottom: clamp(1.85rem, 2.8vw, 2.7rem);
+}
+
+body[data-page="home"] .section-events .events-header::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:.2rem;
+  transform:translateX(-50%);
+  width:min(430px, 70vw);
+  height:82px;
+  border-radius:999px;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(20,194,197,.12) 0%,
+      rgba(14,136,240,.08) 44%,
+      rgba(14,136,240,0) 74%
+    );
+  filter: blur(20px);
+  pointer-events:none;
+  z-index:0;
+}
+
+body[data-page="home"] .section-events .events-header > *{
+  position: relative;
+  z-index: 1;
+}
+
+body[data-page="home"] .section-events .events-title{
+  display:inline-block;
+  margin:0 auto .75rem;
+  padding:0 .08em;
+  font-size: clamp(2.25rem, 3.3vw, 3.45rem);
+  line-height:1.02;
+  font-weight:900;
+  letter-spacing:-.04em;
+  color:#0d2235;
+  text-shadow: 0 10px 30px rgba(12,36,80,.08);
+}
+
+body[data-page="home"] .section-events .events-title::after{
+  width: 98px;
+  height: 4px;
+  margin: .85rem auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #14c2c5 0%, #0e88f0 50%, #0b5ed7 100%);
+  box-shadow: 0 10px 20px rgba(14,136,240,.14);
+}
+
+body[data-page="home"] .section-events .events-subtitle{
+  max-width: 760px;
+  margin: .35rem auto 0;
+  font-size: clamp(1rem, 1.06vw, 1.12rem);
+  line-height: 1.55;
+  color: #5d728a;
+}
+
+/* =========================================================
+   Filtry – 1 řada na desktopu i notebooku
+   ========================================================= */
+
+body[data-page="home"] #events-filters-form.filter-dock{
+  padding: var(--home-panel-pad-y) var(--home-panel-pad-x);
+  margin-bottom: 2.5rem;
+  border: 1px solid rgba(224,235,245,.92);
+  border-radius: var(--home-radius);
+  background:
+    linear-gradient(180deg, rgba(248,252,255,.98) 0%, rgba(242,248,253,.96) 100%);
+  box-shadow:
+    0 20px 44px rgba(12,36,80,.08),
+    0 2px 10px rgba(12,36,80,.04),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+body[data-page="home"] #events-filters-form.filter-dock::before{
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(20,194,197,.08) 0%, rgba(20,194,197,0) 38%),
+    radial-gradient(100% 90% at 100% 0%, rgba(14,136,240,.08) 0%, rgba(14,136,240,0) 42%);
+}
+
+/* homepage quick chips nechceme */
+body[data-page="home"] #events-filters-form.filter-dock .filters-toolbar{
+  display: none;
+}
+
+/* 1 řada */
+body[data-page="home"] #events-filters-form.filter-dock .filters-fieldset{
+  display: grid;
+  grid-template-columns:
+    minmax(150px, .8fr)
+    minmax(220px, 1fr)
+    minmax(210px, .96fr)
+    minmax(240px, 1.05fr)
+    minmax(170px, .78fr);
+  grid-template-areas: "category city date keyword actions";
+  gap: var(--home-gap);
+  align-items: stretch;
+}
+
+/* mapování */
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#filter-category){
+  grid-area: category;
+}
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#filter-city){
+  grid-area: city;
+}
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#date-combo-button){
+  grid-area: date;
+}
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#filter-keyword){
+  grid-area: keyword;
+}
+body[data-page="home"] #events-filters-form.filter-dock .filter-actions{
+  grid-area: actions;
+}
+
+/* schovat, co na homepage nechceme */
+body[data-page="home"] #events-filters-form.filter-dock .filter-group.native-date,
+body[data-page="home"] #events-filters-form.filter-dock .filter-group.is-hidden,
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#filter-sort){
+  display: none;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .filter-keyword{
+  grid-column: auto;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .filter-group{
+  position: relative;
+  display: block;
+  min-width: 0;
+  margin: 0;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .field,
+body[data-page="home"] #events-filters-form.filter-dock .date-combo{
+  position: relative;
+  min-width: 0;
+}
+
+/* label dovnitř boxu */
+body[data-page="home"] #events-filters-form.filter-dock .filter-group > label{
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  pointer-events: none;
+
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #456a8f;
+  opacity: .98;
+}
+
+/* ikonky jen u město / datum / keyword */
+body[data-page="home"] #events-filters-form.filter-dock .filter-group > label::before{
+  display: none;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#filter-city) > label::before,
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#date-combo-button) > label::before,
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#filter-keyword) > label::before{
+  display: inline-block;
+}
+
+/* vypnout extra ikonky ve fieldu */
+body[data-page="home"] #events-filters-form.filter-dock .field .leading,
+body[data-page="home"] #events-filters-form.filter-dock .with-icon .icon{
+  display: none;
+}
+
+/* boxy */
+body[data-page="home"] #events-filters-form.filter-dock input.styled-input,
+body[data-page="home"] #events-filters-form.filter-dock select.styled-select,
+body[data-page="home"] #events-filters-form.filter-dock .date-combo .combo-button{
+  min-height: var(--home-control-h);
+  height: var(--home-control-h);
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 24px;
+  padding: 32px 18px 14px;
+  font-size: clamp(1rem, .98vw, 1.08rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #173a62;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(250,253,255,.98)) padding-box,
+    linear-gradient(135deg, #dfeaf7, #edf4fb) border-box;
+  border: 1.25px solid transparent;
+  box-shadow:
+    0 12px 24px rgba(12,36,80,.06),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+body[data-page="home"] #events-filters-form.filter-dock input.styled-input:hover,
+body[data-page="home"] #events-filters-form.filter-dock select.styled-select:hover,
+body[data-page="home"] #events-filters-form.filter-dock .date-combo .combo-button:hover{
+  filter: brightness(1.01);
+}
+
+body[data-page="home"] #events-filters-form.filter-dock input.styled-input:focus,
+body[data-page="home"] #events-filters-form.filter-dock select.styled-select:focus,
+body[data-page="home"] #events-filters-form.filter-dock .date-combo .combo-button:focus,
+body[data-page="home"] #events-filters-form.filter-dock .date-combo .combo-button:focus-visible{
+  outline: none;
+  box-shadow:
+    0 0 0 6px color-mix(in oklab, var(--focus) 24%, transparent),
+    0 14px 28px rgba(12,36,80,.10);
+}
+
+body[data-page="home"] #events-filters-form.filter-dock input.styled-input::placeholder{
+  font-weight: 600;
+  color: #7e93ac;
+  opacity: 1;
+}
+
+/* select */
+body[data-page="home"] #events-filters-form.filter-dock #filter-category{
+  padding-left: 18px;
+  padding-right: 46px;
+  padding-top: 32px;
+  padding-bottom: 14px;
+  background-position: right 18px center;
+  background-size: 14px;
+  line-height: 1.15;
+}
+
+/* město / datum / keyword */
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#filter-city) .styled-input,
+body[data-page="home"] #events-filters-form.filter-dock .filter-group:has(#filter-keyword) .styled-input{
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .date-combo{
+  gap: 0;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .date-combo .combo-button{
+  justify-content: flex-start;
+  padding-left: 18px;
+  padding-right: 48px;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .date-combo .combo-text{
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+/* CTA */
+body[data-page="home"] #events-filters-form.filter-dock .filter-actions{
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  min-width: 0;
+  margin: 0;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .filter-actions #filter-nearme,
+body[data-page="home"] #events-filters-form.filter-dock .filter-actions [type="reset"],
+body[data-page="home"] #events-filters-form.filter-dock .filter-actions .btn-ghost{
+  display: none;
+}
+
+body[data-page="home"] #events-filters-form.filter-dock .filter-actions .btn.btn-primary,
+body[data-page="home"] #events-filters-form.filter-dock .filter-actions [type="submit"].btn{
+  min-height: var(--home-control-h);
+  height: var(--home-control-h);
+  width: 100%;
+  min-width: 0;
+  padding-inline: clamp(20px, 1.8vw, 30px);
+  border-radius: 24px;
+  white-space: nowrap;
+  font-size: clamp(1rem, .98vw, 1.1rem);
+  font-weight: 900;
+  box-shadow:
+    0 22px 38px rgba(14,136,240,.22),
+    inset 0 1px 0 rgba(255,255,255,.3);
+}
+
+/* =========================================================
+   Notebook – stále 1 řada, jen kompaktnější proporce
+   ========================================================= */
+
+@media (max-width: 1440px){
+  body[data-page="home"] .section-events{
+    --home-shell-side: 32px;
+    --home-gap: 14px;
+    --home-control-h: 76px;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock .filters-fieldset{
+    grid-template-columns:
+      minmax(138px, .78fr)
+      minmax(205px, .98fr)
+      minmax(195px, .92fr)
+      minmax(220px, 1fr)
+      minmax(156px, .72fr);
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock input.styled-input,
+  body[data-page="home"] #events-filters-form.filter-dock select.styled-select,
+  body[data-page="home"] #events-filters-form.filter-dock .date-combo .combo-button{
+    padding-top: 30px;
+    padding-bottom: 12px;
+    border-radius: 22px;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions .btn.btn-primary,
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions [type="submit"].btn{
+    border-radius: 22px;
+    padding-inline: 20px;
+  }
+
+  body[data-page="home"] .home-announcements .event-demo-badge,
+  body[data-page="home"] .home-announcements .hp-banner{
+    padding: 16px 20px;
+  }
+
+  body[data-page="home"] .home-announcements .hp-banner__cta,
+  body[data-page="home"] .home-announcements .ib-cta{
+    min-width: 180px;
+    min-height: 62px;
+    border-radius: 22px;
+    padding-inline: 24px;
+  }
+}
+
+/* =========================================================
+   Menší notebook / tablet – 2 řady
+   ========================================================= */
+
+@media (max-width: 1180px){
+  body[data-page="home"] #events-filters-form.filter-dock .filters-fieldset{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "category city"
+      "date keyword"
+      "actions actions";
+    gap: 18px;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions{
+    justify-content: flex-end;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions .btn.btn-primary,
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions [type="submit"].btn{
+    width: auto;
+    min-width: 220px;
+  }
+
+  body[data-page="home"] .home-announcements .event-demo-badge,
+  body[data-page="home"] .home-announcements .hp-banner{
+    grid-template-columns: auto 1fr auto;
+  }
+}
+
+/* =========================================================
+   Mobil
+   ========================================================= */
+
+@media (max-width: 720px){
+  body[data-page="home"] .section-events .events-header{
+    margin-bottom: 1.7rem;
+  }
+
+  body[data-page="home"] .section-events .events-title{
+    font-size: clamp(1.95rem, 9vw, 2.5rem);
+    margin-bottom: .65rem;
+  }
+
+  body[data-page="home"] .section-events .events-title::after{
+    width: 84px;
+    margin-top: .75rem;
+  }
+
+  body[data-page="home"] .home-announcements,
+  body[data-page="home"] .section-events .events-header,
+  body[data-page="home"] #events-filters-form.filter-dock{
+    width: min(calc(100% - 32px), var(--home-shell-max));
+  }
+
+  body[data-page="home"] .home-announcements .event-demo-badge,
+  body[data-page="home"] .home-announcements .hp-banner{
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  body[data-page="home"] .home-announcements .hp-banner__icon,
+  body[data-page="home"] .home-announcements .ib-icon{
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+
+  body[data-page="home"] .home-announcements .hp-banner__cta,
+  body[data-page="home"] .home-announcements .ib-cta{
+    width: 100%;
+    min-width: 0;
+    min-height: 58px;
+    border-radius: 18px;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock{
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock .filters-fieldset{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "category"
+      "city"
+      "date"
+      "keyword"
+      "actions";
+    gap: 14px;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock input.styled-input,
+  body[data-page="home"] #events-filters-form.filter-dock select.styled-select,
+  body[data-page="home"] #events-filters-form.filter-dock .date-combo .combo-button,
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions .btn.btn-primary,
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions [type="submit"].btn{
+    min-height: 72px;
+    height: 72px;
+    border-radius: 20px;
+    padding-top: 30px;
+    padding-bottom: 12px;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions{
+    justify-content: stretch;
+  }
+
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions .btn.btn-primary,
+  body[data-page="home"] #events-filters-form.filter-dock .filter-actions [type="submit"].btn{
+    width: 100%;
+    min-width: 0;
+  }
+}
+/* =========================================================
+   EVENTS.HTML – sjednocení banneru, filtrů a headeru
+   vložit ÚPLNĚ NA KONEC filters-premium.scss
+   ========================================================= */
+
+/* Předpoklad: events stránka má <body data-page="events"> */
+body[data-page="events"]{
+  --events-shell-max: 1680px;
+  --events-shell-side: clamp(16px, 2.5vw, 32px);
+  --events-shell-width: min(calc(100% - (var(--events-shell-side) * 2)), var(--events-shell-max));
+}
+
+/* Banner + header + filtry musí sedět na stejnou vizuální osu */
+body[data-page="events"] .events-header,
+body[data-page="events"] .event-demo-badge,
+body[data-page="events"] .hp-banner,
+body[data-page="events"] #events-filters-form.filter-dock,
+body[data-page="events"] .events-filters.filter-dock{
+  width: var(--events-shell-width);
+  max-width: var(--events-shell-width);
+  margin-inline: auto;
+}
+
+/* Header na střed */
+body[data-page="events"] .events-header{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: clamp(1.8rem, 2.7vw, 2.6rem);
+}
+
+body[data-page="events"] .events-title{
+  display: inline-block;
+  margin: 0 auto .75rem;
+  text-align: center;
+}
+
+body[data-page="events"] .events-subtitle{
+  max-width: 760px;
+  margin: .35rem auto 0;
+  text-align: center;
+}
+
+/* Banner rytmus */
+body[data-page="events"] .event-demo-badge,
+body[data-page="events"] .hp-banner{
+  margin-bottom: clamp(1rem, 1.5vw, 1.4rem);
+}
+
+/* Filtry rytmus */
+body[data-page="events"] #events-filters-form.filter-dock,
+body[data-page="events"] .events-filters.filter-dock{
+  margin-bottom: clamp(1.6rem, 2vw, 2rem);
+}
+
+/* Pokud je banner v extra wrapperu, ať wrapper neháže vlastní odsazení */
+body[data-page="events"] .home-announcements,
+body[data-page="events"] .events-announcements,
+body[data-page="events"] .event-announcements{
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+/* Notebook – stejné zarovnání, jen trochu kompaktnější boční okraje */
+@media (max-width: 1440px){
+  body[data-page="events"]{
+    --events-shell-side: 24px;
+  }
+}
+
+/* Mobil */
+@media (max-width: 720px){
+  body[data-page="events"]{
+    --events-shell-side: 16px;
+  }
+
+  body[data-page="events"] .events-header{
+    margin-bottom: 1.6rem;
+  }
+
+  body[data-page="events"] .events-title{
+    margin-bottom: .65rem;
+  }
+}

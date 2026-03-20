@@ -13,7 +13,7 @@
   "nav-contact": "Kapcsolat",
   "nav-about": "Rólunk",
   "nav-faq": "GYIK",
-   "nav-accommodation": "Szállás",
+  "nav-accommodation": "Szállás",
 
   "section-events-title": "Közelgő események",
   "section-events-subtitle": "Szerezd be a legjobb kulturális élmények jegyeit a közeledben.",
@@ -83,7 +83,7 @@
   "event-details-demo": "Részletek (demo)",
   "event-tickets": "Jegyek",
   "event-tickets-demo": "Jegyek (demo)",
-  "event-demo-badge": "Mintarendezvények – a valódi jegyértékesítés hamarosan indul. Kövess minket!",
+  "event-demo-badge": "Most már szállással is a TrustedStays révén – brit élményútra készülsz? Kiválasztott eseményeknél a szállásban is segítünk.",
 
   "event-category": "Kategória:",
   "add-to-calendar": "Hozzáadás a naptárhoz:",
@@ -219,12 +219,12 @@
   "events-load-more": "Továbbiak betöltése",
 
   "hp-waitlist": {
-    "lead": "Hamarosan indulunk.",
-    "text": "Iratkozz fel a várólistára, és korai meghívót kapsz.",
-    "cta": "Meghívót kérek",
+    "lead": "Már élőben",
+    "text": "Találd meg azt az eseményt, ahová tényleg el akarsz menni.",
+    "cta": "Események felfedezése",
     "dismiss": "Bezárás",
     "dismissAria": "Banner bezárása",
-    "ariaLabel": "Értesítés: hamarosan indulunk – várólista"
+    "ariaLabel": "Értesítés: az AJSEE már elindult, és felfedezheted az eseményeket"
   },
 
   "comingSoon": {
@@ -253,10 +253,10 @@
   },
 
   "event-demo": {
-    "ariaLabel": "Információk demó módról – hamarosan indul a valós jegyértékesítés.",
-    "title": "Mintaesemények.",
-    "body": "Készülünk az éles jegyértékesítésre. Kövess minket!",
-    "cta": "Kövesd a híreket"
+    "ariaLabel": "Információk a TrustedStays szállásairól kiválasztott egyesült királyságbeli eseményekhez.",
+    "title": "Most már szállással is a TrustedStays révén",
+    "body": "Brit élményútra készülsz? Kiválasztott eseményeknél a szállásban is segítünk.",
+    "cta": "Szállás keresése"
   },
 
   "mg.backToBlog": "Vissza a blogra",

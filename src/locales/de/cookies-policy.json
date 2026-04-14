@@ -1,0 +1,108 @@
+{
+  "seo": {
+    "cookies": {
+      "title": "Cookie-Richtlinie | AJSEE",
+      "description": "Wie AJSEE Cookies und ähnliche Technologien verwendet, welche davon notwendig sind, welche optional sind und wie du deine Einstellungen verwalten kannst.",
+      "ogTitle": "Cookie-Richtlinie | AJSEE",
+      "ogDescription": "Wie AJSEE Cookies und ähnliche Technologien verwendet, welche davon notwendig sind, welche optional sind und wie du deine Einstellungen verwalten kannst."
+    }
+  },
+  "cookies": {
+    "hero": {
+      "eyebrow": "AJSEE · Cookies und ähnliche Technologien",
+      "title": "Cookie-Richtlinie",
+      "lead": "Auf dieser Seite findest du Informationen dazu, wie AJSEE Cookies und ähnliche Technologien verwendet, welche für das Funktionieren der Website notwendig sind, welche optional sind und wie du deine Einstellungen verwalten kannst.",
+      "updatedLabel": "Zuletzt aktualisiert:",
+      "updatedDate": "13. April 2026"
+    },
+    "toc": {
+      "title": "Inhalt",
+      "what": "Was Cookies sind",
+      "how": "Wie wir sie verwenden",
+      "types": "Arten von Cookies und Technologien",
+      "tools": "Auf AJSEE verwendete Tools",
+      "managing": "Wie du Einstellungen verwalten kannst",
+      "thirdParties": "Drittanbieter",
+      "updates": "Änderungen dieser Richtlinie",
+      "contact": "Kontakt"
+    },
+    "what": {
+      "title": "1. Was Cookies sind",
+      "p1": "Cookies sind kleine Textdateien oder ähnliche Technologien, die eine Website auf deinem Gerät speichert oder während deines Besuchs Informationen daraus ausliest. Sie können dabei helfen, die grundlegende Funktion der Website sicherzustellen, Einstellungen zu speichern, den Traffic zu analysieren oder Interaktionen zu messen.",
+      "p2": "Für die Zwecke dieser Richtlinie verwenden wir den Begriff „Cookies“ auch für ähnliche Speicher- und Zugriffstechnologien, sofern sie eine vergleichbare Funktion haben."
+    },
+    "how": {
+      "title": "2. Wie wir Cookies verwenden",
+      "p1": "AJSEE verwendet bestimmte Technologien, damit die Website ordnungsgemäß und sicher funktioniert. Andere Technologien verwenden wir nur, wenn du deine Einwilligung gibst, zum Beispiel für Analysen oder zur Messung der Performance von Inhalten.",
+      "p2": "Nicht alle Cookies dienen demselben Zweck. Einige sind für den technischen Betrieb der Website notwendig, andere helfen uns zu verstehen, wie Menschen die Website nutzen, und manche können mit dem Wechsel auf Partner-Websites oder mit der Messung von Attributionsparametern zusammenhängen."
+    },
+    "types": {
+      "title": "3. Arten von Cookies und Technologien",
+      "cards": {
+        "1": {
+          "title": "Notwendig",
+          "text": "Diese Technologien sind für die grundlegende Funktion der Website, die Sicherheit, das Sitzungsmanagement oder das Speichern deiner Cookie-Einstellungen erforderlich. Ohne sie könnten einige Teile des Dienstes nicht richtig funktionieren."
+        },
+        "2": {
+          "title": "Analytisch",
+          "text": "Diese Technologien helfen uns, den Website-Traffic, die Performance von Inhalten und das Nutzerverhalten in aggregierter Form zu verstehen. Wir verwenden sie nur, wenn du sie erlaubst."
+        },
+        "3": {
+          "title": "Präferenzen",
+          "text": "Sie können dazu verwendet werden, bestimmte Auswahlmöglichkeiten oder Einstellungen zu speichern, zum Beispiel Sprach- oder Nutzerpräferenzen, sofern eine konkrete Funktion der Website darauf angewiesen ist."
+        },
+        "4": {
+          "title": "Partner / Attribution",
+          "text": "In einigen Fällen können beim Wechsel von AJSEE zu einer Partner-Website Referral- oder Attributionsparameter verwendet werden, um auszuwerten, ob der Besuch von AJSEE kam."
+        }
+      }
+    },
+    "tools": {
+      "title": "4. Auf AJSEE verwendete Tools",
+      "p1": "Abhängig von der aktuellen Konfiguration der Website kann AJSEE insbesondere die folgenden Tools oder Technologiekategorien verwenden:",
+      "items": {
+        "1": {
+          "label": "Cookie-Einstellungen / Einwilligung",
+          "text": "Technologien, mit denen gespeichert wird, ob du optionale Cookies akzeptiert oder abgelehnt hast."
+        },
+        "2": {
+          "label": "Google Tag Manager",
+          "text": "Ein Tool zur Verwaltung von Tags und zum Laden weiterer Technologien entsprechend der aktuellen Konfiguration und des Einwilligungsstatus."
+        },
+        "3": {
+          "label": "Google Analytics",
+          "text": "Ein Analysetool, das nur verwendet wird, wenn du deine Einwilligung gibst, um den Website-Traffic zu messen und die Website zu verbessern."
+        },
+        "4": {
+          "label": "Partner- / Referral-Parameter",
+          "text": "Parameter oder Messmechanismen im Zusammenhang mit dem Wechsel auf Partner-Websites, zum Beispiel im Rahmen von Affiliate- oder Referral-Kooperationen."
+        }
+      },
+      "p2": "Konkrete Namen, Zwecke und Speicherdauern können sich im Laufe der Zeit je nach technischer Weiterentwicklung der Website, verwendeten Integrationen oder Aktualisierungen bei Partnern ändern. Wenn es zu einer wesentlichen Änderung kommt, aktualisieren wir diese Seite entsprechend."
+    },
+    "managing": {
+      "title": "5. Wie du deine Einstellungen verwalten kannst",
+      "p1": "Optionale Cookies kannst du über das Cookie-Banner oder die Einstellungen verwalten, die auf der Website beim ersten Besuch oder nach dem Zurücksetzen deiner Präferenzen angezeigt werden.",
+      "items": {
+        "1": "du kannst optionale Kategorien akzeptieren oder ablehnen;",
+        "2": "du kannst deine Einstellungen später ändern, wenn die entsprechende Steuerung auf der Website verfügbar ist;",
+        "3": "du kannst Cookies auch in den Einstellungen deines Browsers einschränken oder löschen."
+      },
+      "p2": "Bitte beachte, dass das Blockieren oder Löschen bestimmter Technologien die ordnungsgemäße Funktion einiger Teile der Website beeinträchtigen kann."
+    },
+    "thirdParties": {
+      "title": "6. Drittanbieter",
+      "p1": "Wenn du von AJSEE auf eine Website eines Drittanbieters klickst, zum Beispiel auf die Website eines Ticketing- oder Unterkunftspartners, kann dieser Drittanbieter eigene Cookies und ähnliche Technologien nach seinen eigenen Regeln verwenden. AJSEE hat keine direkte Kontrolle über diese Technologien auf der externen Website.",
+      "p2": "Wir empfehlen dir daher, auch die Cookie-Richtlinie und die Datenschutzinformationen des jeweiligen Partners oder Dienstleisters zu lesen, dessen Website du besuchst."
+    },
+    "updates": {
+      "title": "7. Änderungen dieser Richtlinie",
+      "p1": "Wir können diese Cookie-Richtlinie von Zeit zu Zeit aktualisieren, um rechtliche, technische oder geschäftliche Änderungen abzubilden. Die neueste Version wird immer zusammen mit dem Aktualisierungsdatum auf dieser Seite veröffentlicht."
+    },
+    "contact": {
+      "title": "8. Kontakt",
+      "p1": "Wenn du Fragen zur Verwendung von Cookies oder ähnlichen Technologien auf AJSEE hast, kannst du uns unter <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a> kontaktieren.",
+      "p2": "Weitere Informationen dazu, wie AJSEE personenbezogene Daten verarbeitet, findest du auch auf der Seite Privacy Policy."
+    }
+  }
+}

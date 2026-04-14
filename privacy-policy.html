@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-i18n-key="seo.privacy.title">Zásady ochrany osobních údajů | AJSEE</title>
+  <meta
+    name="description"
+    data-i18n-content="seo.privacy.description"
+    content="Jak AJSEE zpracovává osobní údaje, používá cookies a analytické nástroje a jaká máš práva."
+  />
+  <meta name="theme-color" content="#0b1020" />
+
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:title"
+    data-i18n-content="seo.privacy.ogTitle"
+    content="Zásady ochrany osobních údajů | AJSEE"
+  />
+  <meta
+    property="og:description"
+    data-i18n-content="seo.privacy.ogDescription"
+    content="Jak AJSEE zpracovává osobní údaje, používá cookies a analytické nástroje a jaká máš práva."
+  />
+
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/styles/main.scss" />
+  <link rel="stylesheet" href="/src/styles/pages/privacy-policy.scss" />
+
+  <script>
+    (function(){
+      function detectLang(){
+        try {
+          const qs = new URLSearchParams(location.search);
+          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+        } catch { return 'cs'; }
+      }
+
+      function applyI18nFallback(lang){
+        const root = window.translations || null;
+        if (!root) return;
+
+        const dict = root[lang] || root;
+        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
+
+        document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          const key = el.getAttribute('data-i18n-key');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+
+        document.querySelectorAll('[data-i18n-content]').forEach(el => {
+          const key = el.getAttribute('data-i18n-content');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('content', val);
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
+        });
+
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-i18n-aria');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) {
+            el.setAttribute('aria-label', val);
+            el.setAttribute('title', val);
+          }
+        });
+
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+          const key = el.getAttribute('data-i18n-alt');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const lang = detectLang();
+        document.documentElement.lang = lang;
+
+        if (typeof window.applyTranslations === 'function') return;
+
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
+          applyI18nFallback(lang);
+        }, 250);
+      });
+    })();
+  </script>
+
+  <script type="module" src="/src/pages/privacy-policy/privacy-policy.js"></script>
+</head>
+
+<body class="page-privacy-policy page-legal" data-page="privacy-policy">
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo-link" aria-label="Domů">
+        <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" loading="eager" />
+      </a>
+
+      <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+        <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+
+        <ul>
+          <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+          <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+          <li><a href="/accommodation.html" data-i18n-key="nav-accommodation">Ubytování</a></li>
+          <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
+          <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
+          <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
+          <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+        </ul>
+
+        <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+          <details class="lang-dropdown" id="langDropdownMobile">
+            <summary class="lang-current" aria-label="Změnit jazyk">
+              <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+              <span class="lang-current-label">Čeština</span>
+              <span class="lang-caret" aria-hidden="true">▾</span>
+            </summary>
+
+            <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+              <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+                <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+              </button>
+              <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+                <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+              </button>
+              <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+                <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+              </button>
+              <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+                <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+              </button>
+              <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+                <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+              </button>
+              <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+                <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+              </button>
+            </div>
+          </details>
+        </div>
+      </nav>
+
+      <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+        <details class="lang-dropdown" id="langDropdownDesktop">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
+
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+            </button>
+          </div>
+        </details>
+      </div>
+
+      <div class="menu-overlay-bg" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="legal-hero" id="hero">
+      <div class="container">
+        <div class="legal-hero-card">
+          <p class="legal-eyebrow" data-i18n-key="privacy.hero.eyebrow">AJSEE · Právní informace</p>
+          <h1 class="legal-title" data-i18n-key="privacy.hero.title">Zásady ochrany osobních údajů</h1>
+          <p class="legal-lead" data-i18n-key="privacy.hero.lead">
+            Na této stránce najdeš informace o tom, jaké osobní údaje může AJSEE zpracovávat, proč je zpracovává, jak dlouho je uchovává a jaká máš práva.
+          </p>
+
+          <div class="legal-meta">
+            <span class="legal-meta-label" data-i18n-key="privacy.hero.updatedLabel">Naposledy aktualizováno:</span>
+            <strong data-i18n-key="privacy.hero.updatedDate">13. dubna 2026</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="legal-layout">
+      <div class="container legal-layout-grid">
+        <aside class="legal-toc" aria-labelledby="legal-toc-title">
+          <div class="legal-card">
+            <h2 id="legal-toc-title" data-i18n-key="privacy.toc.title">Obsah</h2>
+            <nav aria-label="Obsah zásad ochrany osobních údajů">
+              <ol>
+                <li><a href="#intro" data-i18n-key="privacy.toc.intro">Úvod</a></li>
+                <li><a href="#controller" data-i18n-key="privacy.toc.controller">Údaje o správci</a></li>
+                <li><a href="#data" data-i18n-key="privacy.toc.data">Jaké údaje můžeme zpracovávat</a></li>
+                <li><a href="#purposes" data-i18n-key="privacy.toc.purposes">Jak a proč údaje používáme</a></li>
+                <li><a href="#cookies" data-i18n-key="privacy.toc.cookies">Cookies a analytika</a></li>
+                <li><a href="#sharing" data-i18n-key="privacy.toc.sharing">Sdílení a zpracovatelé</a></li>
+                <li><a href="#transfers" data-i18n-key="privacy.toc.transfers">Mezinárodní předávání</a></li>
+                <li><a href="#retention" data-i18n-key="privacy.toc.retention">Doba uchování</a></li>
+                <li><a href="#rights" data-i18n-key="privacy.toc.rights">Tvoje práva</a></li>
+                <li><a href="#contact" data-i18n-key="privacy.toc.contact">Kontakt a stížnosti</a></li>
+                <li><a href="#changes" data-i18n-key="privacy.toc.changes">Změny těchto zásad</a></li>
+              </ol>
+            </nav>
+          </div>
+        </aside>
+
+        <div class="legal-content">
+          <section class="legal-section" id="intro">
+            <h2 data-i18n-key="privacy.intro.title">1. Úvod</h2>
+            <p data-i18n-key="privacy.intro.p1">
+              AJSEE pomáhá uživatelům objevovat události a související cestovní či volnočasové služby prostřednictvím ověřených partnerů. Při provozu webu můžeme zpracovávat osobní údaje například tehdy, když nás kontaktuješ, přihlásíš se k odběru novinek, pošleš business enquiry nebo interaguješ s volitelnými analytickými a referral technologiemi.
+            </p>
+            <p data-i18n-key="privacy.intro.p2">
+              Osobní údaje chceme zpracovávat transparentně, bezpečně a pouze v rozsahu nezbytném pro daný účel a v souladu s příslušnými právními předpisy na ochranu osobních údajů, včetně UK GDPR a tam, kde je to relevantní, také EU GDPR.
+            </p>
+          </section>
+
+          <section class="legal-section" id="controller">
+            <h2 data-i18n-key="privacy.controller.title">2. Údaje o správci</h2>
+            <div class="legal-card legal-card--compact">
+              <dl class="legal-definition-list">
+                <div>
+                  <dt data-i18n-key="privacy.controller.companyLabel">Společnost</dt>
+                  <dd>AJSEE LTD</dd>
+                </div>
+                <div>
+                  <dt data-i18n-key="privacy.controller.numberLabel">Číslo společnosti</dt>
+                  <dd>17105762</dd>
+                </div>
+                <div>
+                  <dt data-i18n-key="privacy.controller.officeLabel">Registrované sídlo</dt>
+                  <dd>71-75 Shelton Street, Covent Garden, London, WC2H 9JQ, United Kingdom</dd>
+                </div>
+                <div>
+                  <dt data-i18n-key="privacy.controller.emailLabel">Kontaktní e-mail</dt>
+                  <dd><a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a></dd>
+                </div>
+              </dl>
+            </div>
+            <p data-i18n-key="privacy.controller.p1">
+              Není-li u konkrétního formuláře nebo služby uvedeno jinak, je správcem osobních údajů popsaných na této stránce společnost AJSEE LTD.
+            </p>
+          </section>
+
+          <section class="legal-section" id="data">
+            <h2 data-i18n-key="privacy.data.title">3. Jaké údaje můžeme zpracovávat</h2>
+            <p data-i18n-key="privacy.data.p1">
+              Podle toho, jak náš web používáš nebo jak nás kontaktuješ, můžeme zpracovávat zejména tyto kategorie osobních údajů:
+            </p>
+            <ul class="legal-list">
+              <li data-i18n-key="privacy.data.items.1">identifikační a kontaktní údaje, jako je jméno, e-mailová adresa, název společnosti a obsah zprávy;</li>
+              <li data-i18n-key="privacy.data.items.2">údaje související s newsletterem, například e-mailová adresa a preference odběru;</li>
+              <li data-i18n-key="privacy.data.items.3">údaje uvedené v business nebo partnerské poptávce, které nám dobrovolně zašleš;</li>
+              <li data-i18n-key="privacy.data.items.4">technické a uživatelské údaje, jako je IP adresa, informace o prohlížeči a zařízení, navštívené stránky, přibližná poloha, zdroj návštěvy a interakce na webu, pokud jsou přijaty analytické cookies;</li>
+              <li data-i18n-key="privacy.data.items.5">omezené údaje související s partner click-through nebo referral atribucí, pokud přecházíš z AJSEE na web třetí strany.</li>
+            </ul>
+            <p data-i18n-key="privacy.data.p2">
+              V současnosti na webu nenabízíme registraci uživatelských účtů a standardními formuláři záměrně neshromažďujeme zvláštní kategorie osobních údajů.
+            </p>
+          </section>
+
+          <section class="legal-section" id="purposes">
+            <h2 data-i18n-key="privacy.purposes.title">4. Jak a proč údaje používáme</h2>
+            <div class="legal-purpose-grid">
+              <article class="legal-card">
+                <h3 data-i18n-key="privacy.purposes.cards.1.title">Vyřizování dotazů</h3>
+                <p data-i18n-key="privacy.purposes.cards.1.text">
+                  Kontaktní údaje a obsah zprávy používáme k tomu, abychom odpověděli na tvoje dotazy, vyřídili support requesty a komunikovali o službách, o které ses zajímal/a.
+                </p>
+                <p class="legal-basis">
+                  <strong data-i18n-key="privacy.common.legalBasis">Právní základ:</strong>
+                  <span data-i18n-key="privacy.purposes.cards.1.basis">oprávněný zájem a případně kroky učiněné na tvou žádost před uzavřením smlouvy.</span>
+                </p>
+              </article>
+
+              <article class="legal-card">
+                <h3 data-i18n-key="privacy.purposes.cards.2.title">Newsletter a novinky</h3>
+                <p data-i18n-key="privacy.purposes.cards.2.text">
+                  Pokud se přihlásíš k odběru newsletteru nebo podobných novinek, používáme tvoji e-mailovou adresu k zasílání požadovaného obsahu a ke správě preferencí odběru.
+                </p>
+                <p class="legal-basis">
+                  <strong data-i18n-key="privacy.common.legalBasis">Právní základ:</strong>
+                  <span data-i18n-key="privacy.purposes.cards.2.basis">souhlas.</span>
+                </p>
+              </article>
+
+              <article class="legal-card">
+                <h3 data-i18n-key="privacy.purposes.cards.3.title">Analytika webu a zlepšování služby</h3>
+                <p data-i18n-key="privacy.purposes.cards.3.text">
+                  Analytická data používáme k pochopení návštěvnosti, zlepšování výkonu, měření efektivity obsahu a k tomu, aby byl web přehlednější a lépe použitelný.
+                </p>
+                <p class="legal-basis">
+                  <strong data-i18n-key="privacy.common.legalBasis">Právní základ:</strong>
+                  <span data-i18n-key="privacy.purposes.cards.3.basis">souhlas pro volitelné analytické technologie; oprávněný zájem pro základní bezpečnost webu a troubleshooting.</span>
+                </p>
+              </article>
+
+              <article class="legal-card">
+                <h3 data-i18n-key="privacy.purposes.cards.4.title">Partnerství a business komunikace</h3>
+                <p data-i18n-key="privacy.purposes.cards.4.text">
+                  Pokud nás kontaktuješ ohledně spolupráce nebo partnerství, zpracováváme zaslané údaje za účelem posouzení a správy potenciálního obchodního vztahu.
+                </p>
+                <p class="legal-basis">
+                  <strong data-i18n-key="privacy.common.legalBasis">Právní základ:</strong>
+                  <span data-i18n-key="privacy.purposes.cards.4.basis">oprávněný zájem a případně kroky před uzavřením smlouvy.</span>
+                </p>
+              </article>
+
+              <article class="legal-card">
+                <h3 data-i18n-key="privacy.purposes.cards.5.title">Plnění právních povinností a ochrana nároků</h3>
+                <p data-i18n-key="privacy.purposes.cards.5.text">
+                  Relevantní záznamy můžeme uchovávat nebo používat tam, kde je to nutné pro splnění právních povinností, vedení evidence, ochranu našich práv nebo obranu právních nároků.
+                </p>
+                <p class="legal-basis">
+                  <strong data-i18n-key="privacy.common.legalBasis">Právní základ:</strong>
+                  <span data-i18n-key="privacy.purposes.cards.5.basis">právní povinnost a oprávněný zájem.</span>
+                </p>
+              </article>
+            </div>
+            <p data-i18n-key="privacy.purposes.p1">
+              Tvoje osobní údaje neprodáváme.
+            </p>
+          </section>
+
+          <section class="legal-section" id="cookies">
+            <h2 data-i18n-key="privacy.cookies.title">5. Cookies a analytika</h2>
+            <p data-i18n-key="privacy.cookies.p1">
+              Náš web může používat cookies a podobné technologie. Některé jsou nezbytné pro fungování, bezpečnost nebo základní preference webu. Jiné jsou volitelné a používají se pouze tehdy, pokud s nimi souhlasíš prostřednictvím cookie banneru nebo nastavení preferencí.
+            </p>
+            <ul class="legal-list">
+              <li data-i18n-key="privacy.cookies.items.1">nezbytné technologie pro správné a bezpečné fungování webu;</li>
+              <li data-i18n-key="privacy.cookies.items.2">Google Tag Manager pro správu tagů a integrací závislých na souhlasu;</li>
+              <li data-i18n-key="privacy.cookies.items.3">Google Analytics, pokud je povolena, pro pochopení agregovaného používání webu a jeho zlepšování;</li>
+              <li data-i18n-key="privacy.cookies.items.4">partnerské nebo referral tracking parametry při přechodu na vybrané třetí strany z AJSEE.</li>
+            </ul>
+            <p data-i18n-key="privacy.cookies.p2">
+              Volitelné cookies můžeš spravovat prostřednictvím cookie banneru nebo nastavení svého prohlížeče. Vypnutí některých cookies může ovlivnit určité neesenciální funkce nebo možnosti měření.
+            </p>
+          </section>
+
+          <section class="legal-section" id="sharing">
+            <h2 data-i18n-key="privacy.sharing.title">6. Sdílení a zpracovatelé</h2>
+            <p data-i18n-key="privacy.sharing.p1">
+              Osobní údaje můžeme sdílet s důvěryhodnými poskytovateli služeb a zpracovateli, kteří nám pomáhají s provozem webu, komunikací, analytikou, hostingem nebo jinými nezbytnými business funkcemi. Pokud tito poskytovatelé vystupují jako zpracovatelé, mohou osobní údaje zpracovávat pouze podle našich pokynů.
+            </p>
+            <p data-i18n-key="privacy.sharing.p2">
+              Pokud klikneš na partnerský web, například ticketing nebo accommodation partnera, stává se tato třetí strana samostatně odpovědnou za údaje, které na jejím webu poskytneš. Doporučujeme proto seznámit se i s privacy informacemi konkrétní třetí strany.
+            </p>
+          </section>
+
+          <section class="legal-section" id="transfers">
+            <h2 data-i18n-key="privacy.transfers.title">7. Mezinárodní předávání</h2>
+            <p data-i18n-key="privacy.transfers.p1">
+              Někteří poskytovatelé služeb nebo partneři mohou zpracovávat údaje mimo zemi tvého bydliště. Pokud dochází k mezinárodnímu předávání osobních údajů, usilujeme o využití odpovídajících záruk, například rozhodnutí o odpovídající ochraně nebo standardních smluvních doložek, pokud to vyžaduje právo.
+            </p>
+          </section>
+
+          <section class="legal-section" id="retention">
+            <h2 data-i18n-key="privacy.retention.title">8. Doba uchování</h2>
+            <p data-i18n-key="privacy.retention.p1">
+              Osobní údaje uchováváme pouze po dobu nezbytnou pro daný účel, s ohledem na právní, provozní a důkazní potřeby. Konkrétní doba se může lišit podle typu interakce.
+            </p>
+            <ul class="legal-list">
+              <li data-i18n-key="privacy.retention.items.1">kontaktní nebo support enquiry: obvykle po dobu potřebnou k vyřízení požadavku a přiměřenou dobu poté;</li>
+              <li data-i18n-key="privacy.retention.items.2">newsletter údaje: do odhlášení odběru nebo odvolání souhlasu, pokud zákon nevyžaduje delší dobu;</li>
+              <li data-i18n-key="privacy.retention.items.3">analytická data: podle nastavené retenční doby konkrétních analytických nástrojů;</li>
+              <li data-i18n-key="privacy.retention.items.4">business záznamy: po dobu nezbytnou pro správu spolupráce, plnění právních povinností nebo ochranu právních nároků.</li>
+            </ul>
+          </section>
+
+          <section class="legal-section" id="rights">
+            <h2 data-i18n-key="privacy.rights.title">9. Tvoje práva</h2>
+            <p data-i18n-key="privacy.rights.p1">
+              Podle použitelného práva a tvého místa pobytu můžeš mít právo požadovat přístup ke svým osobním údajům, jejich opravu, výmaz, omezení zpracování, přenositelnost a vznést námitku proti určitému zpracování. Pokud je zpracování založeno na souhlasu, můžeš souhlas kdykoli odvolat, aniž by tím byla dotčena zákonnost předchozího zpracování.
+            </p>
+            <p data-i18n-key="privacy.rights.p2">
+              Pokud chceš svá práva uplatnit, kontaktuj nás prostřednictvím údajů níže. Před vyřízením žádosti můžeme požádat o ověření identity.
+            </p>
+          </section>
+
+          <section class="legal-section" id="contact">
+            <h2 data-i18n-key="privacy.contact.title">10. Kontakt a stížnosti</h2>
+            <p data-i18n-key="privacy.contact.p1">
+              Pro dotazy nebo žádosti týkající se ochrany osobních údajů nás můžeš kontaktovat na <a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a>.
+            </p>
+            <p data-i18n-key="privacy.contact.p2">
+              Můžeš mít také právo podat stížnost u příslušného dozorového úřadu pro ochranu osobních údajů ve své zemi nebo u relevantního úřadu spojeného se správcem.
+            </p>
+          </section>
+
+          <section class="legal-section" id="changes">
+            <h2 data-i18n-key="privacy.changes.title">11. Změny těchto zásad</h2>
+            <p data-i18n-key="privacy.changes.p1">
+              Tyto Zásady ochrany osobních údajů můžeme čas od času aktualizovat, aby odrážely právní, technické nebo business změny. Nejnovější verze bude vždy zveřejněna na této stránce spolu s datem aktualizace.
+            </p>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <noscript>
+      <div class="container" style="padding: 14px 0; color: rgba(234,240,255,.82);">
+        Pro plnou funkčnost (i18n + navigace) povol JavaScript.
+      </div>
+    </noscript>
+  </main>
+
+<footer class="site-footer">
+  <div class="footer-social">
+    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener" aria-label="Instagram">
+      <img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy" />
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener" aria-label="Facebook">
+      <img src="/images/icons/facebook.svg" alt="Facebook" loading="lazy" />
+    </a>
+    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener" aria-label="X">
+      <img src="/images/icons/twitter.svg" alt="X" loading="lazy" />
+    </a>
+    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <img src="/images/icons/linkedin.svg" alt="LinkedIn" loading="lazy" />
+    </a>
+  </div>
+
+  <div class="footer-meta">
+    <p class="footer-copy" data-i18n-key="footer-copyright">
+      &copy; 2025 AJSEE®. Všechna práva vyhrazena.
+    </p>
+
+    <nav class="footer-legal" aria-label="Právní odkazy">
+      <a
+        href="/privacy-policy.html"
+        class="footer-legal-link"
+        data-i18n-key="footer-privacy-policy"
+        data-lang-link
+      >
+        Zásady ochrany osobních údajů
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <a
+        href="/cookies-policy.html"
+        class="footer-legal-link"
+        data-i18n-key="footer-cookies-policy"
+        data-lang-link
+      >
+        Zásady cookies
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <button
+        type="button"
+        class="footer-legal-button"
+        data-open-cookie-settings
+        data-i18n-key="footer-cookie-settings"
+      >
+        Nastavení cookies
+      </button>
+    </nav>
+
+    <p class="footer-company" data-i18n-key="footer-company-info">
+      AJSEE® provozuje společnost AJSEE LTD, registrovaná v Anglii a Walesu pod číslem 17105762. Registrované sídlo: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.
+    </p>
+
+    <p class="footer-contact">
+      <span data-i18n-key="footer-contact-label">Kontakt:</span>
+      <a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a>
+    </p>
+  </div>
+</footer>
+</body>
+</html>

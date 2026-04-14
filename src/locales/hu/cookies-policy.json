@@ -1,0 +1,108 @@
+{
+  "seo": {
+    "cookies": {
+      "title": "Cookie-szabályzat | AJSEE",
+      "description": "Hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek, melyek opcionálisak, és hogyan kezelheted a beállításaidat.",
+      "ogTitle": "Cookie-szabályzat | AJSEE",
+      "ogDescription": "Hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek, melyek opcionálisak, és hogyan kezelheted a beállításaidat."
+    }
+  },
+  "cookies": {
+    "hero": {
+      "eyebrow": "AJSEE · Sütik és hasonló technológiák",
+      "title": "Cookie-szabályzat",
+      "lead": "Ezen az oldalon információkat találsz arról, hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek a weboldal működéséhez, melyek opcionálisak, és hogyan kezelheted a beállításaidat.",
+      "updatedLabel": "Utolsó frissítés:",
+      "updatedDate": "2026. április 13."
+    },
+    "toc": {
+      "title": "Tartalom",
+      "what": "Mik azok a sütik",
+      "how": "Hogyan használjuk őket",
+      "types": "A sütik és technológiák típusai",
+      "tools": "Az AJSEE által használt eszközök",
+      "managing": "Hogyan kezelheted a beállításaidat",
+      "thirdParties": "Harmadik felek",
+      "updates": "A szabályzat módosításai",
+      "contact": "Kapcsolat"
+    },
+    "what": {
+      "title": "1. Mik azok a sütik",
+      "p1": "A sütik kis szöveges fájlok vagy hasonló technológiák, amelyeket egy weboldal a készülékeden tárol, vagy amelyekből információt olvas ki a látogatás során. Segíthetnek a weboldal alapvető működésében, a beállítások megjegyzésében, a forgalom elemzésében vagy az interakciók mérésében.",
+      "p2": "Jelen szabályzat alkalmazásában a „sütik” kifejezést a hasonló tárolási és hozzáférési technológiákra is használjuk, amennyiben hasonló funkciót töltenek be."
+    },
+    "how": {
+      "title": "2. Hogyan használjuk a sütiket",
+      "p1": "Az AJSEE bizonyos technológiákat azért használ, hogy a weboldal megfelelően és biztonságosan működjön. Más technológiákat csak akkor használunk, ha ehhez hozzájárulsz, például analitikai célokra vagy a tartalom teljesítményének mérésére.",
+      "p2": "Nem minden süti szolgálja ugyanazt a célt. Egyesek a weboldal technikai működéséhez szükségesek, mások segítenek megérteni, hogyan használják az emberek a weboldalt, és egyesek a partneroldalakra történő átlépéssel vagy az attribúciós paraméterek mérésével kapcsolatosak lehetnek."
+    },
+    "types": {
+      "title": "3. A sütik és technológiák típusai",
+      "cards": {
+        "1": {
+          "title": "Szükséges",
+          "text": "Ezek a technológiák a weboldal alapvető működéséhez, a biztonsághoz, a munkamenet kezeléséhez vagy a süti-beállítások megjegyzéséhez szükségesek. Nélkülük a szolgáltatás egyes részei nem biztos, hogy megfelelően működnek."
+        },
+        "2": {
+          "title": "Analitikai",
+          "text": "Ezek a technológiák segítenek megérteni a weboldal forgalmát, a tartalom teljesítményét és a felhasználói viselkedést összesített formában. Csak akkor használjuk őket, ha ezt engedélyezed."
+        },
+        "3": {
+          "title": "Preferencia",
+          "text": "Ezek bizonyos választások vagy beállítások megjegyzésére szolgálhatnak, például a nyelvi vagy felhasználói preferenciák esetében, ha a weboldal adott funkciója erre támaszkodik."
+        },
+        "4": {
+          "title": "Partner / attribúció",
+          "text": "Bizonyos esetekben referral vagy attribúciós paraméterek használhatók, amikor az AJSEE-ről egy partner weboldalára lépsz át, annak értékelésére, hogy a látogatás az AJSEE-ről érkezett-e."
+        }
+      }
+    },
+    "tools": {
+      "title": "4. Az AJSEE által használt eszközök",
+      "p1": "A weboldal aktuális konfigurációjától függően az AJSEE különösen az alábbi eszközöket vagy technológiai kategóriákat használhatja:",
+      "items": {
+        "1": {
+          "label": "Süti-beállítások / hozzájárulás",
+          "text": "Olyan technológiák, amelyek megjegyzik, hogy elfogadtad vagy elutasítottad az opcionális sütiket."
+        },
+        "2": {
+          "label": "Google Tag Manager",
+          "text": "Címkekezelő eszköz a tagek kezelésére és további technológiák betöltésére az aktuális konfiguráció és a hozzájárulási állapot szerint."
+        },
+        "3": {
+          "label": "Google Analytics",
+          "text": "Elemző eszköz, amelyet csak akkor használunk, ha hozzájárulsz, a weboldal forgalmának mérésére és a weboldal fejlesztésére."
+        },
+        "4": {
+          "label": "Partner / referral paraméterek",
+          "text": "A partneroldalakra történő átlépéssel kapcsolatos paraméterek vagy mérési mechanizmusok, például affiliate vagy referral együttműködések keretében."
+        }
+      },
+      "p2": "A konkrét nevek, célok és megőrzési idők idővel változhatnak a weboldal technikai fejlődésétől, a használt integrációktól vagy a partnerek frissítéseitől függően. Ha lényeges változás történik, ezt az oldalt ennek megfelelően frissítjük."
+    },
+    "managing": {
+      "title": "5. Hogyan kezelheted a beállításaidat",
+      "p1": "Az opcionális sütiket a süti-bannerben vagy a weboldalon az első látogatáskor, illetve a beállítások visszaállítása után megjelenő beállításokban kezelheted.",
+      "items": {
+        "1": "elfogadhatod vagy elutasíthatod az opcionális kategóriákat;",
+        "2": "később is módosíthatod a beállításaidat, ha a megfelelő vezérlő elérhető a weboldalon;",
+        "3": "a böngésződ beállításaiban is korlátozhatod vagy törölheted a sütiket."
+      },
+      "p2": "Felhívjuk a figyelmedet, hogy bizonyos technológiák blokkolása vagy eltávolítása befolyásolhatja a weboldal egyes részeinek megfelelő működését."
+    },
+    "thirdParties": {
+      "title": "6. Harmadik felek",
+      "p1": "Ha az AJSEE-ről egy harmadik fél weboldalára kattintasz, például egy jegyértékesítő vagy szállás partner oldalára, az adott harmadik fél saját szabályai szerint használhat sütiket és hasonló technológiákat. Az AJSEE-nek nincs közvetlen ellenőrzése ezek felett a technológiák felett a külső weboldalon.",
+      "p2": "Ezért javasoljuk, hogy tekintsd át annak a partnernek vagy szolgáltatónak a sütiszabályzatát és adatvédelmi tájékoztatóját is, amelynek a weboldalára átlépsz."
+    },
+    "updates": {
+      "title": "7. A szabályzat módosításai",
+      "p1": "Időről időre frissíthetjük ezt a Cookie-szabályzatot, hogy tükrözze a jogi, technikai vagy üzleti változásokat. A legfrissebb verzió mindig ezen az oldalon lesz közzétéve a frissítés dátumával együtt."
+    },
+    "contact": {
+      "title": "8. Kapcsolat",
+      "p1": "Ha kérdésed van a sütik vagy hasonló technológiák AJSEE általi használatával kapcsolatban, felveheted velünk a kapcsolatot a <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a> címen.",
+      "p2": "További információt arról, hogyan kezeli az AJSEE a személyes adatokat, a Privacy Policy oldalon találsz."
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "seo": {
+    "cookies": {
+      "title": "Polityka cookies | AJSEE",
+      "description": "Jak AJSEE wykorzystuje pliki cookies i podobne technologie, które z nich są niezbędne, które opcjonalne oraz jak możesz zarządzać swoimi preferencjami.",
+      "ogTitle": "Polityka cookies | AJSEE",
+      "ogDescription": "Jak AJSEE wykorzystuje pliki cookies i podobne technologie, które z nich są niezbędne, które opcjonalne oraz jak możesz zarządzać swoimi preferencjami."
+    }
+  },
+  "cookies": {
+    "hero": {
+      "eyebrow": "AJSEE · Cookies i podobne technologie",
+      "title": "Polityka cookies",
+      "lead": "Na tej stronie znajdziesz informacje o tym, w jaki sposób AJSEE wykorzystuje pliki cookies i podobne technologie, które są niezbędne do działania strony, które są opcjonalne oraz jak możesz zarządzać swoimi preferencjami.",
+      "updatedLabel": "Ostatnia aktualizacja:",
+      "updatedDate": "13 kwietnia 2026"
+    },
+    "toc": {
+      "title": "Spis treści",
+      "what": "Czym są cookies",
+      "how": "Jak je wykorzystujemy",
+      "types": "Rodzaje cookies i technologii",
+      "tools": "Narzędzia używane w AJSEE",
+      "managing": "Jak zarządzać preferencjami",
+      "thirdParties": "Strony trzecie",
+      "updates": "Zmiany w tej polityce",
+      "contact": "Kontakt"
+    },
+    "what": {
+      "title": "1. Czym są cookies",
+      "p1": "Cookies to małe pliki tekstowe lub podobne technologie, które strona internetowa zapisuje na Twoim urządzeniu albo z których odczytuje informacje podczas Twojej wizyty. Mogą pomagać w podstawowym działaniu strony, zapamiętywaniu preferencji, analizowaniu ruchu lub mierzeniu interakcji.",
+      "p2": "Na potrzeby tej polityki używamy pojęcia „cookies” również w odniesieniu do podobnych technologii przechowywania i dostępu do informacji, jeśli pełnią porównywalną funkcję."
+    },
+    "how": {
+      "title": "2. Jak wykorzystujemy cookies",
+      "p1": "AJSEE wykorzystuje niektóre technologie po to, aby strona działała prawidłowo i bezpiecznie. Inne technologie wykorzystujemy wyłącznie wtedy, gdy wyrazisz na to zgodę, na przykład do analityki lub pomiaru skuteczności treści.",
+      "p2": "Nie wszystkie cookies służą temu samemu celowi. Niektóre są niezbędne do technicznego działania strony, inne pomagają nam zrozumieć, jak użytkownicy korzystają ze strony, a jeszcze inne mogą wiązać się z przejściem na strony partnerów lub z pomiarem parametrów atrybucyjnych."
+    },
+    "types": {
+      "title": "3. Rodzaje cookies i technologii",
+      "cards": {
+        "1": {
+          "title": "Niezbędne",
+          "text": "Te technologie są wymagane do podstawowego działania strony, bezpieczeństwa, zarządzania sesją lub zapamiętywania wyboru preferencji cookies. Bez nich niektóre części usługi mogą nie działać prawidłowo."
+        },
+        "2": {
+          "title": "Analityczne",
+          "text": "Te technologie pomagają nam zrozumieć ruch na stronie, skuteczność treści oraz zachowania użytkowników w formie zagregowanej. Korzystamy z nich tylko wtedy, gdy na to pozwolisz."
+        },
+        "3": {
+          "title": "Preferencyjne",
+          "text": "Mogą służyć do zapamiętywania określonych wyborów lub ustawień, na przykład preferencji językowych lub użytkownika, jeśli dana funkcja strony z nich korzysta."
+        },
+        "4": {
+          "title": "Partnerskie / atrybucyjne",
+          "text": "W niektórych przypadkach podczas przejścia z AJSEE na stronę partnera mogą być używane parametry referral lub atrybucyjne, które pomagają ocenić, czy wizyta pochodziła z AJSEE."
+        }
+      }
+    },
+    "tools": {
+      "title": "4. Narzędzia używane w AJSEE",
+      "p1": "W zależności od aktualnej konfiguracji strony AJSEE może w szczególności korzystać z następujących narzędzi lub kategorii technologii:",
+      "items": {
+        "1": {
+          "label": "Preferencje cookies / zgoda",
+          "text": "Technologie służące do zapamiętywania, czy zaakceptowałeś/-aś lub odrzuciłeś/-aś opcjonalne cookies."
+        },
+        "2": {
+          "label": "Google Tag Manager",
+          "text": "Narzędzie do zarządzania tagami i ładowania dodatkowych technologii zgodnie z aktualną konfiguracją i statusem zgody."
+        },
+        "3": {
+          "label": "Google Analytics",
+          "text": "Narzędzie analityczne używane tylko wtedy, gdy wyrazisz zgodę, do mierzenia ruchu na stronie i jej ulepszania."
+        },
+        "4": {
+          "label": "Parametry partnerskie / referral",
+          "text": "Parametry lub mechanizmy pomiarowe związane z przejściem na strony partnerów, na przykład w ramach współpracy afiliacyjnej lub referral."
+        }
+      },
+      "p2": "Konkretne nazwy, cele i okresy przechowywania mogą z czasem się zmieniać w zależności od rozwoju technicznego strony, wykorzystywanych integracji lub aktualizacji partnerów. Jeśli nastąpi istotna zmiana, odpowiednio zaktualizujemy tę stronę."
+    },
+    "managing": {
+      "title": "5. Jak zarządzać swoimi preferencjami",
+      "p1": "Opcjonalnymi cookies możesz zarządzać za pośrednictwem bannera cookies lub ustawień wyświetlanych na stronie podczas pierwszej wizyty albo po zresetowaniu preferencji.",
+      "items": {
+        "1": "możesz zaakceptować lub odrzucić opcjonalne kategorie;",
+        "2": "możesz później zmienić swoje preferencje, jeśli odpowiednie ustawienie jest dostępne na stronie;",
+        "3": "możesz także ograniczyć lub usunąć cookies w ustawieniach swojej przeglądarki."
+      },
+      "p2": "Pamiętaj, że zablokowanie lub usunięcie niektórych technologii może wpłynąć na prawidłowe działanie niektórych części strony."
+    },
+    "thirdParties": {
+      "title": "6. Strony trzecie",
+      "p1": "Jeśli klikniesz z AJSEE na stronę podmiotu trzeciego, na przykład partnera sprzedaży biletów lub partnera noclegowego, ten podmiot trzeci może wykorzystywać własne cookies i podobne technologie zgodnie z własnymi zasadami. AJSEE nie ma bezpośredniej kontroli nad tymi technologiami na zewnętrznej stronie.",
+      "p2": "Dlatego zalecamy również zapoznanie się z polityką cookies i informacjami o prywatności konkretnego partnera lub usługodawcy, którego stronę odwiedzasz."
+    },
+    "updates": {
+      "title": "7. Zmiany w tej polityce",
+      "p1": "Możemy od czasu do czasu aktualizować tę Politykę cookies, aby odzwierciedlała zmiany prawne, techniczne lub biznesowe. Najnowsza wersja będzie zawsze publikowana na tej stronie wraz z datą aktualizacji."
+    },
+    "contact": {
+      "title": "8. Kontakt",
+      "p1": "Jeśli masz pytania dotyczące korzystania z cookies lub podobnych technologii w AJSEE, możesz skontaktować się z nami pod adresem <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a>.",
+      "p2": "Więcej informacji o tym, jak AJSEE przetwarza dane osobowe, znajdziesz także na stronie Privacy Policy."
+    }
+  }
+}

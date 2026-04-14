@@ -1,0 +1,108 @@
+{
+  "seo": {
+    "cookies": {
+      "title": "Zásady cookies | AJSEE",
+      "description": "Jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference.",
+      "ogTitle": "Zásady cookies | AJSEE",
+      "ogDescription": "Jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference."
+    }
+  },
+  "cookies": {
+    "hero": {
+      "eyebrow": "AJSEE · Cookies a podobné technologie",
+      "title": "Zásady cookies",
+      "lead": "Na této stránce najdeš informace o tom, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné pro fungování webu, které jsou volitelné a jak můžeš spravovat své preference.",
+      "updatedLabel": "Naposledy aktualizováno:",
+      "updatedDate": "13. dubna 2026"
+    },
+    "toc": {
+      "title": "Obsah",
+      "what": "Co jsou cookies",
+      "how": "Jak je používáme",
+      "types": "Typy cookies a technologií",
+      "tools": "Nástroje používané na AJSEE",
+      "managing": "Jak spravovat preference",
+      "thirdParties": "Třetí strany",
+      "updates": "Změny těchto zásad",
+      "contact": "Kontakt"
+    },
+    "what": {
+      "title": "1. Co jsou cookies",
+      "p1": "Cookies jsou malé textové soubory nebo obdobné technologie, které web ukládá do tvého zařízení nebo z něj čte informace při návštěvě stránky. Mohou pomáhat se základním fungováním webu, zapamatováním preferencí, analýzou návštěvnosti nebo měřením interakcí.",
+      "p2": "Pro účely těchto zásad používáme pojem „cookies“ i pro podobné technologie ukládání a přístupu k informacím, pokud mají obdobnou funkci."
+    },
+    "how": {
+      "title": "2. Jak cookies používáme",
+      "p1": "AJSEE používá některé technologie proto, aby web fungoval správně a bezpečně. Další technologie používáme pouze tehdy, pokud k tomu udělíš souhlas, například pro analytiku nebo měření výkonu obsahu.",
+      "p2": "Ne všechny cookies mají stejný účel. Některé jsou nezbytné pro technický provoz, jiné pomáhají pochopit, jak lidé web používají, a některé mohou souviset s přechodem na partnerské stránky nebo s měřením atribučních parametrů."
+    },
+    "types": {
+      "title": "3. Typy cookies a technologií",
+      "cards": {
+        "1": {
+          "title": "Nezbytné",
+          "text": "Tyto technologie jsou potřebné pro základní fungování webu, bezpečnost, správu relace nebo zapamatování volby cookie preferencí. Bez nich by některé části služby nemusely fungovat správně."
+        },
+        "2": {
+          "title": "Analytické",
+          "text": "Tyto technologie nám pomáhají pochopit návštěvnost webu, výkonnost obsahu a chování uživatelů v agregované podobě. Používáme je pouze tehdy, pokud je povolíš."
+        },
+        "3": {
+          "title": "Preferenční",
+          "text": "Mohou sloužit k zapamatování určitých voleb nebo nastavení, například jazykové nebo uživatelské preference, pokud je konkrétní funkce na webu využívá."
+        },
+        "4": {
+          "title": "Partnerské / atribuční",
+          "text": "V některých případech mohou být při přechodu z AJSEE na partnerský web použity referral nebo atribuční parametry, které pomáhají vyhodnotit, zda návštěva přišla z AJSEE."
+        }
+      }
+    },
+    "tools": {
+      "title": "4. Nástroje používané na AJSEE",
+      "p1": "Podle aktuální konfigurace webu může AJSEE používat zejména následující nástroje nebo kategorie technologií:",
+      "items": {
+        "1": {
+          "label": "Cookie preference / consent",
+          "text": "Technologie pro zapamatování volby, zda jsi přijal/a nebo odmítl/a volitelné cookies."
+        },
+        "2": {
+          "label": "Google Tag Manager",
+          "text": "Nástroj pro správu tagů a načítání dalších technologií podle aktuální konfigurace a souhlasu."
+        },
+        "3": {
+          "label": "Google Analytics",
+          "text": "Analytický nástroj používaný pouze tehdy, pokud k tomu udělíš souhlas, pro měření návštěvnosti a zlepšování webu."
+        },
+        "4": {
+          "label": "Partnerské / referral parametry",
+          "text": "Parametry nebo měřicí mechanismy související s přechodem na partnerské weby, například v rámci affiliate nebo referral spolupráce."
+        }
+      },
+      "p2": "Konkrétní názvy, účely a retenční doby se mohou v čase měnit podle technického vývoje webu, použitých integrací nebo aktualizace partnerů. Pokud dojde k podstatné změně, tuto stránku odpovídajícím způsobem aktualizujeme."
+    },
+    "managing": {
+      "title": "5. Jak spravovat své preference",
+      "p1": "Volitelné cookies můžeš spravovat prostřednictvím cookie banneru nebo nastavení, které se na webu zobrazuje při první návštěvě nebo po resetu preferencí.",
+      "items": {
+        "1": "můžeš přijmout nebo odmítnout volitelné kategorie;",
+        "2": "můžeš změnit své preference později, pokud je na webu k dispozici příslušné ovládání;",
+        "3": "můžeš také omezit nebo mazat cookies v nastavení svého prohlížeče."
+      },
+      "p2": "Upozorňujeme, že zablokování nebo odstranění některých technologií může ovlivnit správnou funkčnost některých částí webu."
+    },
+    "thirdParties": {
+      "title": "6. Třetí strany",
+      "p1": "Pokud klikneš z AJSEE na web třetí strany, například ticketingového nebo ubytovacího partnera, může tato třetí strana používat vlastní cookies a podobné technologie podle svých pravidel. Nad těmito technologiemi na externím webu AJSEE nemá přímou kontrolu.",
+      "p2": "Doporučujeme proto seznámit se i se zásadami cookies a ochranou osobních údajů konkrétního partnera nebo poskytovatele služby, na jehož web přecházíš."
+    },
+    "updates": {
+      "title": "7. Změny těchto zásad",
+      "p1": "Tyto Zásady cookies můžeme čas od času aktualizovat, aby odrážely právní, technické nebo obchodní změny. Nejnovější verze bude vždy zveřejněna na této stránce spolu s datem aktualizace."
+    },
+    "contact": {
+      "title": "8. Kontakt",
+      "p1": "Pokud máš dotazy k používání cookies nebo podobných technologií na AJSEE, můžeš nás kontaktovat na <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a>.",
+      "p2": "Další informace o tom, jak AJSEE zpracovává osobní údaje, najdeš také na stránce Privacy Policy."
+    }
+  }
+}

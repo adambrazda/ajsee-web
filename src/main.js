@@ -12,6 +12,7 @@ import './utils/ajsee-date-popover.js';
 
 // ✅ NEW: desktop language dropdown (mamma-mia style)
 import { initLangDropdown } from './utils/lang-dropdown.js';
+import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 
 import { getAllEvents } from './api/eventsApi.js';
 import { setupCityTypeahead } from './city/typeahead.js';
@@ -790,6 +791,16 @@ function updateFilterLocaleTexts () {
 
   updateDateComboLabel();
 }
+
+function emitI18nReady(lang) {
+  try {
+    window.dispatchEvent(new CustomEvent('ajsee:i18n-applied', { detail: { lang } }));
+  } catch { /* noop */ }
+  try {
+    window.dispatchEvent(new CustomEvent('ajsee:lang-changed', { detail: { lang } }));
+  } catch { /* noop */ }
+}
+
 async function applyTranslations (lang) {
   window.translations = await loadTranslations(lang);
   document.querySelectorAll('[data-i18n-key]').forEach(el => {
@@ -810,6 +821,9 @@ async function applyTranslations (lang) {
 
   // ✅ při změně jazyka znovu vykresli homepage blog (lokalizované titulky/CTA)
   renderHomeBlog();
+
+  // ✅ shared components (cookie banner, legal links, etc.) must react only AFTER translations are really ready
+  emitI18nReady(lang);
 }
 if (!window.applyTranslations) window.applyTranslations = applyTranslations;
 
@@ -829,6 +843,14 @@ async function ensureTranslations (lang) {
   window.translations = await loadTranslations(lang);
   updateFilterLocaleTexts();
   renderHomeBlog();
+  emitI18nReady(lang);
+}
+
+function syncCookieBanner () {
+  try {
+    // banner must initialize / re-render only after ensureTranslations(currentLang) has completed
+    initCookieBanner({ lang: currentLang, source: 'main-i18n' });
+  } catch { /* noop */ }
 }
 
 /* ───────── UI helpers ───────── */
@@ -2408,7 +2430,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const ccCookie = getCookie('aj_country');
   currentFilters.countryCode = (ccCookie || langToCountry[currentLang] || 'CZ').toUpperCase();
 
+  // ✅ ROOT CAUSE FIX:
+  // Cookie banner must not init before translations are ready.
+  // Homepage uses its own local i18n flow, so we first resolve translations,
+  // then sync banner with the already prepared window.translations.
   await ensureTranslations(currentLang);
+  syncCookieBanner();
 
   // ✅ homepage blog render po startu (aby to sedělo i ve Vite)
   renderHomeBlog();
@@ -2443,6 +2470,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.documentElement.lang = currentLang;
 
     await ensureTranslations(currentLang);
+    syncCookieBannerLanguage(currentLang);
+
     setFilterInputsFromState();
 
     await reinitCityTypeahead(currentLang);

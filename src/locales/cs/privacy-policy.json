@@ -1,0 +1,136 @@
+{
+  "seo": {
+    "privacy": {
+      "title": "Zásady ochrany osobních údajů | AJSEE",
+      "description": "Jak AJSEE zpracovává osobní údaje, používá cookies a analytické nástroje a jaká máš práva.",
+      "ogTitle": "Zásady ochrany osobních údajů | AJSEE",
+      "ogDescription": "Jak AJSEE zpracovává osobní údaje, používá cookies a analytické nástroje a jaká máš práva."
+    }
+  },
+  "privacy": {
+    "hero": {
+      "eyebrow": "AJSEE · Právní informace",
+      "title": "Zásady ochrany osobních údajů",
+      "lead": "Na této stránce najdeš informace o tom, jaké osobní údaje může AJSEE zpracovávat, proč je zpracovává, jak dlouho je uchovává a jaká máš práva.",
+      "updatedLabel": "Naposledy aktualizováno:",
+      "updatedDate": "13. dubna 2026"
+    },
+    "toc": {
+      "title": "Obsah",
+      "intro": "Úvod",
+      "controller": "Údaje o správci",
+      "data": "Jaké údaje můžeme zpracovávat",
+      "purposes": "Jak a proč údaje používáme",
+      "cookies": "Cookies a analytika",
+      "sharing": "Sdílení a zpracovatelé",
+      "transfers": "Mezinárodní předávání",
+      "retention": "Doba uchování",
+      "rights": "Tvoje práva",
+      "contact": "Kontakt a stížnosti",
+      "changes": "Změny těchto zásad"
+    },
+    "intro": {
+      "title": "1. Úvod",
+      "p1": "AJSEE pomáhá uživatelům objevovat události a související cestovní či volnočasové služby prostřednictvím ověřených partnerů. Při provozu webu můžeme zpracovávat osobní údaje například tehdy, když nás kontaktuješ, přihlásíš se k odběru novinek, pošleš obchodní poptávku nebo interaguješ s volitelnými analytickými a partnerskými atribučními technologiemi.",
+      "p2": "Osobní údaje chceme zpracovávat transparentně, bezpečně a pouze v rozsahu nezbytném pro daný účel a v souladu s příslušnými právními předpisy na ochranu osobních údajů, včetně UK GDPR a tam, kde je to relevantní, také EU GDPR."
+    },
+    "controller": {
+      "title": "2. Údaje o správci",
+      "companyLabel": "Společnost",
+      "numberLabel": "Číslo společnosti",
+      "officeLabel": "Registrované sídlo",
+      "emailLabel": "Kontaktní e-mail",
+      "p1": "Není-li u konkrétního formuláře nebo služby uvedeno jinak, je správcem osobních údajů popsaných na této stránce společnost AJSEE LTD."
+    },
+    "data": {
+      "title": "3. Jaké údaje můžeme zpracovávat",
+      "p1": "Podle toho, jak náš web používáš nebo jak nás kontaktuješ, můžeme zpracovávat zejména tyto kategorie osobních údajů:",
+      "items": {
+        "1": "identifikační a kontaktní údaje, jako je jméno, e-mailová adresa, název společnosti a obsah zprávy;",
+        "2": "údaje související s newsletterem, například e-mailová adresa a preference odběru;",
+        "3": "údaje uvedené v obchodní nebo partnerské poptávce, které nám dobrovolně zašleš;",
+        "4": "technické a uživatelské údaje, jako je IP adresa, informace o prohlížeči a zařízení, navštívené stránky, přibližná poloha, zdroj návštěvy a interakce na webu, pokud jsou přijaty analytické cookies;",
+        "5": "omezené údaje související s partnerským proklikem nebo atribučním měřením, pokud přecházíš z AJSEE na web třetí strany."
+      },
+      "p2": "V současnosti na webu nenabízíme registraci uživatelských účtů a standardními formuláři záměrně neshromažďujeme zvláštní kategorie osobních údajů."
+    },
+    "purposes": {
+      "title": "4. Jak a proč údaje používáme",
+      "cards": {
+        "1": {
+          "title": "Vyřizování dotazů",
+          "text": "Kontaktní údaje a obsah zprávy používáme k tomu, abychom odpověděli na tvoje dotazy, vyřídili žádosti o podporu a komunikovali o službách, o které ses zajímal/a.",
+          "basis": "oprávněný zájem a případně kroky učiněné na tvou žádost před uzavřením smlouvy."
+        },
+        "2": {
+          "title": "Newsletter a novinky",
+          "text": "Pokud se přihlásíš k odběru newsletteru nebo podobných novinek, používáme tvoji e-mailovou adresu k zasílání požadovaného obsahu a ke správě preferencí odběru.",
+          "basis": "souhlas."
+        },
+        "3": {
+          "title": "Analytika webu a zlepšování služby",
+          "text": "Analytická data používáme k pochopení návštěvnosti, zlepšování výkonu, měření efektivity obsahu a k tomu, aby byl web přehlednější a lépe použitelný.",
+          "basis": "souhlas pro volitelné analytické technologie; oprávněný zájem pro základní bezpečnost webu a řešení technických problémů."
+        },
+        "4": {
+          "title": "Partnerství a obchodní komunikace",
+          "text": "Pokud nás kontaktuješ ohledně spolupráce nebo partnerství, zpracováváme zaslané údaje za účelem posouzení a správy potenciálního obchodního vztahu.",
+          "basis": "oprávněný zájem a případně kroky před uzavřením smlouvy."
+        },
+        "5": {
+          "title": "Plnění právních povinností a ochrana nároků",
+          "text": "Relevantní záznamy můžeme uchovávat nebo používat tam, kde je to nutné pro splnění právních povinností, vedení evidence, ochranu našich práv nebo obranu právních nároků.",
+          "basis": "právní povinnost a oprávněný zájem."
+        }
+      },
+      "p1": "Tvoje osobní údaje neprodáváme."
+    },
+    "common": {
+      "legalBasis": "Právní základ:"
+    },
+    "cookies": {
+      "title": "5. Cookies a analytika",
+      "p1": "Náš web může používat cookies a podobné technologie. Některé jsou nezbytné pro fungování, bezpečnost nebo základní preference webu. Jiné jsou volitelné a používají se pouze tehdy, pokud s nimi souhlasíš prostřednictvím cookie banneru nebo nastavení preferencí.",
+      "items": {
+        "1": "nezbytné technologie pro správné a bezpečné fungování webu;",
+        "2": "Google Tag Manager pro správu tagů a integrací závislých na souhlasu;",
+        "3": "Google Analytics, pokud je povolena, pro pochopení agregovaného používání webu a jeho zlepšování;",
+        "4": "partnerské nebo atribuční tracking parametry při přechodu na vybrané třetí strany z AJSEE."
+      },
+      "p2": "Volitelné cookies můžeš spravovat prostřednictvím cookie banneru nebo nastavení svého prohlížeče. Vypnutí některých cookies může ovlivnit určité neesenciální funkce nebo možnosti měření."
+    },
+    "sharing": {
+      "title": "6. Sdílení a zpracovatelé",
+      "p1": "Osobní údaje můžeme sdílet s důvěryhodnými poskytovateli služeb a zpracovateli, kteří nám pomáhají s provozem webu, komunikací, analytikou, hostingem nebo jinými nezbytnými obchodními funkcemi. Pokud tito poskytovatelé vystupují jako zpracovatelé, mohou osobní údaje zpracovávat pouze podle našich pokynů.",
+      "p2": "Pokud klikneš na partnerský web, například ticketingového nebo ubytovacího partnera, stává se tato třetí strana samostatně odpovědnou za údaje, které na jejím webu poskytneš. Doporučujeme proto seznámit se i s informacemi o ochraně osobních údajů konkrétní třetí strany."
+    },
+    "transfers": {
+      "title": "7. Mezinárodní předávání",
+      "p1": "Někteří poskytovatelé služeb nebo partneři mohou zpracovávat údaje mimo zemi tvého bydliště. Pokud dochází k mezinárodnímu předávání osobních údajů, usilujeme o využití odpovídajících záruk, například rozhodnutí o odpovídající ochraně nebo standardních smluvních doložek, pokud to vyžaduje právo."
+    },
+    "retention": {
+      "title": "8. Doba uchování",
+      "p1": "Osobní údaje uchováváme pouze po dobu nezbytnou pro daný účel, s ohledem na právní, provozní a důkazní potřeby. Konkrétní doba se může lišit podle typu interakce.",
+      "items": {
+        "1": "kontaktní dotazy nebo žádosti o podporu: obvykle po dobu potřebnou k vyřízení požadavku a přiměřenou dobu poté;",
+        "2": "newsletter údaje: do odhlášení odběru nebo odvolání souhlasu, pokud zákon nevyžaduje delší dobu;",
+        "3": "analytická data: podle nastavené retenční doby konkrétních analytických nástrojů;",
+        "4": "obchodní záznamy: po dobu nezbytnou pro správu spolupráce, plnění právních povinností nebo ochranu právních nároků."
+      }
+    },
+    "rights": {
+      "title": "9. Tvoje práva",
+      "p1": "Podle použitelného práva a tvého místa pobytu můžeš mít právo požadovat přístup ke svým osobním údajům, jejich opravu, výmaz, omezení zpracování, přenositelnost a vznést námitku proti určitému zpracování. Pokud je zpracování založeno na souhlasu, můžeš souhlas kdykoli odvolat, aniž by tím byla dotčena zákonnost předchozího zpracování.",
+      "p2": "Pokud chceš svá práva uplatnit, kontaktuj nás prostřednictvím údajů níže. Před vyřízením žádosti můžeme požádat o ověření identity."
+    },
+    "contact": {
+      "title": "10. Kontakt a stížnosti",
+      "p1": "Pro dotazy nebo žádosti týkající se ochrany osobních údajů nás můžeš kontaktovat na <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a>.",
+      "p2": "Můžeš mít také právo podat stížnost u příslušného dozorového úřadu pro ochranu osobních údajů ve své zemi nebo u relevantního úřadu spojeného se správcem."
+    },
+    "changes": {
+      "title": "11. Změny těchto zásad",
+      "p1": "Tyto Zásady ochrany osobních údajů můžeme čas od času aktualizovat, aby odrážely právní, technické nebo obchodní změny. Nejnovější verze bude vždy zveřejněna na této stránce spolu s datem aktualizace."
+    }
+  }
+}

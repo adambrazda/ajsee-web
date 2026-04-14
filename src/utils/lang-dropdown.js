@@ -1,13 +1,14 @@
 // /src/utils/lang-dropdown.js
-// AJSEE – desktop language dropdown (open/close + switch lang via URL param)
+// AJSEE – language dropdown for current <details class="lang-dropdown"> markup
+// Supports desktop + mobile dropdowns and preserves current page URL with ?lang=
 
 const LANG_META = {
   cs: { label: 'Čeština', flag: '/images/flags/cz.svg' },
-  en: { label: 'English',  flag: '/images/flags/gb.svg' },
-  de: { label: 'Deutsch',  flag: '/images/flags/de.svg' },
+  en: { label: 'English', flag: '/images/flags/gb.svg' },
+  de: { label: 'Deutsch', flag: '/images/flags/de.svg' },
   sk: { label: 'Slovenčina', flag: '/images/flags/sk.svg' },
-  pl: { label: 'Polski',   flag: '/images/flags/pl.svg' },
-  hu: { label: 'Magyar',   flag: '/images/flags/hu.svg' },
+  pl: { label: 'Polski', flag: '/images/flags/pl.svg' },
+  hu: { label: 'Magyar', flag: '/images/flags/hu.svg' },
 };
 
 function detectLang() {
@@ -24,115 +25,162 @@ function detectLang() {
 function goToLang(lang) {
   const url = new URL(window.location.href);
 
-  // default = cs => čistá URL bez parametru
-  if (lang === 'cs') url.searchParams.delete('lang');
-  else url.searchParams.set('lang', lang);
+  if (lang === 'cs') {
+    url.searchParams.delete('lang');
+  } else {
+    url.searchParams.set('lang', lang);
+  }
 
-  // přesměruj (spolehlivé pro events fetch / locale)
   window.location.assign(url.toString());
 }
 
+function getDropdownRoots() {
+  const roots = new Set();
+
+  document.querySelectorAll('details.lang-dropdown').forEach((el) => roots.add(el));
+  document.querySelectorAll('[data-lang-dropdown]').forEach((el) => roots.add(el));
+
+  return Array.from(roots);
+}
+
+function closeDetailsDropdown(root) {
+  if (!(root instanceof HTMLElement)) return;
+  if (root.tagName.toLowerCase() === 'details') {
+    root.removeAttribute('open');
+  }
+
+  const trigger =
+    root.querySelector('.lang-current') ||
+    root.querySelector('.lang-trigger');
+
+  if (trigger) {
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+}
+
+function openDetailsDropdown(root) {
+  if (!(root instanceof HTMLElement)) return;
+  if (root.tagName.toLowerCase() === 'details') {
+    root.setAttribute('open', '');
+  }
+
+  const trigger =
+    root.querySelector('.lang-current') ||
+    root.querySelector('.lang-trigger');
+
+  if (trigger) {
+    trigger.setAttribute('aria-expanded', 'true');
+  }
+}
+
+function setSelectedUIForRoot(root, lang) {
+  const meta = LANG_META[lang] || LANG_META.cs;
+
+  const currentLabel =
+    root.querySelector('.lang-current-label') ||
+    root.querySelector('[data-lang-current]');
+
+  const currentFlag =
+    root.querySelector('.lang-current-flag') ||
+    root.querySelector('img.flag');
+
+  if (currentLabel) currentLabel.textContent = meta.label;
+  if (currentFlag) {
+    currentFlag.src = meta.flag;
+    currentFlag.alt = meta.label;
+  }
+
+  root.querySelectorAll('.lang-btn[data-lang]').forEach((btn) => {
+    const isSelected = (btn.dataset.lang || '').toLowerCase() === lang;
+    btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+  });
+}
+
+function syncAllDropdowns(lang) {
+  getDropdownRoots().forEach((root) => setSelectedUIForRoot(root, lang));
+}
+
 export function initLangDropdown() {
-  const root = document.querySelector('[data-lang-dropdown]');
-  if (!root) return;
+  const roots = getDropdownRoots();
+  if (!roots.length) return;
 
-  const trigger = root.querySelector('.lang-trigger');
-  const menu = root.querySelector('.lang-menu');
-  const currentText = root.querySelector('[data-lang-current]');
-  const currentFlag = trigger?.querySelector('img.flag');
+  const initialLang = detectLang();
+  syncAllDropdowns(initialLang);
 
-  if (!trigger || !menu) return;
+  roots.forEach((root) => {
+    const trigger =
+      root.querySelector('.lang-current') ||
+      root.querySelector('.lang-trigger');
 
-  const options = Array.from(menu.querySelectorAll('.lang-btn[data-lang]'));
-  if (!options.length) return;
+    const menu = root.querySelector('.lang-menu');
+    const options = Array.from(root.querySelectorAll('.lang-btn[data-lang]'));
 
-  let open = false;
+    if (!trigger || !menu || !options.length) return;
 
-  const setSelectedUI = (lang) => {
-    const meta = LANG_META[lang] || LANG_META.cs;
+    trigger.setAttribute(
+      'aria-expanded',
+      root.tagName.toLowerCase() === 'details' && root.hasAttribute('open') ? 'true' : 'false'
+    );
 
-    if (currentText) currentText.textContent = meta.label;
-    if (currentFlag) currentFlag.src = meta.flag;
+    if (root.tagName.toLowerCase() === 'details') {
+      root.addEventListener('toggle', () => {
+        trigger.setAttribute('aria-expanded', root.hasAttribute('open') ? 'true' : 'false');
+      });
+    }
+
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeDetailsDropdown(root);
+        trigger.focus({ preventScroll: true });
+      }
+
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+        openDetailsDropdown(root);
+
+        const current = options.find(
+          (btn) => (btn.dataset.lang || '').toLowerCase() === detectLang()
+        );
+
+        window.requestAnimationFrame(() => {
+          (current || options[0])?.focus?.({ preventScroll: true });
+        });
+      }
+    });
+
+    menu.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeDetailsDropdown(root);
+        trigger.focus({ preventScroll: true });
+      }
+    });
 
     options.forEach((btn) => {
-      const is = (btn.dataset.lang || '').toLowerCase() === lang;
-      btn.setAttribute('aria-selected', is ? 'true' : 'false');
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        const lang = (btn.dataset.lang || 'cs').toLowerCase();
+        if (!LANG_META[lang]) return;
+
+        syncAllDropdowns(lang);
+        roots.forEach((item) => closeDetailsDropdown(item));
+
+        if (lang === detectLang()) return;
+
+        goToLang(lang);
+      });
     });
-  };
-
-  const closeMenu = () => {
-    if (!open) return;
-    open = false;
-    trigger.setAttribute('aria-expanded', 'false');
-    menu.hidden = true;
-  };
-
-  const openMenu = () => {
-    if (open) return;
-    open = true;
-    trigger.setAttribute('aria-expanded', 'true');
-    menu.hidden = false;
-
-    const current = options.find(b => (b.dataset.lang || '').toLowerCase() === detectLang());
-    (current || options[0]).focus({ preventScroll: true });
-  };
-
-  const toggleMenu = () => (open ? closeMenu() : openMenu());
-
-  // Init UI state
-  const initialLang = detectLang();
-  setSelectedUI(initialLang);
-  trigger.setAttribute('aria-expanded', 'false');
-  menu.hidden = true;
-
-  // Trigger click
-  trigger.addEventListener('click', (e) => {
-    e.preventDefault();
-    toggleMenu();
   });
 
-  // Keyboard
-  trigger.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      openMenu();
-    }
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      closeMenu();
-    }
-  });
-
-  menu.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      closeMenu();
-      trigger.focus({ preventScroll: true });
-    }
-  });
-
-  // Click outside closes
   document.addEventListener('click', (e) => {
-    if (!open) return;
     const target = e.target;
     if (!(target instanceof Node)) return;
-    if (!root.contains(target)) closeMenu();
-  });
 
-  // Options click = switch lang
-  options.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const lang = (btn.dataset.lang || 'cs').toLowerCase();
-      if (!LANG_META[lang]) return;
-
-      setSelectedUI(lang);
-      closeMenu();
-
-      // když user klikne na aktuální jazyk, nic nedělej
-      if (lang === detectLang()) return;
-
-      goToLang(lang);
+    roots.forEach((root) => {
+      if (!root.contains(target)) {
+        closeDetailsDropdown(root);
+      }
     });
   });
 }

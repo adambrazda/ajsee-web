@@ -22,25 +22,6 @@
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
-  <!-- Google tag jen na HTTPS/produkci -->
-  <script>
-    (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
-      if (!isProdHttps) return;
-      const s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
-      s.onload = function(){
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ dataLayer.push(arguments); }
-        window.gtag = gtag;
-        gtag('js', new Date());
-        gtag('config', 'G-K0ZS0D9JLK');
-      };
-      document.head.appendChild(s);
-    })();
-  </script>
-
   <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
   <script>
     (function(){
@@ -353,6 +334,39 @@
       &copy; 2025 AJSEE®. Všechna práva vyhrazena.
     </p>
 
+    <nav class="footer-legal" aria-label="Právní odkazy">
+      <a
+        href="/privacy-policy.html"
+        class="footer-legal-link"
+        data-i18n-key="footer-privacy-policy"
+        data-lang-link
+      >
+        Zásady ochrany osobních údajů
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <a
+        href="/cookies-policy.html"
+        class="footer-legal-link"
+        data-i18n-key="footer-cookies-policy"
+        data-lang-link
+      >
+        Zásady cookies
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <button
+        type="button"
+        class="footer-legal-button"
+        data-open-cookie-settings
+        data-i18n-key="footer-cookie-settings"
+      >
+        Nastavení cookies
+      </button>
+    </nav>
+
     <p class="footer-company" data-i18n-key="footer-company-info">
       AJSEE® provozuje společnost AJSEE LTD, registrovaná v Anglii a Walesu pod číslem 17105762. Registrované sídlo: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.
     </p>
@@ -363,9 +377,6 @@
     </p>
   </div>
 </footer>
-
-<!-- JEDINÝ vstup – sjednoceno s ostatními stránkami (důležité pro i18n + dropdown + nav) -->
-<script type="module" src="/src/main.js"></script>
 
 <!-- Partners page logika (validace formu + success/error) -->
 <script type="module" src="/src/partners.js"></script>

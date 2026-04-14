@@ -101,7 +101,7 @@ function activateNavLink() {
     return null;
   };
 
-  qsa('.main-nav a').forEach((link) => {
+    qsa('.main-nav a, [data-lang-link]').forEach((link) => {
     const href = link.getAttribute('href') || '';
     const key = keyForLink(href);
     const isCurrent = key ? !!state[key]() : false;

@@ -54,7 +54,8 @@
 
 .footer-copy,
 .footer-company,
-.footer-contact {
+.footer-contact,
+.footer-legal {
   margin: 0;
   line-height: 1.6;
 }
@@ -62,6 +63,37 @@
 .footer-copy {
   font-weight: 500;
   color: #4a4a4a;
+}
+
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+.footer-legal-link {
+  color: $brand-blue;
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $brand-blue;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+.footer-legal-separator {
+  color: #999;
+  user-select: none;
 }
 
 .footer-company {
@@ -131,8 +163,54 @@
     gap: 0.65rem;
   }
 
+  .footer-legal {
+    gap: 0.35rem 0.55rem;
+    font-size: 0.88rem;
+  }
+
   .footer-company,
   .footer-contact {
     font-size: 0.88rem;
   }
+}
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.footer-legal-link,
+.footer-legal-button {
+  color: $brand-blue;
+  font: inherit;
+  line-height: 1.6;
+  text-decoration: none;
+}
+
+.footer-legal-link:hover,
+.footer-legal-link:focus-visible,
+.footer-legal-button:hover,
+.footer-legal-button:focus-visible {
+  text-decoration: underline;
+}
+
+.footer-legal-button {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.footer-legal-button:focus-visible,
+.footer-legal-link:focus-visible {
+  outline: 2px solid $brand-blue;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.footer-legal-separator {
+  color: #9aa6b2;
 }

@@ -1,0 +1,136 @@
+{
+  "seo": {
+    "privacy": {
+      "title": "Datenschutzerklärung | AJSEE",
+      "description": "Wie AJSEE personenbezogene Daten verarbeitet, Cookies und Analysetools nutzt und welche Rechte du hast.",
+      "ogTitle": "Datenschutzerklärung | AJSEE",
+      "ogDescription": "Wie AJSEE personenbezogene Daten verarbeitet, Cookies und Analysetools nutzt und welche Rechte du hast."
+    }
+  },
+  "privacy": {
+    "hero": {
+      "eyebrow": "AJSEE · Rechtliche Informationen",
+      "title": "Datenschutzerklärung",
+      "lead": "Auf dieser Seite findest du Informationen dazu, welche personenbezogenen Daten AJSEE verarbeiten kann, warum wir sie verarbeiten, wie lange wir sie speichern und welche Rechte du hast.",
+      "updatedLabel": "Zuletzt aktualisiert:",
+      "updatedDate": "13. April 2026"
+    },
+    "toc": {
+      "title": "Inhalt",
+      "intro": "Einleitung",
+      "controller": "Angaben zum Verantwortlichen",
+      "data": "Welche Daten wir verarbeiten können",
+      "purposes": "Wie und warum wir Daten verwenden",
+      "cookies": "Cookies und Analytik",
+      "sharing": "Weitergabe und Auftragsverarbeiter",
+      "transfers": "Internationale Übermittlungen",
+      "retention": "Speicherfristen",
+      "rights": "Deine Rechte",
+      "contact": "Kontakt und Beschwerden",
+      "changes": "Änderungen dieser Erklärung"
+    },
+    "intro": {
+      "title": "1. Einleitung",
+      "p1": "AJSEE hilft Nutzerinnen und Nutzern dabei, Veranstaltungen und damit verbundene Reise- oder Freizeitservices über vertrauenswürdige Partner zu entdecken. Beim Betrieb unserer Website können wir personenbezogene Daten verarbeiten, zum Beispiel wenn du uns kontaktierst, Updates abonnierst, eine Business Enquiry sendest oder mit optionalen Analyse- und Referral-Technologien interagierst.",
+      "p2": "Wir möchten personenbezogene Daten transparent, sicher und nur in dem Umfang verarbeiten, der für den jeweiligen Zweck erforderlich ist, und dabei die geltenden Datenschutzvorschriften einhalten, einschließlich UK GDPR und, soweit relevant, EU GDPR."
+    },
+    "controller": {
+      "title": "2. Angaben zum Verantwortlichen",
+      "companyLabel": "Unternehmen",
+      "numberLabel": "Unternehmensnummer",
+      "officeLabel": "Eingetragener Sitz",
+      "emailLabel": "Kontakt-E-Mail",
+      "p1": "Sofern bei einem bestimmten Formular oder Service nichts anderes angegeben ist, ist AJSEE LTD der Verantwortliche für die auf dieser Seite beschriebenen personenbezogenen Daten."
+    },
+    "data": {
+      "title": "3. Welche Daten wir verarbeiten können",
+      "p1": "Je nachdem, wie du unsere Website nutzt oder uns kontaktierst, können wir insbesondere folgende Kategorien personenbezogener Daten verarbeiten:",
+      "items": {
+        "1": "Identifikations- und Kontaktdaten wie Name, E-Mail-Adresse, Firmenname und Inhalt deiner Nachricht;",
+        "2": "newsletterbezogene Daten wie E-Mail-Adresse und Abonnementpräferenzen;",
+        "3": "Daten, die du uns im Rahmen einer Business- oder Partneranfrage freiwillig übermittelst;",
+        "4": "technische und nutzungsbezogene Daten wie IP-Adresse, Browser- und Geräteinformationen, besuchte Seiten, ungefährer Standort, Herkunft des Traffics und Interaktionen auf der Website, sofern Analyse-Cookies akzeptiert wurden;",
+        "5": "begrenzte Daten im Zusammenhang mit Partner-Click-through oder Referral-Attribution, wenn du von AJSEE zu einer Website eines Dritten wechselst."
+      },
+      "p2": "Derzeit bieten wir auf der Website keine Registrierung von Nutzerkonten an und erfassen über Standardformulare bewusst keine besonderen Kategorien personenbezogener Daten."
+    },
+    "purposes": {
+      "title": "4. Wie und warum wir Daten verwenden",
+      "cards": {
+        "1": {
+          "title": "Bearbeitung von Anfragen",
+          "text": "Wir verwenden Kontaktdaten und den Inhalt deiner Nachricht, um auf deine Anfragen zu antworten, Supportanfragen zu bearbeiten und über Services zu kommunizieren, an denen du Interesse gezeigt hast.",
+          "basis": "berechtigte Interessen und gegebenenfalls vorvertragliche Maßnahmen auf deine Anfrage hin."
+        },
+        "2": {
+          "title": "Newsletter und Updates",
+          "text": "Wenn du unseren Newsletter oder ähnliche Updates abonnierst, verwenden wir deine E-Mail-Adresse, um die gewünschten Inhalte zu versenden und deine Abonnementpräferenzen zu verwalten.",
+          "basis": "Einwilligung."
+        },
+        "3": {
+          "title": "Webanalyse und Verbesserung des Services",
+          "text": "Wir verwenden Analysedaten, um den Traffic zu verstehen, die Performance zu verbessern, die Wirksamkeit von Inhalten zu messen und die Website klarer und benutzerfreundlicher zu machen.",
+          "basis": "Einwilligung für optionale Analyse-Technologien; berechtigte Interessen für grundlegende Website-Sicherheit und Troubleshooting."
+        },
+        "4": {
+          "title": "Partnerschaften und Business-Kommunikation",
+          "text": "Wenn du uns wegen einer Zusammenarbeit oder Partnerschaft kontaktierst, verarbeiten wir die übermittelten Daten, um eine potenzielle Geschäftsbeziehung zu bewerten und zu verwalten.",
+          "basis": "berechtigte Interessen und gegebenenfalls vorvertragliche Maßnahmen."
+        },
+        "5": {
+          "title": "Rechtliche Pflichten und Schutz von Ansprüchen",
+          "text": "Wir können relevante Unterlagen aufbewahren oder nutzen, wenn dies erforderlich ist, um rechtliche Pflichten zu erfüllen, Aufzeichnungen zu führen, unsere Rechte zu schützen oder Rechtsansprüche zu verteidigen.",
+          "basis": "rechtliche Verpflichtung und berechtigte Interessen."
+        }
+      },
+      "p1": "Wir verkaufen deine personenbezogenen Daten nicht."
+    },
+    "common": {
+      "legalBasis": "Rechtsgrundlage:"
+    },
+    "cookies": {
+      "title": "5. Cookies und Analytik",
+      "p1": "Unsere Website kann Cookies und ähnliche Technologien verwenden. Einige sind für die Funktion, Sicherheit oder grundlegende Präferenzen der Website erforderlich. Andere sind optional und werden nur verwendet, wenn du über den Cookie-Banner oder deine Präferenzeinstellungen zustimmst.",
+      "items": {
+        "1": "erforderliche Technologien für den ordnungsgemäßen und sicheren Betrieb der Website;",
+        "2": "Google Tag Manager zur Verwaltung von Tags und zustimmungsabhängigen Integrationen;",
+        "3": "Google Analytics, sofern aktiviert, um die aggregierte Nutzung der Website zu verstehen und den Service zu verbessern;",
+        "4": "Partner- oder Referral-Tracking-Parameter beim Wechsel von AJSEE zu ausgewählten Dritten."
+      },
+      "p2": "Optionale Cookies kannst du über den Cookie-Banner oder die Einstellungen deines Browsers verwalten. Das Deaktivieren bestimmter Cookies kann einige nicht wesentliche Funktionen oder Messmöglichkeiten beeinträchtigen."
+    },
+    "sharing": {
+      "title": "6. Weitergabe und Auftragsverarbeiter",
+      "p1": "Wir können personenbezogene Daten an vertrauenswürdige Dienstleister und Auftragsverarbeiter weitergeben, die uns beim Betrieb der Website, bei Kommunikation, Analytik, Hosting oder anderen notwendigen Business-Funktionen unterstützen. Soweit diese Anbieter als Auftragsverarbeiter tätig sind, dürfen sie personenbezogene Daten nur nach unseren Weisungen verarbeiten.",
+      "p2": "Wenn du auf eine Partner-Website klickst, etwa zu einem Ticketing- oder Accommodation-Partner, ist dieser Dritte eigenständig für die Daten verantwortlich, die du auf seiner Website angibst. Wir empfehlen daher, auch die Datenschutzinformationen des jeweiligen Dritten zu lesen."
+    },
+    "transfers": {
+      "title": "7. Internationale Übermittlungen",
+      "p1": "Einige Dienstleister oder Partner können Daten außerhalb deines Wohnsitzlandes verarbeiten. Wenn personenbezogene Daten international übermittelt werden, bemühen wir uns um geeignete Garantien, etwa Angemessenheitsbeschlüsse oder Standardvertragsklauseln, soweit dies gesetzlich erforderlich ist."
+    },
+    "retention": {
+      "title": "8. Speicherfristen",
+      "p1": "Wir speichern personenbezogene Daten nur so lange, wie es für den jeweiligen Zweck erforderlich ist, unter Berücksichtigung rechtlicher, betrieblicher und nachweisbezogener Anforderungen. Die konkrete Dauer kann je nach Art der Interaktion variieren.",
+      "items": {
+        "1": "Kontakt- oder Supportanfragen: in der Regel für die Zeit, die zur Bearbeitung der Anfrage erforderlich ist, und für einen angemessenen Zeitraum danach;",
+        "2": "Newsletter-Daten: bis du dich abmeldest oder deine Einwilligung widerrufst, sofern gesetzlich keine längere Frist erforderlich ist;",
+        "3": "Analysedaten: entsprechend den Aufbewahrungseinstellungen der jeweiligen Analysetools;",
+        "4": "Business-Unterlagen: so lange wie nötig, um die Zusammenarbeit zu verwalten, rechtliche Pflichten zu erfüllen oder Rechtsansprüche zu schützen."
+      }
+    },
+    "rights": {
+      "title": "9. Deine Rechte",
+      "p1": "Abhängig vom anwendbaren Recht und deinem Wohnort hast du möglicherweise das Recht, Zugang zu deinen personenbezogenen Daten, deren Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie Widerspruch gegen bestimmte Verarbeitungen zu verlangen. Soweit die Verarbeitung auf Einwilligung beruht, kannst du diese jederzeit widerrufen, ohne dass die Rechtmäßigkeit der bisherigen Verarbeitung berührt wird.",
+      "p2": "Wenn du deine Rechte ausüben möchtest, kontaktiere uns bitte über die untenstehenden Angaben. Vor der Bearbeitung deiner Anfrage können wir dich um einen Identitätsnachweis bitten."
+    },
+    "contact": {
+      "title": "10. Kontakt und Beschwerden",
+      "p1": "Bei Fragen oder Anliegen zum Datenschutz kannst du uns unter <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a> kontaktieren.",
+      "p2": "Möglicherweise hast du außerdem das Recht, bei der zuständigen Datenschutzaufsichtsbehörde in deinem Land oder bei der für den Verantwortlichen zuständigen Behörde Beschwerde einzulegen."
+    },
+    "changes": {
+      "title": "11. Änderungen dieser Erklärung",
+      "p1": "Wir können diese Datenschutzerklärung von Zeit zu Zeit aktualisieren, um rechtliche, technische oder geschäftliche Änderungen abzubilden. Die jeweils aktuelle Version wird immer auf dieser Seite zusammen mit dem Aktualisierungsdatum veröffentlicht."
+    }
+  }
+}

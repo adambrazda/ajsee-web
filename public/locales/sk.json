@@ -31,20 +31,21 @@
   "partners-headline": "Naši partneri",
   "partners-cta": "Chcem byť partnerom",
 
-  "contact-headline": "Kontaktujte nás",
-  "contact-send": "Odoslať",
-  "contact-success-msg": "Ďakujeme za správu! Ozveme sa čo najskôr.",
-  "contact-error-msg": "Odoslanie sa nepodarilo. Skúste to neskôr.",
-  "contact-error-name": "Zadajte svoje meno.",
-  "contact-error-email": "Zadajte platný e-mail.",
-  "contact-error-message": "Napíšte správu.",
-  "contact-honeypot-label": "Nevypĺňajte toto pole:",
-  "contact-label-name": "Meno",
-  "contact-label-email": "E-mail",
-  "contact-label-message": "Správa",
-  "contact-placeholder-name": "Vaše meno",
-  "contact-placeholder-email": "Váš e-mail",
-  "contact-placeholder-message": "Vaša správa",
+"contact-headline": "Kontaktujte nás",
+"contact-send": "Odoslať",
+"contact-success-msg": "Ďakujeme za správu! Ozveme sa vám čo najskôr.",
+"contact-error-msg": "Odoslanie sa nepodarilo. Skúste to prosím neskôr.",
+"contact-error-name": "Zadajte svoje meno.",
+"contact-error-email": "Zadajte platný e-mail.",
+"contact-error-message": "Napíšte správu.",
+"contact-honeypot-label": "Nevypĺňajte toto pole:",
+"contact-label-name": "Meno",
+"contact-label-email": "E-mail",
+"contact-label-message": "Správa",
+"contact-placeholder-name": "Vaše meno",
+"contact-placeholder-email": "Váš e-mail",
+"contact-placeholder-message": "Vaša správa",
+"contact-legal-note": "Odoslaním formulára beriete na vedomie naše <a href=\"/privacy-policy.html\" data-lang-link>Zásady ochrany osobných údajov</a> a <a href=\"/cookies-policy.html\" data-lang-link>Zásady používania cookies</a>.",
 
   "about-headline": "O nás",
   "about-lead": "Zážitky nemajú hranice.",
@@ -228,6 +229,8 @@
   "filter-latest": "Najnovšie",
 
   "footer-copyright": "© 2025 AJSEE®. Všetky práva vyhradené.",
+  "footer-company-info": "AJSEE® prevádzkuje spoločnosť AJSEE LTD, registrovaná v Anglicku a Walese pod číslom 17105762. Registrované sídlo: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.",
+  "footer-contact-label": "Kontakt:",
 
   "hp-waitlist": {
     "lead": "Práve spustené",
@@ -295,5 +298,25 @@
     "copied": "Odkaz skopírovaný"
   },
 
-  "mg.relatedTitle": "Súvisiace mikro-sprievodce"
+  "mg.relatedTitle": "Súvisiace mikro-sprievodce",
+  "footer-privacy-policy": "Zásady ochrany osobných údajov",
+  "footer-cookies-policy": "Zásady používania cookies",
+"cookie-banner": {
+  "title": "Používame cookies",
+  "desc": "Používame nevyhnutné cookies pre fungovanie webu a so súhlasom aj analytické cookies, ktoré nám pomáhajú merať návštevnosť a zlepšovať AJSEE.cz.",
+  "privacy": "Zásady ochrany osobných údajov",
+  "cookies": "Zásady používania cookies",
+  "reject": "Odmietnuť",
+  "settings": "Nastavenia",
+  "acceptAll": "Prijať všetko",
+  "modalTitle": "Nastavenia cookies",
+  "necessaryTitle": "Nevyhnutné cookies",
+  "necessaryText": "Tieto cookies sú potrebné pre základné fungovanie webu.",
+  "alwaysActive": "Vždy aktívne",
+  "analyticsTitle": "Analytické cookies",
+  "analyticsText": "Pomáhajú nám merať návštevnosť a zlepšovať web pomocou Google Analytics.",
+  "allowAnalytics": "Povoliť analytiku",
+  "save": "Uložiť nastavenia"
+},
+"footer-cookie-settings": "Nastavenia cookies"
 }

@@ -1,0 +1,136 @@
+{
+  "seo": {
+    "privacy": {
+      "title": "Adatvédelmi tájékoztató | AJSEE",
+      "description": "Hogyan kezeli az AJSEE a személyes adatokat, hogyan használ cookie-kat és analitikai eszközöket, és milyen jogaid vannak.",
+      "ogTitle": "Adatvédelmi tájékoztató | AJSEE",
+      "ogDescription": "Hogyan kezeli az AJSEE a személyes adatokat, hogyan használ cookie-kat és analitikai eszközöket, és milyen jogaid vannak."
+    }
+  },
+  "privacy": {
+    "hero": {
+      "eyebrow": "AJSEE · Jogi információk",
+      "title": "Adatvédelmi tájékoztató",
+      "lead": "Ezen az oldalon információt találsz arról, hogy az AJSEE milyen személyes adatokat kezelhet, miért kezeli azokat, mennyi ideig őrzi meg őket, és milyen jogaid vannak.",
+      "updatedLabel": "Utolsó frissítés:",
+      "updatedDate": "2026. április 13."
+    },
+    "toc": {
+      "title": "Tartalom",
+      "intro": "Bevezetés",
+      "controller": "Az adatkezelő adatai",
+      "data": "Milyen adatokat kezelhetünk",
+      "purposes": "Hogyan és miért használjuk az adatokat",
+      "cookies": "Cookie-k és analitika",
+      "sharing": "Megosztás és adatfeldolgozók",
+      "transfers": "Nemzetközi adattovábbítás",
+      "retention": "Megőrzési időtartamok",
+      "rights": "A jogaid",
+      "contact": "Kapcsolat és panaszok",
+      "changes": "A tájékoztató módosításai"
+    },
+    "intro": {
+      "title": "1. Bevezetés",
+      "p1": "Az AJSEE segít a felhasználóknak események és kapcsolódó utazási vagy leisure szolgáltatások felfedezésében megbízható partnereken keresztül. A weboldal működtetése során személyes adatokat kezelhetünk például akkor, amikor kapcsolatba lépsz velünk, feliratkozol hírekre, business enquiry-t küldesz, vagy opcionális analitikai és referral technológiákkal lépsz kapcsolatba.",
+      "p2": "A személyes adatokat átláthatóan, biztonságosan és csak az adott célhoz szükséges mértékben kívánjuk kezelni, az alkalmazandó adatvédelmi jogszabályoknak megfelelően, beleértve a UK GDPR-t és, ahol releváns, az EU GDPR-t is."
+    },
+    "controller": {
+      "title": "2. Az adatkezelő adatai",
+      "companyLabel": "Cég",
+      "numberLabel": "Cégjegyzékszám",
+      "officeLabel": "Bejegyzett székhely",
+      "emailLabel": "Kapcsolati e-mail",
+      "p1": "Ha egy adott űrlapnál vagy szolgáltatásnál másként nem szerepel, az ezen az oldalon ismertetett személyes adatok adatkezelője az AJSEE LTD."
+    },
+    "data": {
+      "title": "3. Milyen adatokat kezelhetünk",
+      "p1": "Attól függően, hogyan használod a weboldalunkat vagy hogyan lépsz velünk kapcsolatba, különösen az alábbi személyesadat-kategóriákat kezelhetjük:",
+      "items": {
+        "1": "azonosító és kapcsolattartási adatok, például név, e-mail-cím, cégnév és az üzenet tartalma;",
+        "2": "hírlevélhez kapcsolódó adatok, például e-mail-cím és feliratkozási preferenciák;",
+        "3": "az általad önkéntesen megküldött business vagy partner megkeresésben szereplő adatok;",
+        "4": "technikai és használati adatok, például IP-cím, böngésző- és eszközinformációk, meglátogatott oldalak, hozzávetőleges helyadat, forgalmi forrás és weboldalon belüli interakciók, amennyiben analitikai cookie-k elfogadásra kerültek;",
+        "5": "korlátozott adatok, amelyek partner click-through vagy referral attribúcióhoz kapcsolódnak, amikor az AJSEE-ről egy harmadik fél weboldalára lépsz át."
+      },
+      "p2": "Jelenleg nem kínálunk felhasználói fiókregisztrációt a weboldalon, és a szokásos űrlapokon keresztül szándékosan nem gyűjtünk különleges kategóriájú személyes adatokat."
+    },
+    "purposes": {
+      "title": "4. Hogyan és miért használjuk az adatokat",
+      "cards": {
+        "1": {
+          "title": "Megkeresések kezelése",
+          "text": "A kapcsolattartási adatokat és az üzenet tartalmát arra használjuk, hogy válaszoljunk a megkereséseidre, kezeljük a support requesteket, és kommunikáljunk azokról a szolgáltatásokról, amelyek iránt érdeklődést mutattál.",
+          "basis": "jogos érdek, illetve adott esetben a szerződéskötést megelőző, a kérésedre tett lépések."
+        },
+        "2": {
+          "title": "Hírlevél és frissítések",
+          "text": "Ha feliratkozol a hírlevelünkre vagy hasonló frissítésekre, az e-mail-címedet a kért tartalom küldésére és a feliratkozási preferenciák kezelésére használjuk.",
+          "basis": "hozzájárulás."
+        },
+        "3": {
+          "title": "Webanalitika és szolgáltatásfejlesztés",
+          "text": "Az analitikai adatokat a forgalom megértésére, a teljesítmény javítására, a tartalmak hatékonyságának mérésére, valamint arra használjuk, hogy a weboldal átláthatóbb és könnyebben használható legyen.",
+          "basis": "hozzájárulás az opcionális analitikai technológiákhoz; jogos érdek az alapvető weboldalbiztonság és troubleshooting érdekében."
+        },
+        "4": {
+          "title": "Partnerségek és business kommunikáció",
+          "text": "Ha együttműködéssel vagy partnerséggel kapcsolatban keresel meg bennünket, a megadott adatokat a lehetséges üzleti kapcsolat értékelésére és kezelésére használjuk.",
+          "basis": "jogos érdek, illetve adott esetben a szerződéskötést megelőző lépések."
+        },
+        "5": {
+          "title": "Jogi kötelezettségek és igények védelme",
+          "text": "A releváns nyilvántartásokat megőrizhetjük vagy felhasználhatjuk, ha ez jogi kötelezettségek teljesítéséhez, nyilvántartás vezetéséhez, jogaink védelméhez vagy jogi igények érvényesítéséhez szükséges.",
+          "basis": "jogi kötelezettség és jogos érdek."
+        }
+      },
+      "p1": "Nem értékesítjük a személyes adataidat."
+    },
+    "common": {
+      "legalBasis": "Jogalap:"
+    },
+    "cookies": {
+      "title": "5. Cookie-k és analitika",
+      "p1": "Weboldalunk cookie-kat és hasonló technológiákat használhat. Egyesek a weboldal működéséhez, biztonságához vagy alapvető beállításaihoz szükségesek. Mások opcionálisak, és csak akkor használjuk őket, ha ehhez a cookie bannerben vagy a beállításaidnál hozzájárulsz.",
+      "items": {
+        "1": "a weboldal megfelelő és biztonságos működéséhez szükséges technológiák;",
+        "2": "Google Tag Manager a tagek és a hozzájárulástól függő integrációk kezelésére;",
+        "3": "Google Analytics, ha engedélyezve van, az összesített webhasználat megértésére és a szolgáltatás fejlesztésére;",
+        "4": "partner vagy referral tracking paraméterek, amikor az AJSEE-ről kiválasztott harmadik felek oldalaira lépsz át."
+      },
+      "p2": "Az opcionális cookie-kat a cookie bannerben vagy a böngésződ beállításaiban kezelheted. Egyes cookie-k letiltása hatással lehet bizonyos nem alapvető funkciókra vagy mérési lehetőségekre."
+    },
+    "sharing": {
+      "title": "6. Megosztás és adatfeldolgozók",
+      "p1": "A személyes adatokat megoszthatjuk megbízható szolgáltatókkal és adatfeldolgozókkal, akik segítenek a weboldal működtetésében, kommunikációban, analitikában, hostingban vagy más szükséges business funkciókban. Ha ezek a szolgáltatók adatfeldolgozóként járnak el, a személyes adatokat csak a mi utasításaink szerint kezelhetik.",
+      "p2": "Ha egy partner weboldalára kattintasz át, például ticketing vagy accommodation partner oldalára, az a harmadik fél önállóan felel az általa kért és ott megadott adatokért. Ezért javasoljuk, hogy az adott harmadik fél privacy tájékoztatóját is olvasd el."
+    },
+    "transfers": {
+      "title": "7. Nemzetközi adattovábbítás",
+      "p1": "Egyes szolgáltatók vagy partnerek a lakóhelyed szerinti országon kívül is kezelhetnek adatokat. Ha személyes adatok nemzetközi továbbítására kerül sor, törekszünk megfelelő garanciák alkalmazására, például megfelelőségi határozatokra vagy általános szerződési feltételekre, ha ezt jogszabály előírja."
+    },
+    "retention": {
+      "title": "8. Megőrzési időtartamok",
+      "p1": "A személyes adatokat csak addig őrizzük meg, ameddig az az adott célhoz szükséges, figyelembe véve a jogi, működési és bizonyítási igényeket. A konkrét időtartam az interakció típusától függően eltérhet.",
+      "items": {
+        "1": "kapcsolatfelvétel vagy support enquiry: általában a kérés kezeléséhez szükséges ideig és azt követően egy ésszerű ideig;",
+        "2": "hírlevéladatok: a leiratkozásig vagy a hozzájárulás visszavonásáig, kivéve, ha a jog hosszabb időt ír elő;",
+        "3": "analitikai adatok: az adott analitikai eszközök megőrzési beállításai szerint;",
+        "4": "business nyilvántartások: addig, ameddig az együttműködés kezeléséhez, jogi kötelezettségek teljesítéséhez vagy jogi igények védelméhez szükséges."
+      }
+    },
+    "rights": {
+      "title": "9. A jogaid",
+      "p1": "Az alkalmazandó jogtól és a lakóhelyedtől függően jogod lehet hozzáférést kérni a személyes adataidhoz, azok helyesbítését, törlését, a kezelés korlátozását, az adathordozhatóságot, valamint tiltakozni bizonyos adatkezelések ellen. Ha az adatkezelés hozzájáruláson alapul, azt bármikor visszavonhatod anélkül, hogy ez érintené a korábbi adatkezelés jogszerűségét.",
+      "p2": "Ha szeretnéd gyakorolni a jogaidat, kérjük, vedd fel velünk a kapcsolatot az alábbi elérhetőségeken. Kérhetjük személyazonosságod igazolását, mielőtt a kérelmedet kezeljük."
+    },
+    "contact": {
+      "title": "10. Kapcsolat és panaszok",
+      "p1": "Adatvédelemmel kapcsolatos kérdések vagy kérelmek esetén írj nekünk az alábbi címre: <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a>.",
+      "p2": "Jogod lehet panaszt tenni az országod illetékes adatvédelmi felügyeleti hatóságánál, illetve az adatkezelőre irányadó illetékes hatóságnál is."
+    },
+    "changes": {
+      "title": "11. A tájékoztató módosításai",
+      "p1": "Ezt az Adatvédelmi tájékoztatót időről időre frissíthetjük, hogy tükrözze a jogi, technikai vagy business változásokat. A legfrissebb verzió mindig ezen az oldalon lesz elérhető a frissítés dátumával együtt."
+    }
+  }
+}

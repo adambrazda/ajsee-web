@@ -15,29 +15,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- ✅ CSS hned v HEAD (render-blocking) – zabrání probliknutí bez stylů -->
+
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
     window.__TM_INLINE_DISABLED = true;
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
-  </script>
-
-  <!-- Google tag jen na HTTPS/produkci -->
-  <script>
-    (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
-      if (!isProdHttps) return;
-      const s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
-      s.onload = function(){
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ dataLayer.push(arguments); }
-        window.gtag = gtag;
-        gtag('js', new Date());
-        gtag('config', 'G-K0ZS0D9JLK');
-      };
-      document.head.appendChild(s);
-    })();
   </script>
 
   <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
@@ -86,10 +69,8 @@
         const lang = detectLang();
         document.documentElement.lang = lang;
 
-        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
         if (typeof window.applyTranslations === 'function') return;
 
-        // Fallback zkusíme až po krátké chvíli (aby se předešlo přepisu/flash)
         setTimeout(() => {
           if (typeof window.applyTranslations === 'function') return;
           applyI18nFallback(lang);
@@ -98,12 +79,13 @@
     })();
   </script>
 
-  <!-- Vite vstup – dej do HEAD kvůli CSS (omezí FOUC/probliknutí bez stylů) -->
+  <!-- Vite vstup -->
   <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/main-DVYnGrT8.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-zzlB4RLd.css">
+  <script type="module" crossorigin src="/assets/nav-core-BPi7G1lD.js"></script>
+  <script type="module" crossorigin src="/assets/preload-helper-D7HrI6pR.js"></script>
+  <script type="module" crossorigin src="/assets/main-C97d4-g8.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-CQAwj-iK.css">
 </head>
-
 <body data-page="home">
 <header class="site-header">
   <div class="header-inner">
@@ -123,6 +105,7 @@
       <ul>
         <li><a href="/" data-i18n-key="nav-home" aria-current="page">Domů</a></li>
         <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/accommodation.html" data-i18n-key="nav-accommodation">Ubytování</a></li>
         <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
         <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
         <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
@@ -204,18 +187,22 @@
   <section class="hero-section hero--watermark" id="hero">
     <div class="container hero-flex">
       <div class="hero-content">
-        <a href="/partners.html" class="hero-badge" tabindex="0">
-          <span class="badge-icon" aria-hidden="true">🤝</span>
-          <span data-i18n-key="hero.badge"></span>
-        </a>
+        <div class="hero-badge" role="status" aria-live="polite">
+          <span class="badge-icon" aria-hidden="true">✨</span>
+          <span data-i18n-key="hero.badge">Právě spuštěno</span>
+        </div>
 
-        <h1 data-i18n-key="hero.headline"></h1>
-        <p data-i18n-key="hero.intro"></p>
+        <h1 data-i18n-key="hero.headline">Světové akce bez bariér</h1>
+        <p data-i18n-key="hero.intro">Koncerty, divadlo, festivaly, sport i další zážitky na jednom místě, přehledně a jednoduše.</p>
 
         <div class="hero-buttons">
-          <a href="/partners.html" class="btn-primary" data-i18n-key="hero.cta-collab"></a>
-          <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-info"></a>
+          <a href="/events.html" class="btn-primary" data-i18n-key="hero.cta-primary">Prozkoumat události</a>
+          <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-secondary">Zjistit víc o AJSEE</a>
         </div>
+
+        <p class="hero-partner-note">
+          <a href="/partners.html" class="hero-partner-link" data-i18n-key="hero.partner-note">Pro partnery: Budujeme síť partnerů v oblasti vstupenek a zážitků.</a>
+        </p>
       </div>
     </div>
   </section>
@@ -223,18 +210,18 @@
   <!-- UDÁLOSTI -->
   <section class="section-events" id="events">
     <div class="container">
-      <div id="hpWaitlist" class="hp-waitlist" role="region" aria-live="polite" aria-label="" data-i18n-aria="hp-waitlist.ariaLabel">
-        <div class="wl-icon" aria-hidden="true">✨</div>
-        <p class="wl-text">
-          <strong data-i18n-key="hp-waitlist.lead">Spouštíme brzy.</strong>
-          <span data-i18n-key="hp-waitlist.text">Přidej se na čekací listinu a získáš pozvánku mezi prvními.</span>
-        </p>
-        <a class="hp-waitlist-cta" id="hpWaitlistCta" href="/coming-soon?utm_source=site&utm_medium=banner&utm_campaign=waitlist" data-i18n-key="hp-waitlist.cta">Chci pozvánku</a>
-        <button type="button" class="hp-waitlist-close" id="hpWaitlistClose" aria-label="" data-i18n-aria="hp-waitlist.dismissAria" title="">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
+
+      <div class="home-announcements" aria-label="Důležitá oznámení">
+        <div class="event-demo-badge hp-banner hp-banner--secondary" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
+          <div class="hp-banner__icon ib-icon" aria-hidden="true">🏨</div>
+
+          <div class="hp-banner__content">
+            <strong class="hp-banner__title" data-i18n-key="event-demo.title">Nově i ubytování s TrustedStays</strong>
+            <span class="hp-banner__body" data-i18n-key="event-demo.body">Plánuješ cestu za zážitky do UK? U vybraných akcí ti pomůžeme i s ubytováním.</span>
+          </div>
+
+          <a class="ib-cta hp-banner__cta" id="demoBadgeCta" href="/accommodation.html" data-i18n-key="event-demo.cta">Najít ubytování</a>
+        </div>
       </div>
 
       <div class="events-header">
@@ -271,7 +258,7 @@
 
           <div class="filter-group">
             <label for="filter-category" data-i18n-key="filters.category">Kategorie</label>
-            <select id="filter-category" class="styled-select">
+            <select id="filter-category" name="category" class="styled-select">
               <option value="all" data-i18n-key="filters.all">Vše</option>
               <option value="concert" data-i18n-key="category-concert">Koncerty</option>
               <option value="festival" data-i18n-key="category-festival">Festivaly</option>
@@ -282,7 +269,7 @@
 
           <div class="filter-group">
             <label for="filter-sort" data-i18n-key="filters.sort">Řazení</label>
-            <select id="filter-sort" class="styled-select">
+            <select id="filter-sort" name="sort" class="styled-select">
               <option value="nearest" data-i18n-key="filters.nearest">Nejbližší</option>
               <option value="latest" data-i18n-key="filters.latest">Nejnovější</option>
             </select>
@@ -294,7 +281,7 @@
               <span class="leading" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
               </span>
-              <input id="filter-city" type="text" class="styled-input" placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
+              <input id="filter-city" name="city" type="text" class="styled-input" placeholder="Praha, Brno…" data-i18n-placeholder="filters.cityPlaceholder" autocomplete="off">
             </div>
           </div>
 
@@ -318,7 +305,7 @@
               <span class="leading" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6zM9.5 14A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
               </span>
-              <input id="filter-keyword" type="search" class="styled-input" placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
+              <input id="filter-keyword" name="keyword" type="search" class="styled-input" placeholder="Umělec, místo, akce…" data-i18n-placeholder="filters.keywordPlaceholder">
             </div>
           </div>
 
@@ -329,15 +316,6 @@
           </div>
         </fieldset>
       </form>
-
-      <div class="event-demo-badge" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
-        <div class="ib-icon" aria-hidden="true">🎟️</div>
-        <p class="ib-text">
-          <strong data-i18n-key="event-demo.title">Ukázkové události.</strong>
-          <span data-i18n-key="event-demo.body">Připravujeme reálný prodej vstupenek. Sledujte nás!</span>
-        </p>
-        <a class="ib-cta" id="demoBadgeCta" href="/coming-soon?utm_source=site&utm_medium=pill&utm_campaign=demo_badge" data-i18n-key="event-demo.cta">Sleduj novinky</a>
-      </div>
 
       <div id="eventsList" class="events-list" aria-live="polite"></div>
       <noscript>Pro zobrazení událostí povolte JavaScript.</noscript>
@@ -449,7 +427,7 @@
     <div class="container">
       <h2 data-i18n-key="contact-headline">Kontaktujte nás</h2>
       <div class="contact-content">
-        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thank-you.html" class="contact-form" id="contact-form" autocomplete="on">
+        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thank-you.html" class="contact-form" id="contact-form" autocomplete="on" novalidate>
           <input type="hidden" name="form-name" value="contact" />
           <div style="display:none"><label>Don’t fill this out: <input name="bot-field" /></label></div>
 
@@ -471,11 +449,18 @@
             <div class="form-error" id="error-message"></div>
           </div>
 
-          <button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
+<button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
 
-          <div class="contact-error" id="contact-error" style="display:none;">
-            <p data-i18n-key="contact-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
-          </div>
+<p class="form-legal-note" data-i18n-key="contact-legal-note">
+  Odesláním formuláře bereš na vědomí naše
+  <a href="/privacy-policy.html" data-lang-link>Zásady ochrany osobních údajů</a>
+  a
+  <a href="/cookies-policy.html" data-lang-link>Zásady cookies</a>.
+</p>
+
+<div class="contact-error" id="contact-error" style="display:none;">
+  <p data-i18n-key="contact-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
+</div>
         </form>
       </div>
 
@@ -486,89 +471,72 @@
   </section>
 </main>
 
-<footer>
+<footer class="site-footer">
   <div class="footer-social">
-    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener"><img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy"/></a>
-    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener"><img src="/images/icons/facebook.svg" alt="Facebook" loading="lazy"/></a>
-    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener"><img src="/images/icons/twitter.svg" alt="Twitter" loading="lazy"/></a>
-    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener"><img src="/images/icons/linkedin.svg" alt="LinkedIn" loading="lazy"/></a>
+    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener" aria-label="Instagram">
+      <img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy" />
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener" aria-label="Facebook">
+      <img src="/images/icons/facebook.svg" alt="Facebook" loading="lazy" />
+    </a>
+    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener" aria-label="X">
+      <img src="/images/icons/twitter.svg" alt="X" loading="lazy" />
+    </a>
+    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <img src="/images/icons/linkedin.svg" alt="LinkedIn" loading="lazy" />
+    </a>
   </div>
-  <p data-i18n-key="footer-copyright">&copy; 2025 AJSEE®. Všechna práva vyhrazena.</p>
-</footer>
 
+  <div class="footer-meta">
+    <p class="footer-copy" data-i18n-key="footer-copyright">
+      &copy; 2025 AJSEE®. Všechna práva vyhrazena.
+    </p>
+
+    <nav class="footer-legal" aria-label="Právní odkazy">
+      <a
+        href="/privacy-policy.html"
+        class="footer-legal-link"
+        data-i18n-key="footer-privacy-policy"
+        data-lang-link
+      >
+        Zásady ochrany osobních údajů
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <a
+        href="/cookies-policy.html"
+        class="footer-legal-link"
+        data-i18n-key="footer-cookies-policy"
+        data-lang-link
+      >
+        Zásady cookies
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <button
+        type="button"
+        class="footer-legal-button"
+        data-open-cookie-settings
+        data-i18n-key="footer-cookie-settings"
+      >
+        Nastavení cookies
+      </button>
+    </nav>
+
+    <p class="footer-company" data-i18n-key="footer-company-info">
+      AJSEE® provozuje společnost AJSEE LTD, registrovaná v Anglii a Walesu pod číslem 17105762. Registrované sídlo: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.
+    </p>
+
+    <p class="footer-contact">
+      <span data-i18n-key="footer-contact-label">Kontakt:</span>
+      <a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a>
+    </p>
+  </div>
+</footer>
 <script>
   window.__AJSEE_EVENTS_OWNS_FILTERS = true;
-</script>
-
-<!-- Inline skript: waitlist banner -->
-<script>
-  (function () {
-    const box = document.getElementById('hpWaitlist');
-    if (!box) return;
-
-    const qs = new URLSearchParams(location.search);
-    const getLang = () => {
-      const urlLang = (qs.get('lang') || '').toLowerCase();
-      if (urlLang) return urlLang;
-      const htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
-      return htmlLang || 'cs';
-    };
-    const LANG = getLang();
-    const SUPPORTED = ['cs','en','de','sk','pl','hu'];
-
-    function t(path) {
-      try {
-        const dict = window.translations || null;
-        if (!dict) return null;
-        return path.split('.').reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), dict) ?? null;
-      } catch { return null; }
-    }
-
-    function applyBannerI18n(root) {
-      if (!root) return;
-      root.querySelectorAll('[data-i18n-key]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-key');
-        const val = t(key);
-        if (typeof val === 'string') el.textContent = val;
-      });
-      root.querySelectorAll('[data-i18n-aria]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-aria');
-        const val = t(key);
-        if (typeof val === 'string') {
-          el.setAttribute('aria-label', val);
-          el.setAttribute('title', val);
-        }
-      });
-      const regionKey = root.getAttribute('data-i18n-aria');
-      if (regionKey) {
-        const val = t(regionKey);
-        if (typeof val === 'string') root.setAttribute('aria-label', val);
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const cta = document.getElementById('hpWaitlistCta');
-      if (cta) {
-        const url = new URL(cta.href, location.origin);
-        if (SUPPORTED.includes(LANG)) url.searchParams.set('lang', LANG);
-        cta.href = url.toString();
-        cta.addEventListener('click', function () {
-          if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner' });
-        });
-      }
-
-      const btnClose = document.getElementById('hpWaitlistClose');
-      if (btnClose) btnClose.addEventListener('click', function () { box.remove(); });
-
-      const start = Date.now();
-      const id = setInterval(() => {
-        if (window.translations || Date.now() - start > 1500) {
-          clearInterval(id);
-          applyBannerI18n(box);
-        }
-      }, 50);
-    });
-  })();
 </script>
 
 <!-- Inline skript: Demo badge -->

@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title data-i18n-key="seo.cookies.title">Zásady cookies | AJSEE</title>
+  <meta
+    name="description"
+    data-i18n-content="seo.cookies.description"
+    content="Jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference."
+  />
+  <meta name="theme-color" content="#0b1020" />
+
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:title"
+    data-i18n-content="seo.cookies.ogTitle"
+    content="Zásady cookies | AJSEE"
+  />
+  <meta
+    property="og:description"
+    data-i18n-content="seo.cookies.ogDescription"
+    content="Jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference."
+  />
+
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/styles/main.scss" />
+  <link rel="stylesheet" href="/src/styles/pages/cookies-policy.scss" />
+
+  <script>
+    (function(){
+      function detectLang(){
+        try {
+          const qs = new URLSearchParams(location.search);
+          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
+        } catch { return 'cs'; }
+      }
+
+      function applyI18nFallback(lang){
+        const root = window.translations || null;
+        if (!root) return;
+
+        const dict = root[lang] || root;
+        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
+
+        document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          const key = el.getAttribute('data-i18n-key');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.textContent = val;
+        });
+
+        document.querySelectorAll('[data-i18n-content]').forEach(el => {
+          const key = el.getAttribute('data-i18n-content');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('content', val);
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+          const key = el.getAttribute('data-i18n-placeholder');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
+        });
+
+        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-i18n-aria');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) {
+            el.setAttribute('aria-label', val);
+            el.setAttribute('title', val);
+          }
+        });
+
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+          const key = el.getAttribute('data-i18n-alt');
+          const val = get(key);
+          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        const lang = detectLang();
+        document.documentElement.lang = lang;
+
+        if (typeof window.applyTranslations === 'function') return;
+
+        setTimeout(() => {
+          if (typeof window.applyTranslations === 'function') return;
+          applyI18nFallback(lang);
+        }, 250);
+      });
+    })();
+  </script>
+
+  <script type="module" src="/src/pages/cookies-policy/cookies-policy.js"></script>
+</head>
+
+<body class="page-cookies-policy page-legal" data-page="cookies-policy">
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="logo-link" aria-label="Domů">
+        <img src="/images/logo-ajsee.png" alt="AJSEE Logo" class="logo" loading="eager" />
+      </a>
+
+      <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+        <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+
+        <ul>
+          <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+          <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
+          <li><a href="/accommodation.html" data-i18n-key="nav-accommodation">Ubytování</a></li>
+          <li><a href="/partners.html" data-i18n-key="nav-partners">Pro partnery</a></li>
+          <li><a href="/about.html" data-i18n-key="nav-about">O nás</a></li>
+          <li><a href="/blog.html" data-i18n-key="nav-blog">Blog</a></li>
+          <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+        </ul>
+
+        <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+          <details class="lang-dropdown" id="langDropdownMobile">
+            <summary class="lang-current" aria-label="Změnit jazyk">
+              <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+              <span class="lang-current-label">Čeština</span>
+              <span class="lang-caret" aria-hidden="true">▾</span>
+            </summary>
+
+            <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+              <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+                <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+              </button>
+              <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+                <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+              </button>
+              <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+                <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+              </button>
+              <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+                <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+              </button>
+              <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+                <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+              </button>
+              <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+                <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+              </button>
+            </div>
+          </details>
+        </div>
+      </nav>
+
+      <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+        <details class="lang-dropdown" id="langDropdownDesktop">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
+
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+            </button>
+          </div>
+        </details>
+      </div>
+
+      <div class="menu-overlay-bg" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="legal-hero" id="hero">
+      <div class="container">
+        <div class="legal-hero-card">
+          <p class="legal-eyebrow" data-i18n-key="cookies.hero.eyebrow">AJSEE · Cookies a podobné technologie</p>
+          <h1 class="legal-title" data-i18n-key="cookies.hero.title">Zásady cookies</h1>
+          <p class="legal-lead" data-i18n-key="cookies.hero.lead">
+            Na této stránce najdeš informace o tom, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné pro fungování webu, které jsou volitelné a jak můžeš spravovat své preference.
+          </p>
+
+          <div class="legal-meta">
+            <span class="legal-meta-label" data-i18n-key="cookies.hero.updatedLabel">Naposledy aktualizováno:</span>
+            <strong data-i18n-key="cookies.hero.updatedDate">13. dubna 2026</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="legal-layout">
+      <div class="container legal-layout-grid">
+        <aside class="legal-toc" aria-labelledby="legal-toc-title">
+          <div class="legal-card">
+            <h2 id="legal-toc-title" data-i18n-key="cookies.toc.title">Obsah</h2>
+            <nav aria-label="Obsah zásad cookies">
+              <ol>
+                <li><a href="#what-are-cookies" data-i18n-key="cookies.toc.what">Co jsou cookies</a></li>
+                <li><a href="#how-we-use" data-i18n-key="cookies.toc.how">Jak je používáme</a></li>
+                <li><a href="#types" data-i18n-key="cookies.toc.types">Typy cookies a technologií</a></li>
+                <li><a href="#specific-tools" data-i18n-key="cookies.toc.tools">Nástroje používané na AJSEE</a></li>
+                <li><a href="#managing" data-i18n-key="cookies.toc.managing">Jak spravovat preference</a></li>
+                <li><a href="#third-parties" data-i18n-key="cookies.toc.thirdParties">Třetí strany</a></li>
+                <li><a href="#updates" data-i18n-key="cookies.toc.updates">Změny těchto zásad</a></li>
+                <li><a href="#contact" data-i18n-key="cookies.toc.contact">Kontakt</a></li>
+              </ol>
+            </nav>
+          </div>
+        </aside>
+
+        <div class="legal-content">
+          <section class="legal-section" id="what-are-cookies">
+            <h2 data-i18n-key="cookies.what.title">1. Co jsou cookies</h2>
+            <p data-i18n-key="cookies.what.p1">
+              Cookies jsou malé textové soubory nebo obdobné technologie, které web ukládá do tvého zařízení nebo z něj čte informace při návštěvě stránky. Mohou pomáhat se základním fungováním webu, zapamatováním preferencí, analýzou návštěvnosti nebo měřením interakcí.
+            </p>
+            <p data-i18n-key="cookies.what.p2">
+              Pro účely těchto zásad používáme pojem „cookies“ i pro podobné technologie ukládání a přístupu k informacím, pokud mají obdobnou funkci.
+            </p>
+          </section>
+
+          <section class="legal-section" id="how-we-use">
+            <h2 data-i18n-key="cookies.how.title">2. Jak cookies používáme</h2>
+            <p data-i18n-key="cookies.how.p1">
+              AJSEE používá některé technologie proto, aby web fungoval správně a bezpečně. Další technologie používáme pouze tehdy, pokud k tomu udělíš souhlas, například pro analytiku nebo měření výkonu obsahu.
+            </p>
+            <p data-i18n-key="cookies.how.p2">
+              Ne všechny cookies mají stejný účel. Některé jsou nezbytné pro technický provoz, jiné pomáhají pochopit, jak lidé web používají, a některé mohou souviset s přechodem na partnerské stránky nebo s měřením atribučních parametrů.
+            </p>
+          </section>
+
+          <section class="legal-section" id="types">
+            <h2 data-i18n-key="cookies.types.title">3. Typy cookies a technologií</h2>
+
+            <div class="legal-purpose-grid">
+              <article class="legal-card">
+                <h3 data-i18n-key="cookies.types.cards.1.title">Nezbytné</h3>
+                <p data-i18n-key="cookies.types.cards.1.text">
+                  Tyto technologie jsou potřebné pro základní fungování webu, bezpečnost, správu relace nebo zapamatování volby cookie preferencí. Bez nich by některé části služby nemusely fungovat správně.
+                </p>
+              </article>
+
+              <article class="legal-card">
+                <h3 data-i18n-key="cookies.types.cards.2.title">Analytické</h3>
+                <p data-i18n-key="cookies.types.cards.2.text">
+                  Tyto technologie nám pomáhají pochopit návštěvnost webu, výkonnost obsahu a chování uživatelů v agregované podobě. Používáme je pouze tehdy, pokud je povolíš.
+                </p>
+              </article>
+
+              <article class="legal-card">
+                <h3 data-i18n-key="cookies.types.cards.3.title">Preferenční</h3>
+                <p data-i18n-key="cookies.types.cards.3.text">
+                  Mohou sloužit k zapamatování určitých voleb nebo nastavení, například jazykové nebo uživatelské preference, pokud je konkrétní funkce na webu využívá.
+                </p>
+              </article>
+
+              <article class="legal-card">
+                <h3 data-i18n-key="cookies.types.cards.4.title">Partnerské / atribuční</h3>
+                <p data-i18n-key="cookies.types.cards.4.text">
+                  V některých případech mohou být při přechodu z AJSEE na partnerský web použity referral nebo atribuční parametry, které pomáhají vyhodnotit, zda návštěva přišla z AJSEE.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section class="legal-section" id="specific-tools">
+            <h2 data-i18n-key="cookies.tools.title">4. Nástroje používané na AJSEE</h2>
+            <p data-i18n-key="cookies.tools.p1">
+              Podle aktuální konfigurace webu může AJSEE používat zejména následující nástroje nebo kategorie technologií:
+            </p>
+
+            <div class="legal-card legal-card--compact">
+              <dl class="legal-definition-list">
+                <div>
+                  <dt data-i18n-key="cookies.tools.items.1.label">Cookie preference / consent</dt>
+                  <dd data-i18n-key="cookies.tools.items.1.text">
+                    Technologie pro zapamatování volby, zda jsi přijal/a nebo odmítl/a volitelné cookies.
+                  </dd>
+                </div>
+
+                <div>
+                  <dt data-i18n-key="cookies.tools.items.2.label">Google Tag Manager</dt>
+                  <dd data-i18n-key="cookies.tools.items.2.text">
+                    Nástroj pro správu tagů a načítání dalších technologií podle aktuální konfigurace a souhlasu.
+                  </dd>
+                </div>
+
+                <div>
+                  <dt data-i18n-key="cookies.tools.items.3.label">Google Analytics</dt>
+                  <dd data-i18n-key="cookies.tools.items.3.text">
+                    Analytický nástroj používaný pouze tehdy, pokud k tomu udělíš souhlas, pro měření návštěvnosti a zlepšování webu.
+                  </dd>
+                </div>
+
+                <div>
+                  <dt data-i18n-key="cookies.tools.items.4.label">Partnerské / referral parametry</dt>
+                  <dd data-i18n-key="cookies.tools.items.4.text">
+                    Parametry nebo měřicí mechanismy související s přechodem na partnerské weby, například v rámci affiliate nebo referral spolupráce.
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <p data-i18n-key="cookies.tools.p2">
+              Konkrétní názvy, účely a retenční doby se mohou v čase měnit podle technického vývoje webu, použitých integrací nebo aktualizace partnerů. Pokud dojde k podstatné změně, tuto stránku odpovídajícím způsobem aktualizujeme.
+            </p>
+          </section>
+
+          <section class="legal-section" id="managing">
+            <h2 data-i18n-key="cookies.managing.title">5. Jak spravovat své preference</h2>
+            <p data-i18n-key="cookies.managing.p1">
+              Volitelné cookies můžeš spravovat prostřednictvím cookie banneru nebo nastavení, které se na webu zobrazuje při první návštěvě nebo po resetu preferencí.
+            </p>
+            <ul class="legal-list">
+              <li data-i18n-key="cookies.managing.items.1">můžeš přijmout nebo odmítnout volitelné kategorie;</li>
+              <li data-i18n-key="cookies.managing.items.2">můžeš změnit své preference později, pokud je na webu k dispozici příslušné ovládání;</li>
+              <li data-i18n-key="cookies.managing.items.3">můžeš také omezit nebo mazat cookies v nastavení svého prohlížeče.</li>
+            </ul>
+            <p data-i18n-key="cookies.managing.p2">
+              Upozorňujeme, že zablokování nebo odstranění některých technologií může ovlivnit správnou funkčnost některých částí webu.
+            </p>
+          </section>
+
+          <section class="legal-section" id="third-parties">
+            <h2 data-i18n-key="cookies.thirdParties.title">6. Třetí strany</h2>
+            <p data-i18n-key="cookies.thirdParties.p1">
+              Pokud klikneš z AJSEE na web třetí strany, například ticketingového nebo ubytovacího partnera, může tato třetí strana používat vlastní cookies a podobné technologie podle svých pravidel. Nad těmito technologiemi na externím webu AJSEE nemá přímou kontrolu.
+            </p>
+            <p data-i18n-key="cookies.thirdParties.p2">
+              Doporučujeme proto seznámit se i se zásadami cookies a ochranou osobních údajů konkrétního partnera nebo poskytovatele služby, na jehož web přecházíš.
+            </p>
+          </section>
+
+          <section class="legal-section" id="updates">
+            <h2 data-i18n-key="cookies.updates.title">7. Změny těchto zásad</h2>
+            <p data-i18n-key="cookies.updates.p1">
+              Tyto Zásady cookies můžeme čas od času aktualizovat, aby odrážely právní, technické nebo obchodní změny. Nejnovější verze bude vždy zveřejněna na této stránce spolu s datem aktualizace.
+            </p>
+          </section>
+
+          <section class="legal-section" id="contact">
+            <h2 data-i18n-key="cookies.contact.title">8. Kontakt</h2>
+            <p data-i18n-key="cookies.contact.p1">
+              Pokud máš dotazy k používání cookies nebo podobných technologií na AJSEE, můžeš nás kontaktovat na <a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a>.
+            </p>
+            <p data-i18n-key="cookies.contact.p2">
+              Další informace o tom, jak AJSEE zpracovává osobní údaje, najdeš také na stránce Privacy Policy.
+            </p>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <noscript>
+      <div class="container" style="padding: 14px 0; color: rgba(234,240,255,.82);">
+        Pro plnou funkčnost (i18n + navigace) povol JavaScript.
+      </div>
+    </noscript>
+  </main>
+
+<footer class="site-footer">
+  <div class="footer-social">
+    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener" aria-label="Instagram">
+      <img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy" />
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener" aria-label="Facebook">
+      <img src="/images/icons/facebook.svg" alt="Facebook" loading="lazy" />
+    </a>
+    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener" aria-label="X">
+      <img src="/images/icons/twitter.svg" alt="X" loading="lazy" />
+    </a>
+    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <img src="/images/icons/linkedin.svg" alt="LinkedIn" loading="lazy" />
+    </a>
+  </div>
+
+  <div class="footer-meta">
+    <p class="footer-copy" data-i18n-key="footer-copyright">
+      &copy; 2025 AJSEE®. Všechna práva vyhrazena.
+    </p>
+
+    <nav class="footer-legal" aria-label="Právní odkazy">
+      <a
+        href="/privacy-policy.html"
+        class="footer-legal-link"
+        data-i18n-key="footer-privacy-policy"
+        data-lang-link
+      >
+        Zásady ochrany osobních údajů
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <a
+        href="/cookies-policy.html"
+        class="footer-legal-link"
+        data-i18n-key="footer-cookies-policy"
+        data-lang-link
+      >
+        Zásady cookies
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <button
+        type="button"
+        class="footer-legal-button"
+        data-open-cookie-settings
+        data-i18n-key="footer-cookie-settings"
+      >
+        Nastavení cookies
+      </button>
+    </nav>
+
+    <p class="footer-company" data-i18n-key="footer-company-info">
+      AJSEE® provozuje společnost AJSEE LTD, registrovaná v Anglii a Walesu pod číslem 17105762. Registrované sídlo: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.
+    </p>
+
+    <p class="footer-contact">
+      <span data-i18n-key="footer-contact-label">Kontakt:</span>
+      <a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a>
+    </p>
+  </div>
+</footer>
+</body>
+</html>

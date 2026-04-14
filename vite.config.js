@@ -33,7 +33,7 @@ function devRedirectPlugin() {
   };
 }
 
-// ⬇⬇ DŮLEŽITÉ: v devu obslouží /locales/* ze src/locales/*
+// v devu obslouží /locales/* ze src/locales/*
 function devLocalesAlias() {
   return {
     name: 'ajsee-dev-locales-alias',
@@ -41,16 +41,19 @@ function devLocalesAlias() {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (!req.url || !req.url.startsWith('/locales/')) return next();
+
         const filePath = resolve(
           __dirname,
           'src',
           req.url.replace(/^\/locales\//, 'locales/')
         );
+
         if (existsSync(filePath)) {
           res.setHeader('Content-Type', 'application/json; charset=utf-8');
           createReadStream(filePath).pipe(res);
           return;
         }
+
         next();
       });
     }
@@ -67,7 +70,7 @@ function devHtmlRewriteAssetsPlugin() {
   return {
     name: 'ajsee-dev-rewrite-assets-to-src',
     apply: 'serve',
-    transformIndexHtml(html, ctx) {
+    transformIndexHtml(html) {
       const mappings = [
         {
           re: /<script[^>]+src="\/assets\/main-[^"]+\.js"[^>]*><\/script>/g,
@@ -86,6 +89,7 @@ function devHtmlRewriteAssetsPlugin() {
           replace: ''
         }
       ];
+
       let out = html;
       for (const { re, replace } of mappings) out = out.replace(re, replace);
       return out;
@@ -111,15 +115,19 @@ export default defineConfig({
           about: resolve(__dirname, 'about.html'),
           events: resolve(__dirname, 'events.html'),
           partners: resolve(__dirname, 'partners.html'),
-          accommodation: resolve(__dirname, 'accommodation.html'), // ✅ DOPLNĚNO
+          accommodation: resolve(__dirname, 'accommodation.html'),
           thankyou: resolve(__dirname, 'thank-you.html'),
           blog: resolve(__dirname, 'blog.html'),
           'blog-detail': resolve(__dirname, 'blog-detail.html'),
           faq: resolve(__dirname, 'faq.html'),
+          'privacy-policy': resolve(__dirname, 'privacy-policy.html'),
+          'cookies-policy': resolve(__dirname, 'cookies-policy.html'),
           microguides: resolve(__dirname, 'microguides/index.html'),
         };
+
         addIfExists(inputs, 'coming-soon', resolve(__dirname, 'coming-soon/index.html'));
         addIfExists(inputs, 'coming-soon-thanks', resolve(__dirname, 'coming-soon/thanks.html'));
+
         return inputs;
       })(),
     },

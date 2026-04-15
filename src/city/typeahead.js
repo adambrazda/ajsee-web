@@ -1,20 +1,15 @@
 // src/city/typeahead.js
 // ---------------------------------------------------------
 // City Typeahead UI – používá suggestCities() a canonical mapování.
-// B2:
-// - iOS/Safari safe: žádný fixed bottom sheet / overlay
-// - mobil = prémiový anchored dropdown u inputu
-// - smart flip nahoru, když dole není místo
-// - diakriticky nezávislé zvýraznění shody
-// - ARIA: role=combobox/listbox/option, aria-activedescendant, aria-live polite
-// - klávesy: ↑/↓, Home/End, Enter, Escape
-// - trvale dostupné „V mém okolí“
-// - odolnost proti závodům (aplikuj jen poslední výsledek)
+// VERZE C:
+// - desktop: floating dropdown
+// - mobil: inline premium panel pod polem Město
+// - bez odskakování při otevřené klávesnici na iOS
 // ---------------------------------------------------------
 
 import { suggestCities } from './suggestClient.js';
 
-/** diakriticky nezávislá normalizace */
+/** diakriticky nezávislá normalizace (pro vyhledání shody) */
 function norm(s) {
   return (s || '')
     .toString()
@@ -32,7 +27,7 @@ function esc(s = '') {
     .replace(/>/g, '&gt;');
 }
 
-/** zvýrazní první výskyt dotazu */
+/** zvýrazní první výskyt dotazu (bez diakritiky), zachová původní label */
 function highlight(label, query) {
   const raw = String(label || '');
   if (!raw || !query) return esc(raw);
@@ -51,7 +46,7 @@ function highlight(label, query) {
   return `${start}<mark>${mid}</mark>${end}`;
 }
 
-/** fallback texty */
+/** jazykové fallbacky, když t(key) není k dispozici */
 function defaultText(key, lang = 'en', n = 0) {
   const L = (lang || 'en').toLowerCase();
   const pluralFew = (x) =>
@@ -64,7 +59,7 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'pl': return 'Wczytywanie…';
       case 'hu': return 'Betöltés…';
       case 'de': return 'Lade…';
-      default: return 'Loading…';
+      default:   return 'Loading…';
     }
   }
 
@@ -75,7 +70,7 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'pl': return 'Brak wyników';
       case 'hu': return 'Nincs találat';
       case 'de': return 'Keine Treffer';
-      default: return 'No results';
+      default:   return 'No results';
     }
   }
 
@@ -84,10 +79,10 @@ function defaultText(key, lang = 'en', n = 0) {
     switch (L) {
       case 'cs': return nn === 1 ? '1 výsledek' : pluralFew(nn) ? `${nn} výsledky` : `${nn} výsledků`;
       case 'sk': return nn === 1 ? '1 výsledok' : pluralFew(nn) ? `${nn} výsledky` : `${nn} výsledkov`;
-      case 'pl': return nn === 1 ? '1 wynik' : pluralFew(nn) ? `${nn} wyniki` : `${nn} wyników`;
-      case 'hu': return nn === 1 ? '1 találat' : `${nn} találat`;
+      case 'pl': return nn === 1 ? '1 wynik'    : pluralFew(nn) ? `${nn} wyniki`   : `${nn} wyników`;
+      case 'hu': return nn === 1 ? '1 találat'  : `${nn} találat`;
       case 'de': return nn === 1 ? '1 Ergebnis' : `${nn} Ergebnisse`;
-      default: return nn === 1 ? '1 result' : `${nn} results`;
+      default:   return nn === 1 ? '1 result'   : `${nn} results`;
     }
   }
 
@@ -98,18 +93,29 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'pl': return 'W mojej okolicy';
       case 'hu': return 'A közelemben';
       case 'de': return 'In meiner Nähe';
-      default: return 'Near me';
+      default:   return 'Near me';
     }
   }
 
-  if (key === 'nearMeHelper') {
+  if (key === 'nearMeSubtitle') {
     switch (L) {
       case 'cs': return 'Použít aktuální polohu';
       case 'sk': return 'Použiť aktuálnu polohu';
-      case 'pl': return 'Użyj bieżącej lokalizacji';
+      case 'pl': return 'Użyć bieżącej lokalizacji';
       case 'hu': return 'Aktuális hely használata';
       case 'de': return 'Aktuellen Standort verwenden';
-      default: return 'Use current location';
+      default:   return 'Use current location';
+    }
+  }
+
+  if (key === 'suggestionsTitle') {
+    switch (L) {
+      case 'cs': return 'Návrhy měst';
+      case 'sk': return 'Návrhy miest';
+      case 'pl': return 'Sugestie miast';
+      case 'hu': return 'Városjavaslatok';
+      case 'de': return 'Städtevorschläge';
+      default:   return 'City suggestions';
     }
   }
 
@@ -120,7 +126,7 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'pl': return 'Szukam wydarzeń w Twojej okolicy…';
       case 'hu': return 'Események keresése a közeledben…';
       case 'de': return 'Suche Events in Ihrer Nähe…';
-      default: return 'Looking for events near you…';
+      default:   return 'Looking for events near you…';
     }
   }
 
@@ -131,7 +137,7 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'pl': return 'Dostęp do lokalizacji został odrzucony.';
       case 'hu': return 'A helyhozzáférés megtagadva.';
       case 'de': return 'Standortzugriff verweigert.';
-      default: return 'Location access denied.';
+      default:   return 'Location access denied.';
     }
   }
 
@@ -142,18 +148,7 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'pl': return 'Przeglądarka nie obsługuje geolokalizacji.';
       case 'hu': return 'A böngésző nem támogatja a helymeghatározást.';
       case 'de': return 'Browser unterstützt keine Geolokalisierung.';
-      default: return 'Geolocation is not supported.';
-    }
-  }
-
-  if (key === 'suggestionsTitle') {
-    switch (L) {
-      case 'cs': return 'Návrhy měst';
-      case 'sk': return 'Návrhy miest';
-      case 'pl': return 'Sugestie miast';
-      case 'hu': return 'Városjavaslatok';
-      case 'de': return 'Stadtvorschläge';
-      default: return 'City suggestions';
+      default:   return 'Geolocation is not supported.';
     }
   }
 
@@ -162,14 +157,14 @@ function defaultText(key, lang = 'en', n = 0) {
 
 /** bezpečný default překladače */
 function defaultT(k, f) {
-  return (typeof window !== 'undefined' &&
-    window.translations &&
-    (k in window.translations))
+  return (typeof window !== 'undefined'
+      && window.translations
+      && (k in window.translations))
     ? window.translations[k]
     : f;
 }
 
-/** dedupe + jemná normalizace návrhů */
+/** dedupe + jemná normalizace návrhů (city/state/countryCode) */
 function normalizeAndDedupe(list = []) {
   const out = [];
   const seen = new Set();
@@ -217,20 +212,26 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   });
   const onNearMe = providedOnNearMe || null;
 
-  const MOBILE_BP = 720;
-  const isMobile = () => window.matchMedia(`(max-width: ${MOBILE_BP}px)`).matches;
+  const mobileMq = window.matchMedia('(max-width: 720px)');
 
-  const host =
+  function isMobileLayout() {
+    return mobileMq.matches;
+  }
+
+  const fieldEl =
     inputEl.closest('.field') ||
     inputEl.parentElement ||
     inputEl;
 
-  host.classList.add('has-typeahead');
+  const groupEl =
+    inputEl.closest('.filter-group') ||
+    fieldEl;
 
+  // Panel + ARIA
   const panel = document.createElement('div');
-  panel.className = 'typeahead-panel';
+  panel.className = 'typeahead-panel typeahead-panel--floating';
   panel.setAttribute('role', 'listbox');
-  panel.style.display = 'none';
+  panel.hidden = true;
 
   const uid = Math.random().toString(36).slice(2, 8);
   const panelId = `${inputEl.id || 'city-input'}-listbox-${uid}`;
@@ -248,8 +249,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   live.setAttribute('aria-live', 'polite');
   live.setAttribute('aria-atomic', 'true');
 
-  host.appendChild(panel);
-  host.appendChild(live);
+  fieldEl.appendChild(panel);
+  fieldEl.appendChild(live);
 
   let items = [];
   let activeIndex = -1;
@@ -258,46 +259,36 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   let includeNearMe = true;
   let lastLoadId = 0;
 
-  const announce = (msg) => {
-    live.textContent = msg || '';
-  };
+  function ensurePanelPlacement() {
+    const targetHost = isMobileLayout() ? groupEl : fieldEl;
 
-  const isOpen = () => panel.style.display !== 'none';
+    if (panel.parentElement !== targetHost) {
+      targetHost.appendChild(panel);
+    }
 
-  function syncPanelPosition() {
-    if (!isOpen()) return;
-
-    const rect = inputEl.getBoundingClientRect();
-    const viewportH = window.visualViewport?.height || window.innerHeight;
-
-    const spaceBelow = Math.max(120, Math.floor(viewportH - rect.bottom - 12));
-    const spaceAbove = Math.max(120, Math.floor(rect.top - 12));
-    const preferredHeight = isMobile() ? 320 : 360;
-
-    panel.classList.toggle('is-mobile-card', isMobile());
-
-    const shouldFlipUp = spaceBelow < 220 && spaceAbove > (spaceBelow + 48);
-    panel.classList.toggle('is-flip-up', shouldFlipUp);
-
-    const maxHeight = shouldFlipUp
-      ? Math.min(spaceAbove, preferredHeight)
-      : Math.min(spaceBelow, preferredHeight);
-
-    panel.style.maxHeight = `${Math.max(160, maxHeight)}px`;
+    panel.classList.toggle('typeahead-panel--inline', isMobileLayout());
+    panel.classList.toggle('typeahead-panel--floating', !isMobileLayout());
   }
 
   function open() {
-    panel.style.display = 'block';
+    ensurePanelPlacement();
+    panel.hidden = false;
     inputEl.setAttribute('aria-expanded', 'true');
-    requestAnimationFrame(syncPanelPosition);
   }
 
   function close() {
-    panel.style.display = 'none';
+    panel.hidden = true;
     inputEl.setAttribute('aria-expanded', 'false');
     inputEl.removeAttribute('aria-activedescendant');
     activeIndex = -1;
-    panel.classList.remove('is-flip-up');
+  }
+
+  function isOpen() {
+    return !panel.hidden;
+  }
+
+  function announce(msg) {
+    live.textContent = msg || '';
   }
 
   function setActive(idx) {
@@ -306,8 +297,6 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     const activeEl = panel.querySelector(`[data-index="${idx}"]`);
     if (activeEl) {
       inputEl.setAttribute('aria-activedescendant', activeEl.id);
-    } else {
-      inputEl.removeAttribute('aria-activedescendant');
     }
 
     panel.querySelectorAll('.typeahead-item').forEach((el) => {
@@ -318,7 +307,6 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (activeEl) {
       activeEl.classList.add('active');
       activeEl.setAttribute('aria-selected', 'true');
-      activeEl.scrollIntoView({ block: 'nearest' });
     }
   }
 
@@ -330,7 +318,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         __nearMe: true,
         id: `${panelId}-opt-nearme`,
         city: t('filters.nearMe', defaultText('nearMe', locale)),
-        helper: defaultText('nearMeHelper', locale),
+        subtitle: t('filters.nearMeSubtitle', defaultText('nearMeSubtitle', locale))
       });
     }
 
@@ -353,39 +341,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     close();
   }
 
-  function render() {
-    const list = buildRenderList();
-    const header = `
-      <div class="typeahead-header">
-        ${esc(defaultText('suggestionsTitle', locale))}
-      </div>
-    `;
-
-    if (loading) {
-      panel.innerHTML = `
-        ${header}
-        <div class="typeahead-status typeahead-loading">
-          ${esc(t('filters.loading', defaultText('loading', locale)))}
-        </div>
-      `;
-      syncPanelPosition();
-      return;
-    }
-
-    const onlyNearMe = includeNearMe && list.length === 1 && list[0].__nearMe;
-
-    if (!items.length && !onlyNearMe) {
-      panel.innerHTML = `
-        ${header}
-        <div class="typeahead-status typeahead-empty">
-          ${esc(t('filters.noResults', defaultText('noResults', locale)))}
-        </div>
-      `;
-      syncPanelPosition();
-      return;
-    }
-
-    const html = list.map((it, i) => {
+  function renderDesktopList(list) {
+    return list.map((it, i) => {
       if (it.__nearMe) {
         const id = it.id || `${panelId}-opt-nearme`;
         return `
@@ -394,12 +351,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
             class="typeahead-item nearme ${i === activeIndex ? 'active' : ''}"
             role="option"
             aria-selected="${i === activeIndex ? 'true' : 'false'}"
-            data-index="${i}"
-          >
-            <div class="ti-copy">
-              <span class="ti-city">${esc(it.city)}</span>
-              <span class="ti-meta">${esc(it.helper || '')}</span>
-            </div>
+            data-index="${i}">
+            <span class="ti-city">${esc(it.city)}</span>
           </div>
         `;
       }
@@ -414,25 +367,111 @@ export function setupCityTypeahead(inputEl, opts = {}) {
           class="typeahead-item ${i === activeIndex ? 'active' : ''}"
           role="option"
           aria-selected="${i === activeIndex ? 'true' : 'false'}"
-          data-index="${i}"
-        >
-          <div class="ti-copy">
-            <span class="ti-city">${htmlLabel}</span>
-            ${meta ? `<span class="ti-meta">${esc(meta)}</span>` : ''}
-          </div>
+          data-index="${i}">
+          <span class="ti-city">${htmlLabel}</span>
+          ${meta ? `<span class="ti-meta">${esc(meta)}</span>` : ''}
         </div>
       `;
     }).join('');
+  }
 
-    panel.innerHTML = `
-      ${header}
-      <div class="typeahead-list" role="presentation">
-        ${html}
+  function renderMobileList(list) {
+    const header = `
+      <div class="typeahead-mobile-head">
+        ${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}
       </div>
     `;
 
+    const nearMeItem = includeNearMe ? `
+      <div
+        id="${panelId}-opt-nearme"
+        class="typeahead-item typeahead-item--card nearme ${activeIndex === 0 ? 'active' : ''}"
+        role="option"
+        aria-selected="${activeIndex === 0 ? 'true' : 'false'}"
+        data-index="0">
+        <span class="ti-city">${esc(t('filters.nearMe', defaultText('nearMe', locale)))}</span>
+        <span class="ti-sub">${esc(t('filters.nearMeSubtitle', defaultText('nearMeSubtitle', locale)))}</span>
+      </div>
+    ` : '';
+
+    const cityItems = list
+      .filter((it) => !it.__nearMe)
+      .map((it, idx) => {
+        const listIndex = includeNearMe ? idx + 1 : idx;
+        const meta = [it.state, it.countryCode].filter(Boolean).join(', ');
+        const htmlLabel = highlight(it.city, lastQuery);
+        const id = `${panelId}-opt-${listIndex}`;
+
+        return `
+          <div
+            id="${id}"
+            class="typeahead-item typeahead-item--row ${listIndex === activeIndex ? 'active' : ''}"
+            role="option"
+            aria-selected="${listIndex === activeIndex ? 'true' : 'false'}"
+            data-index="${listIndex}">
+            <div class="ti-main">
+              <span class="ti-city">${htmlLabel}</span>
+              ${meta ? `<span class="ti-meta">${esc(meta)}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    const empty =
+      (!items.length && lastQuery.length >= minChars)
+        ? `<div class="typeahead-empty">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>`
+        : '';
+
+    return `
+      <div class="typeahead-mobile-shell">
+        ${header}
+        ${nearMeItem}
+        ${cityItems ? `<div class="typeahead-mobile-list">${cityItems}</div>` : ''}
+        ${empty}
+      </div>
+    `;
+  }
+
+  function render() {
+    ensurePanelPlacement();
+
+    const list = buildRenderList();
+
+    if (loading) {
+      panel.innerHTML = isMobileLayout()
+        ? `
+          <div class="typeahead-mobile-shell">
+            <div class="typeahead-mobile-head">
+              ${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}
+            </div>
+            <div class="typeahead-loading">${esc(t('filters.loading', defaultText('loading', locale)))}</div>
+          </div>
+        `
+        : `<div class="typeahead-loading">${esc(t('filters.loading', defaultText('loading', locale)))}</div>`;
+      return;
+    }
+
+    const onlyNearMe = includeNearMe && list.length === 1 && list[0].__nearMe;
+
+    if (!items.length && !onlyNearMe && lastQuery.length >= minChars) {
+      panel.innerHTML = isMobileLayout()
+        ? `
+          <div class="typeahead-mobile-shell">
+            <div class="typeahead-mobile-head">
+              ${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}
+            </div>
+            <div class="typeahead-empty">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>
+          </div>
+        `
+        : `<div class="typeahead-empty">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>`;
+      return;
+    }
+
+    panel.innerHTML = isMobileLayout()
+      ? renderMobileList(list)
+      : renderDesktopList(list);
+
     announce(defaultText('resultsCount', locale, items.length));
-    syncPanelPosition();
   }
 
   panel.addEventListener('pointerdown', (e) => {
@@ -440,23 +479,23 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (!el) return;
 
     e.preventDefault();
-    const idx = parseInt(el.dataset.index || '', 10);
+
+    const idx = parseInt(el.dataset.index, 10);
     if (Number.isFinite(idx)) chooseCity(idx);
   });
 
   panel.addEventListener('mousemove', (e) => {
+    if (isMobileLayout()) return;
+
     const el = e.target.closest('.typeahead-item');
     if (!el) return;
 
-    const idx = parseInt(el.dataset.index || '', 10);
-    if (Number.isFinite(idx) && idx !== activeIndex) {
-      setActive(idx);
-    }
+    const idx = parseInt(el.dataset.index, 10);
+    if (Number.isFinite(idx) && idx !== activeIndex) setActive(idx);
   });
 
   document.addEventListener('pointerdown', (e) => {
-    const target = e.target;
-    if (!panel.contains(target) && !host.contains(target) && target !== inputEl) {
+    if (!panel.contains(e.target) && e.target !== inputEl) {
       close();
     }
   }, true);
@@ -481,11 +520,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       setActive(last);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (activeIndex >= 0) {
-        chooseCity(activeIndex);
-      } else {
-        close();
-      }
+      if (activeIndex >= 0) chooseCity(activeIndex);
+      else close();
     } else if (e.key === 'Escape') {
       e.preventDefault();
       close();
@@ -522,9 +558,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         keyword: q,
         size: 80,
         countryCodes,
-        countryCode: Array.isArray(countryCodes)
-          ? countryCodes.join(',')
-          : String(countryCodes || '')
+        countryCode: Array.isArray(countryCodes) ? countryCodes.join(',') : String(countryCodes || '')
       });
 
       if (myLoadId !== lastLoadId) return;
@@ -548,25 +582,14 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }
   }
 
-  inputEl.addEventListener('input', () => {
-    inputEl.removeAttribute('data-autofromnearme');
-    debouncedLoad();
-  });
+  inputEl.addEventListener('input', debouncedLoad);
 
   inputEl.addEventListener('focus', () => {
     render();
     open();
+
     const hasCities = items.length > 0;
     setActive(includeNearMe ? 0 : (hasCities ? 0 : -1));
-  });
-
-  inputEl.addEventListener('blur', () => {
-    window.setTimeout(() => {
-      const active = document.activeElement;
-      if (!panel.contains(active) && active !== inputEl) {
-        close();
-      }
-    }, 140);
   });
 
   function handleNearMe() {
@@ -615,21 +638,16 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     );
   }
 
-  const vv = window.visualViewport;
-  if (vv) {
-    vv.addEventListener('resize', () => {
-      if (isOpen()) syncPanelPosition();
-    });
-    vv.addEventListener('scroll', () => {
-      if (isOpen()) syncPanelPosition();
-    });
+  function handleLayoutChange() {
+    ensurePanelPlacement();
+    if (isOpen()) render();
   }
 
-  window.addEventListener('resize', () => {
-    if (isOpen()) syncPanelPosition();
-  });
+  if (typeof mobileMq.addEventListener === 'function') {
+    mobileMq.addEventListener('change', handleLayoutChange);
+  } else if (typeof mobileMq.addListener === 'function') {
+    mobileMq.addListener(handleLayoutChange);
+  }
 
-  window.addEventListener('scroll', () => {
-    if (isOpen()) syncPanelPosition();
-  }, { passive: true });
+  ensurePanelPlacement();
 }

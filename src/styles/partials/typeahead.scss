@@ -1,112 +1,65 @@
-/* typeahead.scss — stabilní B2 verze bez mobilního overlay / sheet bugu */
+/* typeahead.scss — built-in typeahead */
+/* desktop = floating dropdown, mobil = inline premium panel */
 @use '../globals' as *;
 
-.has-typeahead {
-  position: relative;
-}
+/* --------------------------------------------------
+   DESKTOP / DEFAULT FLOATING
+-------------------------------------------------- */
 
-/* Panel / dropdown */
 .ta-popover,
 .typeahead-panel {
   position: absolute;
-  top: calc(100% + 0.5rem);
+  top: calc(100% + 0.35rem);
   left: 0;
-  right: auto;
-  z-index: 10050;
+  z-index: 1000;
 
-  width: 100%;
   min-width: 100%;
-  max-width: min(32rem, 100vw - 2rem);
-  max-height: 360px;
+  max-width: 32rem;
+  max-height: 320px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
 
   margin: 0;
   padding: 0.45rem;
 
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.985) 0%, rgba(247, 251, 255, 0.985) 100%);
-  border: 1px solid rgba(189, 210, 232, 0.92);
-  border-radius: 1.1rem;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(246, 250, 255, 0.98) 100%
+  );
+  border: 1px solid rgba(179, 205, 230, 0.9);
+  border-radius: 1rem;
   box-shadow:
-    0 22px 50px rgba(10, 36, 80, 0.16),
-    0 8px 18px rgba(10, 36, 80, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    0 18px 40px rgba(10, 36, 80, 0.14),
+    0 4px 12px rgba(10, 36, 80, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
 
-  backdrop-filter: blur(14px);
   font: inherit;
   line-height: 1.35;
-  color: #153a60;
 }
 
-.ta-popover.is-flip-up,
-.typeahead-panel.is-flip-up {
-  top: auto;
-  bottom: calc(100% + 0.5rem);
-}
-
-/* Header */
-.typeahead-header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-
-  display: flex;
-  align-items: center;
-  min-height: 2.25rem;
-  padding: 0.35rem 0.75rem 0.5rem;
-
-  font-size: 0.78rem;
-  line-height: 1;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #6c7890;
-
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 251, 255, 0.9) 100%);
-  border-bottom: 1px solid rgba(224, 232, 243, 0.9);
-  border-top-left-radius: 0.9rem;
-  border-top-right-radius: 0.9rem;
-}
-
-/* List */
-.ta-popover .ta-list,
-.typeahead-list {
+.ta-popover .ta-list {
   list-style: none;
   margin: 0;
-  padding: 0.25rem 0 0;
+  padding: 0;
 }
 
-/* Status */
-.ta-popover .typeahead-loading,
-.ta-popover .typeahead-empty,
-.typeahead-loading,
-.typeahead-empty,
-.typeahead-status {
-  padding: 0.9rem 0.95rem 1rem;
-  color: #6f7f96;
-  font-weight: 700;
-  font-size: 0.96rem;
-}
-
-/* Item */
 .ta-popover .ta-item,
 .typeahead-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.8rem;
 
-  padding: 0.9rem 0.95rem;
-  border-radius: 0.95rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 0.9rem;
   border: 1px solid transparent;
   cursor: pointer;
-  user-select: none;
 
   font: inherit;
-  color: #173a62;
+  font-weight: 600;
+  color: #153a60;
   transition:
     background 0.18s ease,
     border-color 0.18s ease,
@@ -116,80 +69,77 @@
 
 .ta-popover .ta-item:hover,
 .typeahead-item:hover {
-  background:
-    linear-gradient(135deg, rgba(14, 136, 240, 0.08), rgba(20, 194, 197, 0.08));
-  border-color: rgba(137, 186, 229, 0.82);
+  background: linear-gradient(
+    135deg,
+    rgba(14, 136, 240, 0.09),
+    rgba(20, 194, 197, 0.08)
+  );
+  border-color: rgba(126, 182, 230, 0.8);
   box-shadow:
     0 8px 18px rgba(12, 36, 80, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .ta-popover .ta-item.active,
 .typeahead-item.active {
-  background:
-    linear-gradient(135deg, rgba(14, 136, 240, 0.16), rgba(20, 194, 197, 0.13));
-  border-color: rgba(85, 157, 226, 0.95);
+  background: linear-gradient(
+    135deg,
+    rgba(14, 136, 240, 0.18),
+    rgba(20, 194, 197, 0.14)
+  );
+  border-color: rgba(78, 156, 226, 0.95);
   box-shadow:
     0 12px 24px rgba(12, 36, 80, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.86);
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+.ta-popover .ta-item.active .ti-city,
+.typeahead-item.active .ti-city {
+  color: #0b5ed7;
 }
 
 .ta-popover .ta-item.nearme,
 .typeahead-item.nearme {
-  background:
-    linear-gradient(135deg, rgba(20, 194, 197, 0.09), rgba(14, 136, 240, 0.09));
-  border-color: rgba(176, 215, 239, 0.9);
+  background: linear-gradient(
+    135deg,
+    rgba(20, 194, 197, 0.08),
+    rgba(14, 136, 240, 0.08)
+  );
 }
 
 .ta-popover .ta-item.nearme:hover,
 .ta-popover .ta-item.nearme.active,
 .typeahead-item.nearme:hover,
 .typeahead-item.nearme.active {
-  background:
-    linear-gradient(135deg, rgba(20, 194, 197, 0.18), rgba(14, 136, 240, 0.16));
-  border-color: rgba(82, 165, 230, 0.95);
-}
-
-/* Inner copy */
-.typeahead-item .ti-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.14rem;
-  min-width: 0;
-  flex: 1 1 auto;
+  background: linear-gradient(
+    135deg,
+    rgba(20, 194, 197, 0.18),
+    rgba(14, 136, 240, 0.16)
+  );
 }
 
 .ta-popover .ta-item span,
 .typeahead-item .ti-city {
-  display: block;
   font-weight: 800;
   font-size: 1rem;
-  line-height: 1.35;
+  line-height: 1.4;
   color: #173a62;
 }
 
-.typeahead-item.active .ti-city {
-  color: #0b5ed7;
-}
-
 .typeahead-item .ti-meta {
-  display: block;
+  margin-left: auto;
+  white-space: nowrap;
   font-size: 0.82rem;
-  line-height: 1.25;
+  line-height: 1.2;
   font-weight: 700;
-  color: #7a8aa0;
-  white-space: normal;
+  color: #6f839b;
+  align-self: center;
 }
 
-.typeahead-item.nearme .ti-city {
-  color: #0b5ed7;
+.typeahead-item .ti-sub {
+  display: none;
 }
 
-.typeahead-item.nearme .ti-meta {
-  color: #6482a4;
-}
-
-/* Legacy alias */
 .ta-popover .ta-item kbd {
   font: inherit;
   font-size: 0.76rem;
@@ -201,61 +151,218 @@
   color: rgba(23, 58, 98, 0.82);
 }
 
-/* Highlight */
+.ta-popover .typeahead-loading,
+.ta-popover .typeahead-empty,
+.typeahead-loading,
+.typeahead-empty {
+  padding: 0.9rem 0.95rem;
+  color: #667c95;
+  font-weight: 700;
+  opacity: 1;
+}
+
 .ta-popover mark,
 .typeahead-item mark {
-  background: rgba(20, 194, 197, 0.18);
+  background: rgba(20, 194, 197, 0.2);
   color: inherit;
-  border-radius: 0.32rem;
-  padding: 0 0.16rem;
+  border-radius: 0.35rem;
+  padding: 0 0.18rem;
   text-decoration: none;
   font-weight: 900;
 }
 
-/* Mobil */
+.typeahead-mobile-shell,
+.typeahead-mobile-head,
+.typeahead-mobile-list,
+.typeahead-item--card,
+.typeahead-item--row,
+.typeahead-item .ti-main {
+  display: block;
+}
+
+/* default: mobilní prvky schovej ve floating desktop verzi */
+.typeahead-panel--floating .typeahead-mobile-head {
+  display: none;
+}
+
+/* --------------------------------------------------
+   MOBILE INLINE PREMIUM
+-------------------------------------------------- */
+
 @media (max-width: 720px) {
-  .ta-popover,
-  .typeahead-panel {
-    width: 100%;
+  .typeahead-panel.typeahead-panel--inline {
+    position: static;
+    top: auto;
+    left: auto;
+    z-index: auto;
+
+    min-width: 100%;
     max-width: none;
-    border-radius: 1.25rem;
-    padding: 0.42rem;
+    max-height: none;
+    overflow: visible;
+
+    margin-top: 0.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-mobile-shell {
+    padding: 0.9rem;
+    border-radius: 1.45rem;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.96) 0%,
+      rgba(244, 248, 253, 0.96) 100%
+    );
+    border: 1px solid rgba(203, 219, 236, 0.92);
     box-shadow:
-      0 20px 42px rgba(10, 36, 80, 0.16),
-      0 6px 14px rgba(10, 36, 80, 0.08),
-      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+      0 22px 36px rgba(12, 36, 80, 0.12),
+      0 4px 16px rgba(12, 36, 80, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 0.94);
   }
 
-  .typeahead-panel.is-mobile-card {
+  .typeahead-panel.typeahead-panel--inline .typeahead-mobile-head {
+    display: block;
+    margin: 0 0 0.75rem;
+    padding: 0 0.15rem 0.7rem;
+    border-bottom: 1px solid rgba(215, 225, 238, 0.9);
+
+    font-size: 0.92rem;
+    line-height: 1.1;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6a7388;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item {
+    cursor: pointer;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+
+    padding: 1.05rem 1rem;
     border-radius: 1.25rem;
+    border: 1px solid rgba(103, 165, 225, 0.85);
+    background: linear-gradient(
+      135deg,
+      rgba(231, 247, 251, 0.98) 0%,
+      rgba(239, 246, 255, 0.98) 100%
+    );
+    box-shadow:
+      0 14px 28px rgba(12, 36, 80, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92);
   }
 
-  .typeahead-header {
-    padding: 0.42rem 0.8rem 0.58rem;
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--card .ti-city {
+    font-size: 1rem;
+    line-height: 1.2;
+    font-weight: 900;
+    color: #245fcb;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--card .ti-sub {
+    display: block;
+    font-size: 0.82rem;
+    line-height: 1.3;
+    font-weight: 700;
+    color: #6d86a7;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-mobile-list {
+    margin-top: 0.75rem;
+    max-height: min(32vh, 260px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--row {
+    display: block;
+    padding: 0.9rem 0.95rem;
+    border-radius: 1rem;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--row + .typeahead-item--row {
+    margin-top: 0.42rem;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--row:hover,
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--row.active {
+    background: linear-gradient(
+      135deg,
+      rgba(14, 136, 240, 0.1),
+      rgba(20, 194, 197, 0.08)
+    );
+    border-color: rgba(136, 180, 224, 0.72);
+    box-shadow:
+      0 8px 18px rgba(12, 36, 80, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--row .ti-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.18rem;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--row .ti-city {
+    font-size: 1rem;
+    line-height: 1.3;
+    font-weight: 800;
+    color: #173a62;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-item--row .ti-meta {
+    margin: 0;
     font-size: 0.8rem;
+    line-height: 1.25;
+    white-space: normal;
+    color: #7a8da7;
+    font-weight: 700;
+    align-self: flex-start;
+  }
+
+  .typeahead-panel.typeahead-panel--inline .typeahead-loading,
+  .typeahead-panel.typeahead-panel--inline .typeahead-empty {
+    margin-top: 0.75rem;
+    padding: 0.9rem 0.95rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.72);
+    color: #6d7f96;
+    font-weight: 700;
+  }
+
+  .typeahead-panel.typeahead-panel--inline mark {
+    background: rgba(20, 194, 197, 0.18);
+  }
+
+  /* floating panel na mobilu lehce zmenšíme, kdyby se někde použil */
+  .ta-popover,
+  .typeahead-panel.typeahead-panel--floating {
+    max-width: none;
+    border-radius: 0.9rem;
+    padding: 0.38rem;
   }
 
   .ta-popover .ta-item,
-  .typeahead-item {
-    min-height: 58px;
-    padding: 0.92rem 0.92rem;
-    border-radius: 1rem;
+  .typeahead-panel.typeahead-panel--floating .typeahead-item {
+    padding: 0.82rem 0.85rem;
+    border-radius: 0.8rem;
   }
 
   .ta-popover .ta-item span,
-  .typeahead-item .ti-city {
-    font-size: 1.03rem;
-    line-height: 1.32;
-  }
-
-  .typeahead-item .ti-meta {
-    font-size: 0.84rem;
-    line-height: 1.25;
-  }
-
-  /* iOS: radši bez hover transformací */
-  .ta-popover .ta-item:hover,
-  .typeahead-item:hover {
-    transform: none;
+  .typeahead-panel.typeahead-panel--floating .typeahead-item .ti-city {
+    font-size: 0.98rem;
   }
 }

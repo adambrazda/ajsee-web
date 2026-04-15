@@ -10,10 +10,10 @@
 const G = window.__ajsee;
 
 // ——— helpers ———
-const qs  = (s, r=document)=>r.querySelector(s);
-const qsa = (s, r=document)=>Array.from(r.querySelectorAll(s));
+const qs  = (s, r = document) => r.querySelector(s);
+const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
 
-const SUPPORTED_LANGS = ['cs','en','de','sk','pl','hu'];
+const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const LANG_KEY = 'ajsee.lang';
 
 function normalizeLang(x) {
@@ -22,10 +22,14 @@ function normalizeLang(x) {
 }
 
 function getStoredLang() {
-  try { return normalizeLang(localStorage.getItem(LANG_KEY)); } catch { return null; }
+  try {
+    return normalizeLang(localStorage.getItem(LANG_KEY));
+  } catch {
+    return null;
+  }
 }
 
-function detectLangSmart(fallback='cs') {
+function detectLangSmart(fallback = 'cs') {
   const urlLang = normalizeLang(new URLSearchParams(location.search).get('lang'));
   const stored = getStoredLang();
   const htmlLang = normalizeLang(document.documentElement.getAttribute('lang'));
@@ -35,7 +39,9 @@ function detectLangSmart(fallback='cs') {
 function persistLangOnly(lang) {
   const l = normalizeLang(lang);
   if (!l) return;
-  try { localStorage.setItem(LANG_KEY, l); } catch {}
+  try {
+    localStorage.setItem(LANG_KEY, l);
+  } catch {}
 }
 
 function onHomePage() {
@@ -61,7 +67,12 @@ function setLangOnInternalHref(rawHref, lang) {
   if (/^https?:\/\//i.test(rawHref)) return rawHref;
 
   let u;
-  try { u = new URL(rawHref, window.location.origin); } catch { return rawHref; }
+  try {
+    u = new URL(rawHref, window.location.origin);
+  } catch {
+    return rawHref;
+  }
+
   if (u.origin !== window.location.origin) return rawHref;
 
   if (l === 'cs') u.searchParams.delete('lang');
@@ -84,8 +95,8 @@ function activateNavLink() {
     accommodation: () => /\/accommodation(\.html)?$/i.test(path),
     about:         () => /\/about(\.html)?$/i.test(path),
     blog:          () => /\/blog(\.html)?$/i.test(path) || (isHomePath && hash === '#blog'),
-    faq:           () => /\/faq(\.html)?$/i.test(path)  || (isHomePath && hash === '#faq'),
-    contact:       () => /\/contact(\.html)?$/i.test(path) || (isHomePath && hash === '#contact'),
+    faq:           () => /\/faq(\.html)?$/i.test(path),
+    contact:       () => isHomePath && hash === '#contact',
   };
 
   const keyForLink = (href) => {
@@ -101,7 +112,7 @@ function activateNavLink() {
     return null;
   };
 
-    qsa('.main-nav a, [data-lang-link]').forEach((link) => {
+  qsa('.main-nav a, [data-lang-link]').forEach((link) => {
     const href = link.getAttribute('href') || '';
     const key = keyForLink(href);
     const isCurrent = key ? !!state[key]() : false;
@@ -112,13 +123,13 @@ function activateNavLink() {
   });
 }
 
-// Přidej/normalizuj FAQ položku (kotva na homepage vs. samostatná stránka)
+// Přidej/normalizuj FAQ položku jako samostatnou stránku
 function ensureFaqNavLink() {
   const nav = qs('.main-nav');
   if (!nav) return;
 
   const links = Array.from(nav.querySelectorAll('a'));
-  const alreadyHasFaq = links.some(a => {
+  const alreadyHasFaq = links.some((a) => {
     const raw = (a.getAttribute('href') || '').toLowerCase();
     const h = raw.split('?')[0];
     return /(^|\/)faq(\.html)?$/.test(h) || raw.endsWith('#faq');
@@ -130,12 +141,18 @@ function ensureFaqNavLink() {
   const a = document.createElement('a');
   if (proto) a.className = proto.className;
   a.setAttribute('data-i18n-key', 'nav-faq');
-  a.textContent = (window.translations?.['nav-faq']) || 'FAQ';
-  a.href = onHomePage() ? `/index.html#faq` : `/faq`;
+  a.textContent = window.translations?.['nav-faq'] || 'FAQ';
+  a.href = '/faq.html';
 
   const contact = nav.querySelector('a[href*="contact"], a[href$="#contact"]');
   const useList = !!nav.querySelector('li > a');
-  const nodeToInsert = useList ? (()=>{ const li = document.createElement('li'); li.appendChild(a); return li; })() : a;
+  const nodeToInsert = useList
+    ? (() => {
+        const li = document.createElement('li');
+        li.appendChild(a);
+        return li;
+      })()
+    : a;
 
   const contactItem = contact?.closest('li') || contact;
   if (contactItem && contactItem.parentElement) {
@@ -149,23 +166,22 @@ function normalizeFaqInNav(lang) {
   const nav = qs('.main-nav');
   if (!nav) return;
 
-  const faqLinks = Array.from(nav.querySelectorAll('a')).filter(a => {
+  const faqLinks = Array.from(nav.querySelectorAll('a')).filter((a) => {
     const raw = (a.getAttribute('href') || '').toLowerCase();
     const base = raw.split('?')[0];
     return /(^|\/)faq(\.html)?$/.test(base) || raw.endsWith('#faq');
   });
   if (faqLinks.length === 0) return;
 
-  const preferAnchor = onHomePage();
-  let keep = preferAnchor
-    ? faqLinks.find(a => (a.getAttribute('href') || '').toLowerCase().endsWith('#faq'))
-    : faqLinks.find(a => /(^|\/)faq(\.html)?($|\?)/.test((a.getAttribute('href') || '').toLowerCase()));
+  let keep = faqLinks.find((a) =>
+    /(^|\/)faq(\.html)?($|\?)/.test((a.getAttribute('href') || '').toLowerCase())
+  );
   if (!keep) keep = faqLinks[0];
 
-  const target = preferAnchor ? `/index.html#faq` : `/faq`;
+  const target = '/faq.html';
   keep.setAttribute('href', setLangOnInternalHref(target, lang));
 
-  faqLinks.forEach(a => {
+  faqLinks.forEach((a) => {
     if (a !== keep) (a.closest('li') || a).remove();
   });
 
@@ -177,10 +193,9 @@ function normalizeFaqInNav(lang) {
   }
 }
 
-// Doplnění ?lang= do odkazů v menu (včetně #blog/#contact/#faq) + cs bez parametru
+// Doplnění ?lang= do odkazů v menu + cs bez parametru
 function updateMenuLinksWithLang(lang) {
   const l = normalizeLang(lang) || 'cs';
-  const isHome = onHomePage();
 
   qsa('.main-nav a').forEach((link) => {
     let href = link.getAttribute('href') || '';
@@ -189,11 +204,13 @@ function updateMenuLinksWithLang(lang) {
     const lower = href.toLowerCase();
 
     if (lower.endsWith('#blog')) {
-      href = `/index.html#blog`;
+      href = '/index.html#blog';
     } else if (lower.endsWith('#contact')) {
-      href = `/index.html#contact`;
+      href = '/#contact';
     } else if (lower.endsWith('#faq')) {
-      href = isHome ? `/index.html#faq` : `/faq`;
+      href = '/faq.html';
+    } else if (/\/faq(\.html)?($|\?)/i.test(lower)) {
+      href = '/faq.html';
     }
 
     href = setLangOnInternalHref(href, l);
@@ -204,9 +221,9 @@ function updateMenuLinksWithLang(lang) {
 // Mobilní menu (hamburger + overlay)
 function initMobileMenu() {
   const hamburger = qs('.hamburger-btn');
-  const nav       = qs('.main-nav');
-  const overlay   = qs('.menu-overlay-bg');
-  const closeBtn  = qs('.menu-close');
+  const nav = qs('.main-nav');
+  const overlay = qs('.menu-overlay-bg');
+  const closeBtn = qs('.menu-close');
 
   if (!hamburger || !nav || !overlay) return;
 
@@ -243,7 +260,9 @@ function initMobileMenu() {
   overlay.addEventListener('click', closeMenu);
   closeBtn?.addEventListener('click', closeMenu);
   qsa('.main-nav a').forEach((link) => link.addEventListener('click', closeMenu));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
 }
 
 function bindLangPersistenceAndNavRefresh() {
@@ -299,19 +318,45 @@ export function initNav({ lang = null } = {}) {
   // Home link smooth + lang přepis
   const homeLink = qs('a[data-i18n-key="nav-home"]');
   if (homeLink) {
-    homeLink.addEventListener('click', async (e) => {
+    homeLink.addEventListener('click', (e) => {
       e.preventDefault();
       window.__ajseeCloseMenu?.();
 
       const isHome = onHomePage();
       if (!isHome) {
-        window.location.href = (currentLang === 'cs') ? `/` : `/?lang=${currentLang}`;
+        window.location.href = (currentLang === 'cs') ? '/' : `/?lang=${currentLang}`;
         return;
       }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
+
+  // Contact link – explicitní chování
+  const contactLinks = qsa('a[data-i18n-key="nav-contact"]');
+  contactLinks.forEach((contactLink) => {
+    contactLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.__ajseeCloseMenu?.();
+
+      const targetHash = '#contact';
+      const isHome = onHomePage();
+
+      if (!isHome) {
+        window.location.href = (currentLang === 'cs')
+          ? `/${targetHash}`
+          : `/?lang=${currentLang}${targetHash}`;
+        return;
+      }
+
+      const target = document.querySelector(targetHash);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.location.hash = targetHash;
+      }
+    });
+  });
 
   initMobileMenu();
   bindLangPersistenceAndNavRefresh();

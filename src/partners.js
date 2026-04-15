@@ -7,12 +7,16 @@ const SUPPORTED_LANGS = ["cs", "en", "de", "sk", "pl", "hu"];
 const DEFAULT_LANG = "cs";
 
 function detectLang() {
-  const url = new URL(window.location.href);
-  const urlLang = url.searchParams.get("lang");
-  if (urlLang && SUPPORTED_LANGS.includes(urlLang)) return urlLang;
+  try {
+    const url = new URL(window.location.href);
+    const urlLang = url.searchParams.get("lang");
+    if (urlLang && SUPPORTED_LANGS.includes(urlLang)) return urlLang;
+  } catch {}
 
-  const stored = localStorage.getItem("ajsee.lang");
-  if (stored && SUPPORTED_LANGS.includes(stored)) return stored;
+  try {
+    const stored = localStorage.getItem("ajsee.lang");
+    if (stored && SUPPORTED_LANGS.includes(stored)) return stored;
+  } catch {}
 
   let lang = (navigator.language || DEFAULT_LANG).slice(0, 2).toLowerCase();
   if (!SUPPORTED_LANGS.includes(lang)) lang = DEFAULT_LANG;
@@ -90,49 +94,34 @@ function updateMenuLinksWithLang(lang) {
 
     let href = rawHref;
 
-    // na partners stránce je správně #partner-contact
     if (href === "#contact" && document.getElementById("partner-contact")) {
       href = "#partner-contact";
     }
 
-    // anchor link (na stejné stránce) → přidáme lang do aktuální URL
     if (href.startsWith("#")) {
       const url = new URL(window.location.href);
-      url.searchParams.set("lang", lang);
+
+      if (lang === DEFAULT_LANG) {
+        url.searchParams.delete("lang");
+      } else {
+        url.searchParams.set("lang", lang);
+      }
+
       url.hash = href;
       link.setAttribute("href", url.pathname + url.search + url.hash);
       return;
     }
 
-    // normální cesta
     const url = new URL(href, window.location.origin);
-    url.searchParams.set("lang", lang);
+
+    if (lang === DEFAULT_LANG) {
+      url.searchParams.delete("lang");
+    } else {
+      url.searchParams.set("lang", lang);
+    }
+
     link.setAttribute("href", url.pathname + url.search + url.hash);
   });
-}
-
-/**
- * Speciální překlad pro headline:
- * - nechceme innerHTML z JSON (bezpečnost)
- * - chceme zachovat <span class="reg">®</span>
- * => přepíšeme jen textový uzel a span necháme
- */
-function applyHeadlineTranslation(el, translatedText) {
-  if (!el) return;
-
-  // najdi nebo vytvoř ® span
-  let reg = el.querySelector(".reg");
-  if (!reg) {
-    reg = document.createElement("span");
-    reg.className = "reg";
-    reg.setAttribute("aria-hidden", "true");
-    reg.textContent = "®";
-  }
-
-  // clear a vlož čistý text + span
-  el.textContent = "";
-  el.append(document.createTextNode(translatedText));
-  el.appendChild(reg);
 }
 
 async function applyTranslations(lang) {
@@ -142,13 +131,6 @@ async function applyTranslations(lang) {
   document.querySelectorAll("[data-i18n-key]").forEach((el) => {
     const key = el.getAttribute("data-i18n-key");
     if (translations[key] == null) return;
-
-    // 🔧 SPECIAL CASE: partner-headline
-    if (key === "partner-headline") {
-      applyHeadlineTranslation(el, translations[key]);
-      return;
-    }
-
     el.textContent = translations[key];
   });
 
@@ -162,25 +144,28 @@ async function applyTranslations(lang) {
     if (translations[key] != null) el.setAttribute("alt", translations[key]);
   });
 
-  document.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
-    const key = el.getAttribute("data-i18n-aria-label");
-    if (translations[key] != null) el.setAttribute("aria-label", translations[key]);
+  document.querySelectorAll("[data-i18n-aria], [data-i18n-aria-label]").forEach((el) => {
+    const key =
+      el.getAttribute("data-i18n-aria") ||
+      el.getAttribute("data-i18n-aria-label");
+
+    if (key && translations[key] != null) {
+      el.setAttribute("aria-label", translations[key]);
+      el.setAttribute("title", translations[key]);
+    }
   });
 
-  // update <title> (plain text) – přidáme ® natvrdo
   const titleEl = document.querySelector("title[data-i18n-key]");
   if (titleEl) {
     const tKey = titleEl.getAttribute("data-i18n-key");
     if (tKey && translations[tKey] != null) {
-      titleEl.textContent = `${translations[tKey]}®`;
+      titleEl.textContent = translations[tKey];
     }
   }
 }
 
 /**
- * FIX: Na partners.html se dříve aktivoval i "Kontakt", protože po updateMenuLinksWithLang()
- * má href tvar /partners.html?lang=xx#partner-contact a obsahuje "partners".
- * Aktivujeme proto explicitně jen odkaz s data-i18n-key="nav-partners".
+ * Na partners stránce má být aktivní jen "Pro partnery".
  */
 function activateNavLink() {
   document.querySelectorAll(".main-nav a").forEach((link) => {
@@ -199,13 +184,22 @@ function initLanguageButtons() {
   document.querySelectorAll(".lang-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.preventDefault();
+
       const chosenLang = btn.dataset.lang;
       if (!SUPPORTED_LANGS.includes(chosenLang)) return;
 
-      localStorage.setItem("ajsee.lang", chosenLang);
+      try {
+        localStorage.setItem("ajsee.lang", chosenLang);
+      } catch {}
 
       const url = new URL(window.location.href);
-      url.searchParams.set("lang", chosenLang);
+
+      if (chosenLang === DEFAULT_LANG) {
+        url.searchParams.delete("lang");
+      } else {
+        url.searchParams.set("lang", chosenLang);
+      }
+
       window.location.href = url.toString();
     });
   });
@@ -225,10 +219,12 @@ function initPartnerForm() {
     fields.forEach((name) => {
       const input = form.elements[name];
       const errEl = form.querySelector(`#error-${name}`);
+
       if (errEl) {
         errEl.textContent = "";
         errEl.classList.remove("active");
       }
+
       if (input) {
         input.removeAttribute("aria-invalid");
         input.removeAttribute("aria-describedby");
@@ -249,6 +245,7 @@ function initPartnerForm() {
 
   function setLoading(isLoading) {
     if (!submitBtn) return;
+
     submitBtn.disabled = isLoading;
     submitBtn.setAttribute("aria-busy", isLoading ? "true" : "false");
     submitBtn.textContent = isLoading
@@ -266,6 +263,7 @@ function initPartnerForm() {
   fields.forEach((name) => {
     const input = form.elements[name];
     if (!input) return;
+
     input.addEventListener("input", () => {
       const errEl = form.querySelector(`#error-${name}`);
       if (errEl) {
@@ -280,6 +278,7 @@ function initPartnerForm() {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearErrors();
+
     if (errorBox) errorBox.style.display = "none";
 
     const honey = form.querySelector('input[name="bot-field"]');
@@ -296,15 +295,18 @@ function initPartnerForm() {
       showError("company", t()["partner-error-company"] || "Vyplňte název firmy nebo instituce.");
       valid = false;
     }
+
     if (!name) {
       showError("name", t()["partner-error-name"] || "Zadejte své jméno.");
       valid = false;
     }
+
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!email || !emailOk) {
       showError("email", t()["partner-error-email"] || "Zadejte platný e-mail.");
       valid = false;
     }
+
     if (!message) {
       showError("message", t()["partner-error-message"] || "Napište vzkaz.");
       valid = false;
@@ -342,8 +344,12 @@ function initPartnerForm() {
       if (errorBox) {
         errorBox.style.display = "block";
         const p = errorBox.querySelector("p");
-        if (p) p.textContent = t()["partner-error-msg"] || "Odeslání se nezdařilo. Zkuste to prosím později.";
-        setTimeout(() => (errorBox.style.display = "none"), 4500);
+        if (p) {
+          p.textContent = t()["partner-error-msg"] || "Odeslání se nezdařilo. Zkuste to prosím později.";
+        }
+        setTimeout(() => {
+          errorBox.style.display = "none";
+        }, 4500);
       }
     } finally {
       setLoading(false);
@@ -353,7 +359,10 @@ function initPartnerForm() {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const lang = detectLang();
-  localStorage.setItem("ajsee.lang", lang);
+
+  try {
+    localStorage.setItem("ajsee.lang", lang);
+  } catch {}
 
   setLangUI(lang);
   await applyTranslations(lang);
@@ -361,6 +370,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   updateMenuLinksWithLang(lang);
   activateNavLink();
   initLanguageButtons();
-
   initPartnerForm();
 });

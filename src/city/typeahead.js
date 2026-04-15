@@ -42,6 +42,13 @@ function highlight(label, query) {
   return `${start}<mark>${mid}</mark>${end}`;
 }
 
+/** nested lookup */
+function getByPath(obj, path) {
+  return String(path || '')
+    .split('.')
+    .reduce((acc, key) => (acc && typeof acc === 'object' ? acc[key] : undefined), obj);
+}
+
 /** fallback texty */
 function defaultText(key, lang = 'en', n = 0) {
   const L = (lang || 'en').toLowerCase();
@@ -120,7 +127,7 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'cs': return 'Začni psát nebo použij svou polohu';
       case 'sk': return 'Začni písať alebo použi svoju polohu';
       case 'pl': return 'Zacznij pisać lub użyj swojej lokalizacji';
-      case 'hu': return 'Kezdj gépelni vagy használd a helyzeted';
+      case 'hu': return 'Kezdj gépelni vagy használd a polohu';
       case 'de': return 'Beginnen Sie zu tippen oder verwenden Sie Ihren Standort';
       default:   return 'Start typing or use your location';
     }
@@ -206,12 +213,12 @@ function defaultText(key, lang = 'en', n = 0) {
   return '';
 }
 
-function defaultT(k, fallback) {
-  return (typeof window !== 'undefined'
-      && window.translations
-      && (k in window.translations))
-    ? window.translations[k]
-    : fallback;
+function defaultT(key, fallback) {
+  if (typeof window === 'undefined' || !window.translations) return fallback;
+  const nested = getByPath(window.translations, key);
+  if (nested !== undefined) return nested;
+  if (window.translations[key] !== undefined) return window.translations[key];
+  return fallback;
 }
 
 function normalizeAndDedupe(list = []) {
@@ -232,12 +239,17 @@ function normalizeAndDedupe(list = []) {
     if (seen.has(key)) continue;
     seen.add(key);
 
+    const latRaw = it.lat ?? it.latitude;
+    const lonRaw = it.lon ?? it.longitude;
+    const lat = typeof latRaw === 'number' ? latRaw : Number(latRaw);
+    const lon = typeof lonRaw === 'number' ? lonRaw : Number(lonRaw);
+
     out.push({
       city,
       state,
       countryCode: cc || undefined,
-      lat: typeof it.lat === 'number' ? it.lat : (typeof it.latitude === 'number' ? it.latitude : undefined),
-      lon: typeof it.lon === 'number' ? it.lon : (typeof it.longitude === 'number' ? it.longitude : undefined),
+      lat: Number.isFinite(lat) ? lat : undefined,
+      lon: Number.isFinite(lon) ? lon : undefined,
       score: typeof it.score === 'number' ? it.score : undefined
     });
   }
@@ -247,6 +259,12 @@ function normalizeAndDedupe(list = []) {
 
 export function setupCityTypeahead(inputEl, opts = {}) {
   if (!inputEl) return;
+
+  // cleanup previous instance on same input
+  const prev = inputEl.__ajseeCityTypeahead;
+  if (prev && typeof prev.destroy === 'function') {
+    try { prev.destroy(); } catch { /* noop */ }
+  }
 
   const {
     locale = 'cs',
@@ -264,6 +282,12 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   });
   const onNearMe = providedOnNearMe || null;
 
+  const controller = new AbortController();
+  const listen = (target, type, handler, options = {}) => {
+    if (!target || !target.addEventListener) return;
+    target.addEventListener(type, handler, { ...options, signal: controller.signal });
+  };
+
   const mobileMq = window.matchMedia('(max-width: 720px)');
   const isMobile = () => mobileMq.matches;
 
@@ -274,6 +298,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   const panel = document.createElement('div');
   panel.className = 'typeahead-panel';
   panel.setAttribute('role', 'listbox');
+  panel.setAttribute('data-city-ta', '1');
   panel.hidden = true;
 
   const uid = Math.random().toString(36).slice(2, 8);
@@ -309,6 +334,9 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   let sheetHint = null;
   let sheetOpen = false;
   let scrollYBeforeLock = 0;
+  let prevBodyStyles = null;
+
+  const vv = window.visualViewport || null;
 
   function announce(msg) {
     live.textContent = msg || '';
@@ -391,7 +419,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
           <input
             type="search"
             class="city-sheet__search"
-            placeholder="${esc(t('filters.searchPlaceholder', defaultText('searchPlaceholder', locale)))}"
+            placeholder="${esc(t('filters.searchPlaceholder', defaultText('searchPlaceholder', locale)))}
+            "
             autocomplete="off"
             autocapitalize="words"
             spellcheck="false"
@@ -427,19 +456,19 @@ export function setupCityTypeahead(inputEl, opts = {}) {
 
     const closeBtn = backdrop.querySelector('.city-sheet__close');
 
-    backdrop.addEventListener('click', (e) => {
+    listen(backdrop, 'click', (e) => {
       if (e.target === backdrop) closeMobile();
     });
 
-    closeBtn.addEventListener('click', () => {
+    listen(closeBtn, 'click', () => {
       closeMobile();
     });
 
-    sheetNearMe.addEventListener('click', () => {
+    listen(sheetNearMe, 'click', () => {
       handleNearMe();
     });
 
-    sheetResults.addEventListener('click', (e) => {
+    listen(sheetResults, 'click', (e) => {
       const btn = e.target.closest('[data-city-index]');
       if (!btn) return;
 
@@ -449,11 +478,11 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       chooseCity(idx);
     });
 
-    sheetSearch.addEventListener('input', () => {
+    listen(sheetSearch, 'input', () => {
       debouncedLoad(() => sheetSearch.value.trim());
     });
 
-    sheetSearch.addEventListener('keydown', (e) => {
+    listen(sheetSearch, 'keydown', (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         closeMobile();
@@ -462,24 +491,63 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   }
 
   function updateViewportVars() {
-    const vv = window.visualViewport;
     const vh = vv ? vv.height : window.innerHeight;
     document.documentElement.style.setProperty('--city-sheet-vh', `${vh}px`);
   }
 
   function lockBodyScroll() {
+    const body = document.body;
     scrollYBeforeLock = window.scrollY || window.pageYOffset || 0;
-    document.body.classList.add('city-picker-open');
-    document.body.style.top = `-${scrollYBeforeLock}px`;
+
+    prevBodyStyles = {
+      position: body.style.position,
+      top: body.style.top,
+      left: body.style.left,
+      right: body.style.right,
+      width: body.style.width,
+      overflow: body.style.overflow,
+      touchAction: body.style.touchAction
+    };
+
+    body.classList.add('city-picker-open');
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollYBeforeLock}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+    body.style.touchAction = 'none';
   }
 
   function unlockBodyScroll() {
-    document.body.classList.remove('city-picker-open');
-    document.body.style.top = '';
+    const body = document.body;
+
+    body.classList.remove('city-picker-open');
+
+    if (prevBodyStyles) {
+      body.style.position = prevBodyStyles.position || '';
+      body.style.top = prevBodyStyles.top || '';
+      body.style.left = prevBodyStyles.left || '';
+      body.style.right = prevBodyStyles.right || '';
+      body.style.width = prevBodyStyles.width || '';
+      body.style.overflow = prevBodyStyles.overflow || '';
+      body.style.touchAction = prevBodyStyles.touchAction || '';
+    } else {
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      body.style.overflow = '';
+      body.style.touchAction = '';
+    }
+
     window.scrollTo(0, scrollYBeforeLock);
   }
 
   function openMobile() {
+    if (sheetOpen) return;
+
     ensureMobileSheet();
     closeDesktop();
 
@@ -502,7 +570,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     renderMobile();
 
     if (lastQuery.length >= minChars) {
-      load(() => sheetSearch.value.trim());
+      void load(() => sheetSearch.value.trim());
     }
 
     setTimeout(() => {
@@ -510,7 +578,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         sheetSearch.focus({ preventScroll: true });
         const len = sheetSearch.value.length;
         sheetSearch.setSelectionRange(len, len);
-      } catch {}
+      } catch { /* noop */ }
     }, 40);
   }
 
@@ -648,7 +716,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     closeMobile();
   }
 
-  panel.addEventListener('pointerdown', (e) => {
+  listen(panel, 'pointerdown', (e) => {
     if (isMobile()) return;
 
     const el = e.target.closest('.typeahead-item');
@@ -660,7 +728,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (Number.isFinite(idx)) chooseCity(idx);
   });
 
-  panel.addEventListener('mousemove', (e) => {
+  listen(panel, 'mousemove', (e) => {
     if (isMobile()) return;
 
     const el = e.target.closest('.typeahead-item');
@@ -672,14 +740,14 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }
   });
 
-  document.addEventListener('pointerdown', (e) => {
+  listen(document, 'pointerdown', (e) => {
     if (isMobile()) return;
     if (!panel.contains(e.target) && e.target !== inputEl) {
       closeDesktop();
     }
   }, true);
 
-  inputEl.addEventListener('keydown', (e) => {
+  listen(inputEl, 'keydown', (e) => {
     if (isMobile()) return;
     if (!isDesktopOpen()) return;
 
@@ -712,7 +780,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   function debouncedLoad(getQueryFn) {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      load(getQueryFn);
+      void load(getQueryFn);
     }, debounceMs);
   }
 
@@ -790,12 +858,12 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }
   }
 
-  inputEl.addEventListener('input', () => {
+  listen(inputEl, 'input', () => {
     if (isMobile()) return;
     debouncedLoad(() => inputEl.value.trim());
   });
 
-  inputEl.addEventListener('focus', () => {
+  listen(inputEl, 'focus', () => {
     if (isMobile()) {
       inputEl.blur();
       openMobile();
@@ -809,17 +877,23 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     setActive(includeNearMe ? 0 : (hasCities ? 0 : -1));
   });
 
-  inputEl.addEventListener('click', (e) => {
+  listen(inputEl, 'click', (e) => {
     if (!isMobile()) return;
     e.preventDefault();
     openMobile();
   });
 
-  inputEl.addEventListener('pointerdown', (e) => {
+  listen(inputEl, 'pointerdown', (e) => {
     if (!isMobile()) return;
     e.preventDefault();
     openMobile();
   });
+
+  listen(inputEl, 'touchstart', (e) => {
+    if (!isMobile()) return;
+    e.preventDefault();
+    openMobile();
+  }, { passive: false });
 
   function handleNearMe() {
     announce(defaultText('nearMeSearching', locale));
@@ -831,7 +905,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         try {
           window.dispatchEvent(new CustomEvent('AJSEE:NearMe:coords', { detail: geo || {} }));
           window.dispatchEvent(new CustomEvent('ajsee:nearme:coords', { detail: geo || {} }));
-        } catch {}
+        } catch { /* noop */ }
       }
     };
 
@@ -839,7 +913,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       announce(defaultText('nearMeUnsupported', locale));
       try {
         window.dispatchEvent(new CustomEvent('AJSEE:NearMe:unsupported'));
-      } catch {}
+      } catch { /* noop */ }
       return;
     }
 
@@ -863,7 +937,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         announce(defaultText('nearMeDenied', locale));
         try {
           window.dispatchEvent(new CustomEvent('AJSEE:NearMe:error'));
-        } catch {}
+        } catch { /* noop */ }
       },
       { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
     );
@@ -873,16 +947,53 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (sheetOpen) updateViewportVars();
   }
 
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', handleViewportResize);
-    window.visualViewport.addEventListener('scroll', handleViewportResize);
+  if (vv) {
+    vv.addEventListener('resize', handleViewportResize);
+    vv.addEventListener('scroll', handleViewportResize);
   }
 
+  const mediaChangeHandler = () => {
+    applyMode();
+  };
+
   if (typeof mobileMq.addEventListener === 'function') {
-    mobileMq.addEventListener('change', applyMode);
+    mobileMq.addEventListener('change', mediaChangeHandler);
   } else if (typeof mobileMq.addListener === 'function') {
-    mobileMq.addListener(applyMode);
+    mobileMq.addListener(mediaChangeHandler);
   }
 
   applyMode();
+
+  function destroy() {
+    clearTimeout(timer);
+    closeDesktop();
+    closeMobile();
+
+    try { controller.abort(); } catch { /* noop */ }
+
+    if (vv) {
+      try { vv.removeEventListener('resize', handleViewportResize); } catch { /* noop */ }
+      try { vv.removeEventListener('scroll', handleViewportResize); } catch { /* noop */ }
+    }
+
+    if (typeof mobileMq.removeEventListener === 'function') {
+      try { mobileMq.removeEventListener('change', mediaChangeHandler); } catch { /* noop */ }
+    } else if (typeof mobileMq.removeListener === 'function') {
+      try { mobileMq.removeListener(mediaChangeHandler); } catch { /* noop */ }
+    }
+
+    try { panel.remove(); } catch { /* noop */ }
+    try { live.remove(); } catch { /* noop */ }
+    try { backdrop?.remove(); } catch { /* noop */ }
+
+    inputEl.removeAttribute('aria-activedescendant');
+    inputEl.removeAttribute('aria-expanded');
+    inputEl.removeAttribute('readonly');
+    inputEl.removeAttribute('inputmode');
+    inputEl.classList.remove('is-city-trigger');
+
+    delete inputEl.__ajseeCityTypeahead;
+  }
+
+  inputEl.__ajseeCityTypeahead = { destroy };
 }

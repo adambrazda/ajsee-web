@@ -1,15 +1,11 @@
 // src/city/typeahead.js
 // ---------------------------------------------------------
-// City Typeahead UI – používá suggestCities() a canonical mapování.
-// VERZE C:
-// - desktop: floating dropdown
-// - mobil: inline premium panel pod polem Město
-// - bez odskakování při otevřené klávesnici na iOS
+// City Typeahead UI – desktop dropdown + mobile bottom sheet
 // ---------------------------------------------------------
 
 import { suggestCities } from './suggestClient.js';
 
-/** diakriticky nezávislá normalizace (pro vyhledání shody) */
+/** diakriticky nezávislá normalizace */
 function norm(s) {
   return (s || '')
     .toString()
@@ -19,7 +15,7 @@ function norm(s) {
     .trim();
 }
 
-/** základní HTML escape */
+/** HTML escape */
 function esc(s = '') {
   return String(s)
     .replace(/&/g, '&amp;')
@@ -27,7 +23,7 @@ function esc(s = '') {
     .replace(/>/g, '&gt;');
 }
 
-/** zvýrazní první výskyt dotazu (bez diakritiky), zachová původní label */
+/** zvýrazní první výskyt dotazu */
 function highlight(label, query) {
   const raw = String(label || '');
   if (!raw || !query) return esc(raw);
@@ -46,7 +42,7 @@ function highlight(label, query) {
   return `${start}<mark>${mid}</mark>${end}`;
 }
 
-/** jazykové fallbacky, když t(key) není k dispozici */
+/** fallback texty */
 function defaultText(key, lang = 'en', n = 0) {
   const L = (lang || 'en').toLowerCase();
   const pluralFew = (x) =>
@@ -108,6 +104,39 @@ function defaultText(key, lang = 'en', n = 0) {
     }
   }
 
+  if (key === 'pickerTitle') {
+    switch (L) {
+      case 'cs': return 'Vyber město';
+      case 'sk': return 'Vyber mesto';
+      case 'pl': return 'Wybierz miasto';
+      case 'hu': return 'Válassz várost';
+      case 'de': return 'Stadt wählen';
+      default:   return 'Choose city';
+    }
+  }
+
+  if (key === 'pickerSubtitle') {
+    switch (L) {
+      case 'cs': return 'Začni psát nebo použij svou polohu';
+      case 'sk': return 'Začni písať alebo použi svoju polohu';
+      case 'pl': return 'Zacznij pisać lub użyj swojej lokalizacji';
+      case 'hu': return 'Kezdj gépelni vagy használd a helyzeted';
+      case 'de': return 'Beginnen Sie zu tippen oder verwenden Sie Ihren Standort';
+      default:   return 'Start typing or use your location';
+    }
+  }
+
+  if (key === 'searchPlaceholder') {
+    switch (L) {
+      case 'cs': return 'Hledat město…';
+      case 'sk': return 'Hľadať mesto…';
+      case 'pl': return 'Szukaj miasta…';
+      case 'hu': return 'Város keresése…';
+      case 'de': return 'Stadt suchen…';
+      default:   return 'Search city…';
+    }
+  }
+
   if (key === 'suggestionsTitle') {
     switch (L) {
       case 'cs': return 'Návrhy měst';
@@ -116,6 +145,28 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'hu': return 'Városjavaslatok';
       case 'de': return 'Städtevorschläge';
       default:   return 'City suggestions';
+    }
+  }
+
+  if (key === 'startTyping') {
+    switch (L) {
+      case 'cs': return 'Začni psát název města.';
+      case 'sk': return 'Začni písať názov mesta.';
+      case 'pl': return 'Zacznij wpisywać nazwę miasta.';
+      case 'hu': return 'Kezdd el begépelni a város nevét.';
+      case 'de': return 'Beginnen Sie, den Stadtnamen einzugeben.';
+      default:   return 'Start typing a city name.';
+    }
+  }
+
+  if (key === 'close') {
+    switch (L) {
+      case 'cs': return 'Zavřít';
+      case 'sk': return 'Zavrieť';
+      case 'pl': return 'Zamknij';
+      case 'hu': return 'Bezárás';
+      case 'de': return 'Schließen';
+      default:   return 'Close';
     }
   }
 
@@ -155,22 +206,23 @@ function defaultText(key, lang = 'en', n = 0) {
   return '';
 }
 
-/** bezpečný default překladače */
-function defaultT(k, f) {
+function defaultT(k, fallback) {
   return (typeof window !== 'undefined'
       && window.translations
       && (k in window.translations))
     ? window.translations[k]
-    : f;
+    : fallback;
 }
 
-/** dedupe + jemná normalizace návrhů (city/state/countryCode) */
 function normalizeAndDedupe(list = []) {
   const out = [];
   const seen = new Set();
 
   for (const it of list) {
-    const city = (it && (it.city || it.name || it.label)) ? String(it.city || it.name || it.label) : '';
+    const city = (it && (it.city || it.name || it.label))
+      ? String(it.city || it.name || it.label)
+      : '';
+
     if (!city) continue;
 
     const state = it.state || it.region || '';
@@ -213,23 +265,14 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   const onNearMe = providedOnNearMe || null;
 
   const mobileMq = window.matchMedia('(max-width: 720px)');
+  const isMobile = () => mobileMq.matches;
 
-  function isMobileLayout() {
-    return mobileMq.matches;
-  }
+  const fieldEl = inputEl.closest('.field') || inputEl.parentElement || inputEl;
+  const groupEl = inputEl.closest('.filter-group') || fieldEl;
 
-  const fieldEl =
-    inputEl.closest('.field') ||
-    inputEl.parentElement ||
-    inputEl;
-
-  const groupEl =
-    inputEl.closest('.filter-group') ||
-    fieldEl;
-
-  // Panel + ARIA
+  // ---------- desktop dropdown ----------
   const panel = document.createElement('div');
-  panel.className = 'typeahead-panel typeahead-panel--floating';
+  panel.className = 'typeahead-panel';
   panel.setAttribute('role', 'listbox');
   panel.hidden = true;
 
@@ -239,9 +282,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
 
   inputEl.setAttribute('role', 'combobox');
   inputEl.setAttribute('aria-autocomplete', 'list');
-  inputEl.setAttribute('aria-haspopup', 'listbox');
   inputEl.setAttribute('aria-controls', panelId);
-  inputEl.setAttribute('aria-expanded', 'false');
   inputEl.setAttribute('autocomplete', 'off');
 
   const live = document.createElement('div');
@@ -259,45 +300,38 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   let includeNearMe = true;
   let lastLoadId = 0;
 
-  function ensurePanelPlacement() {
-    const targetHost = isMobileLayout() ? groupEl : fieldEl;
-
-    if (panel.parentElement !== targetHost) {
-      targetHost.appendChild(panel);
-    }
-
-    panel.classList.toggle('typeahead-panel--inline', isMobileLayout());
-    panel.classList.toggle('typeahead-panel--floating', !isMobileLayout());
-  }
-
-  function open() {
-    ensurePanelPlacement();
-    panel.hidden = false;
-    inputEl.setAttribute('aria-expanded', 'true');
-  }
-
-  function close() {
-    panel.hidden = true;
-    inputEl.setAttribute('aria-expanded', 'false');
-    inputEl.removeAttribute('aria-activedescendant');
-    activeIndex = -1;
-  }
-
-  function isOpen() {
-    return !panel.hidden;
-  }
+  // ---------- mobile sheet ----------
+  let backdrop = null;
+  let sheet = null;
+  let sheetSearch = null;
+  let sheetResults = null;
+  let sheetNearMe = null;
+  let sheetHint = null;
+  let sheetOpen = false;
+  let scrollYBeforeLock = 0;
 
   function announce(msg) {
     live.textContent = msg || '';
+  }
+
+  function buildRenderList() {
+    const arr = [];
+    if (includeNearMe) {
+      arr.push({
+        __nearMe: true,
+        id: `${panelId}-opt-nearme`,
+        city: t('filters.nearMe', defaultText('nearMe', locale)),
+        subtitle: t('filters.nearMeSubtitle', defaultText('nearMeSubtitle', locale))
+      });
+    }
+    return arr.concat(items || []);
   }
 
   function setActive(idx) {
     activeIndex = idx;
 
     const activeEl = panel.querySelector(`[data-index="${idx}"]`);
-    if (activeEl) {
-      inputEl.setAttribute('aria-activedescendant', activeEl.id);
-    }
+    if (activeEl) inputEl.setAttribute('aria-activedescendant', activeEl.id);
 
     panel.querySelectorAll('.typeahead-item').forEach((el) => {
       el.classList.remove('active');
@@ -310,39 +344,206 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }
   }
 
-  function buildRenderList() {
-    const arr = [];
-
-    if (includeNearMe) {
-      arr.push({
-        __nearMe: true,
-        id: `${panelId}-opt-nearme`,
-        city: t('filters.nearMe', defaultText('nearMe', locale)),
-        subtitle: t('filters.nearMeSubtitle', defaultText('nearMeSubtitle', locale))
-      });
-    }
-
-    return arr.concat(items || []);
+  function openDesktop() {
+    panel.hidden = false;
+    inputEl.setAttribute('aria-expanded', 'true');
+    inputEl.setAttribute('aria-haspopup', 'listbox');
   }
 
-  function chooseCity(idx) {
-    const list = buildRenderList();
-    const it = list[idx];
-    if (!it) return;
+  function closeDesktop() {
+    panel.hidden = true;
+    inputEl.setAttribute('aria-expanded', 'false');
+    inputEl.removeAttribute('aria-activedescendant');
+    activeIndex = -1;
+  }
 
-    if (it.__nearMe) {
+  function isDesktopOpen() {
+    return !panel.hidden;
+  }
+
+  function ensureMobileSheet() {
+    if (backdrop) return;
+
+    backdrop = document.createElement('div');
+    backdrop.className = 'city-sheet-backdrop';
+    backdrop.hidden = true;
+
+    backdrop.innerHTML = `
+      <div class="city-sheet" role="dialog" aria-modal="true" aria-labelledby="city-sheet-title-${uid}">
+        <div class="city-sheet__grab" aria-hidden="true"></div>
+
+        <div class="city-sheet__header">
+          <div class="city-sheet__header-copy">
+            <h3 class="city-sheet__title" id="city-sheet-title-${uid}">
+              ${esc(t('filters.pickerTitle', defaultText('pickerTitle', locale)))}
+            </h3>
+            <p class="city-sheet__subtitle">
+              ${esc(t('filters.pickerSubtitle', defaultText('pickerSubtitle', locale)))}
+            </p>
+          </div>
+
+          <button type="button" class="city-sheet__close" aria-label="${esc(t('filters.close', defaultText('close', locale)))}">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+
+        <div class="city-sheet__search-wrap">
+          <input
+            type="search"
+            class="city-sheet__search"
+            placeholder="${esc(t('filters.searchPlaceholder', defaultText('searchPlaceholder', locale)))}"
+            autocomplete="off"
+            autocapitalize="words"
+            spellcheck="false"
+          />
+        </div>
+
+        <div class="city-sheet__content">
+          <button type="button" class="city-sheet__nearme">
+            <span class="city-sheet__nearme-title">${esc(t('filters.nearMe', defaultText('nearMe', locale)))}</span>
+            <span class="city-sheet__nearme-sub">${esc(t('filters.nearMeSubtitle', defaultText('nearMeSubtitle', locale)))}</span>
+          </button>
+
+          <div class="city-sheet__section-title">
+            ${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}
+          </div>
+
+          <div class="city-sheet__hint">
+            ${esc(t('filters.startTyping', defaultText('startTyping', locale)))}
+          </div>
+
+          <div class="city-sheet__results" role="listbox" aria-label="${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}"></div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    sheet = backdrop.querySelector('.city-sheet');
+    sheetSearch = backdrop.querySelector('.city-sheet__search');
+    sheetResults = backdrop.querySelector('.city-sheet__results');
+    sheetNearMe = backdrop.querySelector('.city-sheet__nearme');
+    sheetHint = backdrop.querySelector('.city-sheet__hint');
+
+    const closeBtn = backdrop.querySelector('.city-sheet__close');
+
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closeMobile();
+    });
+
+    closeBtn.addEventListener('click', () => {
+      closeMobile();
+    });
+
+    sheetNearMe.addEventListener('click', () => {
       handleNearMe();
+    });
+
+    sheetResults.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-city-index]');
+      if (!btn) return;
+
+      const idx = parseInt(btn.getAttribute('data-city-index'), 10);
+      if (!Number.isFinite(idx)) return;
+
+      chooseCity(idx);
+    });
+
+    sheetSearch.addEventListener('input', () => {
+      debouncedLoad(() => sheetSearch.value.trim());
+    });
+
+    sheetSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMobile();
+      }
+    });
+  }
+
+  function updateViewportVars() {
+    const vv = window.visualViewport;
+    const vh = vv ? vv.height : window.innerHeight;
+    document.documentElement.style.setProperty('--city-sheet-vh', `${vh}px`);
+  }
+
+  function lockBodyScroll() {
+    scrollYBeforeLock = window.scrollY || window.pageYOffset || 0;
+    document.body.classList.add('city-picker-open');
+    document.body.style.top = `-${scrollYBeforeLock}px`;
+  }
+
+  function unlockBodyScroll() {
+    document.body.classList.remove('city-picker-open');
+    document.body.style.top = '';
+    window.scrollTo(0, scrollYBeforeLock);
+  }
+
+  function openMobile() {
+    ensureMobileSheet();
+    closeDesktop();
+
+    updateViewportVars();
+    lockBodyScroll();
+
+    backdrop.hidden = false;
+    requestAnimationFrame(() => {
+      backdrop.classList.add('is-open');
+    });
+
+    sheetOpen = true;
+    inputEl.setAttribute('aria-expanded', 'true');
+    inputEl.setAttribute('aria-haspopup', 'dialog');
+
+    const currentValue = inputEl.dataset.autofromnearme === '1' ? '' : (inputEl.value || '');
+    sheetSearch.value = currentValue;
+    lastQuery = currentValue.trim();
+
+    renderMobile();
+
+    if (lastQuery.length >= minChars) {
+      load(() => sheetSearch.value.trim());
+    }
+
+    setTimeout(() => {
+      try {
+        sheetSearch.focus({ preventScroll: true });
+        const len = sheetSearch.value.length;
+        sheetSearch.setSelectionRange(len, len);
+      } catch {}
+    }, 40);
+  }
+
+  function closeMobile() {
+    if (!backdrop || !sheetOpen) return;
+
+    backdrop.classList.remove('is-open');
+    sheetOpen = false;
+
+    inputEl.setAttribute('aria-expanded', 'false');
+
+    setTimeout(() => {
+      if (backdrop) backdrop.hidden = true;
+    }, 180);
+
+    unlockBodyScroll();
+  }
+
+  function renderDesktop() {
+    const list = buildRenderList();
+
+    if (loading) {
+      panel.innerHTML = `<div class="typeahead-loading">${esc(t('filters.loading', defaultText('loading', locale)))}</div>`;
       return;
     }
 
-    inputEl.removeAttribute('data-autofromnearme');
-    onChoose(it);
-    inputEl.dispatchEvent(new Event('change', { bubbles: true }));
-    close();
-  }
+    const onlyNearMe = includeNearMe && list.length === 1 && list[0].__nearMe;
+    if (!items.length && !onlyNearMe && lastQuery.length >= minChars) {
+      panel.innerHTML = `<div class="typeahead-empty">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>`;
+      return;
+    }
 
-  function renderDesktopList(list) {
-    return list.map((it, i) => {
+    panel.innerHTML = list.map((it, i) => {
       if (it.__nearMe) {
         const id = it.id || `${panelId}-opt-nearme`;
         return `
@@ -373,108 +574,83 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         </div>
       `;
     }).join('');
-  }
-
-  function renderMobileList(list) {
-    const header = `
-      <div class="typeahead-mobile-head">
-        ${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}
-      </div>
-    `;
-
-    const nearMeItem = includeNearMe ? `
-      <div
-        id="${panelId}-opt-nearme"
-        class="typeahead-item typeahead-item--card nearme ${activeIndex === 0 ? 'active' : ''}"
-        role="option"
-        aria-selected="${activeIndex === 0 ? 'true' : 'false'}"
-        data-index="0">
-        <span class="ti-city">${esc(t('filters.nearMe', defaultText('nearMe', locale)))}</span>
-        <span class="ti-sub">${esc(t('filters.nearMeSubtitle', defaultText('nearMeSubtitle', locale)))}</span>
-      </div>
-    ` : '';
-
-    const cityItems = list
-      .filter((it) => !it.__nearMe)
-      .map((it, idx) => {
-        const listIndex = includeNearMe ? idx + 1 : idx;
-        const meta = [it.state, it.countryCode].filter(Boolean).join(', ');
-        const htmlLabel = highlight(it.city, lastQuery);
-        const id = `${panelId}-opt-${listIndex}`;
-
-        return `
-          <div
-            id="${id}"
-            class="typeahead-item typeahead-item--row ${listIndex === activeIndex ? 'active' : ''}"
-            role="option"
-            aria-selected="${listIndex === activeIndex ? 'true' : 'false'}"
-            data-index="${listIndex}">
-            <div class="ti-main">
-              <span class="ti-city">${htmlLabel}</span>
-              ${meta ? `<span class="ti-meta">${esc(meta)}</span>` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-    const empty =
-      (!items.length && lastQuery.length >= minChars)
-        ? `<div class="typeahead-empty">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>`
-        : '';
-
-    return `
-      <div class="typeahead-mobile-shell">
-        ${header}
-        ${nearMeItem}
-        ${cityItems ? `<div class="typeahead-mobile-list">${cityItems}</div>` : ''}
-        ${empty}
-      </div>
-    `;
-  }
-
-  function render() {
-    ensurePanelPlacement();
-
-    const list = buildRenderList();
-
-    if (loading) {
-      panel.innerHTML = isMobileLayout()
-        ? `
-          <div class="typeahead-mobile-shell">
-            <div class="typeahead-mobile-head">
-              ${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}
-            </div>
-            <div class="typeahead-loading">${esc(t('filters.loading', defaultText('loading', locale)))}</div>
-          </div>
-        `
-        : `<div class="typeahead-loading">${esc(t('filters.loading', defaultText('loading', locale)))}</div>`;
-      return;
-    }
-
-    const onlyNearMe = includeNearMe && list.length === 1 && list[0].__nearMe;
-
-    if (!items.length && !onlyNearMe && lastQuery.length >= minChars) {
-      panel.innerHTML = isMobileLayout()
-        ? `
-          <div class="typeahead-mobile-shell">
-            <div class="typeahead-mobile-head">
-              ${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}
-            </div>
-            <div class="typeahead-empty">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>
-          </div>
-        `
-        : `<div class="typeahead-empty">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>`;
-      return;
-    }
-
-    panel.innerHTML = isMobileLayout()
-      ? renderMobileList(list)
-      : renderDesktopList(list);
 
     announce(defaultText('resultsCount', locale, items.length));
   }
 
+  function renderMobile() {
+    if (!sheetOpen || !sheetResults || !sheetHint) return;
+
+    const q = sheetSearch ? sheetSearch.value.trim() : '';
+    const list = buildRenderList().filter((it) => !it.__nearMe);
+
+    if (loading) {
+      sheetHint.hidden = true;
+      sheetResults.innerHTML = `<div class="city-sheet__state">${esc(t('filters.loading', defaultText('loading', locale)))}</div>`;
+      return;
+    }
+
+    if (q.length < minChars) {
+      sheetResults.innerHTML = '';
+      sheetHint.hidden = false;
+      return;
+    }
+
+    sheetHint.hidden = true;
+
+    if (!list.length) {
+      sheetResults.innerHTML = `<div class="city-sheet__state">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>`;
+      return;
+    }
+
+    sheetResults.innerHTML = list.map((it, idx) => {
+      const listIndex = includeNearMe ? idx + 1 : idx;
+      const meta = [it.state, it.countryCode].filter(Boolean).join(', ');
+      const htmlLabel = highlight(it.city, q);
+
+      return `
+        <button
+          type="button"
+          class="city-sheet__option"
+          role="option"
+          aria-selected="false"
+          data-city-index="${listIndex}">
+          <span class="city-sheet__option-city">${htmlLabel}</span>
+          ${meta ? `<span class="city-sheet__option-meta">${esc(meta)}</span>` : ''}
+        </button>
+      `;
+    }).join('');
+  }
+
+  function render() {
+    if (isMobile() && sheetOpen) {
+      renderMobile();
+    } else {
+      renderDesktop();
+    }
+  }
+
+  function chooseCity(idx) {
+    const list = buildRenderList();
+    const it = list[idx];
+    if (!it) return;
+
+    if (it.__nearMe) {
+      handleNearMe();
+      return;
+    }
+
+    inputEl.removeAttribute('data-autofromnearme');
+    onChoose(it);
+    inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+
+    closeDesktop();
+    closeMobile();
+  }
+
   panel.addEventListener('pointerdown', (e) => {
+    if (isMobile()) return;
+
     const el = e.target.closest('.typeahead-item');
     if (!el) return;
 
@@ -485,23 +661,27 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   });
 
   panel.addEventListener('mousemove', (e) => {
-    if (isMobileLayout()) return;
+    if (isMobile()) return;
 
     const el = e.target.closest('.typeahead-item');
     if (!el) return;
 
     const idx = parseInt(el.dataset.index, 10);
-    if (Number.isFinite(idx) && idx !== activeIndex) setActive(idx);
+    if (Number.isFinite(idx) && idx !== activeIndex) {
+      setActive(idx);
+    }
   });
 
   document.addEventListener('pointerdown', (e) => {
+    if (isMobile()) return;
     if (!panel.contains(e.target) && e.target !== inputEl) {
-      close();
+      closeDesktop();
     }
   }, true);
 
   inputEl.addEventListener('keydown', (e) => {
-    if (!isOpen()) return;
+    if (isMobile()) return;
+    if (!isDesktopOpen()) return;
 
     const list = buildRenderList();
     const last = list.length - 1;
@@ -521,36 +701,46 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (activeIndex >= 0) chooseCity(activeIndex);
-      else close();
+      else closeDesktop();
     } else if (e.key === 'Escape') {
       e.preventDefault();
-      close();
+      closeDesktop();
     }
   });
 
   let timer = null;
-  const debouncedLoad = () => {
+  function debouncedLoad(getQueryFn) {
     clearTimeout(timer);
-    timer = setTimeout(load, debounceMs);
-  };
+    timer = setTimeout(() => {
+      load(getQueryFn);
+    }, debounceMs);
+  }
 
-  async function load() {
-    const q = inputEl.value.trim();
+  async function load(getQueryFn) {
+    const q = typeof getQueryFn === 'function'
+      ? getQueryFn()
+      : inputEl.value.trim();
+
     lastQuery = q;
 
     if (q.length < minChars) {
       items = [];
       loading = false;
       render();
-      open();
-      setActive(includeNearMe ? 0 : -1);
+
+      if (!isMobile()) {
+        openDesktop();
+        setActive(includeNearMe ? 0 : -1);
+      }
+
       return;
     }
 
     const myLoadId = ++lastLoadId;
     loading = true;
+
+    if (!isMobile()) openDesktop();
     render();
-    open();
 
     try {
       const list = await suggestCities({
@@ -567,10 +757,9 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       loading = false;
       render();
 
-      if (items.length) {
-        setActive(includeNearMe ? 1 : 0);
-      } else {
-        setActive(includeNearMe ? 0 : -1);
+      if (!isMobile()) {
+        if (items.length) setActive(includeNearMe ? 1 : 0);
+        else setActive(includeNearMe ? 0 : -1);
       }
     } catch {
       if (myLoadId !== lastLoadId) return;
@@ -578,18 +767,58 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       items = [];
       loading = false;
       render();
-      setActive(includeNearMe ? 0 : -1);
+
+      if (!isMobile()) {
+        setActive(includeNearMe ? 0 : -1);
+      }
     }
   }
 
-  inputEl.addEventListener('input', debouncedLoad);
+  function applyMode() {
+    if (isMobile()) {
+      inputEl.setAttribute('readonly', 'readonly');
+      inputEl.setAttribute('inputmode', 'none');
+      inputEl.classList.add('is-city-trigger');
+      inputEl.setAttribute('aria-haspopup', 'dialog');
+      closeDesktop();
+    } else {
+      inputEl.removeAttribute('readonly');
+      inputEl.removeAttribute('inputmode');
+      inputEl.classList.remove('is-city-trigger');
+      inputEl.setAttribute('aria-haspopup', 'listbox');
+      closeMobile();
+    }
+  }
+
+  inputEl.addEventListener('input', () => {
+    if (isMobile()) return;
+    debouncedLoad(() => inputEl.value.trim());
+  });
 
   inputEl.addEventListener('focus', () => {
-    render();
-    open();
+    if (isMobile()) {
+      inputEl.blur();
+      openMobile();
+      return;
+    }
+
+    renderDesktop();
+    openDesktop();
 
     const hasCities = items.length > 0;
     setActive(includeNearMe ? 0 : (hasCities ? 0 : -1));
+  });
+
+  inputEl.addEventListener('click', (e) => {
+    if (!isMobile()) return;
+    e.preventDefault();
+    openMobile();
+  });
+
+  inputEl.addEventListener('pointerdown', (e) => {
+    if (!isMobile()) return;
+    e.preventDefault();
+    openMobile();
   });
 
   function handleNearMe() {
@@ -626,7 +855,9 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         inputEl.dispatchEvent(new Event('change', { bubbles: true }));
 
         emit({ lat, lon, accuracy });
-        close();
+
+        closeDesktop();
+        closeMobile();
       },
       () => {
         announce(defaultText('nearMeDenied', locale));
@@ -638,16 +869,20 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     );
   }
 
-  function handleLayoutChange() {
-    ensurePanelPlacement();
-    if (isOpen()) render();
+  function handleViewportResize() {
+    if (sheetOpen) updateViewportVars();
+  }
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', handleViewportResize);
+    window.visualViewport.addEventListener('scroll', handleViewportResize);
   }
 
   if (typeof mobileMq.addEventListener === 'function') {
-    mobileMq.addEventListener('change', handleLayoutChange);
+    mobileMq.addEventListener('change', applyMode);
   } else if (typeof mobileMq.addListener === 'function') {
-    mobileMq.addListener(handleLayoutChange);
+    mobileMq.addListener(applyMode);
   }
 
-  ensurePanelPlacement();
+  applyMode();
 }

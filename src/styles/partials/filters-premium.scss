@@ -2256,3 +2256,59 @@ body[data-page="events"] #events-city-filter[data-autofromnearme="1"] {
   color: #0a4e84;
   font-weight: 900;
 }
+/* =========================================================
+   MOBILE HOTFIX – city typeahead na iPhone / Safari
+   přidat ÚPLNĚ NA KONEC filters-premium.scss
+   ========================================================= */
+
+@media (max-width: 720px) {
+  /* iOS Safari: zabránění auto-zoomu při focusu */
+  body[data-page="home"] #filter-city,
+  body[data-page="events"] #filter-city,
+  body[data-page="home"] #events-city-filter,
+  body[data-page="events"] #events-city-filter {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+
+  /* host pro absolutní dropdown */
+  body[data-page="home"] .filter-group:has(#filter-city) .field,
+  body[data-page="events"] .filter-group:has(#filter-city) .field,
+  body[data-page="home"] .filter-group:has(#events-city-filter) .field,
+  body[data-page="events"] .filter-group:has(#events-city-filter) .field {
+    position: relative;
+  }
+
+  /* dropdown musí sedět přesně na šířku pole */
+  body[data-page="home"] .filter-group:has(#filter-city) .typeahead-panel,
+  body[data-page="events"] .filter-group:has(#filter-city) .typeahead-panel,
+  body[data-page="home"] .filter-group:has(#events-city-filter) .typeahead-panel,
+  body[data-page="events"] .filter-group:has(#events-city-filter) .typeahead-panel,
+  body[data-page="home"] .filter-group:has(#filter-city) .ta-popover,
+  body[data-page="events"] .filter-group:has(#filter-city) .ta-popover,
+  body[data-page="home"] .filter-group:has(#events-city-filter) .ta-popover,
+  body[data-page="events"] .filter-group:has(#events-city-filter) .ta-popover {
+    left: 0;
+    right: 0;
+    top: calc(100% + 0.35rem);
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    max-height: min(280px, 38vh);
+    box-sizing: border-box;
+  }
+
+  /* text položek raději natvrdo na 16 px */
+  body[data-page="home"] .typeahead-item .ti-city,
+  body[data-page="events"] .typeahead-item .ti-city,
+  body[data-page="home"] .ta-popover .ta-item span,
+  body[data-page="events"] .ta-popover .ta-item span {
+    font-size: 16px;
+    line-height: 1.35;
+  }
+
+  body[data-page="home"] .typeahead-item .ti-meta,
+  body[data-page="events"] .typeahead-item .ti-meta {
+    font-size: 13px;
+  }
+}

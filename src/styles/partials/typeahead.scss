@@ -15,6 +15,7 @@
   max-height: 320px;
   overflow-y: auto;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 
   margin: 0;
   padding: 0.45rem;
@@ -31,6 +32,7 @@
 
   font: inherit;
   line-height: 1.35;
+  transform: translateZ(0);
 }
 
 /* List reset */
@@ -151,10 +153,28 @@
   font-weight: 900;
 }
 
+/* iOS / mobile fix */
 @media (max-width: 720px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body[data-page="home"] #filter-city,
+  body[data-page="events"] #filter-city,
+  body[data-page="home"] #filter-keyword,
+  body[data-page="events"] #filter-keyword,
+  body[data-page="home"] .styled-input,
+  body[data-page="events"] .styled-input {
+    font-size: 16px;
+  }
+
   .ta-popover,
   .typeahead-panel {
-    max-width: none;
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    max-width: 100%;
+    max-height: min(280px, 38vh);
     border-radius: 0.9rem;
     padding: 0.38rem;
   }
@@ -167,6 +187,10 @@
 
   .ta-popover .ta-item span,
   .typeahead-item .ti-city {
-    font-size: 0.98rem;
+    font-size: 16px;
+  }
+
+  .typeahead-item .ti-meta {
+    font-size: 13px;
   }
 }

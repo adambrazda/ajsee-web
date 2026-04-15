@@ -2199,3 +2199,60 @@ body[data-page="events"] .event-announcements{
     margin-bottom: .65rem;
   }
 }
+/* =========================================================
+   CITY INPUT – lepší viditelnost vybrané hodnoty
+   přidat na ÚPLNÝ KONEC filters-premium.scss
+   ========================================================= */
+
+body[data-page="home"] #filter-city,
+body[data-page="events"] #filter-city,
+body[data-page="home"] #events-city-filter,
+body[data-page="events"] #events-city-filter {
+  color: #173a62;
+  font-weight: 700;
+  caret-color: #0b5ed7;
+}
+
+/* placeholder zůstane světlejší */
+body[data-page="home"] #filter-city::placeholder,
+body[data-page="events"] #filter-city::placeholder,
+body[data-page="home"] #events-city-filter::placeholder,
+body[data-page="events"] #events-city-filter::placeholder {
+  color: #7e93ac;
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* když je v poli už nějaká hodnota, ať je výrazně čitelnější */
+body[data-page="home"] #filter-city:not(:placeholder-shown),
+body[data-page="events"] #filter-city:not(:placeholder-shown),
+body[data-page="home"] #events-city-filter:not(:placeholder-shown),
+body[data-page="events"] #events-city-filter:not(:placeholder-shown) {
+  color: #0f3c66;
+  font-weight: 800;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 253, 255, 1)) padding-box,
+    linear-gradient(135deg, rgba(20, 194, 197, 0.5), rgba(14, 136, 240, 0.55)) border-box;
+  box-shadow:
+    0 14px 28px rgba(12, 36, 80, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+/* při otevřeném typeaheadu zvýrazni pole ještě trochu víc */
+body[data-page="home"] #filter-city[aria-expanded="true"],
+body[data-page="events"] #filter-city[aria-expanded="true"],
+body[data-page="home"] #events-city-filter[aria-expanded="true"],
+body[data-page="events"] #events-city-filter[aria-expanded="true"] {
+  box-shadow:
+    0 0 0 6px color-mix(in oklab, var(--focus) 24%, transparent),
+    0 16px 30px rgba(12, 36, 80, 0.12);
+}
+
+/* pokud se nastaví “V mém okolí”, ať je to ještě o chlup výraznější */
+body[data-page="home"] #filter-city[data-autofromnearme="1"],
+body[data-page="events"] #filter-city[data-autofromnearme="1"],
+body[data-page="home"] #events-city-filter[data-autofromnearme="1"],
+body[data-page="events"] #events-city-filter[data-autofromnearme="1"] {
+  color: #0a4e84;
+  font-weight: 900;
+}

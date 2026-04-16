@@ -437,15 +437,6 @@
   }
 
   function ensureStyles () {
-    try {
-      const flag = WIN.getComputedStyle(DOC.documentElement)
-        .getPropertyValue('--ajsee-date-tm-css')
-        .trim();
-      if (flag === '1') return;
-    } catch {
-      /* noop */
-    }
-
     if (DOC.getElementById('ajsee-date-tm-css')) return;
 
     const s = DOC.createElement('style');
@@ -476,10 +467,13 @@
       }
 
       .ajsee-date-popover-overlay.is-desktop{
-        padding:0;
-        backdrop-filter:none;
-        -webkit-backdrop-filter:none;
-        background:transparent;
+        padding:0 !important;
+        backdrop-filter:none !important;
+        -webkit-backdrop-filter:none !important;
+        background:transparent !important;
+        pointer-events:none !important;
+        align-items:flex-start !important;
+        justify-content:flex-start !important;
       }
 
       .ajsee-date-popover-overlay.is-desktop .ajsee-date-popover{
@@ -507,11 +501,16 @@
       }
 
       .ajsee-date-popover.ajsee-date-tm.is-desktop{
-        position:fixed;
-        width:min(${CONFIG.MAX_W}px, calc(100vw - 24px));
-        max-width:${CONFIG.MAX_W}px;
-        max-height:${CONFIG.MAX_H}px;
-        border-radius:20px;
+        position:fixed !important;
+        width:min(${CONFIG.MAX_W}px, calc(100vw - 24px)) !important;
+        max-width:min(${CONFIG.MAX_W}px, calc(100vw - 24px)) !important;
+        max-height:min(${CONFIG.MAX_H}px, calc(100vh - 24px)) !important;
+        border-radius:24px !important;
+        overflow:auto !important;
+        margin:0 !important;
+        inset:auto auto auto auto !important;
+        transform:none !important;
+        box-shadow:0 24px 64px rgba(9,30,66,.22) !important;
       }
 
       .ajsee-date-popover.ajsee-date-tm.is-mobile{
@@ -1279,6 +1278,26 @@
   function positionDesktopPopover () {
     if (!popover || !anchorEl) return;
 
+    if (overlay) {
+      overlay.style.pointerEvents = 'none';
+      overlay.style.background = 'transparent';
+      overlay.style.backdropFilter = 'none';
+      overlay.style.webkitBackdropFilter = 'none';
+      overlay.style.padding = '0';
+      overlay.style.alignItems = 'flex-start';
+      overlay.style.justifyContent = 'flex-start';
+    }
+
+    popover.style.position = 'fixed';
+    popover.style.margin = '0';
+    popover.style.inset = 'auto';
+    popover.style.right = 'auto';
+    popover.style.bottom = 'auto';
+    popover.style.transform = 'none';
+    popover.style.width = `min(${CONFIG.MAX_W}px, calc(100vw - 24px))`;
+    popover.style.maxWidth = `min(${CONFIG.MAX_W}px, calc(100vw - 24px))`;
+    popover.style.overflow = 'auto';
+
     const anchor = DOC.getElementById('date-combo-button') || anchorEl;
     if (!anchor || !anchor.isConnected) {
       closePopover();
@@ -1346,7 +1365,11 @@
 
     popover.style.left = `${Math.round(left)}px`;
     popover.style.top = `${Math.round(top)}px`;
-    if (maxHeight) popover.style.maxHeight = `${Math.round(maxHeight)}px`;
+    popover.style.right = 'auto';
+    popover.style.bottom = 'auto';
+    popover.style.transform = 'none';
+    popover.style.overflow = 'auto';
+    popover.style.maxHeight = `${Math.round(maxHeight || Math.min(CONFIG.MAX_H, vpH - safeTop - CONFIG.SAFE))}px`;
   }
 
   function positionPopover () {

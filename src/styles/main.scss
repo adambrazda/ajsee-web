@@ -15,7 +15,7 @@
 @use './partials/footer';
 @use './partials/events-page';
 @use './partials/about-section';
-@use './partials/microguides'; // ✅ opraveno z @styles/partials/microguides
+@use './partials/microguides';
 @use './partials/blog-page';
 @use './partials/faq';
 @use './partials/typeahead';
@@ -24,13 +24,17 @@
 @use './partials/comments';
 @use './partials/cookie-consent';
 @use './partials/filters-premium';
+@use './partials/date-popover';
 
-// --- globalní drobnosti ---
-html, body { overflow-x: hidden; overflow-y: auto; }
-.site-header { position: sticky; top: 0; z-index: 9999; }
+// --- globální drobnosti ---
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 
-/* ------------------------------------------------------
-   PREMIUM FILTERS SKIN
-   Musí být NA KONCI, aby přebil starší styly z events.scss
-   a dalších parcialů. Platí pro homepage i /events.html.
--------------------------------------------------------*/
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}

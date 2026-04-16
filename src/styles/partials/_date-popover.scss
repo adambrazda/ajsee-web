@@ -1,0 +1,567 @@
+/* ------------------------------------------------------
+   AJSEE – DATE POPOVER / SHEET
+   - desktop: anchored floating panel under #date-combo-button
+   - mobile: bottom sheet
+   - intentionally isolated from filters-premium.scss
+-------------------------------------------------------*/
+
+:root {
+  --ajsee-date-panel-z: calc(var(--ajsee-popover-z, 10040) + 1);
+  --ajsee-date-panel-backdrop-z: var(--ajsee-popover-overlay-z, 10030);
+  --ajsee-date-panel-bg: rgba(255, 255, 255, 0.96);
+  --ajsee-date-panel-brd: rgba(207, 220, 235, 0.95);
+  --ajsee-date-panel-shadow:
+    0 28px 60px rgba(12, 36, 80, 0.18),
+    0 6px 16px rgba(12, 36, 80, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  --ajsee-date-panel-radius: 24px;
+  --ajsee-date-cell-size: 52px;
+  --ajsee-date-gap: 8px;
+  --ajsee-date-accent: #0e88f0;
+  --ajsee-date-accent-strong: #2b63db;
+  --ajsee-date-accent-soft: #14c2c5;
+  --ajsee-date-ink: #102840;
+  --ajsee-date-ink-soft: #6b7f97;
+  --ajsee-date-surface: #f6faff;
+  --ajsee-date-border-soft: rgba(229, 237, 246, 0.94);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ajsee-date-panel-bg: rgba(14, 22, 35, 0.96);
+    --ajsee-date-panel-brd: rgba(255, 255, 255, 0.12);
+    --ajsee-date-panel-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --ajsee-date-ink: #eef4ff;
+    --ajsee-date-ink-soft: #aebed3;
+    --ajsee-date-surface: rgba(255, 255, 255, 0.05);
+    --ajsee-date-border-soft: rgba(255, 255, 255, 0.1);
+  }
+}
+
+body.ajsee-date-sheet-open {
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+.ajsee-date-panel[hidden] {
+  display: none;
+}
+
+.ajsee-date-panel {
+  z-index: var(--ajsee-date-panel-z);
+}
+
+.ajsee-date-panel__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 16, 32, 0.34);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.ajsee-date-panel__surface {
+  color: var(--ajsee-date-ink);
+  background:
+    radial-gradient(circle at top left, rgba(20, 194, 197, 0.1), transparent 28%),
+    radial-gradient(circle at top right, rgba(14, 136, 240, 0.1), transparent 32%),
+    var(--ajsee-date-panel-bg);
+  border: 1px solid var(--ajsee-date-panel-brd);
+  box-shadow: var(--ajsee-date-panel-shadow);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  isolation: isolate;
+}
+
+.ajsee-date-panel__surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 24%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ajsee-date-panel__surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ajsee-date-panel__grab {
+  display: none;
+}
+
+.ajsee-date-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ajsee-date-panel__tabs {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.ajsee-date-panel__tab {
+  border: 0;
+  background: transparent;
+  padding: 10px 2px 12px;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--ajsee-date-ink-soft);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.ajsee-date-panel__tab.is-active {
+  color: var(--ajsee-date-accent);
+  border-bottom-color: var(--ajsee-date-accent);
+}
+
+.ajsee-date-panel__close,
+.ajsee-date-panel__nav,
+.ajsee-date-panel__btn {
+  font: inherit;
+}
+
+.ajsee-date-panel__close {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--ajsee-date-border-soft);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ajsee-date-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(12, 36, 80, 0.08);
+}
+
+.ajsee-date-panel__inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.ajsee-date-panel__field label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 12px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 900;
+  color: var(--ajsee-date-ink-soft);
+}
+
+.ajsee-date-panel__field input {
+  width: 100%;
+  height: 54px;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(198, 214, 232, 0.92);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ajsee-date-ink);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+.ajsee-date-panel__calendar {
+  min-height: 0;
+}
+
+.ajsee-date-panel__months {
+  display: grid;
+  gap: 20px;
+}
+
+.ajsee-date-panel__month {
+  min-width: 0;
+}
+
+.ajsee-date-panel__month-head {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0 10px;
+}
+
+.ajsee-date-panel__title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ajsee-date-ink);
+  text-transform: capitalize;
+}
+
+.ajsee-date-panel__nav,
+.ajsee-date-panel__nav-spacer {
+  width: 44px;
+  height: 44px;
+}
+
+.ajsee-date-panel__nav {
+  border: 1px solid rgba(209, 222, 237, 0.9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ajsee-date-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  box-shadow: 0 10px 22px rgba(12, 36, 80, 0.08);
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.18s ease;
+}
+
+.ajsee-date-panel__nav:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+}
+
+.ajsee-date-panel__nav:disabled {
+  opacity: 0.42;
+  cursor: default;
+  transform: none;
+}
+
+.ajsee-date-panel__dow,
+.ajsee-date-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.ajsee-date-panel__dow {
+  gap: var(--ajsee-date-gap);
+  margin-bottom: 8px;
+}
+
+.ajsee-date-panel__dow span {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ajsee-date-ink-soft);
+  padding: 6px 0;
+  text-transform: lowercase;
+}
+
+.ajsee-date-panel__grid {
+  gap: var(--ajsee-date-gap);
+}
+
+.ajsee-date-panel__cell,
+.ajsee-date-panel__empty {
+  height: var(--ajsee-date-cell-size);
+}
+
+.ajsee-date-panel__day {
+  width: 100%;
+  height: var(--ajsee-date-cell-size);
+  border: 1px solid rgba(232, 239, 247, 0.9);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--ajsee-date-ink);
+  font: inherit;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 10px 18px rgba(12, 36, 80, 0.05);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.12s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ajsee-date-panel__day:hover {
+  transform: translateY(-1px);
+  background: #f4f9ff;
+}
+
+.ajsee-date-panel__day.is-disabled {
+  opacity: 0.34;
+  pointer-events: none;
+  box-shadow: none;
+  background: transparent;
+  border-color: transparent;
+}
+
+.ajsee-date-panel__day.is-today::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  width: 18px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--ajsee-date-accent);
+}
+
+.ajsee-date-panel__day.is-in-range {
+  background: rgba(14, 136, 240, 0.12);
+  border-color: rgba(152, 205, 247, 0.8);
+}
+
+.ajsee-date-panel__day.is-start,
+.ajsee-date-panel__day.is-end {
+  background: linear-gradient(180deg, var(--ajsee-date-accent), var(--ajsee-date-accent-strong));
+  border-color: transparent;
+  color: #fff;
+  box-shadow:
+    0 18px 28px rgba(14, 136, 240, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.ajsee-date-panel__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ajsee-date-panel__actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ajsee-date-panel__btn {
+  border: 1px solid rgba(214, 226, 239, 0.92);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--ajsee-date-ink);
+  padding: 11px 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(12, 36, 80, 0.06);
+}
+
+.ajsee-date-panel__btn--primary {
+  border-color: transparent;
+  background: linear-gradient(180deg, var(--ajsee-date-accent), var(--ajsee-date-accent-strong));
+  color: #fff;
+  box-shadow:
+    0 20px 36px rgba(14, 136, 240, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+@media (min-width: 900px) {
+  .ajsee-date-panel {
+    position: fixed;
+    left: var(--ajsee-popover-left, 16px);
+    top: var(--ajsee-popover-top, 16px);
+    width: min(760px, calc(100vw - 32px));
+    max-height: min(var(--ajsee-popover-height, 560px), calc(100vh - 32px));
+    pointer-events: none;
+  }
+
+  .ajsee-date-panel__backdrop {
+    display: none;
+  }
+
+  .ajsee-date-panel__surface {
+    position: relative;
+    width: 100%;
+    max-height: inherit;
+    border-radius: var(--ajsee-date-panel-radius);
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .ajsee-date-panel__grab {
+    display: none;
+  }
+
+  .ajsee-date-panel__header {
+    padding: 18px 22px 0;
+  }
+
+  .ajsee-date-panel__close {
+    display: none;
+  }
+
+  .ajsee-date-panel__inputs {
+    padding: 14px 22px 10px;
+  }
+
+  .ajsee-date-panel__calendar {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 2px 22px 0;
+    min-height: 0;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable both-edges;
+  }
+
+  .ajsee-date-panel__months {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ajsee-date-panel__actions {
+    padding: 16px 22px 18px;
+    border-top: 1px solid rgba(226, 235, 245, 0.9);
+    background: rgba(255, 255, 255, 0.72);
+  }
+}
+
+@media (max-width: 899.98px) {
+  .ajsee-date-panel {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .ajsee-date-panel__backdrop {
+    display: block;
+    z-index: var(--ajsee-date-panel-backdrop-z);
+    pointer-events: auto;
+  }
+
+  .ajsee-date-panel__surface {
+    position: relative;
+    z-index: calc(var(--ajsee-date-panel-backdrop-z) + 1);
+    width: 100%;
+    max-height: min(88dvh, calc(100vh - 12px));
+    border-radius: 28px 28px 0 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    pointer-events: auto;
+  }
+
+  .ajsee-date-panel__grab {
+    display: block;
+    width: 54px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(113, 128, 150, 0.35);
+    margin: 10px auto 2px;
+    flex: 0 0 auto;
+  }
+
+  .ajsee-date-panel__header {
+    padding: 8px 18px 0;
+  }
+
+  .ajsee-date-panel__tabs {
+    gap: 14px;
+  }
+
+  .ajsee-date-panel__tab {
+    font-size: 16px;
+    padding-top: 8px;
+    padding-bottom: 10px;
+  }
+
+  .ajsee-date-panel__close {
+    flex: 0 0 auto;
+  }
+
+  .ajsee-date-panel__inputs {
+    padding: 12px 18px 8px;
+  }
+
+  .ajsee-date-panel__field input {
+    height: 50px;
+    font-size: 17px;
+  }
+
+  .ajsee-date-panel__calendar {
+    overflow: auto;
+    min-height: 0;
+    padding: 4px 18px 0;
+    overscroll-behavior: contain;
+  }
+
+  .ajsee-date-panel__months {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .ajsee-date-panel__cell,
+  .ajsee-date-panel__empty {
+    height: 48px;
+  }
+
+  .ajsee-date-panel__day {
+    height: 48px;
+    font-size: 17px;
+    border-radius: 14px;
+  }
+
+  .ajsee-date-panel__actions {
+    padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid rgba(226, 235, 245, 0.9);
+    background: rgba(255, 255, 255, 0.78);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .ajsee-date-panel__actions-right {
+    display: contents;
+  }
+
+  .ajsee-date-panel__btn {
+    min-height: 46px;
+    font-size: 14px;
+    padding: 0 12px;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .ajsee-date-panel__close,
+  .ajsee-date-panel__nav,
+  .ajsee-date-panel__btn,
+  .ajsee-date-panel__field input,
+  .ajsee-date-panel__day {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--ajsee-date-border-soft);
+    color: var(--ajsee-date-ink);
+    box-shadow: none;
+  }
+
+  .ajsee-date-panel__day:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .ajsee-date-panel__day.is-disabled {
+    background: transparent;
+  }
+
+  .ajsee-date-panel__actions {
+    border-top-color: rgba(255, 255, 255, 0.08);
+    background: rgba(14, 22, 35, 0.72);
+  }
+
+  .ajsee-date-panel__btn--primary,
+  .ajsee-date-panel__day.is-start,
+  .ajsee-date-panel__day.is-end {
+    background: linear-gradient(180deg, var(--ajsee-date-accent), var(--ajsee-date-accent-strong));
+    border-color: transparent;
+    color: #fff;
+  }
+}

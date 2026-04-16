@@ -47,10 +47,12 @@ function wireOnce(el, evt, handler, key = '', opts) {
   if (!el) return;
   const id = `${evt}:${key || ''}`;
   let set = _wiredMap.get(el);
+
   if (!set) {
     set = new Set();
     _wiredMap.set(el, set);
   }
+
   if (set.has(id)) return;
   set.add(id);
   el.addEventListener(evt, handler, opts);
@@ -76,6 +78,7 @@ let currentFilters = {
 };
 
 const pagination = { page: 1, perPage: 12 };
+
 let _renderInflight = false;
 let _renderQueued = false;
 let _lastFetchSig = '';
@@ -98,7 +101,7 @@ function getUILang() {
   const sp = new URLSearchParams(location.search);
   const p1 = (sp.get('lang') || sp.get('locale') || sp.get('hl') || '').toLowerCase();
   const m = location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
-  const p2 = (m && m[1] || '').toLowerCase();
+  const p2 = ((m && m[1]) || '').toLowerCase();
   const htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
   const cookieLang = (document.cookie.split('; ').find(r => r.startsWith('aj_lang=')) || '').split('=')[1] || '';
   const supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
@@ -120,13 +123,16 @@ function getCookie(name) {
 
 function isHome() {
   if (document.body?.dataset?.page === 'home') return true;
+
   const p = (location.pathname || '/').replace(/\/+$/, '/');
   if (p === '/' || p.endsWith('/index.html')) return true;
+
   return /^\/(cs|en|de|sk|pl|hu)\/?$/.test((location.pathname || '').replace(/\/+$/, ''));
 }
 
 function isEventsPage() {
   if (document.body?.dataset?.page === 'events') return true;
+
   const p = (location.pathname || '').toLowerCase().replace(/\/+$/, '');
   return p.endsWith('/events') || p.endsWith('/events.html');
 }
@@ -182,26 +188,33 @@ function getHeaderEl() {
 function getHeaderMetrics() {
   const el = getHeaderEl();
   if (!el) return { el: null, bottom: 0, z: null, rect: null };
+
   const rect = el.getBoundingClientRect();
   const cs = window.getComputedStyle(el);
   const z = parseZ(cs.zIndex);
   const bottom = Math.max(0, rect.bottom || 0);
+
   return { el, rect, bottom, z };
 }
 
 function syncPopoverZIndex() {
   const { z } = getHeaderMetrics();
-  const desired = (typeof z === 'number' && Number.isFinite(z)) ? Math.max(10, z - 1) : 10020;
+  const desired = (typeof z === 'number' && Number.isFinite(z))
+    ? Math.max(10, z - 1)
+    : 10020;
+
   document.documentElement.style.setProperty('--ajsee-popover-z', String(desired));
   return desired;
 }
 
 function isElementInViewportBelowHeader(el, pad = 4) {
   if (!el || !el.getBoundingClientRect) return false;
+
   const r = el.getBoundingClientRect();
   const vpH = window.innerHeight || document.documentElement.clientHeight || 0;
   const { bottom: hdrBottom } = getHeaderMetrics();
   const sizeOk = r.width > 0 && r.height > 0;
+
   return sizeOk && (r.bottom > hdrBottom + pad) && (r.top < vpH - pad);
 }
 
@@ -215,12 +228,14 @@ function getScrollParents(el) {
   while (node && node !== document.body && node !== document.documentElement) {
     node = node.parentElement;
     if (!node) break;
+
     try {
       const st = window.getComputedStyle(node);
       const oy = st.overflowY || st.overflow || '';
       const ox = st.overflowX || st.overflow || '';
       const scrollable = overflowRe.test(oy) || overflowRe.test(ox);
       const canScroll = (node.scrollHeight > node.clientHeight) || (node.scrollWidth > node.clientWidth);
+
       if (scrollable && canScroll && !seen.has(node)) {
         seen.add(node);
         out.push(node);
@@ -232,6 +247,7 @@ function getScrollParents(el) {
 
   const se = document.scrollingElement || document.documentElement;
   if (se && !seen.has(se)) out.push(se);
+
   out.push(window);
   return out;
 }
@@ -239,9 +255,11 @@ function getScrollParents(el) {
 function installDatePopoverScrollBridges() {
   const dateBtn = qs('#date-combo-button');
   if (!dateBtn) return;
+
   const anchor = dateBtn.closest('.filter-group') || dateBtn;
   getScrollParents(anchor).forEach(p => {
     if (p === window) return;
+
     wireOnce(p, 'scroll', () => {
       try {
         window.dispatchEvent(new Event('scroll'));
@@ -297,54 +315,54 @@ window.ajseePositionDatePopover = function ajseePositionDatePopover(ctx = {}) {
 
 /* ───────── cities / localization ───────── */
 const CITY_SYNONYMS = {
-  prague:      { cs: 'Praha', en: 'Prague', de: 'Prag', sk: 'Praha', pl: 'Praga', hu: 'Prága' },
-  brno:        { cs: 'Brno', en: 'Brno', de: 'Brünn', sk: 'Brno', pl: 'Brno', hu: 'Brünn' },
-  ostrava:     { cs: 'Ostrava', en: 'Ostrava', de: 'Ostrau', sk: 'Ostrava', pl: 'Ostrawa', hu: 'Ostrava' },
-  plzen:       { cs: 'Plzeň', en: 'Pilsen', de: 'Pilsen', sk: 'Plzeň', pl: 'Pilzno', hu: 'Plzeň' },
-  liberec:     { cs: 'Liberec', en: 'Liberec', de: 'Reichenberg', sk: 'Liberec', pl: 'Liberec', hu: 'Liberec' },
-  olomouc:     { cs: 'Olomouc', en: 'Olomouc', de: 'Olmütz', sk: 'Olomouc', pl: 'Ołomuniec', hu: 'Olmütz' },
+  prague: { cs: 'Praha', en: 'Prague', de: 'Prag', sk: 'Praha', pl: 'Praga', hu: 'Prága' },
+  brno: { cs: 'Brno', en: 'Brno', de: 'Brünn', sk: 'Brno', pl: 'Brno', hu: 'Brünn' },
+  ostrava: { cs: 'Ostrava', en: 'Ostrava', de: 'Ostrau', sk: 'Ostrava', pl: 'Ostrawa', hu: 'Ostrava' },
+  plzen: { cs: 'Plzeň', en: 'Pilsen', de: 'Pilsen', sk: 'Plzeň', pl: 'Pilzno', hu: 'Plzeň' },
+  liberec: { cs: 'Liberec', en: 'Liberec', de: 'Reichenberg', sk: 'Liberec', pl: 'Liberec', hu: 'Liberec' },
+  olomouc: { cs: 'Olomouc', en: 'Olomouc', de: 'Olmütz', sk: 'Olomouc', pl: 'Ołomuniec', hu: 'Olmütz' },
   cbudejovice: { cs: 'České Budějovice', en: 'České Budějovice', de: 'Budweis', sk: 'České Budějovice', pl: 'Czeskie Budziejowice', hu: 'Budweis' },
-  hkralove:    { cs: 'Hradec Králové', en: 'Hradec Králové', de: 'Königgrätz', sk: 'Hradec Králové', pl: 'Hradec Králové', hu: 'Königgrätz' },
-  pardubice:   { cs: 'Pardubice', en: 'Pardubice', de: 'Pardubitz', sk: 'Pardubice', pl: 'Pardubice', hu: 'Pardubice' },
+  hkralove: { cs: 'Hradec Králové', en: 'Hradec Králové', de: 'Königgrätz', sk: 'Hradec Králové', pl: 'Hradec Králové', hu: 'Königgrätz' },
+  pardubice: { cs: 'Pardubice', en: 'Pardubice', de: 'Pardubitz', sk: 'Pardubice', pl: 'Pardubice', hu: 'Pardubice' },
 
-  bratislava:  { cs: 'Bratislava', en: 'Bratislava', de: 'Pressburg', sk: 'Bratislava', pl: 'Bratysława', hu: 'Pozsony' },
-  kosice:      { cs: 'Košice', en: 'Kosice', de: 'Kaschau', sk: 'Košice', pl: 'Koszyce', hu: 'Kassa' },
+  bratislava: { cs: 'Bratislava', en: 'Bratislava', de: 'Pressburg', sk: 'Bratislava', pl: 'Bratysława', hu: 'Pozsony' },
+  kosice: { cs: 'Košice', en: 'Kosice', de: 'Kaschau', sk: 'Košice', pl: 'Koszyce', hu: 'Kassa' },
 
-  wien:        { cs: 'Vídeň', en: 'Vienna', de: 'Wien', sk: 'Viedeň', pl: 'Wiedeń', hu: 'Bécs' },
-  graz:        { cs: 'Štýrský Hradec', en: 'Graz', de: 'Graz', sk: 'Štajerský Hradec', pl: 'Graz', hu: 'Graz' },
-  linz:        { cs: 'Linec', en: 'Linz', de: 'Linz', sk: 'Linz', pl: 'Linz', hu: 'Linz' },
-  salzburg:    { cs: 'Salcburk', en: 'Salzburg', de: 'Salzburg', sk: 'Salzburg', pl: 'Salzburg', hu: 'Salzburg' },
-  innsbruck:   { cs: 'Innsbruck', en: 'Innsbruck', de: 'Innsbruck', sk: 'Innsbruck', pl: 'Innsbruck', hu: 'Innsbruck' },
-  klagenfurt:  { cs: 'Klagenfurt', en: 'Klagenfurt', de: 'Klagenfurt', sk: 'Klagenfurt', pl: 'Klagenfurt', hu: 'Klagenfurt' },
+  wien: { cs: 'Vídeň', en: 'Vienna', de: 'Wien', sk: 'Viedeň', pl: 'Wiedeń', hu: 'Bécs' },
+  graz: { cs: 'Štýrský Hradec', en: 'Graz', de: 'Graz', sk: 'Štajerský Hradec', pl: 'Graz', hu: 'Graz' },
+  linz: { cs: 'Linec', en: 'Linz', de: 'Linz', sk: 'Linz', pl: 'Linz', hu: 'Linz' },
+  salzburg: { cs: 'Salcburk', en: 'Salzburg', de: 'Salzburg', sk: 'Salzburg', pl: 'Salzburg', hu: 'Salzburg' },
+  innsbruck: { cs: 'Innsbruck', en: 'Innsbruck', de: 'Innsbruck', sk: 'Innsbruck', pl: 'Innsbruck', hu: 'Innsbruck' },
+  klagenfurt: { cs: 'Klagenfurt', en: 'Klagenfurt', de: 'Klagenfurt', sk: 'Klagenfurt', pl: 'Klagenfurt', hu: 'Klagenfurt' },
 
-  berlin:      { cs: 'Berlín', en: 'Berlin', de: 'Berlin', sk: 'Berlín', pl: 'Berlin', hu: 'Berlin' },
-  hamburg:     { cs: 'Hamburk', en: 'Hamburg', de: 'Hamburg', sk: 'Hamburg', pl: 'Hamburg', hu: 'Hamburg' },
-  munchen:     { cs: 'Mnichov', en: 'Munich', de: 'München', sk: 'Mníchov', pl: 'Monachium', hu: 'München' },
-  koln:        { cs: 'Kolín nad Rýnem', en: 'Cologne', de: 'Köln', sk: 'Kolín nad Rýnom', pl: 'Kolonia', hu: 'Köln' },
-  frankfurt:   { cs: 'Frankfurt', en: 'Frankfurt', de: 'Frankfurt', sk: 'Frankfurt', pl: 'Frankfurt', hu: 'Frankfurt' },
-  stuttgart:   { cs: 'Stuttgart', en: 'Stuttgart', de: 'Stuttgart', sk: 'Stuttgart', pl: 'Stuttgart', hu: 'Stuttgart' },
-  dusseldorf:  { cs: 'Düsseldorf', en: 'Düsseldorf', de: 'Düsseldorf', sk: 'Düsseldorf', pl: 'Düsseldorf', hu: 'Düsseldorf' },
-  dresden:     { cs: 'Drážďany', en: 'Dresden', de: 'Dresden', sk: 'Drážďany', pl: 'Drezno', hu: 'Drezda' },
-  leipzig:     { cs: 'Lipsko', en: 'Leipzig', de: 'Leipzig', sk: 'Lipsko', pl: 'Lipsk', hu: 'Lipcse' },
+  berlin: { cs: 'Berlín', en: 'Berlin', de: 'Berlin', sk: 'Berlín', pl: 'Berlin', hu: 'Berlin' },
+  hamburg: { cs: 'Hamburk', en: 'Hamburg', de: 'Hamburg', sk: 'Hamburg', pl: 'Hamburg', hu: 'Hamburg' },
+  munchen: { cs: 'Mnichov', en: 'Munich', de: 'München', sk: 'Mníchov', pl: 'Monachium', hu: 'München' },
+  koln: { cs: 'Kolín nad Rýnem', en: 'Cologne', de: 'Köln', sk: 'Kolín nad Rýnom', pl: 'Kolonia', hu: 'Köln' },
+  frankfurt: { cs: 'Frankfurt', en: 'Frankfurt', de: 'Frankfurt', sk: 'Frankfurt', pl: 'Frankfurt', hu: 'Frankfurt' },
+  stuttgart: { cs: 'Stuttgart', en: 'Stuttgart', de: 'Stuttgart', sk: 'Stuttgart', pl: 'Stuttgart', hu: 'Stuttgart' },
+  dusseldorf: { cs: 'Düsseldorf', en: 'Düsseldorf', de: 'Düsseldorf', sk: 'Düsseldorf', pl: 'Düsseldorf', hu: 'Düsseldorf' },
+  dresden: { cs: 'Drážďany', en: 'Dresden', de: 'Dresden', sk: 'Drážďany', pl: 'Drezno', hu: 'Drezda' },
+  leipzig: { cs: 'Lipsko', en: 'Leipzig', de: 'Leipzig', sk: 'Lipsko', pl: 'Lipsk', hu: 'Lipcse' },
 
-  warszawa:    { cs: 'Varšava', en: 'Warsaw', de: 'Warschau', sk: 'Varšava', pl: 'Warszawa', hu: 'Varsó' },
-  krakow:      { cs: 'Krakov', en: 'Krakow', de: 'Krakau', sk: 'Krakov', pl: 'Kraków', hu: 'Krakkó' },
-  lodz:        { cs: 'Lodž', en: 'Łódź', de: 'Łódź', sk: 'Lodž', pl: 'Łódź', hu: 'Łódź' },
-  wroclaw:     { cs: 'Vratislav', en: 'Wroclaw', de: 'Breslau', sk: 'Vroclav', pl: 'Wrocław', hu: 'Wroclaw' },
-  poznan:      { cs: 'Poznaň', en: 'Poznan', de: 'Posen', sk: 'Poznaň', pl: 'Poznań', hu: 'Poznań' },
-  gdansk:      { cs: 'Gdaňsk', en: 'Gdansk', de: 'Danzig', sk: 'Gdansk', pl: 'Gdańsk', hu: 'Gdansk' },
-  szczecin:    { cs: 'Štětín', en: 'Szczecin', de: 'Stettin', sk: 'Štetín', pl: 'Szczecin', hu: 'Szczecin' },
-  bydgoszcz:   { cs: 'Bydhošť', en: 'Bydgoszcz', de: 'Bromberg', sk: 'Bydgoszcz', pl: 'Bydgoszcz', hu: 'Bydgoszcz' },
+  warszawa: { cs: 'Varšava', en: 'Warsaw', de: 'Warschau', sk: 'Varšava', pl: 'Warszawa', hu: 'Varsó' },
+  krakow: { cs: 'Krakov', en: 'Krakow', de: 'Krakau', sk: 'Krakov', pl: 'Kraków', hu: 'Krakkó' },
+  lodz: { cs: 'Lodž', en: 'Łódź', de: 'Łódź', sk: 'Lodž', pl: 'Łódź', hu: 'Łódź' },
+  wroclaw: { cs: 'Vratislav', en: 'Wroclaw', de: 'Breslau', sk: 'Vroclav', pl: 'Wrocław', hu: 'Wroclaw' },
+  poznan: { cs: 'Poznaň', en: 'Poznan', de: 'Posen', sk: 'Poznaň', pl: 'Poznań', hu: 'Poznań' },
+  gdansk: { cs: 'Gdaňsk', en: 'Gdansk', de: 'Danzig', sk: 'Gdansk', pl: 'Gdańsk', hu: 'Gdansk' },
+  szczecin: { cs: 'Štětín', en: 'Szczecin', de: 'Stettin', sk: 'Štetín', pl: 'Szczecin', hu: 'Szczecin' },
+  bydgoszcz: { cs: 'Bydhošť', en: 'Bydgoszcz', de: 'Bromberg', sk: 'Bydgoszcz', pl: 'Bydgoszcz', hu: 'Bydgoszcz' },
 
-  budapest:    { cs: 'Budapešť', en: 'Budapest', de: 'Budapest', sk: 'Budapešť', pl: 'Budapeszt', hu: 'Budapest' },
-  debrecen:    { cs: 'Debrecín', en: 'Debrecen', de: 'Debrecen', sk: 'Debrecín', pl: 'Debreczyn', hu: 'Debrecen' },
-  szeged:      { cs: 'Szeged', en: 'Szeged', de: 'Szeged', sk: 'Szeged', pl: 'Szeged', hu: 'Szeged' },
-  miskolc:     { cs: 'Miškovec', en: 'Miskolc', de: 'Miskolc', sk: 'Miškovec', pl: 'Miszkolc', hu: 'Miskolc' },
-  pecs:        { cs: 'Péč', en: 'Pécs', de: 'Pécs', sk: 'Pécs', pl: 'Pecz', hu: 'Pécs' },
-  gyor:        { cs: 'Ráb', en: 'Győr', de: 'Raab', sk: 'Győr', pl: 'Győr', hu: 'Győr' },
+  budapest: { cs: 'Budapešť', en: 'Budapest', de: 'Budapest', sk: 'Budapešť', pl: 'Budapeszt', hu: 'Budapest' },
+  debrecen: { cs: 'Debrecín', en: 'Debrecen', de: 'Debrecen', sk: 'Debrecín', pl: 'Debreczyn', hu: 'Debrecen' },
+  szeged: { cs: 'Szeged', en: 'Szeged', de: 'Szeged', sk: 'Szeged', pl: 'Szeged', hu: 'Szeged' },
+  miskolc: { cs: 'Miškovec', en: 'Miskolc', de: 'Miskolc', sk: 'Miškovec', pl: 'Miszkolc', hu: 'Miskolc' },
+  pecs: { cs: 'Péč', en: 'Pécs', de: 'Pécs', sk: 'Pécs', pl: 'Pecz', hu: 'Pécs' },
+  gyor: { cs: 'Ráb', en: 'Győr', de: 'Raab', sk: 'Győr', pl: 'Győr', hu: 'Győr' },
 
-  london:      { cs: 'Londýn', en: 'London', de: 'London', sk: 'Londýn', pl: 'Londyn', hu: 'London' },
-  paris:       { cs: 'Paříž', en: 'Paris', de: 'Paris', sk: 'Paríž', pl: 'Paryż', hu: 'Párizs' }
+  london: { cs: 'Londýn', en: 'London', de: 'London', sk: 'Londýn', pl: 'Londyn', hu: 'London' },
+  paris: { cs: 'Paříž', en: 'Paris', de: 'Paris', sk: 'Paríž', pl: 'Paryż', hu: 'Párizs' }
 };
 
 const LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
@@ -363,18 +381,21 @@ function localizedCityLabel(slug, lang) {
 
 function findSlugByAnyLabel(label) {
   const n = normKey(label);
+
   for (const slug of slugList) {
     const map = CITY_SYNONYMS[slug];
     for (const l of LANGS) {
       if (normKey(map[l]) === n) return slug;
     }
   }
+
   return null;
 }
 
 function canonPreferredCity(label) {
   const slug = findSlugByAnyLabel(label) || findSlugByAnyLabel(currentFilters.city || '') || null;
   if (!slug) return canonForInputCity(label);
+
   const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || label;
   return canonForInputCity(forApi);
 }
@@ -384,8 +405,13 @@ function syncLocalizedCityLabelFromCurrentState() {
     currentFilters.cityLabel = nearMeLabel();
     return;
   }
+
   const slug = findSlugByAnyLabel(currentFilters.cityLabel || currentFilters.city || '');
   if (slug) currentFilters.cityLabel = localizedCityLabel(slug, currentLang);
+}
+
+function getCityInputEl() {
+  return qs('#filter-city') || qs('#events-city-filter');
 }
 
 /* ───────── helper: force-inline filters + homepage blog fix ───────── */
@@ -435,9 +461,11 @@ function fixHomeBlog() {
 function pickLocalized(val, lang) {
   if (!val) return '';
   if (typeof val === 'string') return val;
+
   if (typeof val === 'object') {
     return val[lang] || val[lang?.slice(0, 2)] || val.cs || val.en || Object.values(val)[0] || '';
   }
+
   return String(val);
 }
 
@@ -445,6 +473,7 @@ function withLangParam(href, lang) {
   try {
     const u = new URL(href, location.origin);
     if (u.origin !== location.origin) return u.toString();
+
     if (!u.searchParams.has('lang')) u.searchParams.set('lang', lang);
     return u.toString();
   } catch {
@@ -457,6 +486,7 @@ function withLangParam(href, lang) {
         /* noop */
       }
     }
+
     return href || '#';
   }
 }
@@ -464,7 +494,10 @@ function withLangParam(href, lang) {
 function getHomeBlogHost() {
   const blog = document.getElementById('blog') || qs('section#blog');
   if (!blog) return null;
-  return blog.querySelector('#homepage-blog-list') || blog.querySelector('[data-home-blog]') || blog.querySelector('.homepage-blog-cards');
+
+  return blog.querySelector('#homepage-blog-list') ||
+    blog.querySelector('[data-home-blog]') ||
+    blog.querySelector('.homepage-blog-cards');
 }
 
 function renderHomeBlog() {
@@ -536,6 +569,7 @@ function renderHomeBlog() {
 /* ───────── live region ───────── */
 function ensureLiveRegion() {
   let region = document.getElementById('ajsee-live');
+
   if (!region) {
     region = document.createElement('div');
     region.id = 'ajsee-live';
@@ -550,6 +584,7 @@ function ensureLiveRegion() {
     region.style.whiteSpace = 'nowrap';
     document.body.appendChild(region);
   }
+
   return region;
 }
 
@@ -574,9 +609,13 @@ function setBusy(v) {
 /* ───────── i18n ───────── */
 function deepMerge(a = {}, b = {}) {
   const out = { ...a };
+
   for (const [k, v] of Object.entries(b)) {
-    out[k] = v && typeof v === 'object' && !Array.isArray(v) ? deepMerge(out[k] || {}, v) : v;
+    out[k] = v && typeof v === 'object' && !Array.isArray(v)
+      ? deepMerge(out[k] || {}, v)
+      : v;
   }
+
   return out;
 }
 
@@ -587,6 +626,7 @@ async function fetchJSON(path) {
   } catch {
     /* noop */
   }
+
   return null;
 }
 
@@ -596,6 +636,7 @@ async function loadTranslations(lang) {
   const pagePart = page === 'about.html'
     ? (await fetchJSON(`/locales/${lang}/about.json`)) || (await fetchJSON(`/src/locales/${lang}/about.json`)) || {}
     : {};
+
   return deepMerge(base, pagePart);
 }
 
@@ -675,6 +716,7 @@ function fbFilters(key) {
 
 function setBtnLabel(el, txt) {
   if (!el) return;
+
   const node = el.querySelector('[data-i18n-label],.label,.btn-label');
   (node || el).textContent = txt;
 }
@@ -685,6 +727,7 @@ async function applyTranslations(lang) {
   document.querySelectorAll('[data-i18n-key]').forEach(el => {
     const key = el.getAttribute('data-i18n-key');
     const value = t(key);
+
     if (value === undefined || String(value).trim() === '') return;
     if (/[<][a-z]/i.test(value)) el.innerHTML = value;
     else el.textContent = value;
@@ -725,6 +768,7 @@ function emitI18nReady(lang) {
   } catch {
     /* noop */
   }
+
   try {
     window.dispatchEvent(new CustomEvent('ajsee:lang-changed', { detail: { lang } }));
   } catch {
@@ -734,6 +778,7 @@ function emitI18nReady(lang) {
 
 async function ensureTranslations(lang) {
   if (typeof window.applyTranslations === 'function') return window.applyTranslations(lang);
+
   window.translations = await loadTranslations(lang);
   syncLocalizedCityLabelFromCurrentState();
   updateFilterLocaleTexts();
@@ -754,10 +799,12 @@ function syncCookieBanner() {
     const mo = new MutationObserver(async () => {
       const nextLang = getUILang();
       if (!nextLang || nextLang === currentLang) return;
+
       currentLang = nextLang;
       setLangCookie(currentLang);
       await ensureTranslations(currentLang);
     });
+
     mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   } catch {
     /* noop */
@@ -767,6 +814,7 @@ function syncCookieBanner() {
 /* ───────── visual patch / compat styles ───────── */
 function injectOnce(id, css) {
   if (document.getElementById(id)) return;
+
   const style = document.createElement('style');
   style.id = id;
   style.textContent = css;
@@ -1120,7 +1168,7 @@ function patchFilterVisuals() {
 
 /* ───────── UI / filter text sync ───────── */
 function updateFilterLocaleTexts() {
-  const city = qs('#filter-city') || qs('#events-city-filter');
+  const city = getCityInputEl();
   if (city) city.placeholder = t('filters.cityPlaceholder', 'Praha, Brno…');
 
   const kw = qs('#filter-keyword');
@@ -1148,18 +1196,27 @@ function updateFilterLocaleTexts() {
   const dateBtn = qs('#date-combo-button');
   if (dateBtn) dateBtn.setAttribute('aria-label', dateLabel);
 
+  const nearBtn = qs('.btn-nearme-inline');
+  if (nearBtn) {
+    nearBtn.setAttribute('aria-label', nearMeLabel());
+    nearBtn.title = nearMeLabel();
+  }
+
   updateDateComboLabel();
 }
 
 function expandFilters() {
   const dock = qs('form.filter-dock') || qs('.events-filters');
   if (!dock) return;
+
   dock.classList.remove('is-collapsed');
+
   const toggle = qs('#filtersToggle');
   if (toggle) {
     toggle.setAttribute('aria-pressed', 'false');
     setBtnLabel(toggle, toggleLabel('hide'));
   }
+
   store.set('filtersCollapsed', false);
   announce(ariaToggleText('expanded'));
 }
@@ -1178,14 +1235,18 @@ function computeActiveFiltersCount(filters = currentFilters) {
 function updateToggleBadge() {
   const btn = qs('#filtersToggle');
   if (!btn) return;
+
   const cnt = computeActiveFiltersCount();
   let badge = btn.querySelector('.badge');
+
   if (!badge) {
     badge = document.createElement('span');
     badge.className = 'badge';
     btn.appendChild(badge);
   }
+
   badge.textContent = String(cnt);
+
   const base = toggleLabel('hide');
   btn.setAttribute('aria-label', cnt ? `${base} (${cnt})` : base);
 }
@@ -1198,10 +1259,12 @@ function updateResultsCount(n) {
     document.body;
 
   let el = host.querySelector('#eventsResultsCount');
+
   if (!el) {
     el = document.createElement('div');
     el.id = 'eventsResultsCount';
     el.className = 'events-results-count';
+
     const list = qs('#eventsList');
     if (list && list.parentElement === host) host.insertBefore(el, list);
     else host.appendChild(el);
@@ -1250,6 +1313,7 @@ function applyDateRangeFromDetail(detail = {}, options = {}) {
 
 function normalizeDates() {
   if (!currentFilters.dateFrom && !currentFilters.dateTo) return;
+
   applyDateRangeFromDetail({
     from: currentFilters.dateFrom,
     to: currentFilters.dateTo,
@@ -1260,6 +1324,7 @@ function normalizeDates() {
 function parseISODateMidday(iso) {
   const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return new Date(iso);
+
   return new Date(+m[1], +m[2] - 1, +m[3], 12, 0, 0, 0);
 }
 
@@ -1274,6 +1339,7 @@ function formatDateRangeCompact(aISO, bISO) {
 
   const A = parseISODateMidday(aISO);
   const B = parseISODateMidday(bISO);
+
   if (isNaN(A) || isNaN(B)) return `${aISO || ''}${aISO && bISO ? ' - ' : ''}${bISO || ''}`;
 
   const sameYear = A.getFullYear() === B.getFullYear();
@@ -1293,10 +1359,12 @@ function formatDateRangeCompact(aISO, bISO) {
 function updateDateComboLabel() {
   const btnTxt = qs('.date-combo .combo-text');
   if (!btnTxt) return;
+
   const anytime = t('filters.anytime', fbFilters('anytime'));
   const label = (currentFilters.dateFrom || currentFilters.dateTo)
     ? formatDateRangeCompact(currentFilters.dateFrom, currentFilters.dateTo)
     : anytime;
+
   btnTxt.textContent = label;
   btnTxt.title = label;
 }
@@ -1307,7 +1375,7 @@ if (!window.updateDateComboLabel) window.updateDateComboLabel = updateDateComboL
 function setFilterInputsFromState() {
   const cat = qs('#filter-category') || qs('#events-category-filter');
   const sort = qs('#filter-sort') || qs('#events-sort-filter');
-  const city = qs('#filter-city') || qs('#events-city-filter');
+  const city = getCityInputEl();
   const from = qs('#filter-date-from') || qs('#events-date-from');
   const to = qs('#filter-date-to') || qs('#events-date-to');
   const kw = qs('#filter-keyword');
@@ -1335,7 +1403,7 @@ function setFilterInputsFromState() {
 function syncFiltersFromForm() {
   const cat = qs('#filter-category') || qs('#events-category-filter');
   const sort = qs('#filter-sort') || qs('#events-sort-filter');
-  const city = qs('#filter-city') || qs('#events-city-filter');
+  const city = getCityInputEl();
   const from = qs('#filter-date-from') || qs('#events-date-from');
   const to = qs('#filter-date-to') || qs('#events-date-to');
   const kw = qs('#filter-keyword');
@@ -1423,6 +1491,7 @@ function upgradeSortToSegmented() {
 
   function setActive(which) {
     const buttons = [btnNearest, btnLatest];
+
     buttons.forEach((btn, idx) => {
       btn.classList.toggle('is-active', idx === which);
       btn.setAttribute('aria-selected', idx === which ? 'true' : 'false');
@@ -1455,7 +1524,9 @@ function upgradeSortToSegmented() {
 
   wireOnce(wrap, 'keydown', async e => {
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+
     e.preventDefault();
+
     const isLatest = currentFilters.sort === 'latest';
     if (e.key === 'ArrowLeft' && isLatest) {
       btnNearest.click();
@@ -1489,8 +1560,10 @@ function getDatePopoverPanel() {
 
 function isDatePopoverPanelVisible(panel) {
   if (!panel) return false;
+
   const cs = window.getComputedStyle(panel);
   if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false;
+
   const r = panel.getBoundingClientRect();
   return r.width > 0 && r.height > 0;
 }
@@ -1551,11 +1624,14 @@ function installDatePopoverAutoHide() {
   let raf = 0;
   const check = () => {
     raf = 0;
+
     const panel = getDatePopoverPanel();
     if (!isDatePopoverPanelVisible(panel)) return;
+
     if (!isElementInViewportBelowHeader(group, 4)) {
       closeDatePopover();
       group.classList.remove('is-open');
+
       try {
         btn?.setAttribute('aria-expanded', 'false');
       } catch {
@@ -1571,8 +1647,8 @@ function installDatePopoverAutoHide() {
   getScrollParents(group).forEach(sp => {
     wireOnce(sp, 'scroll', schedule, 'date-autohide-scroll', { passive: true });
   });
-  wireOnce(window, 'resize', schedule, 'date-autohide-resize', { passive: true });
 
+  wireOnce(window, 'resize', schedule, 'date-autohide-resize', { passive: true });
   schedule();
 }
 
@@ -1590,8 +1666,10 @@ function bindDatePopoverGlue() {
   const isOpen = () => {
     const panel = getDatePopoverPanel();
     if (!panel) return false;
+
     const cs = window.getComputedStyle(panel);
     if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false;
+
     return panel.getBoundingClientRect().width > 0;
   };
 
@@ -1661,17 +1739,21 @@ async function acquireGeolocation({ timeout = 15000, highAccuracy = false } = {}
 async function fallbackGeoFromEdge() {
   const res = await fetch('/api/geo', { cache: 'no-store' });
   if (!res.ok) throw new Error('edge-failed');
+
   const json = await res.json();
   const lat = Number(json?.geo?.latitude ?? json?.latitude);
   const lon = Number(json?.geo?.longitude ?? json?.longitude);
+
   if (isFinite(lat) && isFinite(lon)) {
     return { lat: +lat.toFixed(5), lon: +lon.toFixed(5) };
   }
+
   throw new Error('edge-no-coords');
 }
 
 function geoErrorMessage(err) {
   const code = Number(err?.code);
+
   switch (code) {
     case 1:
       return t('geo.permissionDenied', 'Přístup k poloze byl zamítnut v prohlížeči.');
@@ -1699,6 +1781,7 @@ async function activateNearMeViaGeo(input) {
     currentFilters.nearMeLat = lat;
     currentFilters.nearMeLon = lon;
     currentFilters.nearMeRadiusKm = currentFilters.nearMeRadiusKm || 50;
+
     if (input) {
       input.value = nearMeLabel();
       input.setAttribute('data-autofromnearme', '1');
@@ -1724,8 +1807,12 @@ async function activateNearMeViaGeo(input) {
 
 function ensureNearMeInlineButton(input) {
   if (!input) return;
+
   const host = input.closest('.filter-group') || input.parentElement;
-  if (!host || host.querySelector('.btn-nearme-inline')) return;
+  if (!host) return;
+
+  const existing = host.querySelector('.btn-nearme-inline');
+  if (existing) existing.remove();
 
   const btn = document.createElement('button');
   btn.type = 'button';
@@ -1733,12 +1820,14 @@ function ensureNearMeInlineButton(input) {
   btn.setAttribute('aria-label', nearMeLabel());
   btn.title = nearMeLabel();
   btn.textContent = '📍';
+
   host.style.position = 'relative';
   host.appendChild(btn);
 
-  btn.addEventListener('click', () => {
-    void activateNearMeViaGeo(input);
-  });
+  wireOnce(btn, 'click', () => {
+    const liveInput = getCityInputEl() || input;
+    void activateNearMeViaGeo(liveInput);
+  }, 'nearme-inline-click');
 }
 
 /* ───────── city typeahead integration ───────── */
@@ -1760,7 +1849,13 @@ function buildCityTypeaheadOptions(input, locale) {
       void renderAndSync({ resetPage: true }).then(() => expandFilters());
     },
     onNearMe: async ({ lat, lon } = {}) => {
-      if (typeof lat === 'number' && typeof lon === 'number' && isFinite(lat) && isFinite(lon) && ((Math.abs(lat) + Math.abs(lon)) > 0)) {
+      if (
+        typeof lat === 'number' &&
+        typeof lon === 'number' &&
+        isFinite(lat) &&
+        isFinite(lon) &&
+        ((Math.abs(lat) + Math.abs(lon)) > 0)
+      ) {
         currentFilters.city = '';
         currentFilters.cityLabel = nearMeLabel();
         currentFilters.nearMeLat = +lat;
@@ -1800,6 +1895,7 @@ function bindCityInputShortcuts(input) {
 
 function rebuildCityInput(input) {
   if (!input) return null;
+
   const clone = input.cloneNode(true);
   clone.value = input.value;
   input.replaceWith(clone);
@@ -1807,15 +1903,19 @@ function rebuildCityInput(input) {
 }
 
 function initCityTypeahead(locale, { rebuild = false } = {}) {
-  let input = qs('#filter-city') || qs('#events-city-filter');
+  let input = getCityInputEl();
   if (!input) return null;
 
   if (rebuild || input.dataset.ajTypeaheadBound === '1') {
     input = rebuildCityInput(input);
   }
 
-  setupCityTypeahead(input, buildCityTypeaheadOptions(input, locale));
-  input.dataset.ajTypeaheadBound = '1';
+  try {
+    setupCityTypeahead(input, buildCityTypeaheadOptions(input, locale));
+    input.dataset.ajTypeaheadBound = '1';
+  } catch {
+    input.dataset.ajTypeaheadBound = '0';
+  }
 
   bindCityInputShortcuts(input);
   ensureNearMeInlineButton(input);
@@ -1837,6 +1937,7 @@ function safeUrl(raw) {
   } catch {
     /* noop */
   }
+
   return '#';
 }
 
@@ -1855,7 +1956,9 @@ function adjustTicketmasterLanguage(rawUrl, lang = getUILang()) {
 function wrapAffiliate(url) {
   try {
     const cfg = window.__impact || window.__aff || {};
+
     if (cfg.clickBase) return cfg.clickBase + encodeURIComponent(url);
+
     if (cfg.param && cfg.value) {
       const u = new URL(url);
       if (!u.searchParams.has(cfg.param)) u.searchParams.set(cfg.param, cfg.value);
@@ -1864,6 +1967,7 @@ function wrapAffiliate(url) {
   } catch {
     /* noop */
   }
+
   return url;
 }
 
@@ -1903,6 +2007,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       const lat = +api.nearMeLat;
       const lon = +api.nearMeLon;
       const radius = clamp(+api.nearMeRadiusKm || 50, 10, 300);
+
       Object.assign(api, {
         city: '',
         nearMe: 1,
@@ -1924,9 +2029,10 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     const sig = makeFetchSig(locale, api, pagination.page, pagination.perPage);
     if (sig === _lastFetchSig) return;
-    _lastFetchSig = sig;
 
     const events = await getAllEvents({ locale, filters: api }) || [];
+    _lastFetchSig = sig;
+
     if (!window.translations) window.translations = await loadTranslations(locale);
 
     let out = [...events];
@@ -1944,6 +2050,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     const isHp = isHome();
     let toRender = out;
+
     if (isHp) {
       if (out.length > 6) toRender = out.slice(0, 6);
     } else {
@@ -1983,6 +2090,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);
   } catch {
+    _lastFetchSig = '';
+
     if (list) {
       list.innerHTML = `<p>${esc(t('events-load-error', 'Unable to load events. Try again later.'))}</p>`;
     }
@@ -1996,10 +2105,12 @@ async function renderAndSync({ resetPage = true } = {}) {
     _renderQueued = true;
     return;
   }
+
   _renderInflight = true;
 
   try {
     if (resetPage) pagination.page = 1;
+
     normalizeDates();
     syncURLFromFilters();
 
@@ -2112,18 +2223,23 @@ function initLangDropdownFallback() {
 
   const close = () => {
     if (!state.open) return;
+
     state.open = false;
+
     try {
       state.menu?.remove?.();
     } catch {
       /* noop */
     }
+
     state.menu = null;
+
     if (state.root) {
       state.root.classList.remove('is-open');
       const active = state.root.querySelector('.lang-btn.is-active');
       if (active) active.setAttribute('aria-expanded', 'false');
     }
+
     state.root = null;
   };
 
@@ -2139,6 +2255,7 @@ function initLangDropdownFallback() {
 
   const positionMenu = (menu, anchorRect) => {
     if (!menu || !anchorRect) return;
+
     const SAFE = 8;
     const vpW = window.innerWidth || 1024;
     const vpH = window.innerHeight || 768;
@@ -2182,15 +2299,20 @@ function initLangDropdownFallback() {
       const clone = src.cloneNode(true);
       clone.removeAttribute('id');
       clone.setAttribute('type', 'button');
+
       const lang = (clone.getAttribute('data-lang') || clone.getAttribute('data-locale') || '').toLowerCase();
       clone.classList.toggle('is-active', lang === currentLang);
+
       clone.addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
+
         if (!lang) return;
+
         close();
         if (lang !== currentLang) changeLangTo(lang);
       });
+
       menu.appendChild(clone);
     });
 
@@ -2206,22 +2328,27 @@ function initLangDropdownFallback() {
 
     const schedule = () => {
       if (!state.open || !state.menu || !state.root) return;
+
       const active = state.root.querySelector('.lang-btn.is-active') || state.root.querySelector('.lang-btn');
       const r = active?.getBoundingClientRect?.();
+
       if (!r) {
         close();
         return;
       }
+
       if (!isElementInViewportBelowHeader(active, 2)) {
         close();
         return;
       }
+
       positionMenu(state.menu, r);
     };
 
     getScrollParents(root).forEach(sp => {
       wireOnce(sp, 'scroll', schedule, 'langdd-scroll', { passive: true });
     });
+
     wireOnce(window, 'resize', schedule, 'langdd-resize', { passive: true });
 
     wireOnce(document, 'click', e => {
@@ -2238,6 +2365,7 @@ function initLangDropdownFallback() {
 
   roots.forEach(root => {
     if (!root || root.dataset.ajLangDropdownWired === '1') return;
+
     const btns = qsa('.lang-btn', root);
     if (btns.length < 2) return;
 
@@ -2273,6 +2401,7 @@ function safeInitLangDropdown() {
   } catch {
     /* noop */
   }
+
   initLangDropdownFallback();
 }
 
@@ -2309,6 +2438,7 @@ function syncLangDropdownUI(lang) {
           currentFlag.src = img.getAttribute('src') || img.src;
           currentFlag.alt = img.getAttribute('alt') || img.alt || '';
         }
+
         const txt = (btn.textContent || '').trim();
         if (currentLabel && txt) currentLabel.textContent = txt;
       }
@@ -2328,12 +2458,16 @@ function initLangDropdownCompat() {
     if (!summary || !menu) return;
 
     summary.classList.add('lang-trigger');
+
     const caret = summary.querySelector('.lang-caret');
     if (caret) caret.classList.add('chevron');
+
     const flag = summary.querySelector('.lang-current-flag');
     if (flag) flag.classList.add('flag');
+
     const label = summary.querySelector('.lang-current-label');
     if (label) label.classList.add('lang-current');
+
     qsa('.lang-btn', menu).forEach(btn => btn.classList.add('lang-option'));
 
     const syncOpen = () => {
@@ -2361,8 +2495,10 @@ function initLangDropdownCompat() {
 
     wireOnce(document, 'keydown', e => {
       if (e.key !== 'Escape' || !dd.open) return;
+
       dd.open = false;
       syncOpen();
+
       try {
         summary.blur();
       } catch {
@@ -2468,6 +2604,7 @@ function initFiltersFromURL() {
     currentFilters.city = canonPreferredCity(raw);
     currentFilters.cityLabel = raw;
   }
+
   if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
   if (sp.get('to')) currentFilters.dateTo = sp.get('to') || '';
   if (sp.get('segment')) currentFilters.category = sp.get('segment') || 'all';
@@ -2499,17 +2636,19 @@ function bindFilterFormInteractions(formEl) {
   wireOnce(formEl, 'submit', async e => {
     e.preventDefault();
     syncFiltersFromForm();
-    const city = qs('#filter-city') || qs('#events-city-filter');
+
+    const city = getCityInputEl();
     if (city && !city.hasAttribute('readonly') && isNearMeTyped(city) && !(currentFilters.nearMeLat && currentFilters.nearMeLon)) {
       await activateNearMeViaGeo(city);
       syncFiltersFromForm();
     }
+
     await renderAndSync({ resetPage: true });
   }, 'submit');
 }
 
 /* ───────── DOM Ready ───────── */
-document.addEventListener('DOMContentLoaded', async () => {
+async function bootstrapMain() {
   ensureRuntimeStyles();
   updateHeaderOffset();
   syncPopoverZIndex();
@@ -2550,6 +2689,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const formEl = qs('#events-filters-form');
   const topToolbar = document.querySelector('.filters-toolbar');
   if (topToolbar) topToolbar.remove();
+
   const legacyNearBtn = document.getElementById('filter-nearme');
   if (legacyNearBtn) legacyNearBtn.remove();
 
@@ -2575,6 +2715,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await ensureTranslations(currentLang);
     syncCookieBannerLanguage(currentLang);
 
+    _lastFetchSig = '';
+
     initCityTypeahead(currentLang, { rebuild: true });
     setFilterInputsFromState();
 
@@ -2595,4 +2737,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }, 'ajsee-lang-change-main');
 
   await renderAndSync({ resetPage: true });
-});
+}
+
+if (!G.flags.mainDomReadyBound) {
+  G.flags.mainDomReadyBound = true;
+  document.addEventListener('DOMContentLoaded', () => {
+    void bootstrapMain();
+  });
+}

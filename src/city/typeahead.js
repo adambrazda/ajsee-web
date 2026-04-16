@@ -1,9 +1,371 @@
 // src/city/typeahead.js
 // ---------------------------------------------------------
-// City Typeahead UI – desktop dropdown + mobile bottom sheet
+// City Typeahead UI – desktop dropdown + premium mobile bottom sheet
 // ---------------------------------------------------------
 
 import { suggestCities } from './suggestClient.js';
+
+const STYLE_ID = 'ajsee-city-typeahead-inline-styles';
+
+function injectStylesOnce() {
+  if (document.getElementById(STYLE_ID)) return;
+
+  const style = document.createElement('style');
+  style.id = STYLE_ID;
+  style.textContent = `
+    body.city-picker-open {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .typeahead-panel {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      z-index: var(--ajsee-popover-z, 10020);
+      background: #fff;
+      border: 1px solid rgba(157, 177, 205, 0.32);
+      border-radius: 20px;
+      box-shadow: 0 22px 64px rgba(16, 32, 68, 0.16);
+      overflow: hidden;
+      max-height: min(420px, 56vh);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      backdrop-filter: blur(18px);
+    }
+
+    .typeahead-loading,
+    .typeahead-empty {
+      padding: 16px 18px;
+      color: #667085;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .typeahead-section-title {
+      padding: 14px 18px 8px;
+      color: #667085;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .typeahead-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: background-color .16s ease;
+      border-top: 1px solid rgba(157, 177, 205, 0.14);
+    }
+
+    .typeahead-item:first-of-type {
+      border-top: 0;
+    }
+
+    .typeahead-item:hover,
+    .typeahead-item.active {
+      background: linear-gradient(180deg, rgba(239, 247, 255, 0.92), rgba(245, 250, 255, 0.92));
+    }
+
+    .typeahead-item.nearme {
+      background: linear-gradient(180deg, rgba(246, 251, 255, 0.98), rgba(241, 248, 255, 0.98));
+    }
+
+    .typeahead-item.nearme .ti-city {
+      color: #2f5fd0;
+      font-weight: 800;
+    }
+
+    .ti-city {
+      color: #0f172a;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.28;
+    }
+
+    .ti-meta,
+    .ti-sub {
+      color: #667085;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .ti-city mark,
+    .city-sheet__option-city mark {
+      background: rgba(46, 94, 217, 0.10);
+      color: inherit;
+      font-weight: 800;
+      border-radius: 6px;
+      padding: 0 .08em;
+    }
+
+    .city-sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: calc(var(--ajsee-popover-z, 10020) + 4);
+      background: rgba(11, 16, 32, 0.28);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .22s ease;
+      display: flex;
+      align-items: flex-end;
+      justify-content: stretch;
+    }
+
+    .city-sheet-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .city-sheet {
+      width: 100%;
+      max-height: min(78svh, calc(var(--city-sheet-vh, 100vh) - 16px));
+      min-height: min(420px, 62svh);
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 30px 30px 0 0;
+      border: 1px solid rgba(157, 177, 205, 0.28);
+      box-shadow: 0 -18px 60px rgba(8, 24, 56, 0.16);
+      padding: 12px 22px calc(20px + env(safe-area-inset-bottom, 0px));
+      transform: translateY(22px);
+      transition: transform .22s ease;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .city-sheet-backdrop.is-open .city-sheet {
+      transform: translateY(0);
+    }
+
+    .city-sheet__grab {
+      width: 56px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.16);
+      margin: 6px auto 18px;
+      flex: 0 0 auto;
+    }
+
+    .city-sheet__header {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex: 0 0 auto;
+    }
+
+    .city-sheet__title {
+      margin: 0;
+      color: #0b1734;
+      font-size: clamp(22px, 5vw, 30px);
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .city-sheet__subtitle {
+      margin: 8px 0 0;
+      color: #667085;
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .city-sheet__close {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(157, 177, 205, 0.22);
+      border-radius: 999px;
+      background: rgba(246, 248, 252, 0.92);
+      color: #344054;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .city-sheet__search-wrap {
+      position: relative;
+      margin-bottom: 14px;
+      flex: 0 0 auto;
+    }
+
+    .city-sheet__search {
+      width: 100%;
+      height: 60px;
+      border-radius: 20px;
+      border: 1px solid rgba(157, 177, 205, 0.34);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+      padding: 0 18px;
+      color: #0f172a;
+      font-size: 18px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .city-sheet__search::placeholder {
+      color: #98a2b3;
+      font-weight: 700;
+    }
+
+    .city-sheet__search:focus {
+      border-color: rgba(77, 122, 233, 0.52);
+      box-shadow: 0 0 0 4px rgba(46, 94, 217, 0.10);
+    }
+
+    .city-sheet__content {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1 1 auto;
+    }
+
+    .city-sheet__nearme {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3px;
+      width: 100%;
+      border-radius: 22px;
+      border: 1px solid rgba(109, 154, 234, 0.44);
+      background: linear-gradient(180deg, rgba(244, 250, 255, 0.96), rgba(237, 246, 255, 0.96));
+      padding: 16px 18px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 10px 26px rgba(57, 93, 170, 0.08);
+      flex: 0 0 auto;
+    }
+
+    .city-sheet__nearme-title {
+      color: #2f5fd0;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    .city-sheet__nearme-sub {
+      color: #667085;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .city-sheet__section-title {
+      margin-top: 6px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      flex: 0 0 auto;
+    }
+
+    .city-sheet__results {
+      min-height: 0;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 10px;
+    }
+
+    .city-sheet__option,
+    .city-sheet__state,
+    .city-sheet__skeleton {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      padding: 15px 6px;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid rgba(157, 177, 205, 0.18);
+    }
+
+    .city-sheet__option:last-child {
+      border-bottom: 0;
+    }
+
+    .city-sheet__option-city {
+      color: #0f172a;
+      font-size: 18px;
+      line-height: 1.3;
+      font-weight: 750;
+    }
+
+    .city-sheet__option-meta,
+    .city-sheet__state small {
+      color: #667085;
+      font-size: 14px;
+      line-height: 1.42;
+      font-weight: 600;
+    }
+
+    .city-sheet__state {
+      color: #667085;
+      font-size: 15px;
+      line-height: 1.5;
+      padding-left: 0;
+      padding-right: 0;
+      pointer-events: none;
+    }
+
+    .city-sheet__state strong {
+      color: #344054;
+      font-weight: 800;
+    }
+
+    .city-sheet__skeleton {
+      gap: 10px;
+      padding-left: 0;
+      padding-right: 0;
+      pointer-events: none;
+    }
+
+    .city-sheet__skeleton-line {
+      display: block;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(226,232,240,0.85), rgba(241,245,249,1), rgba(226,232,240,0.85));
+      background-size: 240px 100%;
+      animation: citySheetShimmer 1.1s linear infinite;
+    }
+
+    .city-sheet__skeleton-line.is-main { width: 48%; height: 16px; }
+    .city-sheet__skeleton-line.is-sub { width: 28%; }
+
+    @keyframes citySheetShimmer {
+      from { background-position: -240px 0; }
+      to { background-position: 240px 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .city-sheet-backdrop,
+      .city-sheet,
+      .city-sheet__skeleton-line {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
 
 /** diakriticky nezávislá normalizace */
 function norm(s) {
@@ -42,13 +404,6 @@ function highlight(label, query) {
   return `${start}<mark>${mid}</mark>${end}`;
 }
 
-/** nested lookup */
-function getByPath(obj, path) {
-  return String(path || '')
-    .split('.')
-    .reduce((acc, key) => (acc && typeof acc === 'object' ? acc[key] : undefined), obj);
-}
-
 /** fallback texty */
 function defaultText(key, lang = 'en', n = 0) {
   const L = (lang || 'en').toLowerCase();
@@ -74,6 +429,17 @@ function defaultText(key, lang = 'en', n = 0) {
       case 'hu': return 'Nincs találat';
       case 'de': return 'Keine Treffer';
       default:   return 'No results';
+    }
+  }
+
+  if (key === 'noResultsHelp') {
+    switch (L) {
+      case 'cs': return 'Zkus jiný název města nebo použij aktuální polohu.';
+      case 'sk': return 'Skús iný názov mesta alebo použi aktuálnu polohu.';
+      case 'pl': return 'Spróbuj innej nazwy miasta lub użyj bieżącej lokalizacji.';
+      case 'hu': return 'Próbálj másik városnevet, vagy használd az aktuális helyed.';
+      case 'de': return 'Versuchen Sie einen anderen Stadtnamen oder verwenden Sie Ihren aktuellen Standort.';
+      default:   return 'Try another city name or use your current location.';
     }
   }
 
@@ -124,12 +490,12 @@ function defaultText(key, lang = 'en', n = 0) {
 
   if (key === 'pickerSubtitle') {
     switch (L) {
-      case 'cs': return 'Začni psát nebo použij svou polohu';
-      case 'sk': return 'Začni písať alebo použi svoju polohu';
-      case 'pl': return 'Zacznij pisać lub użyj swojej lokalizacji';
-      case 'hu': return 'Kezdj gépelni vagy használd a polohu';
-      case 'de': return 'Beginnen Sie zu tippen oder verwenden Sie Ihren Standort';
-      default:   return 'Start typing or use your location';
+      case 'cs': return 'Začni psát nebo použij aktuální polohu';
+      case 'sk': return 'Začni písať alebo použi aktuálnu polohu';
+      case 'pl': return 'Zacznij pisać lub użyj bieżącej lokalizacji';
+      case 'hu': return 'Kezdj gépelni vagy használd az aktuális helyed';
+      case 'de': return 'Beginnen Sie zu tippen oder verwenden Sie Ihren aktuellen Standort';
+      default:   return 'Start typing or use your current location';
     }
   }
 
@@ -155,14 +521,14 @@ function defaultText(key, lang = 'en', n = 0) {
     }
   }
 
-  if (key === 'startTyping') {
+  if (key === 'popularCities') {
     switch (L) {
-      case 'cs': return 'Začni psát název města.';
-      case 'sk': return 'Začni písať názov mesta.';
-      case 'pl': return 'Zacznij wpisywać nazwę miasta.';
-      case 'hu': return 'Kezdd el begépelni a város nevét.';
-      case 'de': return 'Beginnen Sie, den Stadtnamen einzugeben.';
-      default:   return 'Start typing a city name.';
+      case 'cs': return 'Oblíbená města';
+      case 'sk': return 'Obľúbené mestá';
+      case 'pl': return 'Popularne miasta';
+      case 'hu': return 'Népszerű városok';
+      case 'de': return 'Beliebte Städte';
+      default:   return 'Popular cities';
     }
   }
 
@@ -213,12 +579,12 @@ function defaultText(key, lang = 'en', n = 0) {
   return '';
 }
 
-function defaultT(key, fallback) {
-  if (typeof window === 'undefined' || !window.translations) return fallback;
-  const nested = getByPath(window.translations, key);
-  if (nested !== undefined) return nested;
-  if (window.translations[key] !== undefined) return window.translations[key];
-  return fallback;
+function defaultT(k, fallback) {
+  return (typeof window !== 'undefined'
+      && window.translations
+      && (k in window.translations))
+    ? window.translations[k]
+    : fallback;
 }
 
 function normalizeAndDedupe(list = []) {
@@ -239,17 +605,12 @@ function normalizeAndDedupe(list = []) {
     if (seen.has(key)) continue;
     seen.add(key);
 
-    const latRaw = it.lat ?? it.latitude;
-    const lonRaw = it.lon ?? it.longitude;
-    const lat = typeof latRaw === 'number' ? latRaw : Number(latRaw);
-    const lon = typeof lonRaw === 'number' ? lonRaw : Number(lonRaw);
-
     out.push({
       city,
       state,
       countryCode: cc || undefined,
-      lat: Number.isFinite(lat) ? lat : undefined,
-      lon: Number.isFinite(lon) ? lon : undefined,
+      lat: typeof it.lat === 'number' ? it.lat : (typeof it.latitude === 'number' ? it.latitude : undefined),
+      lon: typeof it.lon === 'number' ? it.lon : (typeof it.longitude === 'number' ? it.longitude : undefined),
       score: typeof it.score === 'number' ? it.score : undefined
     });
   }
@@ -257,13 +618,45 @@ function normalizeAndDedupe(list = []) {
   return out;
 }
 
+const DEFAULT_CITY_PRESETS = {
+  prague:     { cs: 'Praha', en: 'Prague', de: 'Prag', sk: 'Praha', pl: 'Praga', hu: 'Prága' },
+  brno:       { cs: 'Brno', en: 'Brno', de: 'Brünn', sk: 'Brno', pl: 'Brno', hu: 'Brünn' },
+  ostrava:    { cs: 'Ostrava', en: 'Ostrava', de: 'Ostrau', sk: 'Ostrava', pl: 'Ostrawa', hu: 'Ostrava' },
+  plzen:      { cs: 'Plzeň', en: 'Pilsen', de: 'Pilsen', sk: 'Plzeň', pl: 'Pilzno', hu: 'Plzeň' },
+  liberec:    { cs: 'Liberec', en: 'Liberec', de: 'Reichenberg', sk: 'Liberec', pl: 'Liberec', hu: 'Liberec' },
+  olomouc:    { cs: 'Olomouc', en: 'Olomouc', de: 'Olmütz', sk: 'Olomouc', pl: 'Ołomuniec', hu: 'Olmütz' },
+  bratislava: { cs: 'Bratislava', en: 'Bratislava', de: 'Pressburg', sk: 'Bratislava', pl: 'Bratysława', hu: 'Pozsony' },
+  wien:       { cs: 'Vídeň', en: 'Vienna', de: 'Wien', sk: 'Viedeň', pl: 'Wiedeń', hu: 'Bécs' }
+};
+
+function getPresetCity(slug, lang = 'cs') {
+  const row = DEFAULT_CITY_PRESETS[slug];
+  return row?.[lang] || row?.cs || slug;
+}
+
+function getDefaultCityItems(lang = 'cs') {
+  const order = ['prague', 'brno', 'ostrava', 'plzen', 'liberec', 'olomouc'];
+  return order.map((slug) => ({
+    city: getPresetCity(slug, lang),
+    state: '',
+    countryCode: 'CZ'
+  }));
+}
+
+function filterDefaultCityItems(query, lang = 'cs') {
+  const q = norm(query);
+  const base = getDefaultCityItems(lang);
+  if (!q) return base;
+  return base.filter((it) => norm(it.city).includes(q));
+}
+
 export function setupCityTypeahead(inputEl, opts = {}) {
   if (!inputEl) return;
 
-  // cleanup previous instance on same input
-  const prev = inputEl.__ajseeCityTypeahead;
-  if (prev && typeof prev.destroy === 'function') {
-    try { prev.destroy(); } catch { /* noop */ }
+  injectStylesOnce();
+
+  if (typeof inputEl.__ajseeTypeaheadCleanup === 'function') {
+    try { inputEl.__ajseeTypeaheadCleanup(); } catch {}
   }
 
   const {
@@ -283,9 +676,10 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   const onNearMe = providedOnNearMe || null;
 
   const controller = new AbortController();
-  const listen = (target, type, handler, options = {}) => {
-    if (!target || !target.addEventListener) return;
-    target.addEventListener(type, handler, { ...options, signal: controller.signal });
+  const { signal } = controller;
+  const on = (el, evt, handler, options = {}) => {
+    if (!el) return;
+    el.addEventListener(evt, handler, { ...options, signal });
   };
 
   const mobileMq = window.matchMedia('(max-width: 720px)');
@@ -298,8 +692,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   const panel = document.createElement('div');
   panel.className = 'typeahead-panel';
   panel.setAttribute('role', 'listbox');
-  panel.setAttribute('data-city-ta', '1');
   panel.hidden = true;
+  panel.dataset.cityTa = '1';
 
   const uid = Math.random().toString(36).slice(2, 8);
   const panelId = `${inputEl.id || 'city-input'}-listbox-${uid}`;
@@ -309,6 +703,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   inputEl.setAttribute('aria-autocomplete', 'list');
   inputEl.setAttribute('aria-controls', panelId);
   inputEl.setAttribute('autocomplete', 'off');
+  inputEl.setAttribute('aria-expanded', 'false');
 
   const live = document.createElement('div');
   live.className = 'sr-only';
@@ -331,12 +726,12 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   let sheetSearch = null;
   let sheetResults = null;
   let sheetNearMe = null;
-  let sheetHint = null;
+  let sheetSectionTitle = null;
   let sheetOpen = false;
+  let sheetPointerStartY = null;
+  let cleanupViewport = null;
+  let previousFocus = null;
   let scrollYBeforeLock = 0;
-  let prevBodyStyles = null;
-
-  const vv = window.visualViewport || null;
 
   function announce(msg) {
     live.textContent = msg || '';
@@ -355,11 +750,19 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     return arr.concat(items || []);
   }
 
+  function getCurrentSearchValue() {
+    if (isMobile() && sheetOpen && sheetSearch) {
+      return (sheetSearch.value || '').trim();
+    }
+    return (inputEl.value || '').trim();
+  }
+
   function setActive(idx) {
     activeIndex = idx;
 
     const activeEl = panel.querySelector(`[data-index="${idx}"]`);
     if (activeEl) inputEl.setAttribute('aria-activedescendant', activeEl.id);
+    else inputEl.removeAttribute('aria-activedescendant');
 
     panel.querySelectorAll('.typeahead-item').forEach((el) => {
       el.classList.remove('active');
@@ -387,6 +790,22 @@ export function setupCityTypeahead(inputEl, opts = {}) {
 
   function isDesktopOpen() {
     return !panel.hidden;
+  }
+
+  function getMobileSectionTitle() {
+    const q = getCurrentSearchValue();
+    return q.length >= minChars
+      ? t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale))
+      : t('filters.popularCities', defaultText('popularCities', locale));
+  }
+
+  function renderSkeletonRows() {
+    return Array.from({ length: 4 }).map(() => `
+      <div class="city-sheet__skeleton" aria-hidden="true">
+        <span class="city-sheet__skeleton-line is-main"></span>
+        <span class="city-sheet__skeleton-line is-sub"></span>
+      </div>
+    `).join('');
   }
 
   function ensureMobileSheet() {
@@ -419,11 +838,11 @@ export function setupCityTypeahead(inputEl, opts = {}) {
           <input
             type="search"
             class="city-sheet__search"
-            placeholder="${esc(t('filters.searchPlaceholder', defaultText('searchPlaceholder', locale)))}
-            "
+            placeholder="${esc(t('filters.searchPlaceholder', defaultText('searchPlaceholder', locale)))}"
             autocomplete="off"
             autocapitalize="words"
             spellcheck="false"
+            enterkeyhint="search"
           />
         </div>
 
@@ -433,13 +852,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
             <span class="city-sheet__nearme-sub">${esc(t('filters.nearMeSubtitle', defaultText('nearMeSubtitle', locale)))}</span>
           </button>
 
-          <div class="city-sheet__section-title">
-            ${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}
-          </div>
-
-          <div class="city-sheet__hint">
-            ${esc(t('filters.startTyping', defaultText('startTyping', locale)))}
-          </div>
+          <div class="city-sheet__section-title">${esc(getMobileSectionTitle())}</div>
 
           <div class="city-sheet__results" role="listbox" aria-label="${esc(t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale)))}"></div>
         </div>
@@ -452,23 +865,23 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     sheetSearch = backdrop.querySelector('.city-sheet__search');
     sheetResults = backdrop.querySelector('.city-sheet__results');
     sheetNearMe = backdrop.querySelector('.city-sheet__nearme');
-    sheetHint = backdrop.querySelector('.city-sheet__hint');
+    sheetSectionTitle = backdrop.querySelector('.city-sheet__section-title');
 
     const closeBtn = backdrop.querySelector('.city-sheet__close');
 
-    listen(backdrop, 'click', (e) => {
+    on(backdrop, 'click', (e) => {
       if (e.target === backdrop) closeMobile();
     });
 
-    listen(closeBtn, 'click', () => {
+    on(closeBtn, 'click', () => {
       closeMobile();
     });
 
-    listen(sheetNearMe, 'click', () => {
+    on(sheetNearMe, 'click', () => {
       handleNearMe();
     });
 
-    listen(sheetResults, 'click', (e) => {
+    on(sheetResults, 'click', (e) => {
       const btn = e.target.closest('[data-city-index]');
       if (!btn) return;
 
@@ -478,80 +891,107 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       chooseCity(idx);
     });
 
-    listen(sheetSearch, 'input', () => {
+    on(sheetSearch, 'input', () => {
       debouncedLoad(() => sheetSearch.value.trim());
     });
 
-    listen(sheetSearch, 'keydown', (e) => {
+    on(sheetSearch, 'keydown', (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         closeMobile();
       }
     });
+
+    on(sheet, 'keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      trapFocus(e);
+    });
+
+    on(sheet, 'pointerdown', (e) => {
+      const rect = sheet.getBoundingClientRect();
+      if (e.clientY > rect.top + 48) return;
+      sheetPointerStartY = e.clientY;
+    });
+
+    on(sheet, 'pointerup', (e) => {
+      if (sheetPointerStartY == null) return;
+      const delta = e.clientY - sheetPointerStartY;
+      sheetPointerStartY = null;
+      if (delta > 70) closeMobile();
+    });
+
+    on(sheet, 'pointercancel', () => {
+      sheetPointerStartY = null;
+    });
+  }
+
+  function getFocusableInsideSheet() {
+    if (!sheet) return [];
+    return Array.from(sheet.querySelectorAll(
+      'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+    )).filter((el) => !el.hasAttribute('hidden'));
+  }
+
+  function trapFocus(e) {
+    const nodes = getFocusableInsideSheet();
+    if (!nodes.length) return;
+
+    const first = nodes[0];
+    const last = nodes[nodes.length - 1];
+    const current = document.activeElement;
+
+    if (e.shiftKey && current === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && current === last) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 
   function updateViewportVars() {
+    const vv = window.visualViewport;
     const vh = vv ? vv.height : window.innerHeight;
     document.documentElement.style.setProperty('--city-sheet-vh', `${vh}px`);
   }
 
   function lockBodyScroll() {
-    const body = document.body;
     scrollYBeforeLock = window.scrollY || window.pageYOffset || 0;
-
-    prevBodyStyles = {
-      position: body.style.position,
-      top: body.style.top,
-      left: body.style.left,
-      right: body.style.right,
-      width: body.style.width,
-      overflow: body.style.overflow,
-      touchAction: body.style.touchAction
-    };
-
-    body.classList.add('city-picker-open');
-    body.style.position = 'fixed';
-    body.style.top = `-${scrollYBeforeLock}px`;
-    body.style.left = '0';
-    body.style.right = '0';
-    body.style.width = '100%';
-    body.style.overflow = 'hidden';
-    body.style.touchAction = 'none';
+    document.body.classList.add('city-picker-open');
+    document.body.style.top = `-${scrollYBeforeLock}px`;
   }
 
   function unlockBodyScroll() {
-    const body = document.body;
-
-    body.classList.remove('city-picker-open');
-
-    if (prevBodyStyles) {
-      body.style.position = prevBodyStyles.position || '';
-      body.style.top = prevBodyStyles.top || '';
-      body.style.left = prevBodyStyles.left || '';
-      body.style.right = prevBodyStyles.right || '';
-      body.style.width = prevBodyStyles.width || '';
-      body.style.overflow = prevBodyStyles.overflow || '';
-      body.style.touchAction = prevBodyStyles.touchAction || '';
-    } else {
-      body.style.position = '';
-      body.style.top = '';
-      body.style.left = '';
-      body.style.right = '';
-      body.style.width = '';
-      body.style.overflow = '';
-      body.style.touchAction = '';
-    }
-
+    document.body.classList.remove('city-picker-open');
+    document.body.style.top = '';
     window.scrollTo(0, scrollYBeforeLock);
   }
 
-  function openMobile() {
-    if (sheetOpen) return;
+  function bindViewportListeners() {
+    cleanupViewport?.();
+    cleanupViewport = null;
 
+    if (!window.visualViewport) {
+      const onResize = () => updateViewportVars();
+      window.addEventListener('resize', onResize, { signal });
+      cleanupViewport = () => {};
+      return;
+    }
+
+    const vv = window.visualViewport;
+    const onResize = () => updateViewportVars();
+    vv.addEventListener('resize', onResize, { signal });
+    vv.addEventListener('scroll', onResize, { signal });
+    cleanupViewport = () => {};
+  }
+
+  function openMobile() {
     ensureMobileSheet();
     closeDesktop();
 
+    previousFocus = document.activeElement;
     updateViewportVars();
+    bindViewportListeners();
     lockBodyScroll();
 
     backdrop.hidden = false;
@@ -567,10 +1007,12 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     sheetSearch.value = currentValue;
     lastQuery = currentValue.trim();
 
-    renderMobile();
-
     if (lastQuery.length >= minChars) {
       void load(() => sheetSearch.value.trim());
+    } else {
+      items = filterDefaultCityItems(lastQuery, locale);
+      loading = false;
+      renderMobile();
     }
 
     setTimeout(() => {
@@ -578,7 +1020,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         sheetSearch.focus({ preventScroll: true });
         const len = sheetSearch.value.length;
         sheetSearch.setSelectionRange(len, len);
-      } catch { /* noop */ }
+      } catch {}
     }, 40);
   }
 
@@ -587,7 +1029,6 @@ export function setupCityTypeahead(inputEl, opts = {}) {
 
     backdrop.classList.remove('is-open');
     sheetOpen = false;
-
     inputEl.setAttribute('aria-expanded', 'false');
 
     setTimeout(() => {
@@ -595,79 +1036,87 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }, 180);
 
     unlockBodyScroll();
+    cleanupViewport?.();
+    cleanupViewport = null;
+
+    try {
+      const target = previousFocus && typeof previousFocus.focus === 'function' ? previousFocus : inputEl;
+      target.focus({ preventScroll: true });
+    } catch {}
   }
 
   function renderDesktop() {
     const list = buildRenderList();
+    const q = getCurrentSearchValue();
 
     if (loading) {
       panel.innerHTML = `<div class="typeahead-loading">${esc(t('filters.loading', defaultText('loading', locale)))}</div>`;
       return;
     }
 
-    const onlyNearMe = includeNearMe && list.length === 1 && list[0].__nearMe;
-    if (!items.length && !onlyNearMe && lastQuery.length >= minChars) {
-      panel.innerHTML = `<div class="typeahead-empty">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>`;
-      return;
-    }
+    panel.innerHTML = `
+      <div class="typeahead-section-title">${esc(
+        q.length >= minChars
+          ? t('filters.suggestionsTitle', defaultText('suggestionsTitle', locale))
+          : t('filters.popularCities', defaultText('popularCities', locale))
+      )}</div>
+      ${list.map((it, i) => {
+        if (it.__nearMe) {
+          const id = it.id || `${panelId}-opt-nearme`;
+          return `
+            <div
+              id="${id}"
+              class="typeahead-item nearme ${i === activeIndex ? 'active' : ''}"
+              role="option"
+              aria-selected="${i === activeIndex ? 'true' : 'false'}"
+              data-index="${i}">
+              <span class="ti-city">${esc(it.city)}</span>
+              <span class="ti-sub">${esc(it.subtitle || '')}</span>
+            </div>
+          `;
+        }
 
-    panel.innerHTML = list.map((it, i) => {
-      if (it.__nearMe) {
-        const id = it.id || `${panelId}-opt-nearme`;
+        const meta = [it.state, it.countryCode].filter(Boolean).join(', ');
+        const htmlLabel = highlight(it.city, q);
+        const id = `${panelId}-opt-${i}`;
+
         return `
           <div
             id="${id}"
-            class="typeahead-item nearme ${i === activeIndex ? 'active' : ''}"
+            class="typeahead-item ${i === activeIndex ? 'active' : ''}"
             role="option"
             aria-selected="${i === activeIndex ? 'true' : 'false'}"
             data-index="${i}">
-            <span class="ti-city">${esc(it.city)}</span>
+            <span class="ti-city">${htmlLabel}</span>
+            ${meta ? `<span class="ti-meta">${esc(meta)}</span>` : ''}
           </div>
         `;
-      }
-
-      const meta = [it.state, it.countryCode].filter(Boolean).join(', ');
-      const htmlLabel = highlight(it.city, lastQuery);
-      const id = `${panelId}-opt-${i}`;
-
-      return `
-        <div
-          id="${id}"
-          class="typeahead-item ${i === activeIndex ? 'active' : ''}"
-          role="option"
-          aria-selected="${i === activeIndex ? 'true' : 'false'}"
-          data-index="${i}">
-          <span class="ti-city">${htmlLabel}</span>
-          ${meta ? `<span class="ti-meta">${esc(meta)}</span>` : ''}
-        </div>
-      `;
-    }).join('');
+      }).join('')}
+    `;
 
     announce(defaultText('resultsCount', locale, items.length));
   }
 
   function renderMobile() {
-    if (!sheetOpen || !sheetResults || !sheetHint) return;
+    if (!sheetOpen || !sheetResults || !sheetSectionTitle) return;
 
-    const q = sheetSearch ? sheetSearch.value.trim() : '';
+    const q = getCurrentSearchValue();
     const list = buildRenderList().filter((it) => !it.__nearMe);
 
+    sheetSectionTitle.textContent = getMobileSectionTitle();
+
     if (loading) {
-      sheetHint.hidden = true;
-      sheetResults.innerHTML = `<div class="city-sheet__state">${esc(t('filters.loading', defaultText('loading', locale)))}</div>`;
+      sheetResults.innerHTML = renderSkeletonRows();
       return;
     }
-
-    if (q.length < minChars) {
-      sheetResults.innerHTML = '';
-      sheetHint.hidden = false;
-      return;
-    }
-
-    sheetHint.hidden = true;
 
     if (!list.length) {
-      sheetResults.innerHTML = `<div class="city-sheet__state">${esc(t('filters.noResults', defaultText('noResults', locale)))}</div>`;
+      sheetResults.innerHTML = `
+        <div class="city-sheet__state">
+          <strong>${esc(t('filters.noResults', defaultText('noResults', locale)))}</strong>
+          <small>${esc(t('filters.noResultsHelp', defaultText('noResultsHelp', locale)))}</small>
+        </div>
+      `;
       return;
     }
 
@@ -716,7 +1165,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     closeMobile();
   }
 
-  listen(panel, 'pointerdown', (e) => {
+  on(panel, 'pointerdown', (e) => {
     if (isMobile()) return;
 
     const el = e.target.closest('.typeahead-item');
@@ -728,7 +1177,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (Number.isFinite(idx)) chooseCity(idx);
   });
 
-  listen(panel, 'mousemove', (e) => {
+  on(panel, 'mousemove', (e) => {
     if (isMobile()) return;
 
     const el = e.target.closest('.typeahead-item');
@@ -740,14 +1189,14 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }
   });
 
-  listen(document, 'pointerdown', (e) => {
+  on(document, 'pointerdown', (e) => {
     if (isMobile()) return;
     if (!panel.contains(e.target) && e.target !== inputEl) {
       closeDesktop();
     }
   }, true);
 
-  listen(inputEl, 'keydown', (e) => {
+  on(inputEl, 'keydown', (e) => {
     if (isMobile()) return;
     if (!isDesktopOpen()) return;
 
@@ -787,12 +1236,12 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   async function load(getQueryFn) {
     const q = typeof getQueryFn === 'function'
       ? getQueryFn()
-      : inputEl.value.trim();
+      : getCurrentSearchValue();
 
     lastQuery = q;
 
     if (q.length < minChars) {
-      items = [];
+      items = filterDefaultCityItems(q, locale);
       loading = false;
       render();
 
@@ -858,18 +1307,20 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }
   }
 
-  listen(inputEl, 'input', () => {
+  on(inputEl, 'input', () => {
     if (isMobile()) return;
     debouncedLoad(() => inputEl.value.trim());
   });
 
-  listen(inputEl, 'focus', () => {
+  on(inputEl, 'focus', () => {
     if (isMobile()) {
       inputEl.blur();
       openMobile();
       return;
     }
 
+    items = filterDefaultCityItems(inputEl.value.trim(), locale);
+    loading = false;
     renderDesktop();
     openDesktop();
 
@@ -877,23 +1328,17 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     setActive(includeNearMe ? 0 : (hasCities ? 0 : -1));
   });
 
-  listen(inputEl, 'click', (e) => {
+  on(inputEl, 'click', (e) => {
     if (!isMobile()) return;
     e.preventDefault();
     openMobile();
   });
 
-  listen(inputEl, 'pointerdown', (e) => {
+  on(inputEl, 'pointerdown', (e) => {
     if (!isMobile()) return;
     e.preventDefault();
     openMobile();
   });
-
-  listen(inputEl, 'touchstart', (e) => {
-    if (!isMobile()) return;
-    e.preventDefault();
-    openMobile();
-  }, { passive: false });
 
   function handleNearMe() {
     announce(defaultText('nearMeSearching', locale));
@@ -905,7 +1350,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         try {
           window.dispatchEvent(new CustomEvent('AJSEE:NearMe:coords', { detail: geo || {} }));
           window.dispatchEvent(new CustomEvent('ajsee:nearme:coords', { detail: geo || {} }));
-        } catch { /* noop */ }
+        } catch {}
       }
     };
 
@@ -913,7 +1358,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       announce(defaultText('nearMeUnsupported', locale));
       try {
         window.dispatchEvent(new CustomEvent('AJSEE:NearMe:unsupported'));
-      } catch { /* noop */ }
+      } catch {}
       return;
     }
 
@@ -937,63 +1382,44 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         announce(defaultText('nearMeDenied', locale));
         try {
           window.dispatchEvent(new CustomEvent('AJSEE:NearMe:error'));
-        } catch { /* noop */ }
+        } catch {}
       },
       { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
     );
   }
 
-  function handleViewportResize() {
-    if (sheetOpen) updateViewportVars();
-  }
-
-  if (vv) {
-    vv.addEventListener('resize', handleViewportResize);
-    vv.addEventListener('scroll', handleViewportResize);
-  }
-
-  const mediaChangeHandler = () => {
+  function handleMediaChange() {
     applyMode();
-  };
+    if (!isMobile()) {
+      items = filterDefaultCityItems(inputEl.value.trim(), locale);
+    }
+  }
 
   if (typeof mobileMq.addEventListener === 'function') {
-    mobileMq.addEventListener('change', mediaChangeHandler);
+    mobileMq.addEventListener('change', handleMediaChange, { signal });
   } else if (typeof mobileMq.addListener === 'function') {
-    mobileMq.addListener(mediaChangeHandler);
+    mobileMq.addListener(handleMediaChange);
   }
 
   applyMode();
 
-  function destroy() {
+  inputEl.__ajseeTypeaheadCleanup = () => {
+    controller.abort();
     clearTimeout(timer);
-    closeDesktop();
-    closeMobile();
+    cleanupViewport?.();
+    cleanupViewport = null;
 
-    try { controller.abort(); } catch { /* noop */ }
+    try { closeMobile(); } catch {}
+    try { closeDesktop(); } catch {}
 
-    if (vv) {
-      try { vv.removeEventListener('resize', handleViewportResize); } catch { /* noop */ }
-      try { vv.removeEventListener('scroll', handleViewportResize); } catch { /* noop */ }
+    if (panel.parentNode) panel.parentNode.removeChild(panel);
+    if (live.parentNode) live.parentNode.removeChild(live);
+    if (backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+
+    if (typeof mobileMq.removeListener === 'function') {
+      try { mobileMq.removeListener(handleMediaChange); } catch {}
     }
 
-    if (typeof mobileMq.removeEventListener === 'function') {
-      try { mobileMq.removeEventListener('change', mediaChangeHandler); } catch { /* noop */ }
-    } else if (typeof mobileMq.removeListener === 'function') {
-      try { mobileMq.removeListener(mediaChangeHandler); } catch { /* noop */ }
-    }
-
-    try { panel.remove(); } catch { /* noop */ }
-    try { live.remove(); } catch { /* noop */ }
-    try { backdrop?.remove(); } catch { /* noop */ }
-
-    inputEl.removeAttribute('aria-activedescendant');
-    inputEl.removeAttribute('aria-expanded');
-    inputEl.removeAttribute('readonly');
-    inputEl.removeAttribute('inputmode');
-    inputEl.classList.remove('is-city-trigger');
-
-    delete inputEl.__ajseeCityTypeahead;
-  }
-
-  inputEl.__ajseeCityTypeahead = { destroy };
+    delete inputEl.__ajseeTypeaheadCleanup;
+  };
 }

@@ -964,6 +964,8 @@ function patchFilterVisuals() {
       width:100%;
       left:0;
       right:0;
+      touch-action:none;
+      overscroll-behavior:none;
     }
 
     .city-sheet-backdrop{
@@ -989,7 +991,9 @@ function patchFilterVisuals() {
 
     .city-sheet{
       width:min(100%, 720px);
-      max-height:calc(var(--city-sheet-vh, 100vh) - env(safe-area-inset-top, 0px) - 16px);
+      height:min(calc(var(--city-sheet-vh, 100vh) - env(safe-area-inset-top, 0px) - 16px), 760px);
+      max-height:min(calc(var(--city-sheet-vh, 100vh) - env(safe-area-inset-top, 0px) - 16px), 760px);
+      min-height:min(460px, 72vh);
       background:rgba(255,255,255,.98);
       backdrop-filter:blur(22px);
       -webkit-backdrop-filter:blur(22px);
@@ -1001,6 +1005,7 @@ function patchFilterVisuals() {
       flex-direction:column;
       transform:translateY(18px);
       transition:transform .18s ease;
+      touch-action:pan-y;
     }
 
     .city-sheet-backdrop.is-open .city-sheet{ transform:translateY(0); }
@@ -1070,6 +1075,10 @@ function patchFilterVisuals() {
       outline:none;
     }
 
+    .city-sheet__search::placeholder{
+      color:#98a2b3;
+    }
+
     .city-sheet__search:focus{
       border-color:#7aa7ff;
       box-shadow:0 0 0 4px rgba(47,107,255,.10);
@@ -1078,9 +1087,12 @@ function patchFilterVisuals() {
     .city-sheet__content{
       flex:1 1 auto;
       min-height:0;
-      overflow:auto;
-      padding:0 18px 18px;
+      overflow-y:auto;
+      overflow-x:hidden;
+      padding:0 18px calc(18px + env(safe-area-inset-bottom, 0px));
       -webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;
+      touch-action:pan-y;
     }
 
     .city-sheet__nearme{
@@ -1129,7 +1141,8 @@ function patchFilterVisuals() {
       display:flex;
       flex-direction:column;
       gap:8px;
-      padding-bottom:max(8px, env(safe-area-inset-bottom, 0px));
+      min-height:1px;
+      padding-bottom:max(16px, env(safe-area-inset-bottom, 0px));
     }
 
     .city-sheet__option{
@@ -1768,6 +1781,83 @@ function geoErrorMessage(err) {
 
 const nearMeLabel = () => t('filters.nearMe', 'V mém okolí');
 
+const citySearchPlaceholderFallback = {
+  cs: 'Hledat město…',
+  en: 'Search city…',
+  de: 'Stadt suchen…',
+  sk: 'Hľadať mesto…',
+  pl: 'Szukaj miasta…',
+  hu: 'Város keresése…'
+};
+
+function getCitySearchPlaceholder() {
+  const fallback = (citySearchPlaceholderFallback[currentLang] || citySearchPlaceholderFallback.cs);
+  const candidates = [
+    t('filters.citySearchPlaceholder'),
+    t('filters.citySearch'),
+    t('filters.searchPlaceholder'),
+    t('filters.cityPlaceholder'),
+    fallback
+  ].filter(value => typeof value === 'string' && value.trim());
+
+  const picked = candidates[0] || fallback;
+  const normalized = normKey(picked);
+  const badTokens = [
+    'udalost', 'událost', 'event', 'events', 'veranstaltung', 'podujat', 'wydarzen', 'esemeny'
+  ];
+
+  if (badTokens.some(token => normalized.includes(normKey(token)))) {
+    return fallback;
+  }
+
+  return picked;
+}
+
+function syncCitySheetUsability(root = document) {
+  if (!root || !root.querySelector) return;
+
+  const search = root.querySelector('.city-sheet__search');
+  if (search) {
+    const placeholder = getCitySearchPlaceholder();
+    if (search.getAttribute('placeholder') !== placeholder) {
+      search.setAttribute('placeholder', placeholder);
+    }
+  }
+
+  const content = root.querySelector('.city-sheet__content');
+  if (content) {
+    content.style.overflowY = 'auto';
+    content.style.overflowX = 'hidden';
+    content.style.webkitOverflowScrolling = 'touch';
+    content.style.overscrollBehavior = 'contain';
+    content.style.touchAction = 'pan-y';
+  }
+
+  const results = root.querySelector('.city-sheet__results');
+  if (results) {
+    results.style.minHeight = '1px';
+    results.style.paddingBottom = 'max(16px, env(safe-area-inset-bottom, 0px))';
+  }
+}
+
+function installCitySheetObserver() {
+  if (G.state._citySheetObserverInstalled) return;
+  G.state._citySheetObserverInstalled = true;
+
+  const run = debounce(() => syncCitySheetUsability(document), 16);
+  const mo = new MutationObserver(run);
+
+  mo.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class', 'hidden', 'style']
+  });
+
+  G.state._citySheetMO = mo;
+  run();
+}
+
 function isNearMeTyped(input) {
   const value = normKey(input?.value || '');
   const candidates = [nearMeLabel(), 'v mem okoli', 'vmojemokoli', 'near me', 'nearme', 'aroundme'];
@@ -1920,6 +2010,7 @@ function initCityTypeahead(locale, { rebuild = false } = {}) {
   bindCityInputShortcuts(input);
   ensureNearMeInlineButton(input);
   setFilterInputsFromState();
+  syncCitySheetUsability(document);
 
   return input;
 }
@@ -2695,6 +2786,7 @@ async function bootstrapMain() {
 
   upgradeSortToSegmented();
   normalizeFilterFormUI();
+  installCitySheetObserver();
   bindFilterFormInteractions(formEl);
 
   installDatePopoverScrollBridges();
@@ -2704,6 +2796,7 @@ async function bootstrapMain() {
 
   initCityTypeahead(currentLang, { rebuild: false });
   setFilterInputsFromState();
+  syncCitySheetUsability(document);
   updateToggleBadge();
 
   wireOnce(window, 'AJSEE:langChanged', async e => {
@@ -2719,6 +2812,7 @@ async function bootstrapMain() {
 
     initCityTypeahead(currentLang, { rebuild: true });
     setFilterInputsFromState();
+    syncCitySheetUsability(document);
 
     installDatePopoverScrollBridges();
     bindDatePopoverGlue();

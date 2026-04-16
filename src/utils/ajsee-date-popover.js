@@ -1,18 +1,24 @@
 // /src/utils/ajsee-date-popover.js
-/*! AJSEE – responsive date range popover / sheet
-   - Desktop: anchored floating popover under #date-combo-button
-   - Mobile: bottom sheet with internal scroll + sticky actions
-   - 2-month grid on desktop, 1-month stepping on mobile (single visible month)
+/*! AJSEE – Ticketmaster-like date range popover
+   - Anchor = #date-combo-button
+   - 2-month grid (range selection)
    - Highlights today
    - Disables past days + disables navigation to past months
-   - Emits `AJSEE:date-popover:apply` and `AJSEE:dateRangeApply`
-     with { mode, from, to, dateFrom, dateTo }
+   - No page scroll lock / no overlay
+   - Outside-click handled via document (capturing)
+   - Emits `AJSEE:date-popover:apply` with { mode, from, to, dateFrom, dateTo }
+
+   Desktop fix:
+   - intentionally DOES NOT use the legacy `.ajsee-date-popover` class on the runtime popup,
+     because production CSS can style that selector as a full-screen/modal layer.
+   - runtime popup uses `.ajsee-date-tm-popover` + `data-ajsee="date-popover"`
+     so main.js can still find it, but desktop layout is no longer overwritten by legacy CSS.
 */
 
 (function () {
   const WIN = window;
   const DOC = document;
-  const GLOBAL_KEY = '__AJSEE_DATE_POPOVER_RESPONSIVE__';
+  const GLOBAL_KEY = '__AJSEE_DATE_POPOVER_MINI__';
 
   if (WIN[GLOBAL_KEY]) return;
   WIN[GLOBAL_KEY] = true;
@@ -23,76 +29,16 @@
     MAX_W: 720,
     MAX_H: 520,
     Z: 10040,
-    MOBILE_BREAKPOINT: 720
+    DESKTOP_MIN: 901
   };
 
   const STRINGS = {
-    cs: {
-      anytime: 'Kdykoliv',
-      today: 'Dnes',
-      start: 'Od',
-      end: 'Do',
-      apply: 'Použít',
-      clear: 'Vymazat',
-      cancel: 'Zrušit',
-      dateLabel: 'Datum',
-      pickerTitle: 'Vyber datum'
-    },
-    en: {
-      anytime: 'Anytime',
-      today: 'Today',
-      start: 'Start date',
-      end: 'End date',
-      apply: 'Apply',
-      clear: 'Clear',
-      cancel: 'Cancel',
-      dateLabel: 'Date',
-      pickerTitle: 'Choose date'
-    },
-    de: {
-      anytime: 'Beliebig',
-      today: 'Heute',
-      start: 'Von',
-      end: 'Bis',
-      apply: 'Übernehmen',
-      clear: 'Löschen',
-      cancel: 'Abbrechen',
-      dateLabel: 'Datum',
-      pickerTitle: 'Datum wählen'
-    },
-    sk: {
-      anytime: 'Kedykoľvek',
-      today: 'Dnes',
-      start: 'Od',
-      end: 'Do',
-      apply: 'Použiť',
-      clear: 'Vymazať',
-      cancel: 'Zrušiť',
-      dateLabel: 'Dátum',
-      pickerTitle: 'Vyber dátum'
-    },
-    pl: {
-      anytime: 'Kiedykolwiek',
-      today: 'Dzisiaj',
-      start: 'Od',
-      end: 'Do',
-      apply: 'Zastosuj',
-      clear: 'Wyczyść',
-      cancel: 'Anuluj',
-      dateLabel: 'Data',
-      pickerTitle: 'Wybierz datę'
-    },
-    hu: {
-      anytime: 'Bármikor',
-      today: 'Ma',
-      start: 'Kezdet',
-      end: 'Vége',
-      apply: 'Alkalmaz',
-      clear: 'Törlés',
-      cancel: 'Mégse',
-      dateLabel: 'Dátum',
-      pickerTitle: 'Dátum kiválasztása'
-    }
+    cs: { anytime: 'Kdykoliv', today: 'Dnes', start: 'Od', end: 'Do', apply: 'Použít', clear: 'Vymazat', cancel: 'Zrušit', dateLabel: 'Datum' },
+    en: { anytime: 'Anytime', today: 'Today', start: 'Start Date', end: 'End date', apply: 'Apply', clear: 'Reset', cancel: 'Cancel', dateLabel: 'Date' },
+    de: { anytime: 'Beliebig', today: 'Heute', start: 'Von', end: 'Bis', apply: 'Übernehmen', clear: 'Löschen', cancel: 'Abbrechen', dateLabel: 'Datum' },
+    sk: { anytime: 'Kedykoľvek', today: 'Dnes', start: 'Od', end: 'Do', apply: 'Použiť', clear: 'Vymazať', cancel: 'Zrušiť', dateLabel: 'Dátum' },
+    pl: { anytime: 'Kiedykolwiek', today: 'Dzisiaj', start: 'Od', end: 'Do', apply: 'Zastosuj', clear: 'Wyczyść', cancel: 'Anuluj', dateLabel: 'Data' },
+    hu: { anytime: 'Bármikor', today: 'Ma', start: 'Tól', end: 'Ig', apply: 'Alkalmaz', clear: 'Törlés', cancel: 'Mégse', dateLabel: 'Dátum' }
   };
 
   function esc (s) {
@@ -105,8 +51,8 @@
   }
 
   function normalizeLang (l) {
-    const key = String(l || '').toLowerCase().slice(0, 2);
-    return STRINGS[key] ? key : 'cs';
+    const k = String(l || '').toLowerCase().slice(0, 2);
+    return STRINGS[k] ? k : 'cs';
   }
 
   function currentLang (forced) {
@@ -114,19 +60,20 @@
 
     try {
       const html = DOC.documentElement;
-      const htmlLang = (html && html.getAttribute('lang')) || '';
+
+      const htmlLang = (html.getAttribute('lang') || '').trim();
       if (htmlLang) return normalizeLang(htmlLang);
 
-      const htmlDataLang = (html && (html.getAttribute('data-lang') || (html.dataset && html.dataset.lang))) || '';
+      const htmlDataLang = (html.getAttribute('data-lang') || (html.dataset && html.dataset.lang) || '').trim();
       if (htmlDataLang) return normalizeLang(htmlDataLang);
 
       const body = DOC.body;
       if (body) {
-        const bodyLang = (body.getAttribute('lang') || body.getAttribute('data-lang') || (body.dataset && body.dataset.lang)) || '';
+        const bodyLang = (body.getAttribute('lang') || body.getAttribute('data-lang') || (body.dataset && body.dataset.lang) || '').trim();
         if (bodyLang) return normalizeLang(bodyLang);
       }
 
-      const winLang = WIN.AJSEE_LANG || WIN.__AJSEE_LANG__ || WIN.lang || '';
+      const winLang = (WIN.AJSEE_LANG || WIN.__AJSEE_LANG__ || WIN.lang || '').trim();
       if (winLang) return normalizeLang(winLang);
 
       try {
@@ -138,14 +85,14 @@
       }
 
       try {
-        const path = WIN.location && WIN.location.pathname ? WIN.location.pathname : '';
-        const pathMatch = path.match(/^\/(cs|en|de|sk|pl|hu)(\/|$)/i);
-        if (pathMatch && pathMatch[1]) return normalizeLang(pathMatch[1]);
+        const path = (WIN.location && WIN.location.pathname) ? WIN.location.pathname : '';
+        const m = path.match(/^\/(cs|en|de|sk|pl|hu)(\/|$)/i);
+        if (m && m[1]) return normalizeLang(m[1]);
 
         const qs = WIN.location && WIN.location.search ? WIN.location.search : '';
         if (qs) {
-          const p = new URLSearchParams(qs);
-          const qp = p.get('lang') || p.get('locale');
+          const q = new URLSearchParams(qs);
+          const qp = q.get('lang') || q.get('locale');
           if (qp) return normalizeLang(qp);
         }
       } catch {
@@ -162,11 +109,11 @@
     return STRINGS[currentLang(forcedLang)] || STRINGS.cs;
   }
 
-  function isMobileMode () {
+  function isDesktopViewport () {
     try {
-      return WIN.matchMedia(`(max-width: ${CONFIG.MOBILE_BREAKPOINT}px)`).matches;
+      return WIN.matchMedia(`(min-width: ${CONFIG.DESKTOP_MIN}px)`).matches;
     } catch {
-      return (WIN.innerWidth || 1024) <= CONFIG.MOBILE_BREAKPOINT;
+      return (WIN.innerWidth || 0) >= CONFIG.DESKTOP_MIN;
     }
   }
 
@@ -205,9 +152,9 @@
       const prev = combo.previousElementSibling;
       if (prev && prev.tagName === 'LABEL') return prev;
 
-      const parent = combo.parentElement;
-      if (parent && parent.children) {
-        const direct = Array.from(parent.children).find((ch) => ch && ch.tagName === 'LABEL');
+      const p = combo.parentElement;
+      if (p && p.children) {
+        const direct = Array.from(p.children).find(ch => ch && ch.tagName === 'LABEL');
         if (direct) return direct;
       }
     }
@@ -221,15 +168,15 @@
       btn.closest('[class*="filter"]')
     ].filter(Boolean);
 
-    for (const wrapper of wrappers) {
-      if (!wrapper || !wrapper.children) continue;
-      const direct = Array.from(wrapper.children).filter((ch) => ch && ch.tagName === 'LABEL');
+    for (const w of wrappers) {
+      if (!w || !w.children) continue;
+      const direct = Array.from(w.children).filter(ch => ch && ch.tagName === 'LABEL');
       if (direct.length) return direct[0];
     }
 
-    for (const wrapper of wrappers) {
-      if (!wrapper) continue;
-      const any = wrapper.querySelector('label');
+    for (const w of wrappers) {
+      if (!w) continue;
+      const any = w.querySelector('label');
       if (any) return any;
     }
 
@@ -241,6 +188,7 @@
     const labelText = t.dateLabel || 'Date';
 
     const btns = getDateComboButtons();
+
     if (!btns.length) {
       const direct = DOC.querySelector('label[for="date-combo-button"]');
       if (direct) direct.textContent = labelText;
@@ -272,9 +220,7 @@
     }
   }
 
-  function pad2 (n) {
-    return String(n).padStart(2, '0');
-  }
+  function pad2 (n) { return String(n).padStart(2, '0'); }
 
   function todayISO () {
     const d = new Date();
@@ -292,16 +238,11 @@
     return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
   }
 
-  function monthIndex (d) {
-    return d.getFullYear() * 12 + d.getMonth();
-  }
-
-  function fromMonthIndex (idx) {
-    return new Date(Math.floor(idx / 12), idx % 12, 1, 12, 0, 0, 0);
-  }
+  function monthIndex (d) { return d.getFullYear() * 12 + d.getMonth(); }
+  function fromMonthIndex (idx) { return new Date(Math.floor(idx / 12), idx % 12, 1, 12, 0, 0, 0); }
 
   function weekStartsOn (lang) {
-    return lang === 'en' ? 0 : 1;
+    return (lang === 'en') ? 0 : 1;
   }
 
   function weekdayLabels (lang) {
@@ -309,13 +250,11 @@
     const baseSun = new Date(2024, 0, 7, 12, 0, 0, 0);
     const fmt = new Intl.DateTimeFormat(lang, { weekday: 'short' });
     const out = [];
-
     for (let i = 0; i < 7; i++) {
       const d = new Date(baseSun);
       d.setDate(baseSun.getDate() + ((start + i) % 7));
       out.push(fmt.format(d));
     }
-
     return out;
   }
 
@@ -346,365 +285,134 @@
   function syncHiddenInputs (from, to) {
     const fromField = DOC.querySelector('#filter-date-from, #events-date-from');
     const toField = DOC.querySelector('#filter-date-to, #events-date-to');
-
-    if (fromField) {
-      fromField.value = from || '';
-      try { fromField.dispatchEvent(new Event('input', { bubbles: true })); } catch {
-        /* noop */
-      }
-      try { fromField.dispatchEvent(new Event('change', { bubbles: true })); } catch {
-        /* noop */
-      }
-    }
-
-    if (toField) {
-      toField.value = to || '';
-      try { toField.dispatchEvent(new Event('input', { bubbles: true })); } catch {
-        /* noop */
-      }
-      try { toField.dispatchEvent(new Event('change', { bubbles: true })); } catch {
-        /* noop */
-      }
-    }
-  }
-
-  function getScrollParents (el) {
-    const out = [];
-    const seen = new Set();
-    const overflowRe = /(auto|scroll|overlay)/;
-
-    let node = el;
-    while (node && node !== DOC.body && node !== DOC.documentElement) {
-      node = node.parentElement;
-      if (!node) break;
-
-      try {
-        const st = WIN.getComputedStyle(node);
-        const oy = st.overflowY || st.overflow || '';
-        const ox = st.overflowX || st.overflow || '';
-        const scrollable = overflowRe.test(oy) || overflowRe.test(ox);
-        const canScroll = (node.scrollHeight > node.clientHeight) || (node.scrollWidth > node.clientWidth);
-        if (scrollable && canScroll && !seen.has(node)) {
-          seen.add(node);
-          out.push(node);
-        }
-      } catch {
-        /* noop */
-      }
-    }
-
-    const se = DOC.scrollingElement || DOC.documentElement;
-    if (se && !seen.has(se)) out.push(se);
-    out.push(WIN);
-    return out;
-  }
-
-  function getHeaderSafeTop () {
-    const header = DOC.querySelector('header.site-header') || DOC.querySelector('.site-header') || DOC.querySelector('header');
-    const rect = header && header.getBoundingClientRect ? header.getBoundingClientRect() : null;
-    const bottom = rect ? rect.bottom : 0;
-    return Math.max(CONFIG.SAFE, Math.round(bottom + 8));
-  }
-
-  let overlay = null;
-  let popover = null;
-  let anchorEl = null;
-  let isOpen = false;
-  let isMobileOpen = false;
-  let viewMonthIdx = null;
-  let selFrom = '';
-  let selTo = '';
-  let scrollParents = [];
-  let scrollYBeforeLock = 0;
-  let rafPosition = 0;
-
-  function updateViewportVars () {
-    const vv = WIN.visualViewport;
-    const vh = vv ? vv.height : WIN.innerHeight;
-    DOC.documentElement.style.setProperty('--ajsee-date-sheet-vh', `${vh}px`);
-  }
-
-  function lockBodyScroll () {
-    scrollYBeforeLock = WIN.scrollY || WIN.pageYOffset || 0;
-    DOC.body.classList.add('ajsee-date-picker-open');
-    DOC.body.style.top = `-${scrollYBeforeLock}px`;
-  }
-
-  function unlockBodyScroll () {
-    DOC.body.classList.remove('ajsee-date-picker-open');
-    DOC.body.style.top = '';
-    WIN.scrollTo(0, scrollYBeforeLock);
+    if (fromField) fromField.value = from || '';
+    if (toField) toField.value = to || '';
   }
 
   function ensureStyles () {
+    try {
+      const flag = WIN.getComputedStyle(DOC.documentElement)
+        .getPropertyValue('--ajsee-date-tm-css')
+        .trim();
+      if (flag === '1') return;
+    } catch {
+      /* noop */
+    }
+
     if (DOC.getElementById('ajsee-date-tm-css')) return;
 
     const s = DOC.createElement('style');
     s.id = 'ajsee-date-tm-css';
     s.textContent = `
-      body.ajsee-date-picker-open{
+      .ajsee-date-tm-popover{
         position:fixed;
-        overflow:hidden;
-        width:100%;
-        left:0;
-        right:0;
-      }
-
-      .ajsee-date-popover-overlay[hidden],
-      .ajsee-date-popover[hidden]{
-        display:none !important;
-      }
-
-      .ajsee-date-popover-overlay{
-        position:fixed;
-        inset:0;
+        inset:auto;
+        display:none;
         z-index:${CONFIG.Z};
-        display:flex;
-        align-items:flex-start;
-        justify-content:flex-start;
-        background:transparent;
-        pointer-events:none;
-      }
-
-      .ajsee-date-popover-overlay.is-desktop{
-        padding:0 !important;
-        backdrop-filter:none !important;
-        -webkit-backdrop-filter:none !important;
-        background:transparent !important;
-        pointer-events:none !important;
-        align-items:flex-start !important;
-        justify-content:flex-start !important;
-      }
-
-      .ajsee-date-popover-overlay.is-desktop .ajsee-date-popover{
-        pointer-events:auto;
-      }
-
-      .ajsee-date-popover-overlay.is-mobile{
-        align-items:flex-end;
-        justify-content:center;
-        background:rgba(11,16,32,.28);
-        backdrop-filter:blur(10px);
-        -webkit-backdrop-filter:blur(10px);
-        pointer-events:auto;
-        padding:12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
-      }
-
-      .ajsee-date-popover{
-        background:rgba(255,255,255,.98);
-        backdrop-filter:blur(22px);
-        -webkit-backdrop-filter:blur(22px);
-        box-shadow:0 18px 60px rgba(9,30,66,.22);
+        background:rgba(255,255,255,.96);
+        backdrop-filter:blur(20px);
+        -webkit-backdrop-filter:blur(20px);
         border:1px solid rgba(217,225,239,.96);
+        border-radius:26px;
+        box-shadow:0 24px 60px rgba(9,30,66,.20);
         overflow:hidden;
-        color:#101828;
+        width:min(${CONFIG.MAX_W}px, calc(100vw - 24px));
+        max-width:${CONFIG.MAX_W}px;
+        max-height:min(${CONFIG.MAX_H}px, calc(100vh - 24px));
       }
 
-      .ajsee-date-popover.ajsee-date-tm.is-desktop{
-        position:fixed !important;
-        width:min(${CONFIG.MAX_W}px, calc(100vw - 24px)) !important;
-        max-width:min(${CONFIG.MAX_W}px, calc(100vw - 24px)) !important;
-        max-height:min(${CONFIG.MAX_H}px, calc(100vh - 24px)) !important;
-        border-radius:24px !important;
-        overflow:auto !important;
-        margin:0 !important;
-        inset:auto auto auto auto !important;
-        transform:none !important;
-        box-shadow:0 24px 64px rgba(9,30,66,.22) !important;
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile{
-        position:relative;
-        width:min(100%, 720px);
-        max-height:calc(var(--ajsee-date-sheet-vh, 100vh) - env(safe-area-inset-top, 0px) - 16px);
-        border-radius:28px;
-        display:flex;
-        flex-direction:column;
-        box-shadow:0 24px 60px rgba(9,30,66,.24);
-      }
-
-      .ajsee-date-tm__grab{
-        display:none;
-        width:48px;
-        height:5px;
-        border-radius:999px;
-        background:rgba(71,84,103,.22);
-        margin:10px auto 2px;
-        flex:0 0 auto;
-      }
-
-      .ajsee-date-tm__header{
-        display:none;
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile .ajsee-date-tm__grab{
-        display:block;
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile .ajsee-date-tm__header{
-        display:flex;
-        align-items:flex-start;
-        justify-content:space-between;
-        gap:12px;
-        padding:16px 18px 12px;
-        flex:0 0 auto;
-      }
-
-      .ajsee-date-tm__header-copy{
-        min-width:0;
-      }
-
-      .ajsee-date-tm__title-main{
-        margin:0;
-        font-size:22px;
-        line-height:1.15;
-        font-weight:800;
-        color:#101828;
-      }
-
-      .ajsee-date-tm__close{
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        width:40px;
-        height:40px;
-        border:0;
-        border-radius:999px;
-        background:#f2f4f7;
-        color:#344054;
-        cursor:pointer;
-        flex:0 0 auto;
-      }
-
-      .ajsee-date-tm__close span{
-        font-size:28px;
-        line-height:1;
-      }
-
-      .ajsee-date-tm__body{
-        display:flex;
-        flex-direction:column;
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile .ajsee-date-tm__body{
-        flex:1 1 auto;
-        min-height:0;
-        overflow:auto;
-        -webkit-overflow-scrolling:touch;
-      }
+      .ajsee-date-tm__inner{ padding:14px 16px 12px; }
 
       .ajsee-date-tm__tabs{
         display:flex;
-        gap:10px;
+        gap:18px;
         align-items:center;
-        padding:14px 16px 0;
-        flex-wrap:wrap;
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile .ajsee-date-tm__tabs{
-        padding:0 18px 0;
+        padding:18px 22px 0;
       }
 
       .ajsee-date-tm__tab{
         border:0;
         background:transparent;
-        padding:8px 4px;
+        padding:8px 0;
         font:inherit;
         font-weight:700;
+        font-size:16px;
         cursor:pointer;
-        opacity:.72;
-        border-bottom:2px solid transparent;
-        color:#344054;
+        opacity:.75;
+        border-bottom:3px solid transparent;
+        color:#667085;
       }
 
       .ajsee-date-tm__tab.is-active{
         opacity:1;
-        color:#2f5fd0;
-        border-bottom-color:currentColor;
+        border-bottom-color:#2f6bff;
+        color:#2346a0;
       }
 
       .ajsee-date-tm__inputs{
         display:grid;
         grid-template-columns:1fr 1fr;
-        gap:14px;
-        padding:10px 16px 8px;
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile .ajsee-date-tm__inputs{
-        padding:12px 18px 8px;
+        gap:16px;
+        padding:14px 22px 10px;
       }
 
       .ajsee-date-tm__field label{
         display:block;
         font-size:12px;
-        color:#667085;
-        margin-bottom:6px;
         font-weight:700;
-        text-transform:uppercase;
         letter-spacing:.04em;
+        text-transform:uppercase;
+        color:#8b94a7;
+        margin-bottom:8px;
       }
 
       .ajsee-date-tm__field input{
         width:100%;
-        height:48px;
-        border-radius:14px;
-        border:1px solid rgba(217,225,239,.96);
-        background:#fff;
-        padding:0 14px;
+        height:54px;
+        border-radius:18px;
+        border:1px solid rgba(190,204,227,.95);
+        background:rgba(255,255,255,.88);
+        padding:0 16px;
         font:inherit;
-        font-size:15px;
-        color:#101828;
+        font-size:16px;
+        color:#344054;
         outline:none;
       }
 
       .ajsee-date-tm__field input:focus{
-        border-color:rgba(47,107,255,.72);
+        border-color:rgba(47,107,255,.55);
         box-shadow:0 0 0 4px rgba(47,107,255,.10);
       }
 
       .ajsee-date-tm__cal{
-        padding:4px 16px 10px;
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile .ajsee-date-tm__cal{
-        padding:6px 18px 12px;
+        padding:8px 22px 14px;
       }
 
       .ajsee-date-tm__months{
         display:grid;
         grid-template-columns:1fr 1fr;
-        gap:18px;
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile .ajsee-date-tm__months{
-        grid-template-columns:1fr;
-        gap:14px;
-      }
-
-      .ajsee-date-tm__month[hidden]{
-        display:none !important;
+        gap:20px;
       }
 
       .ajsee-date-tm__month-head{
-        display:grid;
-        grid-template-columns:36px 1fr 36px;
+        display:flex;
         align-items:center;
-        gap:10px;
-        margin:4px 0 10px;
+        justify-content:space-between;
+        margin:2px 0 10px;
       }
 
       .ajsee-date-tm__nav{
         border:0;
-        background:#f8fafc;
-        width:36px;
-        height:36px;
-        border-radius:12px;
+        background:rgba(248,250,252,.98);
+        width:44px;
+        height:44px;
+        border-radius:16px;
         cursor:pointer;
-        display:inline-flex;
+        display:flex;
         align-items:center;
         justify-content:center;
-        opacity:.92;
-        color:#101828;
+        color:#344054;
+        box-shadow:0 6px 16px rgba(9,30,66,.06);
       }
 
       .ajsee-date-tm__nav:disabled{
@@ -712,24 +420,20 @@
         opacity:.35;
       }
 
-      .ajsee-date-tm__nav[hidden]{
-        visibility:hidden;
-      }
-
       .ajsee-date-tm__title{
         font-weight:800;
-        font-size:16px;
-        text-align:center;
-        color:#101828;
+        font-size:18px;
+        color:#14213d;
+        text-transform:lowercase;
       }
 
       .ajsee-date-tm__dow{
         display:grid;
         grid-template-columns:repeat(7, 1fr);
         gap:6px;
-        font-size:12px;
-        color:#667085;
-        margin-bottom:8px;
+        font-size:13px;
+        color:#98a2b3;
+        margin-bottom:10px;
       }
 
       .ajsee-date-tm__dow span{
@@ -744,36 +448,39 @@
 
       .ajsee-date-tm__cell,
       .ajsee-date-tm__empty{
-        min-height:42px;
+        height:52px;
       }
 
       .ajsee-date-tm__day{
         width:100%;
-        height:42px;
+        height:52px;
         border:0;
-        border-radius:14px;
-        background:#fff;
-        box-shadow:0 4px 12px rgba(9,30,66,.04);
+        border-radius:18px;
+        background:rgba(255,255,255,.94);
+        box-shadow:0 8px 18px rgba(9,30,66,.04);
         cursor:pointer;
         font:inherit;
         font-weight:700;
+        font-size:18px;
         color:#1d2340;
         position:relative;
-        transition:background-color .18s ease, transform .18s ease, box-shadow .18s ease;
+        transition:transform .16s ease, background-color .16s ease, box-shadow .16s ease;
       }
 
       .ajsee-date-tm__day:hover{
-        background:rgba(47,107,255,.08);
+        background:rgba(238,245,255,.95);
+        transform:translateY(-1px);
       }
 
       .ajsee-date-tm__day.is-disabled{
         cursor:not-allowed;
-        opacity:.30;
+        opacity:.32;
         box-shadow:none;
       }
 
       .ajsee-date-tm__day.is-disabled:hover{
-        background:#fff;
+        background:rgba(255,255,255,.94);
+        transform:none;
       }
 
       .ajsee-date-tm__day.is-today::after{
@@ -781,21 +488,24 @@
         position:absolute;
         left:50%;
         transform:translateX(-50%);
-        bottom:6px;
-        width:16px;
+        bottom:8px;
+        width:18px;
         height:3px;
-        border-radius:2px;
-        background:rgba(47,107,255,.95);
+        border-radius:999px;
+        background:#2f6bff;
+        opacity:.9;
       }
 
       .ajsee-date-tm__day.is-in-range{
         background:rgba(47,107,255,.10);
+        box-shadow:none;
       }
 
       .ajsee-date-tm__day.is-start,
       .ajsee-date-tm__day.is-end{
-        background:linear-gradient(180deg, rgba(71,132,255,.98), rgba(32,89,214,.98));
+        background:linear-gradient(180deg, rgba(63,131,248,.98), rgba(47,93,208,.98));
         color:#fff;
+        box-shadow:0 14px 28px rgba(47,107,255,.24);
       }
 
       .ajsee-date-tm__actions{
@@ -803,49 +513,36 @@
         justify-content:space-between;
         align-items:center;
         gap:12px;
-        padding:12px 16px 14px;
-        border-top:1px solid rgba(0,0,0,.08);
+        padding:14px 22px 18px;
+        border-top:1px solid rgba(15,23,42,.08);
         background:rgba(255,255,255,.92);
-      }
-
-      .ajsee-date-popover.ajsee-date-tm.is-mobile .ajsee-date-tm__actions{
-        position:sticky;
-        bottom:0;
-        padding:12px 18px calc(14px + env(safe-area-inset-bottom, 0px));
-        backdrop-filter:blur(18px);
-        -webkit-backdrop-filter:blur(18px);
-      }
-
-      .ajsee-date-tm__actions-right{
-        display:flex;
-        align-items:center;
-        gap:8px;
       }
 
       .ajsee-date-tm__btn{
         border:0;
         background:transparent;
         cursor:pointer;
-        padding:10px 10px;
-        border-radius:12px;
+        padding:12px 12px;
+        border-radius:14px;
         font:inherit;
         font-weight:800;
+        letter-spacing:.02em;
         color:#1d2340;
       }
 
       .ajsee-date-tm__btn:hover{
-        background:rgba(0,0,0,.06);
+        background:rgba(15,23,42,.05);
       }
 
       .ajsee-date-tm__btn.primary{
-        background:linear-gradient(180deg, rgba(71,132,255,.98), rgba(32,89,214,.98));
+        background:linear-gradient(180deg, rgba(63,131,248,.98), rgba(47,93,208,.98));
         color:#fff;
-        padding:12px 18px;
-        box-shadow:0 10px 22px rgba(47,107,255,.24);
+        padding:12px 20px;
+        box-shadow:0 14px 28px rgba(47,107,255,.22);
       }
 
       .ajsee-date-tm__btn.primary:hover{
-        background:linear-gradient(180deg, rgba(64,125,248,1), rgba(27,83,205,1));
+        filter:brightness(1.02);
       }
 
       .ajsee-date-tm__btn:disabled{
@@ -853,127 +550,113 @@
         cursor:not-allowed;
       }
 
-      @media (max-width: 640px){
-        .ajsee-date-tm__inputs{
+      @media (max-width: 900px){
+        .ajsee-date-tm-popover{
+          width:min(100vw - 16px, 760px);
+          max-width:none;
+          border-radius:30px;
+          max-height:calc(100vh - 16px);
+        }
+
+        .ajsee-date-tm__months{
           grid-template-columns:1fr;
-          gap:12px;
+          gap:24px;
         }
       }
     `;
-
     (DOC.head || DOC.documentElement).appendChild(s);
   }
 
+  let popover = null;
+  let anchorEl = null;
+  let isOpen = false;
+  let viewMonthIdx = null;
+  let selFrom = '';
+  let selTo = '';
+
   function ensurePopover () {
-    if (overlay && popover) return;
-
+    if (popover) return;
     ensureStyles();
-    updateViewportVars();
 
-    const t = txt();
     const lang = currentLang();
-    const placeholder = lang === 'en' ? 'MM/DD/YYYY' : 'dd.mm.rrrr';
+    const t = txt();
+    const wrap = DOC.createElement('div');
+    wrap.className = 'ajsee-date-tm-popover ajsee-date-tm';
+    wrap.setAttribute('role', 'dialog');
+    wrap.setAttribute('aria-modal', 'false');
+    wrap.setAttribute('data-ajsee', 'date-popover');
+    wrap.style.display = 'none';
+    wrap.style.zIndex = String(CONFIG.Z);
 
-    const overlayEl = DOC.createElement('div');
-    overlayEl.className = 'ajsee-date-popover-overlay';
-    overlayEl.setAttribute('data-ajsee-date-overlay', '1');
-    overlayEl.hidden = true;
+    const placeholder = (lang === 'en') ? 'MM/DD/YYYY' : 'dd.mm.rrrr';
 
-    overlayEl.innerHTML = `
-      <div class="ajsee-date-popover ajsee-date-tm" data-ajsee="date-popover" role="dialog" aria-modal="false" aria-labelledby="ajsee-date-tm-title" tabindex="-1">
-        <div class="ajsee-date-tm__grab" aria-hidden="true"></div>
+    wrap.innerHTML = `
+      <div class="ajsee-date-tm__tabs">
+        <button type="button" class="ajsee-date-tm__tab" data-quick="anytime">${esc(t.anytime)}</button>
+        <button type="button" class="ajsee-date-tm__tab" data-quick="today">${esc(t.today)}</button>
+      </div>
 
-        <div class="ajsee-date-tm__header">
-          <div class="ajsee-date-tm__header-copy">
-            <h3 class="ajsee-date-tm__title-main" id="ajsee-date-tm-title">${esc(t.pickerTitle || t.dateLabel || 'Date')}</h3>
-          </div>
-          <button type="button" class="ajsee-date-tm__close" data-act="close" aria-label="${esc(t.cancel)}">
-            <span aria-hidden="true">×</span>
-          </button>
+      <div class="ajsee-date-tm__inputs">
+        <div class="ajsee-date-tm__field">
+          <label>${esc(t.start)}</label>
+          <input type="text" data-role="start" placeholder="${esc(placeholder)}" readonly />
         </div>
+        <div class="ajsee-date-tm__field">
+          <label>${esc(t.end)}</label>
+          <input type="text" data-role="end" placeholder="${esc(placeholder)}" readonly />
+        </div>
+      </div>
 
-        <div class="ajsee-date-tm__body">
-          <div class="ajsee-date-tm__tabs">
-            <button type="button" class="ajsee-date-tm__tab" data-quick="anytime">${esc(t.anytime)}</button>
-            <button type="button" class="ajsee-date-tm__tab" data-quick="today">${esc(t.today)}</button>
+      <div class="ajsee-date-tm__cal">
+        <div class="ajsee-date-tm__months">
+          <div class="ajsee-date-tm__month" data-month="0">
+            <div class="ajsee-date-tm__month-head">
+              <button type="button" class="ajsee-date-tm__nav" data-nav="prev" aria-label="Previous month">‹</button>
+              <div class="ajsee-date-tm__title" data-role="title-0"></div>
+              <span style="width:44px;height:44px;"></span>
+            </div>
+            <div class="ajsee-date-tm__dow" data-role="dow-0"></div>
+            <div class="ajsee-date-tm__grid" data-role="grid-0"></div>
           </div>
 
-          <div class="ajsee-date-tm__inputs">
-            <div class="ajsee-date-tm__field">
-              <label>${esc(t.start)}</label>
-              <input type="text" data-role="start" placeholder="${esc(placeholder)}" readonly />
+          <div class="ajsee-date-tm__month" data-month="1">
+            <div class="ajsee-date-tm__month-head">
+              <span style="width:44px;height:44px;"></span>
+              <div class="ajsee-date-tm__title" data-role="title-1"></div>
+              <button type="button" class="ajsee-date-tm__nav" data-nav="next" aria-label="Next month">›</button>
             </div>
-            <div class="ajsee-date-tm__field">
-              <label>${esc(t.end)}</label>
-              <input type="text" data-role="end" placeholder="${esc(placeholder)}" readonly />
-            </div>
-          </div>
-
-          <div class="ajsee-date-tm__cal">
-            <div class="ajsee-date-tm__months">
-              <div class="ajsee-date-tm__month" data-month="0">
-                <div class="ajsee-date-tm__month-head">
-                  <button type="button" class="ajsee-date-tm__nav" data-nav="prev" aria-label="Previous month">‹</button>
-                  <div class="ajsee-date-tm__title" data-role="title-0"></div>
-                  <button type="button" class="ajsee-date-tm__nav" data-nav="next-inline" aria-label="Next month">›</button>
-                </div>
-                <div class="ajsee-date-tm__dow" data-role="dow-0"></div>
-                <div class="ajsee-date-tm__grid" data-role="grid-0"></div>
-              </div>
-
-              <div class="ajsee-date-tm__month" data-month="1">
-                <div class="ajsee-date-tm__month-head">
-                  <button type="button" class="ajsee-date-tm__nav" data-nav="prev-inline" aria-label="Previous month">‹</button>
-                  <div class="ajsee-date-tm__title" data-role="title-1"></div>
-                  <button type="button" class="ajsee-date-tm__nav" data-nav="next" aria-label="Next month">›</button>
-                </div>
-                <div class="ajsee-date-tm__dow" data-role="dow-1"></div>
-                <div class="ajsee-date-tm__grid" data-role="grid-1"></div>
-              </div>
-            </div>
+            <div class="ajsee-date-tm__dow" data-role="dow-1"></div>
+            <div class="ajsee-date-tm__grid" data-role="grid-1"></div>
           </div>
         </div>
+      </div>
 
-        <div class="ajsee-date-tm__actions">
-          <button type="button" class="ajsee-date-tm__btn" data-act="clear">${esc(t.clear)}</button>
-          <div class="ajsee-date-tm__actions-right">
-            <button type="button" class="ajsee-date-tm__btn" data-act="cancel">${esc(t.cancel)}</button>
-            <button type="button" class="ajsee-date-tm__btn primary" data-act="apply">${esc(t.apply)}</button>
-          </div>
+      <div class="ajsee-date-tm__actions">
+        <button type="button" class="ajsee-date-tm__btn" data-act="clear">${esc(t.clear)}</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button type="button" class="ajsee-date-tm__btn" data-act="cancel">${esc(t.cancel)}</button>
+          <button type="button" class="ajsee-date-tm__btn primary" data-act="apply">${esc(t.apply)}</button>
         </div>
       </div>
     `;
 
-    DOC.body.appendChild(overlayEl);
-
-    overlay = overlayEl;
-    popover = overlayEl.querySelector('.ajsee-date-popover');
+    DOC.body.appendChild(wrap);
+    popover = wrap;
 
     popover.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         closePopover();
       } else if (e.key === 'Enter') {
-        const target = e.target;
-        const isDayButton = !!(target && target.closest && target.closest('button[data-iso]'));
-        if (!isDayButton) {
-          e.preventDefault();
-          applyAndClose();
-        }
+        e.preventDefault();
+        applyAndClose();
       }
     });
 
-    overlay.addEventListener('click', (e) => {
-      if (!isOpen) return;
-      if (!isMobileOpen) return;
-      if (e.target === overlay) closePopover();
-    });
-
-    popover.querySelectorAll('[data-quick]').forEach((btn) => {
+    popover.querySelectorAll('[data-quick]').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const mode = e.currentTarget.getAttribute('data-quick');
         const today = todayISO();
-
         if (mode === 'anytime') {
           selFrom = '';
           selTo = '';
@@ -988,11 +671,6 @@
       });
     });
 
-    const closeBtn = popover.querySelector('[data-act="close"]');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => closePopover());
-    }
-
     popover.querySelector('[data-act="clear"]').addEventListener('click', () => {
       selFrom = '';
       selTo = '';
@@ -1005,25 +683,19 @@
 
     popover.querySelector('[data-act="apply"]').addEventListener('click', applyAndClose);
 
-    const goPrev = () => {
-      const minDate = parseISO(todayISO());
-      const minIdx = monthIndex(new Date(minDate.getFullYear(), minDate.getMonth(), 1, 12, 0, 0, 0));
-      viewMonthIdx = Math.max(minIdx, (viewMonthIdx == null ? minIdx : viewMonthIdx) - 1);
+    popover.querySelector('[data-nav="prev"]').addEventListener('click', () => {
+      const minIdx = monthIndex(new Date(parseISO(todayISO()).getFullYear(), parseISO(todayISO()).getMonth(), 1, 12, 0, 0, 0));
+      viewMonthIdx = Math.max(minIdx, (viewMonthIdx || minIdx) - 1);
       renderUI();
-    };
+    });
 
-    const goNext = () => {
-      const baseDate = parseISO(todayISO());
-      const baseIdx = monthIndex(new Date(baseDate.getFullYear(), baseDate.getMonth(), 1, 12, 0, 0, 0));
-      const currentIdx = viewMonthIdx == null ? baseIdx : viewMonthIdx;
-      viewMonthIdx = currentIdx + 1;
+    popover.querySelector('[data-nav="next"]').addEventListener('click', () => {
+      const base = (viewMonthIdx == null)
+        ? monthIndex(new Date(parseISO(todayISO()).getFullYear(), parseISO(todayISO()).getMonth(), 1, 12, 0, 0, 0))
+        : viewMonthIdx;
+      viewMonthIdx = base + 1;
       renderUI();
-    };
-
-    popover.querySelector('[data-nav="prev"]').addEventListener('click', goPrev);
-    popover.querySelector('[data-nav="prev-inline"]').addEventListener('click', goPrev);
-    popover.querySelector('[data-nav="next"]').addEventListener('click', goNext);
-    popover.querySelector('[data-nav="next-inline"]').addEventListener('click', goNext);
+    });
 
     popover.addEventListener('click', (e) => {
       const btn = e.target && e.target.closest && e.target.closest('button[data-iso]');
@@ -1076,11 +748,10 @@
 
   function setTabsActive () {
     const today = todayISO();
-    const any = !selFrom && !selTo;
-    const isToday = selFrom === today && selTo === today;
+    const any = (!selFrom && !selTo);
+    const isToday = (selFrom === today && selTo === today);
 
-    popover.querySelectorAll('.ajsee-date-tm__tab').forEach((b) => b.classList.remove('is-active'));
-
+    popover.querySelectorAll('.ajsee-date-tm__tab').forEach(b => b.classList.remove('is-active'));
     const bAny = popover.querySelector('[data-quick="anytime"]');
     const bToday = popover.querySelector('[data-quick="today"]');
     if (any && bAny) bAny.classList.add('is-active');
@@ -1089,9 +760,8 @@
 
   function renderMonth (monthOffset) {
     const lang = currentLang();
-    const todayDate = parseISO(todayISO());
-    const startIdx = viewMonthIdx == null
-      ? monthIndex(new Date(todayDate.getFullYear(), todayDate.getMonth(), 1, 12, 0, 0, 0))
+    const startIdx = (viewMonthIdx == null)
+      ? monthIndex(new Date(parseISO(todayISO()).getFullYear(), parseISO(todayISO()).getMonth(), 1, 12, 0, 0, 0))
       : viewMonthIdx;
 
     const monthStart = fromMonthIndex(startIdx + monthOffset);
@@ -1104,7 +774,7 @@
     const dowEl = popover.querySelector(`[data-role="dow-${monthOffset}"]`);
     if (dowEl) {
       const labels = weekdayLabels(lang);
-      dowEl.innerHTML = labels.map((w) => `<span>${esc(w)}</span>`).join('');
+      dowEl.innerHTML = labels.map(w => `<span>${esc(w)}</span>`).join('');
     }
 
     const gridEl = popover.querySelector(`[data-role="grid-${monthOffset}"]`);
@@ -1123,6 +793,7 @@
     const to = selTo || '';
 
     let html = '';
+
     for (let i = 0; i < leading; i++) {
       html += '<div class="ajsee-date-tm__empty"></div>';
     }
@@ -1161,256 +832,37 @@
     gridEl.innerHTML = html;
   }
 
-  function updateNavVisibility () {
-    const month0 = popover.querySelector('[data-month="0"]');
-    const month1 = popover.querySelector('[data-month="1"]');
-    const btnPrev = popover.querySelector('[data-nav="prev"]');
-    const btnPrevInline = popover.querySelector('[data-nav="prev-inline"]');
-    const btnNextInline = popover.querySelector('[data-nav="next-inline"]');
-    const btnNext = popover.querySelector('[data-nav="next"]');
-
-    const minDate = parseISO(todayISO());
-    const minIdx = monthIndex(new Date(minDate.getFullYear(), minDate.getMonth(), 1, 12, 0, 0, 0));
-    const isAtMin = (viewMonthIdx == null ? minIdx : viewMonthIdx) <= minIdx;
-
-    if (isMobileMode()) {
-      if (month0) month0.hidden = false;
-      if (month1) month1.hidden = true;
-
-      if (btnPrev) {
-        btnPrev.hidden = false;
-        btnPrev.disabled = isAtMin;
-      }
-      if (btnNextInline) btnNextInline.hidden = false;
-      if (btnPrevInline) btnPrevInline.hidden = true;
-      if (btnNext) btnNext.hidden = true;
-    } else {
-      if (month0) month0.hidden = false;
-      if (month1) month1.hidden = false;
-
-      if (btnPrev) {
-        btnPrev.hidden = false;
-        btnPrev.disabled = isAtMin;
-      }
-      if (btnNextInline) btnNextInline.hidden = true;
-      if (btnPrevInline) btnPrevInline.hidden = true;
-      if (btnNext) btnNext.hidden = false;
-    }
-  }
-
   function renderUI () {
     if (!popover) return;
     normalizeSelection();
 
     const lang = currentLang();
-    const t = txt();
-
-    const titleMain = popover.querySelector('.ajsee-date-tm__title-main');
-    const startLabel = popover.querySelector('.ajsee-date-tm__field:nth-child(1) label');
-    const endLabel = popover.querySelector('.ajsee-date-tm__field:nth-child(2) label');
-    const bAny = popover.querySelector('[data-quick="anytime"]');
-    const bToday = popover.querySelector('[data-quick="today"]');
-    const bClear = popover.querySelector('[data-act="clear"]');
-    const bCancel = popover.querySelector('[data-act="cancel"]');
-    const bApply = popover.querySelector('[data-act="apply"]');
-
-    if (titleMain) titleMain.textContent = t.pickerTitle || t.dateLabel || 'Date';
-    if (startLabel) startLabel.textContent = t.start;
-    if (endLabel) endLabel.textContent = t.end;
-    if (bAny) bAny.textContent = t.anytime;
-    if (bToday) bToday.textContent = t.today;
-    if (bClear) bClear.textContent = t.clear;
-    if (bCancel) bCancel.textContent = t.cancel;
-    if (bApply) bApply.textContent = t.apply;
-
-    const closeBtn = popover.querySelector('[data-act="close"]');
-    if (closeBtn) closeBtn.setAttribute('aria-label', t.cancel);
-
-    const placeholder = lang === 'en' ? 'MM/DD/YYYY' : 'dd.mm.rrrr';
     const startInp = popover.querySelector('input[data-role="start"]');
     const endInp = popover.querySelector('input[data-role="end"]');
-    if (startInp) {
-      startInp.value = formatDisplay(selFrom, lang);
-      startInp.placeholder = placeholder;
-    }
-    if (endInp) {
-      endInp.value = formatDisplay(selTo, lang);
-      endInp.placeholder = placeholder;
-    }
+    if (startInp) startInp.value = formatDisplay(selFrom, lang);
+    if (endInp) endInp.value = formatDisplay(selTo, lang);
 
     setTabsActive();
-    updateNavVisibility();
     renderMonth(0);
-    if (!isMobileMode()) renderMonth(1);
-  }
+    renderMonth(1);
 
-  function removeAnchorScrollListeners () {
-    if (!scrollParents.length) return;
-    scrollParents.forEach((node) => {
-      try { node.removeEventListener('scroll', schedulePosition, { passive: true }); } catch {
-        /* noop */
-      }
-    });
-    scrollParents = [];
-  }
-
-  function addAnchorScrollListeners () {
-    removeAnchorScrollListeners();
-    if (!anchorEl) return;
-
-    scrollParents = getScrollParents(anchorEl);
-    scrollParents.forEach((node) => {
-      try { node.addEventListener('scroll', schedulePosition, { passive: true }); } catch {
-        /* noop */
-      }
-    });
-  }
-
-  function schedulePosition () {
-    if (!isOpen) return;
-    if (rafPosition) return;
-    rafPosition = WIN.requestAnimationFrame(() => {
-      rafPosition = 0;
-      positionPopover();
-    });
-  }
-
-  function positionDesktopPopover () {
-    if (!popover || !anchorEl) return;
-
-    if (overlay) {
-      overlay.style.pointerEvents = 'none';
-      overlay.style.background = 'transparent';
-      overlay.style.backdropFilter = 'none';
-      overlay.style.webkitBackdropFilter = 'none';
-      overlay.style.padding = '0';
-      overlay.style.alignItems = 'flex-start';
-      overlay.style.justifyContent = 'flex-start';
-    }
-
-    popover.style.position = 'fixed';
-    popover.style.margin = '0';
-    popover.style.inset = 'auto';
-    popover.style.right = 'auto';
-    popover.style.bottom = 'auto';
-    popover.style.transform = 'none';
-    popover.style.width = `min(${CONFIG.MAX_W}px, calc(100vw - 24px))`;
-    popover.style.maxWidth = `min(${CONFIG.MAX_W}px, calc(100vw - 24px))`;
-    popover.style.overflow = 'auto';
-
-    const anchor = DOC.getElementById('date-combo-button') || anchorEl;
-    if (!anchor || !anchor.isConnected) {
-      closePopover();
-      return;
-    }
-
-    const rect = anchor.getBoundingClientRect();
-    const vpW = WIN.innerWidth || DOC.documentElement.clientWidth || 1024;
-    const vpH = WIN.innerHeight || DOC.documentElement.clientHeight || 768;
-    const safeTop = getHeaderSafeTop();
-
-    if (rect.bottom <= safeTop || rect.top >= vpH || rect.width <= 0 || rect.height <= 0) {
-      closePopover();
-      return;
-    }
-
-    popover.style.maxHeight = '';
-    popover.style.maxWidth = '';
-
-    const panelRect = popover.getBoundingClientRect();
-    const panelW = Math.min(panelRect.width || CONFIG.MAX_W, CONFIG.MAX_W, vpW - CONFIG.SAFE * 2);
-    const panelH = panelRect.height || CONFIG.MAX_H;
-
-    let computed = null;
-    try {
-      if (typeof WIN.ajseePositionDatePopover === 'function') {
-        computed = WIN.ajseePositionDatePopover({
-          anchor,
-          anchorRect: rect,
-          panel: popover,
-          panelRect: { width: panelW, height: panelH },
-          viewportWidth: vpW,
-          viewportHeight: vpH,
-          gap: CONFIG.GAP
-        });
-      }
-    } catch {
-      computed = null;
-    }
-
-    let left;
-    let top;
-    let maxHeight;
-
-    if (computed && typeof computed.left === 'number' && typeof computed.top === 'number') {
-      left = computed.left;
-      top = computed.top;
-      maxHeight = computed.maxHeight;
-    } else {
-      left = Math.max(CONFIG.SAFE, Math.min(rect.left, vpW - CONFIG.SAFE - panelW));
-      top = rect.bottom + CONFIG.GAP;
-
-      if (top + panelH > vpH - CONFIG.SAFE) {
-        const above = rect.top - CONFIG.GAP - panelH;
-        if (above >= safeTop) {
-          top = above;
-        } else {
-          top = safeTop;
-          maxHeight = Math.max(220, vpH - safeTop - CONFIG.SAFE);
-        }
-      } else if (top < safeTop) {
-        top = safeTop;
-      }
-    }
-
-    popover.style.left = `${Math.round(left)}px`;
-    popover.style.top = `${Math.round(top)}px`;
-    popover.style.right = 'auto';
-    popover.style.bottom = 'auto';
-    popover.style.transform = 'none';
-    popover.style.overflow = 'auto';
-    popover.style.maxHeight = `${Math.round(maxHeight || Math.min(CONFIG.MAX_H, vpH - safeTop - CONFIG.SAFE))}px`;
-  }
-
-  function positionPopover () {
-    if (!isOpen || !popover || !overlay) return;
-
-    updateViewportVars();
-
-    if (isMobileOpen) {
-      overlay.classList.add('is-mobile');
-      overlay.classList.remove('is-desktop');
-      popover.classList.add('is-mobile');
-      popover.classList.remove('is-desktop');
-      popover.style.left = '';
-      popover.style.top = '';
-      popover.style.maxHeight = '';
-      return;
-    }
-
-    overlay.classList.add('is-desktop');
-    overlay.classList.remove('is-mobile');
-    popover.classList.add('is-desktop');
-    popover.classList.remove('is-mobile');
-
-    positionDesktopPopover();
+    const minIdx = monthIndex(new Date(parseISO(todayISO()).getFullYear(), parseISO(todayISO()).getMonth(), 1, 12, 0, 0, 0));
+    const prevBtn = popover.querySelector('[data-nav="prev"]');
+    if (prevBtn) prevBtn.disabled = (viewMonthIdx == null ? minIdx : viewMonthIdx) <= minIdx;
   }
 
   function openPopover (anchor) {
     if (!anchor) return;
-
     ensurePopover();
 
     anchorEl = anchor;
     isOpen = true;
-    isMobileOpen = isMobileMode();
+    popover.style.display = 'block';
 
-    overlay.hidden = false;
-    popover.hidden = false;
+    const { from, to } = readCurrentHiddenInputs();
+    selFrom = (from || '').trim();
+    selTo = (to || '').trim();
 
-    const values = readCurrentHiddenInputs();
-    selFrom = (values.from || '').trim();
-    selTo = (values.to || '').trim();
     normalizeSelection();
 
     const base = parseISO(selFrom || todayISO()) || parseISO(todayISO());
@@ -1418,70 +870,18 @@
     const minMonth = new Date(parseISO(todayISO()).getFullYear(), parseISO(todayISO()).getMonth(), 1, 12, 0, 0, 0);
     viewMonthIdx = Math.max(monthIndex(minMonth), monthIndex(baseMonth));
 
-    if (isMobileOpen) {
-      lockBodyScroll();
-      overlay.classList.add('is-mobile');
-      overlay.classList.remove('is-desktop');
-    } else {
-      overlay.classList.add('is-desktop');
-      overlay.classList.remove('is-mobile');
-      addAnchorScrollListeners();
-    }
-
     renderUI();
     positionPopover();
 
-    const focusTarget = isMobileOpen
-      ? popover.querySelector('[data-act="close"]')
-      : popover.querySelector('[data-act="apply"]');
-
-    if (focusTarget && focusTarget.focus) {
-      try { focusTarget.focus({ preventScroll: true }); } catch {
-        try { focusTarget.focus(); } catch {
-          /* noop */
-        }
-      }
-    }
+    const applyBtn = popover.querySelector('[data-act="apply"]');
+    (applyBtn || popover).focus && (applyBtn || popover).focus();
   }
 
   function closePopover () {
     if (!isOpen) return;
-
     isOpen = false;
-
-    if (rafPosition) {
-      WIN.cancelAnimationFrame(rafPosition);
-      rafPosition = 0;
-    }
-
-    removeAnchorScrollListeners();
-
-    if (isMobileOpen) unlockBodyScroll();
-    isMobileOpen = false;
-
-    if (overlay) {
-      overlay.hidden = true;
-      overlay.classList.remove('is-mobile', 'is-desktop');
-    }
-
-    if (popover) {
-      popover.hidden = true;
-      popover.classList.remove('is-mobile', 'is-desktop');
-      popover.style.left = '';
-      popover.style.top = '';
-      popover.style.maxHeight = '';
-    }
-
+    if (popover) popover.style.display = 'none';
     anchorEl = null;
-  }
-
-  function emitApply (detail) {
-    try { WIN.dispatchEvent(new CustomEvent('AJSEE:date-popover:apply', { detail })); } catch {
-      /* noop */
-    }
-    try { WIN.dispatchEvent(new CustomEvent('AJSEE:dateRangeApply', { detail })); } catch {
-      /* noop */
-    }
   }
 
   function applyAndClose () {
@@ -1496,76 +896,135 @@
     if (!from && !to) mode = 'anytime';
     else if (from === today && to === today) mode = 'today';
 
-    emitApply({ mode, from, to, dateFrom: from, dateTo: to });
+    const detail = { mode, from, to, dateFrom: from, dateTo: to };
+
+    try { WIN.dispatchEvent(new CustomEvent('AJSEE:date-popover:apply', { detail })); } catch {
+      /* noop */
+    }
+
     closePopover();
+  }
+
+  function getHeaderSafeTop () {
+    const header = DOC.querySelector('.site-header');
+    const h = header && header.getBoundingClientRect ? header.getBoundingClientRect().height : 0;
+    return Math.max(CONFIG.SAFE, Math.round(h + 8));
+  }
+
+  function positionPopover () {
+    if (!isOpen || !popover) return;
+
+    const anchor = DOC.getElementById('date-combo-button') || anchorEl;
+    if (!anchor) return;
+
+    const r = anchor.getBoundingClientRect();
+    const vpW = WIN.innerWidth || DOC.documentElement.clientWidth || 0;
+    const vpH = WIN.innerHeight || DOC.documentElement.clientHeight || 0;
+
+    if (r.bottom <= 0 || r.top >= vpH) {
+      closePopover();
+      return;
+    }
+
+    const SAFE = CONFIG.SAFE;
+    const SAFE_TOP = getHeaderSafeTop();
+    const GAP = CONFIG.GAP;
+
+    popover.style.maxHeight = '';
+    popover.style.maxWidth = '';
+
+    const desktop = isDesktopViewport();
+    const desiredWidth = desktop ? Math.min(CONFIG.MAX_W, vpW - SAFE * 2) : Math.min(vpW - 16, 760);
+    popover.style.width = `${Math.max(320, desiredWidth)}px`;
+
+    const width = popover.offsetWidth || desiredWidth;
+    const height = popover.offsetHeight || CONFIG.MAX_H;
+
+    let left = desktop ? r.left : (vpW - width) / 2;
+    left = Math.max(left, SAFE);
+    left = Math.min(left, vpW - SAFE - width);
+
+    let top = desktop ? (r.bottom + GAP) : Math.max(SAFE_TOP, vpH - height - SAFE);
+
+    if (desktop) {
+      if (top + height > vpH - SAFE) {
+        const above = r.top - GAP - height;
+        if (above >= SAFE_TOP) {
+          top = above;
+        } else {
+          top = SAFE_TOP;
+          const usableH = Math.max(260, vpH - SAFE_TOP - SAFE);
+          popover.style.maxHeight = `${usableH}px`;
+        }
+      }
+    } else {
+      const usableH = Math.max(320, vpH - SAFE_TOP - SAFE);
+      popover.style.maxHeight = `${usableH}px`;
+      top = Math.min(top, vpH - SAFE - Math.min(height, usableH));
+      if (top < SAFE_TOP) top = SAFE_TOP;
+    }
+
+    popover.style.position = 'fixed';
+    popover.style.left = `${Math.round(left)}px`;
+    popover.style.top = `${Math.round(top)}px`;
+  }
+
+  function onScrollOrResize () {
+    if (!isOpen) return;
+    positionPopover();
   }
 
   function onGlobalPointerDown (e) {
-    if (!isOpen || isMobileOpen) return;
-    const target = e.target;
-    if (popover && popover.contains(target)) return;
-    if (anchorEl && anchorEl.contains(target)) return;
+    if (!isOpen) return;
+    const t = e.target;
+    if (popover && popover.contains(t)) return;
+    if (anchorEl && anchorEl.contains(t)) return;
     closePopover();
   }
 
-  function bindGlobalListeners () {
-    DOC.addEventListener('mousedown', onGlobalPointerDown, true);
-    DOC.addEventListener('touchstart', onGlobalPointerDown, true);
+  DOC.addEventListener('mousedown', onGlobalPointerDown, true);
+  DOC.addEventListener('touchstart', onGlobalPointerDown, true);
+  WIN.addEventListener('scroll', onScrollOrResize, { passive: true });
+  WIN.addEventListener('resize', onScrollOrResize, { passive: true });
 
-    WIN.addEventListener('resize', schedulePosition, { passive: true });
-    WIN.addEventListener('orientationchange', schedulePosition, { passive: true });
-
-    if (WIN.visualViewport) {
-      WIN.visualViewport.addEventListener('resize', schedulePosition, { passive: true });
-      WIN.visualViewport.addEventListener('scroll', schedulePosition, { passive: true });
+  WIN.addEventListener('AJSEE:langChanged', (e) => {
+    let forced = null;
+    try {
+      const d = e && e.detail;
+      if (typeof d === 'string') forced = d;
+      else if (d && typeof d.lang === 'string') forced = d.lang;
+      else if (d && typeof d.locale === 'string') forced = d.locale;
+      else if (d && typeof d.language === 'string') forced = d.language;
+    } catch {
+      /* noop */
     }
 
-    WIN.addEventListener('AJSEE:langChanged', (e) => {
-      let forced = null;
-      try {
-        const detail = e && e.detail;
-        if (typeof detail === 'string') forced = detail;
-        else if (detail && typeof detail.lang === 'string') forced = detail.lang;
-        else if (detail && typeof detail.locale === 'string') forced = detail.locale;
-        else if (detail && typeof detail.language === 'string') forced = detail.language;
-      } catch {
-        /* noop */
-      }
+    syncDateComboLabel(forced);
 
-      syncDateComboLabel(forced);
+    if (popover) {
+      popover.remove();
+      popover = null;
+    }
+    closePopover();
+  });
 
-      if (overlay) {
-        try { overlay.remove(); } catch {
-          /* noop */
-        }
-        overlay = null;
-        popover = null;
-      }
+  function initAnchors () {
+    const btn = DOC.getElementById('date-combo-button') ||
+      DOC.querySelector('[data-ajsee-date-combo]') ||
+      DOC.querySelector('.date-combo .combo-button');
 
-      closePopover();
-      initAnchors();
-      WIN.requestAnimationFrame(() => syncDateComboLabel(forced));
-    });
-  }
+    if (!btn) return;
+    if (btn.dataset.ajDatePopoverWired === '1') return;
 
-  function bindTrigger (btn) {
-    if (!btn || btn.dataset.ajseeDateBound === '1') return;
-    btn.dataset.ajseeDateBound = '1';
+    btn.dataset.ajDatePopoverWired = '1';
+    syncDateComboLabel();
 
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      e.stopPropagation();
-      if (isOpen && anchorEl === btn) closePopover();
+      if (isOpen) closePopover();
       else openPopover(btn);
     });
   }
-
-  function initAnchors () {
-    getDateComboButtons().forEach(bindTrigger);
-    syncDateComboLabel();
-  }
-
-  bindGlobalListeners();
 
   if (DOC.readyState === 'loading') {
     DOC.addEventListener('DOMContentLoaded', () => {
@@ -1574,7 +1033,6 @@
       setTimeout(syncDateComboLabel, 0);
       setTimeout(syncDateComboLabel, 80);
       setTimeout(syncDateComboLabel, 250);
-      setTimeout(initAnchors, 250);
     });
   } else {
     initAnchors();
@@ -1582,6 +1040,5 @@
     setTimeout(syncDateComboLabel, 0);
     setTimeout(syncDateComboLabel, 80);
     setTimeout(syncDateComboLabel, 250);
-    setTimeout(initAnchors, 250);
   }
 })();

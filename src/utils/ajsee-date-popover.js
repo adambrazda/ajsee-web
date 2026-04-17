@@ -15,11 +15,11 @@
 
   const CONFIG = {
     SAFE: 12,
-    GAP: 8,
+    GAP: 2,
     DESKTOP_BREAKPOINT: 721,
-    DESKTOP_MAX_W: 640,
-    DESKTOP_MIN_W: 560,
-    DESKTOP_MAX_H: 560
+    DESKTOP_MAX_W: 620,
+    DESKTOP_MIN_W: 540,
+    DESKTOP_MAX_H: 520
   };
 
   const STRINGS = {

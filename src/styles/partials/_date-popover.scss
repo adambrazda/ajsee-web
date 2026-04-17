@@ -1,29 +1,33 @@
 /* ------------------------------------------------------
    AJSEE – DATE POPOVER / SHEET
-   - desktop: anchored floating panel under #date-combo-button
-   - mobile: bottom sheet
-   - intentionally isolated from filters-premium.scss
+   Desktop: elegantní kotvený panel pod buňkou Termín
+   Mobile: bottom sheet ponechaný beze změny logiky
 -------------------------------------------------------*/
 
 :root {
   --ajsee-date-panel-z: calc(var(--ajsee-popover-z, 10040) + 1);
   --ajsee-date-panel-backdrop-z: var(--ajsee-popover-overlay-z, 10030);
-  --ajsee-date-panel-bg: rgba(255, 255, 255, 0.96);
+
+  --ajsee-date-panel-bg: rgba(255, 255, 255, 0.98);
   --ajsee-date-panel-brd: rgba(207, 220, 235, 0.95);
   --ajsee-date-panel-shadow:
-    0 28px 60px rgba(12, 36, 80, 0.18),
-    0 6px 16px rgba(12, 36, 80, 0.08),
+    0 24px 48px rgba(12, 36, 80, 0.16),
+    0 4px 14px rgba(12, 36, 80, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
   --ajsee-date-panel-radius: 24px;
-  --ajsee-date-cell-size: 52px;
-  --ajsee-date-gap: 8px;
-  --ajsee-date-accent: #0e88f0;
-  --ajsee-date-accent-strong: #2b63db;
-  --ajsee-date-accent-soft: #14c2c5;
   --ajsee-date-ink: #102840;
   --ajsee-date-ink-soft: #6b7f97;
-  --ajsee-date-surface: #f6faff;
-  --ajsee-date-border-soft: rgba(229, 237, 246, 0.94);
+  --ajsee-date-accent: #0e88f0;
+  --ajsee-date-accent-strong: #2b63db;
+  --ajsee-date-border-soft: rgba(226, 235, 245, 0.96);
+
+  --ajsee-date-desktop-width: 640px;
+  --ajsee-date-desktop-cell: 40px;
+  --ajsee-date-desktop-gap: 6px;
+
+  --ajsee-date-mobile-cell: 52px;
+  --ajsee-date-mobile-gap: 8px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,7 +39,6 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
     --ajsee-date-ink: #eef4ff;
     --ajsee-date-ink-soft: #aebed3;
-    --ajsee-date-surface: rgba(255, 255, 255, 0.05);
     --ajsee-date-border-soft: rgba(255, 255, 255, 0.1);
   }
 }
@@ -48,15 +51,15 @@ body.ajsee-date-sheet-open {
   right: 0;
 }
 
-.ajsee-date-panel[hidden] {
+.ajsee-date-popover[hidden] {
   display: none;
 }
 
-.ajsee-date-panel {
+.ajsee-date-popover {
   z-index: var(--ajsee-date-panel-z);
 }
 
-.ajsee-date-panel__backdrop {
+.ajsee-date-popover__backdrop {
   position: absolute;
   inset: 0;
   background: rgba(11, 16, 32, 0.34);
@@ -64,11 +67,11 @@ body.ajsee-date-sheet-open {
   -webkit-backdrop-filter: blur(10px);
 }
 
-.ajsee-date-panel__surface {
+.ajsee-date-popover__surface {
   color: var(--ajsee-date-ink);
   background:
-    radial-gradient(circle at top left, rgba(20, 194, 197, 0.1), transparent 28%),
-    radial-gradient(circle at top right, rgba(14, 136, 240, 0.1), transparent 32%),
+    radial-gradient(circle at top left, rgba(20, 194, 197, 0.08), transparent 28%),
+    radial-gradient(circle at top right, rgba(14, 136, 240, 0.08), transparent 32%),
     var(--ajsee-date-panel-bg);
   border: 1px solid var(--ajsee-date-panel-brd);
   box-shadow: var(--ajsee-date-panel-shadow);
@@ -77,44 +80,44 @@ body.ajsee-date-sheet-open {
   isolation: isolate;
 }
 
-.ajsee-date-panel__surface::before {
-  content: '';
+.ajsee-date-popover__surface::before {
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 24%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 24%);
   pointer-events: none;
   z-index: 0;
 }
 
-.ajsee-date-panel__surface > * {
+.ajsee-date-popover__surface > * {
   position: relative;
   z-index: 1;
 }
 
-.ajsee-date-panel__grab {
+.ajsee-date-popover__grab {
   display: none;
 }
 
-.ajsee-date-panel__header {
+.ajsee-date-popover__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
 }
 
-.ajsee-date-panel__tabs {
+.ajsee-date-popover__tabs {
   display: flex;
   align-items: center;
   gap: 18px;
 }
 
-.ajsee-date-panel__tab {
+.ajsee-date-popover__tab {
   border: 0;
   background: transparent;
-  padding: 10px 2px 12px;
+  padding: 8px 2px 10px;
   font: inherit;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 900;
   color: var(--ajsee-date-ink-soft);
   border-bottom: 3px solid transparent;
@@ -122,23 +125,23 @@ body.ajsee-date-sheet-open {
   transition: color 0.18s ease, border-color 0.18s ease;
 }
 
-.ajsee-date-panel__tab.is-active {
+.ajsee-date-popover__tab.is-active {
   color: var(--ajsee-date-accent);
   border-bottom-color: var(--ajsee-date-accent);
 }
 
-.ajsee-date-panel__close,
-.ajsee-date-panel__nav,
-.ajsee-date-panel__btn {
+.ajsee-date-popover__close,
+.ajsee-date-popover__nav,
+.ajsee-date-popover__btn {
   font: inherit;
 }
 
-.ajsee-date-panel__close {
+.ajsee-date-popover__close {
   width: 42px;
   height: 42px;
   border: 1px solid var(--ajsee-date-border-soft);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.84);
   color: var(--ajsee-date-ink);
   display: inline-flex;
   align-items: center;
@@ -149,15 +152,15 @@ body.ajsee-date-sheet-open {
   box-shadow: 0 10px 18px rgba(12, 36, 80, 0.08);
 }
 
-.ajsee-date-panel__inputs {
+.ajsee-date-popover__inputs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 14px;
 }
 
-.ajsee-date-panel__field label {
+.ajsee-date-popover__field label {
   display: block;
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   font-size: 12px;
   line-height: 1;
   text-transform: uppercase;
@@ -166,134 +169,75 @@ body.ajsee-date-sheet-open {
   color: var(--ajsee-date-ink-soft);
 }
 
-.ajsee-date-panel__field input {
+.ajsee-date-popover__field input {
   width: 100%;
-  height: 54px;
-  padding: 0 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(198, 214, 232, 0.92);
-  background: rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
   color: var(--ajsee-date-ink);
   font: inherit;
-  font-size: 18px;
-  font-weight: 700;
-  box-sizing: border-box;
+  font-weight: 800;
 }
 
-.ajsee-date-panel__calendar {
+.ajsee-date-popover__calendar {
   min-height: 0;
 }
 
-.ajsee-date-panel__months {
+.ajsee-date-popover__months {
   display: grid;
-  gap: 20px;
+  gap: 16px;
 }
 
-.ajsee-date-panel__month {
+.ajsee-date-popover__month {
   min-width: 0;
 }
 
-.ajsee-date-panel__month-head {
+.ajsee-date-popover__month-head {
   display: grid;
-  grid-template-columns: 44px 1fr 44px;
   align-items: center;
-  gap: 10px;
-  margin: 2px 0 10px;
+  margin: 0 0 6px;
 }
 
-.ajsee-date-panel__title {
+.ajsee-date-popover__title {
   text-align: center;
-  font-size: 18px;
   font-weight: 900;
   color: var(--ajsee-date-ink);
   text-transform: capitalize;
 }
 
-.ajsee-date-panel__nav,
-.ajsee-date-panel__nav-spacer {
-  width: 44px;
-  height: 44px;
-}
-
-.ajsee-date-panel__nav {
-  border: 1px solid rgba(209, 222, 237, 0.9);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--ajsee-date-ink);
+.ajsee-date-popover__nav,
+.ajsee-date-popover__nav-spacer {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  line-height: 1;
-  box-shadow: 0 10px 22px rgba(12, 36, 80, 0.08);
-  cursor: pointer;
-  transition: transform 0.12s ease, filter 0.18s ease;
 }
 
-.ajsee-date-panel__nav:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.02);
-}
-
-.ajsee-date-panel__nav:disabled {
-  opacity: 0.42;
-  cursor: default;
-  transform: none;
-}
-
-.ajsee-date-panel__dow,
-.ajsee-date-panel__grid {
+.ajsee-date-popover__dow,
+.ajsee-date-popover__grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 
-.ajsee-date-panel__dow {
-  gap: var(--ajsee-date-gap);
-  margin-bottom: 8px;
-}
-
-.ajsee-date-panel__dow span {
+.ajsee-date-popover__dow span {
   text-align: center;
-  font-size: 14px;
   font-weight: 700;
   color: var(--ajsee-date-ink-soft);
-  padding: 6px 0;
   text-transform: lowercase;
 }
 
-.ajsee-date-panel__grid {
-  gap: var(--ajsee-date-gap);
-}
-
-.ajsee-date-panel__cell,
-.ajsee-date-panel__empty {
-  height: var(--ajsee-date-cell-size);
-}
-
-.ajsee-date-panel__day {
+.ajsee-date-popover__day {
   width: 100%;
-  height: var(--ajsee-date-cell-size);
-  border: 1px solid rgba(232, 239, 247, 0.9);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.86);
   color: var(--ajsee-date-ink);
   font: inherit;
-  font-size: 18px;
   font-weight: 800;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.8) inset,
-    0 10px 18px rgba(12, 36, 80, 0.05);
   cursor: pointer;
   position: relative;
   transition: transform 0.12s ease, background-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.ajsee-date-panel__day:hover {
+.ajsee-date-popover__day:hover {
   transform: translateY(-1px);
-  background: #f4f9ff;
 }
 
-.ajsee-date-panel__day.is-disabled {
+.ajsee-date-popover__day.is-disabled {
   opacity: 0.34;
   pointer-events: none;
   box-shadow: none;
@@ -301,130 +245,211 @@ body.ajsee-date-sheet-open {
   border-color: transparent;
 }
 
-.ajsee-date-panel__day.is-today::after {
-  content: '';
+.ajsee-date-popover__day.is-today::after {
+  content: "";
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 8px;
-  width: 18px;
-  height: 3px;
   border-radius: 999px;
   background: var(--ajsee-date-accent);
 }
 
-.ajsee-date-panel__day.is-in-range {
+.ajsee-date-popover__day.is-in-range {
   background: rgba(14, 136, 240, 0.12);
   border-color: rgba(152, 205, 247, 0.8);
 }
 
-.ajsee-date-panel__day.is-start,
-.ajsee-date-panel__day.is-end {
+.ajsee-date-popover__day.is-start,
+.ajsee-date-popover__day.is-end {
   background: linear-gradient(180deg, var(--ajsee-date-accent), var(--ajsee-date-accent-strong));
   border-color: transparent;
   color: #fff;
-  box-shadow:
-    0 18px 28px rgba(14, 136, 240, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
-.ajsee-date-panel__actions {
+.ajsee-date-popover__actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
 
-.ajsee-date-panel__actions-right {
+.ajsee-date-popover__actions-right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.ajsee-date-panel__btn {
-  border: 1px solid rgba(214, 226, 239, 0.92);
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--ajsee-date-ink);
-  padding: 11px 16px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 900;
+.ajsee-date-popover__btn {
   cursor: pointer;
-  box-shadow: 0 10px 18px rgba(12, 36, 80, 0.06);
 }
 
-.ajsee-date-panel__btn--primary {
-  border-color: transparent;
-  background: linear-gradient(180deg, var(--ajsee-date-accent), var(--ajsee-date-accent-strong));
-  color: #fff;
-  box-shadow:
-    0 20px 36px rgba(14, 136, 240, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-@media (min-width: 900px) {
-  .ajsee-date-panel {
+/* ───────────────── Desktop ───────────────── */
+@media (min-width: 721px) {
+  .ajsee-date-popover {
     position: fixed;
     left: var(--ajsee-popover-left, 16px);
     top: var(--ajsee-popover-top, 16px);
-    width: min(760px, calc(100vw - 32px));
-    max-height: min(var(--ajsee-popover-height, 560px), calc(100vh - 32px));
+    width: min(var(--ajsee-date-desktop-width), calc(100vw - 32px));
     pointer-events: none;
   }
 
-  .ajsee-date-panel__backdrop {
+  .ajsee-date-popover__backdrop {
     display: none;
   }
 
-  .ajsee-date-panel__surface {
+  .ajsee-date-popover__surface {
     position: relative;
     width: 100%;
-    max-height: inherit;
-    border-radius: var(--ajsee-date-panel-radius);
+    border-radius: 0 0 var(--ajsee-date-panel-radius) var(--ajsee-date-panel-radius);
     pointer-events: auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
 
-  .ajsee-date-panel__grab {
+  .ajsee-date-popover__header {
+    padding: 14px 18px 0;
+  }
+
+  .ajsee-date-popover__close {
     display: none;
   }
 
-  .ajsee-date-panel__header {
-    padding: 18px 22px 0;
+  .ajsee-date-popover__inputs {
+    padding: 10px 18px 8px;
   }
 
-  .ajsee-date-panel__close {
-    display: none;
+  .ajsee-date-popover__field input {
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(203, 218, 235, 0.96);
+    background: rgba(255, 255, 255, 0.92);
+    font-size: 15px;
   }
 
-  .ajsee-date-panel__inputs {
-    padding: 14px 22px 10px;
+  .ajsee-date-popover__calendar {
+    padding: 4px 18px 0;
   }
 
-  .ajsee-date-panel__calendar {
-    flex: 1 1 auto;
-    overflow: auto;
-    padding: 2px 22px 0;
-    min-height: 0;
-    overscroll-behavior: contain;
-    scrollbar-gutter: stable both-edges;
-  }
-
-  .ajsee-date-panel__months {
+  .ajsee-date-popover__months {
     grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
 
-  .ajsee-date-panel__actions {
-    padding: 16px 22px 18px;
+  .ajsee-date-popover__month-head {
+    grid-template-columns: 36px 1fr 36px;
+    gap: 8px;
+  }
+
+  .ajsee-date-popover__title {
+    font-size: 14px;
+  }
+
+  .ajsee-date-popover__nav,
+  .ajsee-date-popover__nav-spacer {
+    width: 36px;
+    height: 36px;
+  }
+
+  .ajsee-date-popover__nav {
+    border: 1px solid rgba(212, 224, 238, 0.92);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ajsee-date-ink);
+    font-size: 18px;
+    line-height: 1;
+    box-shadow: 0 8px 16px rgba(12, 36, 80, 0.05);
+  }
+
+  .ajsee-date-popover__nav:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.02);
+  }
+
+  .ajsee-date-popover__nav:disabled {
+    opacity: 0.38;
+    cursor: default;
+    transform: none;
+  }
+
+  .ajsee-date-popover__dow {
+    gap: var(--ajsee-date-desktop-gap);
+    margin-bottom: 6px;
+  }
+
+  .ajsee-date-popover__dow span {
+    font-size: 12px;
+    padding: 4px 0;
+  }
+
+  .ajsee-date-popover__grid {
+    gap: var(--ajsee-date-desktop-gap);
+  }
+
+  .ajsee-date-popover__cell,
+  .ajsee-date-popover__empty {
+    height: var(--ajsee-date-desktop-cell);
+  }
+
+  .ajsee-date-popover__day {
+    height: var(--ajsee-date-desktop-cell);
+    border: 1px solid rgba(230, 237, 245, 0.96);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.92);
+    font-size: 15px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.82) inset,
+      0 8px 14px rgba(12, 36, 80, 0.04);
+  }
+
+  .ajsee-date-popover__day:hover {
+    background: #f5faff;
+  }
+
+  .ajsee-date-popover__day.is-start,
+  .ajsee-date-popover__day.is-end {
+    box-shadow:
+      0 14px 22px rgba(14, 136, 240, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
+
+  .ajsee-date-popover__day.is-today::after {
+    bottom: 6px;
+    width: 16px;
+    height: 3px;
+  }
+
+  .ajsee-date-popover__actions {
+    padding: 12px 18px 16px;
     border-top: 1px solid rgba(226, 235, 245, 0.9);
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.74);
+  }
+
+  .ajsee-date-popover__btn {
+    border: 1px solid rgba(214, 226, 239, 0.92);
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--ajsee-date-ink);
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: 900;
+    box-shadow: 0 8px 16px rgba(12, 36, 80, 0.05);
+  }
+
+  .ajsee-date-popover__btn--primary {
+    border-color: transparent;
+    background: linear-gradient(180deg, var(--ajsee-date-accent), var(--ajsee-date-accent-strong));
+    color: #fff;
+    box-shadow:
+      0 16px 28px rgba(14, 136, 240, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.28);
   }
 }
 
-@media (max-width: 899.98px) {
-  .ajsee-date-panel {
+/* ───────────────── Mobile ───────────────── */
+@media (max-width: 720px) {
+  .ajsee-date-popover {
     position: fixed;
     inset: 0;
     display: flex;
@@ -433,135 +458,164 @@ body.ajsee-date-sheet-open {
     pointer-events: none;
   }
 
-  .ajsee-date-panel__backdrop {
+  .ajsee-date-popover__backdrop {
     display: block;
     z-index: var(--ajsee-date-panel-backdrop-z);
     pointer-events: auto;
   }
 
-  .ajsee-date-panel__surface {
+  .ajsee-date-popover__surface {
     position: relative;
     z-index: calc(var(--ajsee-date-panel-backdrop-z) + 1);
-    width: 100%;
-    max-height: min(88dvh, calc(100vh - 12px));
+    width: min(100%, 860px);
+    max-height: calc(100vh - env(safe-area-inset-top, 0px) - 12px);
     border-radius: 28px 28px 0 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     pointer-events: auto;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  .ajsee-date-panel__grab {
+  .ajsee-date-popover__grab {
     display: block;
-    width: 54px;
+    width: 48px;
     height: 5px;
     border-radius: 999px;
-    background: rgba(113, 128, 150, 0.35);
+    background: rgba(99, 112, 130, 0.28);
     margin: 10px auto 2px;
-    flex: 0 0 auto;
   }
 
-  .ajsee-date-panel__header {
-    padding: 8px 18px 0;
+  .ajsee-date-popover__header {
+    padding: 12px 18px 0;
   }
 
-  .ajsee-date-panel__tabs {
-    gap: 14px;
+  .ajsee-date-popover__close {
+    display: inline-flex;
   }
 
-  .ajsee-date-panel__tab {
+  .ajsee-date-popover__inputs {
+    padding: 10px 18px 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .ajsee-date-popover__field input {
+    height: 48px;
+    padding: 0 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(198, 214, 232, 0.92);
+    background: rgba(255, 255, 255, 0.92);
     font-size: 16px;
-    padding-top: 8px;
-    padding-bottom: 10px;
   }
 
-  .ajsee-date-panel__close {
-    flex: 0 0 auto;
-  }
-
-  .ajsee-date-panel__inputs {
-    padding: 12px 18px 8px;
-  }
-
-  .ajsee-date-panel__field input {
-    height: 50px;
-    font-size: 17px;
-  }
-
-  .ajsee-date-panel__calendar {
+  .ajsee-date-popover__calendar {
     overflow: auto;
-    min-height: 0;
-    padding: 4px 18px 0;
+    padding: 2px 18px 0;
     overscroll-behavior: contain;
   }
 
-  .ajsee-date-panel__months {
+  .ajsee-date-popover__months {
     grid-template-columns: 1fr;
     gap: 18px;
   }
 
-  .ajsee-date-panel__cell,
-  .ajsee-date-panel__empty {
-    height: 48px;
-  }
-
-  .ajsee-date-panel__day {
-    height: 48px;
-    font-size: 17px;
-    border-radius: 14px;
-  }
-
-  .ajsee-date-panel__actions {
-    padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
-    border-top: 1px solid rgba(226, 235, 245, 0.9);
-    background: rgba(255, 255, 255, 0.78);
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+  .ajsee-date-popover__month-head {
+    grid-template-columns: 44px 1fr 44px;
     gap: 10px;
+    margin-bottom: 10px;
   }
 
-  .ajsee-date-panel__actions-right {
-    display: contents;
+  .ajsee-date-popover__title {
+    font-size: 18px;
   }
 
-  .ajsee-date-panel__btn {
-    min-height: 46px;
-    font-size: 14px;
-    padding: 0 12px;
-    white-space: nowrap;
+  .ajsee-date-popover__nav,
+  .ajsee-date-popover__nav-spacer {
+    width: 44px;
+    height: 44px;
   }
-}
 
-@media (prefers-color-scheme: dark) {
-  .ajsee-date-panel__close,
-  .ajsee-date-panel__nav,
-  .ajsee-date-panel__btn,
-  .ajsee-date-panel__field input,
-  .ajsee-date-panel__day {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--ajsee-date-border-soft);
+  .ajsee-date-popover__nav {
+    border: 1px solid rgba(209, 222, 237, 0.9);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.9);
     color: var(--ajsee-date-ink);
-    box-shadow: none;
+    font-size: 22px;
+    line-height: 1;
+    box-shadow: 0 10px 22px rgba(12, 36, 80, 0.08);
   }
 
-  .ajsee-date-panel__day:hover {
-    background: rgba(255, 255, 255, 0.08);
+  .ajsee-date-popover__dow {
+    gap: var(--ajsee-date-mobile-gap);
+    margin-bottom: 8px;
   }
 
-  .ajsee-date-panel__day.is-disabled {
-    background: transparent;
+  .ajsee-date-popover__dow span {
+    font-size: 14px;
+    padding: 6px 0;
   }
 
-  .ajsee-date-panel__actions {
-    border-top-color: rgba(255, 255, 255, 0.08);
-    background: rgba(14, 22, 35, 0.72);
+  .ajsee-date-popover__grid {
+    gap: var(--ajsee-date-mobile-gap);
   }
 
-  .ajsee-date-panel__btn--primary,
-  .ajsee-date-panel__day.is-start,
-  .ajsee-date-panel__day.is-end {
-    background: linear-gradient(180deg, var(--ajsee-date-accent), var(--ajsee-date-accent-strong));
+  .ajsee-date-popover__cell,
+  .ajsee-date-popover__empty {
+    height: var(--ajsee-date-mobile-cell);
+  }
+
+  .ajsee-date-popover__day {
+    height: var(--ajsee-date-mobile-cell);
+    border: 1px solid rgba(232, 239, 247, 0.9);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.86);
+    font-size: 18px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.8) inset,
+      0 10px 18px rgba(12, 36, 80, 0.05);
+  }
+
+  .ajsee-date-popover__day:hover {
+    background: #f4f9ff;
+  }
+
+  .ajsee-date-popover__day.is-start,
+  .ajsee-date-popover__day.is-end {
+    box-shadow:
+      0 18px 28px rgba(14, 136, 240, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  .ajsee-date-popover__day.is-today::after {
+    bottom: 8px;
+    width: 18px;
+    height: 3px;
+  }
+
+  .ajsee-date-popover__actions {
+    padding: 14px 18px 16px;
+    border-top: 1px solid rgba(226, 235, 245, 0.9);
+    background: rgba(255, 255, 255, 0.76);
+  }
+
+  .ajsee-date-popover__btn {
+    border: 1px solid rgba(214, 226, 239, 0.92);
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--ajsee-date-ink);
+    padding: 11px 16px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 900;
+    box-shadow: 0 10px 18px rgba(12, 36, 80, 0.06);
+  }
+
+  .ajsee-date-popover__btn--primary {
     border-color: transparent;
+    background: linear-gradient(180deg, var(--ajsee-date-accent), var(--ajsee-date-accent-strong));
     color: #fff;
+    box-shadow:
+      0 20px 36px rgba(14, 136, 240, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
 }

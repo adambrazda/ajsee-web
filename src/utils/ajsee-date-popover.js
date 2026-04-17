@@ -1,26 +1,25 @@
 // /src/utils/ajsee-date-popover.js
 /*! AJSEE – responsive date range popover
-   - desktop: anchored popover under #date-combo-button
+   - desktop: compact anchored panel under #date-combo-button
    - mobile: bottom sheet
    - emits `AJSEE:date-popover:apply` with { mode, from, to, dateFrom, dateTo }
-   - styling is expected from SCSS (.ajsee-date-panel)
 */
 
 (function () {
   const WIN = window;
   const DOC = document;
-  const GLOBAL_KEY = '__AJSEE_DATE_POPOVER_V2__';
+  const GLOBAL_KEY = '__AJSEE_DATE_POPOVER_V4__';
 
   if (WIN[GLOBAL_KEY]) return;
   WIN[GLOBAL_KEY] = true;
 
   const CONFIG = {
     SAFE: 12,
-    GAP: 10,
-    DESKTOP_BREAKPOINT: 900,
-    DESKTOP_MAX_W: 760,
-    DESKTOP_MIN_W: 680,
-    DESKTOP_MAX_H: 640
+    GAP: 8,
+    DESKTOP_BREAKPOINT: 721,
+    DESKTOP_MAX_W: 640,
+    DESKTOP_MIN_W: 560,
+    DESKTOP_MAX_H: 560
   };
 
   const STRINGS = {
@@ -31,6 +30,17 @@
     pl: { anytime: 'Kiedykolwiek', today: 'Dzisiaj', start: 'Od', end: 'Do', apply: 'Zastosuj', clear: 'Wyczyść', cancel: 'Anuluj', close: 'Zamknij', dateLabel: 'Data' },
     hu: { anytime: 'Bármikor', today: 'Ma', start: 'Tól', end: 'Ig', apply: 'Alkalmaz', clear: 'Törlés', cancel: 'Mégse', close: 'Bezárás', dateLabel: 'Dátum' }
   };
+
+  let popover = null;
+  let anchorEl = null;
+  let isOpen = false;
+  let openDesktopMode = null;
+  let viewMonthIdx = null;
+  let selFrom = '';
+  let selTo = '';
+  let boundParents = [];
+  let lastScrollY = 0;
+  let positionRaf = 0;
 
   function esc(s) {
     return String(s || '')
@@ -61,7 +71,7 @@
       const queryLang = qs ? (qs.get('lang') || qs.get('locale') || '') : '';
       if (queryLang) return normalizeLang(queryLang);
     } catch {
-      /* noop */
+      // noop
     }
 
     return 'cs';
@@ -168,7 +178,10 @@
     if (combo) {
       const prev = combo.previousElementSibling;
       if (prev && prev.tagName === 'LABEL') return prev;
-      const direct = combo.parentElement ? Array.from(combo.parentElement.children).find((child) => child.tagName === 'LABEL') : null;
+
+      const direct = combo.parentElement
+        ? Array.from(combo.parentElement.children).find((child) => child.tagName === 'LABEL')
+        : null;
       if (direct) return direct;
     }
 
@@ -206,7 +219,7 @@
       try {
         btn.setAttribute('aria-label', label);
       } catch {
-        /* noop */
+        // noop
       }
     });
   }
@@ -225,7 +238,7 @@
       mo.observe(DOC.documentElement, { attributes: true, attributeFilter: ['lang', 'data-lang'] });
       if (DOC.body) mo.observe(DOC.body, { attributes: true, attributeFilter: ['lang', 'data-lang'] });
     } catch {
-      /* noop */
+      // noop
     }
   }
 
@@ -261,12 +274,13 @@
         const ox = st.overflowX || st.overflow || '';
         const scrollable = overflowRe.test(oy) || overflowRe.test(ox);
         const canScroll = node.scrollHeight > node.clientHeight || node.scrollWidth > node.clientWidth;
+
         if (scrollable && canScroll && !seen.has(node)) {
           seen.add(node);
           out.push(node);
         }
       } catch {
-        /* noop */
+        // noop
       }
     }
 
@@ -277,24 +291,17 @@
   }
 
   function getHeaderEl() {
-    return DOC.querySelector('header.site-header') || DOC.querySelector('.site-header') || DOC.querySelector('header');
+    return DOC.querySelector('header.site-header') ||
+      DOC.querySelector('.site-header') ||
+      DOC.querySelector('header');
   }
 
   function getHeaderSafeTop() {
     const header = getHeaderEl();
     if (!header || !header.getBoundingClientRect) return CONFIG.SAFE;
     const rect = header.getBoundingClientRect();
-    return Math.max(CONFIG.SAFE, Math.round((rect.bottom || 0) + 10));
+    return Math.max(CONFIG.SAFE, Math.round((rect.bottom || 0) + 8));
   }
-
-  let popover = null;
-  let anchorEl = null;
-  let isOpen = false;
-  let viewMonthIdx = null;
-  let selFrom = '';
-  let selTo = '';
-  let boundParents = [];
-  let lastScrollY = 0;
 
   function saveBodyScrollState() {
     if (DOC.body.classList.contains('ajsee-date-sheet-open')) return;
@@ -315,66 +322,75 @@
 
     const t = txt();
     const wrap = DOC.createElement('div');
-    wrap.className = 'ajsee-date-panel';
+    wrap.className = 'ajsee-date-popover';
     wrap.setAttribute('role', 'dialog');
     wrap.setAttribute('aria-modal', isDesktop() ? 'false' : 'true');
     wrap.setAttribute('data-ajsee', 'date-popover');
     wrap.hidden = true;
 
     wrap.innerHTML = `
-      <div class="ajsee-date-panel__backdrop" data-ajsee-close></div>
-      <div class="ajsee-date-panel__surface" tabindex="-1">
-        <div class="ajsee-date-panel__grab" aria-hidden="true"></div>
+      <div class="ajsee-date-popover__backdrop" data-ajsee-close></div>
 
-        <div class="ajsee-date-panel__header">
-          <div class="ajsee-date-panel__tabs" role="tablist" aria-label="Rychlé volby termínu">
-            <button type="button" class="ajsee-date-panel__tab" data-quick="anytime">${esc(t.anytime)}</button>
-            <button type="button" class="ajsee-date-panel__tab" data-quick="today">${esc(t.today)}</button>
+      <div class="ajsee-date-popover__surface" tabindex="-1">
+        <div class="ajsee-date-popover__grab" aria-hidden="true"></div>
+
+        <div class="ajsee-date-popover__header">
+          <div class="ajsee-date-popover__tabs" role="tablist" aria-label="Rychlé volby termínu">
+            <button type="button" class="ajsee-date-popover__tab" data-quick="anytime">${esc(t.anytime)}</button>
+            <button type="button" class="ajsee-date-popover__tab" data-quick="today">${esc(t.today)}</button>
           </div>
 
-          <button type="button" class="ajsee-date-panel__close" data-ajsee-close aria-label="${esc(t.close)}">×</button>
+          <button
+            type="button"
+            class="ajsee-date-popover__close"
+            data-ajsee-close
+            aria-label="${esc(t.close)}">
+            ×
+          </button>
         </div>
 
-        <div class="ajsee-date-panel__inputs">
-          <div class="ajsee-date-panel__field">
+        <div class="ajsee-date-popover__inputs">
+          <div class="ajsee-date-popover__field">
             <label data-role="label-start">${esc(t.start)}</label>
             <input type="text" data-role="start" readonly />
           </div>
-          <div class="ajsee-date-panel__field">
+
+          <div class="ajsee-date-popover__field">
             <label data-role="label-end">${esc(t.end)}</label>
             <input type="text" data-role="end" readonly />
           </div>
         </div>
 
-        <div class="ajsee-date-panel__calendar">
-          <div class="ajsee-date-panel__months">
-            <section class="ajsee-date-panel__month" data-month="0">
-              <div class="ajsee-date-panel__month-head">
-                <button type="button" class="ajsee-date-panel__nav" data-nav="prev" aria-label="Předchozí měsíc">‹</button>
-                <div class="ajsee-date-panel__title" data-role="title-0"></div>
-                <span class="ajsee-date-panel__nav-spacer"></span>
+        <div class="ajsee-date-popover__calendar">
+          <div class="ajsee-date-popover__months">
+            <section class="ajsee-date-popover__month" data-month="0">
+              <div class="ajsee-date-popover__month-head">
+                <button type="button" class="ajsee-date-popover__nav" data-nav="prev" aria-label="Předchozí měsíc">‹</button>
+                <div class="ajsee-date-popover__title" data-role="title-0"></div>
+                <span class="ajsee-date-popover__nav-spacer"></span>
               </div>
-              <div class="ajsee-date-panel__dow" data-role="dow-0"></div>
-              <div class="ajsee-date-panel__grid" data-role="grid-0"></div>
+              <div class="ajsee-date-popover__dow" data-role="dow-0"></div>
+              <div class="ajsee-date-popover__grid" data-role="grid-0"></div>
             </section>
 
-            <section class="ajsee-date-panel__month" data-month="1">
-              <div class="ajsee-date-panel__month-head">
-                <span class="ajsee-date-panel__nav-spacer"></span>
-                <div class="ajsee-date-panel__title" data-role="title-1"></div>
-                <button type="button" class="ajsee-date-panel__nav" data-nav="next" aria-label="Další měsíc">›</button>
+            <section class="ajsee-date-popover__month" data-month="1">
+              <div class="ajsee-date-popover__month-head">
+                <span class="ajsee-date-popover__nav-spacer"></span>
+                <div class="ajsee-date-popover__title" data-role="title-1"></div>
+                <button type="button" class="ajsee-date-popover__nav" data-nav="next" aria-label="Další měsíc">›</button>
               </div>
-              <div class="ajsee-date-panel__dow" data-role="dow-1"></div>
-              <div class="ajsee-date-panel__grid" data-role="grid-1"></div>
+              <div class="ajsee-date-popover__dow" data-role="dow-1"></div>
+              <div class="ajsee-date-popover__grid" data-role="grid-1"></div>
             </section>
           </div>
         </div>
 
-        <div class="ajsee-date-panel__actions">
-          <button type="button" class="ajsee-date-panel__btn ajsee-date-panel__btn--ghost" data-act="clear">${esc(t.clear)}</button>
-          <div class="ajsee-date-panel__actions-right">
-            <button type="button" class="ajsee-date-panel__btn ajsee-date-panel__btn--ghost" data-act="cancel">${esc(t.cancel)}</button>
-            <button type="button" class="ajsee-date-panel__btn ajsee-date-panel__btn--primary" data-act="apply">${esc(t.apply)}</button>
+        <div class="ajsee-date-popover__actions">
+          <button type="button" class="ajsee-date-popover__btn ajsee-date-popover__btn--ghost" data-act="clear">${esc(t.clear)}</button>
+
+          <div class="ajsee-date-popover__actions-right">
+            <button type="button" class="ajsee-date-popover__btn ajsee-date-popover__btn--ghost" data-act="cancel">${esc(t.cancel)}</button>
+            <button type="button" class="ajsee-date-popover__btn ajsee-date-popover__btn--primary" data-act="apply">${esc(t.apply)}</button>
           </div>
         </div>
       </div>
@@ -387,11 +403,6 @@
       if (e.key === 'Escape') {
         e.preventDefault();
         closePopover();
-      }
-      if (e.key === 'Enter' && e.target && e.target.matches('button[data-iso]')) {
-        e.preventDefault();
-        const iso = e.target.getAttribute('data-iso') || '';
-        if (iso) onPickDay(iso);
       }
     });
 
@@ -411,6 +422,7 @@
         const base = parseISO(today);
         viewMonthIdx = monthIndex(new Date(base.getFullYear(), base.getMonth(), 1, 12, 0, 0, 0));
         renderUI();
+        schedulePosition();
       });
     });
 
@@ -418,11 +430,15 @@
       selFrom = '';
       selTo = '';
       renderUI();
+      schedulePosition();
     });
 
     popover.querySelector('[data-act="cancel"]').addEventListener('click', closePopover);
     popover.querySelector('[data-act="apply"]').addEventListener('click', applyAndClose);
-    popover.querySelectorAll('[data-ajsee-close]').forEach((btn) => btn.addEventListener('click', closePopover));
+
+    popover.querySelectorAll('[data-ajsee-close]').forEach((btn) => {
+      btn.addEventListener('click', closePopover);
+    });
 
     popover.querySelector('[data-nav="prev"]').addEventListener('click', () => {
       const now = parseISO(todayISO());
@@ -445,6 +461,7 @@
     popover.addEventListener('click', (e) => {
       const btn = e.target && e.target.closest && e.target.closest('button[data-iso]');
       if (!btn) return;
+
       const iso = btn.getAttribute('data-iso') || '';
       if (!iso || btn.classList.contains('is-disabled')) return;
       onPickDay(iso);
@@ -453,11 +470,10 @@
 
   function rebuildStaticTexts(forcedLang) {
     if (!popover) return;
+
     const t = txt(forcedLang);
 
-    const closeBtn = popover.querySelector('[data-ajsee-close].ajsee-date-panel__close');
-    if (closeBtn) closeBtn.setAttribute('aria-label', t.close);
-
+    const closeBtn = popover.querySelector('.ajsee-date-popover__close');
     const tabAny = popover.querySelector('[data-quick="anytime"]');
     const tabToday = popover.querySelector('[data-quick="today"]');
     const clearBtn = popover.querySelector('[data-act="clear"]');
@@ -466,6 +482,7 @@
     const startLabel = popover.querySelector('[data-role="label-start"]');
     const endLabel = popover.querySelector('[data-role="label-end"]');
 
+    if (closeBtn) closeBtn.setAttribute('aria-label', t.close);
     if (tabAny) tabAny.textContent = t.anytime;
     if (tabToday) tabToday.textContent = t.today;
     if (clearBtn) clearBtn.textContent = t.clear;
@@ -479,8 +496,10 @@
 
   function normalizeSelection() {
     const min = todayISO();
+
     if (selFrom && selFrom < min) selFrom = min;
     if (selTo && selTo < min) selTo = min;
+
     if (selFrom && selTo && selFrom > selTo) {
       const tmp = selFrom;
       selFrom = selTo;
@@ -496,8 +515,9 @@
       selFrom = iso;
       selTo = '';
     } else if (selFrom && !selTo) {
-      if (iso >= selFrom) selTo = iso;
-      else {
+      if (iso >= selFrom) {
+        selTo = iso;
+      } else {
         selFrom = iso;
         selTo = '';
       }
@@ -512,10 +532,12 @@
     viewMonthIdx = monthIndex(new Date(d.getFullYear(), d.getMonth(), 1, 12, 0, 0, 0));
 
     renderUI();
+
     if (!isDesktop() && selFrom && selTo) {
       applyAndClose();
       return;
     }
+
     schedulePosition();
   }
 
@@ -524,7 +546,9 @@
     const any = !selFrom && !selTo;
     const isToday = selFrom === today && selTo === today;
 
-    popover.querySelectorAll('.ajsee-date-panel__tab').forEach((tab) => tab.classList.remove('is-active'));
+    popover.querySelectorAll('.ajsee-date-popover__tab').forEach((tab) => {
+      tab.classList.remove('is-active');
+    });
 
     const anyBtn = popover.querySelector('[data-quick="anytime"]');
     const todayBtn = popover.querySelector('[data-quick="today"]');
@@ -536,6 +560,7 @@
   function renderMonth(offset) {
     const lang = currentLang();
     const now = parseISO(todayISO());
+
     const startIdx = viewMonthIdx == null
       ? monthIndex(new Date(now.getFullYear(), now.getMonth(), 1, 12, 0, 0, 0))
       : viewMonthIdx;
@@ -548,7 +573,9 @@
     if (titleEl) titleEl.textContent = monthTitle(monthStart, lang);
 
     const dowEl = popover.querySelector(`[data-role="dow-${offset}"]`);
-    if (dowEl) dowEl.innerHTML = weekdayLabels(lang).map((day) => `<span>${esc(day)}</span>`).join('');
+    if (dowEl) {
+      dowEl.innerHTML = weekdayLabels(lang).map((day) => `<span>${esc(day)}</span>`).join('');
+    }
 
     const gridEl = popover.querySelector(`[data-role="grid-${offset}"]`);
     if (!gridEl) return;
@@ -565,7 +592,10 @@
     const to = selTo || '';
 
     let html = '';
-    for (let i = 0; i < leading; i++) html += '<div class="ajsee-date-panel__empty"></div>';
+
+    for (let i = 0; i < leading; i++) {
+      html += '<div class="ajsee-date-popover__empty"></div>';
+    }
 
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day, 12, 0, 0, 0);
@@ -577,7 +607,7 @@
       const inRange = from && to && iso > from && iso < to;
 
       const cls = [
-        'ajsee-date-panel__day',
+        'ajsee-date-popover__day',
         disabled ? 'is-disabled' : '',
         isTodayCell ? 'is-today' : '',
         inRange ? 'is-in-range' : '',
@@ -586,7 +616,7 @@
       ].filter(Boolean).join(' ');
 
       html += `
-        <div class="ajsee-date-panel__cell">
+        <div class="ajsee-date-popover__cell">
           <button
             type="button"
             class="${cls}"
@@ -615,11 +645,13 @@
 
     const startInput = popover.querySelector('input[data-role="start"]');
     const endInput = popover.querySelector('input[data-role="end"]');
+
     if (startInput) {
       startInput.value = formatDisplay(selFrom, lang);
       startInput.placeholder = lang === 'en' ? 'MM/DD/YYYY' : 'dd.mm.rrrr';
       startInput.setAttribute('aria-label', t.start);
     }
+
     if (endInput) {
       endInput.value = formatDisplay(selTo, lang);
       endInput.placeholder = lang === 'en' ? 'MM/DD/YYYY' : 'dd.mm.rrrr';
@@ -633,7 +665,9 @@
     const now = parseISO(todayISO());
     const minIdx = monthIndex(new Date(now.getFullYear(), now.getMonth(), 1, 12, 0, 0, 0));
     const prevBtn = popover.querySelector('[data-nav="prev"]');
-    if (prevBtn) prevBtn.disabled = (viewMonthIdx == null ? minIdx : viewMonthIdx) <= minIdx;
+    if (prevBtn) {
+      prevBtn.disabled = (viewMonthIdx == null ? minIdx : viewMonthIdx) <= minIdx;
+    }
   }
 
   function clearParentBindings() {
@@ -641,16 +675,16 @@
       try {
         target.removeEventListener('scroll', handler);
       } catch {
-        /* noop */
+        // noop
       }
     });
     boundParents = [];
   }
 
-  let positionRaf = 0;
   function schedulePosition() {
     if (!isOpen) return;
     if (positionRaf) return;
+
     positionRaf = WIN.requestAnimationFrame(() => {
       positionRaf = 0;
       positionPopover();
@@ -680,8 +714,9 @@
     const rect = group.getBoundingClientRect();
     const vpW = WIN.innerWidth || DOC.documentElement.clientWidth || 0;
     const vpH = WIN.innerHeight || DOC.documentElement.clientHeight || 0;
+    const safeTop = getHeaderSafeTop();
 
-    if (rect.bottom <= 0 || rect.top >= vpH) {
+    if (rect.bottom <= safeTop || rect.top >= vpH || rect.right <= 0 || rect.left >= vpW) {
       closePopover();
       return;
     }
@@ -692,13 +727,15 @@
     popover.style.maxHeight = '';
 
     const availableW = Math.max(320, vpW - CONFIG.SAFE * 2);
-    const desiredW = Math.min(CONFIG.DESKTOP_MAX_W, Math.max(CONFIG.DESKTOP_MIN_W, Math.round(rect.width * 1.9)));
+    const desiredW = Math.min(
+      CONFIG.DESKTOP_MAX_W,
+      Math.max(CONFIG.DESKTOP_MIN_W, Math.round(rect.width * 1.85))
+    );
     const panelW = Math.min(desiredW, availableW);
 
     popover.style.width = `${panelW}px`;
 
-    const safeTop = getHeaderSafeTop();
-    const surface = popover.querySelector('.ajsee-date-panel__surface');
+    const surface = popover.querySelector('.ajsee-date-popover__surface');
     const panelH = surface ? surface.offsetHeight : popover.offsetHeight;
 
     let left = rect.left;
@@ -716,7 +753,7 @@
       }
     }
 
-    const maxH = Math.max(420, vpH - safeTop - CONFIG.SAFE);
+    const maxH = Math.max(360, vpH - safeTop - CONFIG.SAFE);
     popover.style.maxHeight = `${Math.min(CONFIG.DESKTOP_MAX_H, maxH)}px`;
     popover.style.left = `${Math.round(left)}px`;
     popover.style.top = `${Math.round(top)}px`;
@@ -724,10 +761,10 @@
 
   function positionMobileSheet() {
     if (!popover) return;
-    popover.style.left = '0px';
-    popover.style.top = '0px';
-    popover.style.width = '100%';
-    popover.style.maxHeight = '100%';
+    popover.style.left = '';
+    popover.style.top = '';
+    popover.style.width = '';
+    popover.style.maxHeight = '';
   }
 
   function positionPopover() {
@@ -742,6 +779,7 @@
     ensurePopover();
     anchorEl = anchor;
     isOpen = true;
+    openDesktopMode = isDesktop();
     popover.hidden = false;
 
     const current = readCurrentHiddenInputs();
@@ -757,16 +795,22 @@
 
     renderUI();
     bindAnchorScrollParents();
-    if (!isDesktop()) saveBodyScrollState();
+
+    if (!openDesktopMode) {
+      saveBodyScrollState();
+    }
+
     positionPopover();
 
-    const surface = popover.querySelector('.ajsee-date-panel__surface');
+    const surface = popover.querySelector('.ajsee-date-popover__surface');
     if (surface && surface.focus) surface.focus();
   }
 
   function closePopover() {
     if (!isOpen) return;
+
     isOpen = false;
+    openDesktopMode = null;
     clearParentBindings();
     restoreBodyScrollState();
 
@@ -780,7 +824,15 @@
 
     const prevAnchor = anchorEl;
     anchorEl = null;
-    if (prevAnchor && prevAnchor.setAttribute) prevAnchor.setAttribute('aria-expanded', 'false');
+
+    if (prevAnchor && prevAnchor.setAttribute) {
+      prevAnchor.setAttribute('aria-expanded', 'false');
+      try {
+        prevAnchor.focus({ preventScroll: true });
+      } catch {
+        // noop
+      }
+    }
   }
 
   function applyAndClose() {
@@ -791,15 +843,24 @@
 
     let mode = 'range';
     const today = todayISO();
+
     if (!from && !to) mode = 'anytime';
     else if (from === today && to === today) mode = 'today';
 
-    const detail = { mode, from, to, dateFrom: from, dateTo: to };
+    const detail = {
+      mode,
+      from,
+      to,
+      dateFrom: from,
+      dateTo: to
+    };
+
     try {
       WIN.dispatchEvent(new CustomEvent('AJSEE:date-popover:apply', { detail }));
     } catch {
-      /* noop */
+      // noop
     }
+
     closePopover();
   }
 
@@ -811,6 +872,21 @@
     closePopover();
   }
 
+  function handleViewportChange() {
+    if (!isOpen) return;
+
+    const nowDesktop = isDesktop();
+    if (openDesktopMode !== nowDesktop) {
+      openDesktopMode = nowDesktop;
+      if (nowDesktop) restoreBodyScrollState();
+      else saveBodyScrollState();
+      bindAnchorScrollParents();
+      renderUI();
+    }
+
+    schedulePosition();
+  }
+
   function initAnchors() {
     const buttons = getDateComboButtons();
     if (!buttons.length) return;
@@ -820,28 +896,38 @@
     buttons.forEach((btn) => {
       if (btn.dataset.ajseeDateBound === '1') return;
       btn.dataset.ajseeDateBound = '1';
+
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         const currentTarget = e.currentTarget;
-        if (isOpen && anchorEl === currentTarget) closePopover();
-        else {
-          currentTarget.setAttribute('aria-expanded', 'true');
-          openPopover(currentTarget);
+
+        if (isOpen && anchorEl === currentTarget) {
+          closePopover();
+          return;
         }
+
+        currentTarget.setAttribute('aria-expanded', 'true');
+        openPopover(currentTarget);
       });
     });
   }
 
   DOC.addEventListener('mousedown', onGlobalPointerDown, true);
   DOC.addEventListener('touchstart', onGlobalPointerDown, true);
-  WIN.addEventListener('resize', schedulePosition, { passive: true });
+
+  WIN.addEventListener('resize', handleViewportChange, { passive: true });
+  WIN.addEventListener('orientationchange', handleViewportChange, { passive: true });
   WIN.addEventListener('scroll', schedulePosition, { passive: true });
 
   WIN.addEventListener('AJSEE:langChanged', (e) => {
     const detail = e && e.detail ? e.detail : null;
-    const forced = typeof detail === 'string' ? detail : (detail && (detail.lang || detail.locale || detail.language)) || null;
+    const forced = typeof detail === 'string'
+      ? detail
+      : (detail && (detail.lang || detail.locale || detail.language)) || null;
+
     syncDateComboLabel(forced);
     rebuildStaticTexts(forced);
+    WIN.requestAnimationFrame(initAnchors);
     schedulePosition();
   });
 

@@ -995,3 +995,122 @@ body.ajsee-date-sheet-open {
       inset 0 1px 0 rgba(255, 255, 255, 0.24);
   }
 }
+@media (min-width: 721px) {
+  .ajsee-date-popover {
+    margin-top: -2px;
+  }
+
+  .ajsee-date-popover__surface {
+    border-radius: 0 0 20px 20px;
+    border-top: 0;
+    box-shadow:
+      0 14px 28px rgba(12, 36, 80, 0.10),
+      0 3px 8px rgba(12, 36, 80, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    background:
+      linear-gradient(180deg, rgba(252, 254, 255, 0.985) 0%, rgba(247, 250, 253, 0.985) 100%);
+  }
+
+  .filter-group.date-combo.is-open .combo-button,
+  .date-combo.is-open .combo-button {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow:
+      0 10px 22px rgba(12, 36, 80, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  }
+
+  .ajsee-date-popover__header {
+    padding: 10px 16px 0;
+  }
+
+  .ajsee-date-popover__tabs {
+    gap: 12px;
+  }
+
+  .ajsee-date-popover__tab {
+    font-size: 13px;
+    padding: 6px 2px 8px;
+  }
+
+  .ajsee-date-popover__inputs {
+    padding: 6px 16px 8px;
+    gap: 10px;
+  }
+
+  .ajsee-date-popover__field label {
+    margin-bottom: 4px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .ajsee-date-popover__field input {
+    height: 34px;
+    border-radius: 12px;
+    font-size: 13px;
+    padding: 0 12px;
+  }
+
+  .ajsee-date-popover__calendar {
+    padding: 0 16px;
+  }
+
+  .ajsee-date-popover__months {
+    gap: 10px;
+  }
+
+  .ajsee-date-popover__month-head {
+    margin: 0 0 4px;
+  }
+
+  .ajsee-date-popover__title {
+    font-size: 13px;
+  }
+
+  .ajsee-date-popover__dow span {
+    font-size: 10px;
+    padding: 2px 0;
+    opacity: 0.85;
+  }
+
+  .ajsee-date-popover__cell,
+  .ajsee-date-popover__empty {
+    height: 34px;
+  }
+
+  .ajsee-date-popover__day {
+    height: 34px;
+    border-radius: 10px;
+    font-size: 12px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.82) inset,
+      0 3px 6px rgba(12, 36, 80, 0.025);
+  }
+
+  .ajsee-date-popover__day.is-start,
+  .ajsee-date-popover__day.is-end {
+    box-shadow:
+      0 8px 16px rgba(14, 136, 240, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  .ajsee-date-popover__actions {
+    padding: 10px 16px 12px;
+    gap: 8px;
+  }
+
+  .ajsee-date-popover__actions-right {
+    gap: 6px;
+  }
+
+  .ajsee-date-popover__btn {
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-size: 12px;
+  }
+
+  .ajsee-date-popover__btn--primary {
+    min-width: 66px;
+  }
+}

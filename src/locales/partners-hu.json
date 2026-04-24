@@ -47,5 +47,15 @@
   "partner-error-company": "Kérjük, adja meg a cég vagy intézmény nevét.",
   "partner-error-name": "Kérjük, adja meg a nevét.",
   "partner-error-message": "Kérjük, írjon üzenetet.",
-  "partner-honeypot-label": "Ne töltse ki ezt a mezőt (spam elleni védelem)"
+  "partner-honeypot-label": "Ne töltse ki ezt a mezőt (spam elleni védelem)",
+  "partner-focus-title": "Milyen típusú partnerségeket építünk jelenleg",
+  "partner-focus-intro": "Az AJSEE jelenleg elsősorban a jegyértékesítés és az élményekhez kapcsolódó utazásokhoz kötődő szállás területén épít partnerségeket. Emellett nyitottak vagyunk más együttműködésekre is, amelyek természetesen illeszkednek az AJSEE működéséhez, és egyértelmű értéket adnak a felhasználónak.",
+  "partner-focus-item-1-title": "Jegyértékesítés",
+  "partner-focus-item-1-text": "Partnerek koncertekhez, színházhoz, fesztiválokhoz és sporteseményekhez.",
+  "partner-focus-item-2-title": "Szállás és kapcsolódó szolgáltatások",
+  "partner-focus-item-2-text": "Partnerek, akik az élményeket értelmes szálláslehetőségekkel és utazástervezéssel egészítik ki.",
+  "partner-focus-item-3-title": "Helyszínek, városok és úti célok",
+  "partner-focus-item-3-text": "Az élményekhez kapcsolódó utazás és a szabadidő megtervezése szempontjából releváns partnerek.",
+  "partner-focus-item-4-title": "Tartalmi és technológiai együttműködések",
+  "partner-focus-item-4-text": "Olyan együttműködések, amelyek támogatják az események felfedezését, az ajánlatok terjesztését vagy a jobb minőségű tartalmat."
 }

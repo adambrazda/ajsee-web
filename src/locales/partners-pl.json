@@ -47,5 +47,15 @@
   "partner-error-company": "Podaj nazwę firmy lub instytucji.",
   "partner-error-name": "Podaj swoje imię i nazwisko.",
   "partner-error-message": "Wpisz wiadomość.",
-  "partner-honeypot-label": "Nie wypełniaj tego pola (antyspam)"
+  "partner-honeypot-label": "Nie wypełniaj tego pola (antyspam)",
+  "partner-focus-title": "Jakie typy partnerstw obecnie rozwijamy",
+  "partner-focus-intro": "AJSEE rozwija dziś partnerstwa przede wszystkim w obszarze sprzedaży biletów oraz noclegów powiązanych z podróżowaniem za wydarzeniami i doświadczeniami. Jednocześnie jesteśmy otwarci na inne formy współpracy, które naturalnie wpisują się w sposób działania AJSEE i wnoszą dla użytkownika wyraźną wartość.",
+  "partner-focus-item-1-title": "Sprzedaż biletów",
+  "partner-focus-item-1-text": "Partnerzy dla koncertów, teatru, festiwali i wydarzeń sportowych.",
+  "partner-focus-item-2-title": "Noclegi i usługi powiązane",
+  "partner-focus-item-2-text": "Partnerzy, którzy uzupełniają doświadczenia o sensowne możliwości pobytu i planowania podróży.",
+  "partner-focus-item-3-title": "Miejsca wydarzeń, miasta i destynacje",
+  "partner-focus-item-3-text": "Partnerzy istotni dla podróżowania za wydarzeniami i planowania wolnego czasu.",
+  "partner-focus-item-4-title": "Współprace contentowe i technologiczne",
+  "partner-focus-item-4-text": "Współprace wspierające odkrywanie wydarzeń, dystrybucję oferty lub tworzenie lepszych treści."
 }

@@ -891,3 +891,261 @@
     display: none;
   }
 }
+// =============================================
+// PARTNERS FOCUS SECTION
+// =============================================
+.partners-focus-section {
+  position: relative;
+  overflow: hidden;
+  margin-top: clamp(-12px, -1vw, -20px);
+  padding: clamp(3.6rem, 4.4vw, 4.8rem) 0 clamp(4rem, 4.8vw, 5.2rem);
+  background:
+    linear-gradient(180deg, rgba(222, 236, 242, 0.96) 0%, #f3f7fb 16%, #f7fbff 100%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(760px 260px at 20% 0%, rgba($brand-blue-light, 0.12) 0%, rgba($brand-blue-light, 0) 74%),
+      radial-gradient(700px 240px at 80% 8%, rgba($brand-blue, 0.08) 0%, rgba($brand-blue, 0) 76%);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 50%;
+    transform: translateX(-50%);
+    width: min(1680px, calc(100% - 3.2rem));
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba($brand-blue, 0) 0%,
+      rgba($brand-blue, 0.14) 18%,
+      rgba($brand-blue-light, 0.18) 50%,
+      rgba($brand-blue, 0.14) 82%,
+      rgba($brand-blue, 0) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1680px;
+    padding:
+      clamp(1.8rem, 2.2vw, 2.4rem)
+      clamp(1.6rem, 3vw, 3.2rem)
+      clamp(1.5rem, 1.8vw, 1.9rem);
+    background: linear-gradient(180deg, rgba(255,255,255,0.80) 0%, rgba(255,255,255,0.95) 100%);
+    border: 1px solid rgba($brand-blue, 0.08);
+    border-radius: 30px;
+    box-shadow:
+      0 24px 54px rgba(10, 61, 98, 0.08),
+      0 8px 20px rgba(10, 61, 98, 0.04),
+      inset 0 1px 0 rgba(255,255,255,0.72);
+    backdrop-filter: blur(8px);
+  }
+
+  .partners-focus-head {
+    display: grid;
+    grid-template-columns: minmax(360px, 0.9fr) minmax(520px, 1.1fr);
+    gap: clamp(1.2rem, 2vw, 2.4rem);
+    align-items: start;
+    margin: 0 0 2rem;
+    text-align: left;
+    max-width: none;
+  }
+
+  h2 {
+    margin: 0;
+    max-width: 13ch;
+    font-size: clamp(2.05rem, 2.6vw, 2.95rem);
+    line-height: 1.04;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: $brand-dark;
+    text-wrap: balance;
+  }
+
+  .partners-focus-head p {
+    margin: 0;
+    max-width: 72ch;
+    font-size: 1.03rem;
+    line-height: 1.72;
+    color: $text-secondary;
+    text-wrap: pretty;
+  }
+
+  .partners-focus-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem;
+    align-items: stretch;
+  }
+
+  .partners-focus-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 178px;
+    padding: 1.4rem 1.35rem 1.18rem;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(247, 251, 255, 0.98) 0%, #ffffff 100%);
+    border: 1px solid rgba($brand-blue, 0.10);
+    box-shadow:
+      0 16px 30px rgba($brand-blue, 0.06),
+      0 5px 14px rgba($brand-blue, 0.035);
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease,
+      border-color 0.22s ease,
+      background 0.22s ease;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, $brand-blue 0%, $brand-blue-light 100%);
+      transform: scaleX(0.24);
+      transform-origin: left center;
+      transition: transform 0.24s ease;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: -36px;
+      right: -36px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba($brand-blue-light, 0.12) 0%,
+        rgba($brand-blue-light, 0) 72%
+      );
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    &:hover {
+      transform: translateY(-5px);
+      border-color: rgba($brand-blue, 0.16);
+      box-shadow:
+        0 22px 38px rgba($brand-blue, 0.085),
+        0 10px 22px rgba($brand-blue, 0.05);
+    }
+
+    &:hover::before {
+      transform: scaleX(1);
+    }
+
+    h3 {
+      margin: 0 0 0.62rem;
+      max-width: 24ch;
+      font-size: clamp(1.14rem, 1.2vw, 1.34rem);
+      line-height: 1.18;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: $brand-dark;
+      text-wrap: balance;
+    }
+
+    p {
+      margin: 0;
+      max-width: 52ch;
+      font-size: 0.98rem;
+      line-height: 1.62;
+      color: $text-secondary;
+      text-wrap: pretty;
+    }
+  }
+}
+
+@media (max-width: 980px) {
+  .partners-focus-section {
+    margin-top: -8px;
+    padding: 3.2rem 0 3.8rem;
+
+    .container {
+      padding:
+        1.35rem
+        1.05rem
+        1.1rem;
+      border-radius: 24px;
+    }
+
+    .partners-focus-head {
+      grid-template-columns: 1fr;
+      gap: 0.95rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .partners-focus-head p {
+      max-width: 100%;
+    }
+
+    .partners-focus-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .partners-focus-card {
+      min-height: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .partners-focus-section {
+    margin-top: 0;
+    padding: 2.8rem 0 3.2rem;
+
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: 1.2rem;
+      padding-bottom: 1rem;
+      border-radius: 20px;
+      box-shadow:
+        0 18px 34px rgba(10, 61, 98, 0.07),
+        0 6px 14px rgba(10, 61, 98, 0.035);
+    }
+
+    h2 {
+      max-width: none;
+      font-size: clamp(1.72rem, 7vw, 2.2rem);
+      line-height: 1.08;
+    }
+
+    .partners-focus-head {
+      margin-bottom: 1.35rem;
+    }
+
+    .partners-focus-head p {
+      font-size: 0.97rem;
+      line-height: 1.64;
+    }
+
+    .partners-focus-card {
+      padding: 1.05rem 0.95rem 0.95rem;
+      border-radius: 18px;
+
+      h3 {
+        max-width: none;
+        font-size: 1.05rem;
+        margin-bottom: 0.48rem;
+      }
+
+      p {
+        font-size: 0.94rem;
+        line-height: 1.56;
+      }
+    }
+  }
+}

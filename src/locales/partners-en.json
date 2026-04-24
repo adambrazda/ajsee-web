@@ -47,5 +47,15 @@
   "partner-error-company": "Please fill in your company or institution name.",
   "partner-error-name": "Please enter your name.",
   "partner-error-message": "Please write a message.",
-  "partner-honeypot-label": "Do not fill in this field (antispam)"
+  "partner-honeypot-label": "Do not fill in this field (antispam)",
+  "partner-focus-title": "What types of partnerships we are currently developing",
+  "partner-focus-intro": "Today, AJSEE is primarily developing partnerships in ticket sales and accommodation connected to travel for experiences. At the same time, we are open to other collaborations that naturally fit how AJSEE works and bring clear value to the user.",
+  "partner-focus-item-1-title": "Ticket sales",
+  "partner-focus-item-1-text": "Partners for concerts, theatre, festivals and sports events.",
+  "partner-focus-item-2-title": "Accommodation and related services",
+  "partner-focus-item-2-text": "Partners who complement experiences with meaningful accommodation options and trip planning.",
+  "partner-focus-item-3-title": "Venues, cities and destinations",
+  "partner-focus-item-3-text": "Partners relevant to travel for experiences and leisure planning.",
+  "partner-focus-item-4-title": "Content and technology partnerships",
+  "partner-focus-item-4-text": "Collaborations that support event discovery, offer distribution or higher-quality content."
 }

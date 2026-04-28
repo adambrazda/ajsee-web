@@ -1,4 +1,5 @@
 const CONSENT_KEY = 'ajsee_cookie_consent_v1';
+const GTM_ID = 'GTM-T5NZVSSW';
 
 const defaultConsent = {
   necessary: true,
@@ -7,9 +8,11 @@ const defaultConsent = {
 };
 
 function isProdHttps() {
+  const hostname = location.hostname || '';
+
   return (
     location.protocol === 'https:' &&
-    !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname)
+    !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(hostname)
   );
 }
 
@@ -58,38 +61,85 @@ function hasAnalyticsConsent() {
 
 let gtmLoaded = false;
 
+function hasExistingGTMScript() {
+  return !!document.querySelector(`script[src*="googletagmanager.com/gtm.js?id=${GTM_ID}"]`);
+}
+
+function ensureDataLayer() {
+  window.dataLayer = window.dataLayer || [];
+  return window.dataLayer;
+}
+
 function loadGTM() {
-  if (gtmLoaded) return;
-  if (!isProdHttps()) return;
-
-  const existingScript = document.querySelector(
-    'script[src*="googletagmanager.com/gtm.js?id=GTM-T5NZVSSW"]'
-  );
-
-  if (existingScript) {
+  if (gtmLoaded || hasExistingGTMScript()) {
     gtmLoaded = true;
-    return;
+    return true;
+  }
+
+  if (!isProdHttps()) {
+    window.__AJSEE_GTM_DEBUG__ = {
+      loaded: false,
+      reason: 'not-prod-https',
+      protocol: location.protocol,
+      hostname: location.hostname,
+      consent: readConsent(),
+    };
+    return false;
   }
 
   gtmLoaded = true;
 
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
+  const dataLayer = ensureDataLayer();
+
+  dataLayer.push({
     event: 'gtm.js',
     'gtm.start': Date.now(),
   });
 
   const script = document.createElement('script');
   script.async = true;
-  script.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-T5NZVSSW';
+  script.src = `https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`;
+
   script.onload = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
+    ensureDataLayer().push({
       event: 'ajsee_consent_analytics_granted',
     });
+
+    window.__AJSEE_GTM_DEBUG__ = {
+      loaded: true,
+      reason: 'loaded',
+      protocol: location.protocol,
+      hostname: location.hostname,
+      consent: readConsent(),
+      gtmId: GTM_ID,
+    };
+  };
+
+  script.onerror = () => {
+    gtmLoaded = false;
+
+    window.__AJSEE_GTM_DEBUG__ = {
+      loaded: false,
+      reason: 'script-error',
+      protocol: location.protocol,
+      hostname: location.hostname,
+      consent: readConsent(),
+      gtmId: GTM_ID,
+    };
   };
 
   document.head.appendChild(script);
+
+  window.__AJSEE_GTM_DEBUG__ = {
+    loaded: true,
+    reason: 'script-injected',
+    protocol: location.protocol,
+    hostname: location.hostname,
+    consent: readConsent(),
+    gtmId: GTM_ID,
+  };
+
+  return true;
 }
 
 function applyConsent(consent) {
@@ -99,6 +149,35 @@ function applyConsent(consent) {
     loadGTM();
   }
 }
+
+// Safety bootstrap:
+// Když uživatel souhlas udělil dříve, GTM se načte i v případě,
+// že se cookie banner z nějakého důvodu neinicializuje včas.
+function bootstrapConsentOnLoad() {
+  const consent = readConsent();
+
+  if (consent?.analytics) {
+    applyConsent(consent);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrapConsentOnLoad, { once: true });
+} else {
+  bootstrapConsentOnLoad();
+}
+
+// Debug helper pro ověření v Console
+window.__AJSEE_CONSENT_DEBUG__ = {
+  CONSENT_KEY,
+  GTM_ID,
+  isProdHttps,
+  readConsent,
+  hasConsentDecision,
+  hasAnalyticsConsent,
+  loadGTM,
+  applyConsent,
+};
 
 export {
   CONSENT_KEY,

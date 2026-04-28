@@ -897,124 +897,124 @@
 .partners-focus-section {
   position: relative;
   overflow: hidden;
-  margin-top: clamp(-12px, -1vw, -20px);
-  padding: clamp(3.6rem, 4.4vw, 4.8rem) 0 clamp(4rem, 4.8vw, 5.2rem);
   background:
-    linear-gradient(180deg, rgba(222, 236, 242, 0.96) 0%, #f3f7fb 16%, #f7fbff 100%);
+    radial-gradient(circle at top center, rgba($brand-blue, 0.05), transparent 34%),
+    linear-gradient(180deg, #f7fbff 0%, #f1f6fb 100%);
+  padding: 3.4rem 0 3.9rem;
 
   &::before {
     content: "";
     position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(760px 260px at 20% 0%, rgba($brand-blue-light, 0.12) 0%, rgba($brand-blue-light, 0) 74%),
-      radial-gradient(700px 240px at 80% 8%, rgba($brand-blue, 0.08) 0%, rgba($brand-blue, 0) 76%);
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
     inset: 0 auto auto 50%;
     transform: translateX(-50%);
-    width: min(1680px, calc(100% - 3.2rem));
+    width: min(1560px, calc(100% - 3rem));
     height: 1px;
     background: linear-gradient(
       90deg,
       rgba($brand-blue, 0) 0%,
-      rgba($brand-blue, 0.14) 18%,
-      rgba($brand-blue-light, 0.18) 50%,
-      rgba($brand-blue, 0.14) 82%,
+      rgba($brand-blue, 0.12) 20%,
+      rgba($brand-blue, 0.12) 80%,
       rgba($brand-blue, 0) 100%
     );
     pointer-events: none;
-    z-index: 0;
   }
 
   .container {
     position: relative;
     z-index: 1;
-    width: 100%;
     max-width: 1680px;
-    padding:
-      clamp(1.8rem, 2.2vw, 2.4rem)
-      clamp(1.6rem, 3vw, 3.2rem)
-      clamp(1.5rem, 1.8vw, 1.9rem);
-    background: linear-gradient(180deg, rgba(255,255,255,0.80) 0%, rgba(255,255,255,0.95) 100%);
+    padding-left: clamp(1.6rem, 3vw, 3.2rem);
+    padding-right: clamp(1.6rem, 3vw, 3.2rem);
+  }
+
+  .partners-focus-shell {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,0.985) 0%, #ffffff 100%);
     border: 1px solid rgba($brand-blue, 0.08);
     border-radius: 30px;
     box-shadow:
       0 24px 54px rgba(10, 61, 98, 0.08),
-      0 8px 20px rgba(10, 61, 98, 0.04),
-      inset 0 1px 0 rgba(255,255,255,0.72);
-    backdrop-filter: blur(8px);
+      0 8px 20px rgba(10, 61, 98, 0.04);
+    padding: clamp(1.5rem, 1.9vw, 2rem);
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: -120px;
+      left: -120px;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba($brand-blue-light, 0.09) 0%, rgba($brand-blue-light, 0) 72%);
+      pointer-events: none;
+    }
   }
 
   .partners-focus-head {
     display: grid;
-    grid-template-columns: minmax(360px, 0.9fr) minmax(520px, 1.1fr);
-    gap: clamp(1.2rem, 2vw, 2.4rem);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.2rem, 1.8vw, 2rem);
     align-items: start;
-    margin: 0 0 2rem;
+    margin: 0 0 1.25rem;
     text-align: left;
-    max-width: none;
   }
 
   h2 {
     margin: 0;
-    max-width: 13ch;
-    font-size: clamp(2.05rem, 2.6vw, 2.95rem);
-    line-height: 1.04;
+    max-width: 18ch;
+    font-size: clamp(2.1rem, 2.55vw, 2.95rem);
+    line-height: 0.95;
     font-weight: 800;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.045em;
     color: $brand-dark;
     text-wrap: balance;
   }
 
   .partners-focus-head p {
     margin: 0;
-    max-width: 72ch;
-    font-size: 1.03rem;
-    line-height: 1.72;
-    color: $text-secondary;
+    max-width: 100%;
+    font-size: 1rem;
+    line-height: 1.68;
+    color: darken($text-secondary, 14%);
     text-wrap: pretty;
+    padding-top: 0.1rem;
   }
 
   .partners-focus-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.1rem;
+    gap: 0.82rem;
     align-items: stretch;
   }
 
   .partners-focus-card {
     position: relative;
     overflow: hidden;
-    min-height: 178px;
-    padding: 1.4rem 1.35rem 1.18rem;
-    border-radius: 24px;
-    background: linear-gradient(180deg, rgba(247, 251, 255, 0.98) 0%, #ffffff 100%);
+    min-height: 106px;
+    padding: 0.92rem 1.05rem 0.88rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #fbfdff 0%, #f3f8fd 100%);
     border: 1px solid rgba($brand-blue, 0.10);
     box-shadow:
-      0 16px 30px rgba($brand-blue, 0.06),
-      0 5px 14px rgba($brand-blue, 0.035);
+      0 10px 24px rgba($brand-blue, 0.05),
+      0 3px 8px rgba($brand-blue, 0.03);
     transition:
-      transform 0.22s ease,
-      box-shadow 0.22s ease,
-      border-color 0.22s ease,
-      background 0.22s ease;
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease,
+      background 0.24s ease;
 
     &::before {
       content: "";
       position: absolute;
       inset: 0 auto auto 0;
       width: 100%;
-      height: 4px;
+      height: 3px;
       background: linear-gradient(90deg, $brand-blue 0%, $brand-blue-light 100%);
-      transform: scaleX(0.24);
+      transform: scaleX(0.18);
       transform-origin: left center;
-      transition: transform 0.24s ease;
+      transition: transform 0.28s ease;
     }
 
     &::after {
@@ -1022,47 +1022,55 @@
       position: absolute;
       top: -36px;
       right: -36px;
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      background: radial-gradient(
-        circle,
-        rgba($brand-blue-light, 0.12) 0%,
-        rgba($brand-blue-light, 0) 72%
-      );
-      opacity: 0.9;
+      background: radial-gradient(circle, rgba($brand-blue-light, 0.12) 0%, rgba($brand-blue-light, 0) 72%);
+      opacity: 0;
+      transform: translate(10px, -10px);
+      transition: opacity 0.24s ease, transform 0.24s ease;
       pointer-events: none;
     }
 
-    &:hover {
-      transform: translateY(-5px);
+    &:hover,
+    &:focus-within {
+      transform: translateY(-4px);
       border-color: rgba($brand-blue, 0.16);
+      background: linear-gradient(180deg, #ffffff 0%, #f4f9fe 100%);
       box-shadow:
-        0 22px 38px rgba($brand-blue, 0.085),
-        0 10px 22px rgba($brand-blue, 0.05);
+        0 16px 28px rgba($brand-blue, 0.08),
+        0 6px 14px rgba($brand-blue, 0.05);
     }
 
-    &:hover::before {
+    &:hover::before,
+    &:focus-within::before {
       transform: scaleX(1);
     }
 
+    &:hover::after,
+    &:focus-within::after {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
     h3 {
-      margin: 0 0 0.62rem;
-      max-width: 24ch;
-      font-size: clamp(1.14rem, 1.2vw, 1.34rem);
-      line-height: 1.18;
+      margin: 0 0 0.38rem;
+      max-width: none;
+      font-size: 1.06rem;
+      line-height: 1.14;
       font-weight: 800;
-      letter-spacing: -0.025em;
+      letter-spacing: -0.022em;
       color: $brand-dark;
-      text-wrap: balance;
+      white-space: nowrap;
+      text-wrap: nowrap;
     }
 
     p {
       margin: 0;
-      max-width: 52ch;
-      font-size: 0.98rem;
-      line-height: 1.62;
-      color: $text-secondary;
+      max-width: 58ch;
+      font-size: 0.93rem;
+      line-height: 1.5;
+      color: darken($text-secondary, 10%);
       text-wrap: pretty;
     }
   }
@@ -1070,25 +1078,29 @@
 
 @media (max-width: 980px) {
   .partners-focus-section {
-    margin-top: -8px;
-    padding: 3.2rem 0 3.8rem;
+    padding: 3rem 0 3.4rem;
 
-    .container {
-      padding:
-        1.35rem
-        1.05rem
-        1.1rem;
+    .partners-focus-shell {
+      padding: 1.3rem;
       border-radius: 24px;
     }
 
     .partners-focus-head {
       grid-template-columns: 1fr;
-      gap: 0.95rem;
-      margin-bottom: 1.6rem;
+      gap: 0.8rem;
+      margin-bottom: 1.15rem;
+    }
+
+    h2 {
+      max-width: 20ch;
+      font-size: clamp(1.9rem, 4.8vw, 2.3rem);
+      line-height: 0.98;
     }
 
     .partners-focus-head p {
       max-width: 100%;
+      font-size: 0.97rem;
+      line-height: 1.6;
     }
 
     .partners-focus-grid {
@@ -1097,55 +1109,374 @@
 
     .partners-focus-card {
       min-height: 0;
+
+      h3 {
+        white-space: normal;
+        text-wrap: balance;
+      }
     }
   }
 }
 
 @media (max-width: 768px) {
   .partners-focus-section {
-    margin-top: 0;
-    padding: 2.8rem 0 3.2rem;
+    padding: 2.6rem 0 2.9rem;
 
     .container {
       padding-left: 1rem;
       padding-right: 1rem;
-      padding-top: 1.2rem;
-      padding-bottom: 1rem;
+    }
+
+    .partners-focus-shell {
+      padding: 1.05rem;
       border-radius: 20px;
-      box-shadow:
-        0 18px 34px rgba(10, 61, 98, 0.07),
-        0 6px 14px rgba(10, 61, 98, 0.035);
     }
 
     h2 {
-      max-width: none;
-      font-size: clamp(1.72rem, 7vw, 2.2rem);
-      line-height: 1.08;
-    }
-
-    .partners-focus-head {
-      margin-bottom: 1.35rem;
+      max-width: 100%;
+      font-size: clamp(1.7rem, 7vw, 2.05rem);
+      line-height: 1;
     }
 
     .partners-focus-head p {
-      font-size: 0.97rem;
-      line-height: 1.64;
+      font-size: 0.95rem;
+      line-height: 1.56;
     }
 
     .partners-focus-card {
-      padding: 1.05rem 0.95rem 0.95rem;
-      border-radius: 18px;
+      padding: 0.9rem 0.95rem 0.85rem;
+      border-radius: 16px;
 
       h3 {
-        max-width: none;
-        font-size: 1.05rem;
-        margin-bottom: 0.48rem;
+        font-size: 1rem;
+        margin-bottom: 0.34rem;
+        white-space: normal;
+        text-wrap: balance;
       }
 
       p {
-        font-size: 0.94rem;
-        line-height: 1.56;
+        font-size: 0.9rem;
+        line-height: 1.46;
       }
     }
+  }
+}
+
+
+// =============================================
+// PARTNERS COLLABORATION SECTION
+// =============================================
+.partners-collaboration-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top center, rgba($brand-blue-light, 0.08), transparent 36%),
+    linear-gradient(180deg, #f3fbfd 0%, #ebf7fb 100%);
+  padding: 0 0 3.9rem;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 50%;
+    transform: translateX(-50%);
+    width: min(1560px, calc(100% - 3rem));
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba($brand-blue-light, 0) 0%,
+      rgba($brand-blue-light, 0.18) 20%,
+      rgba($brand-blue-light, 0.18) 80%,
+      rgba($brand-blue-light, 0) 100%
+    );
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1680px;
+    padding-left: clamp(1.6rem, 3vw, 3.2rem);
+    padding-right: clamp(1.6rem, 3vw, 3.2rem);
+  }
+
+  .partners-collaboration-shell {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255,255,255,0.985) 0%, #fbfeff 100%);
+    border: 1px solid rgba($brand-blue-light, 0.14);
+    border-radius: 30px;
+    box-shadow:
+      0 24px 54px rgba(10, 61, 98, 0.07),
+      0 8px 20px rgba(10, 61, 98, 0.035);
+    padding: clamp(1.5rem, 1.9vw, 2rem);
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba($brand-blue-light, 0.12) 0%, rgba($brand-blue-light, 0) 72%);
+      pointer-events: none;
+    }
+  }
+
+  .partners-collaboration-head {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.2rem, 1.8vw, 2rem);
+    align-items: start;
+    margin: 0 0 1.25rem;
+    text-align: left;
+  }
+
+  h2 {
+    margin: 0;
+    max-width: 16ch;
+    font-size: clamp(2.1rem, 2.55vw, 2.95rem);
+    line-height: 0.95;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    color: $brand-dark;
+    text-wrap: balance;
+  }
+
+  .partners-collaboration-head p {
+    margin: 0;
+    max-width: 100%;
+    font-size: 1rem;
+    line-height: 1.68;
+    color: darken($text-secondary, 14%);
+    text-wrap: pretty;
+    padding-top: 0.1rem;
+  }
+
+  .partners-collaboration-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.82rem;
+    align-items: stretch;
+  }
+
+  .partners-collaboration-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 106px;
+    padding: 0.92rem 1.05rem 0.88rem;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #fbfeff 0%, #f2fbfe 100%);
+    border: 1px solid rgba($brand-blue-light, 0.16);
+    box-shadow:
+      0 10px 24px rgba($brand-blue-light, 0.05),
+      0 3px 8px rgba($brand-blue-light, 0.03);
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease,
+      background 0.24s ease;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, $brand-blue-light 0%, lighten($brand-blue-light, 12%) 100%);
+      transform: scaleX(0.18);
+      transform-origin: left center;
+      transition: transform 0.28s ease;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -42px;
+      right: -36px;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba($brand-blue-light, 0.12) 0%, rgba($brand-blue-light, 0) 72%);
+      opacity: 0;
+      transform: translate(10px, 10px);
+      transition: opacity 0.24s ease, transform 0.24s ease;
+      pointer-events: none;
+    }
+
+    &:hover,
+    &:focus-within {
+      transform: translateY(-4px);
+      border-color: rgba($brand-blue-light, 0.24);
+      background: linear-gradient(180deg, #ffffff 0%, #f3fcff 100%);
+      box-shadow:
+        0 16px 28px rgba($brand-blue-light, 0.08),
+        0 6px 14px rgba($brand-blue-light, 0.05);
+    }
+
+    &:hover::before,
+    &:focus-within::before {
+      transform: scaleX(1);
+    }
+
+    &:hover::after,
+    &:focus-within::after {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+
+    h3 {
+      margin: 0 0 0.38rem;
+      max-width: none;
+      font-size: 1.06rem;
+      line-height: 1.14;
+      font-weight: 800;
+      letter-spacing: -0.022em;
+      color: $brand-dark;
+      white-space: nowrap;
+      text-wrap: nowrap;
+    }
+
+    p {
+      margin: 0;
+      max-width: 58ch;
+      font-size: 0.93rem;
+      line-height: 1.5;
+      color: darken($text-secondary, 10%);
+      text-wrap: pretty;
+    }
+  }
+}
+
+@media (max-width: 980px) {
+  .partners-collaboration-section {
+    padding: 0 0 3.4rem;
+
+    .partners-collaboration-shell {
+      padding: 1.3rem;
+      border-radius: 24px;
+    }
+
+    .partners-collaboration-head {
+      grid-template-columns: 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.15rem;
+    }
+
+    h2 {
+      max-width: 18ch;
+      font-size: clamp(1.9rem, 4.8vw, 2.3rem);
+      line-height: 0.98;
+    }
+
+    .partners-collaboration-head p {
+      max-width: 100%;
+      font-size: 0.97rem;
+      line-height: 1.6;
+    }
+
+    .partners-collaboration-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .partners-collaboration-card {
+      min-height: 0;
+
+      h3 {
+        white-space: normal;
+        text-wrap: balance;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .partners-collaboration-section {
+    padding: 0 0 2.9rem;
+
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .partners-collaboration-shell {
+      padding: 1.05rem;
+      border-radius: 20px;
+    }
+
+    h2 {
+      max-width: 100%;
+      font-size: clamp(1.7rem, 7vw, 2.05rem);
+      line-height: 1;
+    }
+
+    .partners-collaboration-head p {
+      font-size: 0.95rem;
+      line-height: 1.56;
+    }
+
+    .partners-collaboration-card {
+      padding: 0.9rem 0.95rem 0.85rem;
+      border-radius: 16px;
+
+      h3 {
+        font-size: 1rem;
+        margin-bottom: 0.34rem;
+        white-space: normal;
+        text-wrap: balance;
+      }
+
+      p {
+        font-size: 0.9rem;
+        line-height: 1.46;
+      }
+    }
+  }
+}
+/* =============================================
+   PARTNERS SECTION TITLES – fixed 2-line layout
+   JSON už obsahuje line1 / line2, tady jen vynutíme zalomení
+============================================= */
+
+.partners-focus-section .partners-focus-title,
+.partners-collaboration-section .partners-collaboration-title {
+  margin: 0;
+  max-width: none;
+  font-size: clamp(2.1rem, 2.55vw, 2.95rem);
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  color: $brand-dark;
+  text-wrap: normal;
+}
+
+.partners-focus-section .partners-focus-title span,
+.partners-collaboration-section .partners-collaboration-title span {
+  display: block;
+}
+
+.partners-focus-section .partners-focus-title span:first-child,
+.partners-collaboration-section .partners-collaboration-title span:first-child {
+  white-space: nowrap;
+}
+
+@media (max-width: 980px) {
+  .partners-focus-section .partners-focus-title,
+  .partners-collaboration-section .partners-collaboration-title {
+    font-size: clamp(1.9rem, 4.8vw, 2.3rem);
+    line-height: 0.98;
+  }
+}
+
+@media (max-width: 768px) {
+  .partners-focus-section .partners-focus-title,
+  .partners-collaboration-section .partners-collaboration-title {
+    font-size: clamp(1.7rem, 7vw, 2.05rem);
+    line-height: 1;
+  }
+
+  .partners-focus-section .partners-focus-title span:first-child,
+  .partners-collaboration-section .partners-collaboration-title span:first-child {
+    white-space: normal;
   }
 }

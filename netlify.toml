@@ -132,6 +132,11 @@
 # - .html soubory = interní build artefakty
 # - pretty URL se interně rewriteuje na .html přes status 200
 # - 301 cleanup pravidla musí být před 200 rewrites
+#
+# Důležité:
+# - neřešíme zde ?lang=cs cleanup, protože předchozí varianta způsobila self-redirecty
+# - ?lang=cs dočasně ošetříme přes canonical v HTML
+# - soubor public/_redirects musí zůstat odstraněný
 
 
 # ------------ Homepage cleanup ------------
@@ -141,95 +146,6 @@
   to = "/"
   status = 301
   force = true
-
-
-# ------------ Query cleanup: výchozí čeština bez ?lang=cs ------------
-# Pozor: řešíme jen bezpečné statické stránky.
-# Slug/detail URL budeme řešit později cíleně, aby se nerozbily parametry typu slug.
-
-[[redirects]]
-  from = "/"
-  to = "/"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/accommodation"
-  to = "/accommodation"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/about"
-  to = "/about"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/events"
-  to = "/events"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/partners"
-  to = "/partners"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/faq"
-  to = "/faq"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/blog"
-  to = "/blog"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/thank-you"
-  to = "/thank-you"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/privacy-policy"
-  to = "/privacy-policy"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/cookies-policy"
-  to = "/cookies-policy"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/coming-soon/"
-  to = "/coming-soon/"
-  status = 301
-  force = true
-  query = { lang = "cs" }
-
-[[redirects]]
-  from = "/microguides/"
-  to = "/microguides/"
-  status = 301
-  force = true
-  query = { lang = "cs" }
 
 
 # ------------ .html → pretty canonical URLs ------------

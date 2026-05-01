@@ -12,19 +12,49 @@
   directory    = "netlify/functions"
   node_bundler = "esbuild"
 
-# ------------ Edge Functions ------------
-# 1) JSON endpoint pro NearMe fallback (context.geo → JSON) – specifická cesta musí být první
-[[edge_functions]]
-function = "geo-lookup"
-path = "/api/geo"
 
-# 2) Cookie middleware podle Geo/IP nebo lang – až potom catch-all
+# ------------ Edge Functions ------------
+# 1) JSON endpoint pro NearMe fallback (context.geo → JSON)
+# Specifická cesta musí být první.
 [[edge_functions]]
-function = "geo-country"
-path = "/*"
+  function = "geo-lookup"
+  path = "/api/geo"
+
+# 2) Cookie middleware podle Geo/IP nebo lang
+# Důležité: catch-all nesmí běžet nad assety, obrázky, locale JSONy,
+# sitemapou, robots.txt ani technickými soubory.
+[[edge_functions]]
+  function = "geo-country"
+  path = "/*"
+  excludedPath = [
+    "/api/*",
+    "/.netlify/functions/*",
+    "/assets/*",
+    "/images/*",
+    "/locales/*",
+    "/content/*",
+    "/favicon.ico",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/site.webmanifest",
+    "/*.css",
+    "/*.js",
+    "/*.map",
+    "/*.json",
+    "/*.png",
+    "/*.jpg",
+    "/*.jpeg",
+    "/*.webp",
+    "/*.avif",
+    "/*.svg",
+    "/*.ico",
+    "/*.xml"
+  ]
+
 
 # ------------ HEADERS ------------
-# CORS pro Functions (záloha k odpovědím z funkce) + no-store
+
+# CORS pro Functions + no-store
 [[headers]]
   for = "/.netlify/functions/*"
   [headers.values]
@@ -45,23 +75,46 @@ path = "/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# HTML nikdy necacheovat – kořenové *.html
+# Locale JSON – lze cacheovat, ale musí se revalidovat
+[[headers]]
+  for = "/locales/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+# Microguide content JSON – krátká cache, aby šly rychle promítat změny obsahu
+[[headers]]
+  for = "/content/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+# HTML nikdy agresivně necacheovat – kořenové *.html
 [[headers]]
   for = "/*.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# HTML nikdy necacheovat – index.html v podsložkách (např. /coming-soon/index.html)
+# HTML nikdy agresivně necacheovat – index.html v podsložkách
 [[headers]]
   for = "/*/index.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# (Volitelné) lehká cache pro nefingerprintované obrázky
+# Sitemap a robots – krátká cache
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/robots.txt"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+# Obrázky
 [[headers]]
   for = "/images/*"
   [headers.values]
-    Cache-Control = "public, max-age=604800"
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
 
 # Základní security hlavičky
 [[headers]]
@@ -72,112 +125,334 @@ path = "/*"
     Referrer-Policy        = "strict-origin-when-cross-origin"
     Permissions-Policy     = "geolocation=(self), microphone=(), camera=()"
 
-# ------------ REDIRECTS (MPA "pretty URLs") ------------
-# Ubytování
+
+# ------------ REDIRECTS / REWRITES ------------
+# SEO princip:
+# - veřejná kanonická URL = bez .html
+# - .html soubory = interní build artefakty
+# - pretty URL se interně rewriteuje na .html přes status 200
+# - 301 cleanup pravidla musí být před 200 rewrites
+
+
+# ------------ Homepage cleanup ------------
+
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+
+# ------------ Query cleanup: výchozí čeština bez ?lang=cs ------------
+# Pozor: řešíme jen bezpečné statické stránky.
+# Slug/detail URL budeme řešit později cíleně, aby se nerozbily parametry typu slug.
+
+[[redirects]]
+  from = "/"
+  to = "/"
+  status = 301
+  force = true
+  query = { lang = "cs" }
+
 [[redirects]]
   from = "/accommodation"
-  to   = "/accommodation.html"
+  to = "/accommodation"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
 
-[[redirects]]
-  from = "/accommodation/"
-  to   = "/accommodation.html"
-  status = 301
-  force  = true
-
-# O nás
 [[redirects]]
   from = "/about"
-  to   = "/about.html"
+  to = "/about"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
 
-[[redirects]]
-  from = "/about/"
-  to   = "/about.html"
-  status = 301
-  force  = true
-
-# Události
 [[redirects]]
   from = "/events"
-  to   = "/events.html"
+  to = "/events"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
 
-[[redirects]]
-  from = "/events/"
-  to   = "/events.html"
-  status = 301
-  force  = true
-
-# Pro partnery
 [[redirects]]
   from = "/partners"
-  to   = "/partners.html"
+  to = "/partners"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
 
-[[redirects]]
-  from = "/partners/"
-  to   = "/partners.html"
-  status = 301
-  force  = true
-
-# FAQ
 [[redirects]]
   from = "/faq"
-  to   = "/faq.html"
+  to = "/faq"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
 
-[[redirects]]
-  from = "/faq/"
-  to   = "/faq.html"
-  status = 301
-  force  = true
-
-# Blog (listing)
 [[redirects]]
   from = "/blog"
-  to   = "/blog.html"
+  to = "/blog"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
 
 [[redirects]]
-  from = "/blog/"
-  to   = "/blog.html"
+  from = "/thank-you"
+  to = "/thank-you"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
 
-# Microguides (folder index)
 [[redirects]]
-  from = "/microguides"
-  to   = "/microguides/index.html"
+  from = "/privacy-policy"
+  to = "/privacy-policy"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
+
+[[redirects]]
+  from = "/cookies-policy"
+  to = "/cookies-policy"
+  status = 301
+  force = true
+  query = { lang = "cs" }
+
+[[redirects]]
+  from = "/coming-soon/"
+  to = "/coming-soon/"
+  status = 301
+  force = true
+  query = { lang = "cs" }
 
 [[redirects]]
   from = "/microguides/"
-  to   = "/microguides/index.html"
+  to = "/microguides/"
   status = 301
-  force  = true
+  force = true
+  query = { lang = "cs" }
 
-# Thank you (pokud používáš hezkou URL)
+
+# ------------ .html → pretty canonical URLs ------------
+
 [[redirects]]
-  from = "/thank-you"
-  to   = "/thank-you.html"
+  from = "/accommodation.html"
+  to = "/accommodation"
   status = 301
-  force  = true
+  force = true
+
+[[redirects]]
+  from = "/about.html"
+  to = "/about"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/events.html"
+  to = "/events"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/partners.html"
+  to = "/partners"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/faq.html"
+  to = "/faq"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog.html"
+  to = "/blog"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog-detail.html"
+  to = "/blog-detail"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/thank-you.html"
+  to = "/thank-you"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/privacy-policy.html"
+  to = "/privacy-policy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cookies-policy.html"
+  to = "/cookies-policy"
+  status = 301
+  force = true
+
+
+# ------------ Folder index cleanup ------------
+
+[[redirects]]
+  from = "/microguides"
+  to = "/microguides/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/microguides/index.html"
+  to = "/microguides/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/coming-soon"
+  to = "/coming-soon/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/coming-soon/index.html"
+  to = "/coming-soon/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/coming-soon/thanks.html"
+  to = "/coming-soon/thanks"
+  status = 301
+  force = true
+
+
+# ------------ Trailing slash cleanup for flat pages ------------
+
+[[redirects]]
+  from = "/accommodation/"
+  to = "/accommodation"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/about/"
+  to = "/about"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/events/"
+  to = "/events"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/partners/"
+  to = "/partners"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/faq/"
+  to = "/faq"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog/"
+  to = "/blog"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/blog-detail/"
+  to = "/blog-detail"
+  status = 301
+  force = true
 
 [[redirects]]
   from = "/thank-you/"
-  to   = "/thank-you.html"
+  to = "/thank-you"
   status = 301
-  force  = true
+  force = true
+
+[[redirects]]
+  from = "/privacy-policy/"
+  to = "/privacy-policy"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cookies-policy/"
+  to = "/cookies-policy"
+  status = 301
+  force = true
+
+
+# ------------ Pretty URL → internal HTML rewrites ------------
+# Tyto rules musí být až po 301 redirectech výše.
+# Status 200 = URL v prohlížeči zůstane hezká, ale Netlify obslouží .html soubor.
+
+[[redirects]]
+  from = "/accommodation"
+  to = "/accommodation.html"
+  status = 200
+
+[[redirects]]
+  from = "/about"
+  to = "/about.html"
+  status = 200
+
+[[redirects]]
+  from = "/events"
+  to = "/events.html"
+  status = 200
+
+[[redirects]]
+  from = "/partners"
+  to = "/partners.html"
+  status = 200
+
+[[redirects]]
+  from = "/faq"
+  to = "/faq.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog-detail"
+  to = "/blog-detail.html"
+  status = 200
+
+[[redirects]]
+  from = "/thank-you"
+  to = "/thank-you.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy-policy"
+  to = "/privacy-policy.html"
+  status = 200
+
+[[redirects]]
+  from = "/cookies-policy"
+  to = "/cookies-policy.html"
+  status = 200
+
+[[redirects]]
+  from = "/coming-soon/thanks"
+  to = "/coming-soon/thanks.html"
+  status = 200
+
 
 # ------------ DEV: Netlify Dev reverse-proxy na běžící Vite ------------
+
 [dev]
   command    = "npm run dev -- --port 5173 --strictPort"
   port       = 8888

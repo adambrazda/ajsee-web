@@ -86,6 +86,22 @@ let _hasDoneFirstRender = false;
 let _userInteractedWithFilters = false;
 let currentLang = getUILang();
 
+/* ───────── i18n performance cache ───────── */
+const IS_LOCAL_DEV =
+  location.hostname === 'localhost' ||
+  location.hostname === '127.0.0.1' ||
+  location.hostname === '0.0.0.0';
+
+const I18N_FETCH_CACHE_MODE = IS_LOCAL_DEV ? 'no-store' : 'default';
+
+const JSON_CACHE = new Map();
+const JSON_PROMISE_CACHE = new Map();
+
+const TRANSLATIONS_CACHE = new Map();
+const TRANSLATIONS_PROMISE_CACHE = new Map();
+
+const I18N_PREFETCHED = new Set();
+
 /* ───────── utils ───────── */
 const qs = (s, r = document) => r.querySelector(s);
 const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -640,14 +656,42 @@ function deepMerge(a = {}, b = {}) {
 }
 
 async function fetchJSON(path) {
-  try {
-    const res = await fetch(path, { cache: 'no-store' });
-    if (res.ok) return await res.json();
-  } catch {
-    /* noop */
+  if (!path) return null;
+
+  // Cacheujeme i neexistující soubory jako null,
+  // aby se při přepínání jazyků pořád dokola netahaly stejné 404.
+  if (JSON_CACHE.has(path)) {
+    return JSON_CACHE.get(path);
   }
 
-  return null;
+  if (JSON_PROMISE_CACHE.has(path)) {
+    return JSON_PROMISE_CACHE.get(path);
+  }
+
+  const promise = (async () => {
+    try {
+      const res = await fetch(path, { cache: I18N_FETCH_CACHE_MODE });
+
+      if (!res.ok) {
+        JSON_CACHE.set(path, null);
+        return null;
+      }
+
+      const json = await res.json();
+      const value = json && typeof json === 'object' ? json : null;
+
+      JSON_CACHE.set(path, value);
+      return value;
+    } catch {
+      JSON_CACHE.set(path, null);
+      return null;
+    } finally {
+      JSON_PROMISE_CACHE.delete(path);
+    }
+  })();
+
+  JSON_PROMISE_CACHE.set(path, promise);
+  return promise;
 }
 
 function getPageKeyForI18n() {
@@ -665,12 +709,31 @@ function getPageKeyForI18n() {
   return clean;
 }
 
+function getI18nFilesForPage(lang, pageKey = getPageKeyForI18n()) {
+  const files = [`/locales/${lang}.json`];
+
+  // Důležité:
+  // Nezkoušíme už desítky fallback cest typu /locales/cs/common.json,
+  // protože na ostré verzi dělaly zbytečné 404 a zpomalovaly přepnutí jazyka.
+  //
+  // Pokud má konkrétní stránka vlastní slovník, přidej ji sem cíleně.
+  if (pageKey === 'partners') {
+    files.push(`/locales/partners-${lang}.json`);
+  }
+
+  return files;
+}
+
 async function mergeFetchCandidates(paths) {
+  const uniquePaths = Array.from(new Set(paths.filter(Boolean)));
+
+  const parts = await Promise.all(
+    uniquePaths.map(path => fetchJSON(path))
+  );
+
   let out = {};
 
-  for (const path of paths) {
-    const json = await fetchJSON(path);
-
+  for (const json of parts) {
     if (json && typeof json === 'object' && Object.keys(json).length) {
       out = deepMerge(out, json);
     }
@@ -680,29 +743,53 @@ async function mergeFetchCandidates(paths) {
 }
 
 async function loadTranslations(lang) {
+  const normalizedLang = String(lang || 'cs').toLowerCase().slice(0, 2);
+  const pageKey = getPageKeyForI18n();
+  const cacheKey = `${normalizedLang}:${pageKey}`;
+
+  if (TRANSLATIONS_CACHE.has(cacheKey)) {
+    return TRANSLATIONS_CACHE.get(cacheKey);
+  }
+
+  if (TRANSLATIONS_PROMISE_CACHE.has(cacheKey)) {
+    return TRANSLATIONS_PROMISE_CACHE.get(cacheKey);
+  }
+
+  const promise = (async () => {
+    const paths = getI18nFilesForPage(normalizedLang, pageKey);
+    const translations = await mergeFetchCandidates(paths);
+
+    TRANSLATIONS_CACHE.set(cacheKey, translations);
+    TRANSLATIONS_PROMISE_CACHE.delete(cacheKey);
+
+    return translations;
+  })();
+
+  TRANSLATIONS_PROMISE_CACHE.set(cacheKey, promise);
+  return promise;
+}
+
+function prefetchTranslations() {
   const pageKey = getPageKeyForI18n();
 
-  const base = await mergeFetchCandidates([
-    `/locales/${lang}.json`,
-    `/locales/${lang}/common.json`,
-    `/locales/${lang}/base.json`,
-    `/src/locales/${lang}.json`,
-    `/src/locales/${lang}/common.json`,
-    `/src/locales/${lang}/base.json`,
-  ]);
+  if (I18N_PREFETCHED.has(pageKey)) return;
+  I18N_PREFETCHED.add(pageKey);
 
-  const pagePart = await mergeFetchCandidates([
-    `/locales/${lang}/${pageKey}.json`,
-    `/locales/${lang}-${pageKey}.json`,
-    `/locales/${pageKey}.${lang}.json`,
-    `/locales/${pageKey}-${lang}.json`,
-    `/src/locales/${lang}/${pageKey}.json`,
-    `/src/locales/${lang}-${pageKey}.json`,
-    `/src/locales/${pageKey}.${lang}.json`,
-    `/src/locales/${pageKey}-${lang}.json`,
-  ]);
+  const langsToPrefetch = ['cs', 'en', 'de', 'sk', 'pl', 'hu']
+    .filter(lang => lang !== currentLang);
 
-  return deepMerge(base, pagePart);
+  const run = () => {
+    langsToPrefetch.forEach(lang => {
+      // Nečekáme na výsledek. Jen tiše nahřejeme cache pro další přepnutí.
+      loadTranslations(lang).catch(() => {});
+    });
+  };
+
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(run, { timeout: 2500 });
+  } else {
+    window.setTimeout(run, 1200);
+  }
 }
 
 function getByPath(obj, path) {
@@ -2606,15 +2693,13 @@ function initLangDropdownFallback() {
 }
 
 function safeInitLangDropdown() {
-  // Důležité: nepouštíme importovaný initLangDropdown(), protože aktuální verze
-  // /src/utils/lang-dropdown.js používá window.location.assign() a tím vyvolává reload.
-  // Ovládání dropdownu zajišťují initLangDropdownCompat() + initLanguageSwitchers().
   try {
     if (typeof initLangDropdown === 'function') {
-      // Import necháváme kvůli kompatibilitě bundlu, ale intentionally no-op.
+      initLangDropdown();
+      return;
     }
   } catch {
-    /* noop */
+    /* fallback níže */
   }
 
   initLangDropdownFallback();
@@ -2890,6 +2975,7 @@ async function bootstrapMain() {
   initFiltersFromURL();
 
   await ensureTranslations(currentLang);
+  prefetchTranslations();
   syncCookieBanner();
 
   renderHomeBlog();
@@ -2933,6 +3019,7 @@ async function bootstrapMain() {
 
     syncLocalizedCityLabelFromCurrentState();
     await ensureTranslations(currentLang);
+    prefetchTranslations();
     syncCookieBannerLanguage(currentLang);
 
     _lastFetchSig = '';

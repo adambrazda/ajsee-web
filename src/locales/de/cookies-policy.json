@@ -13,7 +13,7 @@
       "title": "Cookie-Richtlinie",
       "lead": "Auf dieser Seite findest du Informationen dazu, wie AJSEE Cookies und ähnliche Technologien verwendet, welche für das Funktionieren der Website notwendig sind, welche optional sind und wie du deine Einstellungen verwalten kannst.",
       "updatedLabel": "Zuletzt aktualisiert:",
-      "updatedDate": "13. April 2026"
+      "updatedDate": "1. Mai 2026"
     },
     "toc": {
       "title": "Inhalt",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. Wie wir Cookies verwenden",
-      "p1": "AJSEE verwendet bestimmte Technologien, damit die Website ordnungsgemäß und sicher funktioniert. Andere Technologien verwenden wir nur, wenn du deine Einwilligung gibst, zum Beispiel für Analysen oder zur Messung der Performance von Inhalten.",
+      "p1": "AJSEE verwendet bestimmte Technologien, damit die Website ordnungsgemäß und sicher funktioniert und grundlegende Auswahlmöglichkeiten wie Sprache, Region oder Cookie-Einstellungen gespeichert werden können. Andere Technologien verwenden wir nur, wenn du deine Einwilligung gibst, zum Beispiel für Analysen oder zur Messung der Performance von Inhalten.",
       "p2": "Nicht alle Cookies dienen demselben Zweck. Einige sind für den technischen Betrieb der Website notwendig, andere helfen uns zu verstehen, wie Menschen die Website nutzen, und manche können mit dem Wechsel auf Partner-Websites oder mit der Messung von Attributionsparametern zusammenhängen."
     },
     "types": {
@@ -41,7 +41,7 @@
       "cards": {
         "1": {
           "title": "Notwendig",
-          "text": "Diese Technologien sind für die grundlegende Funktion der Website, die Sicherheit, das Sitzungsmanagement oder das Speichern deiner Cookie-Einstellungen erforderlich. Ohne sie könnten einige Teile des Dienstes nicht richtig funktionieren."
+          "text": "Diese Technologien sind für die grundlegende Funktion der Website, die Sicherheit, das Sitzungsmanagement, das Speichern deiner Cookie-Einstellungen, Sprache oder Region erforderlich. Ohne sie könnten einige Teile des Dienstes nicht richtig funktionieren."
         },
         "2": {
           "title": "Analytisch",
@@ -49,7 +49,7 @@
         },
         "3": {
           "title": "Präferenzen",
-          "text": "Sie können dazu verwendet werden, bestimmte Auswahlmöglichkeiten oder Einstellungen zu speichern, zum Beispiel Sprach- oder Nutzerpräferenzen, sofern eine konkrete Funktion der Website darauf angewiesen ist."
+          "text": "Sie können dazu verwendet werden, bestimmte Auswahlmöglichkeiten oder Einstellungen zu speichern, zum Beispiel Sprach-, regionale oder Nutzerpräferenzen, sofern eine konkrete Funktion der Website darauf angewiesen ist."
         },
         "4": {
           "title": "Partner / Attribution",
@@ -66,14 +66,18 @@
           "text": "Technologien, mit denen gespeichert wird, ob du optionale Cookies akzeptiert oder abgelehnt hast."
         },
         "2": {
-          "label": "Google Tag Manager",
-          "text": "Ein Tool zur Verwaltung von Tags und zum Laden weiterer Technologien entsprechend der aktuellen Konfiguration und des Einwilligungsstatus."
+          "label": "Sprach- und Regionseinstellungen",
+          "text": "Technologien oder Cookies, die dabei helfen, die ausgewählte Sprache, das Land oder regionale Website-Einstellungen zu speichern."
         },
         "3": {
-          "label": "Google Analytics",
-          "text": "Ein Analysetool, das nur verwendet wird, wenn du deine Einwilligung gibst, um den Website-Traffic zu messen und die Website zu verbessern."
+          "label": "Google Tag Manager",
+          "text": "Ein Tool zur Verwaltung von Tags und zum Laden weiterer Technologien entsprechend der aktuellen Website-Konfiguration und des Einwilligungsstatus."
         },
         "4": {
+          "label": "Google Analytics",
+          "text": "Ein Analysetool, das nur verwendet wird, wenn du deine Einwilligung gibst. Es hilft uns, den Website-Traffic zu messen und Inhalte sowie Benutzerfreundlichkeit der Website zu verbessern."
+        },
+        "5": {
           "label": "Partner- / Referral-Parameter",
           "text": "Parameter oder Messmechanismen im Zusammenhang mit dem Wechsel auf Partner-Websites, zum Beispiel im Rahmen von Affiliate- oder Referral-Kooperationen."
         }
@@ -82,7 +86,7 @@
     },
     "managing": {
       "title": "5. Wie du deine Einstellungen verwalten kannst",
-      "p1": "Optionale Cookies kannst du über das Cookie-Banner oder die Einstellungen verwalten, die auf der Website beim ersten Besuch oder nach dem Zurücksetzen deiner Präferenzen angezeigt werden.",
+      "p1": "Optionale Cookies kannst du über das Cookie-Banner oder die Cookie-Einstellungen verwalten, die auf der Website beim ersten Besuch, nach dem Zurücksetzen deiner Präferenzen oder über den Link in der Fußzeile verfügbar sind.",
       "items": {
         "1": "du kannst optionale Kategorien akzeptieren oder ablehnen;",
         "2": "du kannst deine Einstellungen später ändern, wenn die entsprechende Steuerung auf der Website verfügbar ist;",
@@ -92,7 +96,7 @@
     },
     "thirdParties": {
       "title": "6. Drittanbieter",
-      "p1": "Wenn du von AJSEE auf eine Website eines Drittanbieters klickst, zum Beispiel auf die Website eines Ticketing- oder Unterkunftspartners, kann dieser Drittanbieter eigene Cookies und ähnliche Technologien nach seinen eigenen Regeln verwenden. AJSEE hat keine direkte Kontrolle über diese Technologien auf der externen Website.",
+      "p1": "Wenn du von AJSEE auf eine Website eines Drittanbieters klickst, zum Beispiel auf die Website eines Ticketing-, Unterkunfts- oder anderen Partneranbieters, kann dieser Drittanbieter eigene Cookies und ähnliche Technologien nach seinen eigenen Regeln verwenden. AJSEE hat keine direkte Kontrolle über diese Technologien auf der externen Website.",
       "p2": "Wir empfehlen dir daher, auch die Cookie-Richtlinie und die Datenschutzinformationen des jeweiligen Partners oder Dienstleisters zu lesen, dessen Website du besuchst."
     },
     "updates": {
@@ -102,7 +106,7 @@
     "contact": {
       "title": "8. Kontakt",
       "p1": "Wenn du Fragen zur Verwendung von Cookies oder ähnlichen Technologien auf AJSEE hast, kannst du uns unter <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a> kontaktieren.",
-      "p2": "Weitere Informationen dazu, wie AJSEE personenbezogene Daten verarbeitet, findest du auch auf der Seite Privacy Policy."
+      "p2": "Weitere Informationen dazu, wie AJSEE personenbezogene Daten verarbeitet, findest du auch in unserer <a href=\"/privacy-policy\" data-lang-link>Datenschutzerklärung</a>."
     }
   }
 }

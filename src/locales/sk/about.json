@@ -1,16 +1,16 @@
 {
   "about": {
     "headline": "O nás",
-    "title": "O nás | AJSEE®",
+    "title": "O AJSEE | Svetové podujatia bez jazykových bariér",
     "hero": {
       "headlineFull": "Náš príbeh. Naša vízia.",
       "text": "Zážitky nemajú hranice. A práve preto vzniklo AJSEE.",
-      "subtext": "Naším cieľom je sprístupniť ľuďom kultúrne, zábavné aj športové podujatia z celého sveta – jasne, zrozumiteľne a bez zbytočných bariér pri výbere aj nákupe vstupeniek.",
-      "claim": "AJSEE<sup>®</sup> je moderná platforma pre všetkých, ktorí chcú zažívať svet naplno – bez prekážok."
+      "subtext": "Naším cieľom je sprístupniť ľuďom kultúrne, zábavné aj športové podujatia z celého sveta – jasne, zrozumiteľne a bez zbytočných bariér pri objavovaní podujatí, vstupeniek aj možností cestovania.",
+      "claim": "AJSEE<sup>®</sup> je moderná platforma pre všetkých, ktorí chcú zažívať svet naplno – bez zbytočných prekážok."
     },
     "story": {
-      "headline": "Ako to celé začalo",
-      "p1": "Bol jeseň <strong>2024</strong>. Sedeli sme v krčme, dali si pivo — a ako to už býva, <strong>jedno obyčajné rozprávanie odštartovalo niečo, čo sa čoskoro zmenilo na skutočný nápad.</strong>",
+      "headline": "Ako sa to celé začalo",
+      "p1": "Bola jeseň <strong>2024</strong>. Sedeli sme v krčme, dali si pivo — a ako to už býva, <strong>jedno obyčajné rozprávanie odštartovalo niečo, čo sa čoskoro zmenilo na skutočný nápad.</strong>",
       "p2": "Ešte v ten večer vznikol <strong>názov AJSEE</strong>, prvý návrh loga aj vízia: <strong>uľahčiť ľuďom prístup k svetovým zážitkom bez jazykových bariér.</strong>",
       "p3": "Potom však prišla najťažšia fáza: <strong>naozaj začať.</strong>",
       "p4": "Obaja sme mali prácu na plný úväzok, delilo nás <strong>180 kilometrov</strong> a času bolo málo. Projekt sa na chvíľu zastavil ešte predtým, než sa stihol rozbehnúť.",
@@ -33,10 +33,10 @@
     },
     "future": {
       "headline": "🎯 Kam smerujeme",
-      "p1": "Do konca roka 2025 chceme spustiť ostrú verziu webu.",
-      "p2": "Pracujeme na rozšírení jazykových mutácií a na spolupráci s medzinárodnými platformami.",
-      "p3": "Chystáme mobilnú aplikáciu a rozširujeme ponuku podujatí aj ich dostupnosť pre širšie publikum.",
-      "p4": "Chceme, aby bol AJSEE prvou voľbou pre každého, kto hľadá cestu k svetovým zážitkom – či už v Londýne, Barcelone alebo doma v Brne."
+      "p1": "V roku 2026 pracujeme na rozširovaní obsahu, partnerstiev a technického základu platformy.",
+      "p2": "Rozvíjame jazykové mutácie, praktických sprievodcov a spoluprácu s medzinárodnými partnermi.",
+      "p3": "Postupne chceme rozširovať ponuku podujatí, súvisiacich služieb a dostupnosť pre širšie publikum.",
+      "p4": "Chceme, aby bol AJSEE prvou voľbou pre každého, kto hľadá cestu k svetovým zážitkom – či už v Londýne, Barcelone alebo bližšie k domovu."
     }
   }
 }

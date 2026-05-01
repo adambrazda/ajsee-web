@@ -13,7 +13,7 @@
       "title": "Cookie-szabályzat",
       "lead": "Ezen az oldalon információkat találsz arról, hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek a weboldal működéséhez, melyek opcionálisak, és hogyan kezelheted a beállításaidat.",
       "updatedLabel": "Utolsó frissítés:",
-      "updatedDate": "2026. április 13."
+      "updatedDate": "2026. május 1."
     },
     "toc": {
       "title": "Tartalom",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. Hogyan használjuk a sütiket",
-      "p1": "Az AJSEE bizonyos technológiákat azért használ, hogy a weboldal megfelelően és biztonságosan működjön. Más technológiákat csak akkor használunk, ha ehhez hozzájárulsz, például analitikai célokra vagy a tartalom teljesítményének mérésére.",
+      "p1": "Az AJSEE bizonyos technológiákat azért használ, hogy a weboldal megfelelően és biztonságosan működjön, valamint hogy megjegyezze az alapvető választásokat, például a nyelvet, a régiót vagy a süti-beállításokat. Más technológiákat csak akkor használunk, ha ehhez hozzájárulsz, például analitikai célokra vagy a tartalom teljesítményének mérésére.",
       "p2": "Nem minden süti szolgálja ugyanazt a célt. Egyesek a weboldal technikai működéséhez szükségesek, mások segítenek megérteni, hogyan használják az emberek a weboldalt, és egyesek a partneroldalakra történő átlépéssel vagy az attribúciós paraméterek mérésével kapcsolatosak lehetnek."
     },
     "types": {
@@ -41,7 +41,7 @@
       "cards": {
         "1": {
           "title": "Szükséges",
-          "text": "Ezek a technológiák a weboldal alapvető működéséhez, a biztonsághoz, a munkamenet kezeléséhez vagy a süti-beállítások megjegyzéséhez szükségesek. Nélkülük a szolgáltatás egyes részei nem biztos, hogy megfelelően működnek."
+          "text": "Ezek a technológiák a weboldal alapvető működéséhez, a biztonsághoz, a munkamenet kezeléséhez, a süti-beállítások, a nyelv vagy a régió megjegyzéséhez szükségesek. Nélkülük a szolgáltatás egyes részei nem biztos, hogy megfelelően működnek."
         },
         "2": {
           "title": "Analitikai",
@@ -49,7 +49,7 @@
         },
         "3": {
           "title": "Preferencia",
-          "text": "Ezek bizonyos választások vagy beállítások megjegyzésére szolgálhatnak, például a nyelvi vagy felhasználói preferenciák esetében, ha a weboldal adott funkciója erre támaszkodik."
+          "text": "Ezek bizonyos választások vagy beállítások megjegyzésére szolgálhatnak, például nyelvi, regionális vagy felhasználói preferenciák esetében, ha a weboldal adott funkciója erre támaszkodik."
         },
         "4": {
           "title": "Partner / attribúció",
@@ -66,14 +66,18 @@
           "text": "Olyan technológiák, amelyek megjegyzik, hogy elfogadtad vagy elutasítottad az opcionális sütiket."
         },
         "2": {
-          "label": "Google Tag Manager",
-          "text": "Címkekezelő eszköz a tagek kezelésére és további technológiák betöltésére az aktuális konfiguráció és a hozzájárulási állapot szerint."
+          "label": "Nyelvi és regionális beállítások",
+          "text": "Olyan technológiák vagy sütik, amelyek segítenek megjegyezni a kiválasztott nyelvet, országot vagy a weboldal regionális beállításait."
         },
         "3": {
-          "label": "Google Analytics",
-          "text": "Elemző eszköz, amelyet csak akkor használunk, ha hozzájárulsz, a weboldal forgalmának mérésére és a weboldal fejlesztésére."
+          "label": "Google Tag Manager",
+          "text": "Címkekezelő eszköz a tagek kezelésére és további technológiák betöltésére az aktuális weboldal-konfiguráció és a hozzájárulási állapot szerint."
         },
         "4": {
+          "label": "Google Analytics",
+          "text": "Analitikai eszköz, amelyet csak akkor használunk, ha hozzájárulsz. Segít mérni a weboldal forgalmát, valamint fejleszteni a tartalmat és a használhatóságot."
+        },
+        "5": {
           "label": "Partner / referral paraméterek",
           "text": "A partneroldalakra történő átlépéssel kapcsolatos paraméterek vagy mérési mechanizmusok, például affiliate vagy referral együttműködések keretében."
         }
@@ -82,7 +86,7 @@
     },
     "managing": {
       "title": "5. Hogyan kezelheted a beállításaidat",
-      "p1": "Az opcionális sütiket a süti-bannerben vagy a weboldalon az első látogatáskor, illetve a beállítások visszaállítása után megjelenő beállításokban kezelheted.",
+      "p1": "Az opcionális sütiket a süti-bannerben vagy a weboldalon elérhető süti-beállításokban kezelheted az első látogatáskor, a beállítások visszaállítása után, vagy a weboldal láblécében található hivatkozáson keresztül.",
       "items": {
         "1": "elfogadhatod vagy elutasíthatod az opcionális kategóriákat;",
         "2": "később is módosíthatod a beállításaidat, ha a megfelelő vezérlő elérhető a weboldalon;",
@@ -92,7 +96,7 @@
     },
     "thirdParties": {
       "title": "6. Harmadik felek",
-      "p1": "Ha az AJSEE-ről egy harmadik fél weboldalára kattintasz, például egy jegyértékesítő vagy szállás partner oldalára, az adott harmadik fél saját szabályai szerint használhat sütiket és hasonló technológiákat. Az AJSEE-nek nincs közvetlen ellenőrzése ezek felett a technológiák felett a külső weboldalon.",
+      "p1": "Ha az AJSEE-ről egy harmadik fél weboldalára kattintasz, például egy jegyértékesítő, szállás- vagy más partner szolgáltató oldalára, az adott harmadik fél saját szabályai szerint használhat sütiket és hasonló technológiákat. Az AJSEE-nek nincs közvetlen ellenőrzése ezek felett a technológiák felett a külső weboldalon.",
       "p2": "Ezért javasoljuk, hogy tekintsd át annak a partnernek vagy szolgáltatónak a sütiszabályzatát és adatvédelmi tájékoztatóját is, amelynek a weboldalára átlépsz."
     },
     "updates": {
@@ -102,7 +106,7 @@
     "contact": {
       "title": "8. Kapcsolat",
       "p1": "Ha kérdésed van a sütik vagy hasonló technológiák AJSEE általi használatával kapcsolatban, felveheted velünk a kapcsolatot a <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a> címen.",
-      "p2": "További információt arról, hogyan kezeli az AJSEE a személyes adatokat, a Privacy Policy oldalon találsz."
+      "p2": "További információt arról, hogyan kezeli az AJSEE a személyes adatokat, az <a href=\"/privacy-policy\" data-lang-link>Adatvédelmi tájékoztatóban</a> találsz."
     }
   }
 }

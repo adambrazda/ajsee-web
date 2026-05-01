@@ -1,11 +1,11 @@
 {
   "about": {
     "headline": "O nás",
-    "title": "O nás | AJSEE®",
+    "title": "O AJSEE | Světové akce bez jazykových bariér",
     "hero": {
       "headlineFull": "Náš příběh. Naše vize.",
       "text": "Zážitky nemají hranice. A právě proto vzniklo AJSEE.",
-      "subtext": "Naším cílem je zpřístupnit lidem kulturní, zábavní i sportovní události z celého světa – jasně, srozumitelně a bez zbytečných bariér při výběru i nákupu vstupenek.",
+      "subtext": "Naším cílem je zpřístupnit lidem kulturní, zábavní i sportovní události z celého světa – jasně, srozumitelně a bez zbytečných bariér při objevování akcí, vstupenek i cestovních možností.",
       "claim": "AJSEE<sup>®</sup> je moderní platforma pro všechny, kdo chtějí zažívat svět naplno – bez překážek."
     },
     "story": {
@@ -33,9 +33,9 @@
     },
     "future": {
       "headline": "🎯 Kam míříme",
-      "p1": "Do konce roku 2025 chceme spustit ostrou verzi webu.",
-      "p2": "Pracujeme na rozšíření jazykových mutací a spolupráci s mezinárodními platformami.",
-      "p3": "Chystáme mobilní aplikaci a rozšiřujeme nabídku akcí i jejich dostupnost pro širší publikum.",
+      "p1": "V roce 2026 pracujeme na rozšiřování obsahu, partnerství a technického základu platformy.",
+      "p2": "Rozvíjíme jazykové mutace, obsahové průvodce a spolupráci s mezinárodními partnery.",
+      "p3": "Postupně chceme rozšiřovat nabídku akcí, souvisejících služeb a dostupnost pro širší publikum.",
       "p4": "Chceme, aby byl AJSEE první volbou pro každého, kdo hledá cestu ke světovým zážitkům – ať už v Londýně, Barceloně nebo doma v Brně."
     }
   }

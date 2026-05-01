@@ -1,51 +1,52 @@
 {
-  "nav-home": "Start",
+  "nav-home": "Startseite",
   "nav-events": "Events",
   "nav-accommodation": "Unterkunft",
   "nav-partners": "Für Partner",
   "nav-about": "Über uns",
   "nav-blog": "Blog",
   "nav-contact": "Kontakt",
-  "footer-copyright": "&copy; <span id=\"year\">2025</span> AJSEE®. Alle Rechte vorbehalten.",
+  "nav-faq": "FAQ",
+  "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Alle Rechte vorbehalten.",
 
   "seo": {
     "accommodation": {
-      "title": "Unterkunft in UK | AJSEE",
-      "description": "Unterkünfte im Vereinigten Königreich bieten wir in Partnerschaft mit TrustedStays an. Anfrage oder Buchung schließt du direkt auf der Website von TrustedStays ab.",
-      "ogTitle": "Unterkunft in UK | AJSEE",
-      "ogDescription": "Unterkünfte im Vereinigten Königreich bieten wir in Partnerschaft mit TrustedStays an. Anfrage oder Buchung schließt du direkt auf der Website von TrustedStays ab."
+      "title": "Unterkünfte für Konzerte, Sport und Events in UK | AJSEE",
+      "description": "Finde Unterkünfte im Vereinigten Königreich, wenn du zu Konzerten, Sport oder anderen Events reist. AJSEE verbindet dich mit TrustedStays; die Buchung erfolgt beim Partner.",
+      "ogTitle": "Unterkünfte für Konzerte, Sport und Events in UK | AJSEE",
+      "ogDescription": "Reist du für ein Konzert, Sportevent oder Live-Erlebnis nach Großbritannien? AJSEE verbindet dich mit TrustedStays, wo Anfrage, Buchung und Bestätigung erfolgen."
     }
   },
 
   "accommodation": {
     "hero": {
-      "title": "Unterkunft in UK",
-      "lead": "Unterkünfte im Vereinigten Königreich bieten wir in Partnerschaft mit TrustedStays an. Anfrage oder Buchung schließt du direkt auf deren Website ab.",
-      "ctaPrimary": "Unterkünfte ansehen (UK)",
+      "title": "Unterkünfte in UK für Reisen zu Erlebnissen",
+      "lead": "Reist du für ein Konzert, Sportevent oder ein anderes Live-Erlebnis ins Vereinigte Königreich? AJSEE verbindet dich mit TrustedStays, wo du deine Anfrage oder Buchung direkt beim Partner abschließt.",
+      "ctaPrimary": "Unterkünfte in UK ansehen",
       "ctaSecondary": "So funktioniert’s",
-      "micro": "Offizielle Partnerschaft • Aktuell UK • Anfrage / Buchung erfolgt auf TrustedStays"
+      "micro": "Offizielle Partnerschaft • Aktuell UK • Anfrage, Buchung und Bestätigung erfolgen auf TrustedStays"
     },
 
     "partner": {
       "label": "Offizieller Unterkunftspartner von AJSEE",
-      "scope": "Hinweis: Diese Seite gilt aktuell nur für Unterkünfte in UK."
+      "scope": "Hinweis: Diese Seite ist aktuell nur für Unterkünfte im Vereinigten Königreich vorgesehen."
     },
 
     "trustedstays": {
       "title": "TrustedStays auf einen Blick",
-      "lead": "TrustedStays bietet akkreditierte, professionell verwaltete und sichere Unterkünfte im gesamten Vereinigten Königreich — beliebt für Corporate- und längere Aufenthalte.",
+      "lead": "TrustedStays bietet akkreditierte, professionell verwaltete und sichere Unterkünfte im gesamten Vereinigten Königreich — geeignet für Geschäftsreisen, längere Aufenthalte und ausgewählte Reisen zu Events.",
       "points": {
-        "1": "Aktuell UK (landesweite Abdeckung)",
-        "2": "Akkreditierte Unterkünfte mit Fokus auf Standards und Sicherheit",
-        "3": "Geeignet für kurze und längere Aufenthalte (von ein paar Nächten bis zu mehreren Monaten)"
+        "1": "Aktueller Fokus auf das Vereinigte Königreich",
+        "2": "Akkreditierte Unterkünfte mit Fokus auf Standards, Sicherheit und professionelles Management",
+        "3": "Geeignet für kurze und längere Aufenthalte — von wenigen Nächten bis zu mehreren Monaten"
       },
-      "scope": "Anfrage oder Buchung, Zahlung und Bestätigung erfolgen direkt auf TrustedStays."
+      "scope": "Anfrage oder Buchung, Zahlung und Bestätigung schließt du direkt auf TrustedStays ab."
     },
 
     "support": {
       "title": "Lokale AJSEE-Unterstützung",
-      "text": "Unsicher beim Ablauf oder ein Problem? Schreib uns — wir helfen dir bei der Anfrage oder Buchung in deiner Sprache.",
-      "textMobile": "Hilfe bei Anfrage oder Buchung? Schreib uns — wir helfen in deiner Sprache.",
+      "text": "Unsicher beim Ablauf oder auf ein Problem gestoßen? Schreib uns — wir helfen dir, dich bei Anfrage oder Buchung in deiner Sprache zu orientieren.",
+      "textMobile": "Unsicher beim Ablauf? Schreib uns — wir helfen dir bei Anfrage oder Buchung.",
       "cta": "AJSEE kontaktieren",
       "ctaSecondary": "↗ TrustedStays öffnen"
     },
@@ -53,26 +54,47 @@
     "how": {
       "title": "So funktioniert’s",
       "steps": {
-        "1": { "title": "Angebot öffnen", "text": "Klicke auf den Button und öffne TrustedStays (öffnet sich in einem neuen Tab)." },
-        "2": { "title": "Ort & Datum wählen", "text": "Suche UK-Unterkünfte nach Stadt, Datum und Gästezahl." },
-        "3": { "title": "Anfragen oder direkt buchen", "text": "Anfragen oder direkt buchen — Zahlung und Bestätigung erfolgen direkt über TrustedStays." }
+        "1": {
+          "title": "Angebot öffnen",
+          "text": "Klicke auf den Button und öffne TrustedStays. Die Seite öffnet sich in einem neuen Tab."
+        },
+        "2": {
+          "title": "Ziel und Datum wählen",
+          "text": "Suche Unterkünfte im Vereinigten Königreich nach Stadt, Datum, Anzahl der Gäste und Art des Aufenthalts."
+        },
+        "3": {
+          "title": "Anfragen oder buchen",
+          "text": "Anfrage oder Buchung schließt du direkt auf TrustedStays ab. Zahlung, Bestätigung und weitere Kommunikation erfolgen beim Partner."
+        }
       }
     },
 
     "faq": {
       "title": "FAQ",
-      "q1": { "q": "Buche ich über AJSEE?", "a": "Nein — Anfrage oder Buchung schließt du auf TrustedStays ab." },
-      "q2": { "q": "Ist das ein Partnerlink?", "a": "Wir nutzen einen Partner-/Referral-Link, um vermittelte Besuche zu messen. Falls eine Provision entsteht, sollte das keinen Einfluss auf deinen Preis haben." },
-      "q3": { "q": "Helft ihr mir, wenn ich nicht weiterkomme?", "a": "Ja. Schreib uns — wir helfen dir in deiner Sprache." },
-      "q4": { "q": "Wer kümmert sich um Storno oder Änderungen der Buchung?", "a": "Storno und Änderungen werden von TrustedStays gemäß deren Bedingungen bearbeitet. Wenn du möchtest, hilft dir AJSEE bei der Orientierung und Kommunikation." }
+      "q1": {
+        "q": "Buche ich über AJSEE?",
+        "a": "Nein. AJSEE verbindet dich mit TrustedStays, aber Anfrage oder Buchung schließt du direkt auf deren Website ab."
+      },
+      "q2": {
+        "q": "Ist das ein Partnerlink?",
+        "a": "Ja. Wir nutzen einen Referral-Link zu TrustedStays, um vermittelte Besuche zu messen. Falls eine Provision entsteht, sollte das keinen Einfluss auf deinen Preis haben."
+      },
+      "q3": {
+        "q": "Helft ihr mir, wenn ich nicht weiterkomme?",
+        "a": "Ja. Schreib uns — wir helfen dir, dich im Ablauf oder in der Kommunikation in deiner Sprache zu orientieren."
+      },
+      "q4": {
+        "q": "Wer kümmert sich um Storno oder Buchungsänderungen?",
+        "a": "Storno, Buchungsänderungen, Zahlungen und Bestätigungen werden von TrustedStays gemäß deren Bedingungen bearbeitet. AJSEE kann dir bei der Orientierung und Kommunikation helfen."
+      }
     },
 
-    "disclaimer": "AJSEE ist weder Unterkunftsanbieter noch Zahlungsdienstleister. Die Buchungsbedingungen legt TrustedStays fest.",
+    "disclaimer": "AJSEE ist kein Unterkunftsanbieter, kein Reiseveranstalter und kein Zahlungsdienstleister. Anfrage, Buchung, Zahlung, Bestätigung und Aufenthaltsbedingungen werden von TrustedStays abgewickelt.",
 
     "final": {
       "title": "Bereit? Wähle deine Unterkunft in UK.",
-      "text": "TrustedStays öffnet sich in einem neuen Tab — Anfrage oder Buchung schließt du direkt beim Partner ab.",
-      "ctaPrimary": "Unterkünfte ansehen (UK)",
+      "text": "TrustedStays öffnet sich in einem neuen Tab. Dort schließt du Anfrage oder Buchung direkt beim Partner ab.",
+      "ctaPrimary": "Unterkünfte in UK ansehen",
       "ctaSecondary": "AJSEE kontaktieren"
     }
   }

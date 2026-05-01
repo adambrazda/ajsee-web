@@ -13,7 +13,7 @@
       "title": "Polityka cookies",
       "lead": "Na tej stronie znajdziesz informacje o tym, w jaki sposób AJSEE wykorzystuje pliki cookies i podobne technologie, które są niezbędne do działania strony, które są opcjonalne oraz jak możesz zarządzać swoimi preferencjami.",
       "updatedLabel": "Ostatnia aktualizacja:",
-      "updatedDate": "13 kwietnia 2026"
+      "updatedDate": "1 maja 2026"
     },
     "toc": {
       "title": "Spis treści",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. Jak wykorzystujemy cookies",
-      "p1": "AJSEE wykorzystuje niektóre technologie po to, aby strona działała prawidłowo i bezpiecznie. Inne technologie wykorzystujemy wyłącznie wtedy, gdy wyrazisz na to zgodę, na przykład do analityki lub pomiaru skuteczności treści.",
+      "p1": "AJSEE wykorzystuje niektóre technologie po to, aby strona działała prawidłowo i bezpiecznie oraz aby mogła zapamiętać podstawowe wybory, takie jak język, region lub ustawienia cookies. Inne technologie wykorzystujemy wyłącznie wtedy, gdy wyrazisz na to zgodę, na przykład do analityki lub pomiaru skuteczności treści.",
       "p2": "Nie wszystkie cookies służą temu samemu celowi. Niektóre są niezbędne do technicznego działania strony, inne pomagają nam zrozumieć, jak użytkownicy korzystają ze strony, a jeszcze inne mogą wiązać się z przejściem na strony partnerów lub z pomiarem parametrów atrybucyjnych."
     },
     "types": {
@@ -41,7 +41,7 @@
       "cards": {
         "1": {
           "title": "Niezbędne",
-          "text": "Te technologie są wymagane do podstawowego działania strony, bezpieczeństwa, zarządzania sesją lub zapamiętywania wyboru preferencji cookies. Bez nich niektóre części usługi mogą nie działać prawidłowo."
+          "text": "Te technologie są wymagane do podstawowego działania strony, bezpieczeństwa, zarządzania sesją, zapamiętywania wyboru preferencji cookies, języka lub regionu. Bez nich niektóre części usługi mogą nie działać prawidłowo."
         },
         "2": {
           "title": "Analityczne",
@@ -49,7 +49,7 @@
         },
         "3": {
           "title": "Preferencyjne",
-          "text": "Mogą służyć do zapamiętywania określonych wyborów lub ustawień, na przykład preferencji językowych lub użytkownika, jeśli dana funkcja strony z nich korzysta."
+          "text": "Mogą służyć do zapamiętywania określonych wyborów lub ustawień, na przykład preferencji językowych, regionalnych lub użytkownika, jeśli dana funkcja strony z nich korzysta."
         },
         "4": {
           "title": "Partnerskie / atrybucyjne",
@@ -66,14 +66,18 @@
           "text": "Technologie służące do zapamiętywania, czy zaakceptowałeś/-aś lub odrzuciłeś/-aś opcjonalne cookies."
         },
         "2": {
-          "label": "Google Tag Manager",
-          "text": "Narzędzie do zarządzania tagami i ładowania dodatkowych technologii zgodnie z aktualną konfiguracją i statusem zgody."
+          "label": "Preferencje językowe i regionalne",
+          "text": "Technologie lub cookies, które pomagają zapamiętać wybrany język, kraj lub regionalne ustawienia strony."
         },
         "3": {
-          "label": "Google Analytics",
-          "text": "Narzędzie analityczne używane tylko wtedy, gdy wyrazisz zgodę, do mierzenia ruchu na stronie i jej ulepszania."
+          "label": "Google Tag Manager",
+          "text": "Narzędzie do zarządzania tagami i ładowania dodatkowych technologii zgodnie z aktualną konfiguracją strony oraz statusem zgody."
         },
         "4": {
+          "label": "Google Analytics",
+          "text": "Narzędzie analityczne używane tylko wtedy, gdy wyrazisz zgodę. Pomaga nam mierzyć ruch na stronie oraz ulepszać treści i użyteczność serwisu."
+        },
+        "5": {
           "label": "Parametry partnerskie / referral",
           "text": "Parametry lub mechanizmy pomiarowe związane z przejściem na strony partnerów, na przykład w ramach współpracy afiliacyjnej lub referral."
         }
@@ -82,7 +86,7 @@
     },
     "managing": {
       "title": "5. Jak zarządzać swoimi preferencjami",
-      "p1": "Opcjonalnymi cookies możesz zarządzać za pośrednictwem bannera cookies lub ustawień wyświetlanych na stronie podczas pierwszej wizyty albo po zresetowaniu preferencji.",
+      "p1": "Opcjonalnymi cookies możesz zarządzać za pośrednictwem bannera cookies lub ustawień cookies dostępnych na stronie podczas pierwszej wizyty, po zresetowaniu preferencji albo przez link w stopce strony.",
       "items": {
         "1": "możesz zaakceptować lub odrzucić opcjonalne kategorie;",
         "2": "możesz później zmienić swoje preferencje, jeśli odpowiednie ustawienie jest dostępne na stronie;",
@@ -92,7 +96,7 @@
     },
     "thirdParties": {
       "title": "6. Strony trzecie",
-      "p1": "Jeśli klikniesz z AJSEE na stronę podmiotu trzeciego, na przykład partnera sprzedaży biletów lub partnera noclegowego, ten podmiot trzeci może wykorzystywać własne cookies i podobne technologie zgodnie z własnymi zasadami. AJSEE nie ma bezpośredniej kontroli nad tymi technologiami na zewnętrznej stronie.",
+      "p1": "Jeśli klikniesz z AJSEE na stronę podmiotu trzeciego, na przykład partnera sprzedaży biletów, partnera noclegowego lub innego usługodawcy partnerskiego, ten podmiot trzeci może wykorzystywać własne cookies i podobne technologie zgodnie z własnymi zasadami. AJSEE nie ma bezpośredniej kontroli nad tymi technologiami na zewnętrznej stronie.",
       "p2": "Dlatego zalecamy również zapoznanie się z polityką cookies i informacjami o prywatności konkretnego partnera lub usługodawcy, którego stronę odwiedzasz."
     },
     "updates": {
@@ -102,7 +106,7 @@
     "contact": {
       "title": "8. Kontakt",
       "p1": "Jeśli masz pytania dotyczące korzystania z cookies lub podobnych technologii w AJSEE, możesz skontaktować się z nami pod adresem <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a>.",
-      "p2": "Więcej informacji o tym, jak AJSEE przetwarza dane osobowe, znajdziesz także na stronie Privacy Policy."
+      "p2": "Więcej informacji o tym, jak AJSEE przetwarza dane osobowe, znajdziesz także w naszej <a href=\"/privacy-policy\" data-lang-link>Polityce prywatności</a>."
     }
   }
 }

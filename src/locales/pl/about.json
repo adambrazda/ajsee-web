@@ -1,17 +1,17 @@
 {
   "about": {
     "headline": "O nas",
-    "title": "O nas | AJSEE®",
+    "title": "O AJSEE | Światowe wydarzenia bez barier językowych",
     "hero": {
       "headlineFull": "Nasza historia. Nasza wizja.",
-      "text": "Doświadczenia nie mają granic. Dlatego powstało AJSEE.",
-      "subtext": "Naszym celem jest udostępnianie ludziom wydarzeń kulturalnych, rozrywkowych i sportowych z całego świata – jasno, zrozumiale i bez zbędnych barier przy wyborze i zakupie biletów.",
-      "claim": "AJSEE<sup>®</sup> to nowoczesna platforma dla wszystkich, którzy chcą doświadczać świata w pełni – bez przeszkód."
+      "text": "Przeżycia nie mają granic. Dlatego powstało AJSEE.",
+      "subtext": "Naszym celem jest ułatwienie dostępu do wydarzeń kulturalnych, rozrywkowych i sportowych z całego świata – jasno, zrozumiale i bez zbędnych barier przy odkrywaniu wydarzeń, biletów oraz możliwości podróży.",
+      "claim": "AJSEE<sup>®</sup> to nowoczesna platforma dla wszystkich, którzy chcą doświadczać świata w pełni – bez zbędnych przeszkód."
     },
     "story": {
       "headline": "Jak to się zaczęło",
       "p1": "Była jesień <strong>2024</strong>. Siedzieliśmy w pubie przy piwie – i jak to bywa, <strong>zwykła rozmowa przerodziła się w coś, co szybko stało się prawdziwym pomysłem.</strong>",
-      "p2": "Jeszcze tego samego wieczoru powstała <strong>nazwa AJSEE</strong>, pierwszy szkic logo i wizja: <strong>ułatwić ludziom dostęp do światowych wrażeń bez barier językowych.</strong>",
+      "p2": "Jeszcze tego samego wieczoru powstała <strong>nazwa AJSEE</strong>, pierwszy szkic logo i wizja: <strong>ułatwić ludziom dostęp do światowych przeżyć bez barier językowych.</strong>",
       "p3": "Potem nadszedł najtrudniejszy etap: <strong>naprawdę zacząć.</strong>",
       "p4": "Obaj mieliśmy pracę na pełen etat, dzieliło nas <strong>180 kilometrów</strong>, a czasu było niewiele. Projekt stanął w miejscu, zanim zdążył się rozpędzić.",
       "p5": "Aż pewnego dnia jeden z nas <strong>po prostu to uruchomił</strong>. Bez idealnego planu, ale z przekonaniem, że to ma sens. Wtedy AJSEE zaczęło stawać się rzeczywistością."
@@ -21,7 +21,7 @@
       "adam": {
         "name": "Adam Brázda",
         "role": "Współzałożyciel AJSEE®",
-        "claim": "Od samego początku związany z AJSEE®. Wierzy w proste rozwiązania, które otwierają ludziom świat wrażeń bez zbędnych barier.",
+        "claim": "Od samego początku związany z AJSEE®. Wierzy w proste rozwiązania, które otwierają ludziom świat przeżyć bez zbędnych barier.",
         "linkedin": "Profil na LinkedIn"
       },
       "jan": {
@@ -33,10 +33,10 @@
     },
     "future": {
       "headline": "🎯 Dokąd zmierzamy",
-      "p1": "Do końca 2025 roku chcemy uruchomić produkcyjną wersję serwisu.",
-      "p2": "Pracujemy nad rozszerzeniem wersji językowych i współpracą z międzynarodowymi platformami.",
-      "p3": "Przygotowujemy aplikację mobilną i poszerzamy ofertę wydarzeń oraz ich dostępność dla szerszej publiczności.",
-      "p4": "Chcemy, aby AJSEE było pierwszym wyborem dla każdego, kto szuka drogi do światowych wrażeń – czy to w Londynie, Barcelonie, czy w domu w Brnie."
+      "p1": "W 2026 roku pracujemy nad rozwojem treści, partnerstw i technicznego fundamentu platformy.",
+      "p2": "Rozwijamy wersje językowe, praktyczne przewodniki i współpracę z międzynarodowymi partnerami.",
+      "p3": "Krok po kroku chcemy poszerzać ofertę wydarzeń, powiązanych usług i dostępność dla szerszej publiczności.",
+      "p4": "Chcemy, aby AJSEE stało się pierwszym punktem startu dla każdego, kto szuka drogi do światowych przeżyć – w Londynie, Barcelonie albo bliżej domu."
     }
   }
 }

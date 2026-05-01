@@ -1,19 +1,19 @@
 {
   "about": {
     "headline": "About us",
-    "title": "About us | AJSEE®",
+    "title": "About AJSEE | Global events without language barriers",
     "hero": {
       "headlineFull": "Our story. Our vision.",
       "text": "Experiences know no boundaries. That’s why AJSEE was born.",
-      "subtext": "Our goal is to make cultural, entertainment, and sports events from around the world accessible – clearly, understandably, and without unnecessary barriers when choosing and purchasing tickets.",
-      "claim": "AJSEE<sup>®</sup> is a modern platform for everyone who wants to experience the world to the fullest – without obstacles."
+      "subtext": "Our goal is to make cultural, entertainment and sporting events from around the world easier to discover — clearly, intuitively and without unnecessary barriers when exploring events, tickets and travel options.",
+      "claim": "AJSEE<sup>®</sup> is a modern platform for everyone who wants to experience the world to the fullest — without unnecessary obstacles."
     },
     "story": {
       "headline": "How it all began",
       "p1": "It was autumn <strong>2024</strong>. We were sitting in a pub, having a beer – and as it happens, <strong>one ordinary conversation sparked something that soon turned into a real idea.</strong>",
-      "p2": "That same evening, the <strong>name AJSEE</strong>, the first logo draft, and the vision were born: <strong>to make global experiences accessible without language barriers.</strong>",
+      "p2": "That same evening, the <strong>name AJSEE</strong>, the first logo draft and the vision were born: <strong>to make global experiences easier to access without language barriers.</strong>",
       "p3": "Then came the hardest part: <strong>to actually start.</strong>",
-      "p4": "We both had full-time jobs, lived <strong>180 kilometers</strong> apart, and time was short. The project stalled before it could even get going.",
+      "p4": "We both had full-time jobs, lived <strong>180 kilometres</strong> apart, and time was short. The project stalled before it could even get going.",
       "p5": "Until one day, one of us <strong>just launched it</strong>. Without a perfect plan, but with the certainty that it made sense. And that’s when AJSEE started becoming real."
     },
     "team": {
@@ -27,16 +27,16 @@
       "jan": {
         "name": "Jan Oujezdský",
         "role": "Co-founder of AJSEE®",
-        "claim": "From day one, he has shared the vision to make culture, sports and entertainment accessible to as many people as possible. At AJSEE®, he connects ideas, accessibility, and attention to detail.",
+        "claim": "From day one, he has shared the vision to make culture, sport and entertainment accessible to as many people as possible. At AJSEE®, he connects ideas, accessibility and attention to detail.",
         "linkedin": "LinkedIn profile"
       }
     },
     "future": {
-      "headline": "🎯 Where we're heading",
-      "p1": "We aim to launch the production version of the website by the end of 2025.",
-      "p2": "We're expanding language versions and partnering with international platforms.",
-      "p3": "We're preparing a mobile app and broadening the range of events as well as their accessibility for a wider audience.",
-      "p4": "We want AJSEE to be the first choice for anyone seeking world-class experiences — whether in London, Barcelona, or at home in Brno."
+      "headline": "🎯 Where we’re heading",
+      "p1": "In 2026, we are expanding the content, partnerships and technical foundation of the platform.",
+      "p2": "We are developing language versions, practical guides and partnerships with international platforms.",
+      "p3": "Step by step, we want to expand the selection of events, related services and accessibility for a wider audience.",
+      "p4": "We want AJSEE to become a first-choice starting point for anyone looking for global experiences — whether in London, Barcelona or closer to home."
     }
   }
 }

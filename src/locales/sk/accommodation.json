@@ -6,46 +6,47 @@
   "nav-about": "O nás",
   "nav-blog": "Blog",
   "nav-contact": "Kontakt",
-  "footer-copyright": "&copy; <span id=\"year\">2025</span> AJSEE®. Všetky práva vyhradené.",
+  "nav-faq": "FAQ",
+  "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Všetky práva vyhradené.",
 
   "seo": {
     "accommodation": {
-      "title": "Ubytovanie v UK | AJSEE",
-      "description": "Ubytovanie v Spojenom kráľovstve ponúkame v spolupráci s TrustedStays®. Dopyt alebo rezerváciu dokončíš priamo na webe TrustedStays.",
-      "ogTitle": "Ubytovanie v UK | AJSEE",
-      "ogDescription": "Ubytovanie v Spojenom kráľovstve ponúkame v spolupráci s TrustedStays®. Dopyt alebo rezerváciu dokončíš priamo na webe TrustedStays."
+      "title": "Ubytovanie pri koncertoch, športe a podujatiach v UK | AJSEE",
+      "description": "Nájdi ubytovanie v Spojenom kráľovstve pri cestách na koncerty, šport a ďalšie podujatia. AJSEE ťa prepojí s TrustedStays; rezervácia prebieha u partnera.",
+      "ogTitle": "Ubytovanie pri koncertoch, športe a podujatiach v UK | AJSEE",
+      "ogDescription": "Cestuješ do Spojeného kráľovstva za koncertom, športom alebo živým zážitkom? AJSEE ťa prepojí s TrustedStays, kde prebieha dopyt, rezervácia aj potvrdenie ubytovania."
     }
   },
 
   "accommodation": {
     "hero": {
-      "title": "Ubytovanie v UK",
-      "lead": "Ubytovanie v Spojenom kráľovstve ponúkame v spolupráci s TrustedStays®. Dopyt alebo rezerváciu dokončíš priamo na ich webe.",
-      "ctaPrimary": "Zobraziť ponuku ubytovania (UK)",
+      "title": "Ubytovanie v UK na cesty za zážitkami",
+      "lead": "Cestuješ do Spojeného kráľovstva za koncertom, športom alebo iným živým zážitkom? AJSEE ťa prepojí s TrustedStays, kde dopyt alebo rezerváciu dokončíš priamo u partnera.",
+      "ctaPrimary": "Zobraziť ubytovanie v UK",
       "ctaSecondary": "Ako to funguje",
-      "micro": "Aktuálne UK • Dopyt / rezervácia prebieha na TrustedStays"
+      "micro": "Oficiálne partnerstvo • Aktuálne UK • Dopyt, rezervácia a potvrdenie prebiehajú na TrustedStays"
     },
 
     "partner": {
-      "label": "Partner AJSEE pre ubytovanie",
-      "scope": "Poznámka: Táto stránka je aktuálne iba pre ubytovanie v UK."
+      "label": "Oficiálny partner AJSEE pre ubytovanie",
+      "scope": "Poznámka: Táto stránka je aktuálne určená iba pre ubytovanie v Spojenom kráľovstve."
     },
 
     "trustedstays": {
       "title": "TrustedStays v skratke",
-      "lead": "TrustedStays® ponúka akreditované, profesionálne spravované a bezpečné ubytovanie naprieč UK — obľúbené pre firemné aj dlhšie pobyty.",
+      "lead": "TrustedStays ponúka akreditované, profesionálne spravované a bezpečné ubytovanie naprieč Spojeným kráľovstvom — vhodné na pracovné cesty, dlhšie pobyty aj vybrané cesty za podujatiami.",
       "points": {
-        "1": "Aktuálne UK (celoplošné pokrytie)",
-        "2": "Akreditované ubytovanie s dôrazom na štandardy a bezpečnosť",
-        "3": "Vhodné na krátke aj dlhšie pobyty (od pár nocí až po niekoľko mesiacov)"
+        "1": "Aktuálne zameranie na Spojené kráľovstvo",
+        "2": "Akreditované ubytovanie s dôrazom na štandardy, bezpečnosť a profesionálnu správu",
+        "3": "Vhodné na krátke aj dlhšie pobyty — od niekoľkých nocí až po niekoľko mesiacov"
       },
       "scope": "Dopyt alebo rezerváciu, platbu a potvrdenie dokončíš priamo na TrustedStays."
     },
 
     "support": {
       "title": "Lokálna podpora AJSEE",
-      "text": "Nie si si istý/á postupom alebo narazíš na problém? Napíš nám — pomôžeme ti s dopytom alebo rezerváciou v tvojom jazyku.",
-      "textMobile": "Potrebuješ pomoc s dopytom alebo rezerváciou? Napíš — pomôžeme v tvojom jazyku.",
+      "text": "Nie si si istý/á postupom alebo narazíš na problém? Napíš nám — pomôžeme ti zorientovať sa v dopyte alebo rezervácii v tvojom jazyku.",
+      "textMobile": "Nie si si istý/á postupom? Napíš nám — pomôžeme ti zorientovať sa v dopyte alebo rezervácii.",
       "cta": "Kontaktovať AJSEE",
       "ctaSecondary": "↗ Otvoriť TrustedStays"
     },
@@ -53,26 +54,47 @@
     "how": {
       "title": "Ako to funguje",
       "steps": {
-        "1": { "title": "Otvor ponuku", "text": "Klikni na tlačidlo — TrustedStays sa otvorí v novej karte." },
-        "2": { "title": "Vyber miesto a termín", "text": "Vyhľadaj ubytovanie v UK podľa mesta, termínu a počtu hostí." },
-        "3": { "title": "Odošli dopyt alebo rezervuj priamo", "text": "Odošli dopyt alebo rezervuj priamo — platba a potvrdenie prebehnú priamo cez TrustedStays." }
+        "1": {
+          "title": "Otvor ponuku",
+          "text": "Klikni na tlačidlo a prejdeš na TrustedStays. Stránka sa otvorí v novej karte."
+        },
+        "2": {
+          "title": "Vyber destináciu a termín",
+          "text": "Vyhľadaj ubytovanie v Spojenom kráľovstve podľa mesta, termínu, počtu hostí a typu pobytu."
+        },
+        "3": {
+          "title": "Odošli dopyt alebo rezervuj",
+          "text": "Dopyt alebo rezerváciu dokončíš priamo na TrustedStays. Platba, potvrdenie aj ďalšia komunikácia prebiehajú u partnera."
+        }
       }
     },
 
     "faq": {
       "title": "Časté otázky",
-      "q1": { "q": "Je rezervácia na AJSEE?", "a": "Nie — dopyt alebo rezerváciu dokončíš priamo na TrustedStays®." },
-      "q2": { "q": "Je odkaz partnerský?", "a": "Používame partnerský/referral odkaz na meranie sprostredkovaných návštev. Ak vznikne provízia, nemalo by to ovplyvniť cenu pre teba." },
-      "q3": { "q": "Pomôžete mi, keď si nebudem vedieť rady?", "a": "Áno. Napíš nám — pomôžeme ti v tvojom jazyku." },
-      "q4": { "q": "Kto rieši storno alebo zmeny rezervácie?", "a": "Storno a zmeny rezervácie rieši TrustedStays® podľa svojich podmienok. Ak chceš, AJSEE ti pomôže zorientovať sa v postupe a komunikácii." }
+      "q1": {
+        "q": "Prebieha rezervácia na AJSEE?",
+        "a": "Nie. AJSEE ťa prepojí s TrustedStays, ale dopyt alebo rezerváciu dokončíš priamo na ich webe."
+      },
+      "q2": {
+        "q": "Je odkaz partnerský?",
+        "a": "Áno. Používame partnerský referral odkaz na meranie sprostredkovaných návštev. Ak vznikne provízia, nemalo by to mať vplyv na cenu pre teba."
+      },
+      "q3": {
+        "q": "Pomôžete mi, keď si nebudem vedieť rady?",
+        "a": "Áno. Napíš nám a pomôžeme ti zorientovať sa v postupe alebo komunikácii v tvojom jazyku."
+      },
+      "q4": {
+        "q": "Kto rieši storno alebo zmeny rezervácie?",
+        "a": "Storno, zmeny rezervácie, platby a potvrdenia rieši TrustedStays podľa svojich podmienok. AJSEE ti môže pomôcť s orientáciou a komunikáciou."
+      }
     },
 
-    "disclaimer": "AJSEE nie je poskytovateľ ubytovania ani platobný sprostredkovateľ. Podmienky rezervácie určuje TrustedStays®.",
+    "disclaimer": "AJSEE nie je poskytovateľom ubytovania, cestovnou kanceláriou ani prevádzkovateľom platobnej služby. Dopyt, rezervácia, platba, potvrdenie a podmienky pobytu prebiehajú u TrustedStays.",
 
     "final": {
       "title": "Všetko pripravené? Vyber si ubytovanie v UK.",
-      "text": "TrustedStays sa otvorí v novej karte — tam odošleš dopyt alebo rezervuješ priamo u partnera.",
-      "ctaPrimary": "Zobraziť ponuku ubytovania (UK)",
+      "text": "TrustedStays sa otvorí v novej karte, kde dopyt alebo rezerváciu dokončíš priamo u partnera.",
+      "ctaPrimary": "Zobraziť ubytovanie v UK",
       "ctaSecondary": "Kontaktovať AJSEE"
     }
   }

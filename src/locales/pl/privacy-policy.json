@@ -2,18 +2,18 @@
   "seo": {
     "privacy": {
       "title": "Polityka prywatności | AJSEE",
-      "description": "Jak AJSEE przetwarza dane osobowe, korzysta z plików cookie i narzędzi analitycznych oraz jakie masz prawa.",
+      "description": "Jak AJSEE przetwarza dane osobowe, korzysta z plików cookie, narzędzi analitycznych i linków partnerskich oraz jakie masz prawa.",
       "ogTitle": "Polityka prywatności | AJSEE",
-      "ogDescription": "Jak AJSEE przetwarza dane osobowe, korzysta z plików cookie i narzędzi analitycznych oraz jakie masz prawa."
+      "ogDescription": "Jak AJSEE przetwarza dane osobowe, korzysta z plików cookie, narzędzi analitycznych i linków partnerskich oraz jakie masz prawa."
     }
   },
   "privacy": {
     "hero": {
       "eyebrow": "AJSEE · Informacje prawne",
       "title": "Polityka prywatności",
-      "lead": "Na tej stronie znajdziesz informacje o tym, jakie dane osobowe AJSEE może przetwarzać, dlaczego to robi, jak długo je przechowuje oraz jakie masz prawa.",
+      "lead": "Na tej stronie znajdziesz informacje o tym, jakie dane osobowe AJSEE może przetwarzać, dlaczego je przetwarzamy, jak długo je przechowujemy oraz jakie masz prawa.",
       "updatedLabel": "Ostatnia aktualizacja:",
-      "updatedDate": "13 kwietnia 2026"
+      "updatedDate": "1 maja 2026"
     },
     "toc": {
       "title": "Spis treści",
@@ -31,7 +31,7 @@
     },
     "intro": {
       "title": "1. Wprowadzenie",
-      "p1": "AJSEE pomaga użytkownikom odkrywać wydarzenia oraz powiązane usługi podróżnicze i leisure za pośrednictwem zaufanych partnerów. Podczas działania naszej strony możemy przetwarzać dane osobowe, na przykład gdy kontaktujesz się z nami, zapisujesz się na aktualizacje, wysyłasz business enquiry lub wchodzisz w interakcję z opcjonalnymi technologiami analitycznymi i referral.",
+      "p1": "AJSEE pomaga użytkownikom odkrywać wydarzenia, bilety, noclegi oraz powiązane możliwości podróżnicze i spędzania czasu wolnego za pośrednictwem zaufanych partnerów. Podczas działania naszej strony możemy przetwarzać dane osobowe, na przykład gdy kontaktujesz się z nami, wysyłasz formularz, zapisujesz się na aktualizacje, wysyłasz zapytanie biznesowe lub partnerskie albo korzystasz z opcjonalnych technologii analitycznych i partnerskich technologii atrybucyjnych.",
       "p2": "Chcemy przetwarzać dane osobowe w sposób przejrzysty, bezpieczny i wyłącznie w zakresie niezbędnym do danego celu oraz zgodnie z obowiązującymi przepisami o ochronie danych, w tym UK GDPR i, tam gdzie ma to zastosowanie, także EU GDPR."
     },
     "controller": {
@@ -40,44 +40,55 @@
       "numberLabel": "Numer spółki",
       "officeLabel": "Siedziba rejestrowa",
       "emailLabel": "Adres e-mail",
-      "p1": "O ile przy konkretnym formularzu lub usłudze nie wskazano inaczej, administratorem danych osobowych opisanych na tej stronie jest AJSEE LTD."
+      "p1": "O ile przy konkretnym formularzu, usłudze lub przejściu na stronę partnera nie wskazano inaczej, administratorem danych osobowych opisanych na tej stronie jest AJSEE LTD."
     },
     "data": {
       "title": "3. Jakie dane możemy przetwarzać",
       "p1": "W zależności od tego, jak korzystasz z naszej strony lub jak się z nami kontaktujesz, możemy przetwarzać w szczególności następujące kategorie danych osobowych:",
       "items": {
         "1": "dane identyfikacyjne i kontaktowe, takie jak imię i nazwisko, adres e-mail, nazwa firmy oraz treść wiadomości;",
-        "2": "dane związane z newsletterem, takie jak adres e-mail i preferencje subskrypcji;",
-        "3": "dane zawarte w zapytaniu biznesowym lub partnerskim, które dobrowolnie nam przesyłasz;",
-        "4": "dane techniczne i dotyczące korzystania, takie jak adres IP, informacje o przeglądarce i urządzeniu, odwiedzone strony, przybliżona lokalizacja, źródło ruchu oraz interakcje na stronie, jeżeli zaakceptowano analityczne pliki cookie;",
-        "5": "ograniczone dane związane z partner click-through lub atrybucją referral, gdy przechodzisz z AJSEE na stronę podmiotu trzeciego."
+        "2": "dane związane z newsletterem lub listą oczekujących, takie jak adres e-mail, zgoda i preferencje subskrypcji;",
+        "3": "dane zawarte w zapytaniu biznesowym, partnerskim lub dotyczącym noclegu, które dobrowolnie nam przesyłasz;",
+        "4": "dane techniczne i dotyczące korzystania, takie jak adres IP, informacje o przeglądarce i urządzeniu, odwiedzone strony, przybliżona lokalizacja, język, region, źródło ruchu oraz interakcje na stronie;",
+        "5": "dane związane z plikami cookie i preferencjami, takie jak ustawienia zgody, wybrany język lub preferencje regionalne;",
+        "6": "ograniczone dane związane z przejściem na stronę partnera lub pomiarem atrybucji, gdy przechodzisz z AJSEE na stronę podmiotu trzeciego."
       },
-      "p2": "Obecnie nie oferujemy na stronie rejestracji kont użytkowników i świadomie nie zbieramy za pomocą standardowych formularzy szczególnych kategorii danych osobowych."
+      "p2": "Obecnie nie oferujemy na stronie rejestracji kont użytkowników i świadomie nie zbieramy za pomocą standardowych formularzy szczególnych kategorii danych osobowych, takich jak dane dotyczące zdrowia, przekonań religijnych czy poglądów politycznych."
     },
     "purposes": {
       "title": "4. Jak i dlaczego wykorzystujemy dane",
       "cards": {
         "1": {
           "title": "Obsługa zapytań",
-          "text": "Wykorzystujemy dane kontaktowe i treść wiadomości, aby odpowiadać na Twoje pytania, obsługiwać support requesty oraz komunikować się w sprawie usług, którymi się interesujesz.",
+          "text": "Wykorzystujemy dane kontaktowe i treść wiadomości, aby odpowiadać na Twoje pytania, obsługiwać prośby o wsparcie oraz komunikować się w sprawie usług lub treści, którymi się interesujesz.",
           "basis": "uzasadniony interes oraz, w stosownych przypadkach, działania podjęte na Twoje żądanie przed zawarciem umowy."
         },
         "2": {
           "title": "Newsletter i aktualizacje",
-          "text": "Jeśli zapiszesz się na nasz newsletter lub podobne aktualizacje, wykorzystujemy Twój adres e-mail do wysyłki zamówionych treści oraz zarządzania preferencjami subskrypcji.",
+          "text": "Jeśli zapiszesz się na newsletter, listę oczekujących lub podobne aktualizacje, wykorzystujemy Twój adres e-mail do wysyłki zamówionych treści oraz zarządzania preferencjami subskrypcji.",
           "basis": "zgoda."
         },
         "3": {
           "title": "Analityka strony i ulepszanie usługi",
-          "text": "Wykorzystujemy dane analityczne, aby rozumieć ruch, poprawiać wydajność, mierzyć skuteczność treści i sprawiać, by strona była bardziej przejrzysta i łatwiejsza w użyciu.",
-          "basis": "zgoda na opcjonalne technologie analityczne; uzasadniony interes w zakresie podstawowego bezpieczeństwa strony i troubleshootingu."
+          "text": "Wykorzystujemy dane analityczne, aby rozumieć ruch na stronie, poprawiać wydajność, mierzyć skuteczność treści i sprawiać, by strona była bardziej przejrzysta, szybsza i łatwiejsza w użyciu.",
+          "basis": "zgoda na opcjonalne technologie analityczne; uzasadniony interes w zakresie podstawowego bezpieczeństwa strony i rozwiązywania problemów technicznych."
         },
         "4": {
           "title": "Partnerstwa i komunikacja biznesowa",
-          "text": "Jeśli kontaktujesz się z nami w sprawie współpracy lub partnerstwa, przetwarzamy przekazane dane w celu oceny i zarządzania potencjalną relacją biznesową.",
+          "text": "Jeśli kontaktujesz się z nami w sprawie współpracy, partnerstwa lub możliwości biznesowych, przetwarzamy przekazane dane w celu oceny, komunikacji i zarządzania potencjalną relacją biznesową.",
           "basis": "uzasadniony interes oraz, w stosownych przypadkach, działania przed zawarciem umowy."
         },
         "5": {
+          "title": "Preferencje językowe, regionalne i użytkownika",
+          "text": "Niektóre dane wykorzystujemy po to, aby strona mogła wyświetlać się w odpowiednim języku, uwzględniać podstawowe ustawienia regionalne i zapamiętywać Twoje wybory, na przykład preferencje dotyczące plików cookie.",
+          "basis": "uzasadniony interes w prawidłowym działaniu strony oraz, w przypadku technologii opcjonalnych, zgoda."
+        },
+        "6": {
+          "title": "Linki partnerskie i pomiar atrybucji",
+          "text": "Podczas przejścia na strony partnerów możemy używać parametrów referral lub atrybucyjnych, aby ocenić, czy wizyta lub zapytanie pochodziło z AJSEE.",
+          "basis": "uzasadniony interes w ocenie współpracy partnerskiej oraz, jeśli jest to wymagane dla konkretnej technologii, zgoda."
+        },
+        "7": {
           "title": "Obowiązki prawne i ochrona roszczeń",
           "text": "Możemy przechowywać lub wykorzystywać odpowiednie zapisy, gdy jest to konieczne do wypełnienia obowiązków prawnych, prowadzenia dokumentacji, ochrony naszych praw lub obrony przed roszczeniami.",
           "basis": "obowiązek prawny oraz uzasadniony interes."
@@ -90,32 +101,34 @@
     },
     "cookies": {
       "title": "5. Pliki cookie i analityka",
-      "p1": "Nasza strona może korzystać z plików cookie i podobnych technologii. Niektóre są niezbędne do działania strony, bezpieczeństwa lub podstawowych preferencji. Inne są opcjonalne i są używane wyłącznie wtedy, gdy wyrazisz zgodę za pośrednictwem banera cookie lub ustawień preferencji.",
+      "p1": "Nasza strona może korzystać z plików cookie i podobnych technologii. Niektóre są niezbędne do działania strony, bezpieczeństwa, preferencji językowych i regionalnych lub zapamiętania ustawień cookie. Inne są opcjonalne i są używane wyłącznie wtedy, gdy wyrazisz zgodę za pośrednictwem banera cookie lub ustawień preferencji.",
       "items": {
         "1": "niezbędne technologie potrzebne do prawidłowego i bezpiecznego działania strony;",
-        "2": "Google Tag Manager do zarządzania tagami i integracjami zależnymi od zgody;",
-        "3": "Google Analytics, jeśli jest włączone, do zrozumienia zagregowanego sposobu korzystania ze strony i ulepszania usługi;",
-        "4": "partnerskie lub referral tracking parametry przy przejściu z AJSEE do wybranych stron trzecich."
+        "2": "technologie służące do zapamiętywania preferencji cookie, języka i ustawień regionalnych;",
+        "3": "Google Tag Manager do zarządzania tagami i integracjami w zależności od aktualnej konfiguracji oraz statusu zgody;",
+        "4": "Google Analytics, jeśli jest włączone, do zrozumienia zagregowanego sposobu korzystania ze strony i ulepszania usługi;",
+        "5": "partnerskie lub atrybucyjne parametry śledzące przy przejściu z AJSEE do wybranych stron trzecich."
       },
-      "p2": "Opcjonalnymi plikami cookie możesz zarządzać za pomocą banera cookie lub ustawień przeglądarki. Wyłączenie niektórych plików cookie może wpłynąć na niektóre nieistotne funkcje lub możliwości pomiarowe."
+      "p2": "Opcjonalnymi plikami cookie możesz zarządzać za pomocą banera cookie, linku w stopce strony lub ustawień przeglądarki. Wyłączenie niektórych plików cookie może wpłynąć na niektóre funkcje nieistotne dla podstawowego działania strony lub możliwości pomiarowe. Więcej informacji znajdziesz w naszej <a href=\"/cookies-policy\" data-lang-link>Polityce cookies</a>."
     },
     "sharing": {
       "title": "6. Udostępnianie i podmioty przetwarzające",
-      "p1": "Możemy udostępniać dane osobowe zaufanym dostawcom usług i podmiotom przetwarzającym, którzy pomagają nam w prowadzeniu strony, komunikacji, analityce, hostingu lub innych niezbędnych funkcjach biznesowych. Jeżeli podmioty te działają jako podmioty przetwarzające, mogą przetwarzać dane osobowe wyłącznie zgodnie z naszymi instrukcjami.",
-      "p2": "Jeśli klikniesz i przejdziesz do strony partnera, na przykład partnera ticketingowego lub accommodation, ten podmiot trzeci staje się niezależnie odpowiedzialny za dane, które podajesz na jego stronie. Dlatego zalecamy zapoznanie się również z informacjami privacy danego podmiotu trzeciego."
+      "p1": "Możemy udostępniać dane osobowe zaufanym dostawcom usług i podmiotom przetwarzającym, którzy pomagają nam w prowadzeniu strony, hostingu, obsłudze formularzy, komunikacji, analityce, bezpieczeństwie lub innych niezbędnych funkcjach biznesowych. Jeżeli podmioty te działają jako podmioty przetwarzające, mogą przetwarzać dane osobowe wyłącznie zgodnie z naszymi instrukcjami.",
+      "p2": "Jeśli klikniesz i przejdziesz do strony partnera, na przykład partnera sprzedaży biletów, partnera noclegowego lub innego usługodawcy partnerskiego, ten podmiot trzeci staje się niezależnie odpowiedzialny za dane, które podajesz na jego stronie. Dlatego zalecamy zapoznanie się również z informacjami o prywatności danego podmiotu trzeciego."
     },
     "transfers": {
       "title": "7. Przekazywanie międzynarodowe",
-      "p1": "Niektórzy dostawcy usług lub partnerzy mogą przetwarzać dane poza krajem Twojego zamieszkania. Jeżeli dochodzi do międzynarodowego przekazywania danych osobowych, staramy się stosować odpowiednie zabezpieczenia, takie jak decyzje stwierdzające odpowiedni stopień ochrony lub standardowe klauzule umowne, jeżeli wymaga tego prawo."
+      "p1": "Niektórzy dostawcy usług lub partnerzy mogą przetwarzać dane poza krajem Twojego zamieszkania. Jeżeli dochodzi do międzynarodowego przekazywania danych osobowych, staramy się stosować odpowiednie zabezpieczenia, takie jak decyzje stwierdzające odpowiedni stopień ochrony lub standardowe klauzule umowne, jeżeli wymaga tego obowiązujące prawo."
     },
     "retention": {
       "title": "8. Okresy przechowywania",
       "p1": "Przechowujemy dane osobowe wyłącznie tak długo, jak jest to konieczne do danego celu, z uwzględnieniem potrzeb prawnych, operacyjnych i dowodowych. Konkretne okresy mogą się różnić w zależności od rodzaju interakcji.",
       "items": {
-        "1": "zapytania kontaktowe lub support enquiry: zwykle przez czas potrzebny do obsługi zgłoszenia oraz przez rozsądny okres po jego zakończeniu;",
-        "2": "dane newsletterowe: do momentu rezygnacji z subskrypcji lub cofnięcia zgody, chyba że prawo wymaga dłuższego okresu;",
-        "3": "dane analityczne: zgodnie z ustawieniami retencji odpowiednich narzędzi analitycznych;",
-        "4": "dokumentacja biznesowa: tak długo, jak to konieczne do zarządzania współpracą, wypełniania obowiązków prawnych lub ochrony roszczeń."
+        "1": "zapytania kontaktowe lub prośby o wsparcie: zwykle przez czas potrzebny do obsługi zgłoszenia oraz przez rozsądny okres po jego zakończeniu;",
+        "2": "newsletter lub lista oczekujących: do momentu rezygnacji z subskrypcji lub cofnięcia zgody, chyba że prawo wymaga dłuższego okresu;",
+        "3": "preferencje cookie: przez okres obowiązywania konkretnej preferencji albo do jej zresetowania;",
+        "4": "dane analityczne: zgodnie z ustawieniami retencji odpowiednich narzędzi analitycznych;",
+        "5": "dokumentacja biznesowa: tak długo, jak to konieczne do zarządzania współpracą, wypełniania obowiązków prawnych lub ochrony roszczeń."
       }
     },
     "rights": {

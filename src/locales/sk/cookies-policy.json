@@ -13,7 +13,7 @@
       "title": "Zásady používania cookies",
       "lead": "Na tejto stránke nájdeš informácie o tom, ako AJSEE používa cookies a podobné technológie, ktoré sú nevyhnutné pre fungovanie webu, ktoré sú voliteľné a ako môžeš spravovať svoje preferencie.",
       "updatedLabel": "Naposledy aktualizované:",
-      "updatedDate": "13. apríla 2026"
+      "updatedDate": "1. mája 2026"
     },
     "toc": {
       "title": "Obsah",
@@ -33,15 +33,15 @@
     },
     "how": {
       "title": "2. Ako používame cookies",
-      "p1": "AJSEE používa niektoré technológie na to, aby web fungoval správne a bezpečne. Ďalšie technológie používame len vtedy, ak na to udelíš súhlas, napríklad na analytiku alebo meranie výkonnosti obsahu.",
-      "p2": "Nie všetky cookies majú rovnaký účel. Niektoré sú nevyhnutné pre technickú prevádzku webu, iné nám pomáhajú pochopiť, ako ľudia web používajú, a niektoré môžu súvisieť s prechodom na partnerské stránky alebo s meraním atribučních parametrov."
+      "p1": "AJSEE používa niektoré technológie na to, aby web fungoval správne a bezpečne a aby si zapamätal základné voľby, napríklad jazyk, región alebo nastavenia cookies. Ďalšie technológie používame len vtedy, ak na to udelíš súhlas, napríklad na analytiku alebo meranie výkonnosti obsahu.",
+      "p2": "Nie všetky cookies majú rovnaký účel. Niektoré sú nevyhnutné pre technickú prevádzku webu, iné nám pomáhajú pochopiť, ako ľudia web používajú, a niektoré môžu súvisieť s prechodom na partnerské stránky alebo s meraním atribučných parametrov."
     },
     "types": {
       "title": "3. Typy cookies a technológií",
       "cards": {
         "1": {
           "title": "Nevyhnutné",
-          "text": "Tieto technológie sú potrebné pre základné fungovanie webu, bezpečnosť, správu relácie alebo zapamätanie voľby cookie preferencií. Bez nich by niektoré časti služby nemuseli fungovať správne."
+          "text": "Tieto technológie sú potrebné pre základné fungovanie webu, bezpečnosť, správu relácie, zapamätanie voľby cookie preferencií, jazyka alebo regiónu. Bez nich by niektoré časti služby nemuseli fungovať správne."
         },
         "2": {
           "title": "Analytické",
@@ -49,7 +49,7 @@
         },
         "3": {
           "title": "Preferenčné",
-          "text": "Môžu slúžiť na zapamätanie určitých volieb alebo nastavení, napríklad jazykových alebo používateľských preferencií, ak ich konkrétna funkcia webu využíva."
+          "text": "Môžu slúžiť na zapamätanie určitých volieb alebo nastavení, napríklad jazykových, regionálnych alebo používateľských preferencií, ak ich konkrétna funkcia webu využíva."
         },
         "4": {
           "title": "Partnerské / atribučné",
@@ -66,14 +66,18 @@
           "text": "Technológie na zapamätanie voľby, či si prijal/-a alebo odmietol/-a voliteľné cookies."
         },
         "2": {
-          "label": "Google Tag Manager",
-          "text": "Nástroj na správu tagov a načítavanie ďalších technológií podľa aktuálnej konfigurácie a stavu súhlasu."
+          "label": "Jazykové a regionálne preferencie",
+          "text": "Technológie alebo cookies, ktoré pomáhajú zapamätať zvolený jazyk, krajinu alebo regionálne nastavenia webu."
         },
         "3": {
-          "label": "Google Analytics",
-          "text": "Analytický nástroj používaný len vtedy, ak na to udelíš súhlas, na meranie návštevnosti webu a jeho zlepšovanie."
+          "label": "Google Tag Manager",
+          "text": "Nástroj na správu tagov a načítavanie ďalších technológií podľa aktuálnej konfigurácie webu a stavu udeleného súhlasu."
         },
         "4": {
+          "label": "Google Analytics",
+          "text": "Analytický nástroj používaný len vtedy, ak na to udelíš súhlas. Pomáha nám merať návštevnosť a zlepšovať obsah aj použiteľnosť webu."
+        },
+        "5": {
           "label": "Partnerské / referral parametre",
           "text": "Parametre alebo meracie mechanizmy súvisiace s prechodom na partnerské weby, napríklad v rámci affiliate alebo referral spolupráce."
         }
@@ -82,7 +86,7 @@
     },
     "managing": {
       "title": "5. Ako spravovať svoje preferencie",
-      "p1": "Voliteľné cookies môžeš spravovať prostredníctvom cookie banneru alebo nastavení, ktoré sa na webe zobrazujú pri prvej návšteve alebo po resete preferencií.",
+      "p1": "Voliteľné cookies môžeš spravovať prostredníctvom cookie banneru alebo nastavení cookies, ktoré sú na webe dostupné pri prvej návšteve, po resete preferencií alebo cez odkaz v pätičke webu.",
       "items": {
         "1": "môžeš prijať alebo odmietnuť voliteľné kategórie;",
         "2": "môžeš neskôr zmeniť svoje preferencie, ak je na webe dostupné príslušné ovládanie;",
@@ -92,7 +96,7 @@
     },
     "thirdParties": {
       "title": "6. Tretie strany",
-      "p1": "Ak klikneš z AJSEE na web tretej strany, napríklad ticketingového alebo ubytovacieho partnera, táto tretia strana môže používať vlastné cookies a podobné technológie podľa svojich pravidiel. AJSEE nad týmito technológiami na externom webe nemá priamu kontrolu.",
+      "p1": "Ak klikneš z AJSEE na web tretej strany, napríklad ticketingového, ubytovacieho alebo iného partnerského poskytovateľa, táto tretia strana môže používať vlastné cookies a podobné technológie podľa svojich pravidiel. AJSEE nad týmito technológiami na externom webe nemá priamu kontrolu.",
       "p2": "Odporúčame preto oboznámiť sa aj so zásadami používania cookies a ochranou osobných údajov konkrétneho partnera alebo poskytovateľa služby, na ktorého web prechádzaš."
     },
     "updates": {
@@ -102,7 +106,7 @@
     "contact": {
       "title": "8. Kontakt",
       "p1": "Ak máš otázky týkajúce sa používania cookies alebo podobných technológií na AJSEE, môžeš nás kontaktovať na <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a>.",
-      "p2": "Ďalšie informácie o tom, ako AJSEE spracúva osobné údaje, nájdeš aj na stránke Privacy Policy."
+      "p2": "Ďalšie informácie o tom, ako AJSEE spracúva osobné údaje, nájdeš aj v našich <a href=\"/privacy-policy\" data-lang-link>Zásadách ochrany osobných údajov</a>."
     }
   }
 }

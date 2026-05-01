@@ -13,7 +13,7 @@
       "title": "Cookies Policy",
       "lead": "On this page, you can find information about how AJSEE uses cookies and similar technologies, which are necessary for the website to function, which are optional, and how you can manage your preferences.",
       "updatedLabel": "Last updated:",
-      "updatedDate": "13 April 2026"
+      "updatedDate": "1 May 2026"
     },
     "toc": {
       "title": "Contents",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. How we use cookies",
-      "p1": "AJSEE uses certain technologies so that the website functions properly and securely. We only use other technologies if you give your consent, for example for analytics or measuring content performance.",
+      "p1": "AJSEE uses certain technologies so that the website functions properly and securely, and so that it can remember basic choices such as language, region or cookie settings. We only use other technologies if you give your consent, for example for analytics or measuring content performance.",
       "p2": "Not all cookies serve the same purpose. Some are necessary for the technical operation of the website, others help us understand how people use the website, and some may relate to visits to partner websites or the measurement of attribution parameters."
     },
     "types": {
@@ -41,7 +41,7 @@
       "cards": {
         "1": {
           "title": "Necessary",
-          "text": "These technologies are required for the basic functioning of the website, security, session management, or remembering your cookie preference choices. Without them, some parts of the service may not function properly."
+          "text": "These technologies are required for the basic functioning of the website, security, session management, remembering cookie preference choices, language or region. Without them, some parts of the service may not function properly."
         },
         "2": {
           "title": "Analytics",
@@ -49,7 +49,7 @@
         },
         "3": {
           "title": "Preference",
-          "text": "These may be used to remember certain choices or settings, such as language or user preferences, where a specific website feature relies on them."
+          "text": "These may be used to remember certain choices or settings, such as language, regional or user preferences, where a specific website feature relies on them."
         },
         "4": {
           "title": "Partner / attribution",
@@ -66,14 +66,18 @@
           "text": "Technologies used to remember whether you accepted or rejected optional cookies."
         },
         "2": {
-          "label": "Google Tag Manager",
-          "text": "A tag management tool used to manage tags and load additional technologies according to the current configuration and consent status."
+          "label": "Language and regional preferences",
+          "text": "Technologies or cookies that help remember the selected language, country or regional website settings."
         },
         "3": {
-          "label": "Google Analytics",
-          "text": "An analytics tool used only if you give consent, for measuring website traffic and improving the website."
+          "label": "Google Tag Manager",
+          "text": "A tag management tool used to manage tags and load additional technologies according to the current website configuration and consent status."
         },
         "4": {
+          "label": "Google Analytics",
+          "text": "An analytics tool used only if you give consent. It helps us measure website traffic and improve the content and usability of the website."
+        },
+        "5": {
           "label": "Partner / referral parameters",
           "text": "Parameters or measurement mechanisms related to transitions to partner websites, for example as part of affiliate or referral cooperation."
         }
@@ -82,7 +86,7 @@
     },
     "managing": {
       "title": "5. How to manage your preferences",
-      "p1": "You can manage optional cookies through the cookie banner or settings shown on the website during your first visit or after your preferences are reset.",
+      "p1": "You can manage optional cookies through the cookie banner or cookie settings available on the website during your first visit, after your preferences are reset, or through the link in the website footer.",
       "items": {
         "1": "you can accept or reject optional categories;",
         "2": "you can change your preferences later if the relevant control is available on the website;",
@@ -92,7 +96,7 @@
     },
     "thirdParties": {
       "title": "6. Third parties",
-      "p1": "If you click from AJSEE to a third-party website, for example a ticketing or accommodation partner, that third party may use its own cookies and similar technologies according to its own rules. AJSEE does not have direct control over those technologies on the external website.",
+      "p1": "If you click from AJSEE to a third-party website, for example a ticketing, accommodation or other partner provider, that third party may use its own cookies and similar technologies according to its own rules. AJSEE does not have direct control over those technologies on the external website.",
       "p2": "We therefore recommend that you also review the cookies policy and privacy information of the specific partner or service provider whose website you visit."
     },
     "updates": {
@@ -102,7 +106,7 @@
     "contact": {
       "title": "8. Contact",
       "p1": "If you have any questions about the use of cookies or similar technologies on AJSEE, you can contact us at <a href=\"mailto:adam@ajsee.cz\">adam@ajsee.cz</a>.",
-      "p2": "You can also find more information about how AJSEE processes personal data on the Privacy Policy page."
+      "p2": "You can also find more information about how AJSEE processes personal data in our <a href=\"/privacy-policy\" data-lang-link>Privacy Policy</a>."
     }
   }
 }

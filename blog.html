@@ -4,16 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title data-i18n-key="blog-title">Blog & Recenze | AJSEE®</title>
+  <title data-i18n-key="seo.blog.title">Blog o koncertech, festivalech a cestách za zážitky | AJSEE</title>
   <meta
     name="description"
-    content="Přečtěte si recenze kulturních akcí a tipy na nejlepší zážitky po celém světě."
-    data-i18n-content="blog-meta-description"
+    data-i18n-content="seo.blog.description"
+    content="Čti tipy, průvodce a recenze pro koncerty, festivaly, sportovní události a cestování za zážitky. AJSEE ti pomáhá plánovat akce přehledně a bez bariér."
   />
+
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0077cc" />
+  <link rel="canonical" href="https://ajsee.cz/blog" />
 
   <!-- Favicona -->
   <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta
+    property="og:title"
+    data-i18n-content="seo.blog.ogTitle"
+    content="Blog o koncertech, festivalech a cestách za zážitky | AJSEE"
+  />
+  <meta
+    property="og:description"
+    data-i18n-content="seo.blog.ogDescription"
+    content="Tipy, průvodce a recenze pro koncerty, festivaly, sport, kulturu a cestování za akcemi. Objevuj zážitky s AJSEE."
+  />
+  <meta property="og:url" content="https://ajsee.cz/blog" />
+  <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta property="og:image:alt" content="Logo AJSEE" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta
+    name="twitter:title"
+    content="Blog o koncertech, festivalech a cestách za zážitky | AJSEE"
+  />
+  <meta
+    name="twitter:description"
+    content="Tipy, průvodce a recenze pro koncerty, festivaly, sportovní události a cestování za zážitky."
+  />
+  <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta name="twitter:image:alt" content="Logo AJSEE" />
 
   <!-- Prémiové fonty (sjednoceno s ostatními stránkami) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -26,6 +60,47 @@
   <!-- ✅ CSS přes link (sjednoceno) -->
   <link rel="stylesheet" href="/src/styles/main.scss" />
 
+  <!-- Structured data: Blog + BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Blog",
+          "@id": "https://ajsee.cz/blog#blog",
+          "url": "https://ajsee.cz/blog",
+          "name": "Blog AJSEE",
+          "description": "Tipy, průvodce a recenze pro koncerty, festivaly, sportovní události a cestování za zážitky.",
+          "publisher": {
+            "@id": "https://ajsee.cz/#organization"
+          },
+          "isPartOf": {
+            "@id": "https://ajsee.cz/#website"
+          },
+          "inLanguage": "cs"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://ajsee.cz/blog#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "AJSEE",
+              "item": "https://ajsee.cz/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": "https://ajsee.cz/blog"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
     window.__TM_INLINE_DISABLED = true;
@@ -34,7 +109,6 @@
 
   <!-- ✅ JEDINÝ globální vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
-  <link rel="canonical" href="https://ajsee.cz/blog" />
 </head>
 
 <body data-page="blog">

@@ -1,20 +1,118 @@
 ﻿<!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <title data-i18n-key="blog-detail-title">Blog | AJSEE®</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <title data-i18n-key="seo.blogDetail.title">Článek z blogu | AJSEE</title>
+  <meta
+    name="description"
+    data-i18n-content="seo.blogDetail.description"
+    content="Přečti si článek z blogu AJSEE o koncertech, festivalech, sportovních událostech, cestování a plánování zážitků."
+  />
+
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0077cc" />
-  <link rel="icon" href="/images/logo-ajsee.png">
+
+  <!-- Favicona -->
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta
+    property="og:title"
+    data-i18n-content="seo.blogDetail.ogTitle"
+    content="Článek z blogu | AJSEE"
+  />
+  <meta
+    property="og:description"
+    data-i18n-content="seo.blogDetail.ogDescription"
+    content="Tipy, průvodce a recenze z blogu AJSEE pro koncerty, festivaly, sport, kulturu a cestování za zážitky."
+  />
+  <meta property="og:url" content="https://ajsee.cz/blog-detail" />
+  <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta property="og:image:alt" content="Logo AJSEE" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Článek z blogu | AJSEE" />
+  <meta
+    name="twitter:description"
+    content="Tipy, průvodce a recenze z blogu AJSEE pro koncerty, festivaly, sport, kulturu a cestování za zážitky."
+  />
+  <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta name="twitter:image:alt" content="Logo AJSEE" />
+
+  <!-- Canonical pro dynamický detail článku podle ?slug=... -->
+  <script>
+    (function () {
+      const origin = 'https://ajsee.cz';
+      const params = new URLSearchParams(window.location.search);
+      const slug = (params.get('slug') || '').trim();
+
+      const canonicalUrl = slug
+        ? `${origin}/blog-detail?slug=${encodeURIComponent(slug)}`
+        : `${origin}/blog`;
+
+      function upsertLink(rel, href) {
+        let el = document.querySelector(`link[rel="${rel}"]`);
+        if (!el) {
+          el = document.createElement('link');
+          el.setAttribute('rel', rel);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('href', href);
+      }
+
+      function upsertMetaProperty(property, content) {
+        let el = document.querySelector(`meta[property="${property}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('property', property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      }
+
+      upsertLink('canonical', canonicalUrl);
+      upsertMetaProperty('og:url', canonicalUrl);
+    })();
+  </script>
 
   <!-- Prémiové fonty -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
   <!-- ✅ CSS přes link (sjednoceno) -->
   <link rel="stylesheet" href="/src/styles/main.scss" />
+
+  <!-- Structured data: BreadcrumbList pouze obecně, ne Article -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "AJSEE",
+          "item": "https://ajsee.cz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://ajsee.cz/blog"
+        }
+      ]
+    }
+  </script>
 
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
@@ -64,7 +162,6 @@
           if (typeof val === 'string' && val.trim()) el.textContent = val;
         });
 
-        // ✅ překládání meta content (OG, description, apod.)
         document.querySelectorAll('[data-i18n-content]').forEach(el => {
           const key = el.getAttribute('data-i18n-content');
           const val = get(key);
@@ -76,6 +173,7 @@
           const val = get(key);
           if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
         });
+
         document.querySelectorAll('[data-i18n-aria]').forEach(el => {
           const key = el.getAttribute('data-i18n-aria');
           const val = get(key);
@@ -84,6 +182,7 @@
             el.setAttribute('title', val);
           }
         });
+
         document.querySelectorAll('[data-i18n-alt]').forEach(el => {
           const key = el.getAttribute('data-i18n-alt');
           const val = get(key);
@@ -95,7 +194,6 @@
         const lang = detectLang();
         document.documentElement.lang = lang;
 
-        // Pokud už main bundle poskytl applyTranslations, fallback nespouštěj.
         if (typeof window.applyTranslations === 'function') return;
 
         setTimeout(() => {

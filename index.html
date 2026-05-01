@@ -3,20 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AJSEE® – Refine culture.</title>
-  <meta name="description" content="Vstupenky na koncerty, festivaly a sportovní události z celého světa – česky, přehledně a bez překážek." />
+
+  <title>Vstupenky na koncerty, festivaly a sport | AJSEE</title>
+  <meta
+    name="description"
+    content="Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE ti pomůže najít akce, vstupenky i související cestovní možnosti přehledně a bez překážek."
+  />
+
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0077cc" />
+  <link rel="canonical" href="https://ajsee.cz/" />
 
   <!-- Favicona -->
   <link rel="icon" href="/images/logo-ajsee.png" />
 
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta property="og:title" content="Vstupenky na koncerty, festivaly a sport | AJSEE" />
+  <meta
+    property="og:description"
+    content="Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE propojuje akce, vstupenky a cestovní možnosti na jednom místě."
+  />
+  <meta property="og:url" content="https://ajsee.cz/" />
+  <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta property="og:image:alt" content="Logo AJSEE" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Vstupenky na koncerty, festivaly a sport | AJSEE" />
+  <meta
+    name="twitter:description"
+    content="Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. Přehledně, česky a bez zbytečných překážek."
+  />
+  <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta name="twitter:image:alt" content="Logo AJSEE" />
+
   <!-- Prémiové fonty -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
   <!-- ✅ CSS hned v HEAD (render-blocking) – zabrání probliknutí bez stylů -->
   <link rel="stylesheet" href="/src/styles/main.scss" />
+
+  <!-- Structured data: Organization + WebSite -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://ajsee.cz/#organization",
+          "name": "AJSEE",
+          "url": "https://ajsee.cz/",
+          "logo": "https://ajsee.cz/images/logo-ajsee.png"
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://ajsee.cz/#website",
+          "url": "https://ajsee.cz/",
+          "name": "AJSEE",
+          "publisher": {
+            "@id": "https://ajsee.cz/#organization"
+          },
+          "inLanguage": "cs"
+        }
+      ]
+    }
+  </script>
 
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
@@ -26,9 +85,7 @@
 
   <!-- Vite vstup -->
   <script type="module" src="/src/main.js"></script>
-  <link rel="canonical" href="https://ajsee.cz/" />
 </head>
-
 <body data-page="home">
 <header class="site-header">
   <div class="header-inner">

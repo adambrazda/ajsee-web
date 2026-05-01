@@ -1,11 +1,11 @@
 {
   "hero.badge": "Právě spuštěno",
   "hero.headline": "Světové akce bez bariér",
-  "hero.intro": "Koncerty, divadlo, festivaly, sport i další zážitky na jednom místě, přehledně a jednoduše.",
+  "hero.intro": "Objevuj koncerty, festivaly, sport, divadlo i další zážitky z celého světa přehledně na jednom místě.",
   "hero.imageAlt": "Ilustrace: světové akce propojené s českými a slovenskými fanoušky.",
   "hero.cta-primary": "Prozkoumat události",
   "hero.cta-secondary": "Zjistit víc o AJSEE",
-  "hero.partner-note": "Pro partnery: Budujeme síť partnerů v oblasti vstupenek a zážitků.",
+  "hero.partner-note": "Pro partnery: Budujeme síť pro ticketing, kulturu, sport, cestování a zážitky.",
   "hero.cta-collab": "Prozkoumat události",
   "hero.cta-info": "Zjistit víc o AJSEE",
 
@@ -19,41 +19,42 @@
   "nav-accommodation": "Ubytování",
 
   "section-events-title": "Nejbližší události",
-  "section-events-subtitle": "Získejte vstupenky na nejlepší kulturní zážitky ve vašem okolí.",
+  "section-events-subtitle": "Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa.",
 
-  "feature1-title": "Bezpečný nákup",
-  "feature1-desc": "Vaše vstupenky jsou vždy ověřené a originální.",
+  "feature1-title": "Ověření partneři",
+  "feature1-desc": "Na akce tě směrujeme k důvěryhodným partnerům a oficiálním prodejním kanálům.",
   "feature2-title": "Lokální podpora",
-  "feature2-desc": "Komunikujeme česky a řešíme vše za vás.",
+  "feature2-desc": "AJSEE stavíme tak, aby bylo objevování světových akcí srozumitelné i v češtině.",
   "feature3-title": "Kurátorský výběr",
-  "feature3-desc": "Jen ty nejlepší akce a partneři.",
+  "feature3-desc": "Pomáháme ti rychleji najít akce, za kterými stojí za to vyrazit.",
 
   "partners-headline": "Naši partneři",
   "partners-cta": "Chci být partnerem",
 
- "contact-headline": "Kontaktujte nás",
-"contact-send": "Odeslat",
-"contact-success-msg": "Děkujeme za zprávu! Ozveme se vám co nejdříve.",
-"contact-error-msg": "Odeslání se nezdařilo. Zkuste to prosím později.",
-"contact-error-name": "Zadejte své jméno.",
-"contact-error-email": "Zadejte platný e-mail.",
-"contact-error-message": "Napište zprávu.",
-"contact-honeypot-label": "Nevyplňujte toto pole:",
-"contact-label-name": "Jméno",
-"contact-label-email": "E-mail",
-"contact-label-message": "Zpráva",
-"contact-placeholder-name": "Vaše jméno",
-"contact-placeholder-email": "Váš e-mail",
-"contact-placeholder-message": "Vaše zpráva",
-"contact-legal-note": "Odesláním formuláře berete na vědomí naše <a href=\"/privacy-policy.html\" data-lang-link>Zásady ochrany osobních údajů</a> a <a href=\"/cookies-policy.html\" data-lang-link>Zásady cookies</a>.",
+  "contact-headline": "Kontaktujte nás",
+  "contact-send": "Odeslat",
+  "contact-success-msg": "Děkujeme za zprávu! Ozveme se vám co nejdříve.",
+  "contact-error-msg": "Odeslání se nezdařilo. Zkuste to prosím později.",
+  "contact-error-name": "Zadejte své jméno.",
+  "contact-error-email": "Zadejte platný e-mail.",
+  "contact-error-message": "Napište zprávu.",
+  "contact-honeypot-label": "Nevyplňujte toto pole:",
+  "contact-label-name": "Jméno",
+  "contact-label-email": "E-mail",
+  "contact-label-message": "Zpráva",
+  "contact-placeholder-name": "Vaše jméno",
+  "contact-placeholder-email": "Váš e-mail",
+  "contact-placeholder-message": "Vaše zpráva",
+  "contact-legal-note": "Odesláním formuláře bereš na vědomí naše <a href=\"/privacy-policy\" data-lang-link>Zásady ochrany osobních údajů</a> a <a href=\"/cookies-policy\" data-lang-link>Zásady cookies</a>.",
+
   "about-headline": "O nás",
   "about-lead": "Zážitky nemají hranice.",
   "about-text": "<strong>AJSEE<sup>®</sup></strong> vzniklo z potřeby cestovat za kulturou bez stresu a zbytečných bariér. Budujeme platformu, která ti otevře dveře ke koncertům, festivalům, divadlu i sportu – doma i v zahraničí.",
   "about-btn": "Zjisti více o AJSEE<sup>®</sup>",
-  "about-title": "O nás | AJSEE®",
+  "about-title": "O AJSEE | Světové akce bez jazykových bariér",
   "about-headline-full": "Náš příběh. Naše vize.",
   "about-hero-text": "Zážitky nemají hranice. A právě proto vzniklo AJSEE.",
-  "about-hero-subtext": "Naším cílem je zpřístupnit lidem kulturní, zábavní i sportovní události z celého světa – jasně, srozumitelně a bez zbytečných bariér při výběru i nákupu vstupenek.",
+  "about-hero-subtext": "Naším cílem je zpřístupnit lidem kulturní, zábavní i sportovní události z celého světa – jasně, srozumitelně a bez zbytečných bariér při objevování akcí, vstupenek i cestovních možností.",
   "about-hero-claim": "AJSEE<sup>®</sup> je moderní platforma pro všechny, kdo chtějí zažívat svět naplno – bez překážek.",
   "about-values-headline": "Naše hodnoty",
   "about-value-1": "<strong>Otevřenost</strong> – Zpřístupňujeme světové zážitky každému.",
@@ -73,9 +74,9 @@
 
   "about-future-title": "🎯 Kam míříme",
   "about-future-headline": "🎯 Kam míříme",
-  "about-future-p1": "Do konce roku 2025 chceme spustit ostrou verzi webu.",
-  "about-future-p2": "Pracujeme na rozšíření jazykových mutací a spolupráci s mezinárodními platformami.",
-  "about-future-p3": "Chystáme mobilní aplikaci a rozšiřujeme nabídku akcí i jejich dostupnost pro širší publikum.",
+  "about-future-p1": "V roce 2026 pracujeme na rozšiřování obsahu, partnerství a technického základu platformy.",
+  "about-future-p2": "Rozvíjíme jazykové mutace, obsahové průvodce a spolupráci s mezinárodními partnery.",
+  "about-future-p3": "Postupně chceme rozšiřovat nabídku akcí, souvisejících služeb a dostupnost pro širší publikum.",
   "about-future-p4": "Chceme, aby byl AJSEE první volbou pro každého, kdo hledá cestu ke světovým zážitkům – ať už v Londýně, Barceloně nebo doma v Brně.",
 
   "category-concert": "Koncerty",
@@ -90,7 +91,7 @@
   "event-details-demo": "Zjistit více (demo)",
   "event-tickets": "Vstupenky",
   "event-tickets-demo": "Vstupenky (demo)",
-  "event-demo-badge": "Nově i ubytování s TrustedStays – plánuješ cestu za zážitky do UK? U vybraných akcí ti pomůžeme i s ubytováním.",
+  "event-demo-badge": "Nově i ubytování s TrustedStays – plánuješ cestu za zážitky do UK? U vybraných akcí tě propojíme s možností ubytování.",
 
   "event-category": "Kategorie:",
   "add-to-calendar": "Přidat do kalendáře:",
@@ -98,10 +99,10 @@
   "calendar-outlook": "Outlook",
   "calendar-apple": "Apple / ICS",
 
-  "events-page-title": "Události",
-  "events-hero-title": "Nejlepší zážitky na dosah",
-  "events-hero-desc": "Objevte koncerty, festivaly, divadlo i sportovní akce v jednom přehledném katalogu.",
-  "events-hero-cta": "Zjistit nejbližší události",
+  "events-page-title": "Události a vstupenky na koncerty, festivaly a sport | AJSEE",
+  "events-hero-title": "Koncerty, festivaly a sport na jednom místě",
+  "events-hero-desc": "Objevuj koncerty, festivaly, divadlo, sportovní akce a další zážitky v jednom přehledném katalogu.",
+  "events-hero-cta": "Prozkoumat události",
   "events-upcoming-title": "Nejbližší události",
   "events-filter-category": "Kategorie",
   "events-category-all": "Všechny kategorie",
@@ -113,9 +114,9 @@
   "events-sort-latest": "Nejnovější",
   "events-categories-title": "Kategorie",
   "events-benefits-title": "Proč s námi?",
-  "events-benefit-1": "Originální vstupenky přímo od pořadatelů",
-  "events-benefit-2": "Lokální zákaznická podpora",
-  "events-benefit-3": "Pečlivě vybírané akce",
+  "events-benefit-1": "Vstupenky u ověřených partnerů",
+  "events-benefit-2": "Srozumitelné objevování akcí i v češtině",
+  "events-benefit-3": "Pečlivě vybírané akce a zážitky",
   "events-show-all": "Zobrazit všechny události",
   "events-load-error": "Události nelze načíst. Zkuste to později.",
 
@@ -130,7 +131,7 @@
   "about-timeline-2025-year": "2025",
   "about-timeline-2025": "Zahájení programování a vývoje multijazyčného webu AJSEE®.",
   "about-timeline-2025-07-01-year": "1. 7. 2025",
-  "about-timeline-2025-07-01": "Spuštění testovacího provozu webu AJSEE®. Web je poprvé otevřen veřejnosti a sbíráme první podněty od návštěvníků.",
+  "about-timeline-2025-07-01": "První veřejná verze webu AJSEE®. Web je otevřený návštěvníkům a postupně rozšiřujeme obsah, funkce i partnerské možnosti.",
 
   "about-team-title": "Kdo za tím stojí?",
   "about-team-headline": "Kdo za tím stojí?",
@@ -147,9 +148,9 @@
   "about-cta-text": "AJSEE® je otevřená spolupráci, nápadům i novým partnerstvím. Pokud tě naše mise zaujala, napiš nám – těšíme se na zprávu!",
   "about-cta-contact": "Kontaktovat AJSEE®",
 
-  "blog-title": "Blog & Recenze | AJSEE®",
-  "blog-headline": "Blog & Recenze",
-  "blog-lead": "Přečtěte si recenze kulturních akcí a nenechte si ujít tipy na nejlepší zážitky po celém světě.",
+  "blog-title": "Blog o koncertech, festivalech a cestách za zážitky | AJSEE",
+  "blog-headline": "Blog o zážitcích",
+  "blog-lead": "Čti tipy, průvodce a recenze pro koncerty, festivaly, sportovní události a cestování za zážitky.",
   "blog-filter-all": "Vše",
   "blog-filter-concert": "Koncerty",
   "blog-filter-theatre": "Divadlo",
@@ -161,16 +162,18 @@
   "blog-empty": "Žádné články pro tuto kategorii.",
   "blog-back": "← Zpět na blog",
   "blog-not-found": "Článek nebyl nalezen.",
-  "blog-headline-home": "Blog & Recenze",
+  "blog-headline-home": "Blog o zážitcích",
   "blog-show-all": "Zobrazit všechny články",
+  "blog-meta-description": "Čti tipy, průvodce a recenze pro koncerty, festivaly, sportovní události a cestování za zážitky.",
+  "blog-detail-title": "Článek z blogu | AJSEE",
 
-  "faq-title": "Často kladené dotazy",
+  "faq-title": "Časté otázky k AJSEE, vstupenkám a cestám za akcemi",
   "faq-q1": "Jak funguje AJSEE?",
-  "faq-a1": "AJSEE je moderní platforma pro vstupenky na kulturu, sport a koncerty, navržená pro uživatele i partnery.",
+  "faq-a1": "AJSEE je moderní discovery platforma pro koncerty, festivaly, sport, kulturu, vstupenky a cestování za zážitky.",
   "faq-q2": "Kolik jazyků AJSEE podporuje?",
   "faq-a2": "Web AJSEE je plně lokalizovaný do 6 jazyků: čeština, angličtina, němčina, slovenština, polština a maďarština.",
   "faq-q3": "Je používání AJSEE zdarma?",
-  "faq-a3": "Registrace a vyhledávání událostí je zdarma, platíte pouze za samotné vstupenky.",
+  "faq-a3": "Objevování akcí na AJSEE je zdarma. Samotný nákup vstupenek nebo rezervace služeb probíhá u příslušných partnerů.",
   "faq-q4": "Jak se mohu stát partnerem AJSEE?",
   "faq-a4": "Stačí vyplnit formulář na stránce Pro partnery. Ozveme se vám s dalším postupem.",
 
@@ -185,34 +188,27 @@
     "dateFrom": "Od",
     "dateTo": "Do",
     "keyword": "Klíčové slovo",
-
     "today": "Dnes",
     "weekend": "Tento víkend",
     "nearMe": "V mém okolí",
-
     "anytime": "Kdykoliv",
     "cityPlaceholder": "Praha, Brno…",
     "keywordPlaceholder": "Umělec, místo, akce…",
-
     "searchCityPlaceholder": "Praha",
     "searchPlaceholder": "Hledat události…",
-
     "all": "Vše",
     "allCategories": "Vše",
     "concert": "Koncert",
     "festival": "Festival",
     "sport": "Sport",
     "theatre": "Divadlo",
-
     "nearest": "Nejbližší",
     "latest": "Nejnovější",
-
     "noResults": "Žádné výsledky",
     "finding": "Zjišťuji polohu…",
     "geoError": "Poloha není dostupná. Zkuste to znovu.",
     "geoDenied": "Přístup k poloze je zamítnut. Povolení můžete změnit v nastavení prohlížeče.",
     "geoTimeout": "Získání polohy trvalo příliš dlouho. Zkuste to prosím znovu.",
-
     "apply": "Použít filtry",
     "reset": "Vymazat"
   },
@@ -227,10 +223,9 @@
   "filter-nearest": "Nejbližší",
   "filter-latest": "Nejnovější",
 
-  "footer-copyright": "© 2025 AJSEE®. Všechna práva vyhrazena.",
+  "footer-copyright": "© 2026 AJSEE®. Všechna práva vyhrazena.",
   "footer-company-info": "AJSEE® provozuje společnost AJSEE LTD, registrovaná v Anglii a Walesu pod číslem 17105762. Registrované sídlo: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.",
   "footer-contact-label": "Kontakt:",
-  
   "events-load-more": "Načíst další",
 
   "hp-waitlist": {
@@ -270,7 +265,7 @@
   "event-demo": {
     "ariaLabel": "Informace o ubytování s TrustedStays pro vybrané akce v UK.",
     "title": "Nově i ubytování s TrustedStays",
-    "body": "Plánuješ cestu za zážitky do UK? U vybraných akcí ti pomůžeme i s ubytováním.",
+    "body": "Plánuješ cestu za zážitky do UK? U vybraných akcí tě propojíme s ubytováním přes TrustedStays.",
     "cta": "Najít ubytování"
   },
 
@@ -309,26 +304,148 @@
     "copy": "Zkopírovat odkaz",
     "copied": "Odkaz zkopírován"
   },
+
   "mg.relatedTitle": "související mikroprůvodce",
   "footer-privacy-policy": "Zásady ochrany osobních údajů",
   "footer-cookies-policy": "Zásady cookies",
 
-"cookie-banner": {
-  "title": "Používáme cookies",
-  "desc": "Používáme nezbytné cookies pro fungování webu a se souhlasem také analytické cookies, které nám pomáhají měřit návštěvnost a zlepšovat AJSEE.cz.",
-  "privacy": "Zásady ochrany osobních údajů",
-  "cookies": "Zásady používání cookies",
-  "reject": "Odmítnout",
-  "settings": "Nastavení",
-  "acceptAll": "Přijmout vše",
-  "modalTitle": "Nastavení cookies",
-  "necessaryTitle": "Nezbytné cookies",
-  "necessaryText": "Tyto cookies jsou nutné pro základní fungování webu.",
-  "alwaysActive": "Vždy aktivní",
-  "analyticsTitle": "Analytické cookies",
-  "analyticsText": "Pomáhají nám měřit návštěvnost a zlepšovat web pomocí Google Analytics.",
-  "allowAnalytics": "Povolit analytiku",
-  "save": "Uložit nastavení"
-},
-"footer-cookie-settings": "Nastavení cookies"
+  "cookie-banner": {
+    "title": "Používáme cookies",
+    "desc": "Používáme nezbytné cookies pro fungování webu a se souhlasem také analytické cookies, které nám pomáhají měřit návštěvnost a zlepšovat AJSEE.cz.",
+    "privacy": "Zásady ochrany osobních údajů",
+    "cookies": "Zásady používání cookies",
+    "reject": "Odmítnout",
+    "settings": "Nastavení",
+    "acceptAll": "Přijmout vše",
+    "modalTitle": "Nastavení cookies",
+    "necessaryTitle": "Nezbytné cookies",
+    "necessaryText": "Tyto cookies jsou nutné pro základní fungování webu.",
+    "alwaysActive": "Vždy aktivní",
+    "analyticsTitle": "Analytické cookies",
+    "analyticsText": "Pomáhají nám měřit návštěvnost a zlepšovat web pomocí Google Analytics.",
+    "allowAnalytics": "Povolit analytiku",
+    "save": "Uložit nastavení"
+  },
+
+  "footer-cookie-settings": "Nastavení cookies",
+
+  "seo.home.title": "Vstupenky na koncerty, festivaly a sport | AJSEE",
+  "seo.home.description": "Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE ti pomůže najít akce, vstupenky i související cestovní možnosti přehledně a bez překážek.",
+  "seo.home.ogTitle": "Vstupenky na koncerty, festivaly a sport | AJSEE",
+  "seo.home.ogDescription": "Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE propojuje akce, vstupenky a cestovní možnosti na jednom místě.",
+
+  "seo.events.title": "Události a vstupenky na koncerty, festivaly a sport | AJSEE",
+  "seo.events.description": "Najdi koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE ti pomůže objevovat akce, vstupenky a možnosti cestování přehledně na jednom místě.",
+  "seo.events.ogTitle": "Události a vstupenky na koncerty, festivaly a sport | AJSEE",
+  "seo.events.ogDescription": "Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE propojuje akce, vstupenky a cestovní možnosti přehledně na jednom místě.",
+
+  "seo.accommodation.title": "Ubytování u koncertů, sportu a akcí v UK | AJSEE",
+  "seo.accommodation.description": "Najdi ubytování ve Spojeném království při cestách na koncerty, sport a další akce. AJSEE tě propojí s TrustedStays; rezervace probíhá u partnera.",
+  "seo.accommodation.ogTitle": "Ubytování u koncertů, sportu a akcí v UK | AJSEE",
+  "seo.accommodation.ogDescription": "Cestuješ do Spojeného království za koncertem, sportem nebo akcí? AJSEE tě propojí s TrustedStays, kde probíhá rezervace i potvrzení ubytování.",
+
+  "seo.partners.title": "Pro partnery v ticketingu, kultuře a eventech | AJSEE",
+  "seo.partners.description": "Staň se partnerem AJSEE a oslov relevantní publikum, které hledá koncerty, festivaly, divadlo, sport a cestování za zážitky.",
+  "seo.partners.ogTitle": "Pro partnery v ticketingu, kultuře a eventech | AJSEE",
+  "seo.partners.ogDescription": "AJSEE propojuje discovery, vstupenky, zážitky a cestování. Staň se partnerem a pomoz lidem najít akce, za kterými stojí za to vyrazit.",
+
+  "seo.about.title": "O AJSEE | Světové akce bez jazykových bariér",
+  "seo.about.description": "Poznej AJSEE – platformu, která pomáhá lidem objevovat koncerty, festivaly, sportovní události a další zážitky po celém světě přehledně a bez jazykových bariér.",
+  "seo.about.ogTitle": "O AJSEE | Světové akce bez jazykových bariér",
+  "seo.about.ogDescription": "AJSEE vzniká jako moderní discovery platforma pro koncerty, festivaly, sport, kulturu a cestování za zážitky.",
+
+  "seo.blog.title": "Blog o koncertech, festivalech a cestách za zážitky | AJSEE",
+  "seo.blog.description": "Čti tipy, průvodce a recenze pro koncerty, festivaly, sportovní události a cestování za zážitky. AJSEE ti pomáhá plánovat akce přehledně a bez bariér.",
+  "seo.blog.ogTitle": "Blog o koncertech, festivalech a cestách za zážitky | AJSEE",
+  "seo.blog.ogDescription": "Tipy, průvodce a recenze pro koncerty, festivaly, sport, kulturu a cestování za akcemi. Objevuj zážitky s AJSEE.",
+
+  "seo.blogDetail.title": "Článek z blogu | AJSEE",
+  "seo.blogDetail.description": "Přečti si článek z blogu AJSEE o koncertech, festivalech, sportovních událostech, cestování a plánování zážitků.",
+  "seo.blogDetail.ogTitle": "Článek z blogu | AJSEE",
+  "seo.blogDetail.ogDescription": "Tipy, průvodce a recenze z blogu AJSEE pro koncerty, festivaly, sport, kulturu a cestování za zážitky.",
+
+  "seo.faq.title": "Časté otázky k AJSEE, vstupenkám a cestám za akcemi",
+  "seo.faq.description": "Najdi odpovědi na nejčastější otázky k AJSEE, objevování akcí, vstupenkám, partnerům, ubytování a cestování za koncerty, sportem a festivaly.",
+  "seo.faq.ogTitle": "Časté otázky k AJSEE, vstupenkám a cestám za akcemi",
+  "seo.faq.ogDescription": "Odpovědi na otázky k AJSEE, objevování akcí, vstupenkám, ubytování, partnerům a cestování za zážitky.",
+
+  "seo.privacy.title": "Zásady ochrany osobních údajů | AJSEE",
+  "seo.privacy.description": "Zjisti, jak AJSEE zpracovává osobní údaje, používá cookies, analytické nástroje a partnerské odkazy a jaká máš práva.",
+  "seo.privacy.ogTitle": "Zásady ochrany osobních údajů | AJSEE",
+  "seo.privacy.ogDescription": "Zjisti, jak AJSEE zpracovává osobní údaje, používá cookies, analytické nástroje a partnerské odkazy a jaká máš práva.",
+
+  "seo.cookies.title": "Zásady cookies | AJSEE",
+  "seo.cookies.description": "Zjisti, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference.",
+  "seo.cookies.ogTitle": "Zásady cookies | AJSEE",
+  "seo.cookies.ogDescription": "Zjisti, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference.",
+
+  "seo.thankyou.title": "Děkujeme za zprávu | AJSEE",
+  "seo.thankyou.description": "Děkujeme za zprávu. Ozveme se ti co nejdříve.",
+
+  "seo": {
+    "home": {
+      "title": "Vstupenky na koncerty, festivaly a sport | AJSEE",
+      "description": "Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE ti pomůže najít akce, vstupenky i související cestovní možnosti přehledně a bez překážek.",
+      "ogTitle": "Vstupenky na koncerty, festivaly a sport | AJSEE",
+      "ogDescription": "Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE propojuje akce, vstupenky a cestovní možnosti na jednom místě."
+    },
+    "events": {
+      "title": "Události a vstupenky na koncerty, festivaly a sport | AJSEE",
+      "description": "Najdi koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE ti pomůže objevovat akce, vstupenky a možnosti cestování přehledně na jednom místě.",
+      "ogTitle": "Události a vstupenky na koncerty, festivaly a sport | AJSEE",
+      "ogDescription": "Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE propojuje akce, vstupenky a cestovní možnosti přehledně na jednom místě."
+    },
+    "accommodation": {
+      "title": "Ubytování u koncertů, sportu a akcí v UK | AJSEE",
+      "description": "Najdi ubytování ve Spojeném království při cestách na koncerty, sport a další akce. AJSEE tě propojí s TrustedStays; rezervace probíhá u partnera.",
+      "ogTitle": "Ubytování u koncertů, sportu a akcí v UK | AJSEE",
+      "ogDescription": "Cestuješ do Spojeného království za koncertem, sportem nebo akcí? AJSEE tě propojí s TrustedStays, kde probíhá rezervace i potvrzení ubytování."
+    },
+    "partners": {
+      "title": "Pro partnery v ticketingu, kultuře a eventech | AJSEE",
+      "description": "Staň se partnerem AJSEE a oslov relevantní publikum, které hledá koncerty, festivaly, divadlo, sport a cestování za zážitky.",
+      "ogTitle": "Pro partnery v ticketingu, kultuře a eventech | AJSEE",
+      "ogDescription": "AJSEE propojuje discovery, vstupenky, zážitky a cestování. Staň se partnerem a pomoz lidem najít akce, za kterými stojí za to vyrazit."
+    },
+    "about": {
+      "title": "O AJSEE | Světové akce bez jazykových bariér",
+      "description": "Poznej AJSEE – platformu, která pomáhá lidem objevovat koncerty, festivaly, sportovní události a další zážitky po celém světě přehledně a bez jazykových bariér.",
+      "ogTitle": "O AJSEE | Světové akce bez jazykových bariér",
+      "ogDescription": "AJSEE vzniká jako moderní discovery platforma pro koncerty, festivaly, sport, kulturu a cestování za zážitky."
+    },
+    "blog": {
+      "title": "Blog o koncertech, festivalech a cestách za zážitky | AJSEE",
+      "description": "Čti tipy, průvodce a recenze pro koncerty, festivaly, sportovní události a cestování za zážitky. AJSEE ti pomáhá plánovat akce přehledně a bez bariér.",
+      "ogTitle": "Blog o koncertech, festivalech a cestách za zážitky | AJSEE",
+      "ogDescription": "Tipy, průvodce a recenze pro koncerty, festivaly, sport, kulturu a cestování za akcemi. Objevuj zážitky s AJSEE."
+    },
+    "blogDetail": {
+      "title": "Článek z blogu | AJSEE",
+      "description": "Přečti si článek z blogu AJSEE o koncertech, festivalech, sportovních událostech, cestování a plánování zážitků.",
+      "ogTitle": "Článek z blogu | AJSEE",
+      "ogDescription": "Tipy, průvodce a recenze z blogu AJSEE pro koncerty, festivaly, sport, kulturu a cestování za zážitky."
+    },
+    "faq": {
+      "title": "Časté otázky k AJSEE, vstupenkám a cestám za akcemi",
+      "description": "Najdi odpovědi na nejčastější otázky k AJSEE, objevování akcí, vstupenkám, partnerům, ubytování a cestování za koncerty, sportem a festivaly.",
+      "ogTitle": "Časté otázky k AJSEE, vstupenkám a cestám za akcemi",
+      "ogDescription": "Odpovědi na otázky k AJSEE, objevování akcí, vstupenkám, ubytování, partnerům a cestování za zážitky."
+    },
+    "privacy": {
+      "title": "Zásady ochrany osobních údajů | AJSEE",
+      "description": "Zjisti, jak AJSEE zpracovává osobní údaje, používá cookies, analytické nástroje a partnerské odkazy a jaká máš práva.",
+      "ogTitle": "Zásady ochrany osobních údajů | AJSEE",
+      "ogDescription": "Zjisti, jak AJSEE zpracovává osobní údaje, používá cookies, analytické nástroje a partnerské odkazy a jaká máš práva."
+    },
+    "cookies": {
+      "title": "Zásady cookies | AJSEE",
+      "description": "Zjisti, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference.",
+      "ogTitle": "Zásady cookies | AJSEE",
+      "ogDescription": "Zjisti, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference."
+    },
+    "thankyou": {
+      "title": "Děkujeme za zprávu | AJSEE",
+      "description": "Děkujeme za zprávu. Ozveme se ti co nejdříve."
+    }
+  }
 }

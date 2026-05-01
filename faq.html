@@ -3,30 +3,93 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n-key="faq-title">Často kladené dotazy | AJSEE®</title>
-  <meta name="description" content="Odpovědi na nejčastější dotazy k AJSEE® platformě pro kulturu a vstupenky." />
+
+  <title data-i18n-key="seo.faq.title">Časté otázky k AJSEE, vstupenkám a cestám za akcemi</title>
+  <meta
+    name="description"
+    data-i18n-content="seo.faq.description"
+    content="Najdi odpovědi na nejčastější otázky k AJSEE, objevování akcí, vstupenkám, partnerům, ubytování a cestování za koncerty, sportem a festivaly."
+  />
+
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0077cc" />
+  <link rel="canonical" href="https://ajsee.cz/faq" />
 
   <!-- Favicona -->
-  <link rel="icon" href="data:," />
   <link rel="icon" href="/images/logo-ajsee.png" />
 
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta
+    property="og:title"
+    data-i18n-content="seo.faq.ogTitle"
+    content="Časté otázky k AJSEE, vstupenkám a cestám za akcemi"
+  />
+  <meta
+    property="og:description"
+    data-i18n-content="seo.faq.ogDescription"
+    content="Odpovědi na otázky k AJSEE, objevování akcí, vstupenkám, ubytování, partnerům a cestování za zážitky."
+  />
+  <meta property="og:url" content="https://ajsee.cz/faq" />
+  <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta property="og:image:alt" content="Logo AJSEE" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta
+    name="twitter:title"
+    content="Časté otázky k AJSEE, vstupenkám a cestám za akcemi"
+  />
+  <meta
+    name="twitter:description"
+    content="Najdi odpovědi k AJSEE, vstupenkám, ubytování, partnerům a cestování za koncerty, sportem a festivaly."
+  />
+  <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta name="twitter:image:alt" content="Logo AJSEE" />
+
   <!-- Prémiové fonty (sjednoceno s ostatními stránkami) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
   <!-- ✅ CSS přes link (sjednoceno) -->
   <link rel="stylesheet" href="/src/styles/main.scss" />
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "AJSEE",
+          "item": "https://ajsee.cz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "FAQ",
+          "item": "https://ajsee.cz/faq"
+        }
+      ]
+    }
+  </script>
 
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
     window.__TM_INLINE_DISABLED = true;
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
+
   <!-- ✅ JEDINÝ vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
-  <link rel="canonical" href="https://ajsee.cz/faq" />
 </head>
 
 <body data-page="faq">

@@ -4,37 +4,84 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title data-i18n-key="seo.accommodation.title">Ubytování v UK | AJSEE</title>
+  <title data-i18n-key="seo.accommodation.title">Ubytování u koncertů, sportu a akcí v UK | AJSEE</title>
   <meta
     name="description"
     data-i18n-content="seo.accommodation.description"
-    content="Ubytování ve Spojeném království zajišťujeme ve spolupráci s TrustedStays. Rezervaci dokončíš přímo na jejich webu."
+    content="Najdi ubytování ve Spojeném království při cestách na koncerty, sport a další akce. AJSEE tě propojí s TrustedStays; rezervace probíhá u partnera."
   />
-  <meta name="theme-color" content="#0b1020" />
 
-  <meta property="og:type" content="website" />
-  <meta
-    property="og:title"
-    data-i18n-content="seo.accommodation.ogTitle"
-    content="Ubytování v UK | AJSEE"
-  />
-  <meta
-    property="og:description"
-    data-i18n-content="seo.accommodation.ogDescription"
-    content="Ubytování ve Spojeném království zajišťujeme ve spolupráci s TrustedStays. Rezervaci dokončíš přímo na jejich webu."
-  />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="canonical" href="https://ajsee.cz/accommodation" />
 
   <!-- Favicona -->
   <link rel="icon" href="/images/logo-ajsee.png" />
 
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta
+    property="og:title"
+    data-i18n-content="seo.accommodation.ogTitle"
+    content="Ubytování u koncertů, sportu a akcí v UK | AJSEE"
+  />
+  <meta
+    property="og:description"
+    data-i18n-content="seo.accommodation.ogDescription"
+    content="Cestuješ do Spojeného království za koncertem, sportem nebo akcí? AJSEE tě propojí s TrustedStays, kde probíhá rezervace i potvrzení ubytování."
+  />
+  <meta property="og:url" content="https://ajsee.cz/accommodation" />
+  <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta property="og:image:alt" content="Logo AJSEE" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta
+    name="twitter:title"
+    content="Ubytování u koncertů, sportu a akcí v UK | AJSEE"
+  />
+  <meta
+    name="twitter:description"
+    content="Najdi ubytování ve Spojeném království při cestách za akcemi. Rezervace probíhá přímo u partnera TrustedStays."
+  />
+  <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta name="twitter:image:alt" content="Logo AJSEE" />
+
   <!-- Fonty -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
   <!-- ✅ CSS hned v HEAD (render-blocking) – zabrání probliknutí -->
   <link rel="stylesheet" href="/src/styles/main.scss" />
   <link rel="stylesheet" href="/src/styles/pages/accommodation.scss" />
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "AJSEE",
+          "item": "https://ajsee.cz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Ubytování",
+          "item": "https://ajsee.cz/accommodation"
+        }
+      ]
+    }
+  </script>
 
   <!-- Kill-switch + Impact konfigurace -->
   <script>
@@ -44,7 +91,6 @@
 
   <!-- ✅ Vite entry (bez cache-busting) -->
   <script type="module" src="/src/pages/accommodation/accommodation.js"></script>
-  <link rel="canonical" href="https://ajsee.cz/accommodation" />
 </head>
 
 <body class="page-accommodation" data-page="accommodation">

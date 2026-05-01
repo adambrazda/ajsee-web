@@ -8,11 +8,20 @@
   <meta
     name="description"
     data-i18n-content="seo.cookies.description"
-    content="Jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference."
+    content="Zjisti, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference."
   />
-  <meta name="theme-color" content="#0b1020" />
 
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0b1020" />
+  <link rel="canonical" href="https://ajsee.cz/cookies-policy" />
+
+  <!-- Favicona -->
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Open Graph -->
   <meta property="og:type" content="website" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
   <meta
     property="og:title"
     data-i18n-content="seo.cookies.ogTitle"
@@ -21,18 +30,79 @@
   <meta
     property="og:description"
     data-i18n-content="seo.cookies.ogDescription"
+    content="Zjisti, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference."
+  />
+  <meta property="og:url" content="https://ajsee.cz/cookies-policy" />
+  <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta property="og:image:alt" content="Logo AJSEE" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta
+    name="twitter:title"
+    content="Zásady cookies | AJSEE"
+  />
+  <meta
+    name="twitter:description"
     content="Jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference."
   />
+  <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta name="twitter:image:alt" content="Logo AJSEE" />
 
-  <link rel="icon" href="/images/logo-ajsee.png" />
+  <!-- Prémiové fonty -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+  <!-- CSS -->
   <link rel="stylesheet" href="/src/styles/main.scss" />
   <link rel="stylesheet" href="/src/styles/pages/cookies-policy.scss" />
 
+  <!-- Structured data: WebPage + BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": "https://ajsee.cz/cookies-policy#webpage",
+          "url": "https://ajsee.cz/cookies-policy",
+          "name": "Zásady cookies | AJSEE",
+          "description": "Informace o tom, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné, které volitelné a jak můžeš spravovat své preference.",
+          "isPartOf": {
+            "@id": "https://ajsee.cz/#website"
+          },
+          "publisher": {
+            "@id": "https://ajsee.cz/#organization"
+          },
+          "inLanguage": "cs"
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://ajsee.cz/cookies-policy#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "AJSEE",
+              "item": "https://ajsee.cz/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Zásady cookies",
+              "item": "https://ajsee.cz/cookies-policy"
+            }
+          ]
+        }
+      ]
+    }
+  </script>
+
+  <!-- I18n fallback pro právní stránku -->
   <script>
     (function(){
       function detectLang(){
@@ -98,7 +168,6 @@
   </script>
 
   <script type="module" src="/src/pages/cookies-policy/cookies-policy.js"></script>
-  <link rel="canonical" href="https://ajsee.cz/cookies-policy" />
 </head>
 
 <body class="page-cookies-policy page-legal" data-page="cookies-policy">

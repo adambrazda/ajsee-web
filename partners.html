@@ -3,18 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n-key="partner-headline">Partnerství, které mění objevování v relevantní poptávku</title>
-  <meta name="description" content="Staňte se partnerem AJSEE – moderní platforma pro kulturu, koncerty, divadlo a sport.">
-  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <title data-i18n-key="seo.partners.title">Pro partnery v ticketingu, kultuře a eventech | AJSEE</title>
+  <meta
+    name="description"
+    data-i18n-content="seo.partners.description"
+    content="Staň se partnerem AJSEE a oslov relevantní publikum, které hledá koncerty, festivaly, divadlo, sport a cestování za zážitky."
+  />
+
+  <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0077cc" />
+  <link rel="canonical" href="https://ajsee.cz/partners" />
+
+  <!-- Favicona -->
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta
+    property="og:title"
+    data-i18n-content="seo.partners.ogTitle"
+    content="Pro partnery v ticketingu, kultuře a eventech | AJSEE"
+  />
+  <meta
+    property="og:description"
+    data-i18n-content="seo.partners.ogDescription"
+    content="AJSEE propojuje discovery, vstupenky, zážitky a cestování. Staň se partnerem a pomoz lidem najít akce, za kterými stojí za to vyrazit."
+  />
+  <meta property="og:url" content="https://ajsee.cz/partners" />
+  <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta property="og:image:alt" content="Logo AJSEE" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta
+    name="twitter:title"
+    content="Pro partnery v ticketingu, kultuře a eventech | AJSEE"
+  />
+  <meta
+    name="twitter:description"
+    content="Staň se partnerem AJSEE a oslov publikum, které hledá koncerty, festivaly, sport, divadlo a cestování za zážitky."
+  />
+  <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta name="twitter:image:alt" content="Logo AJSEE" />
 
   <!-- Prémiové fonty -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
   <!-- ✅ CSS přes link (sjednoceno) -->
   <link rel="stylesheet" href="/src/styles/main.scss" />
+
+  <!-- Structured data: BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "AJSEE",
+          "item": "https://ajsee.cz/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Pro partnery",
+          "item": "https://ajsee.cz/partners"
+        }
+      ]
+    }
+  </script>
 
   <!-- Unified FE render ON. Inline TM zakázán. -->
   <script>
@@ -24,7 +90,6 @@
 
   <!-- ✅ JEDINÝ vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
-  <link rel="canonical" href="https://ajsee.cz/partners" />
 </head>
 <body data-page="partners">
 <header class="site-header">

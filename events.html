@@ -27,64 +27,6 @@
     // window.__impact = { clickBase: 'https://YOUR-IMPACT-REDIRECTOR/?url=' };
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
-
-  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
-  <script>
-    (function(){
-      function detectLang(){
-        try {
-          const qs = new URLSearchParams(location.search);
-          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
-        } catch { return 'cs'; }
-      }
-
-      function applyI18nFallback(lang){
-        const root = window.translations || null;
-        if (!root) return;
-
-        const dict = root[lang] || root;
-        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
-
-        document.querySelectorAll('[data-i18n-key]').forEach(el => {
-          const key = el.getAttribute('data-i18n-key');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.textContent = val;
-        });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-          const key = el.getAttribute('data-i18n-placeholder');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
-        });
-        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-          const key = el.getAttribute('data-i18n-aria');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) {
-            el.setAttribute('aria-label', val);
-            el.setAttribute('title', val);
-          }
-        });
-        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
-          const key = el.getAttribute('data-i18n-alt');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
-        });
-      }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        const lang = detectLang();
-        document.documentElement.lang = lang;
-
-        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
-        if (typeof window.applyTranslations === 'function') return;
-
-        setTimeout(() => {
-          if (typeof window.applyTranslations === 'function') return;
-          applyI18nFallback(lang);
-        }, 250);
-      });
-    })();
-  </script>
-
   <!-- ✅ JEDINÝ vstup (dev i prod): Vite si v produkci doplní /assets/* sám -->
   <script type="module" src="/src/main.js"></script>
 </head>

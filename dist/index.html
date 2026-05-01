@@ -23,70 +23,15 @@
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
-  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
-  <script>
-    (function(){
-      function detectLang(){
-        try {
-          const qs = new URLSearchParams(location.search);
-          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
-        } catch { return 'cs'; }
-      }
-
-      function applyI18nFallback(lang){
-        const root = window.translations || null;
-        if (!root) return;
-
-        const dict = root[lang] || root;
-        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
-
-        document.querySelectorAll('[data-i18n-key]').forEach(el => {
-          const key = el.getAttribute('data-i18n-key');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.textContent = val;
-        });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-          const key = el.getAttribute('data-i18n-placeholder');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
-        });
-        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-          const key = el.getAttribute('data-i18n-aria');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) {
-            el.setAttribute('aria-label', val);
-            el.setAttribute('title', val);
-          }
-        });
-        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
-          const key = el.getAttribute('data-i18n-alt');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
-        });
-      }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        const lang = detectLang();
-        document.documentElement.lang = lang;
-
-        if (typeof window.applyTranslations === 'function') return;
-
-        setTimeout(() => {
-          if (typeof window.applyTranslations === 'function') return;
-          applyI18nFallback(lang);
-        }, 250);
-      });
-    })();
-  </script>
-
   <!-- Vite vstup -->
   <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/nav-core-Cq-jUc3V.js"></script>
-  <script type="module" crossorigin src="/assets/runtime-style-Dv60Lf6T.js"></script>
+  <script type="module" crossorigin src="/assets/nav-core-DY0ASbUX.js"></script>
+  <script type="module" crossorigin src="/assets/runtime-style-B0xWYazr.js"></script>
   <script type="module" crossorigin src="/assets/preload-helper-D7HrI6pR.js"></script>
-  <script type="module" crossorigin src="/assets/main-DwMizYfd.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/main-DsbN7KJj.css">
+  <script type="module" crossorigin src="/assets/main-CIbsof7N.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/nav-core-C2MPxQFc.css">
 </head>
+
 <body data-page="home">
 <header class="site-header">
   <div class="header-inner">
@@ -199,6 +144,14 @@
         <div class="hero-buttons">
           <a href="/events.html" class="btn-primary" data-i18n-key="hero.cta-primary">Prozkoumat události</a>
           <a href="/about.html" class="btn-secondary" data-i18n-key="hero.cta-secondary">Zjistit víc o AJSEE</a>
+          <a
+            id="hpWaitlistCta"
+            href="/coming-soon/"
+            class="btn-secondary hero-waitlist-cta"
+            data-i18n-key="comingSoon.submit"
+          >
+            Přidat se na čekací listinu
+          </a>
         </div>
 
         <p class="hero-partner-note">
@@ -450,18 +403,18 @@
             <div class="form-error" id="error-message"></div>
           </div>
 
-<button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
+          <button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
 
-<p class="form-legal-note" data-i18n-key="contact-legal-note">
-  Odesláním formuláře bereš na vědomí naše
-  <a href="/privacy-policy.html" data-lang-link>Zásady ochrany osobních údajů</a>
-  a
-  <a href="/cookies-policy.html" data-lang-link>Zásady cookies</a>.
-</p>
+          <p class="form-legal-note" data-i18n-key="contact-legal-note">
+            Odesláním formuláře bereš na vědomí naše
+            <a href="/privacy-policy.html" data-lang-link>Zásady ochrany osobních údajů</a>
+            a
+            <a href="/cookies-policy.html" data-lang-link>Zásady cookies</a>.
+          </p>
 
-<div class="contact-error" id="contact-error" style="display:none;">
-  <p data-i18n-key="contact-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
-</div>
+          <div class="contact-error" id="contact-error" style="display:none;">
+            <p data-i18n-key="contact-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
+          </div>
         </form>
       </div>
 
@@ -536,6 +489,7 @@
     </p>
   </div>
 </footer>
+
 <script>
   window.__AJSEE_EVENTS_OWNS_FILTERS = true;
 </script>

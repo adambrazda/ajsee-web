@@ -98,15 +98,35 @@ const debounce = (fn, ms = 200) => {
 };
 
 function getUILang() {
-  const sp = new URLSearchParams(location.search);
-  const p1 = (sp.get('lang') || sp.get('locale') || sp.get('hl') || '').toLowerCase();
-  const m = location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
-  const p2 = ((m && m[1]) || '').toLowerCase();
-  const htmlLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
-  const cookieLang = (document.cookie.split('; ').find(r => r.startsWith('aj_lang=')) || '').split('=')[1] || '';
   const supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
-  const pick = [p1, p2, htmlLang, cookieLang, 'cs'].find(x => supported.includes(String(x).toLowerCase()));
-  return pick || 'cs';
+
+  const normalize = value => {
+    const lang = String(value || '').trim().toLowerCase().slice(0, 2);
+    return supported.includes(lang) ? lang : '';
+  };
+
+  const sp = new URLSearchParams(location.search);
+
+  const fromUrl = normalize(sp.get('lang') || sp.get('locale') || sp.get('hl'));
+
+  const pathMatch = location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
+  const fromPath = normalize(pathMatch && pathMatch[1]);
+
+  const fromCookie = normalize(
+    (document.cookie.split('; ').find(r => r.startsWith('aj_lang=')) || '').split('=')[1]
+  );
+
+  let fromStorage = '';
+  try {
+    fromStorage = normalize(localStorage.getItem('ajsee.lang'));
+  } catch {
+    fromStorage = '';
+  }
+
+  const fromHtml = normalize(document.documentElement.getAttribute('lang'));
+
+  // Důležité: <html lang="cs"> je v HTML defaultně, proto musí být cookie/storage před html.
+  return fromUrl || fromPath || fromCookie || fromStorage || fromHtml || 'cs';
 }
 
 function setLangCookie(lang) {
@@ -610,7 +630,7 @@ function setBusy(v) {
 function deepMerge(a = {}, b = {}) {
   const out = { ...a };
 
-  for (const [k, v] of Object.entries(b)) {
+  for (const [k, v] of Object.entries(b || {})) {
     out[k] = v && typeof v === 'object' && !Array.isArray(v)
       ? deepMerge(out[k] || {}, v)
       : v;
@@ -630,12 +650,57 @@ async function fetchJSON(path) {
   return null;
 }
 
+function getPageKeyForI18n() {
+  const fromBody = document.body?.dataset?.page;
+
+  if (fromBody && typeof fromBody === 'string') {
+    return fromBody.trim().toLowerCase();
+  }
+
+  const lastPart = (location.pathname.split('/').pop() || '').toLowerCase();
+  const clean = lastPart.replace(/\.[^.]+$/, '');
+
+  if (!clean || clean === 'index') return 'home';
+
+  return clean;
+}
+
+async function mergeFetchCandidates(paths) {
+  let out = {};
+
+  for (const path of paths) {
+    const json = await fetchJSON(path);
+
+    if (json && typeof json === 'object' && Object.keys(json).length) {
+      out = deepMerge(out, json);
+    }
+  }
+
+  return out;
+}
+
 async function loadTranslations(lang) {
-  const base = (await fetchJSON(`/locales/${lang}.json`)) || (await fetchJSON(`/src/locales/${lang}.json`)) || {};
-  const page = location.pathname.split('/').pop();
-  const pagePart = page === 'about.html'
-    ? (await fetchJSON(`/locales/${lang}/about.json`)) || (await fetchJSON(`/src/locales/${lang}/about.json`)) || {}
-    : {};
+  const pageKey = getPageKeyForI18n();
+
+  const base = await mergeFetchCandidates([
+    `/locales/${lang}.json`,
+    `/locales/${lang}/common.json`,
+    `/locales/${lang}/base.json`,
+    `/src/locales/${lang}.json`,
+    `/src/locales/${lang}/common.json`,
+    `/src/locales/${lang}/base.json`,
+  ]);
+
+  const pagePart = await mergeFetchCandidates([
+    `/locales/${lang}/${pageKey}.json`,
+    `/locales/${lang}-${pageKey}.json`,
+    `/locales/${pageKey}.${lang}.json`,
+    `/locales/${pageKey}-${lang}.json`,
+    `/src/locales/${lang}/${pageKey}.json`,
+    `/src/locales/${lang}-${pageKey}.json`,
+    `/src/locales/${pageKey}.${lang}.json`,
+    `/src/locales/${pageKey}-${lang}.json`,
+  ]);
 
   return deepMerge(base, pagePart);
 }
@@ -645,8 +710,28 @@ function getByPath(obj, path) {
 }
 
 function t(key, fallback) {
+  if (!key) return fallback;
+
+  // Podpora aliasů: "about.story.p1|about-story-p1|about-story-text-1"
+  if (typeof key === 'string' && key.includes('|')) {
+    const keys = key
+      .split('|')
+      .map(item => item.trim())
+      .filter(Boolean);
+
+    for (const item of keys) {
+      const value = t(item);
+      if (value !== undefined && String(value).trim() !== '') {
+        return value;
+      }
+    }
+
+    return fallback;
+  }
+
   const tr = window.translations || {};
   const value = getByPath(tr, key) ?? tr[key];
+
   if (value !== undefined) return value;
 
   if (key.startsWith('filter-')) {
@@ -745,6 +830,7 @@ async function applyTranslations(lang) {
     const value = t(key);
     if (!value) return;
     el.setAttribute('aria-label', String(value));
+    el.setAttribute('title', String(value));
   });
 
   document.querySelectorAll('[data-i18n-alt]').forEach(el => {
@@ -754,13 +840,21 @@ async function applyTranslations(lang) {
     el.setAttribute('alt', String(value));
   });
 
+  document.querySelectorAll('[data-i18n-content]').forEach(el => {
+    const key = el.getAttribute('data-i18n-content');
+    const value = t(key);
+    if (value === undefined || String(value).trim() === '') return;
+    el.setAttribute('content', String(value));
+  });
+
   syncLocalizedCityLabelFromCurrentState();
   updateFilterLocaleTexts();
   renderHomeBlog();
+  syncLangDropdownUI(lang);
   emitI18nReady(lang);
 }
 
-if (!window.applyTranslations) window.applyTranslations = applyTranslations;
+window.applyTranslations = applyTranslations;
 
 function emitI18nReady(lang) {
   try {
@@ -829,13 +923,13 @@ function patchFilterVisuals() {
       position:absolute; top:8px; left:16px; font-size:12px; font-weight:700;
       letter-spacing:.04em; text-transform:uppercase; color:#0A3D62; opacity:.85; pointer-events:none;
     }
-    :where(.events-filters.filter-dock, form.filter-dock) .field{ position:relative; }
     :where(.events-filters.filter-dock, form.filter-dock) .styled-input,
     :where(.events-filters.filter-dock, form.filter-dock) .styled-select{
       height:var(--ajsee-ctrl-h); line-height:1.25; border-radius:var(--ajsee-ctrl-radius);
       padding:26px 16px 10px 16px !important;
       display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;
     }
+    :where(.events-filters.filter-dock, form.filter-dock) .field{ position:relative; }
     :where(.events-filters.filter-dock, form.filter-dock) .field .styled-input{ width:100%; }
     :where(.events-filters.filter-dock, form.filter-dock) .filter-group.date-combo #date-combo-button{
       height:var(--ajsee-ctrl-h); border-radius:var(--ajsee-ctrl-radius);
@@ -2261,18 +2355,41 @@ function initEventsScrollGuard() {
 
 /* ───────── language change helper ───────── */
 function changeLangTo(lang) {
-  const next = String(lang || '').toLowerCase();
-  if (!next || next === currentLang) return;
+  const supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+  const next = String(lang || '').trim().toLowerCase();
+
+  if (!supported.includes(next)) return;
+  if (next === currentLang) return;
 
   currentLang = next;
+
   setLangCookie(currentLang);
-  document.documentElement.lang = currentLang;
+
+  try {
+    localStorage.setItem('ajsee.lang', currentLang);
+  } catch {
+    /* noop */
+  }
 
   const u = new URL(location.href);
-  u.searchParams.set('lang', currentLang);
+
+  if (currentLang === 'cs') {
+    u.searchParams.delete('lang');
+  } else {
+    u.searchParams.set('lang', currentLang);
+  }
+
   history.replaceState(null, '', u.toString());
 
-  window.dispatchEvent(new CustomEvent('AJSEE:langChanged', { detail: { lang: currentLang } }));
+  document.documentElement.lang = currentLang;
+
+  window.dispatchEvent(new CustomEvent('AJSEE:langChanged', {
+    detail: { lang: currentLang }
+  }));
+
+  window.dispatchEvent(new CustomEvent('ajsee:lang-changed', {
+    detail: { lang: currentLang }
+  }));
 }
 
 /* ───────── desktop language dropdown fallback ───────── */
@@ -2397,6 +2514,7 @@ function initLangDropdownFallback() {
       clone.addEventListener('click', e => {
         e.preventDefault();
         e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
 
         if (!lang) return;
 
@@ -2472,6 +2590,7 @@ function initLangDropdownFallback() {
 
       e.preventDefault();
       e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
 
       if (lang === currentLang) {
         if (state.open && state.root === root) close();
@@ -2487,8 +2606,13 @@ function initLangDropdownFallback() {
 }
 
 function safeInitLangDropdown() {
+  // Důležité: nepouštíme importovaný initLangDropdown(), protože aktuální verze
+  // /src/utils/lang-dropdown.js používá window.location.assign() a tím vyvolává reload.
+  // Ovládání dropdownu zajišťují initLangDropdownCompat() + initLanguageSwitchers().
   try {
-    if (typeof initLangDropdown === 'function') initLangDropdown();
+    if (typeof initLangDropdown === 'function') {
+      // Import necháváme kvůli kompatibilitě bundlu, ale intentionally no-op.
+    }
   } catch {
     /* noop */
   }
@@ -2666,6 +2790,7 @@ function initLanguageSwitchers() {
     wireOnce(btn, 'click', e => {
       e.preventDefault();
       e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
 
       qsa('details.lang-dropdown[open]').forEach(d => {
         try {
@@ -2755,6 +2880,7 @@ async function bootstrapMain() {
 
   currentLang = getUILang();
   setLangCookie(currentLang);
+  try { localStorage.setItem('ajsee.lang', currentLang); } catch {}
   document.documentElement.lang = currentLang;
 
   const langToCountry = { cs: 'CZ', sk: 'SK', de: 'DE', pl: 'PL', hu: 'HU', en: 'CZ' };
@@ -2802,6 +2928,7 @@ async function bootstrapMain() {
   wireOnce(window, 'AJSEE:langChanged', async e => {
     currentLang = e?.detail?.lang || getUILang();
     setLangCookie(currentLang);
+    try { localStorage.setItem('ajsee.lang', currentLang); } catch {}
     document.documentElement.lang = currentLang;
 
     syncLocalizedCityLabelFromCurrentState();

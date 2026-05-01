@@ -1,268 +1,497 @@
 // /src/blog.js
+// ---------------------------------------------------------
+// AJSEE – blog listing page
+// Renders blog articles + micro-guides into .blog-cards.
+// Language switching is handled centrally by main.js + lang-dropdown.js.
+// This file only reacts to language changes and re-renders blog cards.
+// ---------------------------------------------------------
+
 import { getSortedBlogArticles } from './blogArticles.js';
 
-// --- jazyk ---
-function normalizeLang(val) {
-  if (!val) return 'cs';
-  let l = String(val).toLowerCase().split(/[-_]/)[0];
-  return l === 'cz' ? 'cs' : l;
+const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+const DEFAULT_LANG = 'cs';
+
+function normalizeLang(value) {
+  if (!value) return DEFAULT_LANG;
+
+  let lang = String(value).trim().toLowerCase().split(/[-_]/)[0];
+  if (lang === 'cz') lang = 'cs';
+
+  return SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG;
+}
+
+function getCookie(name) {
+  try {
+    return document.cookie
+      .split('; ')
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split('=')[1] || '';
+  } catch {
+    return '';
+  }
 }
 
 function getLang() {
-  // 1) URL ?lang=
-  const urlLang = new URLSearchParams(window.location.search).get('lang');
-  if (urlLang) return normalizeLang(urlLang);
+  const params = new URLSearchParams(window.location.search);
 
-  // 2) pokud si main.js někam ukládá jazyk (safe pokusy)
-  const w = window;
-  const maybe =
-    w.__ajsee?.lang ||
-    w.__ajsee?.i18n?.lang ||
-    w.currentLang ||
-    w.lang;
+  const fromUrl = params.get('lang');
+  if (fromUrl) return normalizeLang(fromUrl);
 
-  if (maybe) return normalizeLang(maybe);
+  const fromHtml = document.documentElement.getAttribute('lang');
+  if (fromHtml) return normalizeLang(fromHtml);
 
-  // 3) localStorage fallback (pokud někde ukládáš)
+  const fromCookie = getCookie('aj_lang');
+  if (fromCookie) return normalizeLang(decodeURIComponent(fromCookie));
+
   try {
-    const ls = localStorage.getItem('ajsee_lang') || localStorage.getItem('lang');
-    if (ls) return normalizeLang(ls);
-  } catch {}
+    const fromStorage =
+      localStorage.getItem('ajsee.lang') ||
+      localStorage.getItem('ajsee_lang') ||
+      localStorage.getItem('lang');
 
-  // 4) <html lang>
-  return normalizeLang(document.documentElement.getAttribute('lang') || 'cs');
+    if (fromStorage) return normalizeLang(fromStorage);
+  } catch {
+    /* noop */
+  }
+
+  return DEFAULT_LANG;
 }
 
-// --- lokální texty (read more / badge / filtry) ---
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// --- Local blog UI texts ---------------------------------------------------
+
 const i18n = {
-  readMore: { cs: 'Číst dál', en: 'Read more', de: 'Weiterlesen', sk: 'Čítať ďalej', pl: 'Czytaj dalej', hu: 'Tovább' },
-  badge:    { cs: 'Mikroprůvodce', en: 'Micro-guide', de: 'Mikro-Guide', sk: 'Mikro-sprievodca', pl: 'Mikroprzewodnik', hu: 'Mini útmutató' },
+  readMore: {
+    cs: 'Číst dál',
+    en: 'Read more',
+    de: 'Weiterlesen',
+    sk: 'Čítať ďalej',
+    pl: 'Czytaj dalej',
+    hu: 'Tovább',
+  },
+  badge: {
+    cs: 'Mikroprůvodce',
+    en: 'Micro-guide',
+    de: 'Mikro-Guide',
+    sk: 'Mikro-sprievodca',
+    pl: 'Mikroprzewodnik',
+    hu: 'Mini útmutató',
+  },
   filters: {
-    all: { cs:'Vše', en:'All', de:'Alle', sk:'Všetko', pl:'Wszystko', hu:'Mind' },
-    concert:{ cs:'Koncerty', en:'Concerts', de:'Konzerte', sk:'Koncerty', pl:'Koncerty', hu:'Koncertek' },
-    theatre:{ cs:'Divadlo', en:'Theatre', de:'Theater', sk:'Divadlo', pl:'Teatr', hu:'Színház' },
-    festival:{ cs:'Festivaly', en:'Festivals', de:'Festivals', sk:'Festivaly', pl:'Festiwale', hu:'Fesztiválok' },
-    sport:{ cs:'Sport', en:'Sport', de:'Sport', sk:'Šport', pl:'Sport', hu:'Sport' },
-    tip:{ cs:'Tipy', en:'Tips', de:'Tipps', sk:'Tipy', pl:'Wskazówki', hu:'Tippek' },
-    review:{ cs:'Recenze', en:'Reviews', de:'Rezensionen', sk:'Recenzie', pl:'Recenzje', hu:'Vélemények' },
-    microguide:{ cs:'Průvodce', en:'Guides', de:'Leitfäden', sk:'Sprievodcovia', pl:'Poradniki', hu:'Útmutatók' }
-  }
+    all: {
+      cs: 'Vše',
+      en: 'All',
+      de: 'Alle',
+      sk: 'Všetko',
+      pl: 'Wszystko',
+      hu: 'Mind',
+    },
+    concert: {
+      cs: 'Koncerty',
+      en: 'Concerts',
+      de: 'Konzerte',
+      sk: 'Koncerty',
+      pl: 'Koncerty',
+      hu: 'Koncertek',
+    },
+    theatre: {
+      cs: 'Divadlo',
+      en: 'Theatre',
+      de: 'Theater',
+      sk: 'Divadlo',
+      pl: 'Teatr',
+      hu: 'Színház',
+    },
+    festival: {
+      cs: 'Festivaly',
+      en: 'Festivals',
+      de: 'Festivals',
+      sk: 'Festivaly',
+      pl: 'Festiwale',
+      hu: 'Fesztiválok',
+    },
+    sport: {
+      cs: 'Sport',
+      en: 'Sport',
+      de: 'Sport',
+      sk: 'Šport',
+      pl: 'Sport',
+      hu: 'Sport',
+    },
+    tip: {
+      cs: 'Tipy',
+      en: 'Tips',
+      de: 'Tipps',
+      sk: 'Tipy',
+      pl: 'Wskazówki',
+      hu: 'Tippek',
+    },
+    review: {
+      cs: 'Recenze',
+      en: 'Reviews',
+      de: 'Rezensionen',
+      sk: 'Recenzie',
+      pl: 'Recenzje',
+      hu: 'Vélemények',
+    },
+    microguide: {
+      cs: 'Průvodce',
+      en: 'Guides',
+      de: 'Leitfäden',
+      sk: 'Sprievodcovia',
+      pl: 'Poradniki',
+      hu: 'Útmutatók',
+    },
+  },
 };
 
-const tReadMore = (lang) => i18n.readMore[lang] || i18n.readMore.cs;
-const tBadge    = (lang) => i18n.badge[lang]    || i18n.badge.cs;
-const tFilter   = (key, lang) => (i18n.filters[key] && (i18n.filters[key][lang] || i18n.filters[key].cs)) || '';
-
-const gridEl = () => document.querySelector('.blog-cards');
-
-function setReadMoreTexts(lang) {
-  document.querySelectorAll('.blog-readmore').forEach(el => (el.textContent = tReadMore(lang)));
+function tReadMore(lang) {
+  return i18n.readMore[lang] || i18n.readMore[DEFAULT_LANG];
 }
+
+function tBadge(lang) {
+  return i18n.badge[lang] || i18n.badge[DEFAULT_LANG];
+}
+
+function tFilter(key, lang) {
+  return i18n.filters[key]?.[lang] || i18n.filters[key]?.[DEFAULT_LANG] || '';
+}
+
+function getGrid() {
+  return document.querySelector('.blog-list .blog-cards') || document.querySelector('.blog-cards');
+}
+
+// --- Filters ---------------------------------------------------------------
 
 function ensureMicroguideFilter(lang) {
   const wrap = document.querySelector('.filter-categories');
   if (!wrap) return;
 
   let btn = wrap.querySelector('button[data-category="microguide"]');
+
   if (!btn) {
     btn = document.createElement('button');
+    btn.type = 'button';
     btn.setAttribute('data-category', 'microguide');
     wrap.appendChild(btn);
   }
+
   btn.textContent = tFilter('microguide', lang);
 }
 
 function translateExistingFilters(lang) {
-  document.querySelectorAll('.filter-categories button').forEach((btn) => {
-    const cat = btn.getAttribute('data-category');
-    if (i18n.filters[cat]) btn.textContent = tFilter(cat, lang);
+  document.querySelectorAll('.filter-categories button[data-category]').forEach((btn) => {
+    const category = btn.getAttribute('data-category');
+
+    if (i18n.filters[category]) {
+      btn.textContent = tFilter(category, lang);
+    }
   });
 }
 
-/** ——— robustní loader micro-guidů (více cest, normalizace, fallbacky) ——— */
+function getActiveCategory() {
+  const active = document.querySelector('.filter-categories button.active[data-category]');
+  return active?.getAttribute('data-category') || 'all';
+}
+
+function setActiveCategory(category) {
+  const wrap = document.querySelector('.filter-categories');
+  if (!wrap) return;
+
+  wrap.querySelectorAll('button[data-category]').forEach((btn) => {
+    btn.classList.toggle('active', btn.getAttribute('data-category') === category);
+  });
+}
+
+// --- Micro-guide loading ---------------------------------------------------
+
 async function loadMicroguideCards(lang) {
-  const tryPaths = ['/content/microguides/index.json', '/public/content/microguides/index.json'];
+  const paths = [
+    '/content/microguides/index.json',
+    '/public/content/microguides/index.json',
+  ];
+
   let raw = [];
-  for (const p of tryPaths) {
+
+  for (const path of paths) {
     try {
-      const r = await fetch(p, { cache: 'no-store' });
-      if (!r.ok) continue;
-      const j = await r.json();
-      raw = Array.isArray(j) ? j : (Array.isArray(j?.items) ? j.items : []);
+      const response = await fetch(path, { cache: 'no-store' });
+      if (!response.ok) continue;
+
+      const json = await response.json();
+      raw = Array.isArray(json) ? json : (Array.isArray(json?.items) ? json.items : []);
+
       if (raw.length) break;
-    } catch {/* continue */}
+    } catch {
+      /* try next path */
+    }
   }
+
   if (!raw.length) return [];
 
-  const L = lang;
   const seen = new Set();
+
   return raw
-    .filter(it => !it.status || String(it.status).toLowerCase() === 'published')
-    .filter(it => normalizeLang(it.language || 'cs') === L)
-    .filter(it => it.slug && (seen.has(it.slug) ? false : (seen.add(it.slug), true)))
-    .map(it => ({
+    .filter((item) => !item.status || String(item.status).toLowerCase() === 'published')
+    .filter((item) => normalizeLang(item.language || DEFAULT_LANG) === lang)
+    .filter((item) => {
+      if (!item.slug || seen.has(item.slug)) return false;
+      seen.add(item.slug);
+      return true;
+    })
+    .map((item) => ({
       type: 'microguide',
-      slug: it.slug,
-      lang: normalizeLang(it.language || L),
-      title: it.title || '',
-      lead: it.summary || '',
-      image: it.cover || '',
+      slug: item.slug,
+      lang: normalizeLang(item.language || lang),
+      title: item.title || '',
+      lead: item.summary || '',
+      image: item.cover || '',
       category: 'microguide',
-      ts: Date.parse(it.publishedAt || 0) || 0
+      ts: Date.parse(item.publishedAt || 0) || 0,
     }));
 }
 
-/** sjednoť články i průvodce a seřaď DESC */
 async function loadAllCards(lang) {
-  const mg = await loadMicroguideCards(lang);
-  const arts = getSortedBlogArticles(lang).map(a => ({
+  const microguides = await loadMicroguideCards(lang);
+
+  const articles = getSortedBlogArticles(lang).map((article) => ({
     type: 'article',
-    slug: a.slug,
+    slug: article.slug,
     lang,
-    title: a.titleText,
-    lead: a.leadText,
-    image: a.image,
-    category: a.category || '',
-    ts: a._ts
+    title: article.titleText,
+    lead: article.leadText,
+    image: article.image,
+    category: article.category || '',
+    ts: article._ts,
   }));
-  return [...mg, ...arts].sort((a, b) => b.ts - a.ts);
+
+  return [...microguides, ...articles].sort((a, b) => b.ts - a.ts);
 }
 
 function cardHref(card) {
-  return card.type === 'microguide'
-    ? `/microguides/?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`
-    : `/blog-detail.html?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
+  if (card.type === 'microguide') {
+    return `/microguides/?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
+  }
+
+  return `/blog-detail.html?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
 }
 
-/** render – micro-guidy bez <a> kolem celé karty (kompatibilní s CSS) */
+// --- Render ----------------------------------------------------------------
+
+const cardsCache = new Map();
+let activeCategory = 'all';
+let lastRenderSignature = '';
+let renderInProgress = false;
+let queuedRender = false;
+
+function renderEmptyState(grid, lang) {
+  const fallback = lang === 'en'
+    ? 'No articles found.'
+    : lang === 'de'
+      ? 'Keine Artikel gefunden.'
+      : lang === 'sk'
+        ? 'Nenašli sa žiadne články.'
+        : lang === 'pl'
+          ? 'Nie znaleziono artykułów.'
+          : lang === 'hu'
+            ? 'Nem találhatók cikkek.'
+            : 'Nenašli jsme žádné články.';
+
+  grid.innerHTML = `<p class="blog-empty">${escapeHtml(fallback)}</p>`;
+}
+
 function renderCards(cards, lang) {
-  const grid = gridEl();
+  const grid = getGrid();
   if (!grid) return;
 
-  const html = cards.map(card => {
-    const titleEsc = (card.title || '').replace(/"/g, '&quot;');
+  // Pojistka proti případným legacy třídám z homepage rendereru.
+  grid.classList.add('blog-cards');
+  grid.classList.remove('homepage-blog-cards');
+
+  if (!cards.length) {
+    renderEmptyState(grid, lang);
+    return;
+  }
+
+  grid.innerHTML = cards.map((card) => {
+    const href = cardHref(card);
+    const title = escapeHtml(card.title || '');
+    const lead = escapeHtml(card.lead || '');
+    const image = escapeHtml(card.image || '');
+    const readMore = escapeHtml(tReadMore(lang));
 
     if (card.type === 'microguide') {
       return `
-        <article class="blog-card is-microguide" data-type="microguide" data-href="${cardHref(card)}">
+        <article class="blog-card is-microguide" data-type="microguide" data-href="${escapeHtml(href)}">
           <div class="card-media">
-            ${card.image ? `<img src="${card.image}" alt="${titleEsc}">` : ''}
-            <span class="card-badge">${tBadge(lang)}</span>
+            ${image ? `<img src="${image}" alt="${title}" loading="lazy" decoding="async">` : ''}
+            <span class="card-badge">${escapeHtml(tBadge(lang))}</span>
           </div>
+
           <div class="blog-card-body">
-            <h3 class="blog-card-title">${card.title}</h3>
-            <div class="blog-card-lead">${card.lead || ''}</div>
+            <h3 class="blog-card-title">${title}</h3>
+            <div class="blog-card-lead">${lead}</div>
             <div class="blog-card-actions">
-              <a class="blog-readmore" href="${cardHref(card)}">${tReadMore(lang)}</a>
+              <a class="blog-readmore" href="${escapeHtml(href)}">${readMore}</a>
             </div>
           </div>
-        </article>`;
+        </article>
+      `;
     }
 
     return `
       <article class="blog-card" data-type="article">
         <div class="card-media">
-          ${card.image ? `<img src="${card.image}" alt="${titleEsc}">` : ''}
+          ${image ? `<img src="${image}" alt="${title}" loading="lazy" decoding="async">` : ''}
         </div>
+
         <div class="blog-card-body">
-          <h3 class="blog-card-title">${card.title}</h3>
-          <div class="blog-card-lead">${card.lead || ''}</div>
+          <h3 class="blog-card-title">${title}</h3>
+          <div class="blog-card-lead">${lead}</div>
           <div class="blog-card-actions">
-            <a class="blog-readmore" href="${cardHref(card)}">${tReadMore(lang)}</a>
+            <a class="blog-readmore" href="${escapeHtml(href)}">${readMore}</a>
           </div>
         </div>
-      </article>`;
+      </article>
+    `;
   }).join('');
 
-  grid.innerHTML = html;
+  if (!grid.dataset.blogCardClickBound) {
+    grid.dataset.blogCardClickBound = '1';
 
-  // klik na celou micro-guide kartu (mimo explicitní odkazy) – bind jen jednou
-  if (!grid.dataset.mgClickBound) {
-    grid.dataset.mgClickBound = '1';
-    grid.addEventListener('click', (ev) => {
-      const card = ev.target.closest('.blog-card.is-microguide[data-href]');
-      if (!card) return;
-      if (ev.target.closest('a')) return;
-      window.location.assign(card.dataset.href);
+    grid.addEventListener('click', (event) => {
+      const microguideCard = event.target.closest('.blog-card.is-microguide[data-href]');
+      if (!microguideCard) return;
+      if (event.target.closest('a')) return;
+
+      window.location.assign(microguideCard.dataset.href);
     });
   }
 
-  setReadMoreTexts(lang);
-
-  // kdyby se do karet někdy přidaly data-i18n-key texty, tak se přeloží taky
-  if (typeof window.applyTranslations === 'function') {
-    try { window.applyTranslations(lang); } catch {}
-  }
+  window.dispatchEvent(new CustomEvent('ajsee:blog-rendered', {
+    detail: { lang, count: cards.length },
+  }));
 }
 
-// cache podle jazyka, aby přepínání bylo svižné
-const ALL_CARDS_BY_LANG = {};
-let ACTIVE_CATEGORY = 'all';
-
-async function renderBlogArticles(category = 'all') {
-  const lang = getLang();
-  ACTIVE_CATEGORY = category;
-
-  if (!ALL_CARDS_BY_LANG[lang]) {
-    ALL_CARDS_BY_LANG[lang] = await loadAllCards(lang);
+async function renderBlogArticles(category = activeCategory) {
+  if (renderInProgress) {
+    queuedRender = true;
+    activeCategory = category;
+    return;
   }
 
-  let list = [...ALL_CARDS_BY_LANG[lang]];
-  if (category !== 'all') {
-    if (category === 'microguide') list = list.filter(c => c.type === 'microguide');
-    else list = list.filter(c => c.category === category && c.type === 'article');
-  }
+  renderInProgress = true;
 
-  renderCards(list, lang);
+  try {
+    const lang = getLang();
+    activeCategory = category;
+
+    ensureMicroguideFilter(lang);
+    translateExistingFilters(lang);
+    setActiveCategory(activeCategory);
+
+    const signature = `${lang}:${activeCategory}`;
+
+    if (signature === lastRenderSignature) {
+      return;
+    }
+
+    if (!cardsCache.has(lang)) {
+      cardsCache.set(lang, await loadAllCards(lang));
+    }
+
+    let list = [...cardsCache.get(lang)];
+
+    if (activeCategory !== 'all') {
+      if (activeCategory === 'microguide') {
+        list = list.filter((card) => card.type === 'microguide');
+      } else {
+        list = list.filter((card) => card.type === 'article' && card.category === activeCategory);
+      }
+    }
+
+    renderCards(list, lang);
+    lastRenderSignature = signature;
+  } finally {
+    renderInProgress = false;
+
+    if (queuedRender) {
+      queuedRender = false;
+      const nextCategory = activeCategory;
+      lastRenderSignature = '';
+      void renderBlogArticles(nextCategory);
+    }
+  }
 }
 
 function setupCategoryFilters() {
   const wrap = document.querySelector('.filter-categories');
-  if (!wrap) return;
+  if (!wrap || wrap.dataset.blogFiltersBound === '1') return;
 
-  const lang = getLang();
-  ensureMicroguideFilter(lang);
-  translateExistingFilters(lang);
+  wrap.dataset.blogFiltersBound = '1';
 
-  wrap.addEventListener('click', (ev) => {
-    const btn = ev.target.closest('button[data-category]');
+  wrap.addEventListener('click', (event) => {
+    const btn = event.target.closest('button[data-category]');
     if (!btn) return;
-    wrap.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderBlogArticles(btn.getAttribute('data-category'));
+
+    const category = btn.getAttribute('data-category') || 'all';
+    activeCategory = category;
+    lastRenderSignature = '';
+
+    setActiveCategory(category);
+    void renderBlogArticles(category);
   });
 }
 
-function refreshUiForLang() {
-  const lang = getLang();
-  ensureMicroguideFilter(lang);
-  translateExistingFilters(lang);
-  setReadMoreTexts(lang);
+function refreshForLanguageChange() {
+  lastRenderSignature = '';
+  void renderBlogArticles(activeCategory);
+}
 
-  // přerender karet v aktuální kategorii
-  renderBlogArticles(ACTIVE_CATEGORY);
+function setupLanguageListeners() {
+  let scheduled = false;
+
+  const scheduleRefresh = () => {
+    if (scheduled) return;
+
+    scheduled = true;
+
+    window.requestAnimationFrame(() => {
+      scheduled = false;
+      refreshForLanguageChange();
+    });
+  };
+
+  window.addEventListener('AJSEE:langChanged', scheduleRefresh);
+  window.addEventListener('ajsee:lang-changed', scheduleRefresh);
+  window.addEventListener('popstate', scheduleRefresh);
+
+  try {
+    const observer = new MutationObserver(scheduleRefresh);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['lang'],
+    });
+  } catch {
+    /* noop */
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const lang = getLang();
-  ensureMicroguideFilter(lang);
-  translateExistingFilters(lang);
+  if (document.body?.dataset?.page !== 'blog') return;
 
-  await renderBlogArticles('all');
+  activeCategory = getActiveCategory();
+
   setupCategoryFilters();
+  setupLanguageListeners();
 
-  // 1) změna <html lang> (main.js ji často přepíná)
-  const mo = new MutationObserver(() => refreshUiForLang());
-  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-
-  // 2) změna URL (např. historie / popstate)
-  window.addEventListener('popstate', () => refreshUiForLang());
-
-  // 3) klik na jazykové tlačítko (pokud to přepíná bez reloadu)
-  document.addEventListener('click', (ev) => {
-    const b = ev.target.closest('.lang-btn[data-lang]');
-    if (!b) return;
-    // necháme proběhnout logiku v main.js a pak přerender
-    setTimeout(refreshUiForLang, 0);
-  });
+  await renderBlogArticles(activeCategory);
 });

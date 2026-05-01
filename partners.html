@@ -22,63 +22,6 @@
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
-  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
-  <script>
-    (function(){
-      function detectLang(){
-        try {
-          const qs = new URLSearchParams(location.search);
-          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
-        } catch { return 'cs'; }
-      }
-
-      function applyI18nFallback(lang){
-        const root = window.translations || null;
-        if (!root) return;
-
-        const dict = root[lang] || root;
-        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
-
-        document.querySelectorAll('[data-i18n-key]').forEach(el => {
-          const key = el.getAttribute('data-i18n-key');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.textContent = val;
-        });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-          const key = el.getAttribute('data-i18n-placeholder');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
-        });
-        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-          const key = el.getAttribute('data-i18n-aria');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) {
-            el.setAttribute('aria-label', val);
-            el.setAttribute('title', val);
-          }
-        });
-        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
-          const key = el.getAttribute('data-i18n-alt');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
-        });
-      }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        const lang = detectLang();
-        document.documentElement.lang = lang;
-
-        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
-        if (typeof window.applyTranslations === 'function') return;
-
-        setTimeout(() => {
-          if (typeof window.applyTranslations === 'function') return;
-          applyI18nFallback(lang);
-        }, 250);
-      });
-    })();
-  </script>
-
   <!-- ✅ JEDINÝ vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
 </head>
@@ -484,63 +427,140 @@
     </div>
   </div>
 </section>
-  <section id="partner-contact" class="partner-contact-section">
-    <div class="container">
-      <h2 data-i18n-key="partner-contact-headline">Ozvěte se nám</h2>
+<section id="partner-contact" class="partner-contact-section">
+  <div class="container">
+    <div class="partner-contact-shell">
+      <div class="partner-contact-copy">
+        <p class="partner-contact-eyebrow" data-i18n-key="partner-contact-eyebrow">
+          Kontakt pro partnery
+        </p>
 
-      <form
-        name="partner-contact"
-        method="POST"
-        data-netlify="true"
-        action="#partner-contact?success=1"
-        netlify-honeypot="bot-field"
-        class="contact-form"
-        id="partner-contact-form"
-        autocomplete="on"
-      >
-        <input type="hidden" name="form-name" value="partner-contact" />
+        <h2 data-i18n-key="partner-contact-headline">
+          Pojďme najít smysluplné propojení
+        </h2>
 
-        <!-- Honeypot antispam -->
-        <div style="display:none">
-          <label data-i18n-key="partner-honeypot-label">Nevyplňujte toto pole (antispam) <input name="bot-field" /></label>
+        <p class="partner-contact-intro" data-i18n-key="partner-contact-intro">
+          Hledáme partnery, se kterými budeme společně tvořit svět plný inspirace. Pokud věříte, že by vaše nabídka mohla uživatele AJSEE zaujmout, budeme rádi, když se nám ozvete. Pojďme společně posoudit vzájemný přínos naší spolupráce.
+        </p>
+
+        <div class="partner-contact-direct">
+          <p data-i18n-key="partner-contact-email-label">
+            Preferujete e-mail?
+          </p>
+
+          <a href="mailto:adam@ajsee.cz">
+            adam@ajsee.cz
+          </a>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="company" data-i18n-key="partner-label-company">Název firmy / instituce</label>
-          <input type="text" id="company" name="company" required placeholder="Název firmy / instituce" data-i18n-placeholder="partner-placeholder-company" autocomplete="organization" />
-          <div class="form-error" id="error-company"></div>
+      <div class="partner-contact-form-card" aria-labelledby="partner-contact-form-title">
+        <h3 id="partner-contact-form-title" data-i18n-key="partner-contact-form-title">
+          Formulář
+        </h3>
+
+        <form
+          name="partner-contact"
+          method="POST"
+          data-netlify="true"
+          action="#partner-contact?success=1"
+          netlify-honeypot="bot-field"
+          class="contact-form"
+          id="partner-contact-form"
+          autocomplete="on"
+        >
+          <input type="hidden" name="form-name" value="partner-contact" />
+
+          <!-- Honeypot antispam -->
+          <div style="display:none">
+            <label data-i18n-key="partner-honeypot-label">
+              Nevyplňujte toto pole (antispam)
+              <input name="bot-field" />
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="company" data-i18n-key="partner-label-company">
+              Název firmy / značky
+            </label>
+            <input
+              type="text"
+              id="company"
+              name="company"
+              required
+              placeholder="Např. název vaší společnosti nebo projektu"
+              data-i18n-placeholder="partner-placeholder-company"
+              autocomplete="organization"
+            />
+            <div class="form-error" id="error-company"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="name" data-i18n-key="partner-label-name">
+              Jméno a role
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              placeholder="Vaše jméno a pozice"
+              data-i18n-placeholder="partner-placeholder-name"
+              autocomplete="name"
+            />
+            <div class="form-error" id="error-name"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="email" data-i18n-key="partner-label-email">
+              Firemní e-mail
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="vas@email.cz"
+              data-i18n-placeholder="partner-placeholder-email"
+              autocomplete="email"
+            />
+            <div class="form-error" id="error-email"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="message" data-i18n-key="partner-label-message">
+              Předmět spolupráce
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              required
+              placeholder="Stručně popište vaši nabídku nebo vizi, jak bychom se mohli propojit."
+              data-i18n-placeholder="partner-placeholder-message"
+            ></textarea>
+            <div class="form-error" id="error-message"></div>
+          </div>
+
+          <button type="submit" class="btn-primary" data-i18n-key="partner-send">
+            Chci navázat spolupráci
+          </button>
+
+          <div class="contact-error" id="partner-contact-error" style="display:none;">
+            <p data-i18n-key="partner-error-msg">
+              Ups, něco se nepovedlo. Zkuste to znovu nebo nám napište na adam@ajsee.cz
+            </p>
+          </div>
+        </form>
+
+        <div class="contact-success" style="display:none;" id="partner-contact-success">
+          <p data-i18n-key="partner-success-msg">
+            Skvělé! Vaši zprávu jsme dostali a brzy se vám ozveme zpět.
+          </p>
         </div>
-
-        <div class="form-group">
-          <label for="name" data-i18n-key="partner-label-name">Jméno</label>
-          <input type="text" id="name" name="name" required placeholder="Vaše jméno" data-i18n-placeholder="partner-placeholder-name" autocomplete="name" />
-          <div class="form-error" id="error-name"></div>
-        </div>
-
-        <div class="form-group">
-          <label for="email" data-i18n-key="partner-label-email">E-mail</label>
-          <input type="email" id="email" name="email" required placeholder="Váš e-mail" data-i18n-placeholder="partner-placeholder-email" autocomplete="email" />
-          <div class="form-error" id="error-email"></div>
-        </div>
-
-        <div class="form-group">
-          <label for="message" data-i18n-key="partner-label-message">Vzkaz</label>
-          <textarea id="message" name="message" required placeholder="Vaše zpráva" data-i18n-placeholder="partner-placeholder-message"></textarea>
-          <div class="form-error" id="error-message"></div>
-        </div>
-
-        <button type="submit" class="btn-primary" data-i18n-key="partner-send">Odeslat</button>
-
-        <div class="contact-error" id="partner-contact-error" style="display:none;">
-          <p data-i18n-key="partner-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
-        </div>
-      </form>
-
-      <div class="contact-success" style="display:none;" id="partner-contact-success">
-        <p data-i18n-key="partner-success-msg">Děkujeme za zájem o partnerství! Ozveme se vám co nejdříve.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 </main>
 
 <footer class="site-footer">

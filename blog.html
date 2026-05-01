@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <title data-i18n-key="blog-title">Blog & Recenze | AJSEE®</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <title data-i18n-key="blog-title">Blog & Recenze | AJSEE®</title>
+  <meta
+    name="description"
+    content="Přečtěte si recenze kulturních akcí a tipy na nejlepší zážitky po celém světě."
+    data-i18n-content="blog-meta-description"
+  />
   <meta name="theme-color" content="#0077cc" />
 
   <!-- Favicona -->
-  <link rel="icon" href="data:," />
-  <link rel="icon" href="/images/logo-ajsee.png">
+  <link rel="icon" href="/images/logo-ajsee.png" />
 
   <!-- Prémiové fonty (sjednoceno s ostatními stránkami) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
 
   <!-- ✅ CSS přes link (sjednoceno) -->
   <link rel="stylesheet" href="/src/styles/main.scss" />
@@ -25,73 +32,7 @@
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
-  <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
-  <script>
-    (function(){
-      function detectLang(){
-        try {
-          const qs = new URLSearchParams(location.search);
-          return (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
-        } catch { return 'cs'; }
-      }
-
-      function applyI18nFallback(lang){
-        const root = window.translations || null;
-        if (!root) return;
-        const dict = root[lang] || root;
-        const get = (path) => path.split('.').reduce((o,k)=>o?.[k], dict);
-
-        document.querySelectorAll('[data-i18n-key]').forEach(el => {
-          const key = el.getAttribute('data-i18n-key');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.textContent = val;
-        });
-
-        // (nevadí, i kdyby tu teď nic nebylo — hodí se pro meta content do budoucna)
-        document.querySelectorAll('[data-i18n-content]').forEach(el => {
-          const key = el.getAttribute('data-i18n-content');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('content', val);
-        });
-
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-          const key = el.getAttribute('data-i18n-placeholder');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('placeholder', val);
-        });
-
-        document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-          const key = el.getAttribute('data-i18n-aria');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) {
-            el.setAttribute('aria-label', val);
-            el.setAttribute('title', val);
-          }
-        });
-
-        document.querySelectorAll('[data-i18n-alt]').forEach(el => {
-          const key = el.getAttribute('data-i18n-alt');
-          const val = get(key);
-          if (typeof val === 'string' && val.trim()) el.setAttribute('alt', val);
-        });
-      }
-
-      window.addEventListener('DOMContentLoaded', () => {
-        const lang = detectLang();
-        document.documentElement.lang = lang;
-
-        // Pokud už main.js poskytl applyTranslations, fallback nespouštěj.
-        if (typeof window.applyTranslations === 'function') return;
-
-        setTimeout(() => {
-          if (typeof window.applyTranslations === 'function') return;
-          applyI18nFallback(lang);
-        }, 250);
-      });
-    })();
-  </script>
-
-  <!-- ✅ JEDINÝ vstup (dev i prod) -->
+  <!-- ✅ JEDINÝ globální vstup (dev i prod) -->
   <script type="module" src="/src/main.js"></script>
 </head>
 
@@ -112,6 +53,7 @@
     <!-- Navigace (hlavní menu) -->
     <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
       <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+
       <ul>
         <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
         <li><a href="/events.html" data-i18n-key="nav-events">Události</a></li>
@@ -123,66 +65,66 @@
         <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 
-<!-- Jazykové přepínače v mobilním menu (DROPDOWN – stejné jako events.html) -->
-<div class="language-switcher mobile-switcher" aria-label="Jazyk">
-  <details class="lang-dropdown" id="langDropdownMobile">
-    <summary class="lang-current" aria-label="Změnit jazyk">
-      <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
-      <span class="lang-current-label">Čeština</span>
-      <span class="lang-caret" aria-hidden="true">▾</span>
-    </summary>
+      <!-- Jazykové přepínače v mobilním menu -->
+      <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+        <details class="lang-dropdown" id="langDropdownMobile">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16" />
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
 
-    <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
-      <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
-        <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
-      </button>
-      <button class="lang-btn" type="button" data-lang="en" aria-label="English">
-        <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
-      </button>
-      <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
-        <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
-      </button>
-      <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
-        <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
-      </button>
-      <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
-        <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
-      </button>
-      <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
-        <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
-      </button>
-    </div>
-  </details>
-</div>
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16" /> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16" /> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16" /> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16" /> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16" /> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16" /> Magyar
+            </button>
+          </div>
+        </details>
+      </div>
     </nav>
 
-    <!-- Jazykové přepínače – desktop (dropdown jako homepage; zachovává .lang-btn) -->
+    <!-- Jazykové přepínače – desktop -->
     <div class="language-switcher desktop-switcher" aria-label="Jazyk">
       <details class="lang-dropdown" id="langDropdownDesktop">
         <summary class="lang-current" aria-label="Změnit jazyk">
-          <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+          <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16" />
           <span class="lang-current-label">Čeština</span>
           <span class="lang-caret" aria-hidden="true">▾</span>
         </summary>
 
         <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
           <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
-            <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+            <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16" /> Čeština
           </button>
           <button class="lang-btn" type="button" data-lang="en" aria-label="English">
-            <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+            <img src="/images/flags/gb.svg" alt="English" width="22" height="16" /> English
           </button>
           <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
-            <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+            <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16" /> Deutsch
           </button>
           <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
-            <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+            <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16" /> Slovenčina
           </button>
           <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
-            <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+            <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16" /> Polski
           </button>
           <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
-            <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+            <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16" /> Magyar
           </button>
         </div>
       </details>
@@ -196,9 +138,9 @@
 
 <main id="blog">
   <!-- BLOG HERO -->
-  <section class="blog-hero">
+  <section class="blog-hero" aria-labelledby="blog-page-title">
     <div class="container">
-      <h1 data-i18n-key="blog-headline">Blog & Recenze</h1>
+      <h1 id="blog-page-title" data-i18n-key="blog-headline">Blog & Recenze</h1>
       <p class="blog-lead" data-i18n-key="blog-lead">
         Přečtěte si recenze kulturních akcí a nenechte si ujít tipy na nejlepší zážitky po celém světě.
       </p>
@@ -206,26 +148,29 @@
   </section>
 
   <!-- BLOG FILTERS -->
-  <section class="blog-filters">
+  <section class="blog-filters" aria-label="Filtr článků">
     <div class="container">
-      <div class="filter-categories">
-        <button data-category="all" class="active" data-i18n-key="blog-filter-all">Vše</button>
-        <button data-category="concert" data-i18n-key="blog-filter-concert">Koncerty</button>
-        <button data-category="theatre" data-i18n-key="blog-filter-theatre">Divadlo</button>
-        <button data-category="festival" data-i18n-key="blog-filter-festival">Festivaly</button>
-        <button data-category="sport" data-i18n-key="blog-filter-sport">Sport</button>
-        <button data-category="tip" data-i18n-key="blog-filter-tip">Tipy</button>
-        <button data-category="review" data-i18n-key="blog-filter-review">Recenze</button>
+      <div class="filter-categories" role="list" aria-label="Kategorie blogu">
+        <button type="button" data-category="all" class="active" data-i18n-key="blog-filter-all">Vše</button>
+        <button type="button" data-category="concert" data-i18n-key="blog-filter-concert">Koncerty</button>
+        <button type="button" data-category="theatre" data-i18n-key="blog-filter-theatre">Divadlo</button>
+        <button type="button" data-category="festival" data-i18n-key="blog-filter-festival">Festivaly</button>
+        <button type="button" data-category="sport" data-i18n-key="blog-filter-sport">Sport</button>
+        <button type="button" data-category="tip" data-i18n-key="blog-filter-tip">Tipy</button>
+        <button type="button" data-category="review" data-i18n-key="blog-filter-review">Recenze</button>
       </div>
     </div>
   </section>
 
   <!-- BLOG ARTICLES LIST -->
-  <section class="blog-list">
+  <section class="blog-list" aria-labelledby="blog-list-title">
     <div class="container">
-      <!-- podporujeme obě třídy kvůli stávajícím stylům/skriptům -->
-      <div class="blog-cards blog-grid">
-        <!-- Karty se doplní z /src/blog-mg-list.js + případně z CMS článků -->
+      <h2 id="blog-list-title" class="sr-only" data-i18n-key="blog-list-title">
+        Seznam článků
+      </h2>
+
+      <div class="blog-cards" aria-live="polite">
+        <!-- Karty se doplní z /src/blog.js -->
       </div>
     </div>
   </section>
@@ -296,7 +241,7 @@
   </div>
 </footer>
 
-<!-- main.js už je v head; blog.js necháváme samostatně -->
+<!-- Blog listing logika -->
 <script type="module" src="/src/blog.js"></script>
 </body>
 </html>

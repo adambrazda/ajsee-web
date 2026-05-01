@@ -1,10 +1,10 @@
 {
   "hero.badge": "Właśnie uruchomione",
   "hero.headline": "Światowe wydarzenia bez barier",
-  "hero.intro": "Koncerty, teatr, festiwale, sport i inne wyjątkowe przeżycia w jednym miejscu, przejrzyście i prosto.",
+  "hero.intro": "Odkrywaj koncerty, festiwale, sport, teatr i inne przeżycia z całego świata w jednym przejrzystym miejscu.",
   "hero.cta-primary": "Odkryj wydarzenia",
   "hero.cta-secondary": "Dowiedz się więcej o AJSEE",
-  "hero.partner-note": "Dla partnerów: Budujemy sieć partnerów w obszarze biletów i wyjątkowych doświadczeń.",
+  "hero.partner-note": "Dla partnerów: Budujemy sieć w obszarze ticketingu, kultury, sportu, podróży i wyjątkowych przeżyć.",
   "hero.cta-collab": "Odkryj wydarzenia",
   "hero.cta-info": "Dowiedz się więcej o AJSEE",
   "hero.imageAlt": "Ilustracja: światowe wydarzenia połączone z czeskimi i słowackimi fanami.",
@@ -19,50 +19,51 @@
   "nav-accommodation": "Noclegi",
 
   "section-events-title": "Nadchodzące wydarzenia",
-  "section-events-subtitle": "Zdobądź bilety na najlepsze kulturalne przeżycia w Twojej okolicy.",
+  "section-events-subtitle": "Odkrywaj koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata.",
 
-  "feature1-title": "Bezpieczny zakup",
-  "feature1-desc": "Twoje bilety są zawsze oryginalne i zweryfikowane.",
-  "feature2-title": "Lokalne wsparcie",
-  "feature2-desc": "Komunikujemy się po polsku i wszystko załatwiamy za Ciebie.",
+  "feature1-title": "Zweryfikowani partnerzy",
+  "feature1-desc": "Kierujemy Cię do zaufanych partnerów i oficjalnych kanałów sprzedaży.",
+  "feature2-title": "Przejrzystość lokalnie",
+  "feature2-desc": "Budujemy AJSEE tak, aby odkrywanie światowych wydarzeń było zrozumiałe także po polsku.",
   "feature3-title": "Kuratorski wybór",
-  "feature3-desc": "Tylko najlepsze wydarzenia i partnerzy.",
+  "feature3-desc": "Pomagamy szybciej znaleźć wydarzenia, dla których warto ruszyć w drogę.",
 
   "partners-headline": "Nasi partnerzy",
   "partners-cta": "Chcę zostać partnerem",
 
-"contact-headline": "Skontaktuj się z nami",
-"contact-send": "Wyślij",
-"contact-success-msg": "Dziękujemy za wiadomość! Odpowiemy tak szybko, jak to możliwe.",
-"contact-error-msg": "Nie udało się wysłać wiadomości. Spróbuj ponownie później.",
-"contact-error-name": "Wpisz swoje imię.",
-"contact-error-email": "Wpisz prawidłowy adres e-mail.",
-"contact-error-message": "Napisz wiadomość.",
-"contact-honeypot-label": "Nie wypełniaj tego pola:",
-"contact-label-name": "Imię",
-"contact-label-email": "E-mail",
-"contact-label-message": "Wiadomość",
-"contact-placeholder-name": "Twoje imię",
-"contact-placeholder-email": "Twój e-mail",
-"contact-placeholder-message": "Twoja wiadomość",
-"contact-legal-note": "Wysyłając formularz, potwierdzasz zapoznanie się z naszą <a href=\"/privacy-policy.html\" data-lang-link>Polityką prywatności</a> i <a href=\"/cookies-policy.html\" data-lang-link>Polityką cookies</a>.",
+  "contact-headline": "Skontaktuj się z nami",
+  "contact-send": "Wyślij",
+  "contact-success-msg": "Dziękujemy za wiadomość! Odpowiemy tak szybko, jak to możliwe.",
+  "contact-error-msg": "Nie udało się wysłać wiadomości. Spróbuj ponownie później.",
+  "contact-error-name": "Wpisz swoje imię.",
+  "contact-error-email": "Wpisz prawidłowy adres e-mail.",
+  "contact-error-message": "Napisz wiadomość.",
+  "contact-honeypot-label": "Nie wypełniaj tego pola:",
+  "contact-label-name": "Imię",
+  "contact-label-email": "E-mail",
+  "contact-label-message": "Wiadomość",
+  "contact-placeholder-name": "Twoje imię",
+  "contact-placeholder-email": "Twój e-mail",
+  "contact-placeholder-message": "Twoja wiadomość",
+  "contact-legal-note": "Wysyłając formularz, potwierdzasz zapoznanie się z naszą <a href=\"/privacy-policy\" data-lang-link>Polityką prywatności</a> i <a href=\"/cookies-policy\" data-lang-link>Polityką cookies</a>.",
 
   "about-headline": "O nas",
   "about-lead": "Przeżycia nie mają granic.",
   "about-text": "<strong>AJSEE<sup>®</sup></strong> powstało z potrzeby podróżowania za kulturą bez stresu i zbędnych barier. Budujemy platformę, która otworzy Ci drzwi do koncertów, festiwali, teatru i sportu — w kraju i za granicą.",
   "about-btn": "Dowiedz się więcej o AJSEE<sup>®</sup>",
-  "about-title": "O nas | AJSEE®",
+  "about-title": "O AJSEE | Światowe wydarzenia bez barier językowych",
   "about-headline-full": "Nasza historia. Nasza wizja.",
-  "about-hero-text": "Doświadczenia nie mają granic. I właśnie dlatego powstało AJSEE.",
-  "about-hero-subtext": "Naszym celem jest umożliwienie dostępu do wydarzeń kulturalnych, rozrywkowych i sportowych z całego świata – jasno, przejrzyście i bez zbędnych barier przy wyborze i zakupie biletów.",
-  "about-hero-claim": "AJSEE<sup>®</sup> to nowoczesna platforma dla wszystkich, którzy chcą doświadczać świata – bez granic.",
+  "about-hero-text": "Przeżycia nie mają granic. I właśnie dlatego powstało AJSEE.",
+  "about-hero-subtext": "Naszym celem jest ułatwienie dostępu do wydarzeń kulturalnych, rozrywkowych i sportowych z całego świata — jasno, przejrzyście i bez zbędnych barier przy odkrywaniu wydarzeń, biletów oraz możliwości podróży.",
+  "about-hero-claim": "AJSEE<sup>®</sup> to nowoczesna platforma dla wszystkich, którzy chcą doświadczać świata bez zbędnych barier.",
   "about-values-headline": "Nasze wartości",
-  "about-value-1": "<strong>Otwartość</strong> – Udostępniamy światowe przeżycia każdemu.",
-  "about-value-2": "<strong>Niezawodność</strong> – Wszystko przejrzyście, po polsku i bez przeszkód.",
-  "about-value-3": "<strong>Innowacje</strong> – Śledzimy trendy i wybieramy najlepsze wydarzenia oraz technologie.",
+  "about-value-1": "<strong>Otwartość</strong> – Udostępniamy światowe przeżycia większej liczbie osób.",
+  "about-value-2": "<strong>Niezawodność</strong> – Wszystko przejrzyście, zrozumiale i bez zbędnych przeszkód.",
+  "about-value-3": "<strong>Innowacje</strong> – Śledzimy trendy, wybieramy mocne wydarzenia i budujemy z pomocą technologii.",
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Powrót na stronę główną",
 
+  "about-story-title": "Jak to się zaczęło",
   "about-story-headline": "Jak to się zaczęło",
   "about-story-p1": "Była jesień 2024 roku. Siedzieliśmy w pubie, wypiliśmy piwo — i jak to bywa, jedna zwykła rozmowa zapoczątkowała coś, co szybko przerodziło się w realny pomysł.",
   "about-story-p2": "Jeszcze tego wieczoru powstała nazwa AJSEE, pierwszy projekt logo i wizja: ułatwić ludziom dostęp do światowych przeżyć bez barier językowych.",
@@ -71,11 +72,12 @@
   "about-story-p5": "Aż pewnego dnia jeden z nas po prostu wystartował. Bez idealnego planu, ale z pewnością, że to ma sens.",
   "about-story-p6": "I wtedy AJSEE zaczęło stawać się rzeczywistością.",
 
+  "about-future-title": "🎯 Dokąd zmierzamy",
   "about-future-headline": "🎯 Dokąd zmierzamy",
-  "about-future-p1": "Do końca 2025 roku chcemy uruchomić produkcyjną wersję strony.",
-  "about-future-p2": "Pracujemy nad rozbudową wersji językowych oraz współpracą z międzynarodowymi platformami.",
-  "about-future-p3": "Przygotowujemy aplikację mobilną i poszerzamy ofertę wydarzeń oraz ich dostępność dla szerszej publiczności.",
-  "about-future-p4": "Chcemy, aby AJSEE było pierwszym wyborem dla każdego, kto szuka drogi do światowych przeżyć — niezależnie od tego, czy jest w Londynie, Barcelonie czy w domu w Brnie.",
+  "about-future-p1": "W 2026 roku pracujemy nad rozwojem treści, partnerstw i technicznego fundamentu platformy.",
+  "about-future-p2": "Rozwijamy wersje językowe, praktyczne przewodniki i współpracę z międzynarodowymi partnerami.",
+  "about-future-p3": "Krok po kroku chcemy poszerzać ofertę wydarzeń, powiązanych usług i dostępność dla szerszej publiczności.",
+  "about-future-p4": "Chcemy, aby AJSEE stało się pierwszym punktem startu dla każdego, kto szuka drogi do światowych przeżyć — w Londynie, Barcelonie albo bliżej domu.",
 
   "category-concert": "Koncerty",
   "category-sport": "Sport",
@@ -89,7 +91,7 @@
   "event-details-demo": "Dowiedz się więcej (demo)",
   "event-tickets": "Bilety",
   "event-tickets-demo": "Bilety (demo)",
-  "event-demo-badge": "Teraz także noclegi z TrustedStays – planujesz wyjazd do Wielkiej Brytanii na wyjątkowe wydarzenie? Przy wybranych wydarzeniach pomożemy Ci również znaleźć nocleg.",
+  "event-demo-badge": "Teraz także noclegi z TrustedStays – planujesz wyjazd do Wielkiej Brytanii na wyjątkowe wydarzenie? Przy wybranych wydarzeniach połączymy Cię z możliwościami noclegu.",
 
   "event-category": "Kategoria:",
   "add-to-calendar": "Dodaj do kalendarza:",
@@ -97,10 +99,10 @@
   "calendar-outlook": "Outlook",
   "calendar-apple": "Apple / ICS",
 
-  "events-page-title": "Wydarzenia",
-  "events-hero-title": "Najlepsze przeżycia na wyciągnięcie ręki",
-  "events-hero-desc": "Odkryj koncerty, festiwale, teatr i sport w jednym przejrzystym katalogu.",
-  "events-hero-cta": "Zobacz nadchodzące wydarzenia",
+  "events-page-title": "Wydarzenia i bilety na koncerty, festiwale i sport | AJSEE",
+  "events-hero-title": "Koncerty, festiwale i sport w jednym miejscu",
+  "events-hero-desc": "Odkrywaj koncerty, festiwale, teatr, wydarzenia sportowe i inne przeżycia w jednym przejrzystym katalogu.",
+  "events-hero-cta": "Odkryj wydarzenia",
   "events-upcoming-title": "Nadchodzące wydarzenia",
   "events-filter-category": "Kategoria",
   "events-category-all": "Wszystkie kategorie",
@@ -111,11 +113,10 @@
   "events-sort-nearest": "Najbliższe",
   "events-sort-latest": "Najnowsze",
   "events-categories-title": "Kategorie",
-  "events-benefits-title": "Dlaczego z nami?",
-  "events-benefit-1": "Oryginalne bilety bezpośrednio od organizatorów",
-  "events-benefit-2": "Lokalne wsparcie klienta",
-  "events-benefit-3": "Starannie wybrane wydarzenia",
-
+  "events-benefits-title": "Dlaczego AJSEE?",
+  "events-benefit-1": "Bilety u zweryfikowanych partnerów",
+  "events-benefit-2": "Przejrzyste odkrywanie wydarzeń ponad barierami językowymi",
+  "events-benefit-3": "Starannie wybrane wydarzenia i przeżycia",
   "events-show-all": "Pokaż wszystkie wydarzenia",
   "events-load-error": "Nie udało się wczytać wydarzeń. Spróbuj ponownie później.",
   "events-load-more": "Wczytaj więcej",
@@ -127,30 +128,31 @@
 
   "about-timeline-headline": "Nasza droga",
   "about-timeline-2024-year": "2024",
-  "about-timeline-2024": "Pierwsze pomysły na stworzenie platformy AJSEE®. Rodzi się wizja łączenia świata kultury bez barier językowych.",
+  "about-timeline-2024": "Pojawiają się pierwsze pomysły na stworzenie platformy AJSEE®. Rodzi się wizja ułatwiania dostępu do świata kultury i przeżyć bez barier językowych.",
   "about-timeline-2025-year": "2025",
   "about-timeline-2025": "Start programowania i rozwoju wielojęzycznej strony AJSEE®.",
   "about-timeline-2025-07-01-year": "1.07.2025",
-  "about-timeline-2025-07-01": "Uruchomienie testowego działania strony AJSEE®. Strona po raz pierwszy otwarta dla publiczności – zbieramy opinie odwiedzających.",
+  "about-timeline-2025-07-01": "Pierwsza publiczna wersja strony AJSEE®. Strona zostaje otwarta dla odwiedzających, a my stopniowo rozwijamy treści, funkcje i możliwości partnerskie.",
 
+  "about-team-title": "Kto za tym stoi?",
   "about-team-headline": "Kto za tym stoi?",
   "about-team-adam-name": "Adam Brázda",
   "about-team-adam-role": "Założyciel & CEO",
-  "about-team-adam-claim": "Za platformą AJSEE® stoi Adam Brázda. Od pierwszych pomysłów aż po uruchomienie serwisu prowadzi projekt z wizją łączenia świata kultury bez barier.",
+  "about-team-adam-claim": "Za platformą AJSEE® stoi Adam Brázda. Od pierwszych pomysłów aż po uruchomienie serwisu prowadzi projekt z wizją łączenia świata kultury i przeżyć bez barier.",
   "about-team-adam-linkedin": "Profil na LinkedInie",
 
   "about-team-jan-name": "Jan Oujezdský",
   "about-team-jan-role": "Współzałożyciel",
-  "about-team-jan-claim": "Jan od pierwszego dnia współdzieli wizję ułatwienia dostępu do świata kultury — bez zbędnych barier.",
+  "about-team-jan-claim": "Jan od pierwszego dnia współdzieli wizję ułatwiania dostępu do świata kultury i przeżyć — z naciskiem na zrozumiałość i doświadczenie użytkownika.",
   "about-team-jan-linkedin": "Profil na LinkedInie",
 
   "about-cta-headline": "Chcesz być częścią projektu?",
   "about-cta-text": "AJSEE® jest otwarte na współpracę, pomysły i nowe partnerstwa. Jeśli nasza misja Cię zainteresowała – napisz do nas!",
   "about-cta-contact": "Skontaktuj się z AJSEE®",
 
-  "blog-title": "Blog i Recenzje | AJSEE®",
-  "blog-headline": "Blog i Recenzje",
-  "blog-lead": "Przeczytaj recenzje wydarzeń kulturalnych i nie przegap najlepszych propozycji na całym świecie.",
+  "blog-title": "Blog o koncertach, festiwalach i podróżach po przeżycia | AJSEE",
+  "blog-headline": "Blog o przeżyciach",
+  "blog-lead": "Czytaj wskazówki, przewodniki i recenzje dotyczące koncertów, festiwali, wydarzeń sportowych i podróży po wyjątkowe przeżycia.",
   "blog-filter-all": "Wszystko",
   "blog-filter-concert": "Koncerty",
   "blog-filter-theatre": "Teatr",
@@ -162,18 +164,20 @@
   "blog-empty": "Brak artykułów w tej kategorii.",
   "blog-back": "← Powrót do bloga",
   "blog-not-found": "Nie znaleziono artykułu.",
-  "blog-headline-home": "Blog i Recenzje",
+  "blog-headline-home": "Blog o przeżyciach",
   "blog-show-all": "Pokaż wszystkie artykuły",
+  "blog-meta-description": "Czytaj wskazówki, przewodniki i recenzje dotyczące koncertów, festiwali, wydarzeń sportowych i podróży po wyjątkowe przeżycia.",
+  "blog-detail-title": "Artykuł z bloga | AJSEE",
 
-  "faq-title": "Najczęściej zadawane pytania",
+  "faq-title": "Najczęstsze pytania o AJSEE, bilety i podróże na wydarzenia",
   "faq-q1": "Jak działa AJSEE?",
-  "faq-a1": "AJSEE to nowoczesna platforma z biletami na kulturę, sport i koncerty – dla użytkowników i partnerów.",
+  "faq-a1": "AJSEE to nowoczesna platforma discovery dla koncertów, festiwali, sportu, kultury, biletów i podróży po wyjątkowe przeżycia.",
   "faq-q2": "Ile języków obsługuje AJSEE?",
-  "faq-a2": "Strona AJSEE jest w pełni zlokalizowana w 6 językach: czeski, angielski, niemiecki, słowacki, polski i węgierski.",
+  "faq-a2": "Strona AJSEE jest zlokalizowana w 6 językach: czeskim, angielskim, niemieckim, słowackim, polskim i węgierskim.",
   "faq-q3": "Czy korzystanie z AJSEE jest bezpłatne?",
-  "faq-a3": "Rejestracja i przeglądanie wydarzeń jest bezpłatne, płacisz tylko za bilety.",
+  "faq-a3": "Odkrywanie i przeglądanie wydarzeń w AJSEE jest bezpłatne. Zakup biletów lub rezerwacja usług odbywa się u odpowiednich partnerów.",
   "faq-q4": "Jak zostać partnerem AJSEE?",
-  "faq-a4": "Wystarczy wypełnić formularz na stronie Dla partnerów – skontaktujemy się z Tobą.",
+  "faq-a4": "Wystarczy wypełnić formularz na stronie Dla partnerów – skontaktujemy się z Tobą z kolejnymi krokami.",
 
   "filters": {
     "title": "Filtry",
@@ -211,7 +215,7 @@
     "noResults": "Brak wyników",
     "finding": "Ustalanie lokalizacji…",
     "geoError": "Lokalizacja niedostępna. Spróbuj ponownie.",
-    "geoDenied": "Dostęp do lokalizacji jest zablokowany. Zmień uprawnienia w przeglądarce.",
+    "geoDenied": "Dostęp do lokalizacji jest zablokowany. Możesz zmienić uprawnienia w ustawieniach przeglądarki.",
     "geoTimeout": "Pobieranie lokalizacji trwało zbyt długo. Spróbuj ponownie.",
 
     "apply": "Zastosuj filtry",
@@ -228,7 +232,7 @@
   "filter-nearest": "Najbliższe",
   "filter-latest": "Najnowsze",
 
-  "footer-copyright": "© 2025 AJSEE®. Wszelkie prawa zastrzeżone.",
+  "footer-copyright": "© 2026 AJSEE®. Wszelkie prawa zastrzeżone.",
   "footer-company-info": "AJSEE® jest prowadzone przez spółkę AJSEE LTD, zarejestrowaną w Anglii i Walii pod numerem 17105762. Adres rejestrowy: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.",
   "footer-contact-label": "Kontakt:",
 
@@ -243,19 +247,19 @@
 
   "comingSoon": {
     "title": "Lista oczekujących AJSEE",
-    "lead": "Podaj e-mail, a wyślemy zaproszenie do przedsprzedaży. Bez spamu.",
+    "lead": "Podaj e-mail, a wyślemy zaproszenie do wcześniejszego dostępu. Bez spamu.",
     "emailLabel": "E-mail",
     "emailPh": "twoj@mail.pl",
-    "consent": "Zgadzam się na otrzymywanie aktualizacji o AJSEE i przedsprzedaży biletów.",
+    "consent": "Zgadzam się na otrzymywanie aktualizacji o AJSEE i sprzedaży biletów.",
     "submit": "Dołącz do listy",
     "hint": "Double opt-in włączony. Rezygnacja w każdej chwili.",
     "faqTitle": "Szybkie FAQ",
     "faq1q": "Kiedy start?",
-    "faq1a": "Pierwszą falę przedsprzedaży otwieramy dla ograniczonej liczby zaproszeń. Datę wyślemy mailem.",
+    "faq1a": "Pierwsze fale dostępu będziemy otwierać stopniowo, a aktualizacje wyślemy e-mailem.",
     "faq2q": "Co otrzymam?",
-    "faq2a": "Wcześniejszy dostęp, kuratorskie wskazówki i wygodę w języku polskim/czeskim/słowackim.",
+    "faq2a": "Wcześniejsze aktualizacje, kuratorskie wskazówki i bardziej przejrzysty sposób odkrywania światowych wydarzeń.",
     "faq3q": "Czy to bezpieczne?",
-    "faq3a": "Tylko zweryfikowani partnerzy i uczciwe warunki.",
+    "faq3a": "Współpracujemy ze zweryfikowanymi partnerami i jasnymi warunkami.",
     "back": "Wróć do AJSEE.cz"
   },
 
@@ -269,12 +273,13 @@
   "event-demo": {
     "ariaLabel": "Informacja o noclegach z TrustedStays dla wybranych wydarzeń w Wielkiej Brytanii.",
     "title": "Teraz także noclegi z TrustedStays",
-    "body": "Planujesz wyjazd do Wielkiej Brytanii na wyjątkowe wydarzenie? Przy wybranych wydarzeniach pomożemy Ci również znaleźć nocleg.",
+    "body": "Planujesz wyjazd do Wielkiej Brytanii na wyjątkowe wydarzenie? Przy wybranych wydarzeniach połączymy Cię z noclegiem przez TrustedStays.",
     "cta": "Znajdź nocleg"
   },
 
   "mg.backToBlog": "Wróć do bloga",
   "mg.breadcrumb": "AJSEE wyjaśnia",
+
   "mg": {
     "card": {
       "badge": "Mikroprzewodnik"
@@ -284,6 +289,16 @@
         "title": "Jak czytać mapę miejsc",
         "summary": "Krótki mikroprzewodnik AJSEE: jak czytać mapę miejsc i nie popełnić błędu przy wyborze miejsc."
       }
+    },
+    "share": {
+      "label": "Udostępnij",
+      "system": "Udostępnij…",
+      "twitter": "Udostępnij na X",
+      "facebook": "Udostępnij na Facebooku",
+      "linkedin": "Udostępnij na LinkedIn",
+      "whatsapp": "Udostępnij na WhatsApp",
+      "copy": "Kopiuj link",
+      "copied": "Skopiowano link"
     }
   },
 
@@ -298,25 +313,147 @@
     "copied": "Skopiowano link"
   },
 
-  "mg.relatedTitle": "Powiązane mikro-poradniki",
+  "mg.relatedTitle": "Powiązane mikroprzewodniki",
   "footer-privacy-policy": "Polityka prywatności",
   "footer-cookies-policy": "Polityka cookies",
+
   "cookie-banner": {
-  "title": "Używamy plików cookies",
-  "desc": "Używamy niezbędnych plików cookies do działania strony oraz, za Twoją zgodą, także analitycznych cookies, które pomagają nam mierzyć ruch i ulepszać AJSEE.cz.",
-  "privacy": "Polityka prywatności",
-  "cookies": "Polityka cookies",
-  "reject": "Odrzuć",
-  "settings": "Ustawienia",
-  "acceptAll": "Akceptuj wszystko",
-  "modalTitle": "Ustawienia cookies",
-  "necessaryTitle": "Niezbędne cookies",
-  "necessaryText": "Te pliki cookies są wymagane do podstawowego działania strony.",
-  "alwaysActive": "Zawsze aktywne",
-  "analyticsTitle": "Analityczne cookies",
-  "analyticsText": "Pomagają nam mierzyć ruch i ulepszać stronę za pomocą Google Analytics.",
-  "allowAnalytics": "Włącz analitykę",
-  "save": "Zapisz ustawienia"
-},
-"footer-cookie-settings": "Ustawienia cookies"
+    "title": "Używamy plików cookies",
+    "desc": "Używamy niezbędnych plików cookies do działania strony oraz, za Twoją zgodą, także analitycznych cookies, które pomagają nam mierzyć ruch i ulepszać AJSEE.cz.",
+    "privacy": "Polityka prywatności",
+    "cookies": "Polityka cookies",
+    "reject": "Odrzuć",
+    "settings": "Ustawienia",
+    "acceptAll": "Akceptuj wszystko",
+    "modalTitle": "Ustawienia cookies",
+    "necessaryTitle": "Niezbędne cookies",
+    "necessaryText": "Te pliki cookies są wymagane do podstawowego działania strony.",
+    "alwaysActive": "Zawsze aktywne",
+    "analyticsTitle": "Analityczne cookies",
+    "analyticsText": "Pomagają nam mierzyć ruch i ulepszać stronę za pomocą Google Analytics.",
+    "allowAnalytics": "Włącz analitykę",
+    "save": "Zapisz ustawienia"
+  },
+
+  "footer-cookie-settings": "Ustawienia cookies",
+
+  "seo.home.title": "Bilety na koncerty, festiwale i sport | AJSEE",
+  "seo.home.description": "Odkrywaj koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata. AJSEE pomaga znaleźć wydarzenia, bilety i powiązane możliwości podróży przejrzyście i bez zbędnych barier.",
+  "seo.home.ogTitle": "Bilety na koncerty, festiwale i sport | AJSEE",
+  "seo.home.ogDescription": "Odkrywaj koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata. AJSEE łączy wydarzenia, bilety i możliwości podróży w jednym miejscu.",
+
+  "seo.events.title": "Wydarzenia i bilety na koncerty, festiwale i sport | AJSEE",
+  "seo.events.description": "Znajdź koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata. AJSEE pomaga odkrywać wydarzenia, bilety i możliwości podróży w jednym przejrzystym miejscu.",
+  "seo.events.ogTitle": "Wydarzenia i bilety na koncerty, festiwale i sport | AJSEE",
+  "seo.events.ogDescription": "Odkrywaj koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata. AJSEE łączy wydarzenia, bilety i możliwości podróży w jednym przejrzystym miejscu.",
+
+  "seo.accommodation.title": "Noclegi przy koncertach, sporcie i wydarzeniach w UK | AJSEE",
+  "seo.accommodation.description": "Znajdź nocleg w Wielkiej Brytanii podczas podróży na koncerty, sport i inne wydarzenia. AJSEE łączy Cię z TrustedStays; rezerwacja odbywa się u partnera.",
+  "seo.accommodation.ogTitle": "Noclegi przy koncertach, sporcie i wydarzeniach w UK | AJSEE",
+  "seo.accommodation.ogDescription": "Podróżujesz do Wielkiej Brytanii na koncert, wydarzenie sportowe lub przeżycie na żywo? AJSEE łączy Cię z TrustedStays, gdzie odbywa się rezerwacja i potwierdzenie.",
+
+  "seo.partners.title": "Dla partnerów w ticketingu, kulturze i wydarzeniach | AJSEE",
+  "seo.partners.description": "Zostań partnerem AJSEE i dotrzyj do odbiorców, którzy szukają koncertów, festiwali, teatru, sportu i podróży po wyjątkowe przeżycia.",
+  "seo.partners.ogTitle": "Dla partnerów w ticketingu, kulturze i wydarzeniach | AJSEE",
+  "seo.partners.ogDescription": "AJSEE łączy discovery, bilety, przeżycia i podróże. Zostań partnerem i pomóż ludziom znaleźć wydarzenia, dla których warto ruszyć w drogę.",
+
+  "seo.about.title": "O AJSEE | Światowe wydarzenia bez barier językowych",
+  "seo.about.description": "Poznaj AJSEE – platformę, która pomaga ludziom odkrywać koncerty, festiwale, wydarzenia sportowe i inne przeżycia na całym świecie przejrzyście i bez barier językowych.",
+  "seo.about.ogTitle": "O AJSEE | Światowe wydarzenia bez barier językowych",
+  "seo.about.ogDescription": "AJSEE powstaje jako nowoczesna platforma discovery dla koncertów, festiwali, sportu, kultury i podróży po wyjątkowe przeżycia.",
+
+  "seo.blog.title": "Blog o koncertach, festiwalach i podróżach po przeżycia | AJSEE",
+  "seo.blog.description": "Czytaj wskazówki, przewodniki i recenzje dotyczące koncertów, festiwali, wydarzeń sportowych i podróży po wyjątkowe przeżycia. AJSEE pomaga planować wydarzenia przejrzyście i bez zbędnych barier.",
+  "seo.blog.ogTitle": "Blog o koncertach, festiwalach i podróżach po przeżycia | AJSEE",
+  "seo.blog.ogDescription": "Wskazówki, przewodniki i recenzje dotyczące koncertów, festiwali, sportu, kultury i podróży na wydarzenia. Odkrywaj przeżycia z AJSEE.",
+
+  "seo.blogDetail.title": "Artykuł z bloga | AJSEE",
+  "seo.blogDetail.description": "Przeczytaj artykuł z bloga AJSEE o koncertach, festiwalach, wydarzeniach sportowych, podróżach i planowaniu wyjątkowych przeżyć.",
+  "seo.blogDetail.ogTitle": "Artykuł z bloga | AJSEE",
+  "seo.blogDetail.ogDescription": "Wskazówki, przewodniki i recenzje z bloga AJSEE dotyczące koncertów, festiwali, sportu, kultury i podróży po przeżycia.",
+
+  "seo.faq.title": "Najczęstsze pytania o AJSEE, bilety i podróże na wydarzenia",
+  "seo.faq.description": "Znajdź odpowiedzi na najczęstsze pytania o AJSEE, odkrywanie wydarzeń, bilety, partnerów, noclegi i podróże na koncerty, sport oraz festiwale.",
+  "seo.faq.ogTitle": "Najczęstsze pytania o AJSEE, bilety i podróże na wydarzenia",
+  "seo.faq.ogDescription": "Odpowiedzi na pytania o AJSEE, odkrywanie wydarzeń, bilety, noclegi, partnerów i podróże po wyjątkowe przeżycia.",
+
+  "seo.privacy.title": "Polityka prywatności | AJSEE",
+  "seo.privacy.description": "Dowiedz się, jak AJSEE przetwarza dane osobowe, używa cookies, narzędzi analitycznych i linków partnerskich oraz jakie masz prawa.",
+  "seo.privacy.ogTitle": "Polityka prywatności | AJSEE",
+  "seo.privacy.ogDescription": "Dowiedz się, jak AJSEE przetwarza dane osobowe, używa cookies, narzędzi analitycznych i linków partnerskich oraz jakie masz prawa.",
+
+  "seo.cookies.title": "Polityka cookies | AJSEE",
+  "seo.cookies.description": "Dowiedz się, jak AJSEE używa cookies i podobnych technologii, które są niezbędne, które opcjonalne i jak możesz zarządzać preferencjami.",
+  "seo.cookies.ogTitle": "Polityka cookies | AJSEE",
+  "seo.cookies.ogDescription": "Dowiedz się, jak AJSEE używa cookies i podobnych technologii, które są niezbędne, które opcjonalne i jak możesz zarządzać preferencjami.",
+
+  "seo.thankyou.title": "Dziękujemy za wiadomość | AJSEE",
+  "seo.thankyou.description": "Dziękujemy za wiadomość. Odezwiemy się tak szybko, jak to możliwe.",
+
+  "seo": {
+    "home": {
+      "title": "Bilety na koncerty, festiwale i sport | AJSEE",
+      "description": "Odkrywaj koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata. AJSEE pomaga znaleźć wydarzenia, bilety i powiązane możliwości podróży przejrzyście i bez zbędnych barier.",
+      "ogTitle": "Bilety na koncerty, festiwale i sport | AJSEE",
+      "ogDescription": "Odkrywaj koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata. AJSEE łączy wydarzenia, bilety i możliwości podróży w jednym miejscu."
+    },
+    "events": {
+      "title": "Wydarzenia i bilety na koncerty, festiwale i sport | AJSEE",
+      "description": "Znajdź koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata. AJSEE pomaga odkrywać wydarzenia, bilety i możliwości podróży w jednym przejrzystym miejscu.",
+      "ogTitle": "Wydarzenia i bilety na koncerty, festiwale i sport | AJSEE",
+      "ogDescription": "Odkrywaj koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata. AJSEE łączy wydarzenia, bilety i możliwości podróży w jednym przejrzystym miejscu."
+    },
+    "accommodation": {
+      "title": "Noclegi przy koncertach, sporcie i wydarzeniach w UK | AJSEE",
+      "description": "Znajdź nocleg w Wielkiej Brytanii podczas podróży na koncerty, sport i inne wydarzenia. AJSEE łączy Cię z TrustedStays; rezerwacja odbywa się u partnera.",
+      "ogTitle": "Noclegi przy koncertach, sporcie i wydarzeniach w UK | AJSEE",
+      "ogDescription": "Podróżujesz do Wielkiej Brytanii na koncert, wydarzenie sportowe lub przeżycie na żywo? AJSEE łączy Cię z TrustedStays, gdzie odbywa się rezerwacja i potwierdzenie."
+    },
+    "partners": {
+      "title": "Dla partnerów w ticketingu, kulturze i wydarzeniach | AJSEE",
+      "description": "Zostań partnerem AJSEE i dotrzyj do odbiorców, którzy szukają koncertów, festiwali, teatru, sportu i podróży po wyjątkowe przeżycia.",
+      "ogTitle": "Dla partnerów w ticketingu, kulturze i wydarzeniach | AJSEE",
+      "ogDescription": "AJSEE łączy discovery, bilety, przeżycia i podróże. Zostań partnerem i pomóż ludziom znaleźć wydarzenia, dla których warto ruszyć w drogę."
+    },
+    "about": {
+      "title": "O AJSEE | Światowe wydarzenia bez barier językowych",
+      "description": "Poznaj AJSEE – platformę, która pomaga ludziom odkrywać koncerty, festiwale, wydarzenia sportowe i inne przeżycia na całym świecie przejrzyście i bez barier językowych.",
+      "ogTitle": "O AJSEE | Światowe wydarzenia bez barier językowych",
+      "ogDescription": "AJSEE powstaje jako nowoczesna platforma discovery dla koncertów, festiwali, sportu, kultury i podróży po wyjątkowe przeżycia."
+    },
+    "blog": {
+      "title": "Blog o koncertach, festiwalach i podróżach po przeżycia | AJSEE",
+      "description": "Czytaj wskazówki, przewodniki i recenzje dotyczące koncertów, festiwali, wydarzeń sportowych i podróży po wyjątkowe przeżycia. AJSEE pomaga planować wydarzenia przejrzyście i bez zbędnych barier.",
+      "ogTitle": "Blog o koncertach, festiwalach i podróżach po przeżycia | AJSEE",
+      "ogDescription": "Wskazówki, przewodniki i recenzje dotyczące koncertów, festiwali, sportu, kultury i podróży na wydarzenia. Odkrywaj przeżycia z AJSEE."
+    },
+    "blogDetail": {
+      "title": "Artykuł z bloga | AJSEE",
+      "description": "Przeczytaj artykuł z bloga AJSEE o koncertach, festiwalach, wydarzeniach sportowych, podróżach i planowaniu wyjątkowych przeżyć.",
+      "ogTitle": "Artykuł z bloga | AJSEE",
+      "ogDescription": "Wskazówki, przewodniki i recenzje z bloga AJSEE dotyczące koncertów, festiwali, sportu, kultury i podróży po przeżycia."
+    },
+    "faq": {
+      "title": "Najczęstsze pytania o AJSEE, bilety i podróże na wydarzenia",
+      "description": "Znajdź odpowiedzi na najczęstsze pytania o AJSEE, odkrywanie wydarzeń, bilety, partnerów, noclegi i podróże na koncerty, sport oraz festiwale.",
+      "ogTitle": "Najczęstsze pytania o AJSEE, bilety i podróże na wydarzenia",
+      "ogDescription": "Odpowiedzi na pytania o AJSEE, odkrywanie wydarzeń, bilety, noclegi, partnerów i podróże po wyjątkowe przeżycia."
+    },
+    "privacy": {
+      "title": "Polityka prywatności | AJSEE",
+      "description": "Dowiedz się, jak AJSEE przetwarza dane osobowe, używa cookies, narzędzi analitycznych i linków partnerskich oraz jakie masz prawa.",
+      "ogTitle": "Polityka prywatności | AJSEE",
+      "ogDescription": "Dowiedz się, jak AJSEE przetwarza dane osobowe, używa cookies, narzędzi analitycznych i linków partnerskich oraz jakie masz prawa."
+    },
+    "cookies": {
+      "title": "Polityka cookies | AJSEE",
+      "description": "Dowiedz się, jak AJSEE używa cookies i podobnych technologii, które są niezbędne, które opcjonalne i jak możesz zarządzać preferencjami.",
+      "ogTitle": "Polityka cookies | AJSEE",
+      "ogDescription": "Dowiedz się, jak AJSEE używa cookies i podobnych technologii, które są niezbędne, które opcjonalne i jak możesz zarządzać preferencjami."
+    },
+    "thankyou": {
+      "title": "Dziękujemy za wiadomość | AJSEE",
+      "description": "Dziękujemy za wiadomość. Odezwiemy się tak szybko, jak to możliwe."
+    }
+  }
 }

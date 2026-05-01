@@ -1,10 +1,13 @@
 {
-  "hero.badge": "Cseh startup partnereket keres",
-  "hero.headline": "Kösd össze a világ eseményeit a cseh és szlovák közönséggel",
-  "hero.intro": "Az AJSEE® egy új projekt, amely megkönnyíti és biztonságossá teszi a cseh és szlovák rajongók számára a külföldi koncertekre, fesztiválokra és sporteseményekre szóló jegyvásárlást. Jelenleg világszerte partnereket és jegyértékesítőket keresünk.",
-  "hero.cta-collab": "Együttműködést ajánlok",
-  "hero.cta-info": "Tudj meg többet az AJSEE®-ről",
-  "hero.imageAlt": "Illusztráció: a világ eseményei összekötve a cseh és szlovák rajongókkal.",
+  "hero.badge": "Már elindult",
+  "hero.headline": "Világszintű események akadályok nélkül",
+  "hero.intro": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket, színházat és további élményeket a világ minden tájáról egy átlátható helyen.",
+  "hero.cta-primary": "Események felfedezése",
+  "hero.cta-secondary": "Tudj meg többet az AJSEE-ről",
+  "hero.partner-note": "Partnereknek: hálózatot építünk a ticketing, kultúra, sport, utazás és élmények területén.",
+  "hero.cta-collab": "Események felfedezése",
+  "hero.cta-info": "Tudj meg többet az AJSEE-ről",
+  "hero.imageAlt": "Illusztráció: világszintű események összekapcsolva cseh és szlovák rajongókkal.",
 
   "nav-home": "Főoldal",
   "nav-events": "Események",
@@ -16,63 +19,65 @@
   "nav-accommodation": "Szállás",
 
   "section-events-title": "Közelgő események",
-  "section-events-subtitle": "Szerezd be a legjobb kulturális élmények jegyeit a közeledben.",
+  "section-events-subtitle": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról.",
 
-  "feature1-title": "Biztonságos vásárlás",
-  "feature1-desc": "Jegyeid mindig eredetiek és ellenőrzöttek.",
-  "feature2-title": "Helyi támogatás",
-  "feature2-desc": "Magyarul is kommunikálunk és mindent elintézünk helyetted.",
-  "feature3-title": "Kurátori válogatás",
-  "feature3-desc": "Csak a legjobb események és partnerek.",
+  "feature1-title": "Ellenőrzött partnerek",
+  "feature1-desc": "Megbízható partnerekhez és hivatalos értékesítési csatornákhoz irányítunk.",
+  "feature2-title": "Átlátható felfedezés",
+  "feature2-desc": "Az AJSEE-t úgy építjük, hogy a világszintű események felfedezése nyelveken átívelően is érthető legyen.",
+  "feature3-title": "Kurált válogatás",
+  "feature3-desc": "Segítünk gyorsabban megtalálni azokat az eseményeket, amelyekért érdemes útnak indulni.",
 
   "partners-headline": "Partnereink",
   "partners-cta": "Partner szeretnék lenni",
 
-"contact-headline": "Kapcsolat",
-"contact-send": "Küldés",
-"contact-success-msg": "Köszönjük az üzenetet! A lehető leghamarabb jelentkezünk.",
-"contact-error-msg": "Az üzenet küldése nem sikerült. Kérjük, próbáld meg később.",
-"contact-error-name": "Add meg a neved.",
-"contact-error-email": "Adj meg egy érvényes e-mail-címet.",
-"contact-error-message": "Írj üzenetet.",
-"contact-honeypot-label": "Ne töltsd ki ezt a mezőt:",
-"contact-label-name": "Név",
-"contact-label-email": "E-mail",
-"contact-label-message": "Üzenet",
-"contact-placeholder-name": "Neved",
-"contact-placeholder-email": "E-mail-címed",
-"contact-placeholder-message": "Üzeneted",
-"contact-legal-note": "Az űrlap elküldésével tudomásul veszed az <a href=\"/privacy-policy.html\" data-lang-link>Adatvédelmi tájékoztatót</a> és a <a href=\"/cookies-policy.html\" data-lang-link>Cookie-szabályzatot</a>.",
+  "contact-headline": "Kapcsolat",
+  "contact-send": "Küldés",
+  "contact-success-msg": "Köszönjük az üzenetet! A lehető leghamarabb jelentkezünk.",
+  "contact-error-msg": "Az üzenet küldése nem sikerült. Kérjük, próbáld meg később.",
+  "contact-error-name": "Add meg a neved.",
+  "contact-error-email": "Adj meg egy érvényes e-mail-címet.",
+  "contact-error-message": "Írj üzenetet.",
+  "contact-honeypot-label": "Ne töltsd ki ezt a mezőt:",
+  "contact-label-name": "Név",
+  "contact-label-email": "E-mail",
+  "contact-label-message": "Üzenet",
+  "contact-placeholder-name": "Neved",
+  "contact-placeholder-email": "E-mail-címed",
+  "contact-placeholder-message": "Üzeneted",
+  "contact-legal-note": "Az űrlap elküldésével tudomásul veszed az <a href=\"/privacy-policy\" data-lang-link>Adatvédelmi tájékoztatót</a> és a <a href=\"/cookies-policy\" data-lang-link>Cookie-szabályzatot</a>.",
 
   "about-headline": "Rólunk",
   "about-lead": "Az élményeknek nincsenek határai.",
-  "about-text": "<strong>AJSEE<sup>®</sup></strong> abból az igényből született, hogy a kultúráért stressz és felesleges akadályok nélkül utazhassunk. Olyan platformot építünk, amely kaput nyit a koncertekhez, fesztiválokhoz, színházhoz és sporthoz — itthon és külföldön is.",
+  "about-text": "<strong>AJSEE<sup>®</sup></strong> abból az igényből született, hogy a kultúráért stressz és felesleges akadályok nélkül utazhassunk. Olyan platformot építünk, amely kaput nyit koncertekhez, fesztiválokhoz, színházhoz és sporthoz — otthon és külföldön is.",
   "about-btn": "Tudj meg többet az AJSEE<sup>®</sup>-ről",
-  "about-title": "Rólunk | AJSEE®",
+  "about-title": "Az AJSEE-ről | Világszintű események nyelvi akadályok nélkül",
   "about-headline-full": "Történetünk. Jövőképünk.",
   "about-hero-text": "Az élményeknek nincsenek határai. Ezért jött létre az AJSEE.",
-  "about-hero-subtext": "Célunk, hogy a világ kulturális, szórakoztató és sporteseményeit mindenki számára elérhetővé tegyük – világosan, érthetően és felesleges akadályok nélkül a jegyválasztás és -vásárlás során.",
-  "about-hero-claim": "Az AJSEE<sup>®</sup> egy modern platform mindazoknak, akik akadályok nélkül szeretnék megélni a világot.",
+  "about-hero-subtext": "Célunk, hogy a világ kulturális, szórakoztató és sporteseményeit könnyebben elérhetővé tegyük — világosan, érthetően és felesleges akadályok nélkül az események, jegyek és utazási lehetőségek felfedezése során.",
+  "about-hero-claim": "Az AJSEE<sup>®</sup> egy modern platform mindazoknak, akik felesleges akadályok nélkül szeretnék megélni a világot.",
   "about-values-headline": "Értékeink",
-  "about-value-1": "<strong>Nyitottság</strong> – A világ élményeit mindenki számára elérhetővé tesszük.",
-  "about-value-2": "<strong>Megbízhatóság</strong> – Minden átláthatóan, magyar nyelven és akadályok nélkül.",
-  "about-value-3": "<strong>Innováció</strong> – Követjük a trendeket, a legjobb eseményeket és technológiákat válogatjuk.",
+  "about-value-1": "<strong>Nyitottság</strong> – A világszintű élményeket több ember számára tesszük elérhetővé.",
+  "about-value-2": "<strong>Megbízhatóság</strong> – Átlátható, érthető és egyszerű felfedezés.",
+  "about-value-3": "<strong>Innováció</strong> – Követjük a trendeket, erős eseményeket válogatunk és technológiára építünk.",
   "about-motto": "AJSEE® – Refine culture.",
   "about-back": "Vissza a főoldalra",
 
+  "about-story-title": "Hogyan kezdődött az egész",
   "about-story-headline": "Hogyan kezdődött az egész",
   "about-story-p1": "2024 ősze volt. Egy kocsmában ültünk, ittunk egy sört — és ahogy az lenni szokott, egy egyszerű beszélgetés elindított valamit, ami hamar valódi ötletté vált.",
-  "about-story-p2": "Még azon az estén megszületett az AJSEE név, az első logóterv és a vízió: megkönnyíteni az emberek számára a világ élményeihez való hozzáférést nyelvi akadályok nélkül.",
+  "about-story-p2": "Még azon az estén megszületett az AJSEE név, az első logóterv és a vízió: megkönnyíteni az emberek számára a világszintű élményekhez való hozzáférést nyelvi akadályok nélkül.",
   "about-story-p3": "De aztán jött a legnehezebb rész: tényleg elkezdeni.",
   "about-story-p4": "Mindkettőnknek teljes állású munkája volt, 180 kilométer választott el minket, és kevés volt az idő. A projekt egy időre megállt, még mielőtt igazán beindult volna.",
   "about-story-p5": "Aztán egy nap egyikünk egyszerűen elindította. Tökéletes terv nélkül, de azzal a biztos érzéssel, hogy van értelme.",
   "about-story-p6": "És ekkor kezdett az AJSEE valósággá válni.",
 
+  "about-future-title": "🎯 Merre tartunk",
   "about-future-headline": "🎯 Merre tartunk",
-  "about-future-p1": "2025 végéig szeretnénk elindítani a weboldal éles verzióját.",
-  "about-future-p2": "Bővítjük a nyelvi verziókat és nemzetközi platformokkal való együttműködésen dolgozunk.",
-  "about-future-p3": "Mobilalkalmazást készítünk, és bővítjük az eseménykínálatot – valamint ezek elérhetőségét szélesebb közönség számára.",
-  "about-future-p4": "Azt szeretnénk, hogy az AJSEE legyen az első választás mindenkinek, aki a világ élményeihez vezető utat keresi — akár Londonban, Barcelonában, vagy otthon Brnóban.",
+  "about-future-p1": "2026-ban a platform tartalmi, partneri és technikai alapjainak fejlesztésén dolgozunk.",
+  "about-future-p2": "Fejlesztjük a nyelvi verziókat, a gyakorlati útmutatókat és a nemzetközi partnerekkel való együttműködést.",
+  "about-future-p3": "Lépésről lépésre szeretnénk bővíteni az eseménykínálatot, a kapcsolódó szolgáltatásokat és az elérhetőséget szélesebb közönség számára.",
+  "about-future-p4": "Azt szeretnénk, hogy az AJSEE legyen az első kiindulópont mindenkinek, aki világszintű élményekhez keres utat — Londonban, Barcelonában vagy akár közelebb az otthonához.",
 
   "category-concert": "Koncertek",
   "category-sport": "Sport",
@@ -86,7 +91,7 @@
   "event-details-demo": "Részletek (demo)",
   "event-tickets": "Jegyek",
   "event-tickets-demo": "Jegyek (demo)",
-  "event-demo-badge": "Most már szállással is a TrustedStays révén – brit élményútra készülsz? Kiválasztott eseményeknél a szállásban is segítünk.",
+  "event-demo-badge": "Most már szállással is a TrustedStays révén – brit élményútra készülsz? Kiválasztott eseményeknél összekapcsolunk szálláslehetőségekkel.",
 
   "event-category": "Kategória:",
   "add-to-calendar": "Hozzáadás a naptárhoz:",
@@ -94,10 +99,10 @@
   "calendar-outlook": "Outlook",
   "calendar-apple": "Apple / ICS",
 
-  "events-page-title": "Események",
-  "events-hero-title": "A legjobb élmények várnak",
-  "events-hero-desc": "Fedezd fel a koncerteket, fesztiválokat, színházat és sportot egyetlen, áttekinthető katalógusban.",
-  "events-hero-cta": "Közelgő események megtekintése",
+  "events-page-title": "Események és jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+  "events-hero-title": "Koncertek, fesztiválok és sport egy helyen",
+  "events-hero-desc": "Fedezz fel koncerteket, fesztiválokat, színházat, sporteseményeket és további élményeket egyetlen áttekinthető katalógusban.",
+  "events-hero-cta": "Események felfedezése",
   "events-upcoming-title": "Közelgő események",
   "events-filter-category": "Kategória",
   "events-category-all": "Minden kategória",
@@ -108,13 +113,13 @@
   "events-sort-nearest": "Legközelebbi",
   "events-sort-latest": "Legújabb",
   "events-categories-title": "Kategóriák",
-  "events-benefits-title": "Miért velünk?",
-  "events-benefit-1": "Eredeti jegyek közvetlenül a szervezőktől",
-  "events-benefit-2": "Helyi ügyfélszolgálat",
-  "events-benefit-3": "Gondosan válogatott események",
-
+  "events-benefits-title": "Miért az AJSEE?",
+  "events-benefit-1": "Jegyek ellenőrzött partnereken keresztül",
+  "events-benefit-2": "Átlátható eseményfelfedezés nyelvi akadályokon átívelően",
+  "events-benefit-3": "Gondosan válogatott események és élmények",
   "events-show-all": "Összes esemény megjelenítése",
   "events-load-error": "Az események betöltése nem sikerült. Próbáld meg később.",
+  "events-load-more": "Továbbiak betöltése",
 
   "thankyou-title": "Köszönjük az üzeneted | AJSEE",
   "thankyou-headline": "Köszönjük!",
@@ -123,30 +128,31 @@
 
   "about-timeline-headline": "Utunk",
   "about-timeline-2024-year": "2024",
-  "about-timeline-2024": "Az AJSEE® platform létrehozásának első ötletei. Megszületik a vízió: a kulturális világ összekapcsolása nyelvi akadályok nélkül.",
+  "about-timeline-2024": "Megszületnek az AJSEE® platform első ötletei. Formálódik a vízió: a kultúra és élmények világát nyelvi akadályok nélkül elérhetőbbé tenni.",
   "about-timeline-2025-year": "2025",
-  "about-timeline-2025": "Az AJSEE® többnyelvű weboldalának fejlesztése és programozása megkezdődik.",
+  "about-timeline-2025": "Megkezdődik az AJSEE® többnyelvű weboldalának fejlesztése.",
   "about-timeline-2025-07-01-year": "2025. július 1.",
-  "about-timeline-2025-07-01": "Az AJSEE® weboldal tesztüzemének indítása. Az oldal először nyílik meg a nyilvánosság számára – visszajelzéseket gyűjtünk.",
+  "about-timeline-2025-07-01": "Elindul az AJSEE® weboldal első nyilvános verziója. Az oldal megnyílik a látogatók előtt, mi pedig fokozatosan bővítjük a tartalmat, a funkciókat és a partneri lehetőségeket.",
 
+  "about-team-title": "Kik állnak mögötte?",
   "about-team-headline": "Kik állnak mögötte?",
   "about-team-adam-name": "Adam Brázda",
   "about-team-adam-role": "Alapító & CEO",
-  "about-team-adam-claim": "Az AJSEE® mögött Adam Brázda áll. Az első ötletektől a web elindításáig ő vezeti a projektet – a kultúra világának határok nélküli összekapcsolásának víziójával.",
+  "about-team-adam-claim": "Az AJSEE® mögött Adam Brázda áll. Az első ötletektől a weboldal elindításáig ő vezeti a projektet azzal a vízióval, hogy a kultúra és élmények világát akadályok nélkül kapcsolja össze.",
   "about-team-adam-linkedin": "LinkedIn profil",
 
   "about-team-jan-name": "Jan Oujezdský",
   "about-team-jan-role": "Társalapító",
-  "about-team-jan-claim": "Jan már az első naptól osztozik abban a vízióban, hogy a kulturális élményeket mindenki számára elérhetőbbé tegye — felesleges akadályok nélkül.",
+  "about-team-jan-claim": "Jan az első naptól osztozik abban a vízióban, hogy a kultúra és élmények világa érthetőbben és felesleges akadályok nélkül legyen elérhető.",
   "about-team-jan-linkedin": "LinkedIn profil",
 
   "about-cta-headline": "Szeretnél részese lenni?",
   "about-cta-text": "Az AJSEE® nyitott az együttműködésre, ötletekre és új partnerségekre. Ha felkeltettük az érdeklődésed, írj nekünk!",
   "about-cta-contact": "Kapcsolatfelvétel AJSEE®-vel",
 
-  "blog-title": "Blog és értékelések | AJSEE®",
-  "blog-headline": "Blog és értékelések",
-  "blog-lead": "Olvass beszámolókat kulturális eseményekről és tippeket a legjobb élményekhez világszerte.",
+  "blog-title": "Blog koncertekről, fesztiválokról és élményutazásról | AJSEE",
+  "blog-headline": "Élményblog",
+  "blog-lead": "Olvass tippeket, útmutatókat és beszámolókat koncertekről, fesztiválokról, sporteseményekről és élményutazásról.",
   "blog-filter-all": "Összes",
   "blog-filter-concert": "Koncertek",
   "blog-filter-theatre": "Színház",
@@ -158,20 +164,22 @@
   "blog-empty": "Nincsenek cikkek ebben a kategóriában.",
   "blog-back": "← Vissza a bloghoz",
   "blog-not-found": "A cikk nem található.",
-  "blog-headline-home": "Blog és értékelések",
+  "blog-headline-home": "Élményblog",
   "blog-show-all": "Összes cikk megjelenítése",
+  "blog-meta-description": "Olvass tippeket, útmutatókat és beszámolókat koncertekről, fesztiválokról, sporteseményekről és élményutazásról.",
+  "blog-detail-title": "Blogcikk | AJSEE",
 
-  "faq-title": "Gyakran ismételt kérdések",
+  "faq-title": "Gyakori kérdések az AJSEE-ről, jegyekről és eseményutazásról",
   "faq-q1": "Hogyan működik az AJSEE?",
-  "faq-a1": "Az AJSEE modern platform kulturális, sport- és koncertjegyekhez – felhasználók és partnerek számára.",
+  "faq-a1": "Az AJSEE modern discovery platform koncertekhez, fesztiválokhoz, sporthoz, kultúrához, jegyekhez és élményutazáshoz.",
   "faq-q2": "Hány nyelvet támogat az AJSEE?",
-  "faq-a2": "Az AJSEE teljesen lokalizált 6 nyelvre: cseh, angol, német, szlovák, lengyel és magyar.",
+  "faq-a2": "Az AJSEE weboldal 6 nyelven érhető el: csehül, angolul, németül, szlovákul, lengyelül és magyarul.",
   "faq-q3": "Az AJSEE használata ingyenes?",
-  "faq-a3": "A regisztráció és a böngészés ingyenes, csak a jegyekért fizetsz.",
+  "faq-a3": "Az események felfedezése és böngészése az AJSEE-n ingyenes. A jegyvásárlás vagy szolgáltatásfoglalás az adott partnereknél történik.",
   "faq-q4": "Hogyan lehetek az AJSEE partnere?",
-  "faq-a4": "Töltsd ki az űrlapot a Partnereknek oldalon, és felvesszük veled a kapcsolatot.",
+  "faq-a4": "Töltsd ki az űrlapot a Partnereknek oldalon, és felvesszük veled a kapcsolatot a következő lépésekkel.",
 
-  "footer-copyright": "© 2025 AJSEE®. Minden jog fenntartva.",
+  "footer-copyright": "© 2026 AJSEE®. Minden jog fenntartva.",
   "footer-company-info": "Az AJSEE® üzemeltetője az AJSEE LTD, amely Angliában és Walesben van bejegyezve a 17105762 cégjegyzékszám alatt. Bejegyzett székhely: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.",
   "footer-contact-label": "Kapcsolat:",
 
@@ -180,20 +188,25 @@
     "category": "Kategória",
     "sort": "Rendezés",
     "city": "Város",
+    "date": "Dátum",
+    "from": "Ettől",
+    "to": "Eddig",
     "dateFrom": "Dátumtól",
     "dateTo": "Dátumig",
     "keyword": "Kulcsszó",
 
     "today": "Ma",
-    "weekend": "Hétvégén",
+    "weekend": "Ezen a hétvégén",
     "nearMe": "A közelemben",
 
+    "anytime": "Bármikor",
     "cityPlaceholder": "Prága, Brno…",
     "keywordPlaceholder": "Előadó, helyszín, esemény…",
 
     "searchCityPlaceholder": "Prága",
     "searchPlaceholder": "Események keresése…",
 
+    "all": "Összes",
     "allCategories": "Összes",
     "concert": "Koncert",
     "festival": "Fesztivál",
@@ -206,7 +219,7 @@
     "noResults": "Nincs találat",
     "finding": "Helymeghatározás…",
     "geoError": "A hely nem érhető el. Próbáld újra.",
-    "geoDenied": "A helyhozzáférés le van tiltva. Engedélyezd a böngészőben.",
+    "geoDenied": "A helyhozzáférés le van tiltva. A böngésző beállításaiban módosíthatod.",
     "geoTimeout": "A hely meghatározása túl sokáig tartott. Próbáld újra.",
 
     "apply": "Szűrők alkalmazása",
@@ -223,10 +236,8 @@
   "filter-nearest": "Legközelebbi",
   "filter-latest": "Legújabb",
 
-  "events-load-more": "Továbbiak betöltése",
-
   "hp-waitlist": {
-    "lead": "Már élőben",
+    "lead": "Már elindult",
     "text": "Találd meg azt az eseményt, ahová tényleg el akarsz menni.",
     "cta": "Események felfedezése",
     "dismiss": "Bezárás",
@@ -236,19 +247,19 @@
 
   "comingSoon": {
     "title": "AJSEE várólista",
-    "lead": "Add meg az e-mailed, és küldünk előzetes meghívót. Nem küldünk spamet.",
+    "lead": "Add meg az e-mailed, és küldünk előzetes hozzáférési meghívót. Nem küldünk spamet.",
     "emailLabel": "E-mail",
     "emailPh": "te@pelda.hu",
-    "consent": "Hozzájárulok az AJSEE és az elővétel frissítéseinek fogadásához.",
+    "consent": "Hozzájárulok az AJSEE és a jegyértékesítés frissítéseinek fogadásához.",
     "submit": "Feliratkozom",
     "hint": "Double opt-in bekapcsolva. Leiratkozás bármikor.",
     "faqTitle": "Gyors GYIK",
     "faq1q": "Mikor indultok?",
-    "faq1a": "Az első elővételi hullám korlátozott meghívóval nyílik. Dátumot e-mailben küldünk.",
+    "faq1a": "Az első hozzáférési hullámokat fokozatosan nyitjuk meg, a frissítéseket e-mailben küldjük.",
     "faq2q": "Mit kapok?",
-    "faq2a": "Korai hozzáférést, kurátori tippeket és CZ/SK-barát élményt.",
+    "faq2a": "Korai frissítéseket, kurált tippeket és átláthatóbb módot a világszintű események felfedezésére.",
     "faq3q": "Biztonságos?",
-    "faq3a": "Csak ellenőrzött partnerekkel és tisztességes feltételekkel dolgozunk.",
+    "faq3a": "Ellenőrzött partnerekkel és világos feltételekkel dolgozunk.",
     "back": "Vissza az AJSEE.cz oldalra"
   },
 
@@ -262,7 +273,7 @@
   "event-demo": {
     "ariaLabel": "Információk a TrustedStays szállásairól kiválasztott egyesült királyságbeli eseményekhez.",
     "title": "Most már szállással is a TrustedStays révén",
-    "body": "Brit élményútra készülsz? Kiválasztott eseményeknél a szállásban is segítünk.",
+    "body": "Brit élményútra készülsz? Kiválasztott eseményeknél szállással is összekapcsolunk a TrustedStays-en keresztül.",
     "cta": "Szállás keresése"
   },
 
@@ -270,12 +281,24 @@
   "mg.breadcrumb": "AJSEE magyaráz",
 
   "mg": {
-    "card": { "badge": "Mini útmutató" },
+    "card": {
+      "badge": "Mini útmutató"
+    },
     "guides": {
       "seating-map": {
         "title": "Hogyan olvassuk a helytérképet",
         "summary": "Rövid AJSEE mini útmutató: hogyan olvasd a helytérképet, és hogyan kerüld el a hibákat a helyválasztásnál."
       }
+    },
+    "share": {
+      "label": "Megosztás",
+      "system": "Megosztás…",
+      "twitter": "Megosztás X-en",
+      "facebook": "Megosztás Facebookon",
+      "linkedin": "Megosztás LinkedInen",
+      "whatsapp": "Megosztás WhatsAppon",
+      "copy": "Hivatkozás másolása",
+      "copied": "Hivatkozás másolva"
     }
   },
 
@@ -290,25 +313,147 @@
     "copied": "Hivatkozás másolva"
   },
 
-  "mg.relatedTitle": "Kapcsolódó mikro-útmutatók",
+  "mg.relatedTitle": "Kapcsolódó mini útmutatók",
   "footer-privacy-policy": "Adatvédelmi tájékoztató",
   "footer-cookies-policy": "Cookie-szabályzat",
+
   "cookie-banner": {
-  "title": "Sütiket használunk",
-  "desc": "A weboldal működéséhez szükséges sütiket használunk, és hozzájárulásoddal analitikai sütiket is, amelyek segítenek mérni a forgalmat és fejleszteni az AJSEE.cz oldalt.",
-  "privacy": "Adatvédelmi tájékoztató",
-  "cookies": "Cookie-szabályzat",
-  "reject": "Elutasítás",
-  "settings": "Beállítások",
-  "acceptAll": "Összes elfogadása",
-  "modalTitle": "Süti-beállítások",
-  "necessaryTitle": "Szükséges sütik",
-  "necessaryText": "Ezek a sütik a weboldal alapvető működéséhez szükségesek.",
-  "alwaysActive": "Mindig aktív",
-  "analyticsTitle": "Analitikai sütik",
-  "analyticsText": "Segítenek mérni a forgalmat és fejleszteni a weboldalt a Google Analytics segítségével.",
-  "allowAnalytics": "Analitika engedélyezése",
-  "save": "Beállítások mentése"
-},
-"footer-cookie-settings": "Süti-beállítások"
+    "title": "Sütiket használunk",
+    "desc": "A weboldal működéséhez szükséges sütiket használunk, és hozzájárulásoddal analitikai sütiket is, amelyek segítenek mérni a forgalmat és fejleszteni az AJSEE.cz oldalt.",
+    "privacy": "Adatvédelmi tájékoztató",
+    "cookies": "Cookie-szabályzat",
+    "reject": "Elutasítás",
+    "settings": "Beállítások",
+    "acceptAll": "Összes elfogadása",
+    "modalTitle": "Süti-beállítások",
+    "necessaryTitle": "Szükséges sütik",
+    "necessaryText": "Ezek a sütik a weboldal alapvető működéséhez szükségesek.",
+    "alwaysActive": "Mindig aktív",
+    "analyticsTitle": "Analitikai sütik",
+    "analyticsText": "Segítenek mérni a forgalmat és fejleszteni a weboldalt a Google Analytics segítségével.",
+    "allowAnalytics": "Analitika engedélyezése",
+    "save": "Beállítások mentése"
+  },
+
+  "footer-cookie-settings": "Süti-beállítások",
+
+  "seo.home.title": "Jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+  "seo.home.description": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról. Az AJSEE segít átláthatóan megtalálni az eseményeket, jegyeket és kapcsolódó utazási lehetőségeket.",
+  "seo.home.ogTitle": "Jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+  "seo.home.ogDescription": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról. Az AJSEE egy helyre hozza az eseményeket, jegyeket és utazási lehetőségeket.",
+
+  "seo.events.title": "Események és jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+  "seo.events.description": "Találj koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról. Az AJSEE segít egy átlátható helyen felfedezni az eseményeket, jegyeket és utazási lehetőségeket.",
+  "seo.events.ogTitle": "Események és jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+  "seo.events.ogDescription": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról. Az AJSEE átláthatóan összekapcsolja az eseményeket, jegyeket és utazási lehetőségeket.",
+
+  "seo.accommodation.title": "Szállás koncertekhez, sporthoz és eseményekhez az Egyesült Királyságban | AJSEE",
+  "seo.accommodation.description": "Találj szállást az Egyesült Királyságban, ha koncertre, sportra vagy más eseményre utazol. Az AJSEE összekapcsol a TrustedStays partnerrel; a foglalás a partnernél történik.",
+  "seo.accommodation.ogTitle": "Szállás koncertekhez, sporthoz és eseményekhez az Egyesült Királyságban | AJSEE",
+  "seo.accommodation.ogDescription": "Koncertre, sporteseményre vagy élő élményre utazol az Egyesült Királyságba? Az AJSEE összekapcsol a TrustedStays partnerrel, ahol a foglalás és visszaigazolás történik.",
+
+  "seo.partners.title": "Partnereknek ticketing, kultúra és események területén | AJSEE",
+  "seo.partners.description": "Legyél az AJSEE partnere, és érj el releváns közönséget, amely koncerteket, fesztiválokat, színházat, sportot és élményutazást keres.",
+  "seo.partners.ogTitle": "Partnereknek ticketing, kultúra és események területén | AJSEE",
+  "seo.partners.ogDescription": "Az AJSEE összekapcsolja a discovery-t, jegyeket, élményeket és utazást. Legyél partner, és segíts az embereknek olyan eseményeket találni, amelyekért érdemes útnak indulni.",
+
+  "seo.about.title": "Az AJSEE-ről | Világszintű események nyelvi akadályok nélkül",
+  "seo.about.description": "Ismerd meg az AJSEE-t – egy platformot, amely segít az embereknek átláthatóan és nyelvi akadályok nélkül felfedezni koncerteket, fesztiválokat, sporteseményeket és további élményeket világszerte.",
+  "seo.about.ogTitle": "Az AJSEE-ről | Világszintű események nyelvi akadályok nélkül",
+  "seo.about.ogDescription": "Az AJSEE modern discovery platformként épül koncertekhez, fesztiválokhoz, sporthoz, kultúrához és élményutazáshoz.",
+
+  "seo.blog.title": "Blog koncertekről, fesztiválokról és élményutazásról | AJSEE",
+  "seo.blog.description": "Olvass tippeket, útmutatókat és beszámolókat koncertekről, fesztiválokról, sporteseményekről és élményutazásról. Az AJSEE segít átláthatóan és felesleges akadályok nélkül tervezni az eseményeket.",
+  "seo.blog.ogTitle": "Blog koncertekről, fesztiválokról és élményutazásról | AJSEE",
+  "seo.blog.ogDescription": "Tippek, útmutatók és beszámolók koncertekről, fesztiválokról, sportról, kultúráról és eseményutazásról. Fedezz fel élményeket az AJSEE-vel.",
+
+  "seo.blogDetail.title": "Blogcikk | AJSEE",
+  "seo.blogDetail.description": "Olvass AJSEE blogcikket koncertekről, fesztiválokról, sporteseményekről, utazásról és emlékezetes élmények tervezéséről.",
+  "seo.blogDetail.ogTitle": "Blogcikk | AJSEE",
+  "seo.blogDetail.ogDescription": "Tippek, útmutatók és beszámolók az AJSEE blogból koncertekről, fesztiválokról, sportról, kultúráról és élményutazásról.",
+
+  "seo.faq.title": "Gyakori kérdések az AJSEE-ről, jegyekről és eseményutazásról",
+  "seo.faq.description": "Találj válaszokat az AJSEE-vel, eseményfelfedezéssel, jegyekkel, partnerekkel, szállással és koncertekre, sportra vagy fesztiválokra való utazással kapcsolatos kérdésekre.",
+  "seo.faq.ogTitle": "Gyakori kérdések az AJSEE-ről, jegyekről és eseményutazásról",
+  "seo.faq.ogDescription": "Válaszok az AJSEE-ről, eseményfelfedezésről, jegyekről, szállásról, partnerekről és élményutazásról szóló kérdésekre.",
+
+  "seo.privacy.title": "Adatvédelmi tájékoztató | AJSEE",
+  "seo.privacy.description": "Tudd meg, hogyan kezeli az AJSEE a személyes adatokat, hogyan használ sütiket, analitikai eszközöket és partnerlinkeket, valamint milyen jogaid vannak.",
+  "seo.privacy.ogTitle": "Adatvédelmi tájékoztató | AJSEE",
+  "seo.privacy.ogDescription": "Tudd meg, hogyan kezeli az AJSEE a személyes adatokat, hogyan használ sütiket, analitikai eszközöket és partnerlinkeket, valamint milyen jogaid vannak.",
+
+  "seo.cookies.title": "Cookie-szabályzat | AJSEE",
+  "seo.cookies.description": "Tudd meg, hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek, melyek opcionálisak, és hogyan kezelheted a beállításaidat.",
+  "seo.cookies.ogTitle": "Cookie-szabályzat | AJSEE",
+  "seo.cookies.ogDescription": "Tudd meg, hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek, melyek opcionálisak, és hogyan kezelheted a beállításaidat.",
+
+  "seo.thankyou.title": "Köszönjük az üzeneted | AJSEE",
+  "seo.thankyou.description": "Köszönjük az üzeneted. A lehető leghamarabb jelentkezünk.",
+
+  "seo": {
+    "home": {
+      "title": "Jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+      "description": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról. Az AJSEE segít átláthatóan megtalálni az eseményeket, jegyeket és kapcsolódó utazási lehetőségeket.",
+      "ogTitle": "Jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+      "ogDescription": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról. Az AJSEE egy helyre hozza az eseményeket, jegyeket és utazási lehetőségeket."
+    },
+    "events": {
+      "title": "Események és jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+      "description": "Találj koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról. Az AJSEE segít egy átlátható helyen felfedezni az eseményeket, jegyeket és utazási lehetőségeket.",
+      "ogTitle": "Események és jegyek koncertekre, fesztiválokra és sportra | AJSEE",
+      "ogDescription": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról. Az AJSEE átláthatóan összekapcsolja az eseményeket, jegyeket és utazási lehetőségeket."
+    },
+    "accommodation": {
+      "title": "Szállás koncertekhez, sporthoz és eseményekhez az Egyesült Királyságban | AJSEE",
+      "description": "Találj szállást az Egyesült Királyságban, ha koncertre, sportra vagy más eseményre utazol. Az AJSEE összekapcsol a TrustedStays partnerrel; a foglalás a partnernél történik.",
+      "ogTitle": "Szállás koncertekhez, sporthoz és eseményekhez az Egyesült Királyságban | AJSEE",
+      "ogDescription": "Koncertre, sporteseményre vagy élő élményre utazol az Egyesült Királyságba? Az AJSEE összekapcsol a TrustedStays partnerrel, ahol a foglalás és visszaigazolás történik."
+    },
+    "partners": {
+      "title": "Partnereknek ticketing, kultúra és események területén | AJSEE",
+      "description": "Legyél az AJSEE partnere, és érj el releváns közönséget, amely koncerteket, fesztiválokat, színházat, sportot és élményutazást keres.",
+      "ogTitle": "Partnereknek ticketing, kultúra és események területén | AJSEE",
+      "ogDescription": "Az AJSEE összekapcsolja a discovery-t, jegyeket, élményeket és utazást. Legyél partner, és segíts az embereknek olyan eseményeket találni, amelyekért érdemes útnak indulni."
+    },
+    "about": {
+      "title": "Az AJSEE-ről | Világszintű események nyelvi akadályok nélkül",
+      "description": "Ismerd meg az AJSEE-t – egy platformot, amely segít az embereknek átláthatóan és nyelvi akadályok nélkül felfedezni koncerteket, fesztiválokat, sporteseményeket és további élményeket világszerte.",
+      "ogTitle": "Az AJSEE-ről | Világszintű események nyelvi akadályok nélkül",
+      "ogDescription": "Az AJSEE modern discovery platformként épül koncertekhez, fesztiválokhoz, sporthoz, kultúrához és élményutazáshoz."
+    },
+    "blog": {
+      "title": "Blog koncertekről, fesztiválokról és élményutazásról | AJSEE",
+      "description": "Olvass tippeket, útmutatókat és beszámolókat koncertekről, fesztiválokról, sporteseményekről és élményutazásról. Az AJSEE segít átláthatóan és felesleges akadályok nélkül tervezni az eseményeket.",
+      "ogTitle": "Blog koncertekről, fesztiválokról és élményutazásról | AJSEE",
+      "ogDescription": "Tippek, útmutatók és beszámolók koncertekről, fesztiválokról, sportról, kultúráról és eseményutazásról. Fedezz fel élményeket az AJSEE-vel."
+    },
+    "blogDetail": {
+      "title": "Blogcikk | AJSEE",
+      "description": "Olvass AJSEE blogcikket koncertekről, fesztiválokról, sporteseményekről, utazásról és emlékezetes élmények tervezéséről.",
+      "ogTitle": "Blogcikk | AJSEE",
+      "ogDescription": "Tippek, útmutatók és beszámolók az AJSEE blogból koncertekről, fesztiválokról, sportról, kultúráról és élményutazásról."
+    },
+    "faq": {
+      "title": "Gyakori kérdések az AJSEE-ről, jegyekről és eseményutazásról",
+      "description": "Találj válaszokat az AJSEE-vel, eseményfelfedezéssel, jegyekkel, partnerekkel, szállással és koncertekre, sportra vagy fesztiválokra való utazással kapcsolatos kérdésekre.",
+      "ogTitle": "Gyakori kérdések az AJSEE-ről, jegyekről és eseményutazásról",
+      "ogDescription": "Válaszok az AJSEE-ről, eseményfelfedezésről, jegyekről, szállásról, partnerekről és élményutazásról szóló kérdésekre."
+    },
+    "privacy": {
+      "title": "Adatvédelmi tájékoztató | AJSEE",
+      "description": "Tudd meg, hogyan kezeli az AJSEE a személyes adatokat, hogyan használ sütiket, analitikai eszközöket és partnerlinkeket, valamint milyen jogaid vannak.",
+      "ogTitle": "Adatvédelmi tájékoztató | AJSEE",
+      "ogDescription": "Tudd meg, hogyan kezeli az AJSEE a személyes adatokat, hogyan használ sütiket, analitikai eszközöket és partnerlinkeket, valamint milyen jogaid vannak."
+    },
+    "cookies": {
+      "title": "Cookie-szabályzat | AJSEE",
+      "description": "Tudd meg, hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek, melyek opcionálisak, és hogyan kezelheted a beállításaidat.",
+      "ogTitle": "Cookie-szabályzat | AJSEE",
+      "ogDescription": "Tudd meg, hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek, melyek opcionálisak, és hogyan kezelheted a beállításaidat."
+    },
+    "thankyou": {
+      "title": "Köszönjük az üzeneted | AJSEE",
+      "description": "Köszönjük az üzeneted. A lehető leghamarabb jelentkezünk."
+    }
+  }
 }

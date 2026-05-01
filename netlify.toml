@@ -75,13 +75,13 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Locale JSON – lze cacheovat, ale musí se revalidovat
+# Locale JSON – cacheovat, ale s revalidací
 [[headers]]
   for = "/locales/*"
   [headers.values]
     Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
 
-# Microguide content JSON – krátká cache, aby šly rychle promítat změny obsahu
+# Microguide content JSON – krátká cache
 [[headers]]
   for = "/content/*"
   [headers.values]
@@ -127,244 +127,17 @@
 
 
 # ------------ REDIRECTS / REWRITES ------------
-# SEO princip:
-# - veřejná kanonická URL = bez .html
-# - .html soubory = interní build artefakty
-# - pretty URL se interně rewriteuje na .html přes status 200
-# - 301 cleanup pravidla musí být před 200 rewrites
+# Záměrně zde nyní nejsou page redirecty ani 200 rewrites.
 #
-# Důležité:
-# - neřešíme zde ?lang=cs cleanup, protože předchozí varianta způsobila self-redirecty
-# - ?lang=cs dočasně ošetříme přes canonical v HTML
-# - soubor public/_redirects musí zůstat odstraněný
-
-
-# ------------ Homepage cleanup ------------
-
-[[redirects]]
-  from = "/index.html"
-  to = "/"
-  status = 301
-  force = true
-
-
-# ------------ .html → pretty canonical URLs ------------
-
-[[redirects]]
-  from = "/accommodation.html"
-  to = "/accommodation"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/about.html"
-  to = "/about"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/events.html"
-  to = "/events"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/partners.html"
-  to = "/partners"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/faq.html"
-  to = "/faq"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/blog.html"
-  to = "/blog"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/blog-detail.html"
-  to = "/blog-detail"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/thank-you.html"
-  to = "/thank-you"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/privacy-policy.html"
-  to = "/privacy-policy"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/cookies-policy.html"
-  to = "/cookies-policy"
-  status = 301
-  force = true
-
-
-# ------------ Folder index cleanup ------------
-
-[[redirects]]
-  from = "/microguides"
-  to = "/microguides/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/microguides/index.html"
-  to = "/microguides/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/coming-soon"
-  to = "/coming-soon/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/coming-soon/index.html"
-  to = "/coming-soon/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/coming-soon/thanks.html"
-  to = "/coming-soon/thanks"
-  status = 301
-  force = true
-
-
-# ------------ Trailing slash cleanup for flat pages ------------
-
-[[redirects]]
-  from = "/accommodation/"
-  to = "/accommodation"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/about/"
-  to = "/about"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/events/"
-  to = "/events"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/partners/"
-  to = "/partners"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/faq/"
-  to = "/faq"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/blog/"
-  to = "/blog"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/blog-detail/"
-  to = "/blog-detail"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/thank-you/"
-  to = "/thank-you"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/privacy-policy/"
-  to = "/privacy-policy"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/cookies-policy/"
-  to = "/cookies-policy"
-  status = 301
-  force = true
-
-
-# ------------ Pretty URL → internal HTML rewrites ------------
-# Tyto rules musí být až po 301 redirectech výše.
-# Status 200 = URL v prohlížeči zůstane hezká, ale Netlify obslouží .html soubor.
-
-[[redirects]]
-  from = "/accommodation"
-  to = "/accommodation.html"
-  status = 200
-
-[[redirects]]
-  from = "/about"
-  to = "/about.html"
-  status = 200
-
-[[redirects]]
-  from = "/events"
-  to = "/events.html"
-  status = 200
-
-[[redirects]]
-  from = "/partners"
-  to = "/partners.html"
-  status = 200
-
-[[redirects]]
-  from = "/faq"
-  to = "/faq.html"
-  status = 200
-
-[[redirects]]
-  from = "/blog"
-  to = "/blog.html"
-  status = 200
-
-[[redirects]]
-  from = "/blog-detail"
-  to = "/blog-detail.html"
-  status = 200
-
-[[redirects]]
-  from = "/thank-you"
-  to = "/thank-you.html"
-  status = 200
-
-[[redirects]]
-  from = "/privacy-policy"
-  to = "/privacy-policy.html"
-  status = 200
-
-[[redirects]]
-  from = "/cookies-policy"
-  to = "/cookies-policy.html"
-  status = 200
-
-[[redirects]]
-  from = "/coming-soon/thanks"
-  to = "/coming-soon/thanks.html"
-  status = 200
+# Důvod:
+# - Netlify Pretty URLs už interně pracují s .html soubory.
+# - Ruční kombinace /events.html → /events a /events → /events.html způsobovala self-redirect.
+# - public/_redirects musí zůstat odstraněný, jinak se znovu vytvoří globální SPA fallback:
+#   /* /index.html 200
+#
+# Další krok:
+# - canonical tagy v HTML nastaví hlavní URL bez .html
+# - .html cleanup případně později vyřešíme bezpečně přes Edge Function
 
 
 # ------------ DEV: Netlify Dev reverse-proxy na běžící Vite ------------

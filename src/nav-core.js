@@ -1,4 +1,4 @@
-// src/nav-core.js
+﻿// src/nav-core.js
 // Navigace, aktivní odkaz, jazykové URL, mobilní menu, overlay, bezpečný header offset
 
 (function ensureGlobals(){
@@ -142,7 +142,7 @@ function ensureFaqNavLink() {
   if (proto) a.className = proto.className;
   a.setAttribute('data-i18n-key', 'nav-faq');
   a.textContent = window.translations?.['nav-faq'] || 'FAQ';
-  a.href = '/faq.html';
+  a.href = '/faq';
 
   const contact = nav.querySelector('a[href*="contact"], a[href$="#contact"]');
   const useList = !!nav.querySelector('li > a');
@@ -178,7 +178,7 @@ function normalizeFaqInNav(lang) {
   );
   if (!keep) keep = faqLinks[0];
 
-  const target = '/faq.html';
+  const target = '/faq';
   keep.setAttribute('href', setLangOnInternalHref(target, lang));
 
   faqLinks.forEach((a) => {
@@ -204,13 +204,13 @@ function updateMenuLinksWithLang(lang) {
     const lower = href.toLowerCase();
 
     if (lower.endsWith('#blog')) {
-      href = '/index.html#blog';
+      href = '/#blog';
     } else if (lower.endsWith('#contact')) {
       href = '/#contact';
     } else if (lower.endsWith('#faq')) {
-      href = '/faq.html';
+      href = '/faq';
     } else if (/\/faq(\.html)?($|\?)/i.test(lower)) {
-      href = '/faq.html';
+      href = '/faq';
     }
 
     href = setLangOnInternalHref(href, l);

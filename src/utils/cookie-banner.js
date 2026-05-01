@@ -1,4 +1,4 @@
-import {
+﻿import {
   readConsent,
   writeConsent,
   applyConsent,
@@ -175,8 +175,8 @@ function createBanner(lang) {
       <h2 id="cookie-banner-title">${getText('title', lang)}</h2>
       <p id="cookie-banner-desc">${getText('desc', lang)}</p>
       <div class="cookie-banner__links">
-        <a href="${buildLangHref('/privacy-policy.html', lang)}" data-lang-link>${getText('privacy', lang)}</a>
-        <a href="${buildLangHref('/cookies-policy.html', lang)}" data-lang-link>${getText('cookies', lang)}</a>
+        <a href="${buildLangHref('/privacy-policy', lang)}" data-lang-link>${getText('privacy', lang)}</a>
+        <a href="${buildLangHref('/cookies-policy', lang)}" data-lang-link>${getText('cookies', lang)}</a>
       </div>
       <div class="cookie-banner__actions">
         <button type="button" class="btn btn-secondary" data-action="reject">${getText('reject', lang)}</button>

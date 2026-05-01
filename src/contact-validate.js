@@ -1,4 +1,4 @@
-// src/contact-validate.js
+﻿// src/contact-validate.js
 // Validace kontaktního formuláře + i18n chybové zprávy
 
 export function initContactFormValidation({ lang = 'cs', t = (k, fb) => fb } = {}) {
@@ -103,7 +103,7 @@ export function initContactFormValidation({ lang = 'cs', t = (k, fb) => fb } = {
   };
 
   const updateFormActionWithLang = () => {
-    form.setAttribute('action', `/thank-you.html?lang=${lang}`);
+    form.setAttribute('action', `/thank-you?lang=${lang}`);
   };
 
   // Live validace po opuštění pole

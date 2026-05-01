@@ -1,4 +1,4 @@
-import { renderSharePanel } from './mg-share.js';
+﻿import { renderSharePanel } from './mg-share.js';
 import { renderRelatedMicroguides } from './mg-related.js';
 
 // --- helpers ---
@@ -154,10 +154,10 @@ function upsertMeta(attr, value, content) {
 // --- render ---
 (async function init() {
   const slug = currentSlug();
-  if (!slug) { location.href = withLang('/blog.html'); return; }
+  if (!slug) { location.href = withLang('/blog'); return; }
 
   const data = await loadGuide(slug, lang);
-  if (!data) { location.href = withLang('/blog.html'); return; }
+  if (!data) { location.href = withLang('/blog'); return; }
 
   // <head> – titulek/OG
   const title = `${data.title} – AJSEE`;
@@ -179,7 +179,7 @@ function upsertMeta(attr, value, content) {
 
   root.innerHTML = `
     <nav class="mg-breadcrumb" aria-label="Breadcrumb">
-      <a href="${withLang('/blog.html')}" data-i18n="mg.backToBlog">Zpět na blog</a>
+      <a href="${withLang('/blog')}" data-i18n="mg.backToBlog">Zpět na blog</a>
       <span aria-hidden="true">/</span>
       <span data-i18n="mg.breadcrumb">AJSEE vysvětluje</span>
     </nav>

@@ -1,4 +1,4 @@
-// src/microguides.js
+﻿// src/microguides.js
 // AJSEE Micro-guide renderer (hero, progress, sections, mobile nav)
 // – čte JSON z /content/microguides/<slug>.<lang>.json
 // – fallback pořadí: lang -> en -> cs
@@ -67,7 +67,7 @@ function renderBreadcrumb(root, data) {
   wrap.className = "mg-breadcrumb";
   wrap.setAttribute("aria-label", "breadcrumb");
   wrap.innerHTML = `
-    <a href="/blog.html${lang ? langParam : ""}">${escHtml(backLabel)}</a>
+    <a href="/blog${lang ? langParam : ""}">${escHtml(backLabel)}</a>
     <span aria-hidden="true"> · </span>
     <span>${escHtml(crumbLabel)}</span>
   `;
@@ -273,7 +273,7 @@ function enableSmoothProgressLinks() {
     root.innerHTML = `
       <div class="mg-content">
         <p>${escHtml(t("mg.notFound", "Průvodce se nepodařilo načíst."))}</p>
-        <p><a href="/blog.html?lang=${encodeURIComponent(lang)}">${escHtml(t("mg.backToBlog", "Zpět na blog"))}</a></p>
+        <p><a href="/blog?lang=${encodeURIComponent(lang)}">${escHtml(t("mg.backToBlog", "Zpět na blog"))}</a></p>
       </div>
     `;
   }

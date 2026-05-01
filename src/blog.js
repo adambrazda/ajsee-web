@@ -1,4 +1,4 @@
-// /src/blog.js
+﻿// /src/blog.js
 // ---------------------------------------------------------
 // AJSEE – blog listing page
 // Renders blog articles + micro-guides into .blog-cards.
@@ -281,7 +281,7 @@ function cardHref(card) {
     return `/microguides/?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
   }
 
-  return `/blog-detail.html?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
+  return `/blog-detail?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
 }
 
 // --- Render ----------------------------------------------------------------

@@ -278,9 +278,8 @@ async function loadAllCards(lang) {
 
 function cardHref(card) {
   if (card.type === 'microguide') {
-    return `/microguides/?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
-  }
-
+return `/microguides/${encodeURIComponent(card.slug)}?lang=${encodeURIComponent(card.lang)}`;
+}
 return `/blog/${encodeURIComponent(card.slug)}?lang=${encodeURIComponent(card.lang)}`;}
 
 // --- Render ----------------------------------------------------------------

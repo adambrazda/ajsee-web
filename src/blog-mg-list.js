@@ -60,9 +60,10 @@
      .forEach(n => n.remove());
 
   const placeholder = '/images/microguides/_placeholder.webp';
-  const mgHref = (slug) => `/microguides/?slug=${encodeURIComponent(slug)}&lang=${encodeURIComponent(lang)}`;
-  const pickCover = (item) =>
-    (item.cover && item.cover.trim()) ? item.cover : `/images/microguides/${item.slug}/cover.webp`;
+const mgHref = (slug) => `/microguides/${encodeURIComponent(slug)}?lang=${encodeURIComponent(lang)}`;
+
+const pickCover = (item) =>
+  (item.cover && item.cover.trim()) ? item.cover : `/images/microguides/${item.slug}/cover.webp`;    (item.cover && item.cover.trim()) ? item.cover : `/images/microguides/${item.slug}/cover.webp`;
 
   const frag = document.createDocumentFragment();
 

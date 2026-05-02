@@ -10,7 +10,7 @@ export function renderSharePanel({ slug, language, title, container, variant = '
   if (prev) prev.remove();
 
   const shareUrl = new URL(
-    `/microguides/?slug=${encodeURIComponent(slug)}&lang=${encodeURIComponent(language)}`,
+    `/microguides/${encodeURIComponent(slug)}?lang=${encodeURIComponent(language)}`,
     window.location.origin
   ).toString();
 

@@ -18,3 +18,6 @@
 /coming-soon/index.html  /coming-soon/           301!
 /coming-soon/thanks.html /coming-soon/thanks     301!
 /microguides/index.html  /microguides/           301!
+# Micro-guide pretty URLs
+/microguides/:slug/      /microguides/           200
+/microguides/:slug       /microguides/           200

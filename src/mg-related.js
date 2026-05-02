@@ -79,7 +79,7 @@ export async function renderRelatedMicroguides({ slug, language, container, max 
   grid.className = 'mg-related__grid';
 
   const withLang = (candidateSlug) =>
-    `/microguides/?slug=${encodeURIComponent(candidateSlug)}&lang=${encodeURIComponent(lang)}`;
+  `/microguides/${encodeURIComponent(candidateSlug)}?lang=${encodeURIComponent(lang)}`;
 
   chosen.forEach((card) => {
     const link = document.createElement('a');

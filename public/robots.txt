@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
 
-Disallow: /thank-you
-Disallow: /coming-soon/thanks
-Disallow: /blog-detail
-
 Sitemap: https://ajsee.cz/sitemap.xml

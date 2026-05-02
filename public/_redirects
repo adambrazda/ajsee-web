@@ -1,0 +1,17 @@
+# AJSEE canonical pretty URL redirects
+/index.html              /                       301
+/events.html             /events                 301
+/accommodation.html      /accommodation          301
+/partners.html           /partners               301
+/about.html              /about                  301
+/blog.html               /blog                   301
+/blog-detail.html        /blog-detail            301
+/faq.html                /faq                    301
+/thank-you.html          /thank-you              301
+/privacy-policy.html     /privacy-policy         301
+/cookies-policy.html     /cookies-policy         301
+
+# Nested pages
+/coming-soon/index.html  /coming-soon/           301
+/coming-soon/thanks.html /coming-soon/thanks     301
+/microguides/index.html  /microguides/           301

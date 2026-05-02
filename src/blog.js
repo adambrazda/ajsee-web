@@ -281,8 +281,7 @@ function cardHref(card) {
     return `/microguides/?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
   }
 
-  return `/blog-detail?slug=${encodeURIComponent(card.slug)}&lang=${encodeURIComponent(card.lang)}`;
-}
+return `/blog/${encodeURIComponent(card.slug)}?lang=${encodeURIComponent(card.lang)}`;}
 
 // --- Render ----------------------------------------------------------------
 

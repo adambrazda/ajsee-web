@@ -11,7 +11,7 @@
     content="Přečti si článek z blogu AJSEE o koncertech, festivalech, sportovních událostech, cestování a plánování zážitků."
   />
 
-  <meta name="robots" content="noindex, follow" />
+<meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://ajsee.cz/blog-detail" />
   <meta name="theme-color" content="#0077cc" />
 
@@ -46,16 +46,38 @@
   <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
   <meta name="twitter:image:alt" content="Logo AJSEE" />
 
-  <!-- Canonical pro dynamický detail článku podle ?slug=... -->
+  <!-- Canonical pro dynamický detail článku: /blog/:slug i fallback /blog-detail?slug=... -->
   <script>
     (function () {
       const origin = 'https://ajsee.cz';
       const params = new URLSearchParams(window.location.search);
-      const slug = (params.get('slug') || '').trim();
+
+      const querySlug = (params.get('slug') || '').trim();
+      const pathMatch = window.location.pathname.match(/^\/blog\/([^/?#]+)\/?$/i);
+
+      let slug = querySlug;
+
+      if (!slug && pathMatch && pathMatch[1]) {
+        try {
+          slug = decodeURIComponent(pathMatch[1]);
+        } catch {
+          slug = pathMatch[1];
+        }
+      }
 
       const canonicalUrl = slug
-        ? `${origin}/blog-detail?slug=${encodeURIComponent(slug)}`
-        : `${origin}/blog`;
+        ? `${origin}/blog/${encodeURIComponent(slug)}`
+        : `${origin}/blog-detail`;
+
+      function upsertMetaName(name, content) {
+        let el = document.querySelector(`meta[name="${name}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('name', name);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      }
 
       function upsertLink(rel, href) {
         let el = document.querySelector(`link[rel="${rel}"]`);
@@ -77,8 +99,22 @@
         el.setAttribute('content', content);
       }
 
+      upsertMetaName('robots', slug ? 'index, follow' : 'noindex, follow');
       upsertLink('canonical', canonicalUrl);
       upsertMetaProperty('og:url', canonicalUrl);
+
+      if (slug && /^\/blog-detail\/?$/i.test(window.location.pathname)) {
+        const nextParams = new URLSearchParams();
+        const lang = params.get('lang');
+
+        if (lang) nextParams.set('lang', lang);
+
+        const nextUrl =
+          `/blog/${encodeURIComponent(slug)}` +
+          (nextParams.toString() ? `?${nextParams.toString()}` : '');
+
+        window.history.replaceState({}, '', nextUrl);
+      }
     })();
   </script>
 

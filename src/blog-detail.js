@@ -5,7 +5,24 @@ function getUrlParam(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
 }
+// Funkce na získání slugu článku:
+// 1) podporuje starý fallback /blog-detail?slug=...
+// 2) podporuje novou SEO URL /blog/nazev-clanku
+function getArticleSlug() {
+  const querySlug = (getUrlParam('slug') || '').trim();
+  if (querySlug) return querySlug;
 
+  const match = window.location.pathname.match(/^\/blog\/([^/?#]+)\/?$/i);
+  if (match && match[1]) {
+    try {
+      return decodeURIComponent(match[1]);
+    } catch {
+      return match[1];
+    }
+  }
+
+  return '';
+}
 // Detekce jazyka z URL (nebo fallback na cs)
 function detectLang() {
   const lang = getUrlParam('lang');
@@ -14,7 +31,7 @@ function detectLang() {
 
 // Vykreslení článku do DOM
 async function renderArticle() {
-  const slug = getUrlParam('slug');
+  const slug = getArticleSlug();
   const lang = detectLang();
 
   // Najdi článek podle slug

@@ -6,6 +6,9 @@
 /about.html              /about                  301!
 /blog.html               /blog                   301!
 /blog-detail.html        /blog-detail            301!
+# Blog article pretty URLs
+/blog/:slug/             /blog-detail            200
+/blog/:slug              /blog-detail            200
 /faq.html                /faq                    301!
 /thank-you.html          /thank-you              301!
 /privacy-policy.html     /privacy-policy         301!

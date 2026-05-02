@@ -6,8 +6,55 @@
 
   <title>AJSEE – Micro-guides</title>
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://ajsee.cz/microguides/" />
-  <meta name="description" content="AJSEE vysvětluje: praktické mikroprůvodce." />
+  <!-- Canonical pro mikroprůvodce: /microguides/ i /microguides/:slug -->
+  <script>
+    (function () {
+      var origin = 'https://ajsee.cz';
+      var params = new URLSearchParams(window.location.search);
+      var querySlug = (params.get('slug') || '').trim();
+
+      var pathParts = window.location.pathname
+        .replace(/\/+$/, '')
+        .split('/')
+        .filter(Boolean);
+
+      var pathSlug = pathParts[0] === 'microguides' && pathParts[1]
+        ? decodeURIComponent(pathParts[1])
+        : '';
+
+      var slug = querySlug || pathSlug;
+
+      window.AJSEE_MG_SLUG = slug;
+
+      var canonicalUrl = slug
+        ? origin + '/microguides/' + encodeURIComponent(slug)
+        : origin + '/microguides/';
+
+      function upsertLink(rel, href) {
+        var el = document.querySelector('link[rel="' + rel + '"]');
+        if (!el) {
+          el = document.createElement('link');
+          el.setAttribute('rel', rel);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('href', href);
+      }
+
+      function upsertMetaProperty(property, content) {
+        var el = document.querySelector('meta[property="' + property + '"]');
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('property', property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      }
+
+      upsertLink('canonical', canonicalUrl);
+      upsertMetaProperty('og:url', canonicalUrl);
+    })();
+  </script>
+    <meta name="description" content="AJSEE vysvětluje: praktické mikroprůvodce." />
   <meta name="theme-color" content="#0077cc" />
   <link rel="icon" href="/images/logo-ajsee.png" />
 
@@ -58,11 +105,11 @@
       var params = new URLSearchParams(location.search);
 
       window.dataLayer.push({
-        event: 'mg_init',
-        pageType: 'microguide-detail',
-        'mg.slug': params.get('slug') || '',
-        'mg.lang': window.AJSEE_LANG || 'cs'
-      });
+  event: 'mg_init',
+  pageType: window.AJSEE_MG_SLUG ? 'microguide-detail' : 'microguides-index',
+  'mg.slug': window.AJSEE_MG_SLUG || params.get('slug') || '',
+  'mg.lang': window.AJSEE_LANG || 'cs'
+});
     })();
   </script>
 

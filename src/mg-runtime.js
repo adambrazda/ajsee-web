@@ -2,16 +2,27 @@
 import { renderRelatedMicroguides } from './mg-related.js';
 
 // --- helpers ---
+const SITE_ORIGIN = 'https://ajsee.cz';
+const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+const DEFAULT_LANG = 'cs';
+
 const urlLang = new URLSearchParams(location.search).get('lang');
-const lang = (urlLang || document.documentElement.getAttribute('lang') || 'cs').toLowerCase();
+const rawLang = (urlLang || document.documentElement.getAttribute('lang') || DEFAULT_LANG)
+  .toLowerCase()
+  .split(/[-_]/)[0];
+
+const lang = SUPPORTED_LANGS.includes(rawLang) ? rawLang : DEFAULT_LANG;
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+
+document.documentElement.setAttribute('lang', lang);
 
 function gEvent(action, extra = {}) {
   if (typeof window.dataLayer?.push === 'function') {
     window.dataLayer.push({ event: action, language: lang, ...extra });
   }
+
   if (typeof window.gtag === 'function') {
     gtag('event', action, { language: lang, ...extra });
   }
@@ -21,16 +32,23 @@ function gEvent(action, extra = {}) {
 function currentSlug() {
   const u = new URL(location.href);
   const q = (u.searchParams.get('slug') || '').trim();
+
   if (q) return decodeURIComponent(q);
+
   const parts = u.pathname.replace(/\/+$/, '').split('/');
-  if (parts[1] === 'microguides' && parts[2]) return decodeURIComponent(parts[2]);
+  if (parts[1] === 'microguides' && parts[2]) {
+    return decodeURIComponent(parts[2]);
+  }
+
   return '';
 }
 
 // Fallback pořadí: current → en → cs
 async function loadGuide(slug, langCode) {
   const urls = [];
-  const pushOnce = (p) => { if (!urls.includes(p)) urls.push(p); };
+  const pushOnce = (p) => {
+    if (!urls.includes(p)) urls.push(p);
+  };
 
   pushOnce(`/content/microguides/${slug}.${langCode}.json`);
   if (langCode !== 'en') pushOnce(`/content/microguides/${slug}.en.json`);
@@ -43,8 +61,13 @@ async function loadGuide(slug, langCode) {
   };
 
   for (const url of urls) {
-    try { return await fetchJson(url); } catch { /* try next */ }
+    try {
+      return await fetchJson(url);
+    } catch {
+      // try next
+    }
   }
+
   return null;
 }
 
@@ -55,6 +78,22 @@ function escapeHtml(str = '') {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function stripHtml(value = '') {
+  const el = document.createElement('div');
+  el.innerHTML = String(value);
+  return (el.textContent || el.innerText || '').replace(/\s+/g, ' ').trim();
+}
+
+function toAbsoluteUrl(value = '') {
+  if (!value) return '';
+
+  try {
+    return new URL(value, SITE_ORIGIN).toString();
+  } catch {
+    return '';
+  }
 }
 
 /**
@@ -80,22 +119,40 @@ function mdToHtml(md = '') {
 
   const flushList = () => {
     if (list.length) {
-      out.push('<ul>' + list.map(item => `<li>${escapeInline(item)}</li>`).join('') + '</ul>');
+      out.push('<ul>' + list.map((item) => `<li>${escapeInline(item)}</li>`).join('') + '</ul>');
       list = [];
     }
   };
 
-  for (let raw of lines) {
+  for (const raw of lines) {
     const line = raw.trim();
 
     // prázdný řádek = konec bloku
-    if (!line) { flushList(); out.push(''); continue; }
+    if (!line) {
+      flushList();
+      out.push('');
+      continue;
+    }
 
     // nadpisy
     let m;
-    if ((m = line.match(/^###\s+(.*)$/))) { flushList(); out.push(`<h4>${escapeInline(m[1])}</h4>`); continue; }
-    if ((m = line.match(/^##\s+(.*)$/)))  { flushList(); out.push(`<h3>${escapeInline(m[1])}</h3>`); continue; }
-    if ((m = line.match(/^#\s+(.*)$/)))   { flushList(); out.push(`<h2>${escapeInline(m[1])}</h2>`); continue; }
+    if ((m = line.match(/^###\s+(.*)$/))) {
+      flushList();
+      out.push(`<h4>${escapeInline(m[1])}</h4>`);
+      continue;
+    }
+
+    if ((m = line.match(/^##\s+(.*)$/))) {
+      flushList();
+      out.push(`<h3>${escapeInline(m[1])}</h3>`);
+      continue;
+    }
+
+    if ((m = line.match(/^#\s+(.*)$/))) {
+      flushList();
+      out.push(`<h2>${escapeInline(m[1])}</h2>`);
+      continue;
+    }
 
     // seznam: "- " na začátku řádku
     if (/^- /.test(line)) {
@@ -133,40 +190,185 @@ const prefersReduced = () =>
 const scrollToId = (id) => {
   const el = document.getElementById(id);
   if (!el) return;
-  el.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth', block: 'start' });
+
+  el.scrollIntoView({
+    behavior: prefersReduced() ? 'auto' : 'smooth',
+    block: 'start'
+  });
 };
 
 // Bezpečné vytvoření/aktualizace <meta>
 const cssEsc = (v) => {
-  try { return (window.CSS && CSS.escape) ? CSS.escape(v) : String(v).replace(/"/g, '\\"'); }
-  catch { return String(v).replace(/"/g, '\\"'); }
+  try {
+    return (window.CSS && CSS.escape) ? CSS.escape(v) : String(v).replace(/"/g, '\\"');
+  } catch {
+    return String(v).replace(/"/g, '\\"');
+  }
 };
+
 function upsertMeta(attr, value, content) {
   let m = document.head.querySelector(`meta[${attr}="${cssEsc(value)}"]`);
+
   if (!m) {
     m = document.createElement('meta');
     m.setAttribute(attr, value);
     document.head.appendChild(m);
   }
-  if (typeof content === 'string') m.setAttribute('content', content);
+
+  if (typeof content === 'string') {
+    m.setAttribute('content', content);
+  }
+}
+
+function upsertJsonLd(id, data) {
+  let script = document.getElementById(id);
+
+  if (!script) {
+    script = document.createElement('script');
+    script.id = id;
+    script.type = 'application/ld+json';
+    document.head.appendChild(script);
+  }
+
+  script.textContent = JSON.stringify(data);
+}
+
+function buildMicroguideCanonicalUrl(slug) {
+  return `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}`;
+}
+
+function buildMicroguideArticleBody(data) {
+  const parts = [];
+
+  if (data?.summary) {
+    parts.push(stripHtml(data.summary));
+  }
+
+  if (Array.isArray(data?.steps)) {
+    data.steps.forEach((step) => {
+      if (step?.heading) parts.push(stripHtml(step.heading));
+      if (step?.body) parts.push(stripHtml(step.body));
+    });
+  }
+
+  if (data?.ctaQuestion) {
+    parts.push(stripHtml(data.ctaQuestion));
+  }
+
+  return parts.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+function renderMicroguideStructuredData(data, langCode, slug) {
+  if (!data || !slug) return;
+
+  const canonicalUrl = buildMicroguideCanonicalUrl(slug);
+  const title = data.title || slug;
+  const description = data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.';
+  const image = toAbsoluteUrl(data.cover) || `${SITE_ORIGIN}/images/logo-ajsee.png`;
+  const articleBody = buildMicroguideArticleBody(data);
+
+  const graph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        '@id': `${canonicalUrl}#article`,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': canonicalUrl
+        },
+        headline: title,
+        description,
+        image: [image],
+        inLanguage: langCode,
+        articleSection: data.category || undefined,
+        articleBody: articleBody || undefined,
+        author: {
+          '@type': 'Organization',
+          name: 'AJSEE',
+          url: `${SITE_ORIGIN}/`
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'AJSEE',
+          url: `${SITE_ORIGIN}/`,
+          logo: {
+            '@type': 'ImageObject',
+            url: `${SITE_ORIGIN}/images/logo-ajsee.png`
+          }
+        }
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${canonicalUrl}#breadcrumb`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'AJSEE',
+            item: `${SITE_ORIGIN}/`
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Micro-guides',
+            item: `${SITE_ORIGIN}/microguides/`
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: title,
+            item: canonicalUrl
+          }
+        ]
+      }
+    ]
+  };
+
+  // Odstraní undefined hodnoty, aby JSON-LD zůstal čistý.
+  const cleanGraph = JSON.parse(JSON.stringify(graph));
+  upsertJsonLd('ajsee-microguide-jsonld', cleanGraph);
 }
 
 // --- render ---
 (async function init() {
   const slug = currentSlug();
-  if (!slug) { location.href = withLang('/blog'); return; }
+  if (!slug) {
+    location.href = withLang('/blog');
+    return;
+  }
 
   const data = await loadGuide(slug, lang);
-  if (!data) { location.href = withLang('/blog'); return; }
+  if (!data) {
+    location.href = withLang('/blog');
+    return;
+  }
+
+  const resolvedSlug = data.slug || slug;
 
   // <head> – titulek/OG
   const title = `${data.title} – AJSEE`;
   const desc = data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.';
+  const canonicalUrl = buildMicroguideCanonicalUrl(resolvedSlug);
+  const coverUrl = toAbsoluteUrl(data.cover);
+
   document.title = title;
+
   upsertMeta('name', 'description', desc);
+  upsertMeta('name', 'robots', 'index, follow');
+
+  upsertMeta('property', 'og:type', 'article');
   upsertMeta('property', 'og:title', data.title);
   upsertMeta('property', 'og:description', desc);
-  upsertMeta('property', 'og:image', data.cover || '');
+  upsertMeta('property', 'og:url', canonicalUrl);
+  upsertMeta('property', 'og:image', coverUrl || `${SITE_ORIGIN}/images/logo-ajsee.png`);
+
+  upsertMeta('name', 'twitter:card', 'summary_large_image');
+  upsertMeta('name', 'twitter:title', data.title);
+  upsertMeta('name', 'twitter:description', desc);
+  upsertMeta('name', 'twitter:image', coverUrl || `${SITE_ORIGIN}/images/logo-ajsee.png`);
+
+  renderMicroguideStructuredData(data, lang, resolvedSlug);
 
   // skeleton DOM
   const root = $('#mgRoot');
@@ -174,7 +376,7 @@ function upsertMeta(attr, value, content) {
 
   const heroMedia = `
     <figure class="mg-hero-media">
-      ${data.cover ? `<img src="${data.cover}" alt="${escapeHtml(data.coverAlt || '')}" width="1280" height="720" loading="eager">` : ''}
+      ${data.cover ? `<img src="${escapeHtml(data.cover)}" alt="${escapeHtml(data.coverAlt || '')}" width="1280" height="720" loading="eager" decoding="async">` : ''}
     </figure>`;
 
   root.innerHTML = `
@@ -196,18 +398,18 @@ function upsertMeta(attr, value, content) {
       </header>
 
       <aside class="mg-progress" aria-label="Postup průvodcem">
-        <ol>${(data.steps || []).map(s => `<li><a href="#${escapeHtml(s.id)}">${escapeHtml(s.heading)}</a></li>`).join('')}</ol>
+        <ol>${(data.steps || []).map((s) => `<li><a href="#${escapeHtml(s.id)}">${escapeHtml(s.heading)}</a></li>`).join('')}</ol>
       </aside>
 
       <div class="mg-content">
-        ${(data.steps || []).map(s => `
+        ${(data.steps || []).map((s) => `
           <section id="${escapeHtml(s.id)}" class="mg-section" aria-labelledby="${escapeHtml(s.id)}-title">
             <h2 id="${escapeHtml(s.id)}-title">${escapeHtml(s.heading)}</h2>
             ${mdToHtml(s.body || '')}
             ${s.image ? `
               <figure class="mg-figure">
                 <div class="mg-media-frame">
-                  <img src="${s.image}" alt="${escapeHtml(s.alt || '')}" loading="lazy">
+                  <img src="${escapeHtml(s.image)}" alt="${escapeHtml(s.alt || '')}" loading="lazy" decoding="async">
                 </div>
               </figure>` : ``}
           </section>
@@ -226,6 +428,7 @@ function upsertMeta(attr, value, content) {
       </nav>
     </article>
   `;
+
   root.hidden = false;
 
   // --- SHARE (inline v hero actions, bez duplicit) ---
@@ -233,7 +436,7 @@ function upsertMeta(attr, value, content) {
   if (actionsEl) {
     actionsEl.textContent = '';
     renderSharePanel({
-      slug: data.slug || slug,
+      slug: resolvedSlug,
       language: lang,
       title: data.title,
       container: actionsEl,
@@ -244,12 +447,18 @@ function upsertMeta(attr, value, content) {
   // --- RELATED (pod content/footer CTA, před mobile nav) ---
   const relatedMount = document.createElement('section');
   relatedMount.id = 'mg-related';
+
   const mobileNav = root.querySelector('.mg-mobile-nav');
   const contentEl = root.querySelector('.mg-content');
-  if (mobileNav) mobileNav.insertAdjacentElement('beforebegin', relatedMount);
-  else if (contentEl) contentEl.insertAdjacentElement('afterend', relatedMount);
+
+  if (mobileNav) {
+    mobileNav.insertAdjacentElement('beforebegin', relatedMount);
+  } else if (contentEl) {
+    contentEl.insertAdjacentElement('afterend', relatedMount);
+  }
+
   renderRelatedMicroguides({
-    slug: data.slug || slug,
+    slug: resolvedSlug,
     language: lang,
     container: relatedMount,
     max: 3
@@ -257,31 +466,36 @@ function upsertMeta(attr, value, content) {
 
   // --- progress highlight ---
   const links = $$('.mg-progress a', root);
-  const map = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const map = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
   let lastSentId = null;
 
   const io = ('IntersectionObserver' in window)
     ? new IntersectionObserver((entries) => {
-        entries.forEach(e => {
+        entries.forEach((e) => {
           if (e.isIntersecting) {
             const id = e.target.id;
-            map.forEach(a => a.removeAttribute('aria-current'));
+            map.forEach((a) => a.removeAttribute('aria-current'));
             map.get(id)?.setAttribute('aria-current', 'true');
+
             if (lastSentId !== id) {
               lastSentId = id;
-              gEvent('mg_step_view', { step_id: id, slug: data.slug || slug });
+              gEvent('mg_step_view', { step_id: id, slug: resolvedSlug });
             }
           }
         });
-      }, { rootMargin: '-40% 0% -55% 0%', threshold: 0.01 })
+      }, {
+        rootMargin: '-40% 0% -55% 0%',
+        threshold: 0.01
+      })
     : null;
 
-  $$('.mg-section', root).forEach(sec => io?.observe(sec));
+  $$('.mg-section', root).forEach((sec) => io?.observe(sec));
 
   // progress clicks
-  links.forEach(a => {
+  links.forEach((a) => {
     a.addEventListener('click', (ev) => {
       ev.preventDefault();
+
       const id = a.getAttribute('href').slice(1);
       history.replaceState(null, '', `#${id}`);
       scrollToId(id);
@@ -290,7 +504,7 @@ function upsertMeta(attr, value, content) {
 
   // mobile nav + dots
   const sections = $$('.mg-section', root);
-  const ids = sections.map(s => s.id);
+  const ids = sections.map((s) => s.id);
   const prevBtn = $('.mg-prev', root);
   const nextBtn = $('.mg-next', root);
   const dots = $('.mg-dots', root);
@@ -306,18 +520,24 @@ function upsertMeta(attr, value, content) {
 
   const activeIndex = () => {
     let idx = 0;
+
     sections.forEach((s, i) => {
       const r = s.getBoundingClientRect();
       if (r.top < innerHeight * 0.45) idx = i;
     });
+
     return idx;
   };
 
   const updateNav = () => {
     const i = activeIndex();
+
     if (prevBtn) prevBtn.disabled = i === 0;
     if (nextBtn) nextBtn.disabled = i === ids.length - 1;
-    $$('.mg-dot', dots).forEach((d, di) => d.toggleAttribute('data-active', di === i));
+
+    $$('.mg-dot', dots).forEach((d, di) => {
+      d.toggleAttribute('data-active', di === i);
+    });
   };
 
   updateNav();
@@ -325,13 +545,23 @@ function upsertMeta(attr, value, content) {
 
   prevBtn?.addEventListener('click', () => {
     const i = activeIndex();
+
     if (i > 0) scrollToId(ids[i - 1]);
-    gEvent('mg_nav_prev', { from_step: ids[i], slug: data.slug || slug });
+
+    gEvent('mg_nav_prev', {
+      from_step: ids[i],
+      slug: resolvedSlug
+    });
   });
 
   nextBtn?.addEventListener('click', () => {
     const i = activeIndex();
+
     if (i < ids.length - 1) scrollToId(ids[i + 1]);
-    gEvent('mg_nav_next', { from_step: ids[i], slug: data.slug || slug });
+
+    gEvent('mg_nav_next', {
+      from_step: ids[i],
+      slug: resolvedSlug
+    });
   });
 })();

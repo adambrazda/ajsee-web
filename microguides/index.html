@@ -6,6 +6,11 @@
 
   <title>AJSEE – Micro-guides</title>
   <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ajsee.cz/microguides/" />
+  <meta name="description" content="AJSEE vysvětluje: praktické mikroprůvodce." />
+  <meta name="theme-color" content="#0077cc" />
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
   <!-- Canonical pro mikroprůvodce: /microguides/ i /microguides/:slug -->
   <script>
     (function () {
@@ -13,13 +18,21 @@
       var params = new URLSearchParams(window.location.search);
       var querySlug = (params.get('slug') || '').trim();
 
+      function safeDecode(value) {
+        try {
+          return decodeURIComponent(value);
+        } catch (e) {
+          return value;
+        }
+      }
+
       var pathParts = window.location.pathname
         .replace(/\/+$/, '')
         .split('/')
         .filter(Boolean);
 
       var pathSlug = pathParts[0] === 'microguides' && pathParts[1]
-        ? decodeURIComponent(pathParts[1])
+        ? safeDecode(pathParts[1])
         : '';
 
       var slug = querySlug || pathSlug;
@@ -54,9 +67,6 @@
       upsertMetaProperty('og:url', canonicalUrl);
     })();
   </script>
-    <meta name="description" content="AJSEE vysvětluje: praktické mikroprůvodce." />
-  <meta name="theme-color" content="#0077cc" />
-  <link rel="icon" href="/images/logo-ajsee.png" />
 
   <!-- Prémiové fonty (sjednoceno s ostatními stránkami) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -105,11 +115,11 @@
       var params = new URLSearchParams(location.search);
 
       window.dataLayer.push({
-  event: 'mg_init',
-  pageType: window.AJSEE_MG_SLUG ? 'microguide-detail' : 'microguides-index',
-  'mg.slug': window.AJSEE_MG_SLUG || params.get('slug') || '',
-  'mg.lang': window.AJSEE_LANG || 'cs'
-});
+        event: 'mg_init',
+        pageType: window.AJSEE_MG_SLUG ? 'microguide-detail' : 'microguides-index',
+        'mg.slug': window.AJSEE_MG_SLUG || params.get('slug') || '',
+        'mg.lang': window.AJSEE_LANG || 'cs'
+      });
     })();
   </script>
 
@@ -254,16 +264,22 @@
         (qs.get('lang') || document.documentElement.getAttribute('lang') || 'cs')
           .toLowerCase().split(/[-_]/)[0];
 
+      const currentSlug =
+        window.AJSEE_MG_SLUG ||
+        qs.get('slug') ||
+        location.pathname.replace(/^\/microguides\/?/, '').replace(/\/$/, '') ||
+        location.pathname;
+
       const commentLang = document.getElementById('commentLang');
       const commentPostType = document.getElementById('commentPostType');
       const commentPostId = document.getElementById('commentPostId');
 
       if (commentLang) commentLang.value = lang;
       if (commentPostType) commentPostType.value = 'microguide';
-      if (commentPostId) commentPostId.value = qs.get('slug') || location.pathname;
+      if (commentPostId) commentPostId.value = currentSlug;
 
       const postType = 'microguide';
-      const postId = qs.get('slug') || location.pathname;
+      const postId = currentSlug;
       const statusEl = document.getElementById('commentStatus');
       const listEl = document.getElementById('commentsList');
 
@@ -376,4 +392,3 @@
   </script>
 </body>
 </html>
-

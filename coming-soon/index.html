@@ -2,10 +2,39 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title data-i18n-key="comingSoon.title">Čekací listina AJSEE</title>
-  <meta name="description" content="Přidej se na čekací listinu AJSEE a získej pozvánku do předprodeje.">
-  <link rel="icon" href="/images/logo-ajsee.png"/>
+  <meta
+    name="description"
+    content="Přidej se na čekací listinu AJSEE a získej pozvánku do předprodeje."
+  />
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#0077cc" />
+  <link rel="canonical" href="https://ajsee.cz/coming-soon/" />
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta property="og:title" content="Čekací listina AJSEE" />
+  <meta
+    property="og:description"
+    content="Přidej se na čekací listinu AJSEE a získej pozvánku do předprodeje."
+  />
+  <meta property="og:url" content="https://ajsee.cz/coming-soon/" />
+  <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta property="og:image:alt" content="Logo AJSEE" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Čekací listina AJSEE" />
+  <meta
+    name="twitter:description"
+    content="Přidej se na čekací listinu AJSEE a získej pozvánku do předprodeje."
+  />
+  <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
+  <meta name="twitter:image:alt" content="Logo AJSEE" />
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK"></script>
@@ -18,21 +47,35 @@
 
   <!-- Vite modul pro styly této stránky -->
   <script type="module" src="/src/coming-soon.js"></script>
-  <link rel="canonical" href="https://ajsee.cz/coming-soon/" />
 </head>
+
 <body class="comingsoon-page">
   <div class="wrap">
-    <div class="brand"><img src="/images/logo-ajsee.png" alt="AJSEE logo" /><strong>AJSEE</strong></div>
+    <div class="brand">
+      <img src="/images/logo-ajsee.png" alt="AJSEE logo" width="40" height="40" />
+      <strong>AJSEE</strong>
+    </div>
 
-    <div class="card" role="main">
+    <main class="card" role="main">
       <h1 data-i18n-key="comingSoon.title">Čekací listina AJSEE</h1>
-      <p class="lead" data-i18n-key="comingSoon.lead">Zanech e-mail a pošleme ti pozvánku do předprodeje. Bez spamu.</p>
 
-<form name="ajsee_waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/coming-soon/thanks">        <input type="hidden" name="form-name" value="ajsee_waitlist"/>
-        <input type="hidden" name="utm_source" id="utm_source"/>
-        <input type="hidden" name="utm_medium" id="utm_medium"/>
-        <input type="hidden" name="utm_campaign" id="utm_campaign"/>
-        <input type="hidden" name="lang" id="lang"/>
+      <p class="lead" data-i18n-key="comingSoon.lead">
+        Zanech e-mail a pošleme ti pozvánku do předprodeje. Bez spamu.
+      </p>
+
+      <form
+        name="ajsee_waitlist"
+        method="POST"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        action="/coming-soon/thanks"
+        autocomplete="on"
+      >
+        <input type="hidden" name="form-name" value="ajsee_waitlist" />
+        <input type="hidden" name="utm_source" id="utm_source" />
+        <input type="hidden" name="utm_medium" id="utm_medium" />
+        <input type="hidden" name="utm_campaign" id="utm_campaign" />
+        <input type="hidden" name="lang" id="lang" />
 
         <!-- Honeypot (Netlify antispam) -->
         <p hidden aria-hidden="true">
@@ -40,42 +83,73 @@
         </p>
 
         <label for="email" data-i18n-key="comingSoon.emailLabel">E-mail</label>
-        <div></div>
 
-        <input id="email" name="email" type="email" required
-               placeholder="tvuj@email.cz"
-               data-i18n-placeholder="comingSoon.emailPh"
-               autocomplete="email"/>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          placeholder="tvuj@email.cz"
+          data-i18n-placeholder="comingSoon.emailPh"
+          autocomplete="email"
+          inputmode="email"
+          aria-describedby="waitlistHelp"
+        />
 
-        <button type="submit" data-i18n-key="comingSoon.submit">Přidat se na čekací listinu</button>
+        <button type="submit" data-i18n-key="comingSoon.submit">
+          Přidat se na čekací listinu
+        </button>
 
         <div class="consent">
-          <input id="consent" type="checkbox" required/>
-          <label for="consent" data-i18n-key="comingSoon.consent">Souhlasím se zpracováním e-mailu…</label>
+          <input
+            id="consent"
+            name="consent"
+            type="checkbox"
+            value="yes"
+            required
+          />
+          <label for="consent" data-i18n-key="comingSoon.consent">
+            Souhlasím se zpracováním e-mailu…
+          </label>
         </div>
 
-        <div class="help" data-i18n-key="comingSoon.hint">Double opt-in zapnutý. Odhlášení kdykoli.</div>
+        <p class="help" id="waitlistHelp" data-i18n-key="comingSoon.hint">
+          Double opt-in zapnutý. Odhlášení kdykoli.
+        </p>
       </form>
 
       <a class="back btn-back" id="backLink" href="/">
-        <svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M14 6l-6 6 6 6"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
         <span class="back-label" data-i18n-key="comingSoon.back">Zpět na web</span>
       </a>
-    </div>
+    </main>
   </div>
 
   <!-- i18n bootstrapper: ?lang -> <html lang> -> cs, načti /locales/{lang}.json a aplikuj texty -->
   <script>
     (function () {
-      const SUPPORTED = ['cs','en','de','sk','pl','hu'];
+      const SUPPORTED = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
       const qs = new URLSearchParams(location.search);
 
       // 1) Urči jazyk: ?lang -> <html lang> -> 'cs'
-      let lang = (qs.get('lang') || '').toLowerCase();
-      if (!SUPPORTED.includes(lang)) lang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+      let lang = (qs.get('lang') || '').toLowerCase().split(/[-_]/)[0];
+
+      if (!SUPPORTED.includes(lang)) {
+        lang = (document.documentElement.getAttribute('lang') || '').toLowerCase().split(/[-_]/)[0];
+      }
+
+      if (lang === 'cz') lang = 'cs';
       if (!SUPPORTED.includes(lang)) lang = 'cs';
+
       document.documentElement.setAttribute('lang', lang);
 
       // 2) Propaguj jazyk do hidden pole, action a „Zpět na web“
@@ -83,70 +157,88 @@
       if (langInput) langInput.value = lang;
 
       const form = document.forms['ajsee_waitlist'] || document.querySelector('form[name="ajsee_waitlist"]');
-      if (form && form.action) {
-        const u = new URL(form.action, location.origin);
-        u.searchParams.set('lang', lang);
-        form.action = u.pathname + '?' + u.searchParams.toString();
+      if (form) {
+        const actionUrl = new URL(form.getAttribute('action') || '/coming-soon/thanks', location.origin);
+        actionUrl.searchParams.set('lang', lang);
+        form.setAttribute('action', actionUrl.pathname + actionUrl.search);
       }
 
       const backLink = document.getElementById('backLink');
       if (backLink) {
         const href = backLink.getAttribute('href') || '/';
-        const u = new URL(href, location.origin);
-        u.searchParams.set('lang', lang);
-        backLink.setAttribute('href', u.pathname + '?' + u.searchParams.toString());
+        const backUrl = new URL(href, location.origin);
+        backUrl.searchParams.set('lang', lang);
+        backLink.setAttribute('href', backUrl.pathname + backUrl.search);
       }
 
       // 3) Přenes UTM hodnoty do hidden polí
-      ['utm_source','utm_medium','utm_campaign'].forEach(k=>{
-        const el = document.getElementById(k);
-        if (el) el.value = qs.get(k) || '';
+      ['utm_source', 'utm_medium', 'utm_campaign'].forEach((key) => {
+        const el = document.getElementById(key);
+        if (el) el.value = qs.get(key) || '';
       });
 
       // 4) Načti překlady a aplikuj data-i18n-* na této stránce
       fetch(`/locales/${lang}.json`, { cache: 'no-store' })
-        .then(r => r.ok ? r.json() : null)
-        .then(dict => {
+        .then((response) => response.ok ? response.json() : null)
+        .then((dict) => {
           if (!dict) return;
 
           const get = (path) => {
-            try { return path.split('.').reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), dict); }
-            catch { return undefined; }
+            try {
+              return path
+                .split('.')
+                .reduce((obj, key) => (obj && typeof obj === 'object' ? obj[key] : undefined), dict);
+            } catch {
+              return undefined;
+            }
           };
 
-          // textContent
-          document.querySelectorAll('[data-i18n-key]').forEach(el => {
+          document.querySelectorAll('[data-i18n-key]').forEach((el) => {
             const key = el.getAttribute('data-i18n-key');
-            const v = get(key);
-            if (typeof v === 'string') el.textContent = v;
-          });
+            const value = get(key);
 
-          // alt / placeholder / aria-label
-          document.querySelectorAll('[data-i18n-alt]').forEach(el => {
-            const key = el.getAttribute('data-i18n-alt');
-            const v = get(key);
-            if (typeof v === 'string') el.setAttribute('alt', v);
-          });
-          document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-i18n-placeholder');
-            const v = get(key);
-            if (typeof v === 'string') el.setAttribute('placeholder', v);
-          });
-          document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-            const key = el.getAttribute('data-i18n-aria');
-            const v = get(key);
-            if (typeof v === 'string') {
-              el.setAttribute('aria-label', v);
-              el.setAttribute('title', v);
+            if (typeof value === 'string') {
+              el.textContent = value;
             }
           });
 
-          // <title>
+          document.querySelectorAll('[data-i18n-alt]').forEach((el) => {
+            const key = el.getAttribute('data-i18n-alt');
+            const value = get(key);
+
+            if (typeof value === 'string') {
+              el.setAttribute('alt', value);
+            }
+          });
+
+          document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            const value = get(key);
+
+            if (typeof value === 'string') {
+              el.setAttribute('placeholder', value);
+            }
+          });
+
+          document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+            const key = el.getAttribute('data-i18n-aria');
+            const value = get(key);
+
+            if (typeof value === 'string') {
+              el.setAttribute('aria-label', value);
+              el.setAttribute('title', value);
+            }
+          });
+
           const titleEl = document.querySelector('title[data-i18n-key]');
           if (titleEl) {
             const key = titleEl.getAttribute('data-i18n-key');
-            const v = get(key);
-            if (typeof v === 'string') titleEl.textContent = v;
+            const value = get(key);
+
+            if (typeof value === 'string') {
+              titleEl.textContent = value;
+              document.title = value;
+            }
           }
         })
         .catch(() => {});
@@ -154,5 +246,3 @@
   </script>
 </body>
 </html>
-
-

@@ -1,0 +1,29 @@
+// ------------------------------------------------------
+// AJSEE – Blog detail page SCSS entry point
+// ------------------------------------------------------
+// Cíl: netahat na detail článku celý globální main.scss bundle.
+// Obsahuje pouze společné UI + styly potřebné pro blog detail a komentáře.
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/blog';
+@use '../partials/blog-page';
+@use '../partials/comments';
+@use '../partials/cookie-consent';
+
+// --- globální drobnosti převzaté z main.scss ---
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}

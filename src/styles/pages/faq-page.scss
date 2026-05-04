@@ -1,0 +1,27 @@
+// ------------------------------------------------------
+// AJSEE – FAQ page SCSS entry point
+// ------------------------------------------------------
+// Cíl: netahat na FAQ celý globální main.scss bundle.
+// Obsahuje pouze společné UI + styly potřebné pro FAQ.
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/faq';
+@use '../partials/cookie-consent';
+
+// --- globální drobnosti převzaté z main.scss ---
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}

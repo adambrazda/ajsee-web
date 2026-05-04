@@ -57,8 +57,7 @@
     rel="stylesheet"
   />
 
-  <!-- ✅ CSS přes link (sjednoceno) -->
-  <link rel="stylesheet" href="/src/styles/main.scss" />
+  <link rel="stylesheet" href="/src/styles/pages/blog-page.scss" />
 
   <!-- Structured data: Blog + BreadcrumbList -->
   <script type="application/ld+json">
@@ -107,8 +106,7 @@
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
-  <!-- ✅ JEDINÝ globální vstup (dev i prod) -->
-  <script type="module" src="/src/main.js"></script>
+<script type="module" src="/src/blog-entry.js"></script>
 </head>
 
 <body data-page="blog">
@@ -315,9 +313,6 @@
     </p>
   </div>
 </footer>
-
-<!-- Blog listing logika -->
-<script type="module" src="/src/blog.js"></script>
 </body>
 </html>
 

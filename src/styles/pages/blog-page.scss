@@ -1,0 +1,26 @@
+// ------------------------------------------------------
+// AJSEE – Blog page CSS entry
+// Lightweight CSS for /blog without full main.scss.
+// ------------------------------------------------------
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/blog';
+@use '../partials/blog-page';
+@use '../partials/cookie-consent';
+
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}

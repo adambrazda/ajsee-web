@@ -74,14 +74,10 @@
   </script>
 
   <!-- Unified FE render ON. Inline TM zakázán. -->
-  <script>
-    window.__TM_INLINE_DISABLED = true;
-    window.__AJSEE_EVENTS_OWNS_FILTERS = true;
-
-    // Impact tracking – vyber jednu variantu:
-    // window.__impact = { clickBase: 'https://YOUR-IMPACT-REDIRECTOR/?url=' };
-    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
-  </script>
+<script>
+  window.__TM_INLINE_DISABLED = true;
+  window.__AJSEE_EVENTS_OWNS_FILTERS = true;
+</script>
 
   <!-- ✅ JEDINÝ vstup (dev i prod): Vite si v produkci doplní /assets/* sám -->
   <script type="module" src="/src/events-entry.js"></script>

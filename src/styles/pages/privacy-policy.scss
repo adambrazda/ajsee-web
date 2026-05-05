@@ -1,5 +1,27 @@
 @use '../globals' as *;
 
+
+
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/cookie-consent';
+
+// --- global small rules copied from main.scss ---
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+
 /* =========================================================
    PRIVACY POLICY PAGE
    AJSEE
@@ -337,12 +359,12 @@
 }
 
 .legal-basis {
-  margin-top: 0.8rem !important;
+  margin-top: 0.8rem;
   padding-top: 0.8rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.95rem !important;
-  line-height: 1.65 !important;
-  color: rgba(234, 240, 255, 0.78) !important;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgba(234, 240, 255, 0.78);
 
   strong {
     color: #ffffff;
@@ -409,6 +431,6 @@
 @media (prefers-reduced-motion: reduce) {
   .page-privacy-policy * {
     scroll-behavior: auto;
-    transition: none !important;
+    transition: none;
   }
 }

@@ -1,5 +1,27 @@
 @use '../globals' as *;
 
+
+
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/cookie-consent';
+
+// --- global small rules copied from main.scss ---
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+
 /* =========================================================
    COOKIES POLICY PAGE
    AJSEE
@@ -396,6 +418,6 @@
 @media (prefers-reduced-motion: reduce) {
   .page-cookies-policy * {
     scroll-behavior: auto;
-    transition: none !important;
+    transition: none;
   }
 }

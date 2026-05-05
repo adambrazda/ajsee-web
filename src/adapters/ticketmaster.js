@@ -7,6 +7,9 @@
 // DŮLEŽITÉ:
 // - Ticketmaster API vrací ev.url.
 // - Pokud je účet správně napojený, ev.url může být affiliate URL přes Impact/Ticketmaster.
+// - Někdy ale TM vrací URL ve tvaru:
+//   https://www.ticketmaster.cz/event/...?url=https://ticketmaster.evyy.net/...
+// - V takovém případě preferujeme vnitřní affiliate URL kvůli ochraně provize.
 // - Frontend neposílá uživatele přímo na ev.url.
 // - Místo toho používáme vlastní Netlify redirect funkci tmOutbound.
 // - Tím chráníme UX před rozbitým affiliate redirect chainem
@@ -78,30 +81,93 @@ function pickImage(ev) {
 }
 
 /**
+ * Vrátí true, pokud je URL náš povolený Ticketmaster affiliate redirect.
+ */
+function isTicketmasterAffiliateUrl(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname.toLowerCase() === 'ticketmaster.evyy.net';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Z Ticketmaster URL vytáhne preferovaný odkaz.
+ *
+ * Cíl:
+ * - Pokud TM vrátí rovnou affiliate URL, použijeme ji.
+ * - Pokud TM vrátí přímou Ticketmaster URL, ale uvnitř má parametr "url"
+ *   s affiliate odkazem ticketmaster.evyy.net, použijeme právě tento affiliate odkaz.
+ * - Jinak použijeme původní URL.
+ *
+ * Tím v maximální míře chráníme affiliate provizi.
+ */
+function extractPreferredTicketmasterUrl(rawUrl = '') {
+  const sourceUrl = String(rawUrl || '').trim();
+
+  if (!sourceUrl) return '';
+
+  try {
+    const parsed = new URL(sourceUrl);
+
+    // Pokud už je to přímo affiliate URL, preferujeme ji.
+    if (parsed.hostname.toLowerCase() === 'ticketmaster.evyy.net') {
+      return parsed.toString();
+    }
+
+    // Pokud Ticketmaster URL obsahuje uvnitř affiliate URL v parametru "url",
+    // preferujeme právě affiliate URL kvůli provizi.
+    const nestedUrl = parsed.searchParams.get('url');
+
+    if (nestedUrl) {
+      try {
+        const nested = new URL(nestedUrl);
+
+        if (nested.hostname.toLowerCase() === 'ticketmaster.evyy.net') {
+          return nested.toString();
+        }
+      } catch {
+        // ignorujeme a spadneme na původní URL
+      }
+    }
+
+    return parsed.toString();
+  } catch {
+    return sourceUrl;
+  }
+}
+
+/**
  * Build safe AJSEE outbound URL for Ticketmaster.
  *
  * Proč:
  * - Neposíláme uživatele z frontendu rovnou na affiliate URL.
- * - Primární affiliate URL zůstává zachovaná v parametru url.
+ * - Preferovaný odkaz posíláme do tmOutbound přes parametr "to".
+ * - Nepoužíváme parametr "url", aby se v edge-case scénářích nepropsal
+ *   do finální Ticketmaster URL.
  * - O případném fallbacku rozhoduje až serverová funkce tmOutbound.
  * - Do event objektu zbytečně nepřidáváme samostatnou direct Ticketmaster URL,
  *   aby se nesnižovala šance na připsání provize.
  */
 function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '') {
-  const sourceUrl = String(rawUrl || '').trim();
+  const preferredUrl = extractPreferredTicketmasterUrl(rawUrl);
 
-  if (!sourceUrl) return '';
+  if (!preferredUrl) return '';
 
   // Pokud už by URL náhodou byla jednou zabalená, nebalíme ji znovu.
-  if (sourceUrl.includes('/.netlify/functions/tmOutbound')) {
-    return sourceUrl;
+  if (preferredUrl.includes('/.netlify/functions/tmOutbound')) {
+    return preferredUrl;
   }
 
   const qs = new URLSearchParams();
-  qs.set('url', sourceUrl);
+
+  // Záměrně používáme "to", ne "url".
+  // "url" se nám předtím propisovalo až do finální Ticketmaster URL.
+  qs.set('to', preferredUrl);
 
   if (eventId) {
-    qs.set('eventId', String(eventId));
+    qs.set('eid', String(eventId));
   }
 
   return `/.netlify/functions/tmOutbound?${qs.toString()}`;
@@ -139,9 +205,11 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const putCommonParams = (qs) => {
     if (filters.keyword) qs.set('keyword', String(filters.keyword));
     if (segmentName) qs.set('segmentName', segmentName);
+
     if (filters.classificationName) {
       qs.set('classificationName', String(filters.classificationName));
     }
+
     if (filters.dateFrom) qs.set('dateFrom', String(filters.dateFrom));
     if (filters.dateTo) qs.set('dateTo', String(filters.dateTo));
 

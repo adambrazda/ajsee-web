@@ -1,0 +1,30 @@
+// ------------------------------------------------------
+// AJSEE – Events page SCSS entry
+// ------------------------------------------------------
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+
+@use '../partials/events';
+@use '../partials/events-page';
+@use '../partials/typeahead';
+@use '../partials/filters-premium';
+@use '../partials/date-popover';
+@use '../partials/cookie-consent';
+
+// Page-level globals previously provided by main.scss
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}

@@ -1,0 +1,50 @@
+﻿// ------------------------------------------------------
+// AJSEE – Homepage SCSS entry
+// ------------------------------------------------------
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/hero';
+
+@use '../partials/events';
+@use '../partials/filters-premium';
+@use '../partials/typeahead';
+@use '../partials/date-popover';
+
+@use '../partials/about-section';
+@use '../partials/blog';
+@use '../partials/contact';
+@use '../partials/footer';
+
+@use '../partials/cookie-consent';
+@use '../partials/waitlist-banner';
+
+// Page-level globals previously provided by main.scss
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+/* Homepage about visual – hidden on mobile */
+@media (max-width: 767px) {
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual {
+    display: none;
+  }
+
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-inner {
+    display: block;
+  }
+
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-textblock {
+    max-width: 100%;
+  }
+}

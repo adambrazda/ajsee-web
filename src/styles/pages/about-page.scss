@@ -1,0 +1,27 @@
+﻿// ------------------------------------------------------
+// AJSEE – About page SCSS entry point
+// ------------------------------------------------------
+// Cíl: netahat na About stránku celý globální main.scss bundle.
+// Obsahuje pouze společné UI + styly potřebné pro about.html.
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/about-page';
+@use '../partials/cookie-consent';
+
+// --- globální drobnosti převzaté z main.scss ---
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}

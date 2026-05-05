@@ -16,8 +16,7 @@ import { canonForInputCity } from './city/canonical.js';
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
 import { initContactFormValidation } from './contact-validate.js';
-import { initEventModal } from './event-modal.js';
-
+import { initEventModal, openEventModal } from './event-modal.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 
 /* ───────── global guard ───────── */
@@ -2330,35 +2329,87 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       toRender = out.slice(0, end);
     }
 
-    list.innerHTML = toRender.map(ev => {
-      const titleRaw = (typeof ev.title === 'string'
-        ? ev.title
-        : (ev.title?.[locale] || ev.title?.en || ev.title?.cs || Object.values(ev.title || {})[0])) || 'Untitled';
-      const title = esc(titleRaw);
-      const dateVal = ev.datetime || ev.date;
-      const date = dateVal
-        ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
-        : '';
-      const img = ev.image || '/images/fallbacks/concert0.jpg';
-      const detailHref = safeUrl(wrapAffiliate(adjustTicketmasterLanguage(ev.url || '', locale)));
-      const ticketsHref = safeUrl(wrapAffiliate(adjustTicketmasterLanguage(ev.tickets || ev.url || '', locale)));
-      const detailLabel = esc(t('event-details', 'Details'));
-      const ticketLabel = esc(t('event-tickets', 'Tickets'));
+const modalStore = new Map();
 
-      return `
-        <article class="event-card">
-          <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy"/>
-          <div class="event-content">
-            <h3 class="event-title">${title}</h3>
-            <p class="event-date">${date}</p>
-            <div class="event-buttons-group">
-              <a href="${detailHref}" class="btn-event detail" target="_blank" rel="noopener noreferrer">${detailLabel}</a>
-              <a href="${ticketsHref}" class="btn-event ticket" target="_blank" rel="noopener noreferrer">${ticketLabel}</a>
-            </div>
-          </div>
-        </article>
-      `;
-    }).join('');
+list.innerHTML = toRender.map((ev, index) => {
+  const modalId = String(ev.id || `event-${index}`);
+
+  const titleRaw = (typeof ev.title === 'string'
+    ? ev.title
+    : (ev.title?.[locale] || ev.title?.en || ev.title?.cs || Object.values(ev.title || {})[0])) || 'Untitled';
+
+  const title = esc(titleRaw);
+
+  const dateVal = ev.datetime || ev.date;
+  const date = dateVal
+    ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
+    : '';
+
+  const img = ev.image || '/images/fallbacks/concert0.jpg';
+
+  // Důležité:
+  // Ticket link zůstává přes stejný bezpečný outbound flow jako doteď.
+  // Modal dostane přesně tento spočítaný odkaz.
+  const ticketsHref = safeUrl(
+    wrapAffiliate(
+      adjustTicketmasterLanguage(ev.tickets || ev.url || '', locale)
+    )
+  );
+
+  ev.__ajseeTicketsHref = ticketsHref;
+  ev.__ajseeModalId = modalId;
+
+  modalStore.set(modalId, ev);
+
+  const detailLabel = esc(t('event-details', 'Detail'));
+  const ticketLabel = esc(t('event-tickets', 'Vstupenky'));
+
+  return `
+    <article class="event-card" data-event-id="${esc(modalId)}">
+      <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy"/>
+
+      <div class="event-content">
+        <h3 class="event-title">${title}</h3>
+        <p class="event-date">${date}</p>
+
+        <div class="event-buttons-group">
+          <button
+            type="button"
+            class="btn-event detail js-event-detail"
+            data-event-id="${esc(modalId)}"
+          >
+            ${detailLabel}
+          </button>
+
+          <a
+            href="${ticketsHref}"
+            class="btn-event ticket"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ${ticketLabel}
+          </a>
+        </div>
+      </div>
+    </article>
+  `;
+}).join('');
+
+list.__ajseeEventModalStore = modalStore;
+
+qsa('.js-event-detail', list).forEach(btn => {
+  btn.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const eventId = btn.getAttribute('data-event-id');
+    const selectedEvent = modalStore.get(eventId);
+
+    if (!selectedEvent) return;
+
+    openEventModal(selectedEvent, locale, { t });
+  });
+});
 
     announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);
   } catch {

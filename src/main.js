@@ -16,8 +16,7 @@ import { canonForInputCity } from './city/canonical.js';
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
 import { initContactFormValidation } from './contact-validate.js';
-import { initEventModal } from './event-modal.js';
-
+import { initEventModal, openEventModal } from './event-modal.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 
 /* ───────── global guard ───────── */

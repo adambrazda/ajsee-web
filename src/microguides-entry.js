@@ -40,12 +40,17 @@ function getCurrentLang() {
 }
 
 function exposeI18nHelpers() {
-  // Některé microguide komponenty používají window.i18n(key, fallback).
-  // main.js tu už nepoběží, proto poskytujeme lehkou kompatibilní vrstvu.
-  window.i18n = function i18nCompat(key, fallback) {
+  // Některé microguide komponenty používají window.i18n(key, fallback),
+  // jiné očekávají window.i18n.t(...) nebo window.i18n.get(...).
+  // main.js tu už nepoběží, proto držíme lehkou kompatibilní vrstvu.
+  const i18nCompat = function i18nCompat(key, fallback) {
     return t(key, fallback);
   };
 
+  i18nCompat.t = i18nCompat;
+  i18nCompat.get = i18nCompat;
+
+  window.i18n = window.i18n || i18nCompat;
   window.applyTranslations = window.applyTranslations || applyTranslations;
 }
 

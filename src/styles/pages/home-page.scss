@@ -48,3 +48,73 @@ body {
     max-width: 100%;
   }
 }
+
+/* =========================================================
+   Homepage About section – visual sizing lock
+   Drží orb vpravo a ve velikosti blízké about.html.
+   Mobile zůstává schovaný podle původního záměru.
+   ========================================================= */
+
+@media (min-width: 768px) {
+  body[data-page="home"] section.about-hero.about-hero--home {
+    overflow: hidden;
+    padding-block: clamp(4.2rem, 6vw, 5.4rem);
+  }
+
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(240px, 360px);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
+    width: min(100% - 2rem, 1180px);
+    margin-inline: auto;
+  }
+
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-textblock {
+    max-width: 560px;
+    min-width: 0;
+  }
+
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: end;
+    width: 100%;
+    max-width: 360px;
+    min-width: 0;
+  }
+
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual > *,
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual img,
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual svg,
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual [class*="orbit"],
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual [class*="globe"],
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual [class*="circle"] {
+    width: min(100%, 320px);
+    max-width: 320px;
+    height: auto;
+    max-height: 320px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1180px) {
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-inner {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  }
+
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual {
+    max-width: 320px;
+  }
+
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual > *,
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual img,
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual svg,
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual [class*="orbit"],
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual [class*="globe"],
+  body[data-page="home"] section.about-hero.about-hero--home .about-hero-visual [class*="circle"] {
+    width: min(100%, 300px);
+    max-width: 300px;
+    max-height: 300px;
+  }
+}

@@ -1,18 +1,37 @@
 // netlify/functions/tmOutbound.js
+// ---------------------------------------------------------
 // Bezpečný outbound redirect pro Ticketmaster odkazy.
-// Primárně zkusí affiliate URL, ale pokud redirect chain obsahuje problémovou doménu
-// nebo nastane chyba, pošle uživatele přímo na Ticketmaster URL z parametru "u".
+//
+// Cíl:
+// - Primárně zachovat affiliate / Impact cestu přes ticketmaster.evyy.net.
+// - Neposílat uživatele z frontendu přímo na affiliate redirect.
+// - Pokud affiliate redirect chain narazí na problémovou doménu nebo chybu,
+//   použít čistý fallback na přímý Ticketmaster event URL.
+// - Nepouštět interní technické parametry AJSEE do finální Ticketmaster URL.
+// ---------------------------------------------------------
 
 const BLOCKED_HOSTS = new Set([
   'ojrq.net',
   'www.ojrq.net',
 ]);
 
+const INTERNAL_QUERY_PARAMS = [
+  'url',
+  'eventId',
+  'affiliateUrl',
+  'directUrl',
+  'fallbackUrl',
+  'sourceUrl',
+];
+
 function isTicketmasterHost(hostname = '') {
   const h = hostname.toLowerCase();
-  return h === 'ticketmaster.com'
-    || h.endsWith('.ticketmaster.com')
-    || /^(.+\.)?ticketmaster\.[a-z]{2,}$/i.test(h);
+
+  return (
+    h === 'ticketmaster.com' ||
+    h.endsWith('.ticketmaster.com') ||
+    /^(.+\.)?ticketmaster\.[a-z]{2,}$/i.test(h)
+  );
 }
 
 function isAllowedAffiliateHost(hostname = '') {
@@ -43,28 +62,91 @@ function json(statusCode, data) {
   };
 }
 
-function extractDirectTicketmasterUrl(affiliateUrl) {
+/**
+ * Vyčistí přímou Ticketmaster URL od interních parametrů,
+ * které patří tmOutbound funkci, ne cílové Ticketmaster stránce.
+ */
+function sanitizeTicketmasterUrl(rawUrl = '') {
   try {
-    const parsed = new URL(affiliateUrl);
+    const parsed = new URL(rawUrl);
 
-    // Pokud už je to přímý Ticketmaster link, použijeme ho rovnou jako fallback.
+    if (!isTicketmasterHost(parsed.hostname)) return '';
+
+    for (const key of INTERNAL_QUERY_PARAMS) {
+      parsed.searchParams.delete(key);
+    }
+
+    // Odstraníme jen falešný placeholder, pokud by se někde znovu objevil.
+    const irclickid = parsed.searchParams.get('irclickid');
+    if (
+      irclickid &&
+      (
+        irclickid.includes('<') ||
+        irclickid.includes('>') ||
+        irclickid.toUpperCase().includes('SET_YOUR_CLICK_ID')
+      )
+    ) {
+      parsed.searchParams.delete('irclickid');
+    }
+
+    return parsed.toString();
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Z affiliate URL vytáhne cílový Ticketmaster event link z parametru "u".
+ * Pokud dostane rovnou Ticketmaster link, vrátí jeho očištěnou verzi.
+ */
+function extractDirectTicketmasterUrl(rawUrl = '') {
+  try {
+    const parsed = new URL(rawUrl);
+
+    // Přímý Ticketmaster link.
     if (isTicketmasterHost(parsed.hostname)) {
-      return parsed.toString();
+      return sanitizeTicketmasterUrl(parsed.toString());
     }
 
     // Impact / affiliate link typicky nese cílovou URL v parametru "u".
     const encoded = parsed.searchParams.get('u');
     if (!encoded) return '';
 
-    const direct = new URL(encoded);
-    if (!isTicketmasterHost(direct.hostname)) return '';
-
-    return direct.toString();
+    return sanitizeTicketmasterUrl(encoded);
   } catch {
     return '';
   }
 }
 
+/**
+ * Někdy se může stát, že přijde Ticketmaster URL, která v sobě nese
+ * interní parametr "url" s affiliate linkem. V takovém případě se pokusíme
+ * affiliate link znovu vytáhnout a preferovat ho kvůli provizi.
+ */
+function extractNestedAffiliateUrl(rawUrl = '') {
+  try {
+    const parsed = new URL(rawUrl);
+
+    if (isAllowedAffiliateHost(parsed.hostname)) {
+      return parsed.toString();
+    }
+
+    const nested = parsed.searchParams.get('url');
+    if (!nested) return '';
+
+    const nestedUrl = new URL(nested);
+    if (!isAllowedAffiliateHost(nestedUrl.hostname)) return '';
+
+    return nestedUrl.toString();
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Zkontroluje prvních pár kroků affiliate redirectu.
+ * Když narazí na blokovanou doménu nebo chybu, vrátí ok:false.
+ */
 async function inspectAffiliateRedirect(affiliateUrl) {
   let current = affiliateUrl;
 
@@ -120,42 +202,62 @@ export const handler = async (event) => {
     return safeRedirect('https://www.ticketmaster.cz/');
   }
 
-  let affiliateUrl;
+  let parsedInput;
 
   try {
-    affiliateUrl = new URL(rawUrl);
+    parsedInput = new URL(rawUrl);
   } catch {
     return safeRedirect('https://www.ticketmaster.cz/');
   }
 
-  const affiliateHost = affiliateUrl.hostname.toLowerCase();
+  const inputHost = parsedInput.hostname.toLowerCase();
 
-  const isAllowed =
-    isAllowedAffiliateHost(affiliateHost) ||
-    isTicketmasterHost(affiliateHost);
+  const inputIsAffiliate = isAllowedAffiliateHost(inputHost);
+  const inputIsTicketmaster = isTicketmasterHost(inputHost);
 
-  if (!isAllowed) {
+  if (!inputIsAffiliate && !inputIsTicketmaster) {
     return safeRedirect('https://www.ticketmaster.cz/');
   }
 
-  const directUrl = extractDirectTicketmasterUrl(affiliateUrl.toString());
+  // Kvůli ochraně provize se pokusíme vždy najít affiliate URL.
+  // Buď je rawUrl přímo affiliate URL, nebo je schovaná v parametru "url".
+  const affiliateUrl = inputIsAffiliate
+    ? parsedInput.toString()
+    : extractNestedAffiliateUrl(parsedInput.toString());
 
-  // Když nemáme bezpečný fallback, raději stále pošleme uživatele na původní URL.
-  // Ale u evyy.net by directUrl z parametru "u" měl být dostupný.
+  // Čistý fallback na Ticketmaster.
+  // Nikdy do něj nepouštíme interní parametry url/eventId apod.
+  const directUrl = affiliateUrl
+    ? extractDirectTicketmasterUrl(affiliateUrl)
+    : sanitizeTicketmasterUrl(parsedInput.toString());
+
   if (!directUrl) {
-    return safeRedirect(affiliateUrl.toString());
+    // Když nemáme bezpečný přímý fallback, ale máme affiliate URL,
+    // raději zachováme affiliate cestu než ji zbytečně zahodit.
+    if (affiliateUrl) {
+      return safeRedirect(affiliateUrl);
+    }
+
+    return safeRedirect('https://www.ticketmaster.cz/');
   }
 
-  const check = await inspectAffiliateRedirect(affiliateUrl.toString());
+  // Primární cesta: affiliate link.
+  // Direct fallback použijeme jen tehdy, když affiliate redirect vypadá rozbitě.
+  if (affiliateUrl) {
+    const check = await inspectAffiliateRedirect(affiliateUrl);
 
-  if (!check.ok) {
-    console.warn('[tmOutbound] Affiliate redirect failed, using direct fallback:', {
-      reason: check.reason,
-      eventId: q.eventId || null,
-    });
+    if (!check.ok) {
+      console.warn('[tmOutbound] Affiliate redirect failed, using clean direct fallback:', {
+        reason: check.reason,
+        eventId: q.eventId || null,
+      });
 
-    return safeRedirect(directUrl);
+      return safeRedirect(directUrl);
+    }
+
+    return safeRedirect(affiliateUrl);
   }
 
-  return safeRedirect(affiliateUrl.toString());
+  // Pokud affiliate URL k dispozici není, použijeme čistý přímý Ticketmaster link.
+  return safeRedirect(directUrl);
 };

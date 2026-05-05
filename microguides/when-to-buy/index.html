@@ -1,0 +1,497 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Kdy koupit: dynamické ceny a nejlepší časová okna | AJSEE</title>
+  <meta name="description" content="Jak načasovat nákup vstupenek, porozumět poptávkové křivce a využít dynamické ceny ve svůj prospěch." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ajsee.cz/microguides/when-to-buy" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta property="og:title" content="Kdy koupit: dynamické ceny a nejlepší časová okna" />
+  <meta property="og:description" content="Jak načasovat nákup vstupenek, porozumět poptávkové křivce a využít dynamické ceny ve svůj prospěch." />
+  <meta property="og:url" content="https://ajsee.cz/microguides/when-to-buy" />
+  <meta property="og:image" content="https://ajsee.cz/uploads/cover-06.jpg" />
+  <meta property="og:image:alt" content="Sedadla v divadle a graf ceny – průvodce AJSEE: kdy koupit, aby dynamické ceny pracovaly pro vás" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Kdy koupit: dynamické ceny a nejlepší časová okna" />
+  <meta name="twitter:description" content="Jak načasovat nákup vstupenek, porozumět poptávkové křivce a využít dynamické ceny ve svůj prospěch." />
+  <meta name="twitter:image" content="https://ajsee.cz/uploads/cover-06.jpg" />
+  <meta name="twitter:image:alt" content="Sedadla v divadle a graf ceny – průvodce AJSEE: kdy koupit, aby dynamické ceny pracovaly pro vás" />
+
+  <script id="ajsee-microguide-jsonld" type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://ajsee.cz/microguides/when-to-buy#article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ajsee.cz/microguides/when-to-buy"},"headline":"Kdy koupit: dynamické ceny a nejlepší časová okna","description":"Jak načasovat nákup vstupenek, porozumět poptávkové křivce a využít dynamické ceny ve svůj prospěch.","image":["https://ajsee.cz/uploads/cover-06.jpg"],"inLanguage":"cs","articleSection":"theatre","articleBody":"Jak načasovat nákup vstupenek, porozumět poptávkové křivce a využít dynamické ceny ve svůj prospěch. O co jde - Ceny vstupenek se mění podle **poptávky, termínu a obsazenosti**. - Dobrá zpráva: načasování umí pracovat **pro vás**, ne proti vám. Rychlá doporučení (TL;DR) - **Út/St bývají nejvýhodnější**, premiéry/víkendy nejdražší. - Zvažte **velký předstih** nebo **legální last-minute** – podle poptávky. - **Flexibilita** v datu/čase/sekci = **úspora**. - Sledujte **poplatky a měnu**; nastavte si **upozornění**. Čemu se vyhnout - Panické nákupy při prvním zdražení. - Neoficiální zdroje a DM nabídky. - Předražené „balíčky“ bez jasných podmínek. - Ignorování **VOP**, poplatků a možností **refundace**. FAQ, glosář - **Který den v týdnu je nejlevnější?** Často **úterý/středa**, ale řídí se to poptávkou. - **Je lepší čekat na slevu?** Někdy ano, ale u populárních titulů může cena dál růst. - **Pomůže seating map?** Ano — zvažte sekci s podobným výhledem za lepší cenu. - **Co když potřebuji bezbariérové místo?** Kontaktujte přímo **venue**. - **Dynamické ceny** – automatické úpravy ceny podle poptávky. - **Rush/Lottery/Day seats** – oficiální last-minute možnosti. - **Returns** – vrácené lístky, často u pokladny.","datePublished":"2025-09-06","dateModified":"2025-09-06","author":{"@type":"Organization","name":"AJSEE","url":"https://ajsee.cz/"},"publisher":{"@type":"Organization","name":"AJSEE","url":"https://ajsee.cz/","logo":{"@type":"ImageObject","url":"https://ajsee.cz/images/logo-ajsee.png"}}},{"@type":"BreadcrumbList","@id":"https://ajsee.cz/microguides/when-to-buy#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"AJSEE","item":"https://ajsee.cz/"},{"@type":"ListItem","position":2,"name":"Micro-guides","item":"https://ajsee.cz/microguides/"},{"@type":"ListItem","position":3,"name":"Kdy koupit: dynamické ceny a nejlepší časová okna","item":"https://ajsee.cz/microguides/when-to-buy"}]}]}</script>
+
+  <meta name="theme-color" content="#0077cc" />
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Canonical pro mikroprůvodce: /microguides/ i /microguides/:slug -->
+  <script>
+    (function () {
+      var origin = 'https://ajsee.cz';
+      var params = new URLSearchParams(window.location.search);
+      var querySlug = (params.get('slug') || '').trim();
+
+      function safeDecode(value) {
+        try {
+          return decodeURIComponent(value);
+        } catch (e) {
+          return value;
+        }
+      }
+
+      var pathParts = window.location.pathname
+        .replace(/\/+$/, '')
+        .split('/')
+        .filter(Boolean);
+
+      var pathSlug = pathParts[0] === 'microguides' && pathParts[1]
+        ? safeDecode(pathParts[1])
+        : '';
+
+      var slug = querySlug || pathSlug;
+
+      window.AJSEE_MG_SLUG = slug;
+
+      var canonicalUrl = slug
+        ? origin + '/microguides/' + encodeURIComponent(slug)
+        : origin + '/microguides/';
+
+      function upsertLink(rel, href) {
+        var el = document.querySelector('link[rel="' + rel + '"]');
+        if (!el) {
+          el = document.createElement('link');
+          el.setAttribute('rel', rel);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('href', href);
+      }
+
+      function upsertMetaProperty(property, content) {
+        var el = document.querySelector('meta[property="' + property + '"]');
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('property', property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      }
+
+      upsertLink('canonical', canonicalUrl);
+      upsertMetaProperty('og:url', canonicalUrl);
+    })();
+  </script>
+
+  <!-- Prémiové fonty (sjednoceno s ostatními stránkami) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="/src/styles/pages/microguides-page.scss" />
+
+  <!-- Nastavení jazyka co nejdříve -->
+  <script>
+    (function () {
+      var supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+      var params = new URLSearchParams(location.search);
+      var langParam = params.get('lang');
+      var htmlLang = document.documentElement.getAttribute('lang') || 'cs';
+      var lang = String(langParam || htmlLang || 'cs').toLowerCase().split(/[-_]/)[0];
+
+      if (lang === 'cz') lang = 'cs';
+      if (supported.indexOf(lang) === -1) lang = 'cs';
+
+      document.documentElement.setAttribute('lang', lang);
+      window.AJSEE_LANG = lang;
+
+      try {
+        document.cookie = 'aj_lang=' + encodeURIComponent(lang) + ';path=/;max-age=' + (60 * 60 * 24 * 365) + ';SameSite=Lax';
+        localStorage.setItem('ajsee.lang', lang);
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
+  <script>
+    window.__TM_INLINE_DISABLED = true;
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
+  </script>
+
+  <!-- dataLayer init (pro GA4 i budoucí GTM) + mg_init -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    (function () {
+      var params = new URLSearchParams(location.search);
+
+      window.dataLayer.push({
+        event: 'mg_init',
+        pageType: window.AJSEE_MG_SLUG ? 'microguide-detail' : 'microguides-index',
+        'mg.slug': window.AJSEE_MG_SLUG || params.get('slug') || '',
+        'mg.lang': window.AJSEE_LANG || 'cs'
+      });
+    })();
+  </script>
+
+  <!-- GA4 pouze na HTTPS/produkci -->
+  <script>
+    (function () {
+      var isProdHttps =
+        location.protocol === 'https:' &&
+        !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
+
+      if (!isProdHttps) return;
+
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
+      script.onload = function () {
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag(){ dataLayer.push(arguments); }
+
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-K0ZS0D9JLK', {
+          page_path: location.pathname + location.search
+        });
+      };
+
+      document.head.appendChild(script);
+    })();
+  </script>
+
+  <script type="module" src="/src/microguides-entry.js"></script>
+</head>
+
+<body data-page="microguides">
+  <header class="site-header"></header>
+
+  
+  <main class="mg" id="mgRoot" data-mg-root>
+    <!-- AJSEE GENERATED MICROGUIDE DETAIL -->
+    <nav class="mg-breadcrumb" aria-label="Breadcrumb">
+      <a href="/blog?lang=cs" data-i18n="mg.backToBlog">Zpět na blog</a>
+      <span aria-hidden="true">/</span>
+      <span data-i18n="mg.breadcrumb">AJSEE vysvětluje</span>
+    </nav>
+
+    <article class="mg-article" itemscope itemtype="https://schema.org/Article">
+      <header class="mg-hero">
+        <div class="mg-hero-text">
+          <p class="mg-kicker">AJSEE vysvětluje</p>
+          <h1 class="mg-title" itemprop="headline">Kdy koupit: dynamické ceny a nejlepší časová okna</h1>
+          <p class="mg-meta"><span>5 min čtení</span></p>
+          <div class="mg-actions"></div>
+        </div>
+
+        <figure class="mg-hero-media">
+          <img src="/uploads/cover-06.jpg" alt="Sedadla v divadle a graf ceny – průvodce AJSEE: kdy koupit, aby dynamické ceny pracovaly pro vás" width="1280" height="720" loading="eager" decoding="async">
+        </figure>
+      </header>
+
+      
+      <aside class="mg-progress" aria-label="Postup průvodcem">
+        <ol>
+          <li><a href="#intro">O co jde</a></li>
+          <li><a href="#s1">Rychlá doporučení (TL;DR)</a></li>
+          <li><a href="#s2">Čemu se vyhnout</a></li>
+          <li><a href="#s3">FAQ, glosář</a></li>
+        </ol>
+      </aside>
+
+      <div class="mg-content">
+        
+          <section id="intro" class="mg-section" aria-labelledby="intro-title">
+            <h2 id="intro-title">O co jde</h2>
+            <ul><li>Ceny vstupenek se mění podle <strong>poptávky, termínu a obsazenosti</strong>.</li><li>Dobrá zpráva: načasování umí pracovat <strong>pro vás</strong>, ne proti vám.</li></ul>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/uploads/06-01.svg" alt="ikona grafu" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+          <section id="s1" class="mg-section" aria-labelledby="s1-title">
+            <h2 id="s1-title">Rychlá doporučení (TL;DR)</h2>
+            <ul><li><strong>Út/St bývají nejvýhodnější</strong>, premiéry/víkendy nejdražší.</li><li>Zvažte <strong>velký předstih</strong> nebo <strong>legální last-minute</strong> – podle poptávky.</li><li><strong>Flexibilita</strong> v datu/čase/sekci = <strong>úspora</strong>.</li><li>Sledujte <strong>poplatky a měnu</strong>; nastavte si <strong>upozornění</strong>.</li></ul>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/uploads/06-02.svg" alt="ikona kalendáře" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+          <section id="s2" class="mg-section" aria-labelledby="s2-title">
+            <h2 id="s2-title">Čemu se vyhnout</h2>
+            <ul><li>Panické nákupy při prvním zdražení.</li><li>Neoficiální zdroje a DM nabídky.</li><li>Předražené „balíčky“ bez jasných podmínek.</li><li>Ignorování <strong>VOP</strong>, poplatků a možností <strong>refundace</strong>.</li></ul>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/uploads/06-03.svg" alt="avoid" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+          <section id="s3" class="mg-section" aria-labelledby="s3-title">
+            <h2 id="s3-title">FAQ, glosář</h2>
+            <ul><li><strong>Který den v týdnu je nejlevnější?</strong> Často <strong>úterý/středa</strong>, ale řídí se to poptávkou.</li><li><strong>Je lepší čekat na slevu?</strong> Někdy ano, ale u populárních titulů může cena dál růst.</li><li><strong>Pomůže seating map?</strong> Ano — zvažte sekci s podobným výhledem za lepší cenu.</li><li><strong>Co když potřebuji bezbariérové místo?</strong> Kontaktujte přímo <strong>venue</strong>.</li><li><strong>Dynamické ceny</strong> – automatické úpravy ceny podle poptávky.</li><li><strong>Rush/Lottery/Day seats</strong> – oficiální last-minute možnosti.</li><li><strong>Returns</strong> – vrácené lístky, často u pokladny.</li></ul>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/uploads/05-05.svg" alt="faq" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+
+        <footer class="mg-footer-cta">
+          
+          <a class="ib-cta" href="/coming-soon?lang=cs">Chci na čekací listinu</a>
+        </footer>
+      </div>
+
+      <nav class="mg-mobile-nav" aria-label="Micro-guide navigation">
+        <button class="mg-prev" type="button">Předchozí</button>
+        <div class="mg-dots"></div>
+        <button class="mg-next" type="button">Další</button>
+      </nav>
+    </article>
+
+    <div id="mg-share" aria-hidden="true"></div>
+  </main>
+
+  <!-- COMMENTS: begin (Netlify Forms – registrace při buildu) -->
+  <section class="comments" id="comments">
+    <h3 class="comments-title" data-i18n-key="comments.title">Komentáře</h3>
+
+    <form
+      id="commentForm"
+      name="site-comments"
+      method="POST"
+      data-netlify="true"
+      data-netlify-recaptcha="true"
+      netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="site-comments" />
+      <input type="hidden" name="postId" id="commentPostId" value="" />
+      <input type="hidden" name="postType" id="commentPostType" value="microguide" />
+      <input type="hidden" name="lang" id="commentLang" value="" />
+
+      <p class="hp" hidden>
+        <label>Don’t fill this out: <input name="bot-field" /></label>
+      </p>
+
+      <div class="comments-grid">
+        <div class="form-row">
+          <label for="c_name" data-i18n-key="comments.name">Jméno</label>
+          <input
+            id="c_name"
+            name="name"
+            type="text"
+            required
+            autocomplete="name"
+            placeholder="Tvoje jméno"
+            data-i18n-placeholder="comments.namePh"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="c_email" data-i18n-key="comments.email">E-mail</label>
+          <input
+            id="c_email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="tvuj@email.cz"
+            data-i18n-placeholder="comments.emailPh"
+          />
+          <small class="hint" data-i18n-key="comments.emailHint">E-mail se nezobrazuje veřejně.</small>
+        </div>
+
+        <div class="form-row">
+          <label for="c_website" data-i18n-key="comments.website">Web (nepovinné)</label>
+          <input
+            id="c_website"
+            name="website"
+            type="url"
+            placeholder="https://tvoje-stranka.cz"
+            data-i18n-placeholder="comments.websitePh"
+          />
+          <small class="hint" data-i18n-key="comments.websiteHint">Web se veřejně nezobrazuje.</small>
+        </div>
+
+        <div class="form-row form-row--full">
+          <label for="c_comment" data-i18n-key="comments.comment">Komentář</label>
+          <textarea
+            id="c_comment"
+            name="comment"
+            rows="5"
+            required
+            placeholder="Napiš svůj komentář…"
+            data-i18n-placeholder="comments.commentPh"
+          ></textarea>
+        </div>
+
+        <div data-netlify-recaptcha="true"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" data-i18n-key="comments.submit">Odeslat komentář</button>
+          <p class="form-status" id="commentStatus" aria-live="polite"></p>
+        </div>
+      </div>
+    </form>
+
+    <div id="commentsList" class="comments-list" aria-live="polite"></div>
+  </section>
+  <!-- COMMENTS: end -->
+
+  <noscript>Pro zobrazení mikroprůvodce povol JavaScript.</noscript>
+
+  <footer class="site-footer"></footer>
+
+  <!-- Runtime pro micro-guides -->
+  <script type="module" src="/src/mg-runtime.js"></script>
+
+  <!-- Inline init pro komentáře: nastaví lang/postId/postType, načte a odesílá -->
+  <script>
+    (function () {
+      const qs = new URLSearchParams(location.search);
+      const lang =
+        (qs.get('lang') || document.documentElement.getAttribute('lang') || 'cs')
+          .toLowerCase().split(/[-_]/)[0];
+
+      const currentSlug =
+        window.AJSEE_MG_SLUG ||
+        qs.get('slug') ||
+        location.pathname.replace(/^\/microguides\/?/, '').replace(/\/$/, '') ||
+        location.pathname;
+
+      const commentLang = document.getElementById('commentLang');
+      const commentPostType = document.getElementById('commentPostType');
+      const commentPostId = document.getElementById('commentPostId');
+
+      if (commentLang) commentLang.value = lang;
+      if (commentPostType) commentPostType.value = 'microguide';
+      if (commentPostId) commentPostId.value = currentSlug;
+
+      const postType = 'microguide';
+      const postId = currentSlug;
+      const statusEl = document.getElementById('commentStatus');
+      const listEl = document.getElementById('commentsList');
+
+      const escape = (value = '') =>
+        String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+
+      function fmtDate(iso) {
+        try {
+          const date = new Date(iso);
+
+          return date.toLocaleString(lang, {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        } catch {
+          return iso;
+        }
+      }
+
+      function renderComments(items) {
+        if (!listEl) return;
+
+        if (!Array.isArray(items) || !items.length) {
+          listEl.innerHTML = '<p class="comments-empty" data-i18n-key="comments.empty">Zatím žádné komentáře.</p>';
+          return;
+        }
+
+        listEl.innerHTML = items.map(item => `
+          <article class="comment-item" data-id="${escape(item.id)}">
+            <header class="comment-head">
+              <strong class="comment-author">${escape(item.name || 'Anonym')}</strong>
+              <time class="comment-date" datetime="${escape(item.createdAt)}">${escape(fmtDate(item.createdAt))}</time>
+            </header>
+            <div class="comment-body"><p>${escape(item.comment).replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>')}</p></div>
+          </article>
+        `).join('');
+      }
+
+      async function loadComments() {
+        if (!listEl) return;
+
+        try {
+          const url = new URL('/.netlify/functions/get-comments', location.origin);
+          url.searchParams.set('postId', postId);
+          url.searchParams.set('postType', postType);
+          url.searchParams.set('lang', lang);
+
+          const response = await fetch(url.toString(), {
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Could not load comments');
+          }
+
+          const data = await response.json();
+          renderComments(data.items || []);
+        } catch {
+          // V localhostu může Netlify function vracet 500 – neblokujeme kvůli tomu článek.
+          listEl.innerHTML = '<p class="comments-error">Komentáře se v lokálním prostředí nepodařilo načíst.</p>';
+        }
+      }
+
+      loadComments();
+
+      const form = document.getElementById('commentForm');
+      if (!form) return;
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+
+        if (!formData.get('form-name')) {
+          formData.set('form-name', 'site-comments');
+        }
+
+        fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        })
+          .then(() => {
+            if (statusEl) {
+              statusEl.textContent = lang === 'cs'
+                ? 'Díky! Komentář byl odeslán.'
+                : 'Thanks! Your comment was submitted.';
+            }
+
+            form.reset();
+            setTimeout(loadComments, 1200);
+          })
+          .catch(() => {
+            if (statusEl) {
+              statusEl.textContent = lang === 'cs'
+                ? 'Odeslání se nepodařilo.'
+                : 'Submission failed.';
+            }
+          });
+      }, { passive: false });
+    })();
+  </script>
+</body>
+</html>

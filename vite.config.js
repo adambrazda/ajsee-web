@@ -1,13 +1,58 @@
 // vite.config.js
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import { existsSync, createReadStream } from 'fs';
+import { existsSync, createReadStream, readdirSync } from 'fs';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 // Helper: přidej vstup jen když existuje
 function addIfExists(obj, key, filepath) {
   if (existsSync(filepath)) obj[key] = filepath;
   return obj;
+}
+
+// Helper: bezpečný název rollup input klíče
+function safeInputKey(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+// Najde staticky generované microguide detail stránky:
+// microguides/{slug}/index.html
+function getMicroguideDetailInputs() {
+  const inputs = {};
+  const microguidesDir = resolve(__dirname, 'microguides');
+
+  if (!existsSync(microguidesDir)) {
+    return inputs;
+  }
+
+  let entries = [];
+
+  try {
+    entries = readdirSync(microguidesDir, { withFileTypes: true });
+  } catch {
+    return inputs;
+  }
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+
+    const slug = entry.name;
+    const htmlPath = resolve(microguidesDir, slug, 'index.html');
+
+    if (!existsSync(htmlPath)) continue;
+
+    const key = safeInputKey(`microguides-${slug}`);
+
+    if (key) {
+      inputs[key] = htmlPath;
+    }
+  }
+
+  return inputs;
 }
 
 // Dev-only middleware: přesměruj staré cesty bez /src/
@@ -22,18 +67,20 @@ function devRedirectPlugin() {
           res.setHeader('Location', '/src/main.js');
           return res.end();
         }
+
         if (req.url === '/homepage-blog.js') {
           res.statusCode = 302;
           res.setHeader('Location', '/src/homepage-blog.js');
           return res.end();
         }
+
         next();
       });
     }
   };
 }
 
-// v devu obslouží /locales/* ze src/locales/*
+// V devu obslouží /locales/* ze src/locales/*
 function devLocalesAlias() {
   return {
     name: 'ajsee-dev-locales-alias',
@@ -91,7 +138,11 @@ function devHtmlRewriteAssetsPlugin() {
       ];
 
       let out = html;
-      for (const { re, replace } of mappings) out = out.replace(re, replace);
+
+      for (const { re, replace } of mappings) {
+        out = out.replace(re, replace);
+      }
+
       return out;
     }
   };
@@ -123,6 +174,7 @@ export default defineConfig({
           'privacy-policy': resolve(__dirname, 'privacy-policy.html'),
           'cookies-policy': resolve(__dirname, 'cookies-policy.html'),
           microguides: resolve(__dirname, 'microguides/index.html'),
+          ...getMicroguideDetailInputs(),
         };
 
         addIfExists(inputs, 'coming-soon', resolve(__dirname, 'coming-soon/index.html'));

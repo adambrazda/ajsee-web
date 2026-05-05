@@ -1,0 +1,519 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Jak číst seating mapu | AJSEE</title>
+  <meta name="description" content="Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ajsee.cz/microguides/seating-map" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content="cs_CZ" />
+  <meta property="og:site_name" content="AJSEE" />
+  <meta property="og:title" content="Jak číst seating mapu" />
+  <meta property="og:description" content="Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst." />
+  <meta property="og:url" content="https://ajsee.cz/microguides/seating-map" />
+  <meta property="og:image" content="https://ajsee.cz/images/microguides/seating-map/cover.webp" />
+  <meta property="og:image:alt" content="Ilustrační foto hlediště" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Jak číst seating mapu" />
+  <meta name="twitter:description" content="Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst." />
+  <meta name="twitter:image" content="https://ajsee.cz/images/microguides/seating-map/cover.webp" />
+  <meta name="twitter:image:alt" content="Ilustrační foto hlediště" />
+
+  <script id="ajsee-microguide-jsonld" type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://ajsee.cz/microguides/seating-map#article","mainEntityOfPage":{"@type":"WebPage","@id":"https://ajsee.cz/microguides/seating-map"},"headline":"Jak číst seating mapu","description":"Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst.","image":["https://ajsee.cz/images/microguides/seating-map/cover.webp"],"inLanguage":"cs","articleSection":"theatre","articleBody":"Krátký mikroprůvodce AJSEE: jak číst seating mapu a neudělat chybu při výběru míst. Intro k mikroprůvodci Vybrané sedadlo rozhoduje o zážitku víc než samotná cena. Správné čtení mapy ti pomůže prověřit výhled, akustiku i komfort – a vybrat nejlepší poměr cena/zážitek. Níže najdeš rychlé signály, které se vyplatí zkontrolovat před nákupem. Sleduj „restricted view“ a překážky Ikonky sloupů, zábradlí, kamer či zvukové věže znamenají riziko omezeného výhledu. Obzvlášť u koncertů si všímej umístění mixpultu a světelné konstrukce – místa přímo za nimi mívají horší výhled i zvuk. Pokud je v popisu sektoru výstraha, ber ji vážně. Balkon není vždy nejlepší Balkon umí skvěle fungovat, ale záleží na sklonu a úhlu na scénu. Příliš plochý balkon = víc hlav v zorném poli a slabší pocit blízkosti. Jistota bývá středové bloky a první řady balkonu; rohy ber jen při výrazně lepší ceně. Pro tip Středová osa a zhruba 2/3 hloubky sálu bývá nejjistější kombinace výhledu i zvuku. Legroom a akustika rozlišují zážitek Starší sály mívají menší rozteč řad – u delších programů se komfort opravdu vyplácí. Akusticky je bezpečná volba střed cca v 2/3 hloubky sálu; úplně vpředu může být zvuk přepálený, u stěn se víc odráží. Stalls vs. lóže se liší charakterem zvuku i prostorem. Drž středovou osu Ve většině sálů poskytuje středová osa nejlepší vyvážení zvuku i obrazu. Postupuj spíš do hloubky téhož bloku než do extrémně bočních sektorů. „Zlatý střed“ bývá střední výška sálu a středový blok. Uličkové vs. prostřední místo Ulička = víc prostoru na nohy a jednodušší odchod, ale i víc rušení. Prostředek řady mívá klid a lepší soustředění, ovšem horší přístup. Přizpůsob volbě typu akce a tomu, jestli často vstáváš. Tvůj tip na nejlepší řadu? Napiš do komentářů.","datePublished":"2025-08-22","dateModified":"2025-08-22","author":{"@type":"Organization","name":"AJSEE","url":"https://ajsee.cz/"},"publisher":{"@type":"Organization","name":"AJSEE","url":"https://ajsee.cz/","logo":{"@type":"ImageObject","url":"https://ajsee.cz/images/logo-ajsee.png"}}},{"@type":"BreadcrumbList","@id":"https://ajsee.cz/microguides/seating-map#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"AJSEE","item":"https://ajsee.cz/"},{"@type":"ListItem","position":2,"name":"Micro-guides","item":"https://ajsee.cz/microguides/"},{"@type":"ListItem","position":3,"name":"Jak číst seating mapu","item":"https://ajsee.cz/microguides/seating-map"}]}]}</script>
+
+  <meta name="theme-color" content="#0077cc" />
+  <link rel="icon" href="/images/logo-ajsee.png" />
+
+  <!-- Canonical pro mikroprůvodce: /microguides/ i /microguides/:slug -->
+  <script>
+    (function () {
+      var origin = 'https://ajsee.cz';
+      var params = new URLSearchParams(window.location.search);
+      var querySlug = (params.get('slug') || '').trim();
+
+      function safeDecode(value) {
+        try {
+          return decodeURIComponent(value);
+        } catch (e) {
+          return value;
+        }
+      }
+
+      var pathParts = window.location.pathname
+        .replace(/\/+$/, '')
+        .split('/')
+        .filter(Boolean);
+
+      var pathSlug = pathParts[0] === 'microguides' && pathParts[1]
+        ? safeDecode(pathParts[1])
+        : '';
+
+      var slug = querySlug || pathSlug;
+
+      window.AJSEE_MG_SLUG = slug;
+
+      var canonicalUrl = slug
+        ? origin + '/microguides/' + encodeURIComponent(slug)
+        : origin + '/microguides/';
+
+      function upsertLink(rel, href) {
+        var el = document.querySelector('link[rel="' + rel + '"]');
+        if (!el) {
+          el = document.createElement('link');
+          el.setAttribute('rel', rel);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('href', href);
+      }
+
+      function upsertMetaProperty(property, content) {
+        var el = document.querySelector('meta[property="' + property + '"]');
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('property', property);
+          document.head.appendChild(el);
+        }
+        el.setAttribute('content', content);
+      }
+
+      upsertLink('canonical', canonicalUrl);
+      upsertMetaProperty('og:url', canonicalUrl);
+    })();
+  </script>
+
+  <!-- Prémiové fonty (sjednoceno s ostatními stránkami) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="/src/styles/pages/microguides-page.scss" />
+
+  <!-- Nastavení jazyka co nejdříve -->
+  <script>
+    (function () {
+      var supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+      var params = new URLSearchParams(location.search);
+      var langParam = params.get('lang');
+      var htmlLang = document.documentElement.getAttribute('lang') || 'cs';
+      var lang = String(langParam || htmlLang || 'cs').toLowerCase().split(/[-_]/)[0];
+
+      if (lang === 'cz') lang = 'cs';
+      if (supported.indexOf(lang) === -1) lang = 'cs';
+
+      document.documentElement.setAttribute('lang', lang);
+      window.AJSEE_LANG = lang;
+
+      try {
+        document.cookie = 'aj_lang=' + encodeURIComponent(lang) + ';path=/;max-age=' + (60 * 60 * 24 * 365) + ';SameSite=Lax';
+        localStorage.setItem('ajsee.lang', lang);
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
+  <script>
+    window.__TM_INLINE_DISABLED = true;
+    window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
+  </script>
+
+  <!-- dataLayer init (pro GA4 i budoucí GTM) + mg_init -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    (function () {
+      var params = new URLSearchParams(location.search);
+
+      window.dataLayer.push({
+        event: 'mg_init',
+        pageType: window.AJSEE_MG_SLUG ? 'microguide-detail' : 'microguides-index',
+        'mg.slug': window.AJSEE_MG_SLUG || params.get('slug') || '',
+        'mg.lang': window.AJSEE_LANG || 'cs'
+      });
+    })();
+  </script>
+
+  <!-- GA4 pouze na HTTPS/produkci -->
+  <script>
+    (function () {
+      var isProdHttps =
+        location.protocol === 'https:' &&
+        !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
+
+      if (!isProdHttps) return;
+
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
+      script.onload = function () {
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag(){ dataLayer.push(arguments); }
+
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-K0ZS0D9JLK', {
+          page_path: location.pathname + location.search
+        });
+      };
+
+      document.head.appendChild(script);
+    })();
+  </script>
+
+  <script type="module" src="/src/microguides-entry.js"></script>
+</head>
+
+<body data-page="microguides">
+  <header class="site-header"></header>
+
+  
+  <main class="mg" id="mgRoot" data-mg-root>
+    <!-- AJSEE GENERATED MICROGUIDE DETAIL -->
+    <nav class="mg-breadcrumb" aria-label="Breadcrumb">
+      <a href="/blog?lang=cs" data-i18n="mg.backToBlog">Zpět na blog</a>
+      <span aria-hidden="true">/</span>
+      <span data-i18n="mg.breadcrumb">AJSEE vysvětluje</span>
+    </nav>
+
+    <article class="mg-article" itemscope itemtype="https://schema.org/Article">
+      <header class="mg-hero">
+        <div class="mg-hero-text">
+          <p class="mg-kicker">AJSEE vysvětluje</p>
+          <h1 class="mg-title" itemprop="headline">Jak číst seating mapu</h1>
+          <p class="mg-meta"><span>5 min čtení</span></p>
+          <div class="mg-actions"></div>
+        </div>
+
+        <figure class="mg-hero-media">
+          <img src="/images/microguides/seating-map/cover.webp" alt="Ilustrační foto hlediště" width="1280" height="720" loading="eager" decoding="async">
+        </figure>
+      </header>
+
+      
+      <aside class="mg-progress" aria-label="Postup průvodcem">
+        <ol>
+          <li><a href="#intro">Intro k mikroprůvodci</a></li>
+          <li><a href="#s1">Sleduj „restricted view“ a překážky</a></li>
+          <li><a href="#s2">Balkon není vždy nejlepší</a></li>
+          <li><a href="#s3">Legroom a akustika rozlišují zážitek</a></li>
+          <li><a href="#s4">Drž středovou osu</a></li>
+          <li><a href="#s5">Uličkové vs. prostřední místo</a></li>
+        </ol>
+      </aside>
+
+      <div class="mg-content">
+        
+          <section id="intro" class="mg-section" aria-labelledby="intro-title">
+            <h2 id="intro-title">Intro k mikroprůvodci</h2>
+            <p>Vybrané sedadlo rozhoduje o zážitku víc než samotná cena. Správné čtení mapy ti pomůže prověřit výhled, akustiku i komfort – a vybrat nejlepší poměr cena/zážitek. Níže najdeš rychlé signály, které se vyplatí zkontrolovat před nákupem.</p>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/images/microguides/seating-map/icon-overview.svg" alt="Přehledová ikona" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+          <section id="s1" class="mg-section" aria-labelledby="s1-title">
+            <h2 id="s1-title">Sleduj „restricted view“ a překážky</h2>
+            <p>Ikonky sloupů, zábradlí, kamer či zvukové věže znamenají riziko omezeného výhledu. Obzvlášť u koncertů si všímej umístění mixpultu a světelné konstrukce – místa přímo za nimi mívají horší výhled i zvuk. Pokud je v popisu sektoru výstraha, ber ji vážně.</p>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/images/microguides/seating-map/icon-restricted-view.svg" alt="Ikona omezeného výhledu" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+          <section id="s2" class="mg-section" aria-labelledby="s2-title">
+            <h2 id="s2-title">Balkon není vždy nejlepší</h2>
+            Balkon umí skvěle fungovat, ale záleží na sklonu a úhlu na scénu. Příliš plochý balkon = víc hlav v zorném poli a slabší pocit blízkosti. Jistota bývá středové bloky a první řady balkonu; rohy ber jen při výrazně lepší ceně.<div class='mg-callout -tip'><span class='callout-label'>Pro tip</span><p>Středová osa a zhruba 2/3 hloubky sálu bývá nejjistější kombinace výhledu i zvuku.</p></div>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/images/microguides/seating-map/icon-balkon.svg" alt="Ikona balkonu" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+          <section id="s3" class="mg-section" aria-labelledby="s3-title">
+            <h2 id="s3-title">Legroom a akustika rozlišují zážitek</h2>
+            <p>Starší sály mívají menší rozteč řad – u delších programů se komfort opravdu vyplácí. Akusticky je bezpečná volba střed cca v 2/3 hloubky sálu; úplně vpředu může být zvuk přepálený, u stěn se víc odráží. Stalls vs. lóže se liší charakterem zvuku i prostorem.</p>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/images/microguides/seating-map/icon-legroom.svg" alt="Ikona sedadla – prostor na nohy" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+          <section id="s4" class="mg-section" aria-labelledby="s4-title">
+            <h2 id="s4-title">Drž středovou osu</h2>
+            <p>Ve většině sálů poskytuje středová osa nejlepší vyvážení zvuku i obrazu. Postupuj spíš do hloubky téhož bloku než do extrémně bočních sektorů. „Zlatý střed“ bývá střední výška sálu a středový blok.</p>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/images/microguides/seating-map/icon-overview.svg" alt="Ikona středové osy" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+          <section id="s5" class="mg-section" aria-labelledby="s5-title">
+            <h2 id="s5-title">Uličkové vs. prostřední místo</h2>
+            <p>Ulička = víc prostoru na nohy a jednodušší odchod, ale i víc rušení. Prostředek řady mívá klid a lepší soustředění, ovšem horší přístup. Přizpůsob volbě typu akce a tomu, jestli často vstáváš.</p>
+            
+            <figure class="mg-figure">
+              <div class="mg-media-frame">
+                <img src="/images/microguides/seating-map/icon-legroom.svg" alt="Ikona uličkového místa" loading="lazy" decoding="async">
+              </div>
+            </figure>
+          </section>
+
+        <footer class="mg-footer-cta">
+          <p>Tvůj tip na nejlepší řadu? Napiš do komentářů.</p>
+          <a class="ib-cta" href="/coming-soon?lang=cs">Chci na čekací listinu</a>
+        </footer>
+      </div>
+
+      <nav class="mg-mobile-nav" aria-label="Micro-guide navigation">
+        <button class="mg-prev" type="button">Předchozí</button>
+        <div class="mg-dots"></div>
+        <button class="mg-next" type="button">Další</button>
+      </nav>
+    </article>
+
+    <div id="mg-share" aria-hidden="true"></div>
+  </main>
+
+  <!-- COMMENTS: begin (Netlify Forms – registrace při buildu) -->
+  <section class="comments" id="comments">
+    <h3 class="comments-title" data-i18n-key="comments.title">Komentáře</h3>
+
+    <form
+      id="commentForm"
+      name="site-comments"
+      method="POST"
+      data-netlify="true"
+      data-netlify-recaptcha="true"
+      netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="site-comments" />
+      <input type="hidden" name="postId" id="commentPostId" value="" />
+      <input type="hidden" name="postType" id="commentPostType" value="microguide" />
+      <input type="hidden" name="lang" id="commentLang" value="" />
+
+      <p class="hp" hidden>
+        <label>Don’t fill this out: <input name="bot-field" /></label>
+      </p>
+
+      <div class="comments-grid">
+        <div class="form-row">
+          <label for="c_name" data-i18n-key="comments.name">Jméno</label>
+          <input
+            id="c_name"
+            name="name"
+            type="text"
+            required
+            autocomplete="name"
+            placeholder="Tvoje jméno"
+            data-i18n-placeholder="comments.namePh"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="c_email" data-i18n-key="comments.email">E-mail</label>
+          <input
+            id="c_email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="tvuj@email.cz"
+            data-i18n-placeholder="comments.emailPh"
+          />
+          <small class="hint" data-i18n-key="comments.emailHint">E-mail se nezobrazuje veřejně.</small>
+        </div>
+
+        <div class="form-row">
+          <label for="c_website" data-i18n-key="comments.website">Web (nepovinné)</label>
+          <input
+            id="c_website"
+            name="website"
+            type="url"
+            placeholder="https://tvoje-stranka.cz"
+            data-i18n-placeholder="comments.websitePh"
+          />
+          <small class="hint" data-i18n-key="comments.websiteHint">Web se veřejně nezobrazuje.</small>
+        </div>
+
+        <div class="form-row form-row--full">
+          <label for="c_comment" data-i18n-key="comments.comment">Komentář</label>
+          <textarea
+            id="c_comment"
+            name="comment"
+            rows="5"
+            required
+            placeholder="Napiš svůj komentář…"
+            data-i18n-placeholder="comments.commentPh"
+          ></textarea>
+        </div>
+
+        <div data-netlify-recaptcha="true"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" data-i18n-key="comments.submit">Odeslat komentář</button>
+          <p class="form-status" id="commentStatus" aria-live="polite"></p>
+        </div>
+      </div>
+    </form>
+
+    <div id="commentsList" class="comments-list" aria-live="polite"></div>
+  </section>
+  <!-- COMMENTS: end -->
+
+  <noscript>Pro zobrazení mikroprůvodce povol JavaScript.</noscript>
+
+  <footer class="site-footer"></footer>
+
+  <!-- Runtime pro micro-guides -->
+  <script type="module" src="/src/mg-runtime.js"></script>
+
+  <!-- Inline init pro komentáře: nastaví lang/postId/postType, načte a odesílá -->
+  <script>
+    (function () {
+      const qs = new URLSearchParams(location.search);
+      const lang =
+        (qs.get('lang') || document.documentElement.getAttribute('lang') || 'cs')
+          .toLowerCase().split(/[-_]/)[0];
+
+      const currentSlug =
+        window.AJSEE_MG_SLUG ||
+        qs.get('slug') ||
+        location.pathname.replace(/^\/microguides\/?/, '').replace(/\/$/, '') ||
+        location.pathname;
+
+      const commentLang = document.getElementById('commentLang');
+      const commentPostType = document.getElementById('commentPostType');
+      const commentPostId = document.getElementById('commentPostId');
+
+      if (commentLang) commentLang.value = lang;
+      if (commentPostType) commentPostType.value = 'microguide';
+      if (commentPostId) commentPostId.value = currentSlug;
+
+      const postType = 'microguide';
+      const postId = currentSlug;
+      const statusEl = document.getElementById('commentStatus');
+      const listEl = document.getElementById('commentsList');
+
+      const escape = (value = '') =>
+        String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+
+      function fmtDate(iso) {
+        try {
+          const date = new Date(iso);
+
+          return date.toLocaleString(lang, {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        } catch {
+          return iso;
+        }
+      }
+
+      function renderComments(items) {
+        if (!listEl) return;
+
+        if (!Array.isArray(items) || !items.length) {
+          listEl.innerHTML = '<p class="comments-empty" data-i18n-key="comments.empty">Zatím žádné komentáře.</p>';
+          return;
+        }
+
+        listEl.innerHTML = items.map(item => `
+          <article class="comment-item" data-id="${escape(item.id)}">
+            <header class="comment-head">
+              <strong class="comment-author">${escape(item.name || 'Anonym')}</strong>
+              <time class="comment-date" datetime="${escape(item.createdAt)}">${escape(fmtDate(item.createdAt))}</time>
+            </header>
+            <div class="comment-body"><p>${escape(item.comment).replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>')}</p></div>
+          </article>
+        `).join('');
+      }
+
+      async function loadComments() {
+        if (!listEl) return;
+
+        try {
+          const url = new URL('/.netlify/functions/get-comments', location.origin);
+          url.searchParams.set('postId', postId);
+          url.searchParams.set('postType', postType);
+          url.searchParams.set('lang', lang);
+
+          const response = await fetch(url.toString(), {
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error('Could not load comments');
+          }
+
+          const data = await response.json();
+          renderComments(data.items || []);
+        } catch {
+          // V localhostu může Netlify function vracet 500 – neblokujeme kvůli tomu článek.
+          listEl.innerHTML = '<p class="comments-error">Komentáře se v lokálním prostředí nepodařilo načíst.</p>';
+        }
+      }
+
+      loadComments();
+
+      const form = document.getElementById('commentForm');
+      if (!form) return;
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+
+        if (!formData.get('form-name')) {
+          formData.set('form-name', 'site-comments');
+        }
+
+        fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        })
+          .then(() => {
+            if (statusEl) {
+              statusEl.textContent = lang === 'cs'
+                ? 'Díky! Komentář byl odeslán.'
+                : 'Thanks! Your comment was submitted.';
+            }
+
+            form.reset();
+            setTimeout(loadComments, 1200);
+          })
+          .catch(() => {
+            if (statusEl) {
+              statusEl.textContent = lang === 'cs'
+                ? 'Odeslání se nepodařilo.'
+                : 'Submission failed.';
+            }
+          });
+      }, { passive: false });
+    })();
+  </script>
+</body>
+</html>

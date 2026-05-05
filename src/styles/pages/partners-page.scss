@@ -1,0 +1,45 @@
+﻿// ------------------------------------------------------
+// AJSEE – Partners page SCSS entry point
+// ------------------------------------------------------
+// Cíl: netahat na Partners stránku celý globální main.scss bundle.
+// Obsahuje pouze společné UI + styly potřebné pro partners.html.
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+
+@use '../partials/partners';
+@use '../partials/contact';
+
+@use '../partials/cookie-consent';
+
+// --- globální drobnosti převzaté z main.scss ---
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+
+// Mobile: partners page keeps content text-first, without decorative hero visual.
+@media (max-width: 767px) {
+  body[data-page="partners"] section.partners-hero .partners-hero-media {
+    display: none;
+  }
+
+  body[data-page="partners"] section.partners-hero .partners-hero-inner {
+    display: block;
+  }
+
+  body[data-page="partners"] section.partners-hero .partners-hero-content {
+    max-width: 100%;
+  }
+}

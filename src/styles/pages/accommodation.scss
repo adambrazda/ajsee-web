@@ -7,8 +7,30 @@
    - + lehce vyšší čitelnost body textu (+ kontrast, + line-height)
    - + zvětšení TS loga (scale token)
    - + fix “tight word gaps” v nadpisech (word-spacing + jemnější letter-spacing)
-   Bez !important. Bez zásahů do header/footer (bere se z main.scss).
+   Bez !important. Header/footer/common styly jsou součástí tohoto page entry.
 */
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/cookie-consent';
+
+// --- global small rules copied from main.scss ---
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+
 
 .page-accommodation {
   /* ===== Tokens ===== */

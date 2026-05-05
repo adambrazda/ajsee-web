@@ -1,6 +1,6 @@
-// /src/main.js
+// /src/events-entry.js
 // ---------------------------------------------------------
-// AJSEE – Events UI, i18n & filters (sjednocení s homepage)
+// AJSEE – Events page UI, i18n & filters
 // ---------------------------------------------------------
 
 import './identity-init.js';
@@ -448,7 +448,7 @@ function getCityInputEl() {
   return qs('#filter-city') || qs('#events-city-filter');
 }
 
-/* ───────── helper: force-inline filters + homepage blog fix ───────── */
+/* ───────── helper: force-inline events filters ───────── */
 function forceInlineFilters(doc = document) {
   const form = doc.getElementById('events-filters-form') || qs('form.filter-dock') || qs('.events-filters');
   if (!form) return;
@@ -465,136 +465,6 @@ function forceInlineFilters(doc = document) {
   form.classList.remove('is-hidden', 'is-collapsed', 'is-open');
   form.style.removeProperty('display');
   doc.body.style.removeProperty('overflow');
-}
-
-function fixHomeBlog() {
-  if (!isHome()) return;
-
-  const blog = document.getElementById('blog') || qs('section#blog');
-  if (!blog) return;
-
-  blog.classList.add('homepage-blog');
-  blog.classList.remove('blog');
-
-  const container = blog.querySelector('.container') || blog;
-  let host =
-    container.querySelector('#homepage-blog-list') ||
-    container.querySelector('[data-home-blog]') ||
-    container.querySelector('.homepage-blog-cards');
-
-  if (!host) {
-    host = document.createElement('div');
-    container.appendChild(host);
-  }
-
-  host.id = 'homepage-blog-list';
-  host.classList.add('homepage-blog-cards');
-  host.classList.remove('blog-cards');
-}
-
-function pickLocalized(val, lang) {
-  if (!val) return '';
-  if (typeof val === 'string') return val;
-
-  if (typeof val === 'object') {
-    return val[lang] || val[lang?.slice(0, 2)] || val.cs || val.en || Object.values(val)[0] || '';
-  }
-
-  return String(val);
-}
-
-function withLangParam(href, lang) {
-  try {
-    const u = new URL(href, location.origin);
-    if (u.origin !== location.origin) return u.toString();
-
-    if (!u.searchParams.has('lang')) u.searchParams.set('lang', lang);
-    return u.toString();
-  } catch {
-    if (typeof href === 'string' && href.startsWith('/')) {
-      try {
-        const u = new URL(href, location.origin);
-        if (!u.searchParams.has('lang')) u.searchParams.set('lang', lang);
-        return u.toString();
-      } catch {
-        /* noop */
-      }
-    }
-
-    return href || '#';
-  }
-}
-
-function getHomeBlogHost() {
-  const blog = document.getElementById('blog') || qs('section#blog');
-  if (!blog) return null;
-
-  return blog.querySelector('#homepage-blog-list') ||
-    blog.querySelector('[data-home-blog]') ||
-    blog.querySelector('.homepage-blog-cards');
-}
-
-function renderHomeBlog() {
-  if (!isHome()) return;
-const blog = document.getElementById('blog') || qs('section#blog');
-  const host = getHomeBlogHost();
-  if (!blog || !host) return;
-
-  host.classList.add('homepage-blog-cards');
-  host.classList.remove('blog-cards');
-
-  const more = blog.querySelector('a.homepage-blog-more') || blog.querySelector('a[data-i18n-key="blog-show-all"]');
-  if (more) {
-    more.classList.add('homepage-blog-more');
-    const raw = more.getAttribute('href') || more.href || '/blog';
-    more.href = withLangParam(raw, currentLang);
-  }
-
-  if (host.dataset.ajRenderedLang === currentLang && host.children.length) return;
-
-  let articles = [];
-  try {
-    articles = getSortedBlogArticles?.() || [];
-  } catch {
-    articles = [];
-  }
-
-  const top = (Array.isArray(articles) ? articles : []).slice(0, 3);
-  if (!top.length) {
-    host.innerHTML = '';
-    host.dataset.ajRenderedLang = currentLang;
-    return;
-  }
-
-  const readMore =
-    (t('blog.readMore') && String(t('blog.readMore')).trim()) ? t('blog.readMore') :
-      (currentLang === 'en') ? 'Read more' :
-        (currentLang === 'de') ? 'Mehr lesen' :
-          (currentLang === 'sk') ? 'Čítať ďalej' :
-            (currentLang === 'pl') ? 'Czytaj dalej' :
-              (currentLang === 'hu') ? 'Tovább' :
-                'Číst dál';
-
-  host.innerHTML = top.map(article => {
-    const title = esc(pickLocalized(article.title || article.name || article.heading, currentLang) || '');
-    const excerpt = esc(pickLocalized(article.excerpt || article.perex || article.summary || article.description, currentLang) || '');
-    const img = esc(article.image || article.cover || article.hero || article.thumb || '/images/fallbacks/concert0.jpg');
-    const rawHref = article.url || article.href || article.link || article.path || '/blog';
-    const href = esc(withLangParam(rawHref, currentLang));
-
-    return `
-      <a class="homepage-blog-card blog-card" href="${href}" aria-label="${title}">
-        <img src="${img}" alt="${title}" loading="lazy" />
-        <div class="blog-card-content">
-          <h3>${title}</h3>
-          ${excerpt ? `<p>${excerpt}</p>` : ''}
-          <span class="btn-primary">${esc(readMore)}</span>
-        </div>
-      </a>
-    `;
-  }).join('');
-
-  host.dataset.ajRenderedLang = currentLang;
 }
 
 /* ───────── live region ───────── */
@@ -2807,54 +2677,6 @@ function initLangDropdownCompat() {
 }
 
 /* ───────── homepage CTA helpers ───────── */
-function updateHomeCtasWithLang() {
-  const SUPPORTED = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
-  const lang = (currentLang || getUILang() || 'cs').toLowerCase();
-
-  const wl = document.getElementById('hpWaitlist');
-  const wlCta = document.getElementById('hpWaitlistCta');
-  const wlClose = document.getElementById('hpWaitlistClose');
-
-  if (wlCta) {
-    try {
-      const u = new URL(wlCta.getAttribute('href') || wlCta.href || '/coming-soon', location.origin);
-      if (SUPPORTED.includes(lang)) u.searchParams.set('lang', lang);
-      wlCta.href = u.toString();
-    } catch {
-      /* noop */
-    }
-
-    wireOnce(wlCta, 'click', () => {
-      if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner', lang });
-    }, 'wl-gtag');
-  }
-
-  if (wlClose && wl) {
-    wireOnce(wlClose, 'click', () => {
-      try {
-        wl.remove();
-      } catch {
-        /* noop */
-      }
-    }, 'wl-close');
-  }
-
-  const demoCta = document.getElementById('demoBadgeCta');
-  if (demoCta) {
-    try {
-      const u = new URL(demoCta.getAttribute('href') || demoCta.href || '/coming-soon', location.origin);
-      u.searchParams.set('lang', lang);
-      demoCta.href = u.toString();
-    } catch {
-      /* noop */
-    }
-
-    wireOnce(demoCta, 'click', () => {
-      if (window.gtag) window.gtag('event', 'click_demo_badge', { source: 'home_demo_pill', lang });
-    }, 'demo-gtag');
-  }
-}
-
 /* ───────── jazykové přepínače ───────── */
 function initLanguageSwitchers() {
   qsa('.lang-btn').forEach(btn => {

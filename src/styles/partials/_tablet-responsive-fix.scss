@@ -251,3 +251,54 @@
     text-align: center;
   }
 }
+/* ---------------------------------------------------------
+   EVENTS.HTML – event cards/results width aligned with hero
+   - keeps event list inside the same visual shell as hero/banner
+   - prevents cards/results area from stretching wider than hero
+   - no !important
+--------------------------------------------------------- */
+
+body[data-page="events"] #eventsList.events-list,
+body[data-page="events"] .events-list {
+  width: min(calc(100vw - 2.4rem), 1200px);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+
+body[data-page="events"] .events-results-count,
+body[data-page="events"] .events-status,
+body[data-page="events"] .events-error,
+body[data-page="events"] .events-load-more-wrap {
+  width: min(calc(100vw - 2.4rem), 1200px);
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+@media (min-width: 721px) and (max-width: 1180px) {
+  body[data-page="events"] #eventsList.events-list,
+  body[data-page="events"] .events-list,
+  body[data-page="events"] .events-results-count,
+  body[data-page="events"] .events-status,
+  body[data-page="events"] .events-error,
+  body[data-page="events"] .events-load-more-wrap {
+    width: min(calc(100vw - 48px), 900px);
+    max-width: 900px;
+  }
+}
+
+@media (max-width: 720px) {
+  body[data-page="events"] #eventsList.events-list,
+  body[data-page="events"] .events-list,
+  body[data-page="events"] .events-results-count,
+  body[data-page="events"] .events-status,
+  body[data-page="events"] .events-error,
+  body[data-page="events"] .events-load-more-wrap {
+    width: min(calc(100vw - 32px), 100%);
+    max-width: min(calc(100vw - 32px), 100%);
+  }
+}

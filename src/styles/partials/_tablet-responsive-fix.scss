@@ -1,0 +1,253 @@
+/* ---------------------------------------------------------
+   AJSEE – Tablet responsive polish
+   - header/menu fitting
+   - homepage hero button layout
+   - unified event filters on homepage + events page
+   - iPad/tablet modal height + calendar buttons
+   --------------------------------------------------------- */
+
+
+/* -----------------------------
+   1) Header / desktop menu tablet
+----------------------------- */
+
+@media (min-width: 951px) and (max-width: 1180px) {
+  .site-header {
+    .header-inner {
+      gap: 0.55rem;
+      padding-inline: 0.65rem;
+    }
+
+    .logo {
+      width: 68px;
+      height: auto;
+    }
+
+    .main-nav {
+      flex: 1 1 auto;
+      min-width: 0;
+
+      ul {
+        gap: 0.15rem;
+      }
+
+      a {
+        padding: 0.66rem 0.58rem;
+        font-size: 0.88rem;
+        white-space: nowrap;
+      }
+    }
+
+    .desktop-switcher {
+      flex: 0 0 auto;
+
+      .lang-current {
+        min-width: 116px;
+        padding-inline: 0.7rem;
+      }
+
+      .lang-current-label {
+        max-width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+@media (min-width: 951px) and (max-width: 1040px) {
+  .site-header {
+    .header-inner {
+      gap: 0.4rem;
+      padding-inline: 0.5rem;
+    }
+
+    .logo {
+      width: 62px;
+    }
+
+    .main-nav {
+      a {
+        padding-inline: 0.48rem;
+        font-size: 0.84rem;
+      }
+    }
+
+    .desktop-switcher {
+      .lang-current {
+        min-width: 104px;
+        padding-inline: 0.58rem;
+      }
+
+      .lang-current-label {
+        max-width: 58px;
+      }
+    }
+  }
+}
+
+
+/* -----------------------------
+   2) Homepage hero tablet
+----------------------------- */
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  body[data-page="home"] {
+    .hero-section {
+      min-height: auto;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: min(680px, 72vw);
+    }
+
+    .hero-buttons {
+      max-width: 620px;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-buttons .btn-primary,
+    .hero-buttons .btn-secondary {
+      padding: 0.9rem 1.45rem;
+      font-size: 0.95rem;
+      min-height: 52px;
+    }
+  }
+}
+
+@media (min-width: 951px) and (max-width: 1080px) {
+  body[data-page="home"] {
+    .hero-content {
+      max-width: 600px;
+    }
+
+    .hero-buttons {
+      max-width: 520px;
+    }
+
+    .hero-waitlist-cta {
+      flex-basis: 100%;
+      max-width: 320px;
+    }
+  }
+}
+
+/* -----------------------------
+   5) Event modal – tablet / iPad
+----------------------------- */
+
+@media (min-width: 761px) and (max-width: 1180px) {
+  .event-modal {
+    align-items: center;
+    justify-content: center;
+    padding: clamp(12px, 2.4vw, 28px);
+  }
+
+  .event-modal-content {
+    width: min(92vw, 780px);
+    max-height: calc(100svh - 32px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: grid;
+    grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1fr);
+    gap: clamp(1.2rem, 2.6vw, 2.1rem);
+    padding: clamp(1.25rem, 2.6vw, 2rem);
+  }
+
+  .event-modal-close {
+    position: sticky;
+    top: 0;
+    justify-self: end;
+    z-index: 3;
+  }
+
+  .modal-image,
+  #modalImage {
+    width: 100%;
+    height: min(46svh, 420px);
+    object-fit: cover;
+  }
+
+  .modal-details {
+    min-width: 0;
+  }
+
+  .modal-title,
+  #modalTitle {
+    font-size: clamp(1.85rem, 4vw, 2.45rem);
+    line-height: 1.05;
+  }
+
+  .calendar-buttons {
+    display: grid;
+    grid-template-columns: auto minmax(180px, 1fr);
+    gap: 0.85rem 1rem;
+    align-items: start;
+  }
+
+  .calendar-label {
+    align-self: start;
+    padding-top: 0.55rem;
+  }
+
+  .calendar-btns-wrap {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .calendar-btn {
+    min-height: 44px;
+    padding: 0.72rem 1rem;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 900px),
+       (min-width: 761px) and (max-height: 760px) {
+  .event-modal {
+    align-items: center;
+    padding: 10px;
+  }
+
+  .event-modal-content {
+    width: min(94vw, 720px);
+    max-height: calc(100svh - 20px);
+    grid-template-columns: minmax(190px, 230px) minmax(0, 1fr);
+    gap: 1.15rem;
+    padding: 1.1rem;
+  }
+
+  .modal-image,
+  #modalImage {
+    height: min(38svh, 310px);
+  }
+
+  .modal-title,
+  #modalTitle {
+    font-size: clamp(1.55rem, 3.6vw, 2rem);
+  }
+
+  .calendar-buttons {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .calendar-label {
+    padding-top: 0;
+  }
+
+  .calendar-btns-wrap {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+
+  .calendar-btn {
+    min-height: 42px;
+    padding: 0.65rem 0.7rem;
+    font-size: 0.92rem;
+    text-align: center;
+  }
+}

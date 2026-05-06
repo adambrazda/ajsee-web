@@ -21,6 +21,8 @@
 
 @use '../partials/cookie-consent';
 @use '../partials/waitlist-banner';
+@use '../partials/tablet-responsive-fix';
+@use '../partials/filters-parity-final';
 
 // Page-level globals previously provided by main.scss
 html,

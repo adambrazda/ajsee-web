@@ -15,6 +15,8 @@
 @use '../partials/filters-premium';
 @use '../partials/date-popover';
 @use '../partials/cookie-consent';
+@use '../partials/tablet-responsive-fix';
+@use '../partials/filters-parity-final';
 
 // Page-level globals previously provided by main.scss
 html,
@@ -29,9 +31,10 @@ body {
   z-index: 9999;
 }
 /* ---------------------------------------------------------
-   Events page mobile layout hard fix
+   Events page flow fix
+   - keeps filters, banner and title in normal flow
+   - does not control internal filter grid
    - no !important
-   - forces filters to participate in normal document flow
 --------------------------------------------------------- */
 
 body[data-page="events"] {
@@ -41,35 +44,19 @@ body[data-page="events"] {
 
       > .container {
         display: block;
+        max-width: 1440px;
+        margin-inline: auto;
+        padding-inline: clamp(28px, 4vw, 64px);
       }
 
       #events-filters-form.events-filters.filter-dock {
         position: relative;
         inset: auto;
         transform: none;
-        display: block;
-        width: 100%;
         height: auto;
         min-height: 0;
         overflow: visible;
-        margin: 0 0 1.6rem;
         z-index: 2;
-
-        .filters-fieldset {
-          position: relative;
-          inset: auto;
-          transform: none;
-          display: grid;
-          height: auto;
-          min-height: 0;
-          overflow: visible;
-          margin: 0;
-        }
-
-        .filter-group,
-        .filter-actions {
-          position: relative;
-        }
       }
 
       #demoBadge.event-demo-badge {
@@ -77,8 +64,6 @@ body[data-page="events"] {
         inset: auto;
         transform: none;
         clear: both;
-        width: 100%;
-        margin: 0 0 1.7rem;
         z-index: 1;
       }
 
@@ -86,54 +71,17 @@ body[data-page="events"] {
       .events-upcoming-title {
         position: relative;
         z-index: 1;
-        margin-top: 0;
       }
     }
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 720px) {
   body[data-page="events"] {
     main#main {
       #upcoming-events.events-upcoming-section {
-        padding-top: 2.2rem;
-
-        #events-filters-form.events-filters.filter-dock {
-          margin-bottom: 1.8rem;
-
-          .filters-fieldset {
-            row-gap: 0.9rem;
-          }
-
-          .filter-actions {
-            margin-top: 0.25rem;
-          }
-        }
-
-        #demoBadge.event-demo-badge {
-          margin-top: 0;
-          margin-bottom: 1.65rem;
-        }
-
-        #events-upcoming-title.events-upcoming-title,
-        .events-upcoming-title {
-          margin-top: 0.25rem;
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  body[data-page="events"] {
-    main#main {
-      #upcoming-events.events-upcoming-section {
-        #events-filters-form.events-filters.filter-dock {
-          margin-bottom: 1.9rem;
-        }
-
-        #demoBadge.event-demo-badge {
-          margin-bottom: 1.5rem;
+        > .container {
+          padding-inline: 16px;
         }
       }
     }

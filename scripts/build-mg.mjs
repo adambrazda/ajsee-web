@@ -486,6 +486,15 @@ function applyStaticSeoToTemplate(template, data, langCode, slug, ts = 0) {
 
   let html = template;
 
+  // ajsee-detail-strip-index-jsonld
+  // Detail pages are generated from microguides/index.html.
+  // Strip static index CollectionPage/ItemList JSON-LD from detail output.
+  html = html.replace(
+    /<script\b[^>]*id=["']ajsee-microguides-index-jsonld-static["'][\s\S]*?<\/script>\s*/gi,
+    ''
+  );
+
+
   html = html.replace(/<html\b([^>]*)>/i, `<html lang="${escapeAttr(normalizeLang(langCode))}">`);
 
   if (/<title[^>]*>[\s\S]*?<\/title>/i.test(html)) {

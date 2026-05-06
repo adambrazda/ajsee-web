@@ -501,7 +501,7 @@ function setPageMeta({
 }
 
 function buildMicroguideCanonicalUrl(slug) {
-  return `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}`;
+  return `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}/`;
 }
 
 function buildMicroguideArticleBody(data) {

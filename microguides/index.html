@@ -40,7 +40,7 @@
       window.AJSEE_MG_SLUG = slug;
 
       var canonicalUrl = slug
-        ? origin + '/microguides/' + encodeURIComponent(slug)
+        ? origin + '/microguides/' + encodeURIComponent(slug) + '/'
         : origin + '/microguides/';
 
       function upsertLink(rel, href) {

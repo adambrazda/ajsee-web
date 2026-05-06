@@ -389,7 +389,7 @@ function buildArticleBody(data) {
 }
 
 function buildJsonLd(data, langCode, slug, ts = 0) {
-  const canonicalUrl = `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}`;
+  const canonicalUrl = `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}/`;
   const title = data.title || slug;
   const description = data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.';
   const image = toAbsoluteUrl(data.cover) || `${SITE_ORIGIN}/images/logo-ajsee.png`;
@@ -474,7 +474,7 @@ function removeHeadTag(html, pattern) {
 }
 
 function applyStaticSeoToTemplate(template, data, langCode, slug, ts = 0) {
-  const canonicalUrl = `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}`;
+  const canonicalUrl = `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}/`;
   const title = `${data.title || slug} | AJSEE`;
   const description = truncate(
     data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.',

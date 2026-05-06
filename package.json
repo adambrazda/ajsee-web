@@ -12,17 +12,18 @@
     "svgo:mg": "svgo -f public/images/microguides/seating-map -o public/images/microguides/seating-map --multipass",
     "mg:build": "node scripts/build-mg.mjs",
     "mg:copy-json": "npx cpy-cli \"content/microguides/*.json\" public/content/microguides",
-    "predev": "npx cpy-cli src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json",
+    "predev": "npx cpy-cli src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run blog:build",
     "dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite",
     "dev:netlify": "netlify dev",
     "dev:ntl": "netlify dev",
     "start": "npm run dev",
-    "prebuild": "npx cpy-cli src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json",
+    "prebuild": "npx cpy-cli src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run blog:build",
     "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build",
     "preview": "vite preview",
     "webpack:dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack serve --mode development",
     "webpack:build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack --mode production",
-    "check:locales": "node scripts/check-locales.js"
+    "check:locales": "node scripts/check-locales.js",
+    "blog:build": "node scripts/build-blog.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

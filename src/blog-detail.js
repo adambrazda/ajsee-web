@@ -107,7 +107,7 @@ function upsertMetaProperty(property, content) {
 }
 
 function buildBlogCanonicalUrl(slug) {
-  return `${SITE_ORIGIN}/blog/${encodeURIComponent(slug)}`;
+  return `${SITE_ORIGIN}/blog/${encodeURIComponent(slug)}/`;
 }
 
 // Lehké sjednocení meta dat pro detail článku po načtení článku

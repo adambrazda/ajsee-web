@@ -55,6 +55,24 @@ function getMicroguideDetailInputs() {
   return inputs;
 }
 
+
+
+// Přidá staticky vygenerované blog detail stránky: /blog/<slug>/index.html
+function addGeneratedBlogDetails(inputs) {
+  const blogRoot = resolve(__dirname, 'blog');
+
+  if (!existsSync(blogRoot)) return inputs;
+
+  for (const entry of readdirSync(blogRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+
+    const inputPath = resolve(blogRoot, entry.name, 'index.html');
+    addIfExists(inputs, `blog-${entry.name}`, inputPath);
+  }
+
+  return inputs;
+}
+
 // Dev-only middleware: přesměruj staré cesty bez /src/
 function devRedirectPlugin() {
   return {
@@ -179,6 +197,10 @@ export default defineConfig({
 
         addIfExists(inputs, 'coming-soon', resolve(__dirname, 'coming-soon/index.html'));
         addIfExists(inputs, 'coming-soon-thanks', resolve(__dirname, 'coming-soon/thanks.html'));
+
+        addGeneratedBlogDetails(inputs);
+
+
 
         return inputs;
       })(),

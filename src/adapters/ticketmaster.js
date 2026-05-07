@@ -1,27 +1,29 @@
-// /src/adapters/ticketmaster.js
+﻿// /src/adapters/ticketmaster.js
 // ---------------------------------------------------------
 // Ticketmaster Discovery API adapter (via Netlify function proxy)
 // Supports: city, keyword, segmentName, classificationName, dateFrom/To,
 // page, size, sort (nearest/latest), plus optional geo/ids.
 //
-// DŮLEŽITÉ:
-// - Ticketmaster API vrací ev.url.
-// - Frontend neposílá uživatele přímo na ev.url.
-// - Místo toho používáme vlastní Netlify redirect funkci tmOutbound.
-// - Pokud vybereme známé město se zemí, držíme se této země striktně.
-//   Tím zabráníme falešným výsledkům typu Paris US / Madrid GB.
-// - Výsledky už nevracíme po prvním nenulovém pokusu.
-//   Sloučíme city + keyword + fallback pokusy, deduplikujeme a až pak vracíme.
-// - U Paříže povolujeme metropolitní venue jako Saint-Denis / Nanterre apod.
-// - URL market filtr je měkký: odstraní jen zjevně špatný market, ale nezabije
-//   evropské výsledky, které TM vrátí přes obecný ticketmaster.com.
-// - DŮLEŽITÁ OPRAVA:
-//   Pokud TM vrátí metro venue typu Saint Denis pro vybranou Paříž,
-//   mapujeme location.city zpět na Paris, aby následný FE filtr v eventsApi.js
-//   výsledek znovu nezahodil.
+// DĹ®LEĹ˝ITĂ‰:
+// - Ticketmaster API vracĂ­ ev.url.
+// - Frontend neposĂ­lĂˇ uĹľivatele pĹ™Ă­mo na ev.url.
+// - MĂ­sto toho pouĹľĂ­vĂˇme vlastnĂ­ Netlify redirect funkci tmOutbound.
+// - Pokud vybereme znĂˇmĂ© mÄ›sto se zemĂ­, drĹľĂ­me se tĂ©to zemÄ› striktnÄ›.
+//   TĂ­m zabrĂˇnĂ­me faleĹˇnĂ˝m vĂ˝sledkĹŻm typu Paris US / Madrid GB.
+// - VĂ˝sledky uĹľ nevracĂ­me po prvnĂ­m nenulovĂ©m pokusu.
+//   SlouÄŤĂ­me city + keyword + fallback pokusy, deduplikujeme a aĹľ pak vracĂ­me.
+// - U PaĹ™Ă­Ĺľe povolujeme metropolitnĂ­ venue jako Saint-Denis / Nanterre apod.
+// - URL market filtr je mÄ›kkĂ˝: odstranĂ­ jen zjevnÄ› ĹˇpatnĂ˝ market, ale nezabije
+//   evropskĂ© vĂ˝sledky, kterĂ© TM vrĂˇtĂ­ pĹ™es obecnĂ˝ ticketmaster.com.
+// - DĹ®LEĹ˝ITĂ OPRAVA:
+//   Pokud TM vrĂˇtĂ­ metro venue typu Saint Denis pro vybranou PaĹ™Ă­Ĺľ,
+//   mapujeme location.city zpÄ›t na Paris, aby nĂˇslednĂ˝ FE filtr v eventsApi.js
+//   vĂ˝sledek znovu nezahodil.
 // ---------------------------------------------------------
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
+
+const AJSEE_TM_PATCH_MARKER = 'AJSEE_TM_STRICT_GENERIC_COM_20260507';
 
 const MARKET_LOCALE_BY_COUNTRY = {
   CZ: 'cs-cz',
@@ -103,9 +105,9 @@ function normCity(s = '') {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/ß/g, 'ss')
-    .replace(/ł/g, 'l')
-    .replace(/[’'`´]/g, '')
+    .replace(/Ăź/g, 'ss')
+    .replace(/Ĺ‚/g, 'l')
+    .replace(/[â€™'`Â´]/g, '')
     .replace(/[().,;:/\\\-+_]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -148,9 +150,9 @@ const METRO_CITY_ALIASES = {
     'puteaux',
     'courbevoie',
     'la defense',
-    'la défense',
+    'la dĂ©fense',
     'paris la defense',
-    'paris la défense',
+    'paris la dĂ©fense',
     'boulogne billancourt',
     'boulogne-billancourt',
     'levallois perret',
@@ -241,11 +243,11 @@ function getNestedTargetUrl(rawUrl = '') {
 }
 
 /**
- * Měkká kontrola URL marketu.
+ * MÄ›kkĂˇ kontrola URL marketu.
  *
- * Nejde o tvrdý filtr proti ticketmaster.com, protože TM někdy vrací
- * evropský event s country správně FR/ES/NL, ale URL host je obecný .com.
- * Tvrdě blokujeme jen jasně cizí market, např. FR event s ticketmaster.co.uk.
+ * Nejde o tvrdĂ˝ filtr proti ticketmaster.com, protoĹľe TM nÄ›kdy vracĂ­
+ * evropskĂ˝ event s country sprĂˇvnÄ› FR/ES/NL, ale URL host je obecnĂ˝ .com.
+ * TvrdÄ› blokujeme jen jasnÄ› cizĂ­ market, napĹ™. FR event s ticketmaster.co.uk.
  */
 function getUrlMarketScore(rawUrl = '', countryCode = '', depth = 0) {
   const cc = String(countryCode || '').trim().toUpperCase();
@@ -274,7 +276,7 @@ function getUrlMarketScore(rawUrl = '', countryCode = '', depth = 0) {
     const parsed = new URL(sourceUrl);
     const host = normalizeHost(parsed.hostname);
 
-    // Impact wrapper – pokud známe jeho market, musí sedět.
+    // Impact wrapper â€“ pokud znĂˇme jeho market, musĂ­ sedÄ›t.
     if (host === 'ticketmaster.evyy.net') {
       const impactCountry = getImpactCountry(sourceUrl);
 
@@ -303,25 +305,25 @@ function getUrlMarketScore(rawUrl = '', countryCode = '', depth = 0) {
       };
     }
 
-    // Přesný Ticketmaster market.
+    // PĹ™esnĂ˝ Ticketmaster market.
     if (hostMatches(host, expectedHost)) {
       return { allowed: true, score: 5 };
     }
 
-    // Universe necháváme projít – TM ho používá jako součást svého ekosystému.
+    // Universe nechĂˇvĂˇme projĂ­t â€“ TM ho pouĹľĂ­vĂˇ jako souÄŤĂˇst svĂ©ho ekosystĂ©mu.
     if (host === 'universe.com' || host.endsWith('.universe.com')) {
       return { allowed: true, score: 2 };
     }
 
-    // UK Ticketweb necháváme pro GB.
+    // UK Ticketweb nechĂˇvĂˇme pro GB.
     if (cc === 'GB' && (host === 'ticketweb.uk' || host.endsWith('.ticketweb.uk'))) {
       return { allowed: true, score: 2 };
     }
 
- // Obecný ticketmaster.com u evropských marketů nepouštíme.
-// Ticketmaster Discovery API někdy vrátí venue country správně FR/ES/NL,
-// ale URL vede na globální .com event, který je v praxi neplatný nebo slepý.
-// Pro AJSEE je lepší nezobrazit nic než poslat uživatele na rozbitý odkaz.
+ // ObecnĂ˝ ticketmaster.com u evropskĂ˝ch marketĹŻ nepouĹˇtĂ­me.
+// Ticketmaster Discovery API nÄ›kdy vrĂˇtĂ­ venue country sprĂˇvnÄ› FR/ES/NL,
+// ale URL vede na globĂˇlnĂ­ .com event, kterĂ˝ je v praxi neplatnĂ˝ nebo slepĂ˝.
+// Pro AJSEE je lepĹˇĂ­ nezobrazit nic neĹľ poslat uĹľivatele na rozbitĂ˝ odkaz.
 if (isGenericTicketmasterComHost(host)) {
   const europeanCountries = new Set([
     'CZ', 'SK', 'PL', 'HU',
@@ -339,19 +341,19 @@ if (isGenericTicketmasterComHost(host)) {
   return { allowed: true, score: 0 };
 }
 
-    // Jiný konkrétní Ticketmaster market = špatně.
+    // JinĂ˝ konkrĂ©tnĂ­ Ticketmaster market = ĹˇpatnÄ›.
     if (host.includes('ticketmaster.')) {
       return { allowed: false, score: -100 };
     }
 
-    // Pokud je uvnitř ještě target, zkusíme ho.
+    // Pokud je uvnitĹ™ jeĹˇtÄ› target, zkusĂ­me ho.
     const nested = getNestedTargetUrl(sourceUrl);
 
     if (nested) {
       return getUrlMarketScore(nested, cc, depth + 1);
     }
 
-    // Neznámý host raději nepouštíme.
+    // NeznĂˇmĂ˝ host radÄ›ji nepouĹˇtĂ­me.
     return { allowed: false, score: -100 };
   } catch {
     return { allowed: false, score: -100 };
@@ -359,9 +361,9 @@ if (isGenericTicketmasterComHost(host)) {
 }
 
 /**
- * Odstraní jen zjevně špatné URL markety.
- * Pokud by filtr vyhodil vše, vrátí původní list, aby FE nezůstal prázdný
- * jen kvůli atypickému Ticketmaster URL hostu.
+ * OdstranĂ­ jen zjevnÄ› ĹˇpatnĂ© URL markety.
+ * Pokud by filtr vyhodil vĹˇe, vrĂˇtĂ­ pĹŻvodnĂ­ list, aby FE nezĹŻstal prĂˇzdnĂ˝
+ * jen kvĹŻli atypickĂ©mu Ticketmaster URL hostu.
  */
 function filterObviouslyWrongMarketUrls(events = [], countryCode = '') {
   const cc = String(countryCode || '').trim().toUpperCase();
@@ -372,7 +374,7 @@ function filterObviouslyWrongMarketUrls(events = [], countryCode = '') {
     return score.allowed;
   });
 
-  return filtered.length ? filtered : events;
+  return filtered;
 }
 
 function normClassification(s = '') {
@@ -470,7 +472,7 @@ function pickImage(ev) {
 }
 
 /**
- * Z Ticketmaster URL vytáhne preferovaný odkaz.
+ * Z Ticketmaster URL vytĂˇhne preferovanĂ˝ odkaz.
  */
 function extractPreferredTicketmasterUrl(rawUrl = '') {
   const sourceUrl = String(rawUrl || '').trim();
@@ -525,8 +527,8 @@ function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '', countryCode = '
     qs.set('eid', String(eventId));
   }
 
-  // tmOutbound může podle cc později lépe rozhodnout o fallbacku
-  // u obecných ticketmaster.com URL.
+  // tmOutbound mĹŻĹľe podle cc pozdÄ›ji lĂ©pe rozhodnout o fallbacku
+  // u obecnĂ˝ch ticketmaster.com URL.
   if (countryCode) {
     qs.set('cc', String(countryCode).toUpperCase());
   }
@@ -546,10 +548,10 @@ function mapTicketmasterEvent(ev, locale, context = {}) {
   const selectedCity = String(context.selectedCity || '').trim();
   const selectedCountry = String(context.selectedCountry || '').trim().toUpperCase();
 
-  // Důležité:
-  // Pokud TM vrátí Paris metro venue typu Saint Denis / Nanterre,
-  // necháme pro FE filtr location.city jako vybrané město.
-  // Skutečné venue city uložíme jako actualCity.
+  // DĹŻleĹľitĂ©:
+  // Pokud TM vrĂˇtĂ­ Paris metro venue typu Saint Denis / Nanterre,
+  // nechĂˇme pro FE filtr location.city jako vybranĂ© mÄ›sto.
+  // SkuteÄŤnĂ© venue city uloĹľĂ­me jako actualCity.
   const displayCity =
     selectedCity &&
     selectedCountry &&
@@ -566,7 +568,7 @@ function mapTicketmasterEvent(ev, locale, context = {}) {
   const lat = Number.isFinite(+latRaw) ? +latRaw : undefined;
   const lon = Number.isFinite(+lonRaw) ? +lonRaw : undefined;
 
-  const desc = [ev?.info, ev?.pleaseNote].filter(Boolean).join(' — ');
+  const desc = [ev?.info, ev?.pleaseNote].filter(Boolean).join(' â€” ');
 
   const price =
     Array.isArray(ev?.priceRanges) && ev.priceRanges.length
@@ -612,10 +614,10 @@ function filterRawEventsByStrictCityCountry(events = [], { strictCity = '', stri
     const evCountry = String(venue?.country?.countryCode || '').trim().toUpperCase();
     const evCity = String(venue?.city?.name || '').trim();
 
-    // Země je tvrdá hranice. Tohle chrání Paris FR před Paris US.
+    // ZemÄ› je tvrdĂˇ hranice. Tohle chrĂˇnĂ­ Paris FR pĹ™ed Paris US.
     if (cc && evCountry && evCountry !== cc) return false;
 
-    // Město je přesné, ale pro vybrané metropole povolujeme okolní venue.
+    // MÄ›sto je pĹ™esnĂ©, ale pro vybranĂ© metropole povolujeme okolnĂ­ venue.
     if (city && evCity && !isSameCityOrMetro(evCity, city, cc)) return false;
 
     return true;
@@ -667,7 +669,7 @@ function sortRawEvents(events = [], sort = 'nearest', countryCode = '') {
       return direction * (da - db);
     }
 
-    // Při stejném datu preferuj přesný market před obecným ticketmaster.com.
+    // PĹ™i stejnĂ©m datu preferuj pĹ™esnĂ˝ market pĹ™ed obecnĂ˝m ticketmaster.com.
     const sa = getUrlMarketScore(a?.url || '', cc).score;
     const sb = getUrlMarketScore(b?.url || '', cc).score;
 
@@ -732,7 +734,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     ? String(guessCountryCodeFromCity?.(rawCity) || guessCountryCodeFromCity?.(tmCity) || '').toUpperCase()
     : '';
 
-  // Pokud uživatel zadal město, preferujeme zemi z města před globálním defaultem CZ.
+  // Pokud uĹľivatel zadal mÄ›sto, preferujeme zemi z mÄ›sta pĹ™ed globĂˇlnĂ­m defaultem CZ.
   const selectedCityCountry = rawCity
     ? String(filters.cityCountryCode || guessedCC || explicitCountry || '').toUpperCase()
     : '';
@@ -742,8 +744,8 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     : '';
 
   const locales = [
-    // Ticketmaster FR/ES/NL často vrací evropské eventy správně až přes obecné "en".
-    // U Paříže je to zásadní: fr-fr / cs / en-gb mohou vracet 0, zatímco en vrací výsledky.
+    // Ticketmaster FR/ES/NL ÄŤasto vracĂ­ evropskĂ© eventy sprĂˇvnÄ› aĹľ pĹ™es obecnĂ© "en".
+    // U PaĹ™Ă­Ĺľe je to zĂˇsadnĂ­: fr-fr / cs / en-gb mohou vracet 0, zatĂ­mco en vracĂ­ vĂ˝sledky.
     'en',
     marketLocale,
     locale,
@@ -768,7 +770,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       qs.set('classificationName', String(categoryVariant.classificationName));
     }
 
-    // Explicitní classificationName zvenku má přednost.
+    // ExplicitnĂ­ classificationName zvenku mĂˇ pĹ™ednost.
     if (filters.classificationName) {
       qs.set('classificationName', String(filters.classificationName));
     }
@@ -815,7 +817,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       });
 
       // 2) keyword + country
-      // Pro Paříž je důležité, protože koncerty mohou být v Saint-Denis.
+      // Pro PaĹ™Ă­Ĺľ je dĹŻleĹľitĂ©, protoĹľe koncerty mohou bĂ˝t v Saint-Denis.
       attempts.push({
         mode: 'keyword',
         keyword: tmCity,
@@ -824,7 +826,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         strictCountry: selectedCityCountry,
       });
 
-      // 3) city bez countryCode, ale výsledek striktně odfiltrujeme podle země.
+      // 3) city bez countryCode, ale vĂ˝sledek striktnÄ› odfiltrujeme podle zemÄ›.
       attempts.push({
         mode: 'city',
         city: tmCity,
@@ -834,7 +836,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       });
 
       // 4) broad country fallback pro kategorii.
-      // Pomáhá tam, kde TM city query vrací málo, ale country + segment vrací relevantní metro akce.
+      // PomĂˇhĂˇ tam, kde TM city query vracĂ­ mĂˇlo, ale country + segment vracĂ­ relevantnĂ­ metro akce.
       attempts.push({
         mode: 'broad',
         countryCode: selectedCityCountry,
@@ -916,7 +918,9 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
           '| using =',
           attempt.mode,
           '| category variant =',
-          categoryVariantKey(categoryVariant) || '(none)'
+          categoryVariantKey(categoryVariant) || '(none)',
+          '| patch =',
+          AJSEE_TM_PATCH_MARKER
         );
 
         try {

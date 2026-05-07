@@ -398,7 +398,9 @@ const CITY_SYNONYMS = {
   gyor: { cs: 'Ráb', en: 'Győr', de: 'Raab', sk: 'Győr', pl: 'Győr', hu: 'Győr' },
 
   london: { cs: 'Londýn', en: 'London', de: 'London', sk: 'Londýn', pl: 'Londyn', hu: 'London' },
-  paris: { cs: 'Paříž', en: 'Paris', de: 'Paris', sk: 'Paríž', pl: 'Paryż', hu: 'Párizs' }
+  paris: { cs: 'Paříž', en: 'Paris', de: 'Paris', sk: 'Paríž', pl: 'Paryż', hu: 'Párizs' },
+  amsterdam: { cs: 'Amsterdam', en: 'Amsterdam', de: 'Amsterdam', sk: 'Amsterdam', pl: 'Amsterdam', hu: 'Amszterdam' },
+  madrid: { cs: 'Madrid', en: 'Madrid', de: 'Madrid', sk: 'Madrid', pl: 'Madryt', hu: 'Madrid' }
 };
 
 const LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
@@ -429,10 +431,13 @@ function findSlugByAnyLabel(label) {
 }
 
 function canonPreferredCity(label) {
-  const slug = findSlugByAnyLabel(label) || findSlugByAnyLabel(currentFilters.city || '') || null;
-  if (!slug) return canonForInputCity(label);
+  const raw = String(label || '').trim();
+  if (!raw) return '';
 
-  const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || label;
+  const slug = findSlugByAnyLabel(raw);
+  if (!slug) return canonForInputCity(raw);
+
+  const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || raw;
   return canonForInputCity(forApi);
 }
 

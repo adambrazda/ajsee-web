@@ -85,6 +85,25 @@ const SYNS = {
   paris:      ['paris','paříž','pariz','paríž','parigi','paryż'],
   rome:       ['rome','řím','rim','roma']
 };
+const LOCAL_CITY_FALLBACKS = {
+  prague:   { name: 'Prague', countryCode: 'CZ', lat: 50.0755, lon: 14.4378 },
+  brno:     { name: 'Brno', countryCode: 'CZ', lat: 49.1951, lon: 16.6068 },
+  ostrava:  { name: 'Ostrava', countryCode: 'CZ', lat: 49.8209, lon: 18.2625 },
+  vienna:   { name: 'Vienna', countryCode: 'AT', lat: 48.2082, lon: 16.3738 },
+  berlin:   { name: 'Berlin', countryCode: 'DE', lat: 52.5200, lon: 13.4050 },
+  munich:   { name: 'Munich', countryCode: 'DE', lat: 48.1351, lon: 11.5820 },
+  warsaw:   { name: 'Warsaw', countryCode: 'PL', lat: 52.2297, lon: 21.0122 },
+  krakow:   { name: 'Kraków', countryCode: 'PL', lat: 50.0647, lon: 19.9450 },
+  budapest: { name: 'Budapest', countryCode: 'HU', lat: 47.4979, lon: 19.0402 },
+  london:   { name: 'London', countryCode: 'GB', lat: 51.5072, lon: -0.1276 },
+  paris:    { name: 'Paris', countryCode: 'FR', lat: 48.8566, lon: 2.3522 },
+  amsterdam:{ name: 'Amsterdam', countryCode: 'NL', lat: 52.3676, lon: 4.9041 },
+  dublin:   { name: 'Dublin', countryCode: 'IE', lat: 53.3498, lon: -6.2603 },
+  madrid:   { name: 'Madrid', countryCode: 'ES', lat: 40.4168, lon: -3.7038 },
+  barcelona:{ name: 'Barcelona', countryCode: 'ES', lat: 41.3874, lon: 2.1686 },
+  milan:    { name: 'Milan', countryCode: 'IT', lat: 45.4642, lon: 9.1900 },
+  rome:     { name: 'Rome', countryCode: 'IT', lat: 41.9028, lon: 12.4964 }
+};
 const synToKey = new Map(
   Object.entries(SYNS).flatMap(([key, arr]) => arr.map(v => [stripDiacritics(v), key]))
 );
@@ -250,8 +269,36 @@ const isRelevantName = (name) => {
 
       bucket.set(key, cur);
     };
+    const addLocalFallbacks = () => {
+  const keys = new Set();
 
-    const wantMore = () => bucket.size < size;
+  if (queryKey) keys.add(queryKey);
+
+  const directKey = synToKey.get(qn);
+  if (directKey) keys.add(directKey);
+
+  if (canonFromExonym) {
+    const canonKey = synToKey.get(stripDiacritics(canonFromExonym));
+    if (canonKey) keys.add(canonKey);
+  }
+
+  for (const key of keys) {
+    const fallback = LOCAL_CITY_FALLBACKS[key];
+    if (!fallback) continue;
+
+    add(
+      fallback.name,
+      fallback.countryCode,
+      fallback.lat,
+      fallback.lon,
+      80
+    );
+  }
+};
+
+addLocalFallbacks();
+
+  const wantMore = () => bucket.size < size;
   const CITY_CANDIDATES = Array.from(
   new Set([canonFromExonym, ...querySynonyms, qRaw, qn].filter(Boolean))
 );

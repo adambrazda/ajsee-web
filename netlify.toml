@@ -22,17 +22,20 @@
 
 # 2) Cookie middleware podle Geo/IP nebo lang
 # Důležité: catch-all nesmí běžet nad assety, obrázky, locale JSONy,
-# sitemapou, robots.txt ani technickými soubory.
+# sitemapou, robots.txt, shortlinky ani technickými soubory.
 [[edge_functions]]
   function = "geo-country"
   path = "/*"
   excludedPath = [
     "/api/*",
     "/.netlify/functions/*",
+    "/go/*",
     "/assets/*",
     "/images/*",
+    "/fonts/*",
     "/locales/*",
     "/content/*",
+    "/blog-data/*",
     "/favicon.ico",
     "/robots.txt",
     "/sitemap.xml",
@@ -48,7 +51,8 @@
     "/*.avif",
     "/*.svg",
     "/*.ico",
-    "/*.xml"
+    "/*.xml",
+    "/*.txt"
   ]
 
 
@@ -84,6 +88,12 @@
 # Microguide content JSON – krátká cache
 [[headers]]
   for = "/content/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
+
+# Blog data JSON – krátká cache, pokud se používá
+[[headers]]
+  for = "/blog-data/*"
   [headers.values]
     Cache-Control = "public, max-age=3600, stale-while-revalidate=86400"
 
@@ -127,7 +137,14 @@
 
 
 # ------------ REDIRECTS / REWRITES ------------
-# Záměrně zde nyní nejsou page redirecty ani 200 rewrites.
+# Shortlink manager:
+# /go/:slug → Netlify function go.js
+[[redirects]]
+  from = "/go/:slug"
+  to = "/.netlify/functions/go?slug=:slug"
+  status = 200
+
+# Záměrně zde nyní nejsou page redirecty ani globální SPA fallback.
 #
 # Důvod:
 # - Netlify Pretty URLs už interně pracují s .html soubory.
@@ -148,8 +165,3 @@
   targetPort = 5173
   autoLaunch = false
   framework  = "#custom"
-  
-  [[redirects]]
-  from = "/go/:slug"
-  to = "/.netlify/functions/go?slug=:slug"
-  status = 200

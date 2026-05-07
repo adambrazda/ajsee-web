@@ -1,6 +1,17 @@
 // /src/events-entry.js
 // ---------------------------------------------------------
 // AJSEE – Events page UI, i18n & filters
+//
+// Nově podporuje jedno pole "město nebo země":
+// - Paris / Paříž => city search
+// - Budapest / Budapešť => city search
+// - Francie / France / FR => country-only search
+// - Maďarsko / Hungary / HU => country-only search
+//
+// Interně rozlišujeme:
+// - placeType: 'city'
+// - placeType: 'country'
+// - placeType: 'nearMe'
 // ---------------------------------------------------------
 
 import './identity-init.js';
@@ -65,13 +76,19 @@ if (!G.flags.mainInitialized) {
 let currentFilters = {
   category: 'all',
   sort: 'nearest',
+
+  // Jedno UI pole: město / země / near me.
+  placeType: '',
+
   city: '',
   cityLabel: '',
   cityCountryCode: '',
+
   dateFrom: '',
   dateTo: '',
   keyword: '',
   countryCode: 'CZ',
+
   nearMeLat: null,
   nearMeLon: null,
   nearMeRadiusKm: 50
@@ -141,7 +158,6 @@ function getUILang() {
 
   const fromHtml = normalize(document.documentElement.getAttribute('lang'));
 
-  // Důležité: <html lang="cs"> je v HTML defaultně, proto musí být cookie/storage před html.
   return fromUrl || fromPath || fromCookie || fromStorage || fromHtml || 'cs';
 }
 
@@ -155,6 +171,23 @@ function setLangCookie(lang) {
 
 function getCookie(name) {
   return document.cookie.split('; ').find(r => r.startsWith(name + '='))?.split('=')[1];
+}
+
+function defaultCountryCodeForLang(lang = getUILang()) {
+  const langToCountry = {
+    cs: 'CZ',
+    sk: 'SK',
+    de: 'DE',
+    pl: 'PL',
+    hu: 'HU',
+    en: 'CZ'
+  };
+
+  const ccCookie = getCookie('aj_country');
+
+  return String(ccCookie || langToCountry[String(lang || '').slice(0, 2)] || 'CZ')
+    .trim()
+    .toUpperCase();
 }
 
 function isHome() {
@@ -410,6 +443,316 @@ const normKey = s => String(s || '')
   .replace(/\s+/g, '')
   .toLowerCase();
 
+function foldPlaceText(value) {
+  return String(value || '')
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/['’`]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/* ───────── countries / one field city-or-country ───────── */
+const SUPPORTED_COUNTRY_CODES = new Set([
+  'CZ', 'SK', 'PL', 'HU',
+  'DE', 'AT', 'CH',
+  'GB', 'IE',
+  'FR', 'NL', 'BE',
+  'IT', 'ES',
+  'DK', 'SE', 'FI', 'NO'
+]);
+
+const COUNTRY_LABELS = {
+  CZ: { cs: 'Česko', en: 'Czechia', de: 'Tschechien', sk: 'Česko', pl: 'Czechy', hu: 'Csehország' },
+  SK: { cs: 'Slovensko', en: 'Slovakia', de: 'Slowakei', sk: 'Slovensko', pl: 'Słowacja', hu: 'Szlovákia' },
+  PL: { cs: 'Polsko', en: 'Poland', de: 'Polen', sk: 'Poľsko', pl: 'Polska', hu: 'Lengyelország' },
+  HU: { cs: 'Maďarsko', en: 'Hungary', de: 'Ungarn', sk: 'Maďarsko', pl: 'Węgry', hu: 'Magyarország' },
+
+  DE: { cs: 'Německo', en: 'Germany', de: 'Deutschland', sk: 'Nemecko', pl: 'Niemcy', hu: 'Németország' },
+  AT: { cs: 'Rakousko', en: 'Austria', de: 'Österreich', sk: 'Rakúsko', pl: 'Austria', hu: 'Ausztria' },
+  CH: { cs: 'Švýcarsko', en: 'Switzerland', de: 'Schweiz', sk: 'Švajčiarsko', pl: 'Szwajcaria', hu: 'Svájc' },
+
+  GB: { cs: 'Velká Británie', en: 'United Kingdom', de: 'Vereinigtes Königreich', sk: 'Veľká Británia', pl: 'Wielka Brytania', hu: 'Egyesült Királyság' },
+  IE: { cs: 'Irsko', en: 'Ireland', de: 'Irland', sk: 'Írsko', pl: 'Irlandia', hu: 'Írország' },
+
+  FR: { cs: 'Francie', en: 'France', de: 'Frankreich', sk: 'Francúzsko', pl: 'Francja', hu: 'Franciaország' },
+  NL: { cs: 'Nizozemsko', en: 'Netherlands', de: 'Niederlande', sk: 'Holandsko', pl: 'Holandia', hu: 'Hollandia' },
+  BE: { cs: 'Belgie', en: 'Belgium', de: 'Belgien', sk: 'Belgicko', pl: 'Belgia', hu: 'Belgium' },
+
+  IT: { cs: 'Itálie', en: 'Italy', de: 'Italien', sk: 'Taliansko', pl: 'Włochy', hu: 'Olaszország' },
+  ES: { cs: 'Španělsko', en: 'Spain', de: 'Spanien', sk: 'Španielsko', pl: 'Hiszpania', hu: 'Spanyolország' },
+
+  DK: { cs: 'Dánsko', en: 'Denmark', de: 'Dänemark', sk: 'Dánsko', pl: 'Dania', hu: 'Dánia' },
+  SE: { cs: 'Švédsko', en: 'Sweden', de: 'Schweden', sk: 'Švédsko', pl: 'Szwecja', hu: 'Svédország' },
+  FI: { cs: 'Finsko', en: 'Finland', de: 'Finnland', sk: 'Fínsko', pl: 'Finlandia', hu: 'Finnország' },
+  NO: { cs: 'Norsko', en: 'Norway', de: 'Norwegen', sk: 'Nórsko', pl: 'Norwegia', hu: 'Norvégia' }
+};
+
+const COUNTRY_ALIASES = Object.create(null);
+
+function addCountryAliases(code, aliases) {
+  const cc = String(code || '').trim().toUpperCase();
+
+  if (!SUPPORTED_COUNTRY_CODES.has(cc)) return;
+
+  for (const alias of aliases) {
+    const key = foldPlaceText(alias);
+
+    if (key) {
+      COUNTRY_ALIASES[key] = cc;
+    }
+  }
+}
+
+addCountryAliases('CZ', [
+  'CZ',
+  'Czechia',
+  'Czech Republic',
+  'Česko',
+  'Cesko',
+  'Česká republika',
+  'Ceska republika',
+  'Czechy',
+  'Tschechien'
+]);
+
+addCountryAliases('SK', [
+  'SK',
+  'Slovakia',
+  'Slovensko',
+  'Slovenská republika',
+  'Slovenska republika'
+]);
+
+addCountryAliases('PL', [
+  'PL',
+  'Poland',
+  'Polsko',
+  'Polska'
+]);
+
+addCountryAliases('HU', [
+  'HU',
+  'Hungary',
+  'Maďarsko',
+  'Madarsko',
+  'Magyarország',
+  'Magyarorszag',
+  'Węgry',
+  'Wegry',
+  'Ungarn'
+]);
+
+addCountryAliases('DE', [
+  'DE',
+  'Germany',
+  'Německo',
+  'Nemecko',
+  'Deutschland',
+  'Niemcy',
+  'Germania'
+]);
+
+addCountryAliases('AT', [
+  'AT',
+  'Austria',
+  'Rakousko',
+  'Rakúsko',
+  'Rakouska',
+  'Österreich',
+  'Osterreich'
+]);
+
+addCountryAliases('CH', [
+  'CH',
+  'Switzerland',
+  'Švýcarsko',
+  'Svycarsko',
+  'Švajčiarsko',
+  'Szwajcaria',
+  'Schweiz',
+  'Suisse',
+  'Svizzera'
+]);
+
+addCountryAliases('GB', [
+  'GB',
+  'UK',
+  'United Kingdom',
+  'Great Britain',
+  'Britain',
+  'England',
+  'Scotland',
+  'Wales',
+  'Northern Ireland',
+  'Velká Británie',
+  'Velka Britanie',
+  'Spojené království',
+  'Spojene kralovstvi',
+  'Anglie',
+  'Wielka Brytania',
+  'Egyesült Királyság'
+]);
+
+addCountryAliases('IE', [
+  'IE',
+  'Ireland',
+  'Irsko',
+  'Írsko',
+  'Irlandia',
+  'Éire',
+  'Eire'
+]);
+
+addCountryAliases('FR', [
+  'FR',
+  'France',
+  'Francie',
+  'Francúzsko',
+  'Francuzsko',
+  'Francja',
+  'Franciaország',
+  'Franciaorszag',
+  'Francia',
+  'Frankreich'
+]);
+
+addCountryAliases('NL', [
+  'NL',
+  'Netherlands',
+  'The Netherlands',
+  'Nizozemsko',
+  'Holandsko',
+  'Holandia',
+  'Nederland',
+  'Holland',
+  'Niederlande'
+]);
+
+addCountryAliases('BE', [
+  'BE',
+  'Belgium',
+  'Belgie',
+  'Belgicko',
+  'Belgia',
+  'Belgique',
+  'België',
+  'Belgien'
+]);
+
+addCountryAliases('IT', [
+  'IT',
+  'Italy',
+  'Itálie',
+  'Italie',
+  'Taliansko',
+  'Włochy',
+  'Wlochy',
+  'Italia',
+  'Italien'
+]);
+
+addCountryAliases('ES', [
+  'ES',
+  'Spain',
+  'Španělsko',
+  'Spanelsko',
+  'Španielsko',
+  'Spanielsko',
+  'Hiszpania',
+  'España',
+  'Espana',
+  'Spanien'
+]);
+
+addCountryAliases('DK', [
+  'DK',
+  'Denmark',
+  'Dánsko',
+  'Dansko',
+  'Dania',
+  'Danmark',
+  'Dänemark'
+]);
+
+addCountryAliases('SE', [
+  'SE',
+  'Sweden',
+  'Švédsko',
+  'Svedsko',
+  'Szwecja',
+  'Sverige',
+  'Schweden'
+]);
+
+addCountryAliases('FI', [
+  'FI',
+  'Finland',
+  'Finsko',
+  'Fínsko',
+  'Finlandia',
+  'Suomi',
+  'Finnland'
+]);
+
+addCountryAliases('NO', [
+  'NO',
+  'Norway',
+  'Norsko',
+  'Nórsko',
+  'Norwegia',
+  'Norge',
+  'Norwegen'
+]);
+
+function countryCodeFromInput(value) {
+  const raw = String(value || '').trim();
+
+  if (!raw) return '';
+
+  const upper = raw.toUpperCase();
+  const normalizedCode = upper === 'UK' ? 'GB' : upper;
+
+  if (/^[A-Z]{2}$/.test(normalizedCode) && SUPPORTED_COUNTRY_CODES.has(normalizedCode)) {
+    return normalizedCode;
+  }
+
+  return COUNTRY_ALIASES[foldPlaceText(raw)] || '';
+}
+
+function firstCountryCodeFromInput(value) {
+  const raw = String(value || '').trim();
+
+  if (!raw) return '';
+
+  const parts = raw
+    .split(',')
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  for (const part of parts) {
+    const cc = countryCodeFromInput(part);
+
+    if (cc) return cc;
+  }
+
+  return '';
+}
+
+function countryLabelForCode(code, lang = currentLang || getUILang()) {
+  const cc = String(code || '').trim().toUpperCase();
+
+  if (!cc) return '';
+
+  const labels = COUNTRY_LABELS[cc];
+
+  return labels?.[lang] || labels?.cs || labels?.en || cc;
+}
+
 function localizedCityLabel(slug, lang) {
   const map = CITY_SYNONYMS[slug];
   return (map && map[lang]) || (map && map.cs) || slug;
@@ -432,10 +775,9 @@ function canonPreferredCity(label) {
   const raw = String(label || '').trim();
   if (!raw) return '';
 
-  // Důležité:
-  // Nikdy nepřebíráme slug z předchozího currentFilters.city.
-  // Právě to způsobovalo chybu typu:
-  // uživatel vybral Amsterdam NL, ale URL zůstala city=Paris&cityCc=NL.
+  // Pokud uživatel zadal zemi, nesmíme ji kanonizovat jako město.
+  if (countryCodeFromInput(raw)) return '';
+
   const slug = findSlugByAnyLabel(raw);
 
   if (!slug) {
@@ -456,13 +798,14 @@ function canonPreferredCity(label) {
 }
 
 function cityCountryCodeFromLabel(label, fallback = '') {
-  const fromFallback = String(fallback || '').trim().toUpperCase();
+  const fromFallback = firstCountryCodeFromInput(fallback);
   if (fromFallback) return fromFallback;
 
   const raw = String(label || '').trim();
 
-  // Když uživatel pouze znovu odešle stejné město, držíme dříve vybranou zemi.
-  // To chrání města se stejným názvem ve více trzích.
+  const countryFromRaw = countryCodeFromInput(raw);
+  if (countryFromRaw) return countryFromRaw;
+
   const currentLabel = String(currentFilters.cityLabel || currentFilters.city || '').trim();
   if (raw && currentLabel && normKey(raw) === normKey(currentLabel) && currentFilters.cityCountryCode) {
     return String(currentFilters.cityCountryCode || '').trim().toUpperCase();
@@ -475,9 +818,54 @@ function cityCountryCodeFromLabel(label, fallback = '') {
   }
 }
 
+function setCountryPlace(rawLabel = '', code = '') {
+  const cc = countryCodeFromInput(code) || countryCodeFromInput(rawLabel);
+
+  if (!cc) return false;
+
+  currentFilters.placeType = 'country';
+  currentFilters.city = '';
+  currentFilters.cityLabel = rawLabel || countryLabelForCode(cc, currentLang);
+  currentFilters.cityCountryCode = '';
+  currentFilters.countryCode = cc;
+  currentFilters.nearMeLat = null;
+  currentFilters.nearMeLon = null;
+
+  return true;
+}
+
+function setCityPlace(label = '', code = '') {
+  const raw = String(label || '').trim();
+  const cc = cityCountryCodeFromLabel(raw, code);
+
+  currentFilters.placeType = raw ? 'city' : '';
+  currentFilters.cityLabel = raw;
+  currentFilters.city = raw ? (canonPreferredCity(raw) || raw) : '';
+  currentFilters.cityCountryCode = raw ? cc : '';
+
+  if (cc) {
+    currentFilters.countryCode = cc;
+  }
+
+  currentFilters.nearMeLat = null;
+  currentFilters.nearMeLon = null;
+
+  if (!raw) {
+    currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+  }
+}
+
 function syncLocalizedCityLabelFromCurrentState() {
   if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
+    currentFilters.placeType = 'nearMe';
     currentFilters.cityLabel = nearMeLabel();
+    return;
+  }
+
+  if (currentFilters.placeType === 'country' && currentFilters.countryCode) {
+    currentFilters.city = '';
+    currentFilters.cityCountryCode = '';
+    currentFilters.cityLabel = countryLabelForCode(currentFilters.countryCode, currentLang);
     return;
   }
 
@@ -697,8 +1085,6 @@ function deepMerge(a = {}, b = {}) {
 async function fetchJSON(path) {
   if (!path) return null;
 
-  // Cacheujeme i neexistující soubory jako null,
-  // aby se při přepínání jazyků pořád dokola netahaly stejné 404.
   if (JSON_CACHE.has(path)) {
     return JSON_CACHE.get(path);
   }
@@ -751,11 +1137,6 @@ function getPageKeyForI18n() {
 function getI18nFilesForPage(lang, pageKey = getPageKeyForI18n()) {
   const files = [`/locales/${lang}.json`];
 
-  // Důležité:
-  // Nezkoušíme už desítky fallback cest typu /locales/cs/common.json,
-  // protože na ostré verzi dělaly zbytečné 404 a zpomalovaly přepnutí jazyka.
-  //
-  // Pokud má konkrétní stránka vlastní slovník, přidej ji sem cíleně.
   if (pageKey === 'partners') {
     files.push(`/locales/partners-${lang}.json`);
   }
@@ -819,7 +1200,6 @@ function prefetchTranslations() {
 
   const run = () => {
     langsToPrefetch.forEach(lang => {
-      // Nečekáme na výsledek. Jen tiše nahřejeme cache pro další přepnutí.
       loadTranslations(lang).catch(() => {});
     });
   };
@@ -838,7 +1218,6 @@ function getByPath(obj, path) {
 function t(key, fallback) {
   if (!key) return fallback;
 
-  // Podpora aliasů: "about.story.p1|about-story-p1|about-story-text-1"
   if (typeof key === 'string' && key.includes('|')) {
     const keys = key
       .split('|')
@@ -1402,7 +1781,7 @@ function patchFilterVisuals() {
 /* ───────── UI / filter text sync ───────── */
 function updateFilterLocaleTexts() {
   const city = getCityInputEl();
-  if (city) city.placeholder = t('filters.cityPlaceholder', 'Praha, Brno…');
+  if (city) city.placeholder = t('filters.cityPlaceholder', 'Město nebo země…');
 
   const kw = qs('#filter-keyword');
   if (kw) kw.placeholder = t('filters.keywordPlaceholder', 'Umělec, místo, akce…');
@@ -1414,7 +1793,7 @@ function updateFilterLocaleTexts() {
   if (lblCat) lblCat.textContent = t('filters.category', 'Kategorie');
 
   const lblCity = qs('label[for="filter-city"]') || qs('label[for="events-city-filter"]');
-  if (lblCity) lblCity.textContent = t('filters.city', 'Město');
+  if (lblCity) lblCity.textContent = t('filters.city', 'Město / země');
 
   const lblKw = qs('label[for="filter-keyword"]');
   if (lblKw) lblKw.textContent = t('filters.keyword', 'Klíčové slovo');
@@ -1457,7 +1836,7 @@ function expandFilters() {
 function computeActiveFiltersCount(filters = currentFilters) {
   let count = 0;
   if (filters.category && filters.category !== 'all') count++;
-  if (filters.city || filters.cityLabel) count++;
+  if (filters.city || filters.cityLabel || filters.placeType === 'country') count++;
   if (filters.keyword) count++;
   if (filters.sort && filters.sort !== 'nearest') count++;
   if (filters.dateFrom || filters.dateTo) count++;
@@ -1648,22 +2027,25 @@ function syncFiltersFromForm() {
   currentFilters.dateTo = to?.value || currentFilters.dateTo || '';
 
   if (city && !city.matches('[data-autofromnearme="1"]')) {
-    const rawCity = (city.value || '').trim();
-    const cc = rawCity ? cityCountryCodeFromLabel(rawCity) : '';
+    const rawPlace = (city.value || '').trim();
 
-    currentFilters.cityLabel = rawCity;
-    currentFilters.city = rawCity ? (canonPreferredCity(rawCity) || rawCity) : '';
-    currentFilters.cityCountryCode = cc;
-
-    if (cc) {
-      currentFilters.countryCode = cc;
-    }
-
-    if (!rawCity) {
+    if (!rawPlace) {
+      currentFilters.placeType = '';
+      currentFilters.city = '';
+      currentFilters.cityLabel = '';
       currentFilters.cityCountryCode = '';
+      currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
       currentFilters.nearMeLat = null;
       currentFilters.nearMeLon = null;
       city.removeAttribute('data-autofromnearme');
+    } else {
+      const countryCc = countryCodeFromInput(rawPlace);
+
+      if (countryCc) {
+        setCountryPlace(rawPlace, countryCc);
+      } else {
+        setCityPlace(rawPlace);
+      }
     }
   }
 
@@ -1675,24 +2057,45 @@ function syncURLFromFilters() {
   const u = new URL(location.href);
   const p = u.searchParams;
 
-  currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city');
-  currentFilters.cityCountryCode ? p.set('cityCc', currentFilters.cityCountryCode) : p.delete('cityCc');
+  const isCountryPlace =
+    currentFilters.placeType === 'country' ||
+    (!currentFilters.city && currentFilters.cityLabel && countryCodeFromInput(currentFilters.cityLabel));
+
+  if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
+    p.delete('city');
+    p.delete('cityCc');
+    p.delete('country');
+    p.delete('countryCode');
+
+    p.set('lat', String(currentFilters.nearMeLat));
+    p.set('lon', String(currentFilters.nearMeLon));
+    p.set('radius', String(currentFilters.nearMeRadiusKm || 50));
+  } else {
+    p.delete('lat');
+    p.delete('lon');
+    p.delete('radius');
+
+    if (isCountryPlace) {
+      const cc = currentFilters.countryCode || countryCodeFromInput(currentFilters.cityLabel);
+
+      p.delete('city');
+      p.delete('cityCc');
+      p.delete('countryCode');
+
+      cc ? p.set('country', cc) : p.delete('country');
+    } else {
+      currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city');
+      currentFilters.cityCountryCode ? p.set('cityCc', currentFilters.cityCountryCode) : p.delete('cityCc');
+      p.delete('country');
+      p.delete('countryCode');
+    }
+  }
+
   currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from');
   currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to');
   (currentFilters.category && currentFilters.category !== 'all') ? p.set('segment', currentFilters.category) : p.delete('segment');
   currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q');
   (currentFilters.sort && currentFilters.sort !== 'nearest') ? p.set('sort', currentFilters.sort) : p.delete('sort');
-
-  if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-    p.set('lat', String(currentFilters.nearMeLat));
-    p.set('lon', String(currentFilters.nearMeLon));
-    p.set('radius', String(currentFilters.nearMeRadiusKm || 50));
-    p.delete('cityCc');
-  } else {
-    p.delete('lat');
-    p.delete('lon');
-    p.delete('radius');
-  }
 
   history.replaceState(null, '', u.toString());
 }
@@ -2012,12 +2415,12 @@ function geoErrorMessage(err) {
 const nearMeLabel = () => t('filters.nearMe', 'V mém okolí');
 
 const citySearchPlaceholderFallback = {
-  cs: 'Hledat město…',
-  en: 'Search city…',
-  de: 'Stadt suchen…',
-  sk: 'Hľadať mesto…',
-  pl: 'Szukaj miasta…',
-  hu: 'Város keresése…'
+  cs: 'Hledat město nebo zemi…',
+  en: 'Search city or country…',
+  de: 'Stadt oder Land suchen…',
+  sk: 'Hľadať mesto alebo krajinu…',
+  pl: 'Szukaj miasta lub kraju…',
+  hu: 'Város vagy ország keresése…'
 };
 
 function getCitySearchPlaceholder() {
@@ -2096,6 +2499,7 @@ function isNearMeTyped(input) {
 
 async function activateNearMeViaGeo(input) {
   const setState = ({ lat, lon }) => {
+    currentFilters.placeType = 'nearMe';
     currentFilters.city = '';
     currentFilters.cityLabel = nearMeLabel();
     currentFilters.cityCountryCode = '';
@@ -2167,20 +2571,35 @@ function buildCityTypeaheadOptions(input, locale) {
     ],
     onChoose: item => {
       const label = item?.city || item?.label || item?.name || '';
-      const cc = cityCountryCodeFromLabel(label, item?.countryCode || item?.country || '');
+      const itemType = String(item?.type || item?.kind || '').toLowerCase();
+      const itemCc = item?.countryCode || item?.country || '';
 
-      currentFilters.city = canonPreferredCity(label) || label;
-      currentFilters.cityLabel = label;
-      currentFilters.cityCountryCode = cc;
+      const isCountryItem =
+        itemType === 'country' ||
+        itemType === 'country-only' ||
+        item?.isCountry === true;
 
-      if (cc) {
-        currentFilters.countryCode = cc;
+      const countryCc = countryCodeFromInput(label) || (isCountryItem ? countryCodeFromInput(itemCc) : '');
+
+      if (countryCc) {
+        setCountryPlace(label || countryLabelForCode(countryCc, currentLang), countryCc);
+      } else {
+        const cc = cityCountryCodeFromLabel(label, itemCc);
+
+        currentFilters.placeType = 'city';
+        currentFilters.city = canonPreferredCity(label) || label;
+        currentFilters.cityLabel = label;
+        currentFilters.cityCountryCode = cc;
+
+        if (cc) {
+          currentFilters.countryCode = cc;
+        }
+
+        currentFilters.nearMeLat = null;
+        currentFilters.nearMeLon = null;
       }
 
-      currentFilters.nearMeLat = null;
-      currentFilters.nearMeLon = null;
-
-      input.value = label;
+      input.value = currentFilters.cityLabel || label;
       input.removeAttribute('data-autofromnearme');
 
       _lastFetchSig = '';
@@ -2195,6 +2614,7 @@ function buildCityTypeaheadOptions(input, locale) {
         isFinite(lon) &&
         ((Math.abs(lat) + Math.abs(lon)) > 0)
       ) {
+        currentFilters.placeType = 'nearMe';
         currentFilters.city = '';
         currentFilters.cityLabel = nearMeLabel();
         currentFilters.cityCountryCode = '';
@@ -2303,8 +2723,6 @@ function adjustTicketmasterLanguage(rawUrl, lang = getUILang()) {
     const u = new URL(rawUrl, location.href);
     const val = mapLangToTm(lang);
 
-    // Pokud jde o náš outbound redirect, jazyk musíme nastavit uvnitř parametru "to",
-    // ne na samotnou Netlify funkci.
     if (u.pathname.includes('/.netlify/functions/tmOutbound')) {
       const target = u.searchParams.get('to') || u.searchParams.get('url');
 
@@ -2358,9 +2776,11 @@ function makeFetchSig(locale, api, page, perPage) {
     locale,
     page,
     perPage,
+    placeType: api.placeType || '',
     category: api.category || 'all',
     sort: api.sort || 'nearest',
     city: api.city || '',
+    cityLabel: api.cityLabel || '',
     cityCountryCode: api.cityCountryCode || '',
     dateFrom: api.dateFrom || '',
     dateTo: api.dateTo || '',
@@ -2380,15 +2800,27 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   setBusy(true);
 
   try {
-    const normalizedCity = filters.city
+    const countryFromPlace =
+      countryCodeFromInput(filters.cityLabel) ||
+      countryCodeFromInput(filters.city);
+
+    const isCountryPlace =
+      filters.placeType === 'country' ||
+      (!filters.city && filters.cityLabel && countryFromPlace) ||
+      (filters.city && countryFromPlace);
+
+    const normalizedCity = (!isCountryPlace && filters.city)
       ? (canonForInputCity(filters.city) || filters.city)
       : '';
 
     const api = {
       ...filters,
+      placeType: isCountryPlace ? 'country' : (filters.placeType || ''),
       city: normalizedCity,
-      cityCountryCode: filters.cityCountryCode || '',
-      countryCode: filters.cityCountryCode || filters.countryCode || ''
+      cityCountryCode: isCountryPlace ? '' : (filters.cityCountryCode || ''),
+      countryCode: isCountryPlace
+        ? String(filters.countryCode || countryFromPlace || '').toUpperCase()
+        : (filters.cityCountryCode || filters.countryCode || '')
     };
 
     const latOk = typeof api.nearMeLat === 'number' && isFinite(api.nearMeLat);
@@ -2401,7 +2833,9 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       const radius = clamp(+api.nearMeRadiusKm || 50, 10, 300);
 
       Object.assign(api, {
+        placeType: 'nearMe',
         city: '',
+        cityCountryCode: '',
         nearMe: 1,
         lat,
         lon,
@@ -3064,17 +3498,33 @@ function initLanguageSwitchers() {
 function initFiltersFromURL() {
   const sp = new URLSearchParams(location.search);
 
+  const urlCountryRaw = sp.get('country') || sp.get('countryCode') || '';
+  const urlCountryCc = firstCountryCodeFromInput(urlCountryRaw);
+
   if (sp.get('city')) {
     const raw = sp.get('city') || '';
-    const cc = cityCountryCodeFromLabel(raw, sp.get('cityCc') || '');
+    const cityAsCountry = countryCodeFromInput(raw);
 
-    currentFilters.city = canonPreferredCity(raw) || raw;
-    currentFilters.cityLabel = raw;
-    currentFilters.cityCountryCode = cc;
+    if (cityAsCountry) {
+      setCountryPlace(raw, cityAsCountry);
+    } else {
+      const cc = cityCountryCodeFromLabel(raw, sp.get('cityCc') || '');
 
-    if (cc) {
-      currentFilters.countryCode = cc;
+      currentFilters.placeType = 'city';
+      currentFilters.city = canonPreferredCity(raw) || raw;
+      currentFilters.cityLabel = raw;
+      currentFilters.cityCountryCode = cc;
+
+      if (cc) {
+        currentFilters.countryCode = cc;
+      }
     }
+  } else if (urlCountryCc) {
+    currentFilters.placeType = 'country';
+    currentFilters.city = '';
+    currentFilters.cityLabel = countryLabelForCode(urlCountryCc, currentLang);
+    currentFilters.cityCountryCode = '';
+    currentFilters.countryCode = urlCountryCc;
   }
 
   if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
@@ -3084,6 +3534,7 @@ function initFiltersFromURL() {
   if (sp.get('sort')) currentFilters.sort = sp.get('sort') || 'nearest';
 
   if (sp.get('lat') && sp.get('lon')) {
+    currentFilters.placeType = 'nearMe';
     currentFilters.nearMeLat = +sp.get('lat');
     currentFilters.nearMeLon = +sp.get('lon');
     currentFilters.nearMeRadiusKm = clamp(+(sp.get('radius') || 50), 10, 300);
@@ -3140,9 +3591,7 @@ async function bootstrapMain() {
   try { localStorage.setItem('ajsee.lang', currentLang); } catch {}
   document.documentElement.lang = currentLang;
 
-  const langToCountry = { cs: 'CZ', sk: 'SK', de: 'DE', pl: 'PL', hu: 'HU', en: 'CZ' };
-  const ccCookie = getCookie('aj_country');
-  currentFilters.countryCode = (ccCookie || langToCountry[currentLang] || 'CZ').toUpperCase();
+  currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
 
   initFiltersFromURL();
 

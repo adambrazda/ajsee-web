@@ -1,12 +1,19 @@
 // /shared/city/canonical.js
 // ---------------------------------------------------------
 // Jediný "zdroj pravdy" pro práci s názvy měst napříč FE i Netlify funkcemi.
+//
 // - robustní normalizace (bez diakritiky, lower, trim)
 // - baseCityKey(): sloučí "Praha 1/2/7…" → prague, "Bratislava - Staré Mesto" → bratislava
 // - canonForInputCity(): aliasy -> kanonické endonym/exonym pro TM (EN varianty) + fuzzy
 // - labelForCanon(): preferovaný popisek dle UI jazyka
 // - guessCountryCodeFromCity(): odvodí správný countryCode z města
 // - findBestCityMatchInfo(): detail fuzzy shody (kanonické EN + skóre)
+// - countryCodeFromInput(): rozpozná zadanou zemi / ISO kód, aby se země nemíchaly do city logiky
+//
+// DŮLEŽITÁ OPRAVA 2026-05-07:
+// - Budapest / Budapešť / Budapeszt doplněno do CITY_ALIASES i CITY_TO_CC.
+// - Země typu Francie / France / FR / Maďarsko / Hungary / HU se už nebudou
+//   fuzzy-mapovat jako města.
 // ---------------------------------------------------------
 
 /** Základní normalizace textu: lower + odstranění diakritiky + trim */
@@ -15,7 +22,7 @@ export function normalize(s) {
     .toString()
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // diakritika pryč
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/ß/g, 'ss')
     .replace(/ł/g, 'l')
     .trim();
@@ -27,9 +34,13 @@ function normalizeForMatch(s = '') {
     .replace(/[’'`´]/g, '')
     .replace(/[().,;:/\\\-+_]/g, ' ')
     .replace(/\s+/g, ' ')
-    .replace(/\b(st|st\.|saint|sankt)\b/g, 'saint') // sjednocení Saint
-    .replace(/\b(n\s*y\s*c)\b/g, 'nyc') // NYC
+    .replace(/\b(st|st\.|saint|sankt)\b/g, 'saint')
+    .replace(/\b(n\s*y\s*c)\b/g, 'nyc')
     .trim();
+}
+
+function compactKey(s = '') {
+  return normalizeForMatch(s).replace(/\s+/g, '');
 }
 
 function collapseDistricts(s = '') {
@@ -41,6 +52,9 @@ function collapseDistricts(s = '') {
   s = s.replace(/\blondon\s+(borough|zone)\b.*$/, 'london');
   // Bratislava - Staré Mesto → bratislava
   s = s.replace(/^bratislava\s*[-–].+$/, 'bratislava');
+  // Budapest - district / Budapest 7 → budapest
+  s = s.replace(/^budapest\s*[-–].+$/, 'budapest');
+  s = s.replace(/^budapest\s+([ivxlcdm]+|\d+)\b.*$/, 'budapest');
   return s;
 }
 
@@ -57,11 +71,78 @@ export function baseCityKey(input) {
   // Bratislava – libovolná městská část
   if (/^bratislava(?:\s*[-–]?\s*.+)?$/.test(n)) return 'bratislava';
 
+  // Budapešť / Budapest – libovolná městská část
+  if (/^budapest(?:\s*[-–]?\s*.+)?$/.test(n)) return 'budapest';
+  if (['budapest', 'budapesth', 'budapestt', 'budapestz', 'budapesta'].includes(n)) return 'budapest';
+
   // Vídeň / Wien / Vienna / Wiedeń / Viedeň / Bécs
   if (['vienna', 'wien', 'viden', 'vieden', 'wieden', 'becs'].includes(n)) return 'vienna';
 
   // Jednoduchý fallback: text do čárky/pomlčky
   return n.split(/[,-]/)[0].trim();
+}
+
+/* ---------------------------------------------------------
+   Country aliases – aby se země nikdy nemíchaly do city fuzzy logiky.
+--------------------------------------------------------- */
+export const SUPPORTED_COUNTRY_CODES = new Set([
+  'CZ', 'SK', 'PL', 'HU',
+  'DE', 'AT', 'CH',
+  'GB', 'IE',
+  'FR', 'NL', 'BE',
+  'IT', 'ES',
+  'DK', 'SE', 'FI', 'NO'
+]);
+
+const COUNTRY_ALIASES = Object.create(null);
+
+function addCountryAliases(code, aliases) {
+  const cc = String(code || '').trim().toUpperCase();
+  if (!SUPPORTED_COUNTRY_CODES.has(cc)) return;
+
+  for (const alias of aliases || []) {
+    const key = normalizeForMatch(alias);
+    if (key) COUNTRY_ALIASES[key] = cc;
+
+    const compact = compactKey(alias);
+    if (compact) COUNTRY_ALIASES[compact] = cc;
+  }
+}
+
+addCountryAliases('CZ', ['CZ', 'Czechia', 'Czech Republic', 'Česko', 'Cesko', 'Česká republika', 'Ceska republika', 'Czechy', 'Tschechien']);
+addCountryAliases('SK', ['SK', 'Slovakia', 'Slovensko', 'Slovenská republika', 'Slovenska republika']);
+addCountryAliases('PL', ['PL', 'Poland', 'Polsko', 'Polska']);
+addCountryAliases('HU', ['HU', 'Hungary', 'Maďarsko', 'Madarsko', 'Magyarország', 'Magyarorszag', 'Węgry', 'Wegry', 'Ungarn']);
+addCountryAliases('DE', ['DE', 'Germany', 'Německo', 'Nemecko', 'Deutschland', 'Niemcy', 'Germania']);
+addCountryAliases('AT', ['AT', 'Austria', 'Rakousko', 'Rakúsko', 'Österreich', 'Osterreich']);
+addCountryAliases('CH', ['CH', 'Switzerland', 'Švýcarsko', 'Svycarsko', 'Švajčiarsko', 'Schweiz', 'Suisse', 'Svizzera']);
+addCountryAliases('GB', ['GB', 'UK', 'United Kingdom', 'Great Britain', 'Britain', 'England', 'Scotland', 'Wales', 'Northern Ireland', 'Velká Británie', 'Velka Britanie', 'Spojené království', 'Spojene kralovstvi', 'Anglie']);
+addCountryAliases('IE', ['IE', 'Ireland', 'Irsko', 'Írsko', 'Éire', 'Eire']);
+addCountryAliases('FR', ['FR', 'France', 'Francie', 'Francúzsko', 'Francuzsko', 'Francja', 'Franciaország', 'Franciaorszag', 'Francia', 'Frankreich']);
+addCountryAliases('NL', ['NL', 'Netherlands', 'The Netherlands', 'Nizozemsko', 'Holandsko', 'Nederland', 'Holland', 'Niederlande']);
+addCountryAliases('BE', ['BE', 'Belgium', 'Belgie', 'Belgicko', 'Belgique', 'België', 'Belgien']);
+addCountryAliases('IT', ['IT', 'Italy', 'Itálie', 'Italie', 'Taliansko', 'Italia', 'Italien']);
+addCountryAliases('ES', ['ES', 'Spain', 'Španělsko', 'Spanelsko', 'Španielsko', 'España', 'Espana', 'Spanien']);
+addCountryAliases('DK', ['DK', 'Denmark', 'Dánsko', 'Dansko', 'Danmark', 'Dänemark']);
+addCountryAliases('SE', ['SE', 'Sweden', 'Švédsko', 'Svedsko', 'Sverige', 'Schweden']);
+addCountryAliases('FI', ['FI', 'Finland', 'Finsko', 'Fínsko', 'Suomi', 'Finnland']);
+addCountryAliases('NO', ['NO', 'Norway', 'Norsko', 'Nórsko', 'Norge', 'Norwegen']);
+
+export function countryCodeFromInput(input) {
+  const raw = String(input || '').trim();
+  if (!raw) return '';
+
+  const upper = raw.toUpperCase();
+  const code = upper === 'UK' ? 'GB' : upper;
+
+  if (/^[A-Z]{2}$/.test(code) && SUPPORTED_COUNTRY_CODES.has(code)) {
+    return code;
+  }
+
+  const normal = normalizeForMatch(raw);
+  const compact = compactKey(raw);
+
+  return COUNTRY_ALIASES[normal] || COUNTRY_ALIASES[compact] || '';
 }
 
 /* ---------------------------------------------------------
@@ -85,6 +166,13 @@ const CITY_ALIASES = {
   'Poznan': ['Poznań', 'Poznan'],
   'Lodz': ['Łódź', 'Lodz'],
 
+  'Budapest': ['Budapest', 'Budapešť', 'Budapesth', 'Budapeszt', 'Budapesta'],
+  'Debrecen': ['Debrecen', 'Debrecín', 'Debrecin', 'Debreczyn'],
+  'Szeged': ['Szeged'],
+  'Miskolc': ['Miskolc', 'Miškovec', 'Miskovec', 'Miszkolc'],
+  'Pécs': ['Pécs', 'Pecs', 'Péč', 'Pec', 'Pecz'],
+  'Győr': ['Győr', 'Gyor', 'Ráb', 'Rab', 'Raab'],
+
   // DE / AT / CH / BeNeLux
   'Berlin': ['Berlin', 'Berlín'],
   'Hamburg': ['Hamburg', 'Hamburk'],
@@ -93,6 +181,8 @@ const CITY_ALIASES = {
   'Munich': ['München', 'Munich', 'Muenchen', 'Mnichov'],
   'Stuttgart': ['Stuttgart'],
   'Dusseldorf': ['Düsseldorf', 'Dusseldorf'],
+  'Dresden': ['Dresden', 'Drážďany', 'Drazdany'],
+  'Leipzig': ['Leipzig', 'Lipsko'],
   'Zurich': ['Zürich', 'Zurich', 'Curych'],
   'Geneva': ['Genève', 'Geneva', 'Ženeva'],
 
@@ -115,17 +205,17 @@ const CITY_ALIASES = {
   'Lisbon': ['Lisabon', 'Lisboa', 'Lisbon'],
   'Porto': ['Porto', 'Oporto'],
 
-  'Rome': ['Řím', 'Roma', 'Rome'],
-  'Milan': ['Milán', 'Milano', 'Milan'],
+  'Rome': ['Řím', 'Rim', 'Roma', 'Rome'],
+  'Milan': ['Milán', 'Milan', 'Milano'],
   'Naples': ['Neapol', 'Napoli', 'Naples'],
   'Turin': ['Turín', 'Torino', 'Turin'],
   'Florence': ['Florencie', 'Firenze', 'Florence'],
-  'Venice': ['Benátky', 'Venezia', 'Venice'],
+  'Venice': ['Benátky', 'Benatky', 'Venezia', 'Venice'],
 
   // Nordics + Baltics
   'Stockholm': ['Stockholm', 'Štokholm'],
   'Gothenburg': ['Göteborg', 'Goteborg', 'Gothenburg'],
-  'Copenhagen': ['København', 'Kobenhavn', 'Kodaň', 'Copenhagen'],
+  'Copenhagen': ['København', 'Kobenhavn', 'Kodaň', 'Kodan', 'Copenhagen'],
   'Oslo': ['Oslo'],
   'Helsinki': ['Helsinki', 'Helsinky'],
   'Reykjavik': ['Reykjavik', 'Reykjavík', 'Rejkjavik'],
@@ -135,13 +225,13 @@ const CITY_ALIASES = {
   'Vilnius': ['Vilnius', 'Wilno', 'Vilno'],
 
   // Balkán / SEE
-  'Ljubljana': ['Ljubljana', 'Lublaň'],
-  'Zagreb': ['Zagreb', 'Záhřeb'],
-  'Belgrade': ['Belgrade', 'Beograd', 'Bělehrad'],
+  'Ljubljana': ['Ljubljana', 'Lublaň', 'Lublan'],
+  'Zagreb': ['Zagreb', 'Záhřeb', 'Zahreb'],
+  'Belgrade': ['Belgrade', 'Beograd', 'Bělehrad', 'Belehrad'],
   'Sofia': ['Sofia'],
-  'Bucharest': ['Bucharest', 'București', 'Bukurešť'],
-  'Athens': ['Athens', 'Athína', 'Athény'],
-  'Thessaloniki': ['Thessaloniki', 'Soluň'],
+  'Bucharest': ['Bucharest', 'București', 'Bucuresti', 'Bukurešť', 'Bukurest'],
+  'Athens': ['Athens', 'Athína', 'Athina', 'Athény', 'Atheny'],
+  'Thessaloniki': ['Thessaloniki', 'Soluň', 'Solun'],
   'Istanbul': ['Istanbul'],
 
   // UK / IE
@@ -166,17 +256,17 @@ const CITY_ALIASES = {
 
   // Middle East
   'Tel Aviv': ['Tel Aviv', 'Tel-Aviv', 'TelAviv'],
-  'Jerusalem': ['Jerusalem', 'Jeruzalém'],
+  'Jerusalem': ['Jerusalem', 'Jeruzalém', 'Jeruzalem'],
   'Dubai': ['Dubai', 'Dubaj'],
-  'Abu Dhabi': ['Abu Dhabi', 'Abú Zabí'],
+  'Abu Dhabi': ['Abu Dhabi', 'Abú Zabí', 'Abu Zabi'],
   'Doha': ['Doha'],
-  'Riyadh': ['Riyadh', 'Rijád'],
+  'Riyadh': ['Riyadh', 'Rijád', 'Rijad'],
 
   // North America (výběr)
-  'New York': ['New York', 'NewYork', 'NYC', 'Nový York', 'Nowy Jork'],
+  'New York': ['New York', 'NewYork', 'NYC', 'Nový York', 'Novy York', 'Nowy Jork'],
   'Los Angeles': ['Los Angeles', 'LA'],
   'San Francisco': ['San Francisco', 'SF'],
-  'Chicago': ['Chicago', 'Čikágo'],
+  'Chicago': ['Chicago', 'Čikágo', 'Cikago'],
   'Boston': ['Boston'],
   'Miami': ['Miami'],
   'Washington': ['Washington', 'Washington DC', 'DC'],
@@ -209,18 +299,18 @@ const CITY_ALIASES = {
   'Seoul': ['Seoul', 'Soul'],
   'Busan': ['Busan', 'Pusan'],
   'Beijing': ['Beijing', 'Peking'],
-  'Shanghai': ['Shanghai', 'Šanghaj'],
-  'Shenzhen': ['Shenzhen', 'Šenčen'],
+  'Shanghai': ['Shanghai', 'Šanghaj', 'Sanghaj'],
+  'Shenzhen': ['Shenzhen', 'Šenčen', 'Sencen'],
   'Guangzhou': ['Guangzhou', 'Kanton'],
   'Hong Kong': ['Hong Kong', 'Hongkong'],
   'Taipei': ['Taipei', 'Tchaj-pej'],
   'Singapore': ['Singapore', 'Singapur'],
   'Bangkok': ['Bangkok'],
   'Kuala Lumpur': ['Kuala Lumpur'],
-  'Jakarta': ['Jakarta', 'Džakarta'],
+  'Jakarta': ['Jakarta', 'Džakarta', 'Dzakarta'],
   'Manila': ['Manila'],
   'Mumbai': ['Mumbai', 'Bombaj'],
-  'Delhi': ['Delhi', 'New Delhi', 'Nové Dillí', 'Dillí'],
+  'Delhi': ['Delhi', 'New Delhi', 'Nové Dillí', 'Nove Dilli', 'Dillí', 'Dilli'],
   'Bengaluru': ['Bengaluru', 'Bangalore'],
 
   // Oceania
@@ -231,7 +321,7 @@ const CITY_ALIASES = {
   'Adelaide': ['Adelaide', 'Adelaida'],
   'Canberra': ['Canberra'],
   'Auckland': ['Auckland', 'Okland'],
-  'Wellington': ['Wellington'],
+  'Wellington': ['Wellington']
 };
 
 /** alias → kanonické EN (rychlý index) */
@@ -278,7 +368,6 @@ function jaroWinkler(s1, s2) {
   if (!s1 || !s2) return 0;
   if (s1 === s2) return 1;
 
-  // clamp match distance to >= 0 (krátké řetězce)
   const matchDistance = Math.max(0, Math.floor(Math.max(s1.length, s2.length) / 2) - 1);
   const s1Matches = new Array(s1.length).fill(false);
   const s2Matches = new Array(s2.length).fill(false);
@@ -311,10 +400,10 @@ function jaroWinkler(s1, s2) {
   const m = matches;
   let jaro = (m / s1.length + m / s2.length + (m - transpositions) / m) / 3;
 
-  // Winkler prefix (max 4)
   let prefix = 0;
   for (let i = 0; i < Math.min(4, s1.length, s2.length); i++) {
-    if (s1[i] === s2[i]) prefix++; else break;
+    if (s1[i] === s2[i]) prefix++;
+    else break;
   }
   return jaro + prefix * 0.1 * (1 - jaro);
 }
@@ -354,6 +443,11 @@ function dynamicThreshold(q) {
 /* ---------- veřejné API ---------- */
 export function findBestCityMatchInfo(input) {
   if (!input) return null;
+
+  // Pokud vstup vypadá jako země, city fuzzy vůbec nespouštíme.
+  // Tohle chrání hodnoty typu France / Francie / FR / Hungary / HU.
+  if (countryCodeFromInput(input)) return null;
+
   const norm = normalizeForMatch(collapseDistricts(input));
   if (!norm) return null;
 
@@ -372,12 +466,17 @@ export function findBestCityMatchInfo(input) {
 /** Převede aliasy na kanonický (TM-friendly) EN název. */
 export function canonForInputCity(input) {
   if (!input) return '';
+
+  // Země nejsou města. Vracíme prázdno, aby si vyšší vrstvy mohly držet country-only search.
+  if (countryCodeFromInput(input)) return '';
+
   const hit = findBestCityMatchInfo(input);
   if (hit) return hit.canonical;
 
   const base = baseCityKey(input);
   if (base === 'prague') return 'Prague';
   if (base === 'bratislava') return 'Bratislava';
+  if (base === 'budapest') return 'Budapest';
   if (base === 'vienna') return 'Vienna';
 
   return input;
@@ -385,24 +484,26 @@ export function canonForInputCity(input) {
 
 // Preferované popisky pro UI
 export const CANON_LABEL = {
-  prague:     { cs:'Praha',     sk:'Praha',     en:'Prague',  de:'Prag',     pl:'Praga',    hu:'Prága' },
-  brno:       { cs:'Brno',      sk:'Brno',      en:'Brno',    de:'Brünn',    pl:'Brno',     hu:'Brünn' },
-  ostrava:    { cs:'Ostrava',   sk:'Ostrava',   en:'Ostrava', de:'Ostrau',   pl:'Ostrawa',  hu:'Osztrava' },
-  pilsen:     { cs:'Plzeň',     sk:'Plzeň',     en:'Pilsen',  de:'Pilsen',   pl:'Pilzno',   hu:'Pilsen' },
-  bratislava: { cs:'Bratislava',sk:'Bratislava',en:'Bratislava', de:'Pressburg', pl:'Bratysława', hu:'Pozsony' },
-  vienna:     { cs:'Vídeň',     sk:'Viedeň',    en:'Vienna',  de:'Wien',     pl:'Wiedeń',   hu:'Bécs' },
-  krakow:     { cs:'Krakov',    sk:'Krakov',    en:'Kraków',  de:'Krakau',   pl:'Kraków',   hu:'Krakkó' },
-  warsaw:     { cs:'Varšava',   sk:'Varšava',   en:'Warsaw',  de:'Warschau', pl:'Warszawa', hu:'Varsó' },
+  prague:     { cs:'Praha',     sk:'Praha',     en:'Prague',   de:'Prag',      pl:'Praga',     hu:'Prága' },
+  brno:       { cs:'Brno',      sk:'Brno',      en:'Brno',     de:'Brünn',     pl:'Brno',      hu:'Brünn' },
+  ostrava:    { cs:'Ostrava',   sk:'Ostrava',   en:'Ostrava',  de:'Ostrau',    pl:'Ostrawa',   hu:'Osztrava' },
+  pilsen:     { cs:'Plzeň',     sk:'Plzeň',     en:'Pilsen',   de:'Pilsen',    pl:'Pilzno',    hu:'Pilsen' },
+  bratislava: { cs:'Bratislava',sk:'Bratislava',en:'Bratislava',de:'Pressburg',pl:'Bratysława',hu:'Pozsony' },
+  vienna:     { cs:'Vídeň',     sk:'Viedeň',    en:'Vienna',   de:'Wien',      pl:'Wiedeń',    hu:'Bécs' },
+  krakow:     { cs:'Krakov',    sk:'Krakov',    en:'Kraków',   de:'Krakau',    pl:'Kraków',    hu:'Krakkó' },
+  warsaw:     { cs:'Varšava',   sk:'Varšava',   en:'Warsaw',   de:'Warschau',  pl:'Warszawa',  hu:'Varsó' },
 
-  london:     { cs:'Londýn',    sk:'Londýn',    en:'London',  de:'London',   pl:'Londyn',   hu:'London' },
-  paris:      { cs:'Paříž',     sk:'Paríž',     en:'Paris',   de:'Paris',    pl:'Paryż',    hu:'Párizs' },
-  berlin:     { cs:'Berlín',    sk:'Berlín',    en:'Berlin',  de:'Berlin',   pl:'Berlin',   hu:'Berlin' },
-  budapest:   { cs:'Budapešť',  sk:'Budapešť',  en:'Budapest',de:'Budapest', pl:'Budapeszt',hu:'Budapest' },
+  london:     { cs:'Londýn',    sk:'Londýn',    en:'London',   de:'London',    pl:'Londyn',    hu:'London' },
+  paris:      { cs:'Paříž',     sk:'Paríž',     en:'Paris',    de:'Paris',     pl:'Paryż',     hu:'Párizs' },
+  berlin:     { cs:'Berlín',    sk:'Berlín',    en:'Berlin',   de:'Berlin',    pl:'Berlin',    hu:'Berlin' },
+  budapest:   { cs:'Budapešť',  sk:'Budapešť',  en:'Budapest', de:'Budapest',  pl:'Budapeszt', hu:'Budapest' },
+  amsterdam:  { cs:'Amsterdam', sk:'Amsterdam', en:'Amsterdam',de:'Amsterdam', pl:'Amsterdam', hu:'Amsterdam' },
+  madrid:     { cs:'Madrid',    sk:'Madrid',    en:'Madrid',   de:'Madrid',    pl:'Madryt',    hu:'Madrid' }
 };
 
 export function labelForCanon(canonKey, lang = 'cs') {
   const key = normalize(canonKey);
-  const L = (lang || 'en').toString().slice(0,2).toLowerCase();
+  const L = (lang || 'en').toString().slice(0, 2).toLowerCase();
   const map = CANON_LABEL[key];
   return map?.[L] || canonKey;
 }
@@ -413,13 +514,15 @@ const CITY_TO_CC = {
   'Prague': 'CZ', 'Brno': 'CZ', 'Ostrava': 'CZ', 'Pilsen': 'CZ', 'Olomouc': 'CZ',
   // SK
   'Bratislava': 'SK',
+  // HU
+  'Budapest': 'HU', 'Debrecen': 'HU', 'Szeged': 'HU', 'Miskolc': 'HU', 'Pécs': 'HU', 'Győr': 'HU',
   // AT
   'Vienna': 'AT',
   // PL
   'Kraków': 'PL', 'Warsaw': 'PL', 'Wroclaw': 'PL', 'Gdansk': 'PL', 'Poznan': 'PL', 'Lodz': 'PL',
   // DE
   'Berlin': 'DE', 'Hamburg': 'DE', 'Cologne': 'DE', 'Frankfurt': 'DE', 'Munich': 'DE',
-  'Stuttgart': 'DE', 'Dusseldorf': 'DE',
+  'Stuttgart': 'DE', 'Dusseldorf': 'DE', 'Dresden': 'DE', 'Leipzig': 'DE',
   // CH
   'Zurich': 'CH', 'Geneva': 'CH',
   // NL / BE / LU
@@ -465,12 +568,16 @@ const CITY_TO_CC = {
   'Manila': 'PH', 'Mumbai': 'IN', 'Delhi': 'IN', 'Bengaluru': 'IN',
   // Oceania
   'Sydney': 'AU', 'Melbourne': 'AU', 'Brisbane': 'AU', 'Perth': 'AU', 'Adelaide': 'AU', 'Canberra': 'AU',
-  'Auckland': 'NZ', 'Wellington': 'NZ',
+  'Auckland': 'NZ', 'Wellington': 'NZ'
 };
 
 /** Vrátí ISO country code pro zadané město (pokud ho známe). */
 export function guessCountryCodeFromCity(input) {
   if (!input) return '';
+
+  // Země není město. Tím zabráníme tomu, aby např. France prošla městskou logikou.
+  if (countryCodeFromInput(input)) return '';
+
   const canonCity = canonForInputCity(input);
   return CITY_TO_CC[canonCity] || '';
 }

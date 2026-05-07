@@ -3,9 +3,21 @@
 // Netlify proxy pro Ticketmaster Discovery API (ESM, single handler)
 //
 // - Priorita geo: latlong > city > countryCode
+// - Podporuje jedno vstupní pole "město nebo země":
+//   např. city=Paris => city search
+//   např. city=Francie / France / FR => countryCode=FR search
+//   např. city=Maďarsko / Hungary / HU => countryCode=HU search
 // - City + countryCode:
+//   defaultně zachováváme současné chování:
 //   countryCode s city neposíláme přímo do Ticketmasteru,
 //   ale použijeme ho lokálně po fetchi k odfiltrování správné země.
+// - Nově lze testovat strategii:
+//   countryStrategy=local    současné chování
+//   countryStrategy=upstream pošle city + countryCode přímo do TM
+//   countryStrategy=both     pošle city + countryCode do TM + ještě lokální kontrola
+//   countryStrategy=none     ignoruje countryCode u city dotazu
+// - Debug režim:
+//   debug=1 nebo ajseeDebug=1 přidá _ajseeDebug do JSON odpovědi
 // - CORS + OPTIONS preflight
 // - Timeout přes AbortController
 // - Clamping size
@@ -101,6 +113,215 @@ const LOCALE_WHITELIST = new Set([
   'no', 'no-no'
 ]);
 
+function foldText(value) {
+  return String(value || '')
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/['’`]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+const COUNTRY_ALIASES = Object.create(null);
+
+function addCountryAliases(code, aliases) {
+  const cc = String(code || '').trim().toUpperCase();
+
+  if (!cc) return;
+
+  for (const alias of aliases) {
+    const key = foldText(alias);
+
+    if (key) {
+      COUNTRY_ALIASES[key] = cc;
+    }
+  }
+}
+
+addCountryAliases('CZ', [
+  'CZ',
+  'Czechia',
+  'Czech Republic',
+  'Česko',
+  'Cesko',
+  'Česká republika',
+  'Ceska republika'
+]);
+
+addCountryAliases('SK', [
+  'SK',
+  'Slovakia',
+  'Slovensko',
+  'Slovenská republika',
+  'Slovenska republika'
+]);
+
+addCountryAliases('PL', [
+  'PL',
+  'Poland',
+  'Polsko',
+  'Polska'
+]);
+
+addCountryAliases('HU', [
+  'HU',
+  'Hungary',
+  'Maďarsko',
+  'Madarsko',
+  'Magyarország',
+  'Magyarorszag'
+]);
+
+addCountryAliases('DE', [
+  'DE',
+  'Germany',
+  'Německo',
+  'Nemecko',
+  'Deutschland',
+  'Germania'
+]);
+
+addCountryAliases('AT', [
+  'AT',
+  'Austria',
+  'Rakousko',
+  'Österreich',
+  'Osterreich'
+]);
+
+addCountryAliases('CH', [
+  'CH',
+  'Switzerland',
+  'Švýcarsko',
+  'Svycarsko',
+  'Schweiz',
+  'Suisse',
+  'Svizzera'
+]);
+
+addCountryAliases('FR', [
+  'FR',
+  'France',
+  'Francie',
+  'Francia',
+  'Frankreich'
+]);
+
+addCountryAliases('ES', [
+  'ES',
+  'Spain',
+  'Španělsko',
+  'Spanelsko',
+  'España',
+  'Espana'
+]);
+
+addCountryAliases('NL', [
+  'NL',
+  'Netherlands',
+  'The Netherlands',
+  'Nizozemsko',
+  'Holandsko',
+  'Nederland',
+  'Holland'
+]);
+
+addCountryAliases('BE', [
+  'BE',
+  'Belgium',
+  'Belgie',
+  'Belgique',
+  'België',
+  'Belgie'
+]);
+
+addCountryAliases('IT', [
+  'IT',
+  'Italy',
+  'Itálie',
+  'Italie',
+  'Italia'
+]);
+
+addCountryAliases('DK', [
+  'DK',
+  'Denmark',
+  'Dánsko',
+  'Dansko',
+  'Danmark'
+]);
+
+addCountryAliases('SE', [
+  'SE',
+  'Sweden',
+  'Švédsko',
+  'Svedsko',
+  'Sverige'
+]);
+
+addCountryAliases('FI', [
+  'FI',
+  'Finland',
+  'Finsko',
+  'Suomi'
+]);
+
+addCountryAliases('NO', [
+  'NO',
+  'Norway',
+  'Norsko',
+  'Norge'
+]);
+
+addCountryAliases('IE', [
+  'IE',
+  'Ireland',
+  'Irsko',
+  'Éire',
+  'Eire'
+]);
+
+addCountryAliases('GB', [
+  'GB',
+  'UK',
+  'United Kingdom',
+  'Great Britain',
+  'Britain',
+  'England',
+  'Scotland',
+  'Wales',
+  'Northern Ireland',
+  'Velká Británie',
+  'Velka Britanie',
+  'Spojené království',
+  'Spojene kralovstvi',
+  'Anglie'
+]);
+
+function countryCodeFromInput(value) {
+  const raw = String(value || '').trim();
+
+  if (!raw) return '';
+
+  const upper = raw.toUpperCase();
+
+  // Uživatel může zadat přímo FR, HU, DE apod.
+  // UK převádíme na GB, protože Ticketmaster používá countryCode=GB.
+  if (/^[A-Z]{2}$/.test(upper)) {
+    if (upper === 'UK') return 'GB';
+
+    return upper;
+  }
+
+  const key = foldText(raw);
+
+  return COUNTRY_ALIASES[key] || '';
+}
+
 async function safeFetch(input, init) {
   if (typeof fetch === 'function') {
     return fetch(input, init);
@@ -142,6 +363,7 @@ function getCountryFromVenue(ev) {
     FRANCE: 'FR',
     SPAIN: 'ES',
     NETHERLANDS: 'NL',
+    HOLLAND: 'NL',
     BELGIUM: 'BE',
     ITALY: 'IT',
     DENMARK: 'DK',
@@ -151,10 +373,82 @@ function getCountryFromVenue(ev) {
     IRELAND: 'IE',
     'UNITED KINGDOM': 'GB',
     UK: 'GB',
-    'GREAT BRITAIN': 'GB'
+    'GREAT BRITAIN': 'GB',
+    ENGLAND: 'GB',
+    SCOTLAND: 'GB',
+    WALES: 'GB',
+    'NORTHERN IRELAND': 'GB'
   };
 
   return byName[countryName] || '';
+}
+
+function getHostFromUrl(rawUrl) {
+  try {
+    return rawUrl ? new URL(rawUrl).hostname.replace(/^www\./, '') : '';
+  } catch {
+    return '';
+  }
+}
+
+function buildDebugPayload({
+  parsed,
+  countryStrategy,
+  finalUrl,
+  rawLocale,
+  originalCityParam,
+  effectiveCityParam,
+  cityInputCountryCode,
+  countryParam,
+  countryParamCountryCode,
+  countryCode,
+  latlong,
+  q
+}) {
+  const rawEvents = parsed?._embedded?.events;
+  const events = Array.isArray(rawEvents) ? rawEvents : [];
+
+  return {
+    countryStrategy,
+    interpretedInput: {
+      originalCity: originalCityParam || '',
+      effectiveCity: effectiveCityParam || '',
+      cityWasInterpretedAsCountry: Boolean(originalCityParam && cityInputCountryCode),
+      cityInputCountryCode: cityInputCountryCode || '',
+      countryParam: countryParam || '',
+      countryParamCountryCode: countryParamCountryCode || '',
+      finalCountryCode: countryCode || ''
+    },
+    requested: {
+      city: effectiveCityParam || '',
+      originalCity: originalCityParam || '',
+      countryCode: countryCode || '',
+      locale: rawLocale || '',
+      segmentName: q.segmentName || '',
+      classificationName: q.classificationName || '',
+      keyword: q.keyword || '',
+      dateFrom: q.dateFrom || '',
+      dateTo: q.dateTo || '',
+      startDateTime: q.startDateTime || '',
+      endDateTime: q.endDateTime || '',
+      latlong: latlong || ''
+    },
+    upstreamUrl: finalUrl.replace(/apikey=[^&]+/, 'apikey=***'),
+    rawCountOnPage: events.length,
+    rawPage: parsed?.page || null,
+    samples: events.slice(0, 12).map((ev) => {
+      const venue = ev?._embedded?.venues?.[0] || {};
+
+      return {
+        name: ev?.name || '',
+        eventId: ev?.id || '',
+        city: venue?.city?.name || '',
+        countryCode: getCountryFromVenue(ev),
+        host: getHostFromUrl(ev?.url || ''),
+        url: ev?.url || ''
+      };
+    })
+  };
 }
 
 export const handler = async (event) => {
@@ -197,9 +491,22 @@ export const handler = async (event) => {
       url.searchParams.set('locale', rawLocale);
     }
 
+    // Debug / strategy
+    const rawCountryStrategy = String(q.countryStrategy || '').trim().toLowerCase();
+
+    const countryStrategy = ['local', 'upstream', 'both', 'none'].includes(rawCountryStrategy)
+      ? rawCountryStrategy
+      : 'local';
+
+    const debugMode =
+      q.debug === '1' ||
+      q.ajseeDebug === '1';
+
     // Geo priorita: latlong > city > countryCode
     const latlong = String(q.latlong || '').trim();
-    const cityParam = String(q.city || '').trim();
+
+    const originalCityParam = String(q.city || '').trim();
+    const countryParam = String(q.country || '').trim();
 
     const ccRaw = String(q.countryCode || q.countryCodes || '').trim();
     const ccList = ccRaw
@@ -209,7 +516,18 @@ export const handler = async (event) => {
           .filter(Boolean)
       : [];
 
-    const countryCode = ccList[0] || '';
+    const cityInputCountryCode = countryCodeFromInput(originalCityParam);
+    const countryParamCountryCode = countryCodeFromInput(countryParam);
+
+    // Pokud uživatel do city pole zadá zemi, nepoužijeme to jako city,
+    // ale jako countryCode search.
+    const effectiveCityParam = cityInputCountryCode ? '' : originalCityParam;
+
+    const countryCode =
+      ccList[0] ||
+      countryParamCountryCode ||
+      cityInputCountryCode ||
+      '';
 
     if (latlong) {
       url.searchParams.set('latlong', latlong);
@@ -228,13 +546,23 @@ export const handler = async (event) => {
 
       url.searchParams.set('radius', String(miles));
       url.searchParams.set('unit', 'miles');
-    } else if (cityParam) {
-      url.searchParams.set('city', cityParam);
+    } else if (effectiveCityParam) {
+      url.searchParams.set('city', effectiveCityParam);
 
-      // Záměrně neposíláme countryCode k city přímo do TM.
-      // Některé markety se s city+countryCode chovají nekonzistentně.
-      // Country filtr aplikujeme až lokálně po odpovědi.
+      // Debugovatelná strategie pro city + countryCode:
+      // - local: současné chování, countryCode neposíláme do TM, filtrujeme lokálně
+      // - upstream: countryCode pošleme do TM, lokálně už nefiltrujeme
+      // - both: countryCode pošleme do TM a ještě lokálně ověříme venue country
+      // - none: countryCode ignorujeme úplně
+      if (
+        countryCode &&
+        (countryStrategy === 'upstream' || countryStrategy === 'both')
+      ) {
+        url.searchParams.set('countryCode', countryCode);
+      }
     } else if (countryCode) {
+      // Country-only search.
+      // Sem spadne i případ, kdy uživatel do pole město zadá např. "Francie".
       url.searchParams.set('countryCode', countryCode);
     }
 
@@ -316,9 +644,57 @@ export const handler = async (event) => {
 
     let text = await resp.text();
 
+    let ajseeDebug = null;
+
+    if (resp.ok && text && debugMode) {
+      try {
+        const parsedForDebug = JSON.parse(text);
+
+        ajseeDebug = buildDebugPayload({
+          parsed: parsedForDebug,
+          countryStrategy,
+          finalUrl,
+          rawLocale,
+          originalCityParam,
+          effectiveCityParam,
+          cityInputCountryCode,
+          countryParam,
+          countryParamCountryCode,
+          countryCode,
+          latlong,
+          q
+        });
+      } catch (e) {
+        ajseeDebug = {
+          countryStrategy,
+          debugParseError: e?.message || String(e),
+          upstreamUrl: finalUrl.replace(/apikey=[^&]+/, 'apikey=***'),
+          interpretedInput: {
+            originalCity: originalCityParam || '',
+            effectiveCity: effectiveCityParam || '',
+            cityWasInterpretedAsCountry: Boolean(originalCityParam && cityInputCountryCode),
+            cityInputCountryCode: cityInputCountryCode || '',
+            countryParam: countryParam || '',
+            countryParamCountryCode: countryParamCountryCode || '',
+            finalCountryCode: countryCode || ''
+          }
+        };
+      }
+    }
+
     // Lokální disambiguace:
-    // Pokud přišlo city + countryCode, necháme pouze eventy ve správné zemi.
-    if (resp.ok && cityParam && countryCode && text) {
+    // Pokud přišlo city + countryCode a strategie je local/both,
+    // necháme pouze eventy ve správné zemi.
+    //
+    // Pozor:
+    // Country-only search se tady už lokálně nefiltuje, protože countryCode
+    // posíláme přímo do Ticketmasteru.
+    const shouldApplyLocalCountryFilter =
+      effectiveCityParam &&
+      countryCode &&
+      (countryStrategy === 'local' || countryStrategy === 'both');
+
+    if (resp.ok && shouldApplyLocalCountryFilter && text) {
       try {
         const parsed = JSON.parse(text);
         const events = parsed?._embedded?.events;
@@ -329,16 +705,38 @@ export const handler = async (event) => {
             return evCountry === countryCode;
           });
 
+          if (ajseeDebug) {
+            ajseeDebug.afterLocalCountryFilterCount = filtered.length;
+          }
+
           if (filtered.length !== events.length) {
             parsed._embedded = parsed._embedded || {};
             parsed._embedded.events = filtered;
 
             if (parsed.page && typeof parsed.page === 'object') {
+              // DŮLEŽITÉ:
+              // Tohle je pouze počet po lokálním filtru na aktuální stránce,
+              // ne skutečný celkový počet v Ticketmasteru.
+              // Proto do debug režimu ukládáme i původní rawPage.
               parsed.page.totalElements = filtered.length;
               parsed.page.totalPages = filtered.length ? 1 : 0;
               parsed.page.number = 0;
               parsed.page.size = filtered.length;
             }
+
+            if (debugMode) {
+              parsed._ajseeDebug = {
+                ...(ajseeDebug || {}),
+                afterLocalCountryFilterCount: filtered.length
+              };
+            }
+
+            text = JSON.stringify(parsed);
+          } else if (debugMode && ajseeDebug) {
+            parsed._ajseeDebug = {
+              ...ajseeDebug,
+              afterLocalCountryFilterCount: filtered.length
+            };
 
             text = JSON.stringify(parsed);
           }
@@ -350,6 +748,20 @@ export const handler = async (event) => {
 
     if (!resp.ok) {
       console.error('[ticketmasterEvents] Upstream error', resp.status, text.slice(0, 500));
+    }
+
+    // Připojit debug i v případech, kdy lokální country filtr neběžel.
+    if (resp.ok && debugMode && ajseeDebug && text) {
+      try {
+        const parsed = JSON.parse(text);
+
+        if (!parsed._ajseeDebug) {
+          parsed._ajseeDebug = ajseeDebug;
+          text = JSON.stringify(parsed);
+        }
+      } catch (e) {
+        console.warn('[ticketmasterEvents] debug attach fail:', e?.message || e);
+      }
     }
 
     return {

@@ -1,18 +1,52 @@
 // netlify/edge-functions/geo-lookup.js
-// Jednoduchý EDGE endpoint vracející IP a Geo z contextu (pro debug/telemetrii)
+// ---------------------------------------------------------
+// AJSEE geo lookup endpoint
+//
+// Jednoduchý EDGE endpoint vracející IP a Geo z Netlify contextu.
+// Používá se jako fallback pro "Near me" a případně pro debug.
+// ---------------------------------------------------------
+
+const ALLOWED_ORIGINS = new Set([
+  'https://ajsee.cz',
+  'https://www.ajsee.cz',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173'
+]);
+
+function corsHeaders(request) {
+  const origin = request.headers.get('origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.has(origin) ? origin : '';
+
+  return {
+    ...(allowedOrigin ? { 'Access-Control-Allow-Origin': allowedOrigin } : {}),
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Vary': 'Origin'
+  };
+}
 
 export default (request, context) => {
   const url = new URL(request.url);
-  const origin = request.headers.get('origin') || '*';
+  const cors = corsHeaders(request);
 
-  // Preflight CORS
   if (request.method === 'OPTIONS') {
     return new Response(null, {
+      status: 204,
       headers: {
-        'Access-Control-Allow-Origin': origin,
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
+        ...cors,
+        'Cache-Control': 'no-store'
+      }
+    });
+  }
+
+  if (request.method !== 'GET') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: {
+        ...cors,
+        'content-type': 'application/json; charset=utf-8',
+        'cache-control': 'no-store'
+      }
     });
   }
 
@@ -21,7 +55,7 @@ export default (request, context) => {
     subdivision = {},
     city = '',
     latitude = null,
-    longitude = null,
+    longitude = null
   } = context.geo || {};
 
   const data = {
@@ -33,18 +67,19 @@ export default (request, context) => {
       subdivisionName: subdivision.name || '',
       city,
       latitude,
-      longitude,
+      longitude
     },
     userAgent: request.headers.get('user-agent') || '',
     path: url.pathname,
-    query: url.search,
+    query: url.search
   };
 
   return new Response(JSON.stringify(data), {
+    status: 200,
     headers: {
+      ...cors,
       'content-type': 'application/json; charset=utf-8',
-      'cache-control': 'no-store',
-      'Access-Control-Allow-Origin': origin,
-    },
+      'cache-control': 'no-store'
+    }
   });
 };

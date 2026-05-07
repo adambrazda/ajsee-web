@@ -15,6 +15,10 @@
 // - U Paříže povolujeme metropolitní venue jako Saint-Denis / Nanterre apod.
 // - URL market filtr je měkký: odstraní jen zjevně špatný market, ale nezabije
 //   evropské výsledky, které TM vrátí přes obecný ticketmaster.com.
+// - DŮLEŽITÁ OPRAVA:
+//   Pokud TM vrátí metro venue typu Saint Denis pro vybranou Paříž,
+//   mapujeme location.city zpět na Paris, aby následný FE filtr v eventsApi.js
+//   výsledek znovu nezahodil.
 // ---------------------------------------------------------
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
@@ -515,14 +519,31 @@ function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '', countryCode = '
   return `/.netlify/functions/tmOutbound?${qs.toString()}`;
 }
 
-function mapTicketmasterEvent(ev, locale) {
+function mapTicketmasterEvent(ev, locale, context = {}) {
   const cat = mapSegmentToCategory(ev);
   const dt = pickDate(ev);
   const img = pickImage(ev);
 
   const venue = ev?._embedded?.venues?.[0] || {};
-  const city = venue?.city?.name || '';
+  const actualCity = venue?.city?.name || '';
   const country = venue?.country?.countryCode || '';
+
+  const selectedCity = String(context.selectedCity || '').trim();
+  const selectedCountry = String(context.selectedCountry || '').trim().toUpperCase();
+
+  // Důležité:
+  // Pokud TM vrátí Paris metro venue typu Saint Denis / Nanterre,
+  // necháme pro FE filtr location.city jako vybrané město.
+  // Skutečné venue city uložíme jako actualCity.
+  const displayCity =
+    selectedCity &&
+    selectedCountry &&
+    country &&
+    String(country).toUpperCase() === selectedCountry &&
+    actualCity &&
+    isSameCityOrMetro(actualCity, selectedCity, selectedCountry)
+      ? selectedCity
+      : actualCity;
 
   const latRaw = venue?.location?.latitude ?? venue?.location?.lat ?? '';
   const lonRaw = venue?.location?.longitude ?? venue?.location?.lon ?? '';
@@ -546,7 +567,17 @@ function mapTicketmasterEvent(ev, locale) {
     description: desc ? { [locale]: desc } : {},
     category: cat,
     datetime: dt,
-    location: { city, country, lat, lon },
+    location: {
+      city: displayCity,
+      actualCity,
+      country,
+      lat,
+      lon
+    },
+    venue: {
+      city: actualCity,
+      name: venue?.name || ''
+    },
     image: img,
     partner: 'ticketmaster',
     sourceName: 'Ticketmaster',
@@ -691,18 +722,18 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     ? String(filters.cityCountryCode || guessedCC || explicitCountry || '').toUpperCase()
     : '';
 
-const marketLocale = selectedCityCountry
-  ? MARKET_LOCALE_BY_COUNTRY[selectedCityCountry]
-  : '';
+  const marketLocale = selectedCityCountry
+    ? MARKET_LOCALE_BY_COUNTRY[selectedCityCountry]
+    : '';
 
-const locales = [
-  // Ticketmaster FR/ES/NL často vrací evropské eventy správně až přes obecné "en".
-  // U Paříže je to zásadní: fr-fr / cs / en-gb mohou vracet 0, zatímco en vrací výsledky.
-  'en',
-  marketLocale,
-  locale,
-  'en-gb'
-].filter((v, i, arr) => !!v && arr.indexOf(v) === i);
+  const locales = [
+    // Ticketmaster FR/ES/NL často vrací evropské eventy správně až přes obecné "en".
+    // U Paříže je to zásadní: fr-fr / cs / en-gb mohou vracet 0, zatímco en vrací výsledky.
+    'en',
+    marketLocale,
+    locale,
+    'en-gb'
+  ].filter((v, i, arr) => !!v && arr.indexOf(v) === i);
 
   const sort = toTmSort(filters.sort);
   const page = Number.isFinite(+filters.page) ? String(+filters.page) : '0';
@@ -910,7 +941,12 @@ const locales = [
   dedupedRaw = filterObviouslyWrongMarketUrls(dedupedRaw, selectedCityCountry || explicitCountry);
   dedupedRaw = sortRawEvents(dedupedRaw, sort, selectedCityCountry || explicitCountry);
 
-  return dedupedRaw.map((ev) => mapTicketmasterEvent(ev, locale));
+  return dedupedRaw.map((ev) =>
+    mapTicketmasterEvent(ev, locale, {
+      selectedCity: tmCity,
+      selectedCountry: selectedCityCountry
+    })
+  );
 }
 
 export default { fetchEvents };

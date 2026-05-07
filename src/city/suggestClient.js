@@ -8,9 +8,10 @@
 // - Netlify funkce je primární zdroj návrhů.
 // - Pokud TM city suggest vrátí prázdno nebo nedostupnou odpověď,
 //   použijeme lokální fallback přes canonical.js.
-// - Tím zajistíme, že známá města jako Londýn, Paříž, Madrid,
-//   Amsterdam nebo Varšava budou v našeptávači dostupná i tehdy,
-//   když TM endpoint nic nevrátí.
+// - Pokud uživatel hledá známé město, držíme jeho primární zemi striktně.
+//   Tím zabráníme chybným návrhům typu Paříž GB, Madrid GB, Amsterdam GB.
+// - Známá města jako Londýn, Paříž, Madrid, Amsterdam nebo Varšava
+//   budou v našeptávači dostupná i tehdy, když TM endpoint nic nevrátí.
 //
 // Závislosti:
 //   - src/city/canonical.js
@@ -38,10 +39,19 @@ function norm(s) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ß/g, 'ss')
+    .replace(/ł/g, 'l')
+    .replace(/[’'`´]/g, '')
+    .replace(/[().,;:/\\\-+_]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
-// Sloučení městských částí (shodná heuristika s BE)
+function compactNorm(s) {
+  return norm(s).replace(/\s+/g, '');
+}
+
+// Sloučení městských částí
 function collapseDistricts(name) {
   if (!name) return name;
 
@@ -51,6 +61,8 @@ function collapseDistricts(name) {
   s = s.split(',')[0].trim();                               // "Praha, CZ" → "Praha"
   s = s.replace(/\s+(?:\d+|[IVXLCDM]+)\.?$/i, '').trim();   // "Praha 7" → "Praha"
   s = s.replace(/\s+\d+\s*-.+$/i, '').trim();               // "Praha 4-Libuš" → "Praha"
+  s = s.replace(/^paris\s+\d+\w?\b.*$/i, 'Paris');         // "Paris 11e" → "Paris"
+  s = s.replace(/^london\s+(borough|zone)\b.*$/i, 'London');
 
   return s;
 }
@@ -66,7 +78,7 @@ function clusterKey(rawLabel) {
     canonEn = '';
   }
 
-  return norm(canonEn || base);
+  return compactNorm(canonEn || base);
 }
 
 function parseAllowedCountryCodes(countryCodes = CITY_SUGGEST_SCOPE) {
@@ -92,6 +104,128 @@ function isCountryAllowed(countryCode = '', countryCodes = CITY_SUGGEST_SCOPE) {
   return allowed.has(cc);
 }
 
+function safeCanonForInputCity(value = '') {
+  try {
+    return canonForInputCity(value) || '';
+  } catch {
+    return '';
+  }
+}
+
+function safeLabelForCanon(canon = '', locale = 'cs') {
+  try {
+    return labelForCanon(canon, locale) || canon || '';
+  } catch {
+    return canon || '';
+  }
+}
+
+function safeGuessCountryCodeFromCity(city = '') {
+  try {
+    return String(guessCountryCodeFromCity(city) || '').trim().toUpperCase();
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Vrátí pravidlo pro známé město.
+ *
+ * Pokud poznáme, že uživatel hledá konkrétní známé město,
+ * držíme pouze jeho primární zemi.
+ *
+ * Příklady:
+ * - Paříž / Paris  → FR
+ * - Madrid         → ES
+ * - Amsterdam      → NL
+ * - Londýn / London→ GB
+ * - Varšava        → PL
+ */
+function getKnownCityRule(keyword = '', locale = 'cs') {
+  const q = String(keyword || '').trim();
+
+  if (q.length < 2) return null;
+
+  const canon = safeCanonForInputCity(q);
+
+  if (!canon) return null;
+
+  const countryCode = safeGuessCountryCodeFromCity(canon) || safeGuessCountryCodeFromCity(q);
+
+  if (!countryCode) return null;
+
+  const localized = safeLabelForCanon(canon, locale);
+
+  const qNorm = compactNorm(q);
+  const canonNorm = compactNorm(canon);
+  const localizedNorm = compactNorm(localized);
+
+  if (!qNorm || !canonNorm) return null;
+
+  const exact =
+    qNorm === canonNorm ||
+    qNorm === localizedNorm;
+
+  const strongPrefix =
+    qNorm.length >= 4 &&
+    (
+      canonNorm.startsWith(qNorm) ||
+      localizedNorm.startsWith(qNorm) ||
+      qNorm.startsWith(canonNorm) ||
+      qNorm.startsWith(localizedNorm)
+    );
+
+  // Důležité:
+  // Pro krátké dotazy typu "pa" nechceme tvrdě zamknout Paříž,
+  // protože může jít o Pardubice apod.
+  if (!exact && !strongPrefix) return null;
+
+  return {
+    canon,
+    label: localized || canon,
+    countryCode,
+    qNorm,
+    canonNorm,
+    labelNorm: localizedNorm
+  };
+}
+
+function matchesKnownCityRuleCity(city = '', rule = null) {
+  if (!rule || !city) return false;
+
+  const cityCanon = safeCanonForInputCity(city);
+  const cityNorm = compactNorm(city);
+  const cityCanonNorm = compactNorm(cityCanon || city);
+  const collapsedNorm = compactNorm(collapseDistricts(city));
+
+  return (
+    cityNorm === rule.canonNorm ||
+    cityNorm === rule.labelNorm ||
+    cityCanonNorm === rule.canonNorm ||
+    cityCanonNorm === rule.labelNorm ||
+    collapsedNorm === rule.canonNorm ||
+    collapsedNorm === rule.labelNorm
+  );
+}
+
+function shouldKeepSuggestionForKnownCity(item, rule = null, countryCodes = CITY_SUGGEST_SCOPE) {
+  if (!item) return false;
+
+  const city = item.city || item.name || item.label || item.rawCity || '';
+  const countryCode = String(item.countryCode || item.country || '').trim().toUpperCase();
+
+  if (!isCountryAllowed(countryCode, countryCodes)) return false;
+
+  // Pokud nemáme tvrdé pravidlo, stačí běžný country scope.
+  if (!rule) return true;
+
+  // U známého města držíme jen primární zemi.
+  if (countryCode && countryCode !== rule.countryCode) return false;
+
+  // A zároveň nechceme pustit jiné město ze stejné země.
+  return matchesKnownCityRuleCity(city, rule);
+}
+
 /**
  * Lokální fallback pro známá města.
  *
@@ -99,45 +233,22 @@ function isCountryAllowed(countryCode = '', countryCodes = CITY_SUGGEST_SCOPE) {
  * Je to pojistka pro situace, kdy Ticketmaster city suggest vrátí prázdno,
  * i když město známe a umíme ho později použít pro Discovery API.
  */
-function localCityFallback(keyword, locale = 'cs', countryCodes = CITY_SUGGEST_SCOPE) {
+function localCityFallback(keyword, locale = 'cs', countryCodes = CITY_SUGGEST_SCOPE, knownRule = null) {
   const q = String(keyword || '').trim();
 
   if (q.length < 2) return [];
 
-  let canon = '';
+  const rule = knownRule || getKnownCityRule(q, locale);
 
-  try {
-    canon = canonForInputCity(q) || '';
-  } catch {
-    canon = '';
-  }
+  if (!rule) return [];
 
-  if (!canon) return [];
-
-  const countryCode = guessCountryCodeFromCity(canon) || '';
-
-  if (!isCountryAllowed(countryCode, countryCodes)) {
+  if (!isCountryAllowed(rule.countryCode, countryCodes)) {
     return [];
   }
 
-  const label = labelForCanon(canon, locale) || canon;
-
-  const qNorm = norm(q);
-  const labelNorm = norm(label);
-  const canonNorm = norm(canon);
-
-  const looksRelevant =
-    labelNorm.includes(qNorm) ||
-    qNorm.includes(labelNorm) ||
-    canonNorm.includes(qNorm) ||
-    qNorm.includes(canonNorm) ||
-    canon !== q;
-
-  if (!looksRelevant) return [];
-
   return [{
-    city: label,
-    countryCode,
+    city: rule.label,
+    countryCode: rule.countryCode,
     lat: undefined,
     lon: undefined,
     score: 10000,
@@ -145,7 +256,7 @@ function localCityFallback(keyword, locale = 'cs', countryCodes = CITY_SUGGEST_S
   }];
 }
 
-function mergeSuggestionLists(primary = [], secondary = []) {
+function mergeSuggestionLists(primary = [], secondary = [], knownRule = null, countryCodes = CITY_SUGGEST_SCOPE) {
   const out = [];
   const seen = new Set();
 
@@ -157,6 +268,15 @@ function mergeSuggestionLists(primary = [], secondary = []) {
     if (!city) continue;
 
     const countryCode = String(it.countryCode || it.country || '').trim().toUpperCase();
+
+    if (!shouldKeepSuggestionForKnownCity(
+      { ...it, city, countryCode },
+      knownRule,
+      countryCodes
+    )) {
+      continue;
+    }
+
     const key = `${clusterKey(city)}|${countryCode}`;
 
     if (seen.has(key)) continue;
@@ -200,6 +320,8 @@ export async function suggestCities({
 
   if (q.length < 2) return [];
 
+  const lang = locale || 'cs';
+
   // Bezpečný limit
   const limit = Math.max(10, Math.min(100, Number(size) || 50));
 
@@ -207,7 +329,15 @@ export async function suggestCities({
     ? countryCodes.join(',')
     : String(countryCodes || '');
 
-  const cacheKey = `${(locale || 'cs').toLowerCase()}|${scopeKey || 'GLOBAL'}|${q.toLowerCase()}|${limit}`;
+  const knownRule = getKnownCityRule(q, lang);
+
+  const cacheKey = [
+    (lang || 'cs').toLowerCase(),
+    scopeKey || 'GLOBAL',
+    q.toLowerCase(),
+    limit,
+    knownRule ? `${knownRule.canon}|${knownRule.countryCode}` : 'no-rule'
+  ].join('|');
 
   // Per-modul cache
   if (!suggestCities.__cache) suggestCities.__cache = new Map();
@@ -218,11 +348,11 @@ export async function suggestCities({
     return cache.get(cacheKey);
   }
 
-  const fallback = localCityFallback(q, locale, countryCodes);
+  const fallback = localCityFallback(q, lang, countryCodes, knownRule);
 
   // Sestavení dotazu na Netlify funkci
   const qsParams = new URLSearchParams({
-    locale: locale || 'cs',
+    locale: lang,
     keyword: q,
     size: String(limit)
   });
@@ -270,7 +400,11 @@ export async function suggestCities({
 
       const countryCode = String(it.countryCode || '').trim().toUpperCase();
 
-      if (!isCountryAllowed(countryCode, countryCodes)) {
+      if (!shouldKeepSuggestionForKnownCity(
+        { ...it, city: it.rawCity, countryCode },
+        knownRule,
+        countryCodes
+      )) {
         continue;
       }
 
@@ -281,7 +415,7 @@ export async function suggestCities({
 
       try {
         const canonEn = canonForInputCity(preferred);
-        const localized = labelForCanon(canonEn, locale);
+        const localized = labelForCanon(canonEn, lang);
         preferred = localized || preferred;
       } catch {
         // noop
@@ -321,7 +455,7 @@ export async function suggestCities({
     // Lokální fallback dáváme před TM výsledky.
     // Důvod: u známých měst chceme preferovat správný trh,
     // např. Amsterdam → NL, Paříž → FR, Londýn → GB.
-    const finalList = mergeSuggestionLists(fallback, list).slice(0, limit);
+    const finalList = mergeSuggestionLists(fallback, list, knownRule, countryCodes).slice(0, limit);
 
     cache.set(cacheKey, finalList);
     return finalList;

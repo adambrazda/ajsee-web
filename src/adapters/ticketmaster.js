@@ -85,7 +85,50 @@ function isSameCity(a = '', b = '') {
   if (!aa || !bb) return false;
   return aa === bb || aa.includes(bb) || bb.includes(aa);
 }
+const METRO_CITY_ALIASES = {
+  'FR|paris': [
+    'paris',
+    'saint denis',
+    'saint-denis',
+    'boulogne billancourt',
+    'boulogne-billancourt',
+    'nanterre',
+    'puteaux',
+    'courbevoie',
+    'levallois perret',
+    'levallois-perret',
+    'issy les moulineaux',
+    'issy-les-moulineaux',
+    'neuilly sur seine',
+    'neuilly-sur-seine',
+    'aubervilliers',
+    'saint ouen',
+    'saint-ouen',
+    'pantin',
+    'montreuil',
+    'vincennes',
+    'villepinte',
+    'versailles',
+    'la defense',
+    'la défense',
+    'paris la defense',
+    'paris la défense'
+  ]
+};
 
+function isSameCityOrMetro(evCity = '', selectedCity = '', countryCode = '') {
+  if (isSameCity(evCity, selectedCity)) return true;
+
+  const cc = String(countryCode || '').trim().toUpperCase();
+  const selectedKey = cityKey(selectedCity);
+  const metroKey = `${cc}|${selectedKey}`;
+
+  const aliases = METRO_CITY_ALIASES[metroKey];
+  if (!aliases || !aliases.length) return false;
+
+  const evNorm = normCity(evCity);
+  return aliases.some(alias => normCity(alias) === evNorm);
+}
 const COUNTRY_MARKET_HOST = {
   CZ: 'ticketmaster.cz',
   GB: 'ticketmaster.co.uk',
@@ -404,7 +447,10 @@ function filterStrictCityCountry(mappedEvents, { strictCity = '', strictCountry 
     const evCity = String(ev?.location?.city || '').trim();
 
     if (cc && evCountry && evCountry !== cc) return false;
-    if (city && evCity && !isSameCity(evCity, city)) return false;
+
+    if (city && evCity && !isSameCityOrMetro(evCity, city, cc)) {
+      return false;
+    }
 
     return true;
   });

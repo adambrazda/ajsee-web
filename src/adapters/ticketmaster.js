@@ -10,6 +10,8 @@
 // - Místo toho používáme vlastní Netlify redirect funkci tmOutbound.
 // - Pokud vybereme známé město se zemí, držíme se této země striktně.
 //   Tím zabráníme falešným výsledkům typu Paris GB / Madrid GB.
+// - Nově kontrolujeme i market v URL, aby např. Paříž FR nepustila
+//   falešný / neplatný výsledek z ticketmaster.com.
 // ---------------------------------------------------------
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
@@ -61,6 +63,170 @@ function isSameCity(a = '', b = '') {
 
   if (!aa || !bb) return false;
   return aa === bb || aa.includes(bb) || bb.includes(aa);
+}
+
+const COUNTRY_MARKET_HOST = {
+  CZ: 'ticketmaster.cz',
+  GB: 'ticketmaster.co.uk',
+  DE: 'ticketmaster.de',
+  PL: 'ticketmaster.pl',
+  AT: 'ticketmaster.at',
+  IE: 'ticketmaster.ie',
+  FR: 'ticketmaster.fr',
+  NL: 'ticketmaster.nl',
+  BE: 'ticketmaster.be',
+  IT: 'ticketmaster.it',
+  ES: 'ticketmaster.es',
+  DK: 'ticketmaster.dk',
+  CH: 'ticketmaster.ch',
+  NO: 'ticketmaster.no',
+  SE: 'ticketmaster.se',
+  FI: 'ticketmaster.fi',
+};
+
+const IMPACT_COUNTRY_BY_IDS = {
+  '2038768|23901': 'CZ',
+  '2038758|24023': 'GB',
+  '2038753|23890': 'DE',
+  '2038764|23896': 'PL',
+  '2038762|23895': 'AT',
+  '2038752|23889': 'IE',
+  '2038754|23891': 'FR',
+  '2038751|23888': 'NL',
+  '2038757|23894': 'BE',
+  '2038766|23899': 'IT',
+  '2038750|23886': 'ES',
+  '2038756|23893': 'DK',
+  '2038765|23898': 'CH',
+  '2038767|23900': 'NO',
+  '2038747|23885': 'SE',
+  '2038755|23892': 'FI',
+};
+
+function normalizeHost(hostname = '') {
+  return String(hostname || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^www\./, '');
+}
+
+function hostMatches(hostname = '', expectedHost = '') {
+  const host = normalizeHost(hostname);
+  const expected = normalizeHost(expectedHost);
+
+  if (!host || !expected) return false;
+
+  return host === expected || host.endsWith(`.${expected}`);
+}
+
+function getImpactCountry(rawUrl = '') {
+  try {
+    const parsed = new URL(String(rawUrl || '').trim());
+
+    if (normalizeHost(parsed.hostname) !== 'ticketmaster.evyy.net') {
+      return '';
+    }
+
+    const match = parsed.pathname.match(/\/c\/([^/]+)\/([^/]+)\/([^/?#]+)/);
+    if (!match) return '';
+
+    const assetId = match[2];
+    const programId = match[3];
+
+    return IMPACT_COUNTRY_BY_IDS[`${assetId}|${programId}`] || '';
+  } catch {
+    return '';
+  }
+}
+
+function getNestedTargetUrl(rawUrl = '') {
+  try {
+    const parsed = new URL(String(rawUrl || '').trim());
+
+    return (
+      parsed.searchParams.get('u') ||
+      parsed.searchParams.get('url') ||
+      parsed.searchParams.get('to') ||
+      ''
+    );
+  } catch {
+    return '';
+  }
+}
+
+function isUrlCompatibleWithCountry(rawUrl = '', countryCode = '') {
+  const cc = String(countryCode || '').trim().toUpperCase();
+
+  if (!cc) return true;
+
+  const expectedHost = COUNTRY_MARKET_HOST[cc];
+
+  // Pokud zemi neumíme mapovat, neblokujeme výsledek.
+  if (!expectedHost) return true;
+
+  const sourceUrl = String(rawUrl || '').trim();
+
+  if (!sourceUrl) return false;
+
+  try {
+    const parsed = new URL(sourceUrl);
+    const host = normalizeHost(parsed.hostname);
+
+    // A) Impact wrapper: rozhoduje assetId/programId.
+    if (host === 'ticketmaster.evyy.net') {
+      const impactCountry = getImpactCountry(sourceUrl);
+
+      if (impactCountry) {
+        return impactCountry === cc;
+      }
+
+      const nested = getNestedTargetUrl(sourceUrl);
+      return nested ? isUrlCompatibleWithCountry(nested, cc) : false;
+    }
+
+    // B) Přímý Ticketmaster market.
+    if (hostMatches(host, expectedHost)) return true;
+
+    // C) UK výjimky v rámci Ticketmaster ekosystému.
+    if (cc === 'GB') {
+      if (host === 'universe.com' || host.endsWith('.universe.com')) return true;
+      if (host === 'ticketweb.uk' || host.endsWith('.ticketweb.uk')) return true;
+    }
+
+    // D) Obecný ticketmaster.com NEpouštíme pro evropská města,
+    // protože vrací falešné / neplatné výsledky typu Paris .com.
+    if (host === 'ticketmaster.com' || host.endsWith('.ticketmaster.com')) {
+      return false;
+    }
+
+    // E) Pokud URL obsahuje vnořený target, zkusíme ještě ten.
+    const nested = getNestedTargetUrl(sourceUrl);
+    if (nested) {
+      return isUrlCompatibleWithCountry(nested, cc);
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function filterRawEventsByStrictCityCountryAndMarket(events = [], { strictCity = '', strictCountry = '' } = {}) {
+  const cc = String(strictCountry || '').trim().toUpperCase();
+  const city = String(strictCity || '').trim();
+
+  return events.filter((ev) => {
+    const venue = ev?._embedded?.venues?.[0] || {};
+    const evCountry = String(venue?.country?.countryCode || '').trim().toUpperCase();
+    const evCity = String(venue?.city?.name || '').trim();
+
+    if (cc && evCountry && evCountry !== cc) return false;
+    if (city && evCity && !isSameCity(evCity, city)) return false;
+
+    if (cc && !isUrlCompatibleWithCountry(ev?.url || '', cc)) return false;
+
+    return true;
+  });
 }
 
 /** Normalize TM segment to our internal category */
@@ -410,7 +576,16 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
 
         if (!Array.isArray(list) || !list.length) continue;
 
-        const mapped = list.map((ev) => mapTicketmasterEvent(ev, locale));
+        const strictRawList = (attempt.strictCity || attempt.strictCountry)
+          ? filterRawEventsByStrictCityCountryAndMarket(list, {
+              strictCity: attempt.strictCity,
+              strictCountry: attempt.strictCountry,
+            })
+          : list;
+
+        if (!strictRawList.length) continue;
+
+        const mapped = strictRawList.map((ev) => mapTicketmasterEvent(ev, locale));
 
         const strictMapped = (attempt.strictCity || attempt.strictCountry)
           ? filterStrictCityCountry(mapped, {

@@ -3,10 +3,11 @@
 // AJSEE Ticketmaster outbound redirect
 //
 // Cíl:
-// - přijmout Ticketmaster / Impact / Universe URL přes parametr "to"
+// - přijmout Ticketmaster / Impact / Universe / TicketWeb URL přes parametr "to"
 // - bezpečně vytáhnout čistý cílový odkaz
 // - správně poznat Ticketmaster market i ze subdomén
 //   např. attractions.ticketmaster.co.uk -> ticketmaster.co.uk
+// - správně poznat TicketWeb UK jako UK Ticketmaster market
 // - odstranit staré affiliate / interní / jazykové parametry,
 //   které umí rozbít redirect chain
 // - doplnit subId1, subId2, subId3, sharedid a partnerpropertyid
@@ -23,6 +24,7 @@ const DEFAULT_FALLBACK_URL = 'https://www.ticketmaster.cz/';
 const MARKET_MAP = {
   'ticketmaster.cz':    { assetId: '2038768', programId: '23901' },
   'ticketmaster.co.uk': { assetId: '2038758', programId: '24023' },
+  'ticketweb.uk':       { assetId: '2038758', programId: '24023' },
   'ticketmaster.de':    { assetId: '2038753', programId: '23890' },
   'ticketmaster.pl':    { assetId: '2038764', programId: '23896' },
   'ticketmaster.at':    { assetId: '2038762', programId: '23895' },
@@ -120,7 +122,7 @@ function isImpactTicketmasterHost(hostname = '') {
 }
 
 /**
- * Vrátí základní Ticketmaster market host.
+ * Vrátí základní Ticketmaster / TicketWeb market host.
  *
  * Důležité:
  * Ticketmaster často používá subdomény, např.:
@@ -284,9 +286,10 @@ function getImpactTarget(parsed) {
  * 1) přímý Ticketmaster link
  * 2) přímý Ticketmaster subdomain link
  *    např. attractions.ticketmaster.co.uk
- * 3) přímý Universe link
- * 4) Impact link s parametrem u=...
- * 5) Ticketmaster link s vnořeným parametrem to/url obsahujícím Impact link
+ * 3) přímý TicketWeb UK link
+ * 4) přímý Universe link
+ * 5) Impact link s parametrem u=...
+ * 6) Ticketmaster link s vnořeným parametrem to/url obsahujícím Impact link
  */
 function extractDestination(rawUrl = '') {
   const parsed = parseUrlMaybe(rawUrl);
@@ -332,7 +335,7 @@ function extractDestination(rawUrl = '') {
           }
         }
 
-        // B2) Vnořený přímý Ticketmaster / Universe link.
+        // B2) Vnořený přímý Ticketmaster / TicketWeb / Universe link.
         if (isAllowedDestinationHost(nestedUrl.hostname)) {
           const cleanUrl = sanitizeDestinationUrl(nestedUrl.toString());
 

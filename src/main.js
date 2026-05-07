@@ -2107,7 +2107,13 @@ function buildCityTypeaheadOptions(input, locale) {
     t,
     minChars: 2,
     debounceMs: 220,
-    countryCodes: ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'],
+    countryCodes: [
+  'CZ', 'SK', 'PL', 'HU',
+  'DE', 'AT', 'GB', 'IE',
+  'FR', 'NL', 'BE',
+  'IT', 'ES',
+  'DK', 'CH', 'NO', 'SE', 'FI'
+],
     onChoose: item => {
       const label = item?.city || item?.label || item?.name || '';
       currentFilters.city = canonPreferredCity(label);

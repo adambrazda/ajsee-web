@@ -67,7 +67,7 @@ const EXONYM_TO_CANON = {
   // Prague
   'praha': 'prague', 'prag': 'prague', 'prága': 'prague', 'praga': 'prague',
   // Warsaw / Krakow
-  'varšava': 'warsaw', 'varsava': 'warsaw', 'warschau': 'warsaw',
+ 'varšava': 'warsaw', 'varsava': 'warsaw', 'warschau': 'warsaw', 'warszawa': 'warsaw',
   'krakov': 'krakow', 'kraków': 'krakow'
 };
 
@@ -150,15 +150,35 @@ export const handler = async (event) => {
       return ALLOWED_CC.has(String(cc).toUpperCase().slice(0, 2));
     };
 
-    const canonFromExonym = EXONYM_TO_CANON[qn] || null;
-    const candidateVariants = Array.from(new Set([qRaw, qn, canonFromExonym].filter(Boolean)));
-    const isRelevantName = (name) => {
-      const ln = stripDiacritics(collapseToBaseCity(name));
-      return candidateVariants.some((c) => {
-        const cn = stripDiacritics(c);
-        return ln.startsWith(cn) || ln.includes(cn);
-      });
-    };
+ const canonFromExonym = EXONYM_TO_CANON[qn] || null;
+
+const queryKey =
+  synToKey.get(qn) ||
+  (canonFromExonym ? synToKey.get(stripDiacritics(canonFromExonym)) : '') ||
+  '';
+
+const querySynonyms = queryKey && SYNS[queryKey]
+  ? SYNS[queryKey]
+  : [];
+
+const candidateVariants = Array.from(
+  new Set([qRaw, qn, canonFromExonym, ...querySynonyms].filter(Boolean))
+);
+
+const isRelevantName = (name) => {
+  const nameKey = normCityKey(name);
+
+  // Klíčová oprava:
+  // Varšava / Warsaw / Warszawa patří do stejné synonymické skupiny.
+  if (queryKey && nameKey === queryKey) return true;
+
+  const ln = stripDiacritics(collapseToBaseCity(name));
+
+  return candidateVariants.some((c) => {
+    const cn = stripDiacritics(c);
+    return ln.startsWith(cn) || ln.includes(cn);
+  });
+};
 
     // bez API klíče nefailuj (pomáhá lokálně)
     if (!API_KEY) {
@@ -232,8 +252,11 @@ export const handler = async (event) => {
     };
 
     const wantMore = () => bucket.size < size;
-    const CITY_CANDIDATES = Array.from(new Set([canonFromExonym || qRaw, qRaw].filter(Boolean)));
-    const KEYWORD_CANDIDATES = CITY_CANDIDATES;
+  const CITY_CANDIDATES = Array.from(
+  new Set([canonFromExonym, ...querySynonyms, qRaw, qn].filter(Boolean))
+);
+
+const KEYWORD_CANDIDATES = CITY_CANDIDATES;
 
     for (const loc of LOCALES) {
       // 1) venues by city
@@ -272,13 +295,19 @@ export const handler = async (event) => {
     }
 
     // ---- scoring & output ----
-    const itemsRaw = Array.from(bucket.values()).map(x => {
-      const ln = stripDiacritics(x.namePref);
-      const starts = ln.startsWith(qn);
-      const contains = !starts && ln.includes(qn);
-      const boost = (starts ? 10 : 0) + (contains ? 5 : 0);
-      return { ...x, score: (x.score || 0) + boost };
-    });
+const itemsRaw = Array.from(bucket.values()).map(x => {
+  const ln = stripDiacritics(x.namePref);
+  const starts = ln.startsWith(qn);
+  const contains = !starts && ln.includes(qn);
+  const sameSynonymGroup = queryKey && normCityKey(x.namePref) === queryKey;
+
+  const boost =
+    (sameSynonymGroup ? 12 : 0) +
+    (starts ? 10 : 0) +
+    (contains ? 5 : 0);
+
+  return { ...x, score: (x.score || 0) + boost };
+});
 
     const list = itemsRaw
       .sort((a, b) => b.score - a.score || a.namePref.localeCompare(b.namePref))

@@ -10,8 +10,13 @@
 
 import { canonForInputCity, labelForCanon } from './canonical.js';
 
-// Jednotný scope pro střední Evropu (CSV je OK)
-export const CITY_SUGGEST_SCOPE = ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'];
+export const CITY_SUGGEST_SCOPE = [
+  'CZ', 'SK', 'PL', 'HU',
+  'DE', 'AT', 'GB', 'IE',
+  'FR', 'NL', 'BE',
+  'IT', 'ES',
+  'DK', 'CH', 'NO', 'SE', 'FI'
+];
 
 // Diacritics-less normalize
 function norm(s) {

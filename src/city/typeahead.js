@@ -3,7 +3,7 @@
 // City Typeahead UI – desktop dropdown + premium mobile bottom sheet
 // ---------------------------------------------------------
 
-import { suggestCities } from './suggestClient.js';
+import { suggestCities, CITY_SUGGEST_SCOPE } from './suggestClient.js';
 
 const STYLE_ID = 'ajsee-city-typeahead-inline-styles';
 
@@ -662,7 +662,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   const {
     locale = 'cs',
     t: providedT,
-    countryCodes = ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'],
+    countryCodes = CITY_SUGGEST_SCOPE,
     minChars = 2,
     debounceMs = 160,
     onChoose: providedOnChoose,

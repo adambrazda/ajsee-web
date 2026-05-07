@@ -318,11 +318,26 @@ function getUrlMarketScore(rawUrl = '', countryCode = '', depth = 0) {
       return { allowed: true, score: 2 };
     }
 
-    // Obecný ticketmaster.com není ideální, ale někdy je jediný výstup z API.
-    // Necháme projít, ale s nízkým skóre.
-    if (isGenericTicketmasterComHost(host)) {
-      return { allowed: true, score: 0 };
-    }
+ // Obecný ticketmaster.com u evropských marketů nepouštíme.
+// Ticketmaster Discovery API někdy vrátí venue country správně FR/ES/NL,
+// ale URL vede na globální .com event, který je v praxi neplatný nebo slepý.
+// Pro AJSEE je lepší nezobrazit nic než poslat uživatele na rozbitý odkaz.
+if (isGenericTicketmasterComHost(host)) {
+  const europeanCountries = new Set([
+    'CZ', 'SK', 'PL', 'HU',
+    'DE', 'AT', 'CH',
+    'GB', 'IE',
+    'FR', 'NL', 'BE',
+    'IT', 'ES',
+    'DK', 'SE', 'FI', 'NO'
+  ]);
+
+  if (europeanCountries.has(cc)) {
+    return { allowed: false, score: -100 };
+  }
+
+  return { allowed: true, score: 0 };
+}
 
     // Jiný konkrétní Ticketmaster market = špatně.
     if (host.includes('ticketmaster.')) {

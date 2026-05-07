@@ -2212,12 +2212,53 @@ function safeUrl(raw) {
   return '#';
 }
 
+function withOutboundTracking(rawUrl, { sourcePage = 'events_page', placement = 'event_card' } = {}) {
+  try {
+    const u = new URL(rawUrl, location.href);
+
+    if (u.pathname.includes('/.netlify/functions/tmOutbound')) {
+      u.searchParams.set('source', sourcePage);
+      u.searchParams.set('placement', placement);
+      return u.toString();
+    }
+
+    return rawUrl;
+  } catch {
+    return rawUrl;
+  }
+}
+
 function adjustTicketmasterLanguage(rawUrl, lang = getUILang()) {
   try {
     const u = new URL(rawUrl, location.href);
     const val = mapLangToTm(lang);
+
+    // Pokud jde o náš outbound redirect, jazyk musíme nastavit uvnitř parametru "to",
+    // ne na samotnou Netlify funkci.
+    if (u.pathname.includes('/.netlify/functions/tmOutbound')) {
+      const target = u.searchParams.get('to') || u.searchParams.get('url');
+
+      if (target) {
+        try {
+          const targetUrl = new URL(target);
+
+          targetUrl.searchParams.set('language', val);
+          if (!targetUrl.searchParams.has('locale')) {
+            targetUrl.searchParams.set('locale', val);
+          }
+
+          u.searchParams.set('to', targetUrl.toString());
+        } catch {
+          // když target nejde přečíst, necháme původní outbound URL
+        }
+      }
+
+      return u.toString();
+    }
+
     u.searchParams.set('language', val);
     if (!u.searchParams.has('locale')) u.searchParams.set('locale', val);
+
     return u.toString();
   } catch {
     return rawUrl;
@@ -2339,8 +2380,17 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
         ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
         : '';
       const img = ev.image || '/images/fallbacks/concert0.jpg';
-      const detailHref = safeUrl(wrapAffiliate(adjustTicketmasterLanguage(ev.url || '', locale)));
-      const ticketsHref = safeUrl(wrapAffiliate(adjustTicketmasterLanguage(ev.tickets || ev.url || '', locale)));
+      const sourcePage = isHp ? 'homepage' : 'events_page';
+      const detailBaseUrl = withOutboundTracking(ev.url || '', {
+        sourcePage,
+        placement: 'event_card'
+      });
+      const ticketsBaseUrl = withOutboundTracking(ev.tickets || ev.url || '', {
+        sourcePage,
+        placement: 'event_card'
+      });
+      const detailHref = safeUrl(adjustTicketmasterLanguage(detailBaseUrl, locale));
+      const ticketsHref = safeUrl(adjustTicketmasterLanguage(ticketsBaseUrl, locale));
       const detailLabel = esc(t('event-details', 'Details'));
       const ticketLabel = esc(t('event-tickets', 'Tickets'));
 

@@ -1,22 +1,42 @@
 // netlify/functions/tmOutbound.js
 // ---------------------------------------------------------
-// Bezpečný outbound redirect pro Ticketmaster odkazy.
+// AJSEE Ticketmaster outbound redirect
 //
 // Cíl:
-// - Primárně zachovat affiliate / Impact cestu přes ticketmaster.evyy.net.
-// - Neposílat uživatele z frontendu přímo na affiliate redirect.
-// - Pokud affiliate redirect chain narazí na problémovou doménu nebo chybu,
-//   použít čistý fallback na přímý Ticketmaster event URL.
-// - Nepouštět interní technické parametry AJSEE do finální Ticketmaster URL.
-// - V maximální rozumné míře chránit affiliate provizi.
+// - přijmout čistou Ticketmaster URL přes parametr "to"
+// - odstranit staré affiliate / interní parametry
+// - podle Ticketmaster domény vybrat správný Impact market wrapper
+// - doplnit subId1, subId2, subId3, sharedid a partnerpropertyid
+// - redirectovat uživatele přes Impact tracking link
+// - pokud trh není namapovaný, bezpečně redirectovat na čistý Ticketmaster link
 // ---------------------------------------------------------
 
-const BLOCKED_HOSTS = new Set([
-  'ojrq.net',
-  'www.ojrq.net',
-]);
+const AJSEE_IMPACT_ID = '7218577';
+const AJSEE_SHARED_ID = 'ajsee_web_events';
+const AJSEE_PARTNER_PROPERTY_ID = '8292139';
 
-const INTERNAL_QUERY_PARAMS = [
+const DEFAULT_FALLBACK_URL = 'https://www.ticketmaster.cz/';
+
+const MARKET_MAP = {
+  'ticketmaster.cz':    { assetId: '2038768', programId: '23901' },
+  'ticketmaster.co.uk': { assetId: '2038758', programId: '24023' },
+  'ticketmaster.de':    { assetId: '2038753', programId: '23890' },
+  'ticketmaster.pl':    { assetId: '2038764', programId: '23896' },
+  'ticketmaster.at':    { assetId: '2038762', programId: '23895' },
+  'ticketmaster.ie':    { assetId: '2038752', programId: '23889' },
+  'ticketmaster.fr':    { assetId: '2038754', programId: '23891' },
+  'ticketmaster.nl':    { assetId: '2038751', programId: '23888' },
+  'ticketmaster.be':    { assetId: '2038757', programId: '23894' },
+  'ticketmaster.it':    { assetId: '2038766', programId: '23899' },
+  'ticketmaster.es':    { assetId: '2038750', programId: '23886' },
+  'ticketmaster.dk':    { assetId: '2038756', programId: '23893' },
+  'ticketmaster.ch':    { assetId: '2038765', programId: '23898' },
+  'ticketmaster.no':    { assetId: '2038767', programId: '23900' },
+  'ticketmaster.se':    { assetId: '2038747', programId: '23885' },
+  'ticketmaster.fi':    { assetId: '2038755', programId: '23892' },
+};
+
+const INTERNAL_PARAMS = [
   'url',
   'to',
   'eventId',
@@ -25,21 +45,39 @@ const INTERNAL_QUERY_PARAMS = [
   'directUrl',
   'fallbackUrl',
   'sourceUrl',
+  'source',
+  'placement',
 ];
 
-function isTicketmasterHost(hostname = '') {
-  const h = String(hostname || '').toLowerCase();
+const OLD_AFFILIATE_PARAMS = [
+  'clickId',
+  'irgwc',
+  'afsrc',
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_content',
+  'ircid',
+  'camefrom',
+  'irclickid',
+  'sharedid',
+  'partnerpropertyid',
+  'subId1',
+  'subId2',
+  'subId3',
+  'subId4',
+  'subId5',
+];
 
-  return (
-    h === 'ticketmaster.com' ||
-    h.endsWith('.ticketmaster.com') ||
-    /(^|\.)ticketmaster\.[a-z]{2,}(\.[a-z]{2,})?$/i.test(h)
-  );
-}
-
-function isAllowedAffiliateHost(hostname = '') {
-  const h = String(hostname || '').toLowerCase();
-  return h === 'ticketmaster.evyy.net';
+function json(statusCode, data) {
+  return {
+    statusCode,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
+    body: JSON.stringify(data),
+  };
 }
 
 function safeRedirect(location, statusCode = 302) {
@@ -54,44 +92,52 @@ function safeRedirect(location, statusCode = 302) {
   };
 }
 
-function json(statusCode, data) {
-  return {
-    statusCode,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-store',
-    },
-    body: JSON.stringify(data),
-  };
+function normalizeHost(hostname = '') {
+  return String(hostname || '')
+    .toLowerCase()
+    .replace(/^www\./, '');
 }
 
-/**
- * Vyčistí přímou Ticketmaster URL od interních parametrů,
- * které patří tmOutbound funkci, ne cílové Ticketmaster stránce.
- */
+function isTicketmasterHost(hostname = '') {
+  const h = normalizeHost(hostname);
+  return (
+    h === 'ticketmaster.com' ||
+    /^ticketmaster\.[a-z]{2,}(\.[a-z]{2,})?$/.test(h)
+  );
+}
+
+function isImpactTicketmasterHost(hostname = '') {
+  return String(hostname || '').toLowerCase() === 'ticketmaster.evyy.net';
+}
+
+function cleanTrackingValue(value = '', fallback = '') {
+  const cleaned = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 80);
+
+  return cleaned || fallback;
+}
+
+function cleanEventId(value = '') {
+  return String(value || '')
+    .trim()
+    .replace(/^ticketmaster-/i, '')
+    .replace(/[^a-zA-Z0-9_-]+/g, '')
+    .slice(0, 80);
+}
+
 function sanitizeTicketmasterUrl(rawUrl = '') {
   try {
     const parsed = new URL(rawUrl);
 
     if (!isTicketmasterHost(parsed.hostname)) return '';
 
-    for (const key of INTERNAL_QUERY_PARAMS) {
+    [...INTERNAL_PARAMS, ...OLD_AFFILIATE_PARAMS].forEach((key) => {
       parsed.searchParams.delete(key);
-    }
-
-    // Odstraníme jen falešný placeholder, pokud by se někde znovu objevil.
-    const irclickid = parsed.searchParams.get('irclickid');
-
-    if (
-      irclickid &&
-      (
-        irclickid.includes('<') ||
-        irclickid.includes('>') ||
-        irclickid.toUpperCase().includes('SET_YOUR_CLICK_ID')
-      )
-    ) {
-      parsed.searchParams.delete('irclickid');
-    }
+    });
 
     return parsed.toString();
   } catch {
@@ -99,109 +145,83 @@ function sanitizeTicketmasterUrl(rawUrl = '') {
   }
 }
 
-/**
- * Z affiliate URL vytáhne cílový Ticketmaster event link z parametru "u".
- * Pokud dostane rovnou Ticketmaster link, vrátí jeho očištěnou verzi.
- */
-function extractDirectTicketmasterUrl(rawUrl = '') {
+function extractTicketmasterUrl(rawUrl = '') {
   try {
-    const parsed = new URL(rawUrl);
+    const parsed = new URL(String(rawUrl || '').trim());
+    const host = parsed.hostname.toLowerCase();
 
-    // Přímý Ticketmaster link.
-    if (isTicketmasterHost(parsed.hostname)) {
+    // Legacy: pokud přijde už starý Impact link, vytáhneme z něj cílové "u".
+    if (isImpactTicketmasterHost(host)) {
+      const target = parsed.searchParams.get('u');
+      return target ? sanitizeTicketmasterUrl(target) : '';
+    }
+
+    // Legacy: pokud Ticketmaster URL obsahuje v parametru "url" nebo "to"
+    // starý affiliate link, vytáhneme z něj cílové "u".
+    if (isTicketmasterHost(host)) {
+      const nested = parsed.searchParams.get('to') || parsed.searchParams.get('url');
+
+      if (nested) {
+        try {
+          const nestedUrl = new URL(nested);
+
+          if (isImpactTicketmasterHost(nestedUrl.hostname)) {
+            const target = nestedUrl.searchParams.get('u');
+            if (target) return sanitizeTicketmasterUrl(target);
+          }
+
+          if (isTicketmasterHost(nestedUrl.hostname)) {
+            return sanitizeTicketmasterUrl(nestedUrl.toString());
+          }
+        } catch {
+          // ignorujeme a použijeme původní Ticketmaster URL
+        }
+      }
+
       return sanitizeTicketmasterUrl(parsed.toString());
     }
 
-    // Impact / affiliate link typicky nese cílovou URL v parametru "u".
-    const encoded = parsed.searchParams.get('u');
-    if (!encoded) return '';
-
-    return sanitizeTicketmasterUrl(encoded);
+    return '';
   } catch {
     return '';
   }
 }
 
-/**
- * Někdy může přijít Ticketmaster URL, která v sobě nese
- * interní parametr "url" nebo "to" s affiliate linkem.
- * V takovém případě affiliate link vytáhneme a preferujeme ho kvůli provizi.
- */
-function extractNestedAffiliateUrl(rawUrl = '') {
+function getMarketConfig(ticketmasterUrl = '') {
   try {
-    const parsed = new URL(rawUrl);
-
-    if (isAllowedAffiliateHost(parsed.hostname)) {
-      return parsed.toString();
-    }
-
-    const nested =
-      parsed.searchParams.get('to') ||
-      parsed.searchParams.get('url') ||
-      '';
-
-    if (!nested) return '';
-
-    const nestedUrl = new URL(nested);
-
-    if (!isAllowedAffiliateHost(nestedUrl.hostname)) return '';
-
-    return nestedUrl.toString();
+    const parsed = new URL(ticketmasterUrl);
+    const host = normalizeHost(parsed.hostname);
+    return MARKET_MAP[host] || null;
   } catch {
-    return '';
+    return null;
   }
 }
 
-/**
- * Zkontroluje prvních pár kroků affiliate redirectu.
- * Když narazí na blokovanou doménu nebo chybu, vrátí ok:false.
- */
-async function inspectAffiliateRedirect(affiliateUrl) {
-  let current = affiliateUrl;
+function buildImpactUrl(ticketmasterUrl, options = {}) {
+  const market = getMarketConfig(ticketmasterUrl);
 
-  for (let i = 0; i < 5; i += 1) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4500);
+  if (!market) return '';
 
-    try {
-      const response = await fetch(current, {
-        method: 'GET',
-        redirect: 'manual',
-        headers: {
-          'User-Agent': 'AJSEE-Outbound-Check/1.0',
-          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        },
-        signal: controller.signal,
-      });
+  const sourcePage = cleanTrackingValue(options.sourcePage, 'events_page');
+  const placement = cleanTrackingValue(options.placement, 'event_card');
+  const eventId = cleanEventId(options.eventId);
 
-      clearTimeout(timeout);
+  const impactUrl = new URL(
+    `https://ticketmaster.evyy.net/c/${AJSEE_IMPACT_ID}/${market.assetId}/${market.programId}`
+  );
 
-      const location = response.headers.get('location');
+  impactUrl.searchParams.set('subId1', sourcePage);
+  impactUrl.searchParams.set('subId2', placement);
 
-      // Bez dalšího redirectu = cesta vypadá použitelně.
-      if (!location) {
-        return { ok: true, reason: 'no-location' };
-      }
-
-      const next = new URL(location, current);
-      const host = next.hostname.toLowerCase();
-
-      if (BLOCKED_HOSTS.has(host)) {
-        return { ok: false, reason: `blocked-host:${host}` };
-      }
-
-      current = next.toString();
-    } catch (err) {
-      clearTimeout(timeout);
-
-      return {
-        ok: false,
-        reason: err?.message || String(err),
-      };
-    }
+  if (eventId) {
+    impactUrl.searchParams.set('subId3', eventId);
   }
 
-  return { ok: true, reason: 'max-hops-reached' };
+  impactUrl.searchParams.set('sharedid', AJSEE_SHARED_ID);
+  impactUrl.searchParams.set('partnerpropertyid', AJSEE_PARTNER_PROPERTY_ID);
+  impactUrl.searchParams.set('u', ticketmasterUrl);
+
+  return impactUrl.toString();
 }
 
 export const handler = async (event) => {
@@ -211,70 +231,34 @@ export const handler = async (event) => {
 
   const q = event.queryStringParameters || {};
 
-  // Nový parametr je "to".
-  // "url" necháváme jen kvůli zpětné kompatibilitě se staršími odkazy.
+  // "to" je nový parametr, "url" necháváme jen kvůli zpětné kompatibilitě.
   const rawUrl = q.to || q.url || '';
 
   if (!rawUrl) {
-    return safeRedirect('https://www.ticketmaster.cz/');
+    return safeRedirect(DEFAULT_FALLBACK_URL);
   }
 
-  let parsedInput;
+  const cleanTicketmasterUrl = extractTicketmasterUrl(rawUrl);
 
-  try {
-    parsedInput = new URL(rawUrl);
-  } catch {
-    return safeRedirect('https://www.ticketmaster.cz/');
+  if (!cleanTicketmasterUrl) {
+    return safeRedirect(DEFAULT_FALLBACK_URL);
   }
 
-  const inputHost = parsedInput.hostname.toLowerCase();
+  const sourcePage = q.source || q.subId1 || 'events_page';
+  const placement = q.placement || q.subId2 || 'event_card';
+  const eventId = q.eid || q.eventId || q.subId3 || '';
 
-  const inputIsAffiliate = isAllowedAffiliateHost(inputHost);
-  const inputIsTicketmaster = isTicketmasterHost(inputHost);
+  const affiliateUrl = buildImpactUrl(cleanTicketmasterUrl, {
+    sourcePage,
+    placement,
+    eventId,
+  });
 
-  if (!inputIsAffiliate && !inputIsTicketmaster) {
-    return safeRedirect('https://www.ticketmaster.cz/');
+  // Pokud trh není v mapě, raději použijeme čistý Ticketmaster link
+  // než špatný affiliate wrapper.
+  if (!affiliateUrl) {
+    return safeRedirect(cleanTicketmasterUrl);
   }
 
-  // Kvůli ochraně provize se pokusíme vždy najít affiliate URL.
-  // Buď je rawUrl přímo affiliate URL, nebo je schovaná v parametru "to" / "url".
-  const affiliateUrl = inputIsAffiliate
-    ? parsedInput.toString()
-    : extractNestedAffiliateUrl(parsedInput.toString());
-
-  // Čistý fallback na Ticketmaster.
-  // Nikdy do něj nepouštíme interní parametry url/to/eventId/eid apod.
-  const directUrl = affiliateUrl
-    ? extractDirectTicketmasterUrl(affiliateUrl)
-    : sanitizeTicketmasterUrl(parsedInput.toString());
-
-  if (!directUrl) {
-    // Když nemáme bezpečný přímý fallback, ale máme affiliate URL,
-    // raději zachováme affiliate cestu než ji zbytečně zahodit.
-    if (affiliateUrl) {
-      return safeRedirect(affiliateUrl);
-    }
-
-    return safeRedirect('https://www.ticketmaster.cz/');
-  }
-
-  // Primární cesta: affiliate link.
-  // Direct fallback použijeme jen tehdy, když affiliate redirect vypadá rozbitě.
-  if (affiliateUrl) {
-    const check = await inspectAffiliateRedirect(affiliateUrl);
-
-    if (!check.ok) {
-      console.warn('[tmOutbound] Affiliate redirect failed, using clean direct fallback:', {
-        reason: check.reason,
-        eventId: q.eid || q.eventId || null,
-      });
-
-      return safeRedirect(directUrl);
-    }
-
-    return safeRedirect(affiliateUrl);
-  }
-
-  // Pokud affiliate URL k dispozici není, použijeme čistý přímý Ticketmaster link.
-  return safeRedirect(directUrl);
+  return safeRedirect(affiliateUrl);
 };

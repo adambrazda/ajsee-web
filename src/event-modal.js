@@ -7,6 +7,7 @@
 // - podporuje Google / Outlook / Apple ICS kalendář
 // - překládá vlastní texty modalu podle aktuálního jazyka
 // - desktop modal je scrollovatelný, aby se nikdy neořízl obsah
+// - modal Ticketmaster CTA přepisuje tmOutbound placement na event_modal
 // ---------------------------------------------------------
 
 const MODAL_ID = 'eventModal';
@@ -191,6 +192,77 @@ function toSafeUrl(raw = '') {
   }
 
   return '';
+}
+
+function getModalSourcePage(opts = {}) {
+  if (opts.sourcePage) return String(opts.sourcePage);
+
+  if (document.body?.dataset?.page === 'home') return 'homepage';
+  if (document.body?.dataset?.page === 'events') return 'events_page';
+
+  const path = String(location.pathname || '').toLowerCase();
+
+  if (path.endsWith('/events') || path.endsWith('/events.html')) {
+    return 'events_page';
+  }
+
+  return 'homepage';
+}
+
+function isTicketmasterLikeHost(hostname = '') {
+  const h = String(hostname || '').toLowerCase().replace(/^www\./, '');
+
+  return (
+    h === 'ticketmaster.evyy.net' ||
+    h === 'ticketmaster.com' ||
+    /^ticketmaster\.[a-z]{2,}(\.[a-z]{2,})?$/.test(h)
+  );
+}
+
+function buildModalTicketHref(rawUrl = '', eventData = {}, opts = {}) {
+  const sourcePage = getModalSourcePage(opts);
+  const eventId = String(
+    eventData?.id ||
+    eventData?.eventId ||
+    eventData?.tmId ||
+    ''
+  ).replace(/^ticketmaster-/i, '');
+
+  try {
+    const u = new URL(String(rawUrl || ''), window.location.origin);
+
+    // Pokud už jde o náš tmOutbound link, jen přepíšeme placement.
+    if (u.pathname.includes('/.netlify/functions/tmOutbound')) {
+      u.searchParams.set('source', sourcePage);
+      u.searchParams.set('placement', 'event_modal');
+
+      if (eventId && !u.searchParams.has('eid') && !u.searchParams.has('eventId')) {
+        u.searchParams.set('eid', eventId);
+      }
+
+      return u.toString();
+    }
+
+    // Pokud by někdy přišel přímý Ticketmaster / Impact link,
+    // zabalíme ho do tmOutbound, aby se použila centrální affiliate logika.
+    if (isTicketmasterLikeHost(u.hostname)) {
+      const out = new URL('/.netlify/functions/tmOutbound', window.location.origin);
+
+      out.searchParams.set('to', u.toString());
+      out.searchParams.set('source', sourcePage);
+      out.searchParams.set('placement', 'event_modal');
+
+      if (eventId) {
+        out.searchParams.set('eid', eventId);
+      }
+
+      return out.toString();
+    }
+
+    return u.toString();
+  } catch {
+    return rawUrl;
+  }
 }
 
 function toISODate(raw) {
@@ -731,13 +803,17 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
     '/images/fallbacks/concert0.jpg';
 
   // Důležité:
-  // Preferujeme přesně ten ticket link, který byl spočítaný při renderu karty.
-  // Tím neobcházíme tmOutbound ani affiliate cestu.
-  const ticketHref = toSafeUrl(
+  // Preferujeme ticket link spočítaný při renderu karty,
+  // ale pro modal přepíšeme tmOutbound placement na event_modal.
+  // Tím neobcházíme affiliate flow a zároveň v Impactu oddělíme kliky z modalu.
+  const rawTicketHref =
     eventData.__ajseeTicketsHref ||
     eventData.tickets ||
     eventData.url ||
-    ''
+    '';
+
+  const ticketHref = toSafeUrl(
+    buildModalTicketHref(rawTicketHref, eventData, opts)
   );
 
   const titleEl = modal.querySelector('#modalTitle');

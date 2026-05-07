@@ -148,3 +148,8 @@
   targetPort = 5173
   autoLaunch = false
   framework  = "#custom"
+  
+  [[redirects]]
+  from = "/go/:slug"
+  to = "/.netlify/functions/go?slug=:slug"
+  status = 200

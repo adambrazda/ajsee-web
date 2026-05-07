@@ -3,12 +3,12 @@
 // AJSEE Ticketmaster outbound redirect
 //
 // Cíl:
-// - přijmout čistou Ticketmaster URL přes parametr "to"
+// - přijmout Ticketmaster / Impact / Universe URL přes parametr "to"
 // - odstranit staré affiliate / interní parametry
-// - podle Ticketmaster domény vybrat správný Impact market wrapper
+// - podle Ticketmaster domény nebo původního Impact wrapperu vybrat správný market
 // - doplnit subId1, subId2, subId3, sharedid a partnerpropertyid
 // - redirectovat uživatele přes Impact tracking link
-// - pokud trh není namapovaný, bezpečně redirectovat na čistý Ticketmaster link
+// - pokud trh není namapovaný, bezpečně redirectovat na čistý cílový link
 // ---------------------------------------------------------
 
 const AJSEE_IMPACT_ID = '7218577';
@@ -35,6 +35,10 @@ const MARKET_MAP = {
   'ticketmaster.se':    { assetId: '2038747', programId: '23885' },
   'ticketmaster.fi':    { assetId: '2038755', programId: '23892' },
 };
+
+const MARKET_BY_IDS = Object.fromEntries(
+  Object.values(MARKET_MAP).map((cfg) => [`${cfg.assetId}|${cfg.programId}`, cfg])
+);
 
 const INTERNAL_PARAMS = [
   'url',
@@ -100,10 +104,20 @@ function normalizeHost(hostname = '') {
 
 function isTicketmasterHost(hostname = '') {
   const h = normalizeHost(hostname);
+
   return (
     h === 'ticketmaster.com' ||
     /^ticketmaster\.[a-z]{2,}(\.[a-z]{2,})?$/.test(h)
   );
+}
+
+function isUniverseHost(hostname = '') {
+  const h = normalizeHost(hostname);
+  return h === 'universe.com';
+}
+
+function isAllowedDestinationHost(hostname = '') {
+  return isTicketmasterHost(hostname) || isUniverseHost(hostname);
 }
 
 function isImpactTicketmasterHost(hostname = '') {
@@ -129,11 +143,11 @@ function cleanEventId(value = '') {
     .slice(0, 80);
 }
 
-function sanitizeTicketmasterUrl(rawUrl = '') {
+function sanitizeDestinationUrl(rawUrl = '') {
   try {
     const parsed = new URL(rawUrl);
 
-    if (!isTicketmasterHost(parsed.hostname)) return '';
+    if (!isAllowedDestinationHost(parsed.hostname)) return '';
 
     [...INTERNAL_PARAMS, ...OLD_AFFILIATE_PARAMS].forEach((key) => {
       parsed.searchParams.delete(key);
@@ -145,60 +159,121 @@ function sanitizeTicketmasterUrl(rawUrl = '') {
   }
 }
 
-function extractTicketmasterUrl(rawUrl = '') {
+function getMarketFromImpactUrl(parsed) {
   try {
-    const parsed = new URL(String(rawUrl || '').trim());
-    const host = parsed.hostname.toLowerCase();
+    if (!parsed || !isImpactTicketmasterHost(parsed.hostname)) return null;
 
-    // Legacy: pokud přijde už starý Impact link, vytáhneme z něj cílové "u".
-    if (isImpactTicketmasterHost(host)) {
-      const target = parsed.searchParams.get('u');
-      return target ? sanitizeTicketmasterUrl(target) : '';
-    }
+    const match = parsed.pathname.match(
+      /\/c\/([^/]+)\/([^/]+)\/([^/?#]+)/
+    );
 
-    // Legacy: pokud Ticketmaster URL obsahuje v parametru "url" nebo "to"
-    // starý affiliate link, vytáhneme z něj cílové "u".
-    if (isTicketmasterHost(host)) {
-      const nested = parsed.searchParams.get('to') || parsed.searchParams.get('url');
+    if (!match) return null;
 
-      if (nested) {
-        try {
-          const nestedUrl = new URL(nested);
+    const impactId = match[1];
+    const assetId = match[2];
+    const programId = match[3];
 
-          if (isImpactTicketmasterHost(nestedUrl.hostname)) {
-            const target = nestedUrl.searchParams.get('u');
-            if (target) return sanitizeTicketmasterUrl(target);
-          }
+    if (impactId !== AJSEE_IMPACT_ID) return null;
 
-          if (isTicketmasterHost(nestedUrl.hostname)) {
-            return sanitizeTicketmasterUrl(nestedUrl.toString());
-          }
-        } catch {
-          // ignorujeme a použijeme původní Ticketmaster URL
-        }
-      }
-
-      return sanitizeTicketmasterUrl(parsed.toString());
-    }
-
-    return '';
+    return MARKET_BY_IDS[`${assetId}|${programId}`] || null;
   } catch {
-    return '';
+    return null;
   }
 }
 
-function getMarketConfig(ticketmasterUrl = '') {
+function getMarketConfig(destinationUrl = '') {
   try {
-    const parsed = new URL(ticketmasterUrl);
+    const parsed = new URL(destinationUrl);
     const host = normalizeHost(parsed.hostname);
+
     return MARKET_MAP[host] || null;
   } catch {
     return null;
   }
 }
 
-function buildImpactUrl(ticketmasterUrl, options = {}) {
-  const market = getMarketConfig(ticketmasterUrl);
+/**
+ * Vrátí čistou cílovou URL + market config.
+ *
+ * Umí tyto scénáře:
+ * 1) přímý Ticketmaster link
+ * 2) přímý Universe link
+ * 3) Impact link s parametrem u=...
+ * 4) Ticketmaster link s vnořeným parametrem to/url obsahujícím Impact link
+ */
+function extractDestination(rawUrl = '') {
+  try {
+    const parsed = new URL(String(rawUrl || '').trim());
+
+    // A) Přímý Impact link.
+    // Například:
+    // https://ticketmaster.evyy.net/c/7218577/2038753/23890?u=https%3A%2F%2Fwww.universe.com%2F...
+    if (isImpactTicketmasterHost(parsed.hostname)) {
+      const market = getMarketFromImpactUrl(parsed);
+      const target = parsed.searchParams.get('u') || '';
+      const cleanUrl = sanitizeDestinationUrl(target);
+
+      return {
+        url: cleanUrl,
+        market,
+      };
+    }
+
+    // B) Přímý povolený destination link.
+    // Ticketmaster URL někdy může obsahovat vnořený "to" nebo "url" s Impact linkem.
+    if (isAllowedDestinationHost(parsed.hostname)) {
+      const nested = parsed.searchParams.get('to') || parsed.searchParams.get('url');
+
+      if (nested) {
+        try {
+          const nestedUrl = new URL(nested);
+
+          // B1) Vnořený Impact link.
+          if (isImpactTicketmasterHost(nestedUrl.hostname)) {
+            const market = getMarketFromImpactUrl(nestedUrl);
+            const target = nestedUrl.searchParams.get('u') || '';
+            const cleanUrl = sanitizeDestinationUrl(target);
+
+            if (cleanUrl) {
+              return {
+                url: cleanUrl,
+                market,
+              };
+            }
+          }
+
+          // B2) Vnořený přímý Ticketmaster / Universe link.
+          if (isAllowedDestinationHost(nestedUrl.hostname)) {
+            const cleanUrl = sanitizeDestinationUrl(nestedUrl.toString());
+
+            if (cleanUrl) {
+              return {
+                url: cleanUrl,
+                market: getMarketConfig(cleanUrl),
+              };
+            }
+          }
+        } catch {
+          // ignorujeme a použijeme původní destination URL
+        }
+      }
+
+      const cleanUrl = sanitizeDestinationUrl(parsed.toString());
+
+      return {
+        url: cleanUrl,
+        market: getMarketConfig(cleanUrl),
+      };
+    }
+
+    return { url: '', market: null };
+  } catch {
+    return { url: '', market: null };
+  }
+}
+
+function buildImpactUrl(destinationUrl, options = {}) {
+  const market = options.marketConfig || getMarketConfig(destinationUrl);
 
   if (!market) return '';
 
@@ -219,7 +294,7 @@ function buildImpactUrl(ticketmasterUrl, options = {}) {
 
   impactUrl.searchParams.set('sharedid', AJSEE_SHARED_ID);
   impactUrl.searchParams.set('partnerpropertyid', AJSEE_PARTNER_PROPERTY_ID);
-  impactUrl.searchParams.set('u', ticketmasterUrl);
+  impactUrl.searchParams.set('u', destinationUrl);
 
   return impactUrl.toString();
 }
@@ -238,9 +313,10 @@ export const handler = async (event) => {
     return safeRedirect(DEFAULT_FALLBACK_URL);
   }
 
-  const cleanTicketmasterUrl = extractTicketmasterUrl(rawUrl);
+  const extracted = extractDestination(rawUrl);
+  const cleanDestinationUrl = extracted.url;
 
-  if (!cleanTicketmasterUrl) {
+  if (!cleanDestinationUrl) {
     return safeRedirect(DEFAULT_FALLBACK_URL);
   }
 
@@ -248,16 +324,17 @@ export const handler = async (event) => {
   const placement = q.placement || q.subId2 || 'event_card';
   const eventId = q.eid || q.eventId || q.subId3 || '';
 
-  const affiliateUrl = buildImpactUrl(cleanTicketmasterUrl, {
+  const affiliateUrl = buildImpactUrl(cleanDestinationUrl, {
     sourcePage,
     placement,
     eventId,
+    marketConfig: extracted.market,
   });
 
-  // Pokud trh není v mapě, raději použijeme čistý Ticketmaster link
+  // Pokud trh neumíme určit, raději použijeme čistý cílový link
   // než špatný affiliate wrapper.
   if (!affiliateUrl) {
-    return safeRedirect(cleanTicketmasterUrl);
+    return safeRedirect(cleanDestinationUrl);
   }
 
   return safeRedirect(affiliateUrl);

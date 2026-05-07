@@ -1,21 +1,22 @@
-// /src/events-entry.js
-// ---------------------------------------------------------
-// AJSEE – Events page UI, i18n & filters
-// ---------------------------------------------------------
+  // /src/events-entry.js
+  // ---------------------------------------------------------
+  // AJSEE – Events page UI, i18n & filters
+  // ---------------------------------------------------------
 
-import './identity-init.js';
-import './utils/ajsee-date-popover.js';
+  import './identity-init.js';
+  import './utils/ajsee-date-popover.js';
 
-import { initLangDropdown } from './utils/lang-dropdown.js';
-import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
+  import { initLangDropdown } from './utils/lang-dropdown.js';
+  import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 
-import { getAllEvents } from './api/eventsApi.js';
-import { setupCityTypeahead } from './city/typeahead.js';
-import { canonForInputCity } from './city/canonical.js';
+  import { getAllEvents } from './api/eventsApi.js';
+  import { setupCityTypeahead } from './city/typeahead.js';
+  import { CITY_SUGGEST_SCOPE } from './city/suggestClient.js';
+  import { canonForInputCity } from './city/canonical.js';
 
-import { initNav } from './nav-core.js';
-import { initEventModal, openEventModal } from './event-modal.js';
-import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
+  import { initNav } from './nav-core.js';
+  import { initEventModal, openEventModal } from './event-modal.js';
+  import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 
 /* ───────── global guard ───────── */
 (function ensureGlobals() {
@@ -1970,7 +1971,7 @@ function buildCityTypeaheadOptions(input, locale) {
     t,
     minChars: 2,
     debounceMs: 220,
-    countryCodes: ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'],
+    countryCodes: CITY_SUGGEST_SCOPE,
     onChoose: item => {
       const label = item?.city || item?.label || item?.name || '';
       currentFilters.city = canonPreferredCity(label);

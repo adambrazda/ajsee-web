@@ -348,7 +348,51 @@ function cityId(raw = '') {
 
   return n.replace(/\s+/g, '');
 }
+function compactCityId(raw = '') {
+  return cityId(raw).replace(/[^a-z0-9]/g, '');
+}
 
+const METRO_CITY_IDS = {
+  paris: new Set([
+    'paris',
+    'saintdenis',
+    'stdenis',
+    'nanterre',
+    'puteaux',
+    'courbevoie',
+    'laseinedefense',
+    'ladefense',
+    'boulognebillancourt',
+    'levalloisperret',
+    'neuillysurseine',
+    'issylesmoulineaux',
+    'montreuil',
+    'pantin',
+    'aubervilliers',
+    'ivrysurseine',
+    'vincennes',
+    'saintouen',
+    'versailles'
+  ])
+};
+
+function matchesSelectedCity(eventCity = '', selectedCity = '') {
+  const evId = cityId(eventCity);
+  const qId = cityId(selectedCity);
+
+  if (!evId || !qId) return false;
+
+  if (evId === qId || evId.includes(qId) || qId.includes(evId)) {
+    return true;
+  }
+
+  const compactEvent = compactCityId(eventCity);
+  const compactSelected = compactCityId(selectedCity);
+
+  const allowedMetroCities = METRO_CITY_IDS[compactSelected];
+
+  return !!allowedMetroCities && allowedMetroCities.has(compactEvent);
+}
 function eventCityCandidates(ev) {
   const c1 = ev?.location?.city || ev?.city || '';
   const c2 = ev?.venue?.city || ev?.place?.city || ev?.venue?.address?.city || '';
@@ -482,29 +526,24 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     all = all.filter((ev) => normalizeStr(ev.category) === want);
   }
 
-  if (city) {
-    const qId = cityId(city);
-    const selectedFilterCc = String(
-      filters.cityCountryCode || guessCountryCodeFromCity?.(city) || ''
-    ).trim().toUpperCase();
+if (city) {
+  const selectedFilterCc = String(
+    filters.cityCountryCode || guessCountryCodeFromCity?.(city) || ''
+  ).trim().toUpperCase();
 
-    all = all.filter((ev) => {
-      const evCountry = getEventCountry(ev);
+  all = all.filter((ev) => {
+    const evCountry = getEventCountry(ev);
 
-      if (selectedFilterCc && evCountry && evCountry !== selectedFilterCc) {
-        return false;
-      }
+    if (selectedFilterCc && evCountry && evCountry !== selectedFilterCc) {
+      return false;
+    }
 
-      const candidates = eventCityCandidates(ev);
-      if (!candidates.length) return false;
+    const candidates = eventCityCandidates(ev);
+    if (!candidates.length) return false;
 
-      return candidates.some((label) => {
-        const evId = cityId(label);
-        if (!evId) return false;
-        return evId === qId || evId.includes(qId) || qId.includes(evId);
-      });
-    });
-  }
+    return candidates.some((label) => matchesSelectedCity(label, city));
+  });
+}
 
   // Near Me (jen když jsou lat/lon)
   if (nearMeLat != null && nearMeLon != null) {

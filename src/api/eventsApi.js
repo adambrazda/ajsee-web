@@ -6,10 +6,11 @@
 // - volitelný Near Me filtr (funguje pro zdroje s lat/lon)
 // - bezpečnější práce s daty (čísla místo řetězců), deduplikace
 // - OPRAVA: při filtrování + řazení brát "YYYY-MM-DD" jako lokální den (midday)
+// - OPRAVA: pokud je vybrané město s countryCode, nikdy nepropouštět události z jiné země
 // ---------------------------------------------------------
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
-import { canonForInputCity } from '../city/canonical.js';
+import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 
 // DEV detekce (localhost/Vite)
 const isDev =
@@ -43,17 +44,20 @@ function boundaryMs(iso, isEnd = false) {
       ? new Date(y, mo, d, 23, 59, 59, 999).getTime()
       : new Date(y, mo, d, 0, 0, 0, 0).getTime();
   }
-  // pokud je tam čas, necháme na nativním parseru
+
   return ts(iso);
 }
 
 function inRange(dateStr, fromStr, toStr) {
   const t = tsLocalMidday(dateStr);
   if (!Number.isFinite(t)) return false;
+
   const f = boundaryMs(fromStr, false);
   const to = boundaryMs(toStr, true);
+
   if (Number.isFinite(f) && t < f) return false;
   if (Number.isFinite(to) && t > to) return false;
+
   return true;
 }
 
@@ -63,12 +67,20 @@ function normalizeText(s) {
     .trim()
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // diakritika
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/ß/g, 'ss')
     .replace(/ł/g, 'l')
     .replace(/\s+/g, ' ');
 }
+
 const normalizeStr = normalizeText;
+
+function normalizeCountryCode(value = '') {
+  return String(value || '')
+    .trim()
+    .toUpperCase()
+    .slice(0, 2);
+}
 
 // Haversine distance in km
 function haversineKm(lat1, lon1, lat2, lon2) {
@@ -83,177 +95,181 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
+
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
   return R * c;
 }
 
 // ------- Multilingual city aliases (client-side equality only) -------
+
 const CITY_ALIASES = {
   // CZ / SK / PL
-  Praha: ['Praha','Prague','Prag','Praga','Praag','Prága'],
-  Brno: ['Brno','Brünn'],
+  Praha: ['Praha', 'Prague', 'Prag', 'Praga', 'Praag', 'Prága'],
+  Brno: ['Brno', 'Brünn'],
   Ostrava: ['Ostrava'],
-  Plzeň: ['Plzeň','Plzen','Pilsen'],
-  Olomouc: ['Olomouc','Olmütz'],
-  Bratislava: ['Bratislava','Pressburg','Pozsony'],
-  Košice: ['Košice','Kosice','Kassa'],
-  Žilina: ['Žilina','Zilina'],
-  Warszawa: ['Warszawa','Warsaw','Warschau','Varšava','Varsava'],
-  Kraków: ['Kraków','Krakow','Cracow','Krakau','Krakov'],
-  Wrocław: ['Wrocław','Wroclaw','Breslau'],
-  Gdańsk: ['Gdańsk','Gdansk','Danzig'],
-  Poznań: ['Poznań','Poznan'],
-  Łódź: ['Łódź','Lodz'],
+  Plzeň: ['Plzeň', 'Plzen', 'Pilsen'],
+  Olomouc: ['Olomouc', 'Olmütz'],
+  Bratislava: ['Bratislava', 'Pressburg', 'Pozsony'],
+  Košice: ['Košice', 'Kosice', 'Kassa'],
+  Žilina: ['Žilina', 'Zilina'],
+  Warszawa: ['Warszawa', 'Warsaw', 'Warschau', 'Varšava', 'Varsava'],
+  Kraków: ['Kraków', 'Krakow', 'Cracow', 'Krakau', 'Krakov'],
+  Wrocław: ['Wrocław', 'Wroclaw', 'Breslau'],
+  Gdańsk: ['Gdańsk', 'Gdansk', 'Danzig'],
+  Poznań: ['Poznań', 'Poznan'],
+  Łódź: ['Łódź', 'Lodz'],
   Katowice: ['Katowice'],
-  Budapest: ['Budapest','Budapešť','Budapeszt','Budapesta'],
+  Budapest: ['Budapest', 'Budapešť', 'Budapeszt', 'Budapesta'],
 
   // DE / AT / CH
-  Berlin: ['Berlin','Berlín'],
-  Hamburg: ['Hamburg','Hamburk'],
-  München: ['München','Munich','Muenchen','Mnichov'],
-  Köln: ['Köln','Cologne','Kolín nad Rýnem','Koln'],
-  Frankfurt: ['Frankfurt','Frankfurt am Main'],
+  Berlin: ['Berlin', 'Berlín'],
+  Hamburg: ['Hamburg', 'Hamburk'],
+  München: ['München', 'Munich', 'Muenchen', 'Mnichov'],
+  Köln: ['Köln', 'Cologne', 'Kolín nad Rýnem', 'Koln'],
+  Frankfurt: ['Frankfurt', 'Frankfurt am Main'],
   Stuttgart: ['Stuttgart'],
-  Düsseldorf: ['Düsseldorf','Dusseldorf'],
-  Dresden: ['Dresden','Drážďany'],
+  Düsseldorf: ['Düsseldorf', 'Dusseldorf'],
+  Dresden: ['Dresden', 'Drážďany'],
   Leipzig: ['Leipzig'],
-  Nürnberg: ['Nürnberg','Nuremberg','Norimberk'],
-  Bremen: ['Bremen','Brémy'],
-  Hannover: ['Hannover','Hanover'],
-  Wien: ['Wien','Vienna','Vídeň','Viedeň','Wiedeń'],
-  Salzburg: ['Salzburg','Solnohrad'],
+  Nürnberg: ['Nürnberg', 'Nuremberg', 'Norimberk'],
+  Bremen: ['Bremen', 'Brémy'],
+  Hannover: ['Hannover', 'Hanover'],
+  Wien: ['Wien', 'Vienna', 'Vídeň', 'Viedeň', 'Wiedeń'],
+  Salzburg: ['Salzburg', 'Solnohrad'],
   Linz: ['Linz'],
-  Graz: ['Graz','Štýrský Hradec'],
-  Zürich: ['Zürich','Zurich','Curych'],
-  Genf: ['Genf','Geneva','Ženeva'],
-  Basel: ['Basel','Basilej'],
-  Bern: ['Bern','Berno'],
+  Graz: ['Graz', 'Štýrský Hradec'],
+  Zürich: ['Zürich', 'Zurich', 'Curych'],
+  Genf: ['Genf', 'Geneva', 'Ženeva'],
+  Basel: ['Basel', 'Basilej'],
+  Bern: ['Bern', 'Berno'],
 
   // Benelux
-  Amsterdam: ['Amsterdam','Amsterodam'],
+  Amsterdam: ['Amsterdam', 'Amsterodam'],
   Rotterdam: ['Rotterdam'],
-  'The Hague': ['The Hague','Den Haag','Haag'],
+  'The Hague': ['The Hague', 'Den Haag', 'Haag'],
   Utrecht: ['Utrecht'],
-  Brussels: ['Brussels','Bruxelles','Brusel'],
-  Antwerp: ['Antwerp','Antwerpen','Antverpy'],
-  Ghent: ['Ghent','Gent'],
-  Bruges: ['Bruges','Brugge'],
+  Brussels: ['Brussels', 'Bruxelles', 'Brusel'],
+  Antwerp: ['Antwerp', 'Antwerpen', 'Antverpy'],
+  Ghent: ['Ghent', 'Gent'],
+  Bruges: ['Bruges', 'Brugge'],
 
   // France
-  Paris: ['Paris','Paříž','Paríž','Pariz','París','Parigi','Paryż'],
+  Paris: ['Paris', 'Paříž', 'Paríž', 'Pariz', 'París', 'Parigi', 'Paryż'],
   Lyon: ['Lyon'],
-  Marseille: ['Marseille','Marseilles','Marsej'],
+  Marseille: ['Marseille', 'Marseilles', 'Marsej'],
   Toulouse: ['Toulouse'],
   Bordeaux: ['Bordeaux'],
   Lille: ['Lille'],
   Nice: ['Nice'],
   Nantes: ['Nantes'],
-  Strasbourg: ['Strasbourg','Štrasburk'],
+  Strasbourg: ['Strasbourg', 'Štrasburk'],
   Montpellier: ['Montpellier'],
 
   // Iberia
-  Madrid: ['Madrid','Madryt'],
-  Barcelona: ['Barcelona','Barcelóna'],
-  Valencia: ['Valencia','Valencie'],
-  Seville: ['Seville','Sevilla'],
+  Madrid: ['Madrid', 'Madryt'],
+  Barcelona: ['Barcelona', 'Barcelóna'],
+  Valencia: ['Valencia', 'Valencie'],
+  Seville: ['Seville', 'Sevilla'],
   Bilbao: ['Bilbao'],
-  Malaga: ['Malaga','Málaga'],
-  Zaragoza: ['Zaragoza','Zaragoza'],
-  Lisbon: ['Lisbon','Lisabon','Lisboa'],
-  Porto: ['Porto','Oporto'],
+  Malaga: ['Malaga', 'Málaga'],
+  Zaragoza: ['Zaragoza'],
+  Lisbon: ['Lisbon', 'Lisabon', 'Lisboa'],
+  Porto: ['Porto', 'Oporto'],
 
   // Italy
-  Rome: ['Rome','Roma','Řím','Rim'],
-  Milan: ['Milan','Milano','Milán'],
-  Naples: ['Naples','Napoli','Neapol'],
-  Turin: ['Turin','Torino','Turín'],
-  Florence: ['Florence','Firenze','Florencie'],
-  Venice: ['Venice','Venezia','Benátky','Benatky'],
+  Rome: ['Rome', 'Roma', 'Řím', 'Rim'],
+  Milan: ['Milan', 'Milano', 'Milán'],
+  Naples: ['Naples', 'Napoli', 'Neapol'],
+  Turin: ['Turin', 'Torino', 'Turín'],
+  Florence: ['Florence', 'Firenze', 'Florencie'],
+  Venice: ['Venice', 'Venezia', 'Benátky', 'Benatky'],
   Bologna: ['Bologna'],
-  Genoa: ['Genoa','Genova','Janov'],
+  Genoa: ['Genoa', 'Genova', 'Janov'],
 
   // Nordics & Baltics
-  Stockholm: ['Stockholm','Štokholm'],
-  Gothenburg: ['Gothenburg','Göteborg','Goteborg'],
-  Malmö: ['Malmö','Malmo'],
-  Copenhagen: ['Copenhagen','København','Kobenhavn','Kodaň'],
+  Stockholm: ['Stockholm', 'Štokholm'],
+  Gothenburg: ['Gothenburg', 'Göteborg', 'Goteborg'],
+  Malmö: ['Malmö', 'Malmo'],
+  Copenhagen: ['Copenhagen', 'København', 'Kobenhavn', 'Kodaň'],
   Oslo: ['Oslo'],
   Bergen: ['Bergen'],
-  Helsinki: ['Helsinki','Helsinky'],
+  Helsinki: ['Helsinki', 'Helsinky'],
   Tampere: ['Tampere'],
-  Reykjavik: ['Reykjavik','Reykjavík','Rejkjavik'],
-  Tallinn: ['Tallinn','Talin'],
-  Riga: ['Riga','Ryga'],
-  Vilnius: ['Vilnius','Vilno','Wilno'],
-  Kaunas: ['Kaunas','Kovno'],
+  Reykjavik: ['Reykjavik', 'Reykjavík', 'Rejkjavik'],
+  Tallinn: ['Tallinn', 'Talin'],
+  Riga: ['Riga', 'Ryga'],
+  Vilnius: ['Vilnius', 'Vilno', 'Wilno'],
+  Kaunas: ['Kaunas', 'Kovno'],
 
   // Balkans & SE Europe
-  Ljubljana: ['Ljubljana','Lublaň'],
-  Zagreb: ['Zagreb','Záhřeb','Zahreb'],
+  Ljubljana: ['Ljubljana', 'Lublaň'],
+  Zagreb: ['Zagreb', 'Záhřeb', 'Zahreb'],
   Split: ['Split'],
   Rijeka: ['Rijeka'],
-  Belgrade: ['Belgrade','Beograd','Bělehrad'],
+  Belgrade: ['Belgrade', 'Beograd', 'Bělehrad'],
   'Novi Sad': ['Novi Sad'],
   Sarajevo: ['Sarajevo'],
   Skopje: ['Skopje'],
   Sofia: ['Sofia'],
-  Bucharest: ['Bucharest','Bukurešť','București'],
-  'Cluj-Napoca': ['Cluj-Napoca','Cluj'],
-  Timișoara: ['Timișoara','Timisoara'],
-  Athens: ['Athens','Athény','Athína'],
-  Thessaloniki: ['Thessaloniki','Soluň','Saloniki'],
+  Bucharest: ['Bucharest', 'Bukurešť', 'București'],
+  'Cluj-Napoca': ['Cluj-Napoca', 'Cluj'],
+  Timișoara: ['Timișoara', 'Timisoara'],
+  Athens: ['Athens', 'Athény', 'Athína'],
+  Thessaloniki: ['Thessaloniki', 'Soluň', 'Saloniki'],
   Istanbul: ['Istanbul'],
   Ankara: ['Ankara'],
-  Izmir: ['Izmir','Smyrna'],
+  Izmir: ['Izmir', 'Smyrna'],
 
   // Ukraine / Belarus
-  Kyiv: ['Kyiv','Kyjev','Kiev'],
-  Lviv: ['Lviv','Lvov'],
-  Odesa: ['Odesa','Odessa'],
+  Kyiv: ['Kyiv', 'Kyjev', 'Kiev'],
+  Lviv: ['Lviv', 'Lvov'],
+  Odesa: ['Odesa', 'Odessa'],
   Kharkiv: ['Kharkiv'],
   Minsk: ['Minsk'],
 
   // UK & Ireland
-  London: ['London','Londýn','Londyn','Londres','Londra','Londen'],
+  London: ['London', 'Londýn', 'Londyn', 'Londres', 'Londra', 'Londen'],
   Manchester: ['Manchester'],
   Birmingham: ['Birmingham'],
   Liverpool: ['Liverpool'],
   Leeds: ['Leeds'],
-  'Newcastle upon Tyne': ['Newcastle','Newcastle upon Tyne'],
+  'Newcastle upon Tyne': ['Newcastle', 'Newcastle upon Tyne'],
   Glasgow: ['Glasgow'],
-  Edinburgh: ['Edinburgh','Edinburk'],
+  Edinburgh: ['Edinburgh', 'Edinburk'],
   Bristol: ['Bristol'],
   Cardiff: ['Cardiff'],
   Belfast: ['Belfast'],
   Dublin: ['Dublin'],
 
   // Middle East
-  'Tel Aviv': ['Tel Aviv','Tel-Aviv','TelAviv'],
-  Jerusalem: ['Jerusalem','Jeruzalém'],
-  Dubai: ['Dubai','Dubaj'],
-  'Abu Dhabi': ['Abu Dhabi','Abú Zabí'],
+  'Tel Aviv': ['Tel Aviv', 'Tel-Aviv', 'TelAviv'],
+  Jerusalem: ['Jerusalem', 'Jeruzalém'],
+  Dubai: ['Dubai', 'Dubaj'],
+  'Abu Dhabi': ['Abu Dhabi', 'Abú Zabí'],
   Doha: ['Doha'],
-  Riyadh: ['Riyadh','Rijád'],
+  Riyadh: ['Riyadh', 'Rijád'],
 
-  // North America (selection)
-  'New York': ['New York','NYC','NewYork','Nový York','Nowy Jork'],
-  'Los Angeles': ['Los Angeles','LA'],
-  'San Francisco': ['San Francisco','SF'],
-  Chicago: ['Chicago','Čikágo'],
+  // North America
+  'New York': ['New York', 'NYC', 'NewYork', 'Nový York', 'Nowy Jork'],
+  'Los Angeles': ['Los Angeles', 'LA'],
+  'San Francisco': ['San Francisco', 'SF'],
+  Chicago: ['Chicago', 'Čikágo'],
   Boston: ['Boston'],
   Miami: ['Miami'],
-  Washington: ['Washington','Washington DC','DC'],
+  Washington: ['Washington', 'Washington DC', 'DC'],
   Seattle: ['Seattle'],
   'San Diego': ['San Diego'],
-  'Las Vegas': ['Las Vegas','Vegas'],
+  'Las Vegas': ['Las Vegas', 'Vegas'],
   Dallas: ['Dallas'],
   Houston: ['Houston'],
   Austin: ['Austin'],
   Atlanta: ['Atlanta'],
-  Philadelphia: ['Philadelphia','Philly'],
+  Philadelphia: ['Philadelphia', 'Philly'],
   Phoenix: ['Phoenix'],
   Denver: ['Denver'],
   Detroit: ['Detroit'],
@@ -262,47 +278,47 @@ const CITY_ALIASES = {
   // Canada
   Toronto: ['Toronto'],
   Vancouver: ['Vancouver'],
-  Montreal: ['Montreal','Montréal','Montreál'],
+  Montreal: ['Montreal', 'Montréal', 'Montreál'],
 
-  // South America (selection)
-  'Mexico City': ['Mexico City','Ciudad de México','Mexiko City'],
-  'São Paulo': ['São Paulo','Sao Paulo'],
-  'Rio de Janeiro': ['Rio de Janeiro','Rio'],
+  // South America
+  'Mexico City': ['Mexico City', 'Ciudad de México', 'Mexiko City'],
+  'São Paulo': ['São Paulo', 'Sao Paulo'],
+  'Rio de Janeiro': ['Rio de Janeiro', 'Rio'],
   'Buenos Aires': ['Buenos Aires'],
-  Santiago: ['Santiago','Santiago de Chile'],
+  Santiago: ['Santiago', 'Santiago de Chile'],
 
-  // Asia (selection)
-  Tokyo: ['Tokyo','Tokio'],
+  // Asia
+  Tokyo: ['Tokyo', 'Tokio'],
   Osaka: ['Osaka'],
-  Kyoto: ['Kyoto','Kjóto','Kjoto'],
+  Kyoto: ['Kyoto', 'Kjóto', 'Kjoto'],
   Yokohama: ['Yokohama'],
   Nagoya: ['Nagoya'],
-  Seoul: ['Seoul','Soul'],
-  Busan: ['Busan','Pusan'],
-  Beijing: ['Beijing','Peking'],
-  Shanghai: ['Shanghai','Šanghaj'],
-  Shenzhen: ['Shenzhen','Šenčen','Šen-čen'],
-  Guangzhou: ['Guangzhou','Kanton'],
-  'Hong Kong': ['Hong Kong','Hongkong'],
-  Taipei: ['Taipei','Tchaj-pej'],
-  Singapore: ['Singapore','Singapur'],
+  Seoul: ['Seoul', 'Soul'],
+  Busan: ['Busan', 'Pusan'],
+  Beijing: ['Beijing', 'Peking'],
+  Shanghai: ['Shanghai', 'Šanghaj'],
+  Shenzhen: ['Shenzhen', 'Šenčen', 'Šen-čen'],
+  Guangzhou: ['Guangzhou', 'Kanton'],
+  'Hong Kong': ['Hong Kong', 'Hongkong'],
+  Taipei: ['Taipei', 'Tchaj-pej'],
+  Singapore: ['Singapore', 'Singapur'],
   Bangkok: ['Bangkok'],
   'Kuala Lumpur': ['Kuala Lumpur'],
-  Jakarta: ['Jakarta','Džakarta'],
+  Jakarta: ['Jakarta', 'Džakarta'],
   Manila: ['Manila'],
-  Mumbai: ['Mumbai','Bombaj'],
-  Delhi: ['Delhi','Dillí','New Delhi','Nové Dillí'],
-  Bengaluru: ['Bengaluru','Bangalore'],
+  Mumbai: ['Mumbai', 'Bombaj'],
+  Delhi: ['Delhi', 'Dillí', 'New Delhi', 'Nové Dillí'],
+  Bengaluru: ['Bengaluru', 'Bangalore'],
   Colombo: ['Colombo'],
 
   // Oceania
-  Sydney: ['Sydney','Sydnej'],
-  Melbourne: ['Melbourne','Melbourn'],
+  Sydney: ['Sydney', 'Sydnej'],
+  Melbourne: ['Melbourne', 'Melbourn'],
   Brisbane: ['Brisbane'],
   Perth: ['Perth'],
-  Adelaide: ['Adelaide','Adelaida'],
+  Adelaide: ['Adelaide', 'Adelaida'],
   Canberra: ['Canberra'],
-  Auckland: ['Auckland','Okland'],
+  Auckland: ['Auckland', 'Okland'],
   Wellington: ['Wellington'],
 };
 
@@ -319,12 +335,18 @@ for (const canonical of Object.keys(CITY_ALIASES)) {
 // alias -> cityId (EN)
 const aliasToId = (() => {
   const m = new Map();
+
   for (const [canonical, list] of Object.entries(CITY_ALIASES)) {
     const id = LABEL_TO_ID[canonical];
     if (!id) continue;
-    for (const alias of list) m.set(normalizeText(alias), id);
+
+    for (const alias of list) {
+      m.set(normalizeText(alias), id);
+    }
+
     m.set(normalizeText(canonical), id);
   }
+
   return m;
 })();
 
@@ -332,24 +354,45 @@ function collapseDistricts(n = '') {
   let s = n;
   s = s.replace(/^praha\s+([ivxlcdm]+|\d+)\b.*$/, 'praha');
   s = s.replace(/^prague\s+\d+\b.*$/, 'prague');
-  s = s.replace(/^paris\s+\d+\b.*$/, 'paris');
+  s = s.replace(/^paris\s+\d+\w?\b.*$/, 'paris');
+  s = s.replace(/^london\s+(borough|zone)\b.*$/, 'london');
   return s;
 }
 
 function cityId(raw = '') {
   if (!raw) return '';
+
   let n = normalizeText(raw);
   n = collapseDistricts(n);
+
   if (aliasToId.has(n)) return aliasToId.get(n);
-  // Fallback: normalize by stripping spaces (for "new york" -> "newyork")
+
   return n.replace(/\s+/g, '');
 }
 
 function eventCityCandidates(ev) {
   const c1 = ev?.location?.city || ev?.city || '';
   const c2 = ev?.venue?.city || ev?.place?.city || ev?.venue?.address?.city || '';
-  // držíme jednoduché – adapter by měl sjednocovat do location.city
+
   return [c1, c2].filter(Boolean);
+}
+
+function eventCountryCandidates(ev) {
+  const candidates = [
+    ev?.location?.country,
+    ev?.location?.countryCode,
+    ev?.venue?.country,
+    ev?.venue?.countryCode,
+    ev?.venue?.country?.countryCode,
+    ev?.venue?.country?.name,
+    ev?.place?.country,
+    ev?.country,
+    ev?.countryCode,
+  ];
+
+  return candidates
+    .map(normalizeCountryCode)
+    .filter(Boolean);
 }
 
 function detectLang() {
@@ -360,9 +403,34 @@ function detectLang() {
     return 'cs';
   }
 }
+
 function mapLangToLocale(lang) {
   const m = { cs: 'cs', sk: 'sk', en: 'en', de: 'de', pl: 'pl', hu: 'hu' };
   return m[lang] || 'en';
+}
+
+function resolveCountryCodeForRequest(filters = {}, upstreamCity = '') {
+  const explicit =
+    normalizeCountryCode(filters.cityCountryCode) ||
+    normalizeCountryCode(filters.selectedCountryCode) ||
+    normalizeCountryCode(filters.countryCode) ||
+    normalizeCountryCode(filters.country);
+
+  let inferred = '';
+
+  if (upstreamCity) {
+    try {
+      inferred = normalizeCountryCode(guessCountryCodeFromCity(upstreamCity));
+    } catch {
+      inferred = '';
+    }
+  }
+
+  // Důležité:
+  // Pokud město umíme určit, má jeho země přednost před výchozím countryCode.
+  // Tím opravujeme stav, kdy currentFilters.countryCode zůstane "CZ",
+  // ale uživatel vybere Londýn / Paříž / Madrid / Amsterdam.
+  return inferred || explicit || '';
 }
 
 /**
@@ -379,27 +447,32 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
 
   // --- City hotfix: když kanonizátor vrátí prázdno, ponecháme původní vstup ---
   let upstreamCity = (filters.city || '').trim();
+
   if (upstreamCity) {
     try {
       const canon = canonForInputCity(upstreamCity);
-      upstreamCity = canon || upstreamCity; // fallback na původní text
+      upstreamCity = canon || upstreamCity;
     } catch {
       // kdyby kanonizátor spadl, pošleme původní vstup
     }
   }
 
+  const resolvedCountryCode = resolveCountryCodeForRequest(filters, upstreamCity);
+
   const upstreamFilters = {
     ...filters,
-    // akceptuj i alternativní názvy (from/to/segment) – sloučíme do jednotných polí
     dateFrom: filters.dateFrom ?? filters.from ?? '',
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
-    city: upstreamCity, // ← nikdy nezmizí, pokud něco uživatel zadal
+    city: upstreamCity,
   };
 
-  // Má-li uživatel city, nenuť countryCode (adapter to řeší sám a TM to tak doporučuje)
-  if (upstreamFilters.city) {
-    delete upstreamFilters.countryCode;
+  // Důležité:
+  // countryCode u města už nemažeme.
+  // Ticketmaster adapter může interně zkusit i dotaz bez countryCode,
+  // proto níže ještě výsledky tvrdě filtrujeme podle země.
+  if (resolvedCountryCode) {
+    upstreamFilters.countryCode = resolvedCountryCode;
   }
 
   // --- Ticketmaster (vždy) ---
@@ -418,8 +491,10 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
         (typeof mod.fetchEvents === 'function' && mod.fetchEvents) ||
         (typeof mod.default === 'function' && mod.default) ||
         (typeof mod.default?.fetchEvents === 'function' && mod.default.fetchEvents);
+
       const demoFn = typeof fn === 'function' ? fn : async () => [];
       const demo = await demoFn({ locale: loc, filters: upstreamFilters });
+
       if (Array.isArray(demo)) all = all.concat(demo);
     } catch (e) {
       console.warn('[eventsApi] Demo adapter missing or invalid, continuing without demo data.', e);
@@ -438,23 +513,30 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     nearMeLon = null,
     nearMeRadiusKm = 50,
   } = {
-    ...filters, // sloučíme, aby FE odrážel "živé" hodnoty
+    ...filters,
     dateFrom: filters.dateFrom ?? filters.from ?? '',
     dateTo: filters.dateTo ?? filters.to ?? '',
-    category: filters.category ?? filters.segment ?? 'all'
+    category: filters.category ?? filters.segment ?? 'all',
   };
+
+  const effectiveCity = upstreamCity || city || '';
+  const effectiveCountryCode = resolveCountryCodeForRequest(filters, effectiveCity);
 
   // Dedup podle „id“ (nebo fallback hash – přidán city hint pro menší kolize)
   const seen = new Set();
+
   all = all.filter((ev, idx) => {
-    const titleAny = (ev.title?.[loc] ?? ev.title?.cs ?? ev.title?.en ?? ev.title ?? '');
+    const titleAny = ev.title?.[loc] ?? ev.title?.cs ?? ev.title?.en ?? ev.title ?? '';
     const titleStr = typeof titleAny === 'string' ? titleAny : (titleAny?.toString?.() ?? '');
     const cityHint = ev?.location?.city || ev?.venue?.city || '';
     const timeKey = tsLocalMidday(ev.datetime || ev.date) || idx;
+
     const id =
       ev.id ||
       `${ev.partner || 'x'}-${timeKey}-${(cityHint || '').toLowerCase()}-${titleStr.slice(0, 50)}`;
+
     if (seen.has(id)) return false;
+
     seen.add(id);
     return true;
   });
@@ -464,23 +546,37 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     all = all.filter((ev) => normalizeStr(ev.category) === want);
   }
 
-  if (city) {
-    const qId = cityId(city);
+  if (effectiveCity) {
+    const qId = cityId(effectiveCity);
+
     all = all.filter((ev) => {
       const candidates = eventCityCandidates(ev);
       if (!candidates.length) return false;
+
       return candidates.some((label) => {
         const evId = cityId(label);
         if (!evId) return false;
-        // exact or substring (handles "new york" vs "newyork", etc.)
+
         return evId === qId || evId.includes(qId) || qId.includes(evId);
       });
+    });
+  }
+
+  // Tvrdý country filter:
+  // Pokud je vybrané město a víme jeho zemi, nepustíme jiné země.
+  // Opravuje např. Paris / FR, kde TM může přes fallback vrátit "Paris" v GB nebo IE.
+  if (effectiveCity && effectiveCountryCode) {
+    all = all.filter((ev) => {
+      const countries = eventCountryCandidates(ev);
+      if (!countries.length) return false;
+      return countries.includes(effectiveCountryCode);
     });
   }
 
   // Near Me (jen když jsou lat/lon)
   if (nearMeLat != null && nearMeLon != null) {
     const radius = Number.isFinite(+nearMeRadiusKm) ? +nearMeRadiusKm : 50;
+
     all = all.filter((ev) => {
       const lat =
         ev?.location?.lat ??
@@ -488,12 +584,14 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
         ev?.venue?.location?.lat ??
         ev?.venue?.location?.latitude ??
         ev?.lat;
+
       const lon =
         ev?.location?.lon ??
         ev?.location?.longitude ??
         ev?.venue?.location?.lon ??
         ev?.venue?.location?.longitude ??
         ev?.lon;
+
       const d = haversineKm(+nearMeLat, +nearMeLon, +lat, +lon);
       return d <= radius;
     });
@@ -501,10 +599,12 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
 
   if (keyword) {
     const q = normalizeStr(keyword);
+
     all = all.filter((ev) => {
       const title = ev?.title?.[loc] ?? ev?.title?.cs ?? ev?.title ?? '';
-      const desc  = ev?.description?.[loc] ?? ev?.description?.cs ?? ev?.description ?? '';
+      const desc = ev?.description?.[loc] ?? ev?.description?.cs ?? ev?.description ?? '';
       const cityL = ev?.location?.city ?? '';
+
       return (
         normalizeStr(title).includes(q) ||
         normalizeStr(desc).includes(q) ||
@@ -517,14 +617,16 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     all = all.filter((ev) => inRange(ev.datetime || ev.date, dateFrom, dateTo));
   }
 
-  // Řazení dle data – používejme tsLocalMidday, aby "YYYY-MM-DD" nebylo posunuté
+  // Řazení dle data – používáme tsLocalMidday, aby "YYYY-MM-DD" nebylo posunuté
   all.sort((a, b) => {
     const da = tsLocalMidday(a.datetime || a.date);
     const db = tsLocalMidday(b.datetime || b.date);
+
     if (!Number.isFinite(da) && !Number.isFinite(db)) return 0;
     if (!Number.isFinite(da)) return 1;
     if (!Number.isFinite(db)) return -1;
-    return sort === 'latest' ? db - da : da - db; // default nearest (ASC)
+
+    return sort === 'latest' ? db - da : da - db;
   });
 
   return all;

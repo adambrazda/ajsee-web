@@ -234,6 +234,14 @@ function injectStylesOnce() {
       flex: 1 1 auto;
     }
 
+    .city-sheet__content.is-searching .city-sheet__nearme {
+      display: none;
+    }
+
+    .city-sheet__content.is-searching .city-sheet__section-title {
+      margin-top: 0;
+    }
+
     .city-sheet__nearme {
       display: flex;
       flex-direction: column;
@@ -276,8 +284,10 @@ function injectStylesOnce() {
     }
 
     .city-sheet__results {
+      flex: 1 1 auto;
       min-height: 0;
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       padding-bottom: 10px;
     }
@@ -358,8 +368,8 @@ function injectStylesOnce() {
       .city-sheet-backdrop,
       .city-sheet,
       .city-sheet__skeleton-line {
-        transition: none !important;
-        animation: none !important;
+        transition: none;
+        animation: none;
       }
     }
   `;
@@ -686,7 +696,6 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   const isMobile = () => mobileMq.matches;
 
   const fieldEl = inputEl.closest('.field') || inputEl.parentElement || inputEl;
-  const groupEl = inputEl.closest('.filter-group') || fieldEl;
 
   // ---------- desktop dropdown ----------
   const panel = document.createElement('div');
@@ -723,6 +732,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   // ---------- mobile sheet ----------
   let backdrop = null;
   let sheet = null;
+  let sheetContent = null;
   let sheetSearch = null;
   let sheetResults = null;
   let sheetNearMe = null;
@@ -755,6 +765,18 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       return (sheetSearch.value || '').trim();
     }
     return (inputEl.value || '').trim();
+  }
+
+  function resetMobileResultsScroll() {
+    if (!sheetResults) return;
+
+    requestAnimationFrame(() => {
+      try {
+        sheetResults.scrollTop = 0;
+      } catch {
+        // noop
+      }
+    });
   }
 
   function setActive(idx) {
@@ -862,6 +884,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     document.body.appendChild(backdrop);
 
     sheet = backdrop.querySelector('.city-sheet');
+    sheetContent = backdrop.querySelector('.city-sheet__content');
     sheetSearch = backdrop.querySelector('.city-sheet__search');
     sheetResults = backdrop.querySelector('.city-sheet__results');
     sheetNearMe = backdrop.querySelector('.city-sheet__nearme');
@@ -1101,12 +1124,23 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (!sheetOpen || !sheetResults || !sheetSectionTitle) return;
 
     const q = getCurrentSearchValue();
+    const isSearching = q.trim().length >= minChars;
     const list = buildRenderList().filter((it) => !it.__nearMe);
+
+    if (sheetContent) {
+      sheetContent.classList.toggle('is-searching', isSearching);
+    }
+
+    if (sheetNearMe) {
+      sheetNearMe.setAttribute('aria-hidden', isSearching ? 'true' : 'false');
+      sheetNearMe.tabIndex = isSearching ? -1 : 0;
+    }
 
     sheetSectionTitle.textContent = getMobileSectionTitle();
 
     if (loading) {
       sheetResults.innerHTML = renderSkeletonRows();
+      resetMobileResultsScroll();
       return;
     }
 
@@ -1117,6 +1151,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
           <small>${esc(t('filters.noResultsHelp', defaultText('noResultsHelp', locale)))}</small>
         </div>
       `;
+      resetMobileResultsScroll();
       return;
     }
 
@@ -1137,6 +1172,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
         </button>
       `;
     }).join('');
+
+    resetMobileResultsScroll();
   }
 
   function render() {

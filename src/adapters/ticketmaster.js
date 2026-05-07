@@ -6,6 +6,8 @@
 // - výrazně omezuje počet requestů na Ticketmaster proxy,
 // - nepálí paralelně všechny locale / city / keyword / broad fallbacky,
 // - zastaví další pokusy při 429,
+// - rozpozná i proxy odpověď 200 + _ajseeProxy.upstreamStatus=429,
+// - nastaví krátký frontend cooldown po rate limitu,
 // - loguje jen v debug režimu,
 // - drží city+country striktně, ale pro vybrané metropole povolí metro okolí,
 // - u evropských výsledků dovolí i obecný ticketmaster.com jako nižší skóre,
@@ -14,10 +16,13 @@
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 
-const AJSEE_TM_PATCH_MARKER = 'AJSEE_TM_RATE_LIMIT_GUARD_20260507';
+const AJSEE_TM_PATCH_MARKER = 'AJSEE_TM_RATE_LIMIT_GUARD_20260507B';
 
 const REQUEST_CACHE_TTL_MS = 60_000;
+const RATE_LIMIT_COOLDOWN_MS = 5 * 60_000;
 const REQUEST_CACHE = new Map();
+
+let RATE_LIMIT_UNTIL = 0;
 
 const SUPPORTED_COUNTRY_CODES = new Set([
   'CZ', 'SK', 'PL', 'HU',
@@ -624,8 +629,31 @@ function makeLocaleList({ marketLocale = '', locale = '', debug = false } = {}) 
   return out.filter((v, i, arr) => !!v && arr.indexOf(v) === i);
 }
 
+function createRateLimitError(message = 'Ticketmaster rate limited') {
+  const err = new Error(message);
+  err.status = 429;
+  err.rateLimited = true;
+  return err;
+}
+
+function setRateLimitCooldown() {
+  RATE_LIMIT_UNTIL = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+}
+
+function isRateLimitPayload(data) {
+  const upstreamStatus = Number(data?._ajseeProxy?.upstreamStatus || 0);
+  const reason = String(data?._ajseeProxy?.reason || '').toLowerCase();
+
+  return upstreamStatus === 429 || reason.includes('rate_limited') || reason.includes('rate limit');
+}
+
 async function fetchJsonCached(url) {
   const now = Date.now();
+
+  if (RATE_LIMIT_UNTIL && now < RATE_LIMIT_UNTIL) {
+    throw createRateLimitError('Ticketmaster rate limit cooldown active');
+  }
+
   const cached = REQUEST_CACHE.get(url);
 
   if (cached && cached.exp > now) {
@@ -634,14 +662,34 @@ async function fetchJsonCached(url) {
 
   const promise = fetch(url, { cache: 'default' }).then(async (res) => {
     const status = res.status;
+    const text = await res.text();
+
+    let data = null;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch {
+      data = null;
+    }
+
+    if (status === 429 || isRateLimitPayload(data)) {
+      setRateLimitCooldown();
+      throw createRateLimitError(`Ticketmaster proxy ${status || 429}`);
+    }
 
     if (!res.ok) {
       const err = new Error(`Ticketmaster proxy ${status}`);
       err.status = status;
+      err.body = text;
       throw err;
     }
 
-    return res.json();
+    if (!data) {
+      const err = new Error('Ticketmaster proxy returned invalid JSON');
+      err.status = status;
+      throw err;
+    }
+
+    return data;
   });
 
   REQUEST_CACHE.set(url, {
@@ -649,8 +697,12 @@ async function fetchJsonCached(url) {
     promise
   });
 
-  promise.catch(() => {
-    REQUEST_CACHE.delete(url);
+  promise.catch((err) => {
+    // 429 se řeší globálním cooldownem. Běžné chyby z cache mažeme,
+    // aby se po krátkém výpadku mohl další request zkusit znovu.
+    if (!err?.rateLimited) {
+      REQUEST_CACHE.delete(url);
+    }
   });
 
   return promise;
@@ -853,7 +905,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
           if (!strictRawList.length) continue;
           collectedRaw.push(...strictRawList);
         } catch (err) {
-          if (err?.status === 429) {
+          if (err?.status === 429 || err?.rateLimited) {
             rateLimited = true;
             break outer;
           }

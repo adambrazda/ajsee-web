@@ -934,19 +934,17 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     }
   }
 
-  let dedupedRaw = dedupeRawEvents(collectedRaw);
+    let dedupedRaw = dedupeRawEvents(collectedRaw);
 
   if (!dedupedRaw.length) return [];
 
   dedupedRaw = filterObviouslyWrongMarketUrls(dedupedRaw, selectedCityCountry || explicitCountry);
   dedupedRaw = sortRawEvents(dedupedRaw, sort, selectedCityCountry || explicitCountry);
 
-  return dedupedRaw.map((ev) =>
-    mapTicketmasterEvent(ev, locale, {
-      selectedCity: tmCity,
-      selectedCountry: selectedCityCountry
-    })
-  );
+  return dedupedRaw.map((ev) => mapTicketmasterEvent(ev, locale, {
+    selectedCity: tmCity,
+    selectedCountry: selectedCityCountry
+  }));
 }
 
 export default { fetchEvents };

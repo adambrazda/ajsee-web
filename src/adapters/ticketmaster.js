@@ -691,16 +691,18 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     ? String(filters.cityCountryCode || guessedCC || explicitCountry || '').toUpperCase()
     : '';
 
-  const marketLocale = selectedCityCountry
-    ? MARKET_LOCALE_BY_COUNTRY[selectedCityCountry]
-    : '';
+const marketLocale = selectedCityCountry
+  ? MARKET_LOCALE_BY_COUNTRY[selectedCityCountry]
+  : '';
 
-  const locales = [
-    marketLocale,
-    locale,
-    'en',
-    'en-gb'
-  ].filter((v, i, arr) => !!v && arr.indexOf(v) === i);
+const locales = [
+  // Ticketmaster FR/ES/NL často vrací evropské eventy správně až přes obecné "en".
+  // U Paříže je to zásadní: fr-fr / cs / en-gb mohou vracet 0, zatímco en vrací výsledky.
+  'en',
+  marketLocale,
+  locale,
+  'en-gb'
+].filter((v, i, arr) => !!v && arr.indexOf(v) === i);
 
   const sort = toTmSort(filters.sort);
   const page = Number.isFinite(+filters.page) ? String(+filters.page) : '0';

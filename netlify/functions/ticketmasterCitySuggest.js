@@ -16,6 +16,8 @@
 //   Example: Paris -> FR only, Budapest -> HU only, London -> GB only.
 // - Invalid TM city noise with 0/0 coordinates is ignored.
 // - City labels like "Paris France" are not accepted for strict known-city queries.
+// - Country code aliases no longer steal known city prefixes.
+//   Example: Berlin -> city DE, not Belgium / BE.
 // ---------------------------------------------------------
 
 const CACHE = globalThis.__tm_city_cache || (globalThis.__tm_city_cache = new Map());
@@ -424,9 +426,13 @@ function countrySuggestionsForKeyword(keyword = '', locale = 'cs', isAllowedCC =
 
     const directCode = q === compact(cc);
     const exactAlias = aliasKey === q;
-    const prefix = aliasKey.startsWith(q);
-    const reversePrefix = q.length >= 4 && q.startsWith(aliasKey);
-    const contains = q.length >= 4 && aliasKey.includes(q);
+
+    // Important:
+    // Short country codes such as BE must not behave as loose prefixes,
+    // otherwise Berlin would be suggested as Belgium.
+    const prefix = aliasKey.length >= 4 && aliasKey.startsWith(q);
+    const reversePrefix = aliasKey.length >= 4 && q.length >= 4 && q.startsWith(aliasKey);
+    const contains = aliasKey.length >= 4 && q.length >= 4 && aliasKey.includes(q);
 
     if (!directCode && !exactAlias && !prefix && !reversePrefix && !contains) {
       continue;
@@ -488,6 +494,9 @@ const EXONYM_TO_CANON = {
   budapeszt: 'budapest',
   budapesta: 'budapest',
 
+  // Berlin
+  berlin: 'berlin',
+
   // Amsterdam / Madrid
   amsterdam: 'amsterdam',
   amsterodam: 'amsterdam',
@@ -525,6 +534,7 @@ const SYNS = {
   brno: ['brno', 'brünn'],
   vienna: ['wien', 'vienna', 'vídeň', 'viden', 'viedeň', 'wiedeń', 'bécs'],
   bratislava: ['bratislava', 'pressburg', 'pozsony'],
+  berlin: ['berlin', 'berlín'],
 
   budapest: ['budapest', 'budapešť', 'budapeszt', 'budapesta'],
   munich: ['münchen', 'munchen', 'munich', 'mnichov'],

@@ -16,6 +16,27 @@
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 
+const MARKET_LOCALE_BY_COUNTRY = {
+  CZ: 'cs-cz',
+  SK: 'sk-sk',
+  PL: 'pl-pl',
+  HU: 'hu-hu',
+  DE: 'de-de',
+  AT: 'de-at',
+  CH: 'de-ch',
+  GB: 'en-gb',
+  IE: 'en-gb',
+  FR: 'fr-fr',
+  ES: 'es-es',
+  NL: 'nl-nl',
+  BE: 'fr-fr',
+  IT: 'it-it',
+  DK: 'da-dk',
+  SE: 'sv-se',
+  FI: 'fi-fi',
+  NO: 'nb-no'
+};
+
 /** Map UI sort to TM sort string */
 function toTmSort(sortUi) {
   if (sortUi === 'latest') return 'date,desc';
@@ -406,9 +427,16 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     ? String(filters.cityCountryCode || guessedCC || explicitCountry || '').toUpperCase()
     : '';
 
-  const locales = [locale, 'cs', 'en'].filter(
-    (v, i, arr) => !!v && arr.indexOf(v) === i
-  );
+  const marketLocale = selectedCityCountry
+  ? MARKET_LOCALE_BY_COUNTRY[selectedCityCountry]
+  : '';
+
+const locales = [
+  marketLocale,
+  locale,
+  'en',
+  'en-gb'
+].filter((v, i, arr) => !!v && arr.indexOf(v) === i);
 
   const sort = toTmSort(filters.sort);
   const page = Number.isFinite(+filters.page) ? String(+filters.page) : '0';

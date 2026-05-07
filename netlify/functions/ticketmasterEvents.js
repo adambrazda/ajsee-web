@@ -62,14 +62,23 @@ const CORS_HEADERS = {
   'access-control-allow-headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
 };
 
-// Rozšířený whitelist lokálů (2-písmenné i plné BCP47, defensivně)
 const LOCALE_WHITELIST = new Set([
   'en', 'en-us', 'en-gb',
-  'de', 'de-de',
-  'pl', 'pl-pl',
   'cs', 'cs-cz',
   'sk', 'sk-sk',
-  'hu', 'hu-hu'
+  'de', 'de-de', 'de-at', 'de-ch',
+  'pl', 'pl-pl',
+  'hu', 'hu-hu',
+
+  // Market locales pro Ticketmaster trhy, které používáme
+  'fr', 'fr-fr',
+  'es', 'es-es',
+  'nl', 'nl-nl',
+  'it', 'it-it',
+  'da', 'da-dk',
+  'sv', 'sv-se',
+  'fi', 'fi-fi',
+  'no', 'nb-no'
 ]);
 
 async function safeFetch(input, init) {
@@ -128,11 +137,18 @@ export const handler = async (event) => {
       url.searchParams.set('radius', String(miles));
       url.searchParams.set('unit', 'miles');
     } else if (cityParam) {
-      url.searchParams.set('city', cityParam);
-      // ZÁMĚRNĚ neposíláme countryCode (viz TM doporučení) – disambiguaci vyřešíme níže lokálním filtrem
-    } else if (countryCode) {
-      url.searchParams.set('countryCode', countryCode);
-    }
+  url.searchParams.set('city', cityParam);
+
+  // Nově countryCode posíláme i s city.
+  // Důvod: u trhů jako FR / ES / NL chceme Ticketmasteru rovnou říct,
+  // že hledáme Paris ve Francii, Madrid ve Španělsku atd.
+  // Lokální filtr níže necháváme jako pojistku.
+  if (countryCode) {
+    url.searchParams.set('countryCode', countryCode);
+  }
+} else if (countryCode) {
+  url.searchParams.set('countryCode', countryCode);
+}
 
     // Řazení
     url.searchParams.set('sort', toTmSort(q.sort));

@@ -2,7 +2,7 @@
 // ---------------------------------------------------------
 // AJSEE – Events page UI, i18n & filters
 //
-// Nově podporuje jedno pole "město nebo země":
+// Podporuje jedno pole "město nebo země":
 // - Paris / Paříž => city search
 // - Budapest / Budapešť => city search
 // - Francie / France / FR => country-only search
@@ -12,6 +12,12 @@
 // - placeType: 'city'
 // - placeType: 'country'
 // - placeType: 'nearMe'
+//
+// Events-only pagination:
+// - na events.html se zobrazuje 20 akcí na stránku,
+// - Ticketmaster dávky se načítají postupně,
+// - už načtené dávky zůstávají ve FE bufferu,
+// - homepage se tímto souborem nemění.
 // ---------------------------------------------------------
 
 import './identity-init.js';
@@ -94,7 +100,18 @@ let currentFilters = {
   nearMeRadiusKm: 50
 };
 
-const pagination = { page: 1, perPage: 12 };
+const EVENTS_UI_PAGE_SIZE = 20;
+const EVENTS_API_BATCH_SIZE = 50;
+
+const pagination = { page: 1, perPage: EVENTS_UI_PAGE_SIZE };
+
+const eventsPager = {
+  filterSig: '',
+  apiPage: 0,
+  buffer: [],
+  hasMore: true,
+  loading: false
+};
 
 let _renderInflight = false;
 let _renderQueued = false;
@@ -2603,6 +2620,7 @@ function buildCityTypeaheadOptions(input, locale) {
       input.removeAttribute('data-autofromnearme');
 
       _lastFetchSig = '';
+      resetEventsPager();
 
       void renderAndSync({ resetPage: true }).then(() => expandFilters());
     },
@@ -2792,6 +2810,248 @@ function makeFetchSig(locale, api, page, perPage) {
   });
 }
 
+function makeEventsPagerFilterSig(locale, api) {
+  return makeFetchSig(locale, api, 0, EVENTS_API_BATCH_SIZE);
+}
+
+function resetEventsPager(nextSig = '') {
+  eventsPager.filterSig = nextSig;
+  eventsPager.apiPage = 0;
+  eventsPager.buffer = [];
+  eventsPager.hasMore = true;
+  eventsPager.loading = false;
+}
+
+function eventBufferKey(ev, idx = 0) {
+  const id = String(ev?.id || '').trim();
+  if (id) return id;
+
+  const title = typeof ev?.title === 'string'
+    ? ev.title
+    : (ev?.title?.cs || ev?.title?.en || Object.values(ev?.title || {})[0] || '');
+
+  return [
+    ev?.partner || 'x',
+    ev?.datetime || ev?.date || '',
+    ev?.location?.city || ev?.venue?.city || '',
+    title || '',
+    idx
+  ].join('|').toLowerCase();
+}
+
+function mergeEventsIntoBuffer(nextEvents = []) {
+  if (!Array.isArray(nextEvents) || !nextEvents.length) return;
+
+  const seen = new Set(eventsPager.buffer.map((ev, idx) => eventBufferKey(ev, idx)));
+
+  for (const ev of nextEvents) {
+    const key = eventBufferKey(ev, eventsPager.buffer.length);
+    if (!key || seen.has(key)) continue;
+
+    seen.add(key);
+    eventsPager.buffer.push(ev);
+  }
+}
+
+function sortBufferedEvents(sort = 'nearest') {
+  eventsPager.buffer.sort((a, b) => {
+    const da = new Date(a.datetime || a.date).getTime();
+    const db = new Date(b.datetime || b.date).getTime();
+
+    const aOk = Number.isFinite(da);
+    const bOk = Number.isFinite(db);
+
+    if (!aOk && !bOk) return 0;
+    if (!aOk) return 1;
+    if (!bOk) return -1;
+
+    return sort === 'latest' ? db - da : da - db;
+  });
+}
+
+async function fetchNextEventsBatch(locale, api) {
+  if (eventsPager.loading || !eventsPager.hasMore) return;
+
+  eventsPager.loading = true;
+
+  try {
+    const requestFilters = {
+      ...api,
+      page: eventsPager.apiPage,
+      size: EVENTS_API_BATCH_SIZE
+    };
+
+    const nextEvents = await getAllEvents({
+      locale,
+      filters: requestFilters
+    }) || [];
+
+    eventsPager.apiPage += 1;
+
+    if (!Array.isArray(nextEvents) || nextEvents.length === 0) {
+      eventsPager.hasMore = false;
+      return;
+    }
+
+    mergeEventsIntoBuffer(nextEvents);
+    sortBufferedEvents(api.sort || 'nearest');
+
+    // Bez metadata z Ticketmasteru bereme menší dávku než batch jako signál,
+    // že další relevantní stránka pravděpodobně není.
+    if (nextEvents.length < EVENTS_API_BATCH_SIZE) {
+      eventsPager.hasMore = false;
+    }
+  } finally {
+    eventsPager.loading = false;
+  }
+}
+
+async function ensureEventsPageLoaded(locale, api, uiPage = 1) {
+  const needed = Math.max(1, uiPage) * pagination.perPage;
+
+  if (eventsPager.buffer.length >= needed) return;
+
+  // Záměrně max. 1 API dávka na jeden render/klik.
+  // Chráníme tím Ticketmaster rate limit.
+  if (eventsPager.hasMore) {
+    await fetchNextEventsBatch(locale, api);
+  }
+}
+
+function eventsPagerLabel() {
+  const from = ((pagination.page - 1) * pagination.perPage) + 1;
+  const to = Math.min(pagination.page * pagination.perPage, eventsPager.buffer.length);
+  const total = `${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`;
+
+  if (!eventsPager.buffer.length) return '';
+
+  return `${from}-${to} / ${total}`;
+}
+
+function ensureEventsPagerHost() {
+  if (isHome()) return null;
+
+  const list = qs('#eventsList');
+  if (!list || !list.parentElement) return null;
+
+  let host = document.getElementById('eventsPager');
+
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'eventsPager';
+    host.className = 'events-pager';
+    list.parentElement.insertBefore(host, list.nextSibling);
+  }
+
+  return host;
+}
+
+function updateEventsPagerControls() {
+  if (isHome()) return;
+
+  injectOnce('ajsee-events-pager-css', String.raw`
+    .events-pager{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin:28px auto 0;
+      text-align:center;
+    }
+
+    .events-pager__status{
+      flex:0 0 100%;
+      font-size:14px;
+      color:#667085;
+      margin-bottom:2px;
+    }
+
+    .events-pager__btn{
+      border:1px solid rgba(10,61,98,.16);
+      background:#fff;
+      color:#0A3D62;
+      border-radius:999px;
+      padding:11px 18px;
+      min-height:44px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(9,30,66,.06);
+      transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+    }
+
+    .events-pager__btn:hover:not(:disabled){
+      transform:translateY(-1px);
+      box-shadow:0 12px 28px rgba(9,30,66,.10);
+    }
+
+    .events-pager__btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .events-pager__btn--primary{
+      background:#0A3D62;
+      color:#fff;
+      border-color:#0A3D62;
+    }
+  `);
+
+  const host = ensureEventsPagerHost();
+  if (!host) return;
+
+  const shownEnd = pagination.page * pagination.perPage;
+  const canPrev = pagination.page > 1;
+  const canNextFromCache = shownEnd < eventsPager.buffer.length;
+  const canNextFromApi = eventsPager.hasMore;
+  const canNext = canNextFromCache || canNextFromApi;
+
+  if (!eventsPager.buffer.length) {
+    host.innerHTML = '';
+    host.hidden = true;
+    return;
+  }
+
+  host.hidden = false;
+
+  const prevLabel = t('pagination.previous', 'Zpět');
+  const nextLabel = canNextFromCache
+    ? t('pagination.next', 'Další')
+    : t('pagination.loadMore', 'Načíst dalších 20');
+
+  host.innerHTML = `
+    <div class="events-pager__status">${esc(eventsPagerLabel())}</div>
+    <button type="button" class="events-pager__btn" data-events-page-prev ${canPrev ? '' : 'disabled'}>
+      ${esc(prevLabel)}
+    </button>
+    <button type="button" class="events-pager__btn events-pager__btn--primary" data-events-page-next ${canNext ? '' : 'disabled'}>
+      ${esc(eventsPager.loading ? t('pagination.loading', 'Načítám…') : nextLabel)}
+    </button>
+  `;
+
+  const prev = host.querySelector('[data-events-page-prev]');
+  const next = host.querySelector('[data-events-page-next]');
+
+  if (prev) {
+    prev.addEventListener('click', async () => {
+      if (pagination.page <= 1) return;
+      _userInteractedWithFilters = true;
+      pagination.page -= 1;
+      await renderAndSync({ resetPage: false });
+    }, { once: true });
+  }
+
+  if (next) {
+    next.addEventListener('click', async () => {
+      if (!canNext || eventsPager.loading) return;
+      _userInteractedWithFilters = true;
+      pagination.page += 1;
+      await renderAndSync({ resetPage: false });
+    }, { once: true });
+  }
+}
+
 async function renderEvents(locale = 'cs', filters = currentFilters) {
   const list = document.getElementById('eventsList');
   if (!list) return;
@@ -2853,15 +3113,31 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       delete api.nearMeLon;
     }
 
-    const sig = makeFetchSig(locale, api, pagination.page, pagination.perPage);
-    if (sig === _lastFetchSig) return;
+    const filterSig = makeEventsPagerFilterSig(locale, api);
 
-    const events = await getAllEvents({ locale, filters: api }) || [];
-    _lastFetchSig = sig;
+    if (eventsPager.filterSig !== filterSig) {
+      resetEventsPager(filterSig);
+      pagination.page = 1;
+      _lastFetchSig = '';
+    }
+
+    await ensureEventsPageLoaded(locale, api, pagination.page);
+
+    const renderSig = JSON.stringify({
+      filterSig,
+      uiPage: pagination.page,
+      bufferLength: eventsPager.buffer.length,
+      hasMore: eventsPager.hasMore,
+      loading: eventsPager.loading
+    });
+
+    if (renderSig === _lastFetchSig) return;
+    _lastFetchSig = renderSig;
 
     if (!window.translations) window.translations = await loadTranslations(locale);
 
-    let out = [...events];
+    let out = [...eventsPager.buffer];
+
     if (filters.category && filters.category !== 'all') {
       out = out.filter(e => e.category === filters.category);
     }
@@ -2872,7 +3148,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       out.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
     }
 
-    updateResultsCount(out.length);
+    updateResultsCount(`${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`);
 
     const isHp = isHome();
     let toRender = out;
@@ -2880,8 +3156,9 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     if (isHp) {
       if (out.length > 6) toRender = out.slice(0, 6);
     } else {
+      const start = (pagination.page - 1) * pagination.perPage;
       const end = pagination.page * pagination.perPage;
-      toRender = out.slice(0, end);
+      toRender = out.slice(start, end);
     }
 
     const modalStore = new Map();
@@ -2958,13 +3235,17 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       });
     });
 
-    announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);
+    updateEventsPagerControls();
+
+    announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`);
   } catch {
     _lastFetchSig = '';
 
     if (list) {
       list.innerHTML = `<p>${esc(t('events-load-error', 'Unable to load events. Try again later.'))}</p>`;
     }
+
+    updateEventsPagerControls();
   } finally {
     setBusy(false);
   }
@@ -3553,6 +3834,7 @@ function bindFilterFormInteractions(formEl) {
   if (category) {
     wireOnce(category, 'change', async () => {
       syncFiltersFromForm();
+      resetEventsPager();
       await renderAndSync({ resetPage: true });
     }, 'category-change');
   }
@@ -3567,6 +3849,7 @@ function bindFilterFormInteractions(formEl) {
       syncFiltersFromForm();
     }
 
+    resetEventsPager();
     await renderAndSync({ resetPage: true });
   }, 'submit');
 }
@@ -3644,6 +3927,7 @@ async function bootstrapMain() {
     syncCookieBannerLanguage(currentLang);
 
     _lastFetchSig = '';
+    resetEventsPager();
 
     initCityTypeahead(currentLang, { rebuild: true });
     setFilterInputsFromState();

@@ -9,9 +9,10 @@
 // - Frontend neposílá uživatele přímo na ev.url.
 // - Místo toho používáme vlastní Netlify redirect funkci tmOutbound.
 // - Pokud vybereme známé město se zemí, držíme se této země striktně.
-//   Tím zabráníme falešným výsledkům typu Paris GB / Madrid GB.
-// - Nově kontrolujeme i market v URL, aby např. Paříž FR nepustila
-//   falešný / neplatný výsledek z ticketmaster.com.
+//   Tím zabráníme falešným výsledkům typu Paris US / Madrid GB.
+// - Výsledky už nevracíme po prvním nenulovém pokusu.
+//   Sloučíme city + keyword + fallback pokusy, deduplikujeme a až pak vracíme.
+// - U Paříže povolujeme metropolitní venue jako Saint-Denis / Nanterre apod.
 // ---------------------------------------------------------
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
@@ -66,6 +67,10 @@ function normCity(s = '') {
     .trim();
 }
 
+function compactCity(s = '') {
+  return normCity(s).replace(/[^a-z0-9]/g, '');
+}
+
 function cityKey(s = '') {
   const raw = String(s || '').trim();
   if (!raw) return '';
@@ -85,34 +90,39 @@ function isSameCity(a = '', b = '') {
   if (!aa || !bb) return false;
   return aa === bb || aa.includes(bb) || bb.includes(aa);
 }
+
 const METRO_CITY_ALIASES = {
   'FR|paris': [
     'paris',
     'saint denis',
     'saint-denis',
-    'boulogne billancourt',
-    'boulogne-billancourt',
+    'st denis',
+    'st-denis',
+    'saint ouen',
+    'saint-ouen',
     'nanterre',
     'puteaux',
     'courbevoie',
-    'levallois perret',
-    'levallois-perret',
-    'issy les moulineaux',
-    'issy-les-moulineaux',
-    'neuilly sur seine',
-    'neuilly-sur-seine',
-    'aubervilliers',
-    'saint ouen',
-    'saint-ouen',
-    'pantin',
-    'montreuil',
-    'vincennes',
-    'villepinte',
-    'versailles',
     'la defense',
     'la défense',
     'paris la defense',
-    'paris la défense'
+    'paris la défense',
+    'boulogne billancourt',
+    'boulogne-billancourt',
+    'levallois perret',
+    'levallois-perret',
+    'neuilly sur seine',
+    'neuilly-sur-seine',
+    'issy les moulineaux',
+    'issy-les-moulineaux',
+    'aubervilliers',
+    'pantin',
+    'montreuil',
+    'vincennes',
+    'ivry sur seine',
+    'ivry-sur-seine',
+    'villepinte',
+    'versailles'
   ]
 };
 
@@ -120,177 +130,14 @@ function isSameCityOrMetro(evCity = '', selectedCity = '', countryCode = '') {
   if (isSameCity(evCity, selectedCity)) return true;
 
   const cc = String(countryCode || '').trim().toUpperCase();
-  const selectedKey = cityKey(selectedCity);
+  const selectedKey = compactCity(cityKey(selectedCity));
   const metroKey = `${cc}|${selectedKey}`;
 
   const aliases = METRO_CITY_ALIASES[metroKey];
   if (!aliases || !aliases.length) return false;
 
-  const evNorm = normCity(evCity);
-  return aliases.some(alias => normCity(alias) === evNorm);
-}
-const COUNTRY_MARKET_HOST = {
-  CZ: 'ticketmaster.cz',
-  GB: 'ticketmaster.co.uk',
-  DE: 'ticketmaster.de',
-  PL: 'ticketmaster.pl',
-  AT: 'ticketmaster.at',
-  IE: 'ticketmaster.ie',
-  FR: 'ticketmaster.fr',
-  NL: 'ticketmaster.nl',
-  BE: 'ticketmaster.be',
-  IT: 'ticketmaster.it',
-  ES: 'ticketmaster.es',
-  DK: 'ticketmaster.dk',
-  CH: 'ticketmaster.ch',
-  NO: 'ticketmaster.no',
-  SE: 'ticketmaster.se',
-  FI: 'ticketmaster.fi',
-};
-
-const IMPACT_COUNTRY_BY_IDS = {
-  '2038768|23901': 'CZ',
-  '2038758|24023': 'GB',
-  '2038753|23890': 'DE',
-  '2038764|23896': 'PL',
-  '2038762|23895': 'AT',
-  '2038752|23889': 'IE',
-  '2038754|23891': 'FR',
-  '2038751|23888': 'NL',
-  '2038757|23894': 'BE',
-  '2038766|23899': 'IT',
-  '2038750|23886': 'ES',
-  '2038756|23893': 'DK',
-  '2038765|23898': 'CH',
-  '2038767|23900': 'NO',
-  '2038747|23885': 'SE',
-  '2038755|23892': 'FI',
-};
-
-function normalizeHost(hostname = '') {
-  return String(hostname || '')
-    .trim()
-    .toLowerCase()
-    .replace(/^www\./, '');
-}
-
-function hostMatches(hostname = '', expectedHost = '') {
-  const host = normalizeHost(hostname);
-  const expected = normalizeHost(expectedHost);
-
-  if (!host || !expected) return false;
-
-  return host === expected || host.endsWith(`.${expected}`);
-}
-
-function getImpactCountry(rawUrl = '') {
-  try {
-    const parsed = new URL(String(rawUrl || '').trim());
-
-    if (normalizeHost(parsed.hostname) !== 'ticketmaster.evyy.net') {
-      return '';
-    }
-
-    const match = parsed.pathname.match(/\/c\/([^/]+)\/([^/]+)\/([^/?#]+)/);
-    if (!match) return '';
-
-    const assetId = match[2];
-    const programId = match[3];
-
-    return IMPACT_COUNTRY_BY_IDS[`${assetId}|${programId}`] || '';
-  } catch {
-    return '';
-  }
-}
-
-function getNestedTargetUrl(rawUrl = '') {
-  try {
-    const parsed = new URL(String(rawUrl || '').trim());
-
-    return (
-      parsed.searchParams.get('u') ||
-      parsed.searchParams.get('url') ||
-      parsed.searchParams.get('to') ||
-      ''
-    );
-  } catch {
-    return '';
-  }
-}
-
-function isUrlCompatibleWithCountry(rawUrl = '', countryCode = '') {
-  const cc = String(countryCode || '').trim().toUpperCase();
-
-  if (!cc) return true;
-
-  const expectedHost = COUNTRY_MARKET_HOST[cc];
-
-  // Pokud zemi neumíme mapovat, neblokujeme výsledek.
-  if (!expectedHost) return true;
-
-  const sourceUrl = String(rawUrl || '').trim();
-
-  if (!sourceUrl) return false;
-
-  try {
-    const parsed = new URL(sourceUrl);
-    const host = normalizeHost(parsed.hostname);
-
-    // A) Impact wrapper: rozhoduje assetId/programId.
-    if (host === 'ticketmaster.evyy.net') {
-      const impactCountry = getImpactCountry(sourceUrl);
-
-      if (impactCountry) {
-        return impactCountry === cc;
-      }
-
-      const nested = getNestedTargetUrl(sourceUrl);
-      return nested ? isUrlCompatibleWithCountry(nested, cc) : false;
-    }
-
-    // B) Přímý Ticketmaster market.
-    if (hostMatches(host, expectedHost)) return true;
-
-    // C) UK výjimky v rámci Ticketmaster ekosystému.
-    if (cc === 'GB') {
-      if (host === 'universe.com' || host.endsWith('.universe.com')) return true;
-      if (host === 'ticketweb.uk' || host.endsWith('.ticketweb.uk')) return true;
-    }
-
-    // D) Obecný ticketmaster.com NEpouštíme pro evropská města,
-    // protože vrací falešné / neplatné výsledky typu Paris .com.
-    if (host === 'ticketmaster.com' || host.endsWith('.ticketmaster.com')) {
-      return false;
-    }
-
-    // E) Pokud URL obsahuje vnořený target, zkusíme ještě ten.
-    const nested = getNestedTargetUrl(sourceUrl);
-    if (nested) {
-      return isUrlCompatibleWithCountry(nested, cc);
-    }
-
-    return false;
-  } catch {
-    return false;
-  }
-}
-
-function filterRawEventsByStrictCityCountryAndMarket(events = [], { strictCity = '', strictCountry = '' } = {}) {
-  const cc = String(strictCountry || '').trim().toUpperCase();
-  const city = String(strictCity || '').trim();
-
-  return events.filter((ev) => {
-    const venue = ev?._embedded?.venues?.[0] || {};
-    const evCountry = String(venue?.country?.countryCode || '').trim().toUpperCase();
-    const evCity = String(venue?.city?.name || '').trim();
-
-    if (cc && evCountry && evCountry !== cc) return false;
-    if (city && evCity && !isSameCity(evCity, city)) return false;
-
-    if (cc && !isUrlCompatibleWithCountry(ev?.url || '', cc)) return false;
-
-    return true;
-  });
+  const evCompact = compactCity(evCity);
+  return aliases.some((alias) => compactCity(alias) === evCompact);
 }
 
 /** Normalize TM segment to our internal category */
@@ -354,7 +201,10 @@ function extractPreferredTicketmasterUrl(rawUrl = '') {
       return parsed.toString();
     }
 
-    const nestedUrl = parsed.searchParams.get('url') || parsed.searchParams.get('to');
+    const nestedUrl =
+      parsed.searchParams.get('url') ||
+      parsed.searchParams.get('to') ||
+      parsed.searchParams.get('u');
 
     if (nestedUrl) {
       try {
@@ -377,7 +227,7 @@ function extractPreferredTicketmasterUrl(rawUrl = '') {
 /**
  * Build safe AJSEE outbound URL for Ticketmaster.
  */
-function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '') {
+function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '', countryCode = '') {
   const preferredUrl = extractPreferredTicketmasterUrl(rawUrl);
 
   if (!preferredUrl) return '';
@@ -391,6 +241,12 @@ function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '') {
 
   if (eventId) {
     qs.set('eid', String(eventId));
+  }
+
+  // Nevadí, když to tmOutbound zatím ignoruje.
+  // Hodí se pro pozdější fallback u obecných ticketmaster.com URL.
+  if (countryCode) {
+    qs.set('cc', String(countryCode).toUpperCase());
   }
 
   return `/.netlify/functions/tmOutbound?${qs.toString()}`;
@@ -419,7 +275,7 @@ function mapTicketmasterEvent(ev, locale) {
       : null;
 
   const tmRawUrl = ev.url || '';
-  const outboundUrl = buildTicketmasterOutboundUrl(tmRawUrl, ev.id || '');
+  const outboundUrl = buildTicketmasterOutboundUrl(tmRawUrl, ev.id || '', country);
 
   return {
     id: `ticketmaster-${ev.id}`,
@@ -438,22 +294,55 @@ function mapTicketmasterEvent(ev, locale) {
   };
 }
 
-function filterStrictCityCountry(mappedEvents, { strictCity = '', strictCountry = '' } = {}) {
+function filterRawEventsByStrictCityCountry(events = [], { strictCity = '', strictCountry = '' } = {}) {
   const cc = String(strictCountry || '').trim().toUpperCase();
   const city = String(strictCity || '').trim();
 
-  return mappedEvents.filter((ev) => {
-    const evCountry = String(ev?.location?.country || '').trim().toUpperCase();
-    const evCity = String(ev?.location?.city || '').trim();
+  return events.filter((ev) => {
+    const venue = ev?._embedded?.venues?.[0] || {};
+    const evCountry = String(venue?.country?.countryCode || '').trim().toUpperCase();
+    const evCity = String(venue?.city?.name || '').trim();
 
+    // Země je tvrdá hranice. Tohle chrání Paris FR před Paris US.
     if (cc && evCountry && evCountry !== cc) return false;
 
-    if (city && evCity && !isSameCityOrMetro(evCity, city, cc)) {
-      return false;
-    }
+    // Město je přesné, ale pro vybrané metropole povolujeme okolní venue.
+    if (city && evCity && !isSameCityOrMetro(evCity, city, cc)) return false;
 
+    // DŮLEŽITÉ:
+    // URL market už tady NEpoužíváme jako tvrdý filtr.
+    // Ticketmaster někdy vrací evropské eventy s hostem ticketmaster.com,
+    // přestože venue country je správně FR/ES/NL.
+    // Tvrdý URL filtr právě rozbíjel Paříž při kategorii koncert.
     return true;
   });
+}
+
+function rawEventKey(ev) {
+  const id = String(ev?.id || '').trim();
+  if (id) return id;
+
+  const venue = ev?._embedded?.venues?.[0] || {};
+  const city = venue?.city?.name || '';
+  const country = venue?.country?.countryCode || '';
+  const date = pickDate(ev);
+  const name = ev?.name || '';
+
+  return `${name}|${date}|${city}|${country}`.toLowerCase();
+}
+
+function dedupeRawEvents(events = []) {
+  const out = [];
+  const seen = new Set();
+
+  for (const ev of events) {
+    const key = rawEventKey(ev);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(ev);
+  }
+
+  return out;
 }
 
 export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
@@ -474,15 +363,15 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     : '';
 
   const marketLocale = selectedCityCountry
-  ? MARKET_LOCALE_BY_COUNTRY[selectedCityCountry]
-  : '';
+    ? MARKET_LOCALE_BY_COUNTRY[selectedCityCountry]
+    : '';
 
-const locales = [
-  marketLocale,
-  locale,
-  'en',
-  'en-gb'
-].filter((v, i, arr) => !!v && arr.indexOf(v) === i);
+  const locales = [
+    marketLocale,
+    locale,
+    'en',
+    'en-gb'
+  ].filter((v, i, arr) => !!v && arr.indexOf(v) === i);
 
   const sort = toTmSort(filters.sort);
   const page = Number.isFinite(+filters.page) ? String(+filters.page) : '0';
@@ -537,7 +426,7 @@ const locales = [
 
   if (tmCity) {
     if (selectedCityCountry) {
-      // 1) nejpřesnější pokus: city + country
+      // 1) city + country
       attempts.push({
         mode: 'city',
         city: tmCity,
@@ -546,7 +435,8 @@ const locales = [
         strictCountry: selectedCityCountry,
       });
 
-      // 2) fallback: keyword + country
+      // 2) keyword + country
+      // Pro Paříž je důležité, protože koncerty mohou být v Saint-Denis.
       attempts.push({
         mode: 'keyword',
         keyword: tmCity,
@@ -555,8 +445,7 @@ const locales = [
         strictCountry: selectedCityCountry,
       });
 
-      // 3) fallback: city bez countryCode, ale výsledek striktně odfiltrujeme podle země.
-      // Důležité pro UK, kde city=London někdy funguje lépe bez countryCode.
+      // 3) city bez countryCode, ale výsledek striktně odfiltrujeme podle země.
       attempts.push({
         mode: 'city',
         city: tmCity,
@@ -593,12 +482,12 @@ const locales = [
   const keyOf = (a) =>
     `${a.mode}|${a.city || a.keyword || ''}|${a.countryCode || ''}|${a.strictCountry || ''}`;
 
-  const seen = new Set();
+  const seenAttempts = new Set();
 
   const uniqAttempts = attempts.filter((a) => {
     const key = keyOf(a);
-    if (seen.has(key)) return false;
-    seen.add(key);
+    if (seenAttempts.has(key)) return false;
+    seenAttempts.add(key);
     return true;
   });
 
@@ -606,6 +495,8 @@ const locales = [
     filters.latlong ||
     (filters.nearMeLat != null && filters.nearMeLon != null)
   );
+
+  const collectedRaw = [];
 
   for (const locTry of locales) {
     for (const attempt of uniqAttempts) {
@@ -651,7 +542,7 @@ const locales = [
         if (!Array.isArray(list) || !list.length) continue;
 
         const strictRawList = (attempt.strictCity || attempt.strictCountry)
-          ? filterRawEventsByStrictCityCountryAndMarket(list, {
+          ? filterRawEventsByStrictCityCountry(list, {
               strictCity: attempt.strictCity,
               strictCountry: attempt.strictCountry,
             })
@@ -659,25 +550,18 @@ const locales = [
 
         if (!strictRawList.length) continue;
 
-        const mapped = strictRawList.map((ev) => mapTicketmasterEvent(ev, locale));
-
-        const strictMapped = (attempt.strictCity || attempt.strictCountry)
-          ? filterStrictCityCountry(mapped, {
-              strictCity: attempt.strictCity,
-              strictCountry: attempt.strictCountry,
-            })
-          : mapped;
-
-        if (!strictMapped.length) continue;
-
-        return strictMapped;
+        collectedRaw.push(...strictRawList);
       } catch (err) {
         console.error('[Ticketmaster adapter] fetch error for locale:', locTry, attempt, err);
       }
     }
   }
 
-  return [];
+  const dedupedRaw = dedupeRawEvents(collectedRaw);
+
+  if (!dedupedRaw.length) return [];
+
+  return dedupedRaw.map((ev) => mapTicketmasterEvent(ev, locale));
 }
 
 export default { fetchEvents };

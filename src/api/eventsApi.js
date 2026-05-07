@@ -8,6 +8,7 @@
 // - OPRAVA: při filtrování + řazení brát "YYYY-MM-DD" jako lokální den (midday)
 // - OPRAVA: město si nese i zemi výběru (cityCountryCode), aby Paris FR / London GB / Madrid ES
 //   nespadly do výsledků z jiné země.
+// - OPRAVA: Paříž bere jako metropolitní oblast i Saint-Denis / Nanterre / La Défense atd.
 // ---------------------------------------------------------
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
@@ -67,6 +68,8 @@ function normalizeText(s) {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/ß/g, 'ss')
     .replace(/ł/g, 'l')
+    .replace(/[’'`´]/g, '')
+    .replace(/[().,;:/\\\-+_]/g, ' ')
     .replace(/\s+/g, ' ');
 }
 const normalizeStr = normalizeText;
@@ -348,6 +351,7 @@ function cityId(raw = '') {
 
   return n.replace(/\s+/g, '');
 }
+
 function compactCityId(raw = '') {
   return cityId(raw).replace(/[^a-z0-9]/g, '');
 }
@@ -357,11 +361,14 @@ const METRO_CITY_IDS = {
     'paris',
     'saintdenis',
     'stdenis',
+    'saintouen',
+    'stouen',
     'nanterre',
     'puteaux',
     'courbevoie',
-    'laseinedefense',
     'ladefense',
+    'laseinedefense',
+    'parisladefense',
     'boulognebillancourt',
     'levalloisperret',
     'neuillysurseine',
@@ -371,7 +378,7 @@ const METRO_CITY_IDS = {
     'aubervilliers',
     'ivrysurseine',
     'vincennes',
-    'saintouen',
+    'villepinte',
     'versailles'
   ])
 };
@@ -393,6 +400,7 @@ function matchesSelectedCity(eventCity = '', selectedCity = '') {
 
   return !!allowedMetroCities && allowedMetroCities.has(compactEvent);
 }
+
 function eventCityCandidates(ev) {
   const c1 = ev?.location?.city || ev?.city || '';
   const c2 = ev?.venue?.city || ev?.place?.city || ev?.venue?.address?.city || '';
@@ -526,24 +534,24 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     all = all.filter((ev) => normalizeStr(ev.category) === want);
   }
 
-if (city) {
-  const selectedFilterCc = String(
-    filters.cityCountryCode || guessCountryCodeFromCity?.(city) || ''
-  ).trim().toUpperCase();
+  if (city) {
+    const selectedFilterCc = String(
+      filters.cityCountryCode || selectedCityCc || guessCountryCodeFromCity?.(city) || ''
+    ).trim().toUpperCase();
 
-  all = all.filter((ev) => {
-    const evCountry = getEventCountry(ev);
+    all = all.filter((ev) => {
+      const evCountry = getEventCountry(ev);
 
-    if (selectedFilterCc && evCountry && evCountry !== selectedFilterCc) {
-      return false;
-    }
+      if (selectedFilterCc && evCountry && evCountry !== selectedFilterCc) {
+        return false;
+      }
 
-    const candidates = eventCityCandidates(ev);
-    if (!candidates.length) return false;
+      const candidates = eventCityCandidates(ev);
+      if (!candidates.length) return false;
 
-    return candidates.some((label) => matchesSelectedCity(label, city));
-  });
-}
+      return candidates.some((label) => matchesSelectedCity(label, city));
+    });
+  }
 
   // Near Me (jen když jsou lat/lon)
   if (nearMeLat != null && nearMeLon != null) {

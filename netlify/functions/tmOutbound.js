@@ -4,10 +4,13 @@
 //
 // Cíl:
 // - přijmout Ticketmaster / Impact / Universe URL přes parametr "to"
-// - odstranit staré affiliate / interní parametry
-// - podle Ticketmaster domény nebo původního Impact wrapperu vybrat správný market
+// - bezpečně vytáhnout čistý cílový odkaz
+// - správně poznat Ticketmaster market i ze subdomén
+//   např. attractions.ticketmaster.co.uk -> ticketmaster.co.uk
+// - odstranit staré affiliate / interní / jazykové parametry,
+//   které umí rozbít redirect chain
 // - doplnit subId1, subId2, subId3, sharedid a partnerpropertyid
-// - redirectovat uživatele přes Impact tracking link
+// - redirectovat uživatele přes správný Impact tracking link
 // - pokud trh není namapovaný, bezpečně redirectovat na čistý cílový link
 // ---------------------------------------------------------
 
@@ -39,6 +42,8 @@ const MARKET_MAP = {
 const MARKET_BY_IDS = Object.fromEntries(
   Object.values(MARKET_MAP).map((cfg) => [`${cfg.assetId}|${cfg.programId}`, cfg])
 );
+
+const MARKET_HOSTS = Object.keys(MARKET_MAP);
 
 const INTERNAL_PARAMS = [
   'url',
@@ -73,6 +78,13 @@ const OLD_AFFILIATE_PARAMS = [
   'subId5',
 ];
 
+const LANGUAGE_PARAMS = [
+  'language',
+  'locale',
+  'lang',
+  'hl',
+];
+
 function json(statusCode, data) {
   return {
     statusCode,
@@ -98,30 +110,72 @@ function safeRedirect(location, statusCode = 302) {
 
 function normalizeHost(hostname = '') {
   return String(hostname || '')
+    .trim()
     .toLowerCase()
     .replace(/^www\./, '');
 }
 
-function isTicketmasterHost(hostname = '') {
-  const h = normalizeHost(hostname);
+function isImpactTicketmasterHost(hostname = '') {
+  return normalizeHost(hostname) === 'ticketmaster.evyy.net';
+}
 
-  return (
-    h === 'ticketmaster.com' ||
-    /^ticketmaster\.[a-z]{2,}(\.[a-z]{2,})?$/.test(h)
-  );
+/**
+ * Vrátí základní Ticketmaster market host.
+ *
+ * Důležité:
+ * Ticketmaster často používá subdomény, např.:
+ * - attractions.ticketmaster.co.uk
+ * - shop.ticketmaster.co.uk
+ *
+ * Ty musí spadnout pod ticketmaster.co.uk, jinak redirect skončí na CZ fallbacku.
+ */
+function getTicketmasterMarketHost(hostname = '') {
+  const host = normalizeHost(hostname);
+
+  for (const marketHost of MARKET_HOSTS) {
+    if (host === marketHost || host.endsWith(`.${marketHost}`)) {
+      return marketHost;
+    }
+  }
+
+  return '';
+}
+
+function isTicketmasterDestinationHost(hostname = '') {
+  const host = normalizeHost(hostname);
+
+  if (!host || isImpactTicketmasterHost(host)) return false;
+
+  // Primárně povolujeme jen země, pro které máme mapu.
+  if (getTicketmasterMarketHost(host)) return true;
+
+  // Bez affiliate mapování, ale stále legitimní Ticketmaster doména.
+  // Při takovém odkazu použijeme čistý direct fallback, ne Impact wrapper.
+  if (host === 'ticketmaster.com' || host.endsWith('.ticketmaster.com')) {
+    return true;
+  }
+
+  return false;
 }
 
 function isUniverseHost(hostname = '') {
-  const h = normalizeHost(hostname);
-  return h === 'universe.com';
+  const host = normalizeHost(hostname);
+  return host === 'universe.com' || host.endsWith('.universe.com');
 }
 
 function isAllowedDestinationHost(hostname = '') {
-  return isTicketmasterHost(hostname) || isUniverseHost(hostname);
+  return isTicketmasterDestinationHost(hostname) || isUniverseHost(hostname);
 }
 
-function isImpactTicketmasterHost(hostname = '') {
-  return String(hostname || '').toLowerCase() === 'ticketmaster.evyy.net';
+function getMarketConfig(destinationUrl = '') {
+  try {
+    const parsed = new URL(destinationUrl);
+    const marketHost = getTicketmasterMarketHost(parsed.hostname);
+
+    return marketHost ? (MARKET_MAP[marketHost] || null) : null;
+  } catch {
+    return null;
+  }
 }
 
 function cleanTrackingValue(value = '', fallback = '') {
@@ -143,30 +197,61 @@ function cleanEventId(value = '') {
     .slice(0, 80);
 }
 
-function sanitizeDestinationUrl(rawUrl = '') {
+function safeDecodeMaybe(value = '') {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+
   try {
-    const parsed = new URL(rawUrl);
-
-    if (!isAllowedDestinationHost(parsed.hostname)) return '';
-
-    [...INTERNAL_PARAMS, ...OLD_AFFILIATE_PARAMS].forEach((key) => {
-      parsed.searchParams.delete(key);
-    });
-
-    return parsed.toString();
+    return decodeURIComponent(raw);
   } catch {
-    return '';
+    return raw;
   }
+}
+
+function parseUrlMaybe(rawUrl = '') {
+  const raw = String(rawUrl || '').trim();
+  if (!raw) return null;
+
+  try {
+    return new URL(raw);
+  } catch {
+    try {
+      return new URL(safeDecodeMaybe(raw));
+    } catch {
+      return null;
+    }
+  }
+}
+
+function removeParams(parsed, keys = []) {
+  for (const key of keys) {
+    parsed.searchParams.delete(key);
+  }
+}
+
+function sanitizeDestinationUrl(rawUrl = '') {
+  const parsed = parseUrlMaybe(rawUrl);
+
+  if (!parsed) return '';
+  if (!/^https?:$/i.test(parsed.protocol)) return '';
+  if (!isAllowedDestinationHost(parsed.hostname)) return '';
+
+  removeParams(parsed, INTERNAL_PARAMS);
+  removeParams(parsed, OLD_AFFILIATE_PARAMS);
+
+  // Tyto parametry na cílovém URL nechceme držet.
+  // U přeshraničních linků umí špatná language/locale kombinace způsobit
+  // přesměrování na nesprávný Ticketmaster market.
+  removeParams(parsed, LANGUAGE_PARAMS);
+
+  return parsed.toString();
 }
 
 function getMarketFromImpactUrl(parsed) {
   try {
     if (!parsed || !isImpactTicketmasterHost(parsed.hostname)) return null;
 
-    const match = parsed.pathname.match(
-      /\/c\/([^/]+)\/([^/]+)\/([^/?#]+)/
-    );
-
+    const match = parsed.pathname.match(/\/c\/([^/]+)\/([^/]+)\/([^/?#]+)/);
     if (!match) return null;
 
     const impactId = match[1];
@@ -181,15 +266,15 @@ function getMarketFromImpactUrl(parsed) {
   }
 }
 
-function getMarketConfig(destinationUrl = '') {
-  try {
-    const parsed = new URL(destinationUrl);
-    const host = normalizeHost(parsed.hostname);
+function getImpactTarget(parsed) {
+  if (!parsed) return '';
 
-    return MARKET_MAP[host] || null;
-  } catch {
-    return null;
-  }
+  return (
+    parsed.searchParams.get('u') ||
+    parsed.searchParams.get('url') ||
+    parsed.searchParams.get('to') ||
+    ''
+  );
 }
 
 /**
@@ -197,79 +282,79 @@ function getMarketConfig(destinationUrl = '') {
  *
  * Umí tyto scénáře:
  * 1) přímý Ticketmaster link
- * 2) přímý Universe link
- * 3) Impact link s parametrem u=...
- * 4) Ticketmaster link s vnořeným parametrem to/url obsahujícím Impact link
+ * 2) přímý Ticketmaster subdomain link
+ *    např. attractions.ticketmaster.co.uk
+ * 3) přímý Universe link
+ * 4) Impact link s parametrem u=...
+ * 5) Ticketmaster link s vnořeným parametrem to/url obsahujícím Impact link
  */
 function extractDestination(rawUrl = '') {
-  try {
-    const parsed = new URL(String(rawUrl || '').trim());
+  const parsed = parseUrlMaybe(rawUrl);
 
-    // A) Přímý Impact link.
-    // Například:
-    // https://ticketmaster.evyy.net/c/7218577/2038753/23890?u=https%3A%2F%2Fwww.universe.com%2F...
-    if (isImpactTicketmasterHost(parsed.hostname)) {
-      const market = getMarketFromImpactUrl(parsed);
-      const target = parsed.searchParams.get('u') || '';
-      const cleanUrl = sanitizeDestinationUrl(target);
-
-      return {
-        url: cleanUrl,
-        market,
-      };
-    }
-
-    // B) Přímý povolený destination link.
-    // Ticketmaster URL někdy může obsahovat vnořený "to" nebo "url" s Impact linkem.
-    if (isAllowedDestinationHost(parsed.hostname)) {
-      const nested = parsed.searchParams.get('to') || parsed.searchParams.get('url');
-
-      if (nested) {
-        try {
-          const nestedUrl = new URL(nested);
-
-          // B1) Vnořený Impact link.
-          if (isImpactTicketmasterHost(nestedUrl.hostname)) {
-            const market = getMarketFromImpactUrl(nestedUrl);
-            const target = nestedUrl.searchParams.get('u') || '';
-            const cleanUrl = sanitizeDestinationUrl(target);
-
-            if (cleanUrl) {
-              return {
-                url: cleanUrl,
-                market,
-              };
-            }
-          }
-
-          // B2) Vnořený přímý Ticketmaster / Universe link.
-          if (isAllowedDestinationHost(nestedUrl.hostname)) {
-            const cleanUrl = sanitizeDestinationUrl(nestedUrl.toString());
-
-            if (cleanUrl) {
-              return {
-                url: cleanUrl,
-                market: getMarketConfig(cleanUrl),
-              };
-            }
-          }
-        } catch {
-          // ignorujeme a použijeme původní destination URL
-        }
-      }
-
-      const cleanUrl = sanitizeDestinationUrl(parsed.toString());
-
-      return {
-        url: cleanUrl,
-        market: getMarketConfig(cleanUrl),
-      };
-    }
-
-    return { url: '', market: null };
-  } catch {
+  if (!parsed) {
     return { url: '', market: null };
   }
+
+  // A) Přímý Impact link.
+  // Například:
+  // https://ticketmaster.evyy.net/c/7218577/2038758/24023?u=https%3A%2F%2Fattractions.ticketmaster.co.uk%2F...
+  if (isImpactTicketmasterHost(parsed.hostname)) {
+    const market = getMarketFromImpactUrl(parsed);
+    const target = getImpactTarget(parsed);
+    const cleanUrl = sanitizeDestinationUrl(target);
+
+    return {
+      url: cleanUrl,
+      market,
+    };
+  }
+
+  // B) Přímý povolený destination link.
+  // Ticketmaster URL někdy může obsahovat vnořený "to" nebo "url" s Impact linkem.
+  if (isAllowedDestinationHost(parsed.hostname)) {
+    const nested = parsed.searchParams.get('to') || parsed.searchParams.get('url');
+
+    if (nested) {
+      const nestedUrl = parseUrlMaybe(nested);
+
+      if (nestedUrl) {
+        // B1) Vnořený Impact link.
+        if (isImpactTicketmasterHost(nestedUrl.hostname)) {
+          const market = getMarketFromImpactUrl(nestedUrl);
+          const target = getImpactTarget(nestedUrl);
+          const cleanUrl = sanitizeDestinationUrl(target);
+
+          if (cleanUrl) {
+            return {
+              url: cleanUrl,
+              market,
+            };
+          }
+        }
+
+        // B2) Vnořený přímý Ticketmaster / Universe link.
+        if (isAllowedDestinationHost(nestedUrl.hostname)) {
+          const cleanUrl = sanitizeDestinationUrl(nestedUrl.toString());
+
+          if (cleanUrl) {
+            return {
+              url: cleanUrl,
+              market: getMarketConfig(cleanUrl),
+            };
+          }
+        }
+      }
+    }
+
+    const cleanUrl = sanitizeDestinationUrl(parsed.toString());
+
+    return {
+      url: cleanUrl,
+      market: getMarketConfig(cleanUrl),
+    };
+  }
+
+  return { url: '', market: null };
 }
 
 function buildImpactUrl(destinationUrl, options = {}) {

@@ -6,14 +6,10 @@
 //
 // DŮLEŽITÉ:
 // - Ticketmaster API vrací ev.url.
-// - Pokud je účet správně napojený, ev.url může být affiliate URL přes Impact/Ticketmaster.
-// - Někdy ale TM vrací URL ve tvaru:
-//   https://www.ticketmaster.cz/event/...?url=https://ticketmaster.evyy.net/...
-// - V takovém případě preferujeme vnitřní affiliate URL kvůli ochraně provize.
 // - Frontend neposílá uživatele přímo na ev.url.
 // - Místo toho používáme vlastní Netlify redirect funkci tmOutbound.
-// - Tím chráníme UX před rozbitým affiliate redirect chainem
-//   a zároveň zachováváme affiliate cestu jako primární.
+// - Pokud vybereme známé město se zemí, držíme se této země striktně.
+//   Tím zabráníme falešným výsledkům typu Paris GB / Madrid GB.
 // ---------------------------------------------------------
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
@@ -21,16 +17,50 @@ import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.j
 /** Map UI sort to TM sort string */
 function toTmSort(sortUi) {
   if (sortUi === 'latest') return 'date,desc';
-  if (sortUi === 'nearest') return 'date,asc';
-
-  // bezpečný default
   return 'date,asc';
 }
 
-/** Convert user-input city to a Ticketmaster-friendly EN name (if máš mapu) */
+/** Convert user-input city to a Ticketmaster-friendly EN name */
 function toTmCity(raw = '') {
-  const c = canonForInputCity?.(raw);
-  return (c && String(c)) || String(raw || '').trim();
+  try {
+    const c = canonForInputCity?.(raw);
+    return (c && String(c)) || String(raw || '').trim();
+  } catch {
+    return String(raw || '').trim();
+  }
+}
+
+function normCity(s = '') {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ß/g, 'ss')
+    .replace(/ł/g, 'l')
+    .replace(/[’'`´]/g, '')
+    .replace(/[().,;:/\\\-+_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function cityKey(s = '') {
+  const raw = String(s || '').trim();
+  if (!raw) return '';
+
+  try {
+    const c = canonForInputCity?.(raw);
+    return normCity(c || raw);
+  } catch {
+    return normCity(raw);
+  }
+}
+
+function isSameCity(a = '', b = '') {
+  const aa = cityKey(a);
+  const bb = cityKey(b);
+
+  if (!aa || !bb) return false;
+  return aa === bb || aa.includes(bb) || bb.includes(aa);
 }
 
 /** Normalize TM segment to our internal category */
@@ -39,6 +69,7 @@ function mapSegmentToCategory(ev) {
   const genre = ev?.classifications?.[0]?.genre?.name || '';
   const subGen = ev?.classifications?.[0]?.subGenre?.name || '';
   const name = ev?.name || '';
+
   const hasFest =
     /festival/i.test(genre) ||
     /festival/i.test(subGen) ||
@@ -59,65 +90,40 @@ function mapSegmentToCategory(ev) {
   }
 }
 
-/** Pick sensible date string (avoid boolean dateTBD) */
+/** Pick sensible date string */
 function pickDate(ev) {
   const dt = ev?.dates?.start || {};
 
-  if (dt.dateTime) return dt.dateTime; // ISO
+  if (dt.dateTime) return dt.dateTime;
   if (dt.localDate && dt.localTime) return `${dt.localDate}T${dt.localTime}`;
-  if (dt.localDate) return dt.localDate; // YYYY-MM-DD
+  if (dt.localDate) return dt.localDate;
 
-  return ''; // unknown
+  return '';
 }
 
 /** Safely pick biggest image URL */
 function pickImage(ev) {
-  const img =
+  return (
     (ev?.images || [])
       .filter((im) => im?.url)
-      .sort((a, b) => (b.width || 0) - (a.width || 0))[0]?.url || '';
-
-  return img;
-}
-
-/**
- * Vrátí true, pokud je URL náš povolený Ticketmaster affiliate redirect.
- */
-function isTicketmasterAffiliateUrl(url) {
-  try {
-    const parsed = new URL(url);
-    return parsed.hostname.toLowerCase() === 'ticketmaster.evyy.net';
-  } catch {
-    return false;
-  }
+      .sort((a, b) => (b.width || 0) - (a.width || 0))[0]?.url || ''
+  );
 }
 
 /**
  * Z Ticketmaster URL vytáhne preferovaný odkaz.
- *
- * Cíl:
- * - Pokud TM vrátí rovnou affiliate URL, použijeme ji.
- * - Pokud TM vrátí přímou Ticketmaster URL, ale uvnitř má parametr "url"
- *   s affiliate odkazem ticketmaster.evyy.net, použijeme právě tento affiliate odkaz.
- * - Jinak použijeme původní URL.
- *
- * Tím v maximální míře chráníme affiliate provizi.
  */
 function extractPreferredTicketmasterUrl(rawUrl = '') {
   const sourceUrl = String(rawUrl || '').trim();
-
   if (!sourceUrl) return '';
 
   try {
     const parsed = new URL(sourceUrl);
 
-    // Pokud už je to přímo affiliate URL, preferujeme ji.
     if (parsed.hostname.toLowerCase() === 'ticketmaster.evyy.net') {
       return parsed.toString();
     }
 
-    // Pokud Ticketmaster URL obsahuje uvnitř affiliate URL v parametru "url",
-    // preferujeme právě affiliate URL kvůli provizi.
     const nestedUrl = parsed.searchParams.get('url');
 
     if (nestedUrl) {
@@ -128,7 +134,7 @@ function extractPreferredTicketmasterUrl(rawUrl = '') {
           return nested.toString();
         }
       } catch {
-        // ignorujeme a spadneme na původní URL
+        // noop
       }
     }
 
@@ -140,30 +146,17 @@ function extractPreferredTicketmasterUrl(rawUrl = '') {
 
 /**
  * Build safe AJSEE outbound URL for Ticketmaster.
- *
- * Proč:
- * - Neposíláme uživatele z frontendu rovnou na affiliate URL.
- * - Preferovaný odkaz posíláme do tmOutbound přes parametr "to".
- * - Nepoužíváme parametr "url", aby se v edge-case scénářích nepropsal
- *   do finální Ticketmaster URL.
- * - O případném fallbacku rozhoduje až serverová funkce tmOutbound.
- * - Do event objektu zbytečně nepřidáváme samostatnou direct Ticketmaster URL,
- *   aby se nesnižovala šance na připsání provize.
  */
 function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '') {
   const preferredUrl = extractPreferredTicketmasterUrl(rawUrl);
 
   if (!preferredUrl) return '';
 
-  // Pokud už by URL náhodou byla jednou zabalená, nebalíme ji znovu.
   if (preferredUrl.includes('/.netlify/functions/tmOutbound')) {
     return preferredUrl;
   }
 
   const qs = new URLSearchParams();
-
-  // Záměrně používáme "to", ne "url".
-  // "url" se nám předtím propisovalo až do finální Ticketmaster URL.
   qs.set('to', preferredUrl);
 
   if (eventId) {
@@ -173,18 +166,80 @@ function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '') {
   return `/.netlify/functions/tmOutbound?${qs.toString()}`;
 }
 
+function mapTicketmasterEvent(ev, locale) {
+  const cat = mapSegmentToCategory(ev);
+  const dt = pickDate(ev);
+  const img = pickImage(ev);
+
+  const venue = ev?._embedded?.venues?.[0] || {};
+  const city = venue?.city?.name || '';
+  const country = venue?.country?.countryCode || '';
+
+  const latRaw = venue?.location?.latitude ?? venue?.location?.lat ?? '';
+  const lonRaw = venue?.location?.longitude ?? venue?.location?.lon ?? '';
+
+  const lat = Number.isFinite(+latRaw) ? +latRaw : undefined;
+  const lon = Number.isFinite(+lonRaw) ? +lonRaw : undefined;
+
+  const desc = [ev?.info, ev?.pleaseNote].filter(Boolean).join(' — ');
+
+  const price =
+    Array.isArray(ev?.priceRanges) && ev.priceRanges.length
+      ? (ev.priceRanges[0]?.min ?? null)
+      : null;
+
+  const tmRawUrl = ev.url || '';
+  const outboundUrl = buildTicketmasterOutboundUrl(tmRawUrl, ev.id || '');
+
+  return {
+    id: `ticketmaster-${ev.id}`,
+    title: { [locale]: ev.name },
+    description: desc ? { [locale]: desc } : {},
+    category: cat,
+    datetime: dt,
+    location: { city, country, lat, lon },
+    image: img,
+    partner: 'ticketmaster',
+    sourceName: 'Ticketmaster',
+    url: outboundUrl,
+    tickets: outboundUrl,
+    priceFrom: price,
+    promo: null,
+  };
+}
+
+function filterStrictCityCountry(mappedEvents, { strictCity = '', strictCountry = '' } = {}) {
+  const cc = String(strictCountry || '').trim().toUpperCase();
+  const city = String(strictCity || '').trim();
+
+  return mappedEvents.filter((ev) => {
+    const evCountry = String(ev?.location?.country || '').trim().toUpperCase();
+    const evCity = String(ev?.location?.city || '').trim();
+
+    if (cc && evCountry && evCountry !== cc) return false;
+    if (city && evCity && !isSameCity(evCity, city)) return false;
+
+    return true;
+  });
+}
+
 export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
-  // country může být zadána jako countryCode i country
   const explicitCountry = String(
-    filters.countryCode || filters.country || ''
+    filters.cityCountryCode || filters.countryCode || filters.country || ''
   ).toUpperCase();
 
-  // City + guessed country
   const rawCity = String(filters.city || '').trim();
   const tmCity = rawCity ? toTmCity(rawCity) : '';
-  const guessedCC = rawCity ? (guessCountryCodeFromCity?.(rawCity) || '') : '';
 
-  // vyzkoušíme pár locales (někdy TM vrací víc s en/cs*)
+  const guessedCC = rawCity
+    ? String(guessCountryCodeFromCity?.(rawCity) || guessCountryCodeFromCity?.(tmCity) || '').toUpperCase()
+    : '';
+
+  // Pokud uživatel zadal město, preferujeme zemi z města před globálním defaultem CZ.
+  const selectedCityCountry = rawCity
+    ? String(filters.cityCountryCode || guessedCC || explicitCountry || '').toUpperCase()
+    : '';
+
   const locales = [locale, 'cs', 'en'].filter(
     (v, i, arr) => !!v && arr.indexOf(v) === i
   );
@@ -213,7 +268,6 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     if (filters.dateFrom) qs.set('dateFrom', String(filters.dateFrom));
     if (filters.dateTo) qs.set('dateTo', String(filters.dateTo));
 
-    // GEO: prefer explicit latlong; fallback z nearMeLat/nearMeLon
     let latlong = filters.latlong;
 
     if (!latlong && filters.nearMeLat != null && filters.nearMeLon != null) {
@@ -239,41 +293,72 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     qs.set('size', size);
   };
 
-  // Připrav pokusy:
-  // A) city – přesnější; (countryCode k city neposíláme)
-  // B) keyword=city (+ country pokud známe)
-  // C) široké vyhledávání s country, když není city (default CZ pro český web)
   const attempts = [];
 
   if (tmCity) {
-    attempts.push({
-      mode: 'city',
-      city: tmCity,
-      countryCode: '',
-    });
+    if (selectedCityCountry) {
+      // 1) nejpřesnější pokus: city + country
+      attempts.push({
+        mode: 'city',
+        city: tmCity,
+        countryCode: selectedCityCountry,
+        strictCity: tmCity,
+        strictCountry: selectedCityCountry,
+      });
 
-    attempts.push({
-      mode: 'keyword',
-      keyword: tmCity,
-      countryCode: explicitCountry || guessedCC || '',
-    });
+      // 2) fallback: keyword + country
+      attempts.push({
+        mode: 'keyword',
+        keyword: tmCity,
+        countryCode: selectedCityCountry,
+        strictCity: tmCity,
+        strictCountry: selectedCityCountry,
+      });
+
+      // 3) fallback: city bez countryCode, ale výsledek striktně odfiltrujeme podle země
+      // Důležité pro UK, kde city=London někdy funguje lépe bez countryCode.
+      attempts.push({
+        mode: 'city',
+        city: tmCity,
+        countryCode: '',
+        strictCity: tmCity,
+        strictCountry: selectedCityCountry,
+      });
+    } else {
+      attempts.push({
+        mode: 'city',
+        city: tmCity,
+        countryCode: '',
+        strictCity: tmCity,
+        strictCountry: '',
+      });
+
+      attempts.push({
+        mode: 'keyword',
+        keyword: tmCity,
+        countryCode: '',
+        strictCity: tmCity,
+        strictCountry: '',
+      });
+    }
   } else {
     attempts.push({
       mode: 'broad',
       countryCode: explicitCountry || 'CZ',
+      strictCity: '',
+      strictCountry: '',
     });
   }
 
-  // Dedup pokusů podle (mode, city/keyword, countryCode)
   const keyOf = (a) =>
-    `${a.mode}|${a.city || a.keyword || ''}|${a.countryCode || ''}`;
+    `${a.mode}|${a.city || a.keyword || ''}|${a.countryCode || ''}|${a.strictCountry || ''}`;
 
   const seen = new Set();
 
   const uniqAttempts = attempts.filter((a) => {
-    if (seen.has(keyOf(a))) return false;
-
-    seen.add(keyOf(a));
+    const key = keyOf(a);
+    if (seen.has(key)) return false;
+    seen.add(key);
     return true;
   });
 
@@ -289,10 +374,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       putCommonParams(qs);
       qs.set('locale', locTry);
 
-      // countryCode posíláme jen pokud:
-      // - nemáme geo
-      // - a režim není "city"
-      if (!hasGeo && attempt.countryCode && attempt.mode !== 'city') {
+      if (!hasGeo && attempt.countryCode) {
         qs.set('countryCode', attempt.countryCode);
       }
 
@@ -309,6 +391,8 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         url,
         '| desired city =',
         rawCity || '(none)',
+        '| selected country =',
+        selectedCityCountry || '(none)',
         '| using =',
         attempt.mode
       );
@@ -317,7 +401,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         const res = await fetch(url);
 
         if (!res.ok) {
-          if (res.status === 429) continue; // přejdi na další pokus/locale
+          if (res.status === 429) continue;
           continue;
         }
 
@@ -326,57 +410,20 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
 
         if (!Array.isArray(list) || !list.length) continue;
 
-        // Map to FE shape
-        return list.map((ev) => {
-          const cat = mapSegmentToCategory(ev);
-          const dt = pickDate(ev);
-          const img = pickImage(ev);
+        const mapped = list.map((ev) => mapTicketmasterEvent(ev, locale));
 
-          const venue = ev?._embedded?.venues?.[0] || {};
-          const city = venue?.city?.name || '';
-          const country = venue?.country?.countryCode || '';
+        const strictMapped = (attempt.strictCity || attempt.strictCountry)
+          ? filterStrictCityCountry(mapped, {
+              strictCity: attempt.strictCity,
+              strictCountry: attempt.strictCountry,
+            })
+          : mapped;
 
-          const latRaw = venue?.location?.latitude ?? venue?.location?.lat ?? '';
-          const lonRaw = venue?.location?.longitude ?? venue?.location?.lon ?? '';
+        if (!strictMapped.length) continue;
 
-          const lat = Number.isFinite(+latRaw) ? +latRaw : undefined;
-          const lon = Number.isFinite(+lonRaw) ? +lonRaw : undefined;
-
-          const desc = [ev?.info, ev?.pleaseNote].filter(Boolean).join(' — ');
-
-          const price =
-            Array.isArray(ev?.priceRanges) && ev.priceRanges.length
-              ? (ev.priceRanges[0]?.min ?? null)
-              : null;
-
-          const tmRawUrl = ev.url || '';
-          const outboundUrl = buildTicketmasterOutboundUrl(tmRawUrl, ev.id || '');
-
-          return {
-            id: `ticketmaster-${ev.id}`,
-            title: { [locale]: ev.name },
-            description: desc ? { [locale]: desc } : {},
-            category: cat,
-            datetime: dt,
-            location: { city, country, lat, lon },
-            image: img,
-            partner: 'ticketmaster',
-            sourceName: 'Ticketmaster',
-
-            // Veřejný odkaz pro FE.
-            // Vede přes naši Netlify funkci, která primárně zachová affiliate cestu.
-            url: outboundUrl,
-            tickets: outboundUrl,
-
-            // Záměrně NEpřidáváme direct fallback URL do FE objektu.
-            // Fallback má řešit serverová funkce tmOutbound, ne frontend.
-            priceFrom: price,
-            promo: null,
-          };
-        });
+        return strictMapped;
       } catch (err) {
         console.error('[Ticketmaster adapter] fetch error for locale:', locTry, attempt, err);
-        // zkus další pokus/locale
       }
     }
   }

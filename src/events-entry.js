@@ -1,22 +1,23 @@
-  // /src/events-entry.js
-  // ---------------------------------------------------------
-  // AJSEE – Events page UI, i18n & filters
-  // ---------------------------------------------------------
+// /src/events-entry.js
+// ---------------------------------------------------------
+// AJSEE – Events page UI, i18n & filters
+// ---------------------------------------------------------
 
-  import './identity-init.js';
-  import './utils/ajsee-date-popover.js';
+import './identity-init.js';
+import './utils/ajsee-date-popover.js';
 
-  import { initLangDropdown } from './utils/lang-dropdown.js';
-  import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
+import { initLangDropdown } from './utils/lang-dropdown.js';
+import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 
-  import { getAllEvents } from './api/eventsApi.js';
-  import { setupCityTypeahead } from './city/typeahead.js';
-  import { CITY_SUGGEST_SCOPE } from './city/suggestClient.js';
-  import { canonForInputCity } from './city/canonical.js';
+import { getAllEvents } from './api/eventsApi.js';
+import { setupCityTypeahead } from './city/typeahead.js';
+import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js';
 
-  import { initNav } from './nav-core.js';
-  import { initEventModal, openEventModal } from './event-modal.js';
-  import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
+import { getSortedBlogArticles } from './blogArticles.js';
+import { initNav } from './nav-core.js';
+import { initContactFormValidation } from './contact-validate.js';
+import { initEventModal, openEventModal } from './event-modal.js';
+import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 
 /* ───────── global guard ───────── */
 (function ensureGlobals() {
@@ -66,6 +67,7 @@ let currentFilters = {
   sort: 'nearest',
   city: '',
   cityLabel: '',
+  cityCountryCode: '',
   dateFrom: '',
   dateTo: '',
   keyword: '',
@@ -427,11 +429,35 @@ function findSlugByAnyLabel(label) {
 }
 
 function canonPreferredCity(label) {
-  const slug = findSlugByAnyLabel(label) || findSlugByAnyLabel(currentFilters.city || '') || null;
-  if (!slug) return canonForInputCity(label);
+  const raw = String(label || '').trim();
+  const slug = findSlugByAnyLabel(raw) || findSlugByAnyLabel(currentFilters.city || '') || null;
 
-  const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || label;
-  return canonForInputCity(forApi);
+  if (!slug) {
+    try {
+      return canonForInputCity(raw) || raw;
+    } catch {
+      return raw;
+    }
+  }
+
+  const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || raw;
+
+  try {
+    return canonForInputCity(forApi) || forApi;
+  } catch {
+    return forApi;
+  }
+}
+
+function cityCountryCodeFromLabel(label, fallback = '') {
+  const fromFallback = String(fallback || '').trim().toUpperCase();
+  if (fromFallback) return fromFallback;
+
+  try {
+    return String(guessCountryCodeFromCity?.(label) || '').trim().toUpperCase();
+  } catch {
+    return '';
+  }
 }
 
 function syncLocalizedCityLabelFromCurrentState() {
@@ -448,7 +474,7 @@ function getCityInputEl() {
   return qs('#filter-city') || qs('#events-city-filter');
 }
 
-/* ───────── helper: force-inline events filters ───────── */
+/* ───────── helper: force-inline filters + homepage blog fix ───────── */
 function forceInlineFilters(doc = document) {
   const form = doc.getElementById('events-filters-form') || qs('form.filter-dock') || qs('.events-filters');
   if (!form) return;
@@ -465,6 +491,139 @@ function forceInlineFilters(doc = document) {
   form.classList.remove('is-hidden', 'is-collapsed', 'is-open');
   form.style.removeProperty('display');
   doc.body.style.removeProperty('overflow');
+}
+
+function fixHomeBlog() {
+  if (!isHome()) return;
+
+  const blog = document.getElementById('blog') || qs('section#blog');
+  if (!blog) return;
+
+  blog.classList.add('homepage-blog');
+  blog.classList.remove('blog');
+
+  const container = blog.querySelector('.container') || blog;
+  let host =
+    container.querySelector('#homepage-blog-list') ||
+    container.querySelector('[data-home-blog]') ||
+    container.querySelector('.homepage-blog-cards');
+
+  if (!host) {
+    host = document.createElement('div');
+    container.appendChild(host);
+  }
+
+  host.id = 'homepage-blog-list';
+  host.classList.add('homepage-blog-cards');
+  host.classList.remove('blog-cards');
+}
+
+function pickLocalized(val, lang) {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+
+  if (typeof val === 'object') {
+    return val[lang] || val[lang?.slice(0, 2)] || val.cs || val.en || Object.values(val)[0] || '';
+  }
+
+  return String(val);
+}
+
+function withLangParam(href, lang) {
+  try {
+    const u = new URL(href, location.origin);
+    if (u.origin !== location.origin) return u.toString();
+
+    if (!u.searchParams.has('lang')) u.searchParams.set('lang', lang);
+    return u.toString();
+  } catch {
+    if (typeof href === 'string' && href.startsWith('/')) {
+      try {
+        const u = new URL(href, location.origin);
+        if (!u.searchParams.has('lang')) u.searchParams.set('lang', lang);
+        return u.toString();
+      } catch {
+        /* noop */
+      }
+    }
+
+    return href || '#';
+  }
+}
+
+function getHomeBlogHost() {
+  const blog = document.getElementById('blog') || qs('section#blog');
+  if (!blog) return null;
+
+  return blog.querySelector('#homepage-blog-list') ||
+    blog.querySelector('[data-home-blog]') ||
+    blog.querySelector('.homepage-blog-cards');
+}
+
+function renderHomeBlog() {
+  if (!isHome()) return;
+
+  fixHomeBlog();
+
+  const blog = document.getElementById('blog') || qs('section#blog');
+  const host = getHomeBlogHost();
+  if (!blog || !host) return;
+
+  host.classList.add('homepage-blog-cards');
+  host.classList.remove('blog-cards');
+
+  const more = blog.querySelector('a.homepage-blog-more') || blog.querySelector('a[data-i18n-key="blog-show-all"]');
+  if (more) {
+    more.classList.add('homepage-blog-more');
+    const raw = more.getAttribute('href') || more.href || '/blog';
+    more.href = withLangParam(raw, currentLang);
+  }
+
+  if (host.dataset.ajRenderedLang === currentLang && host.children.length) return;
+
+  let articles = [];
+  try {
+    articles = getSortedBlogArticles?.() || [];
+  } catch {
+    articles = [];
+  }
+
+  const top = (Array.isArray(articles) ? articles : []).slice(0, 3);
+  if (!top.length) {
+    host.innerHTML = '';
+    host.dataset.ajRenderedLang = currentLang;
+    return;
+  }
+
+  const readMore =
+    (t('blog.readMore') && String(t('blog.readMore')).trim()) ? t('blog.readMore') :
+      (currentLang === 'en') ? 'Read more' :
+        (currentLang === 'de') ? 'Mehr lesen' :
+          (currentLang === 'sk') ? 'Čítať ďalej' :
+            (currentLang === 'pl') ? 'Czytaj dalej' :
+              (currentLang === 'hu') ? 'Tovább' :
+                'Číst dál';
+
+  host.innerHTML = top.map(article => {
+    const title = esc(pickLocalized(article.title || article.name || article.heading, currentLang) || '');
+    const excerpt = esc(pickLocalized(article.excerpt || article.perex || article.summary || article.description, currentLang) || '');
+    const img = esc(article.image || article.cover || article.hero || article.thumb || '/images/fallbacks/concert0.jpg');
+    const rawHref = article.url || article.href || article.link || article.path || '/blog';
+    const href = esc(withLangParam(rawHref, currentLang));
+
+    return `
+      <a class="homepage-blog-card blog-card" href="${href}" aria-label="${title}">
+        <img src="${img}" alt="${title}" loading="lazy" />
+        <div class="blog-card-content">
+          <h3>${title}</h3>
+          ${excerpt ? `<p>${excerpt}</p>` : ''}
+          <span class="btn-primary">${esc(readMore)}</span>
+        </div>
+      </a>
+    `;
+  }).join('');
+
+  host.dataset.ajRenderedLang = currentLang;
 }
 
 /* ───────── live region ───────── */
@@ -801,7 +960,8 @@ async function applyTranslations(lang) {
 
   syncLocalizedCityLabelFromCurrentState();
   updateFilterLocaleTexts();
-syncLangDropdownUI(lang);
+  renderHomeBlog();
+  syncLangDropdownUI(lang);
   emitI18nReady(lang);
 }
 
@@ -827,7 +987,8 @@ async function ensureTranslations(lang) {
   window.translations = await loadTranslations(lang);
   syncLocalizedCityLabelFromCurrentState();
   updateFilterLocaleTexts();
-emitI18nReady(lang);
+  renderHomeBlog();
+  emitI18nReady(lang);
 }
 
 function syncCookieBanner() {
@@ -1473,10 +1634,18 @@ function syncFiltersFromForm() {
 
   if (city && !city.matches('[data-autofromnearme="1"]')) {
     const rawCity = (city.value || '').trim();
+    const cc = rawCity ? cityCountryCodeFromLabel(rawCity) : '';
+
     currentFilters.cityLabel = rawCity;
-    currentFilters.city = rawCity ? canonPreferredCity(rawCity) : '';
+    currentFilters.city = rawCity ? (canonPreferredCity(rawCity) || rawCity) : '';
+    currentFilters.cityCountryCode = cc;
+
+    if (cc) {
+      currentFilters.countryCode = cc;
+    }
 
     if (!rawCity) {
+      currentFilters.cityCountryCode = '';
       currentFilters.nearMeLat = null;
       currentFilters.nearMeLon = null;
       city.removeAttribute('data-autofromnearme');
@@ -1492,6 +1661,7 @@ function syncURLFromFilters() {
   const p = u.searchParams;
 
   currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city');
+  currentFilters.cityCountryCode ? p.set('cityCc', currentFilters.cityCountryCode) : p.delete('cityCc');
   currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from');
   currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to');
   (currentFilters.category && currentFilters.category !== 'all') ? p.set('segment', currentFilters.category) : p.delete('segment');
@@ -1502,6 +1672,7 @@ function syncURLFromFilters() {
     p.set('lat', String(currentFilters.nearMeLat));
     p.set('lon', String(currentFilters.nearMeLon));
     p.set('radius', String(currentFilters.nearMeRadiusKm || 50));
+    p.delete('cityCc');
   } else {
     p.delete('lat');
     p.delete('lon');
@@ -1912,6 +2083,7 @@ async function activateNearMeViaGeo(input) {
   const setState = ({ lat, lon }) => {
     currentFilters.city = '';
     currentFilters.cityLabel = nearMeLabel();
+    currentFilters.cityCountryCode = '';
     currentFilters.nearMeLat = lat;
     currentFilters.nearMeLon = lon;
     currentFilters.nearMeRadiusKm = currentFilters.nearMeRadiusKm || 50;
@@ -1971,15 +2143,33 @@ function buildCityTypeaheadOptions(input, locale) {
     t,
     minChars: 2,
     debounceMs: 220,
-    countryCodes: CITY_SUGGEST_SCOPE,
+    countryCodes: [
+      'CZ', 'SK', 'PL', 'HU',
+      'DE', 'AT', 'GB', 'IE',
+      'FR', 'NL', 'BE',
+      'IT', 'ES',
+      'DK', 'CH', 'NO', 'SE', 'FI'
+    ],
     onChoose: item => {
       const label = item?.city || item?.label || item?.name || '';
-      currentFilters.city = canonPreferredCity(label);
+      const cc = cityCountryCodeFromLabel(label, item?.countryCode || item?.country || '');
+
+      currentFilters.city = canonPreferredCity(label) || label;
       currentFilters.cityLabel = label;
+      currentFilters.cityCountryCode = cc;
+
+      if (cc) {
+        currentFilters.countryCode = cc;
+      }
+
       currentFilters.nearMeLat = null;
       currentFilters.nearMeLon = null;
+
       input.value = label;
       input.removeAttribute('data-autofromnearme');
+
+      _lastFetchSig = '';
+
       void renderAndSync({ resetPage: true }).then(() => expandFilters());
     },
     onNearMe: async ({ lat, lon } = {}) => {
@@ -1992,6 +2182,7 @@ function buildCityTypeaheadOptions(input, locale) {
       ) {
         currentFilters.city = '';
         currentFilters.cityLabel = nearMeLabel();
+        currentFilters.cityCountryCode = '';
         currentFilters.nearMeLat = +lat;
         currentFilters.nearMeLon = +lon;
         input.value = nearMeLabel();
@@ -2076,12 +2267,53 @@ function safeUrl(raw) {
   return '#';
 }
 
+function withOutboundTracking(rawUrl, { sourcePage = 'events_page', placement = 'event_card' } = {}) {
+  try {
+    const u = new URL(rawUrl, location.href);
+
+    if (u.pathname.includes('/.netlify/functions/tmOutbound')) {
+      u.searchParams.set('source', sourcePage);
+      u.searchParams.set('placement', placement);
+      return u.toString();
+    }
+
+    return rawUrl;
+  } catch {
+    return rawUrl;
+  }
+}
+
 function adjustTicketmasterLanguage(rawUrl, lang = getUILang()) {
   try {
     const u = new URL(rawUrl, location.href);
     const val = mapLangToTm(lang);
+
+    // Pokud jde o náš outbound redirect, jazyk musíme nastavit uvnitř parametru "to",
+    // ne na samotnou Netlify funkci.
+    if (u.pathname.includes('/.netlify/functions/tmOutbound')) {
+      const target = u.searchParams.get('to') || u.searchParams.get('url');
+
+      if (target) {
+        try {
+          const targetUrl = new URL(target);
+
+          targetUrl.searchParams.set('language', val);
+          if (!targetUrl.searchParams.has('locale')) {
+            targetUrl.searchParams.set('locale', val);
+          }
+
+          u.searchParams.set('to', targetUrl.toString());
+        } catch {
+          // když target nejde přečíst, necháme původní outbound URL
+        }
+      }
+
+      return u.toString();
+    }
+
     u.searchParams.set('language', val);
     if (!u.searchParams.has('locale')) u.searchParams.set('locale', val);
+
     return u.toString();
   } catch {
     return rawUrl;
@@ -2114,6 +2346,7 @@ function makeFetchSig(locale, api, page, perPage) {
     category: api.category || 'all',
     sort: api.sort || 'nearest',
     city: api.city || '',
+    cityCountryCode: api.cityCountryCode || '',
     dateFrom: api.dateFrom || '',
     dateTo: api.dateTo || '',
     keyword: api.keyword || '',
@@ -2132,7 +2365,16 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   setBusy(true);
 
   try {
-    const api = { ...filters, city: filters.city ? canonForInputCity(filters.city) : '' };
+    const normalizedCity = filters.city
+      ? (canonForInputCity(filters.city) || filters.city)
+      : '';
+
+    const api = {
+      ...filters,
+      city: normalizedCity,
+      cityCountryCode: filters.cityCountryCode || '',
+      countryCode: filters.cityCountryCode || filters.countryCode || ''
+    };
 
     const latOk = typeof api.nearMeLat === 'number' && isFinite(api.nearMeLat);
     const lonOk = typeof api.nearMeLon === 'number' && isFinite(api.nearMeLon);
@@ -2193,87 +2435,79 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       toRender = out.slice(0, end);
     }
 
-const modalStore = new Map();
+    const modalStore = new Map();
 
-list.innerHTML = toRender.map((ev, index) => {
-  const modalId = String(ev.id || `event-${index}`);
+    list.innerHTML = toRender.map((ev, index) => {
+      const modalId = String(ev.id || `event-${index}`);
 
-  const titleRaw = (typeof ev.title === 'string'
-    ? ev.title
-    : (ev.title?.[locale] || ev.title?.en || ev.title?.cs || Object.values(ev.title || {})[0])) || 'Untitled';
+      const titleRaw = (typeof ev.title === 'string'
+        ? ev.title
+        : (ev.title?.[locale] || ev.title?.en || ev.title?.cs || Object.values(ev.title || {})[0])) || 'Untitled';
+      const title = esc(titleRaw);
 
-  const title = esc(titleRaw);
+      const dateVal = ev.datetime || ev.date;
+      const date = dateVal
+        ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
+        : '';
 
-  const dateVal = ev.datetime || ev.date;
-  const date = dateVal
-    ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
-    : '';
+      const img = ev.image || '/images/fallbacks/concert0.jpg';
+      const sourcePage = isHp ? 'homepage' : 'events_page';
+      const ticketsBaseUrl = withOutboundTracking(ev.tickets || ev.url || '', {
+        sourcePage,
+        placement: 'event_card'
+      });
+      const ticketsHref = safeUrl(adjustTicketmasterLanguage(ticketsBaseUrl, locale));
 
-  const img = ev.image || '/images/fallbacks/concert0.jpg';
+      ev.__ajseeTicketsHref = ticketsHref;
+      ev.__ajseeModalId = modalId;
+      modalStore.set(modalId, ev);
 
-  // Důležité:
-  // Ticket link zůstává přes stejný bezpečný outbound flow jako doteď.
-  // Modal dostane přesně tento spočítaný odkaz.
-  const ticketsHref = safeUrl(
-    wrapAffiliate(
-      adjustTicketmasterLanguage(ev.tickets || ev.url || '', locale)
-    )
-  );
+      const detailLabel = esc(t('event-details', 'Detail'));
+      const ticketLabel = esc(t('event-tickets', 'Vstupenky'));
 
-  ev.__ajseeTicketsHref = ticketsHref;
-  ev.__ajseeModalId = modalId;
+      return `
+        <article class="event-card" data-event-id="${esc(modalId)}">
+          <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy"/>
+          <div class="event-content">
+            <h3 class="event-title">${title}</h3>
+            <p class="event-date">${date}</p>
+            <div class="event-buttons-group">
+              <button
+                type="button"
+                class="btn-event detail js-event-detail"
+                data-event-id="${esc(modalId)}"
+              >
+                ${detailLabel}
+              </button>
+              <a
+                href="${ticketsHref}"
+                class="btn-event ticket"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ${ticketLabel}
+              </a>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
 
-  modalStore.set(modalId, ev);
+    list.__ajseeEventModalStore = modalStore;
 
-  const detailLabel = esc(t('event-details', 'Detail'));
-  const ticketLabel = esc(t('event-tickets', 'Vstupenky'));
+    qsa('.js-event-detail', list).forEach(btn => {
+      btn.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
 
-  return `
-    <article class="event-card" data-event-id="${esc(modalId)}">
-      <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy"/>
+        const eventId = btn.getAttribute('data-event-id');
+        const selectedEvent = modalStore.get(eventId);
 
-      <div class="event-content">
-        <h3 class="event-title">${title}</h3>
-        <p class="event-date">${date}</p>
+        if (!selectedEvent) return;
 
-        <div class="event-buttons-group">
-          <button
-            type="button"
-            class="btn-event detail js-event-detail"
-            data-event-id="${esc(modalId)}"
-          >
-            ${detailLabel}
-          </button>
-
-          <a
-            href="${ticketsHref}"
-            class="btn-event ticket"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ${ticketLabel}
-          </a>
-        </div>
-      </div>
-    </article>
-  `;
-}).join('');
-
-list.__ajseeEventModalStore = modalStore;
-
-qsa('.js-event-detail', list).forEach(btn => {
-  btn.addEventListener('click', event => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const eventId = btn.getAttribute('data-event-id');
-    const selectedEvent = modalStore.get(eventId);
-
-    if (!selectedEvent) return;
-
-    openEventModal(selectedEvent, locale, { t });
-  });
-});
+        openEventModal(selectedEvent, locale, { t });
+      });
+    });
 
     announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);
   } catch {
@@ -2729,6 +2963,54 @@ function initLangDropdownCompat() {
 }
 
 /* ───────── homepage CTA helpers ───────── */
+function updateHomeCtasWithLang() {
+  const SUPPORTED = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+  const lang = (currentLang || getUILang() || 'cs').toLowerCase();
+
+  const wl = document.getElementById('hpWaitlist');
+  const wlCta = document.getElementById('hpWaitlistCta');
+  const wlClose = document.getElementById('hpWaitlistClose');
+
+  if (wlCta) {
+    try {
+      const u = new URL(wlCta.getAttribute('href') || wlCta.href || '/coming-soon', location.origin);
+      if (SUPPORTED.includes(lang)) u.searchParams.set('lang', lang);
+      wlCta.href = u.toString();
+    } catch {
+      /* noop */
+    }
+
+    wireOnce(wlCta, 'click', () => {
+      if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner', lang });
+    }, 'wl-gtag');
+  }
+
+  if (wlClose && wl) {
+    wireOnce(wlClose, 'click', () => {
+      try {
+        wl.remove();
+      } catch {
+        /* noop */
+      }
+    }, 'wl-close');
+  }
+
+  const demoCta = document.getElementById('demoBadgeCta');
+  if (demoCta) {
+    try {
+      const u = new URL(demoCta.getAttribute('href') || demoCta.href || '/coming-soon', location.origin);
+      u.searchParams.set('lang', lang);
+      demoCta.href = u.toString();
+    } catch {
+      /* noop */
+    }
+
+    wireOnce(demoCta, 'click', () => {
+      if (window.gtag) window.gtag('event', 'click_demo_badge', { source: 'home_demo_pill', lang });
+    }, 'demo-gtag');
+  }
+}
+
 /* ───────── jazykové přepínače ───────── */
 function initLanguageSwitchers() {
   qsa('.lang-btn').forEach(btn => {
@@ -2769,8 +3051,15 @@ function initFiltersFromURL() {
 
   if (sp.get('city')) {
     const raw = sp.get('city') || '';
-    currentFilters.city = canonPreferredCity(raw);
+    const cc = cityCountryCodeFromLabel(raw, sp.get('cityCc') || '');
+
+    currentFilters.city = canonPreferredCity(raw) || raw;
     currentFilters.cityLabel = raw;
+    currentFilters.cityCountryCode = cc;
+
+    if (cc) {
+      currentFilters.countryCode = cc;
+    }
   }
 
   if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
@@ -2785,6 +3074,7 @@ function initFiltersFromURL() {
     currentFilters.nearMeRadiusKm = clamp(+(sp.get('radius') || 50), 10, 300);
     currentFilters.cityLabel = nearMeLabel();
     currentFilters.city = '';
+    currentFilters.cityCountryCode = '';
   }
 
   syncLocalizedCityLabelFromCurrentState();
@@ -2828,7 +3118,9 @@ async function bootstrapMain() {
 
   forceInlineFilters();
   initEventsScrollGuard();
-currentLang = getUILang();
+  fixHomeBlog();
+
+  currentLang = getUILang();
   setLangCookie(currentLang);
   try { localStorage.setItem('ajsee.lang', currentLang); } catch {}
   document.documentElement.lang = currentLang;
@@ -2842,8 +3134,13 @@ currentLang = getUILang();
   await ensureTranslations(currentLang);
   prefetchTranslations();
   syncCookieBanner();
-initNav({ lang: currentLang });
-initEventModal();
+
+  renderHomeBlog();
+  updateHomeCtasWithLang();
+
+  initNav({ lang: currentLang });
+  initContactFormValidation({ lang: currentLang, t });
+  initEventModal();
 
   initLangDropdownCompat();
   initLanguageSwitchers();
@@ -2893,7 +3190,12 @@ initEventModal();
     bindDatePopoverUnhideOnOpen();
     installDatePopoverAutoHide();
     syncPopoverZIndex();
-initLangDropdownCompat();
+
+    fixHomeBlog();
+    renderHomeBlog();
+    updateHomeCtasWithLang();
+
+    initLangDropdownCompat();
     safeInitLangDropdown();
 
     await renderAndSync({ resetPage: true });

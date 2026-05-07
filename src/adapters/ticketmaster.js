@@ -124,7 +124,7 @@ function extractPreferredTicketmasterUrl(rawUrl = '') {
       return parsed.toString();
     }
 
-    const nestedUrl = parsed.searchParams.get('url');
+    const nestedUrl = parsed.searchParams.get('url') || parsed.searchParams.get('to');
 
     if (nestedUrl) {
       try {
@@ -315,7 +315,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         strictCountry: selectedCityCountry,
       });
 
-      // 3) fallback: city bez countryCode, ale výsledek striktně odfiltrujeme podle země
+      // 3) fallback: city bez countryCode, ale výsledek striktně odfiltrujeme podle země.
       // Důležité pro UK, kde city=London někdy funguje lépe bez countryCode.
       attempts.push({
         mode: 'city',

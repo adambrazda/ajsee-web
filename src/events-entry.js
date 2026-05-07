@@ -430,7 +430,13 @@ function findSlugByAnyLabel(label) {
 
 function canonPreferredCity(label) {
   const raw = String(label || '').trim();
-  const slug = findSlugByAnyLabel(raw) || findSlugByAnyLabel(currentFilters.city || '') || null;
+  if (!raw) return '';
+
+  // Důležité:
+  // Nikdy nepřebíráme slug z předchozího currentFilters.city.
+  // Právě to způsobovalo chybu typu:
+  // uživatel vybral Amsterdam NL, ale URL zůstala city=Paris&cityCc=NL.
+  const slug = findSlugByAnyLabel(raw);
 
   if (!slug) {
     try {
@@ -453,8 +459,17 @@ function cityCountryCodeFromLabel(label, fallback = '') {
   const fromFallback = String(fallback || '').trim().toUpperCase();
   if (fromFallback) return fromFallback;
 
+  const raw = String(label || '').trim();
+
+  // Když uživatel pouze znovu odešle stejné město, držíme dříve vybranou zemi.
+  // To chrání města se stejným názvem ve více trzích.
+  const currentLabel = String(currentFilters.cityLabel || currentFilters.city || '').trim();
+  if (raw && currentLabel && normKey(raw) === normKey(currentLabel) && currentFilters.cityCountryCode) {
+    return String(currentFilters.cityCountryCode || '').trim().toUpperCase();
+  }
+
   try {
-    return String(guessCountryCodeFromCity?.(label) || '').trim().toUpperCase();
+    return String(guessCountryCodeFromCity?.(raw) || '').trim().toUpperCase();
   } catch {
     return '';
   }

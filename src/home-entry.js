@@ -11,7 +11,7 @@ import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banne
 
 import { getAllEvents } from './api/eventsApi.js';
 import { setupCityTypeahead } from './city/typeahead.js';
-import { canonForInputCity } from './city/canonical.js';
+import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js';
 
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
@@ -67,6 +67,7 @@ let currentFilters = {
   sort: 'nearest',
   city: '',
   cityLabel: '',
+  cityCountryCode: '',
   dateFrom: '',
   dateTo: '',
   keyword: '',
@@ -433,6 +434,27 @@ function canonPreferredCity(label) {
 
   const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || label;
   return canonForInputCity(forApi);
+}
+
+function cityCountryCodeFromLabel(label, fallback = '') {
+  const raw = String(label || '').trim();
+
+  if (raw) {
+    try {
+      const direct = guessCountryCodeFromCity?.(raw);
+      if (direct) return String(direct).toUpperCase();
+
+      const canon = canonPreferredCity(raw);
+      const fromCanon = guessCountryCodeFromCity?.(canon);
+
+      if (fromCanon) return String(fromCanon).toUpperCase();
+    } catch {
+      // noop
+    }
+  }
+
+  const fb = String(fallback || '').trim().toUpperCase();
+  return /^[A-Z]{2}$/.test(fb) ? fb : '';
 }
 
 function syncLocalizedCityLabelFromCurrentState() {
@@ -1611,10 +1633,14 @@ function syncFiltersFromForm() {
     const rawCity = (city.value || '').trim();
     currentFilters.cityLabel = rawCity;
     currentFilters.city = rawCity ? canonPreferredCity(rawCity) : '';
+    currentFilters.cityCountryCode = rawCity
+      ? cityCountryCodeFromLabel(rawCity, currentFilters.cityCountryCode)
+      : '';
 
     if (!rawCity) {
       currentFilters.nearMeLat = null;
       currentFilters.nearMeLon = null;
+      currentFilters.cityCountryCode = '';
       city.removeAttribute('data-autofromnearme');
     }
   }
@@ -1628,6 +1654,13 @@ function syncURLFromFilters() {
   const p = u.searchParams;
 
   currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city');
+
+  if (currentFilters.city && currentFilters.cityCountryCode) {
+    p.set('cityCc', currentFilters.cityCountryCode);
+  } else {
+    p.delete('cityCc');
+  }
+
   currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from');
   currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to');
   (currentFilters.category && currentFilters.category !== 'all') ? p.set('segment', currentFilters.category) : p.delete('segment');
@@ -2048,6 +2081,7 @@ async function activateNearMeViaGeo(input) {
   const setState = ({ lat, lon }) => {
     currentFilters.city = '';
     currentFilters.cityLabel = nearMeLabel();
+    currentFilters.cityCountryCode = '';
     currentFilters.nearMeLat = lat;
     currentFilters.nearMeLon = lon;
     currentFilters.nearMeRadiusKm = currentFilters.nearMeRadiusKm || 50;
@@ -2107,13 +2141,24 @@ function buildCityTypeaheadOptions(input, locale) {
     t,
     minChars: 2,
     debounceMs: 220,
-    countryCodes: ['CZ', 'SK', 'PL', 'HU', 'DE', 'AT'],
+    countryCodes: [
+      'CZ', 'SK', 'PL', 'HU',
+      'DE', 'AT', 'CH',
+      'GB', 'IE',
+      'FR', 'NL', 'BE',
+      'IT', 'ES',
+      'DK', 'SE', 'FI', 'NO'
+    ],
     onChoose: item => {
       const label = item?.city || item?.label || item?.name || '';
+      const pickedCc = String(item?.countryCode || item?.country || '').trim().toUpperCase();
+
       currentFilters.city = canonPreferredCity(label);
       currentFilters.cityLabel = label;
+      currentFilters.cityCountryCode = pickedCc || cityCountryCodeFromLabel(label, currentFilters.cityCountryCode);
       currentFilters.nearMeLat = null;
       currentFilters.nearMeLon = null;
+
       input.value = label;
       input.removeAttribute('data-autofromnearme');
       void renderAndSync({ resetPage: true }).then(() => expandFilters());
@@ -2128,6 +2173,7 @@ function buildCityTypeaheadOptions(input, locale) {
       ) {
         currentFilters.city = '';
         currentFilters.cityLabel = nearMeLabel();
+        currentFilters.cityCountryCode = '';
         currentFilters.nearMeLat = +lat;
         currentFilters.nearMeLon = +lon;
         input.value = nearMeLabel();
@@ -2250,6 +2296,7 @@ function makeFetchSig(locale, api, page, perPage) {
     category: api.category || 'all',
     sort: api.sort || 'nearest',
     city: api.city || '',
+    cityCountryCode: api.cityCountryCode || '',
     dateFrom: api.dateFrom || '',
     dateTo: api.dateTo || '',
     keyword: api.keyword || '',
@@ -2270,6 +2317,10 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   try {
     const api = { ...filters, city: filters.city ? canonForInputCity(filters.city) : '' };
 
+    if (api.city && !api.cityCountryCode) {
+      api.cityCountryCode = cityCountryCodeFromLabel(api.city, '');
+    }
+
     const latOk = typeof api.nearMeLat === 'number' && isFinite(api.nearMeLat);
     const lonOk = typeof api.nearMeLon === 'number' && isFinite(api.nearMeLon);
     const nonZero = (Math.abs(api.nearMeLat || 0) > 0.001) || (Math.abs(api.nearMeLon || 0) > 0.001);
@@ -2281,6 +2332,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
       Object.assign(api, {
         city: '',
+        cityCountryCode: '',
         nearMe: 1,
         lat,
         lon,
@@ -2955,6 +3007,7 @@ function initFiltersFromURL() {
     const raw = sp.get('city') || '';
     currentFilters.city = canonPreferredCity(raw);
     currentFilters.cityLabel = raw;
+    currentFilters.cityCountryCode = cityCountryCodeFromLabel(raw, sp.get('cityCc') || '');
   }
 
   if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
@@ -2969,6 +3022,7 @@ function initFiltersFromURL() {
     currentFilters.nearMeRadiusKm = clamp(+(sp.get('radius') || 50), 10, 300);
     currentFilters.cityLabel = nearMeLabel();
     currentFilters.city = '';
+    currentFilters.cityCountryCode = '';
   }
 
   syncLocalizedCityLabelFromCurrentState();

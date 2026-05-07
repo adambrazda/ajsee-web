@@ -8,6 +8,14 @@
 // - Accepts countryCode or countryCodes as CSV.
 // - CORS/OPTIONS handling.
 // - Tiny 30s in-memory cache.
+//
+// Key fixes:
+// - Exact country query returns only the country item.
+//   Example: France / Francie -> country FR, no fake city "France".
+// - Known city query is locked to its primary country.
+//   Example: Paris -> FR only, Budapest -> HU only, London -> GB only.
+// - Invalid TM city noise with 0/0 coordinates is ignored.
+// - City labels like "Paris France" are not accepted for strict known-city queries.
 // ---------------------------------------------------------
 
 const CACHE = globalThis.__tm_city_cache || (globalThis.__tm_city_cache = new Map());
@@ -77,13 +85,17 @@ function compact(value = '') {
   return foldText(value).replace(/[^a-z0-9]/g, '');
 }
 
-const CITY_SUGGEST_SCOPE = [
-  'CZ', 'SK', 'PL', 'HU',
-  'DE', 'AT', 'GB', 'IE',
-  'FR', 'NL', 'BE',
-  'IT', 'ES',
-  'DK', 'CH', 'NO', 'SE', 'FI'
-];
+function hasUsableCoords(lat, lon) {
+  const la = Number(lat);
+  const lo = Number(lon);
+
+  if (!Number.isFinite(la) || !Number.isFinite(lo)) return false;
+
+  // TM occasionally returns 0/0 for noisy synthetic venue labels.
+  if (Math.abs(la) < 0.0001 && Math.abs(lo) < 0.0001) return false;
+
+  return true;
+}
 
 const COUNTRY_LABELS = {
   CZ: { cs: 'Česko', en: 'Czechia', de: 'Tschechien', sk: 'Česko', pl: 'Czechy', hu: 'Csehország' },
@@ -181,7 +193,6 @@ addCountryAliases('AT', [
   'Austria',
   'Rakousko',
   'Rakúsko',
-  'Rakouska',
   'Österreich',
   'Osterreich'
 ]);
@@ -362,6 +373,44 @@ function countryLabelForCode(code, lang = 'cs') {
   return labels?.[l] || labels?.cs || labels?.en || cc;
 }
 
+function exactCountryCodeForKeyword(keyword = '', isAllowedCC = () => true) {
+  const q = compact(keyword);
+
+  if (!q) return '';
+
+  const fromAlias = COUNTRY_ALIASES[q] || '';
+
+  if (fromAlias && isAllowedCC(fromAlias)) {
+    return fromAlias;
+  }
+
+  const directCode = q.toUpperCase();
+
+  if (COUNTRY_LABELS[directCode] && isAllowedCC(directCode)) {
+    return directCode;
+  }
+
+  return '';
+}
+
+function countryItemForCode(code, locale = 'cs', score = 10000) {
+  const cc = String(code || '').trim().toUpperCase();
+  const label = countryLabelForCode(cc, locale);
+
+  return {
+    type: 'country',
+    kind: 'country',
+    isCountry: true,
+    label,
+    value: label,
+    name: label,
+    city: '',
+    countryCode: cc,
+    score,
+    source: 'local-country'
+  };
+}
+
 function countrySuggestionsForKeyword(keyword = '', locale = 'cs', isAllowedCC = () => true, limit = 10) {
   const q = compact(keyword);
 
@@ -374,11 +423,12 @@ function countrySuggestionsForKeyword(keyword = '', locale = 'cs', isAllowedCC =
     if (!isAllowedCC(cc)) continue;
 
     const directCode = q === compact(cc);
+    const exactAlias = aliasKey === q;
     const prefix = aliasKey.startsWith(q);
     const reversePrefix = q.length >= 4 && q.startsWith(aliasKey);
     const contains = q.length >= 4 && aliasKey.includes(q);
 
-    if (!directCode && !prefix && !reversePrefix && !contains) {
+    if (!directCode && !exactAlias && !prefix && !reversePrefix && !contains) {
       continue;
     }
 
@@ -398,6 +448,7 @@ function countrySuggestionsForKeyword(keyword = '', locale = 'cs', isAllowedCC =
       countryCode: cc,
       score:
         (directCode ? 10000 : 0) +
+        (exactAlias ? 9500 : 0) +
         (prefix ? 8000 : 0) +
         (contains ? 1000 : 0) +
         Math.max(0, 80 - label.length),
@@ -413,59 +464,60 @@ function countrySuggestionsForKeyword(keyword = '', locale = 'cs', isAllowedCC =
 const EXONYM_TO_CANON = {
   // London
   londyn: 'london',
-  londýn: 'london',
+  london: 'london',
   londra: 'london',
   londen: 'london',
   londres: 'london',
 
   // Vienna
-  vídeň: 'vienna',
   viden: 'vienna',
   vieden: 'vienna',
-  viedeň: 'vienna',
   wien: 'vienna',
+  vienna: 'vienna',
+  wiedeń: 'vienna',
+  becs: 'vienna',
 
   // Paris
-  paříž: 'paris',
   pariz: 'paris',
-  paríž: 'paris',
+  paris: 'paris',
   parigi: 'paris',
-  paryż: 'paris',
+  paryz: 'paris',
 
   // Budapest
-  budapest: 'budapest',
-  budapešt: 'budapest',
   budapest: 'budapest',
   budapeszt: 'budapest',
   budapesta: 'budapest',
 
   // Amsterdam / Madrid
+  amsterdam: 'amsterdam',
   amsterodam: 'amsterdam',
+  madrid: 'madrid',
   madryt: 'madrid',
 
   // Rome
-  řím: 'rome',
   rim: 'rome',
+  rome: 'rome',
   roma: 'rome',
 
   // Munich
   mnichov: 'munich',
   munchen: 'munich',
-  münchen: 'munich',
+  munich: 'munich',
 
   // Prague
   praha: 'prague',
   prag: 'prague',
-  prága: 'prague',
   praga: 'prague',
+  prague: 'prague',
 
   // Warsaw / Krakow
-  varšava: 'warsaw',
   varsava: 'warsaw',
+  warsaw: 'warsaw',
   warschau: 'warsaw',
   warszawa: 'warsaw',
   krakov: 'krakow',
-  kraków: 'krakow'
+  krakow: 'krakow',
+  krakau: 'krakow'
 };
 
 const SYNS = {
@@ -474,7 +526,7 @@ const SYNS = {
   vienna: ['wien', 'vienna', 'vídeň', 'viden', 'viedeň', 'wiedeń', 'bécs'],
   bratislava: ['bratislava', 'pressburg', 'pozsony'],
 
-  budapest: ['budapest', 'budapešť', 'budapest', 'budapeszt', 'budapesta'],
+  budapest: ['budapest', 'budapešť', 'budapeszt', 'budapesta'],
   munich: ['münchen', 'munchen', 'munich', 'mnichov'],
   krakow: ['krakow', 'kraków', 'krakov', 'krakau'],
   warsaw: ['warsaw', 'warszawa', 'warschau', 'varšava', 'varsava'],
@@ -519,6 +571,10 @@ const synToKey = new Map(
   Object.entries(SYNS).flatMap(([key, arr]) => arr.map((v) => [stripDiacritics(v), key]))
 );
 
+function getPrimaryCountryForCityKey(queryKey = '') {
+  return String(LOCAL_CITY_FALLBACKS[queryKey]?.countryCode || '').toUpperCase();
+}
+
 const collapseToBaseCity = (name) => {
   if (!name) return name;
 
@@ -543,23 +599,36 @@ const normCityKey = (name) => {
 
 function buildQueryContext(qRaw) {
   const qn = stripDiacritics(qRaw);
-  const canonFromExonym = EXONYM_TO_CANON[qn] || null;
+  const qCompact = compact(qRaw);
+  const canonFromExonym = EXONYM_TO_CANON[qn] || EXONYM_TO_CANON[qCompact] || null;
 
   const queryKey =
     synToKey.get(qn) ||
+    synToKey.get(qCompact) ||
     (canonFromExonym ? synToKey.get(stripDiacritics(canonFromExonym)) : '') ||
+    canonFromExonym ||
     '';
 
   const querySynonyms = queryKey && SYNS[queryKey]
     ? SYNS[queryKey]
     : [];
 
+  const primaryCountry = getPrimaryCountryForCityKey(queryKey);
+
   const candidateVariants = Array.from(
     new Set([qRaw, qn, canonFromExonym, ...querySynonyms].filter(Boolean))
   );
 
+  const isStrictKnownCity = !!(queryKey && primaryCountry);
+
   const isRelevantName = (name) => {
     const nameKey = normCityKey(name);
+
+    // For exact known city query, do not let TM noise through.
+    // Example: Paris -> only city-key paris, not "Paris France" or unrelated Paris venue labels.
+    if (isStrictKnownCity) {
+      return nameKey === queryKey;
+    }
 
     if (queryKey && nameKey === queryKey) return true;
 
@@ -573,9 +642,12 @@ function buildQueryContext(qRaw) {
 
   return {
     qn,
+    qCompact,
     canonFromExonym,
     queryKey,
     querySynonyms,
+    primaryCountry,
+    isStrictKnownCity,
     candidateVariants,
     isRelevantName
   };
@@ -683,27 +755,54 @@ export const handler = async (event) => {
 
     const ctx = buildQueryContext(qRaw);
 
-    const countryItems = countrySuggestionsForKeyword(qRaw, uiLocale, isAllowedCC, size);
-
     const cacheKey = JSON.stringify({
       l: tmLocale,
       ui: uiLocale,
       q: qn,
       cc: Array.from(allowedSet.values()).join(','),
-      s: size
+      s: size,
+      strictCity: ctx.isStrictKnownCity ? `${ctx.queryKey}|${ctx.primaryCountry}` : '',
+      exactCountry: exactCountryCodeForKeyword(qRaw, isAllowedCC) || ''
     });
 
     const cached = cacheGet(cacheKey);
     if (cached) return json(200, cached);
 
+    // Exact country query should not be mixed with noisy TM city results.
+    // Example: France -> only country FR, not city "France" GB/IE.
+    const exactCountryCode = exactCountryCodeForKeyword(qRaw, isAllowedCC);
+
+    if (exactCountryCode) {
+      const payload = {
+        items: [countryItemForCode(exactCountryCode, uiLocale, 20000)].slice(0, size)
+      };
+
+      cacheSet(cacheKey, payload);
+      return json(200, payload);
+    }
+
+    const countryItems = countrySuggestionsForKeyword(qRaw, uiLocale, isAllowedCC, size);
     const bucket = new Map();
 
     const add = (name, countryCode, lat, lon, w = 1, source = 'ticketmaster') => {
       if (!name || !ctx.isRelevantName(name)) return;
-      if (!isAllowedCC(countryCode)) return;
+
+      const cc = String(countryCode || '').toUpperCase().slice(0, 2);
+      if (!isAllowedCC(cc)) return;
+
+      // Strict known-city queries are locked to their primary country.
+      // Example: Paris -> FR only, Budapest -> HU only.
+      if (ctx.isStrictKnownCity && ctx.primaryCountry && cc !== ctx.primaryCountry) {
+        return;
+      }
+
+      // TM sometimes emits synthetic venue labels with 0/0 coordinates.
+      // We keep local fallback without coords check, but reject broken TM geo noise.
+      if (source === 'ticketmaster' && !hasUsableCoords(lat, lon)) {
+        return;
+      }
 
       const base = collapseToBaseCity(name);
-      const cc = String(countryCode || '').toUpperCase().slice(0, 2);
       const key = `${normCityKey(base)}|${cc}`;
 
       const cur = bucket.get(key) || {
@@ -717,8 +816,8 @@ export const handler = async (event) => {
 
       cur.score += w;
 
-      if (lat && !cur.lat) cur.lat = Number(lat);
-      if (lon && !cur.lon) cur.lon = Number(lon);
+      if (hasUsableCoords(lat, lon) && !cur.lat) cur.lat = Number(lat);
+      if (hasUsableCoords(lat, lon) && !cur.lon) cur.lon = Number(lon);
 
       const bestNow = stripDiacritics(cur.namePref);
       const candN = stripDiacritics(base);
@@ -736,17 +835,19 @@ export const handler = async (event) => {
 
       if (ctx.queryKey) keys.add(ctx.queryKey);
 
-      const directKey = synToKey.get(qn);
+      const directKey = synToKey.get(qn) || synToKey.get(ctx.qCompact);
       if (directKey) keys.add(directKey);
 
       if (ctx.canonFromExonym) {
-        const canonKey = synToKey.get(stripDiacritics(ctx.canonFromExonym));
+        const canonKey = synToKey.get(stripDiacritics(ctx.canonFromExonym)) || ctx.canonFromExonym;
         if (canonKey) keys.add(canonKey);
       }
 
       for (const key of keys) {
         const fallback = LOCAL_CITY_FALLBACKS[key];
         if (!fallback) continue;
+
+        if (!isAllowedCC(fallback.countryCode)) continue;
 
         add(
           fallback.name,

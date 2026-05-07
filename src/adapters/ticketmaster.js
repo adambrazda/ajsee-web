@@ -1,4 +1,4 @@
-﻿// /src/adapters/ticketmaster.js
+// /src/adapters/ticketmaster.js
 // ---------------------------------------------------------
 // Ticketmaster Discovery API adapter (via Netlify function proxy)
 //
@@ -16,13 +16,125 @@
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 
-const AJSEE_TM_PATCH_MARKER = 'AJSEE_TM_RATE_LIMIT_GUARD_20260507B';
+const AJSEE_TM_PATCH_MARKER = 'AJSEE_TM_RATE_LIMIT_GUARD_20260507C';
 
 const REQUEST_CACHE_TTL_MS = 60_000;
 const RATE_LIMIT_COOLDOWN_MS = 5 * 60_000;
 const REQUEST_CACHE = new Map();
 
-let RATE_LIMIT_UNTIL = 0;
+const RATE_LIMIT_STORAGE_KEY = 'ajsee.tm.rateLimit.v1';
+
+let RATE_LIMIT_UNTIL = readStoredRateLimitUntil();
+
+exposeRateLimitState('init');
+
+function readStoredRateLimitUntil() {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return 0;
+
+    const raw = window.localStorage.getItem(RATE_LIMIT_STORAGE_KEY);
+    if (!raw) return 0;
+
+    const parsed = JSON.parse(raw);
+    const until = Number(parsed?.until || parsed || 0);
+
+    if (!Number.isFinite(until) || until <= Date.now()) {
+      window.localStorage.removeItem(RATE_LIMIT_STORAGE_KEY);
+      return 0;
+    }
+
+    return until;
+  } catch {
+    return 0;
+  }
+}
+
+function writeStoredRateLimit(until, reason = 'ticketmaster_rate_limited') {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return;
+
+    window.localStorage.setItem(RATE_LIMIT_STORAGE_KEY, JSON.stringify({
+      until,
+      reason,
+      savedAt: Date.now()
+    }));
+  } catch {
+    // noop
+  }
+}
+
+function clearStoredRateLimitIfExpired(now = Date.now()) {
+  if (!RATE_LIMIT_UNTIL || RATE_LIMIT_UNTIL > now) return;
+
+  RATE_LIMIT_UNTIL = 0;
+
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.removeItem(RATE_LIMIT_STORAGE_KEY);
+    }
+  } catch {
+    // noop
+  }
+
+  exposeRateLimitState('expired');
+}
+
+function getEffectiveRateLimitUntil(now = Date.now()) {
+  const storedUntil = readStoredRateLimitUntil();
+  RATE_LIMIT_UNTIL = Math.max(Number(RATE_LIMIT_UNTIL || 0), Number(storedUntil || 0));
+
+  if (RATE_LIMIT_UNTIL && RATE_LIMIT_UNTIL <= now) {
+    clearStoredRateLimitIfExpired(now);
+  }
+
+  return RATE_LIMIT_UNTIL;
+}
+
+function getRateLimitState(reason = 'ticketmaster_rate_limited') {
+  const now = Date.now();
+  const until = getEffectiveRateLimitUntil(now);
+  const retryAfterMs = Math.max(0, Number(until || 0) - now);
+
+  return {
+    provider: 'ticketmaster',
+    active: retryAfterMs > 0,
+    until: retryAfterMs > 0 ? until : 0,
+    retryAt: retryAfterMs > 0 ? new Date(until).toISOString() : '',
+    retryAfterMs,
+    reason,
+    marker: AJSEE_TM_PATCH_MARKER
+  };
+}
+
+function exposeRateLimitState(reason = 'ticketmaster_rate_limited') {
+  try {
+    if (typeof window === 'undefined') return getRateLimitState(reason);
+
+    window.__ajsee = window.__ajsee || {};
+    const state = getRateLimitState(reason);
+
+    window.__ajsee.tmRateLimit = state;
+    window.__ajsee.ticketmasterRateLimit = state;
+
+    try {
+      window.dispatchEvent(new CustomEvent('AJSEE:tm-rate-limit', { detail: state }));
+      window.dispatchEvent(new CustomEvent('ajsee:tm-rate-limit', { detail: state }));
+    } catch {
+      // noop
+    }
+
+    return state;
+  } catch {
+    return {
+      provider: 'ticketmaster',
+      active: false,
+      until: 0,
+      retryAfterMs: 0,
+      reason,
+      marker: AJSEE_TM_PATCH_MARKER
+    };
+  }
+}
 
 const SUPPORTED_COUNTRY_CODES = new Set([
   'CZ', 'SK', 'PL', 'HU',
@@ -630,14 +742,22 @@ function makeLocaleList({ marketLocale = '', locale = '', debug = false } = {}) 
 }
 
 function createRateLimitError(message = 'Ticketmaster rate limited') {
+  const state = exposeRateLimitState('rate_limited');
+
   const err = new Error(message);
   err.status = 429;
   err.rateLimited = true;
+  err.retryAt = state.retryAt || '';
+  err.retryAfterMs = state.retryAfterMs || 0;
+  err.provider = 'ticketmaster';
+
   return err;
 }
 
-function setRateLimitCooldown() {
+function setRateLimitCooldown(reason = 'ticketmaster_rate_limited') {
   RATE_LIMIT_UNTIL = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+  writeStoredRateLimit(RATE_LIMIT_UNTIL, reason);
+  exposeRateLimitState(reason);
 }
 
 function isRateLimitPayload(data) {
@@ -650,7 +770,10 @@ function isRateLimitPayload(data) {
 async function fetchJsonCached(url) {
   const now = Date.now();
 
-  if (RATE_LIMIT_UNTIL && now < RATE_LIMIT_UNTIL) {
+  const cooldownUntil = getEffectiveRateLimitUntil(now);
+
+  if (cooldownUntil && now < cooldownUntil) {
+    exposeRateLimitState('cooldown_active');
     throw createRateLimitError('Ticketmaster rate limit cooldown active');
   }
 
@@ -672,7 +795,8 @@ async function fetchJsonCached(url) {
     }
 
     if (status === 429 || isRateLimitPayload(data)) {
-      setRateLimitCooldown();
+      const reason = String(data?._ajseeProxy?.reason || '').trim() || 'ticketmaster_rate_limited';
+      setRateLimitCooldown(reason);
       throw createRateLimitError(`Ticketmaster proxy ${status || 429}`);
     }
 
@@ -918,8 +1042,12 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     }
   }
 
-  if (rateLimited && debugTm) {
-    console.warn('[Ticketmaster adapter] rate limited; stopped additional fallback requests.');
+  if (rateLimited) {
+    exposeRateLimitState('rate_limited');
+
+    if (debugTm) {
+      console.warn('[Ticketmaster adapter] rate limited; stopped additional fallback requests.');
+    }
   }
 
   let dedupedRaw = dedupeRawEvents(collectedRaw);

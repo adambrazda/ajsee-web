@@ -1086,6 +1086,209 @@ function setBusy(v) {
   if (list) list.setAttribute('aria-busy', v ? 'true' : 'false');
 }
 
+
+/* ───────── Ticketmaster rate-limit user state ───────── */
+function getTicketmasterRateLimitState() {
+  try {
+    const state =
+      window.__ajsee?.tmRateLimit ||
+      window.__ajsee?.ticketmasterRateLimit ||
+      null;
+
+    if (!state) {
+      return {
+        active: false,
+        until: 0,
+        retryAfterMs: 0,
+        reason: ''
+      };
+    }
+
+    const until = Number(state.until || 0);
+    const retryAfterMs = Math.max(0, until - Date.now());
+
+    return {
+      ...state,
+      until: retryAfterMs > 0 ? until : 0,
+      retryAfterMs,
+      active: retryAfterMs > 0
+    };
+  } catch {
+    return {
+      active: false,
+      until: 0,
+      retryAfterMs: 0,
+      reason: ''
+    };
+  }
+}
+
+function isTicketmasterRateLimited() {
+  return !!getTicketmasterRateLimitState().active;
+}
+
+function formatRateLimitWait(ms = 0) {
+  const totalSeconds = Math.max(0, Math.ceil(Number(ms || 0) / 1000));
+
+  if (totalSeconds <= 0) return '';
+
+  const minutes = Math.ceil(totalSeconds / 60);
+
+  if (minutes <= 1) {
+    return currentLang === 'en' ? 'about 1 minute' : 'přibližně 1 minutu';
+  }
+
+  if (currentLang === 'en') return `about ${minutes} minutes`;
+  if (currentLang === 'de') return `ca. ${minutes} Minuten`;
+  if (currentLang === 'sk') return `približne ${minutes} minút`;
+  if (currentLang === 'pl') return `około ${minutes} min`;
+  if (currentLang === 'hu') return `kb. ${minutes} perc`;
+
+  return `přibližně ${minutes} minut`;
+}
+
+function getRateLimitCopy(kind = 'rateLimit') {
+  const state = getTicketmasterRateLimitState();
+  const wait = formatRateLimitWait(state.retryAfterMs);
+
+  const copy = {
+    cs: {
+      title: 'Ticketmaster je dočasně přetížený',
+      body: wait
+        ? `Právě jsme narazili na limit Ticketmaster API. Abychom limit dál nezvyšovali, další načítání jsme na chvíli pozastavili. Zkuste to znovu za ${wait}.`
+        : 'Právě jsme narazili na limit Ticketmaster API. Zkuste to prosím za chvíli znovu.',
+      retry: 'Zkusit znovu'
+    },
+    en: {
+      title: 'Ticketmaster is temporarily busy',
+      body: wait
+        ? `We have hit the Ticketmaster API limit. To avoid increasing the limit further, loading is paused for now. Please try again in ${wait}.`
+        : 'We have hit the Ticketmaster API limit. Please try again shortly.',
+      retry: 'Try again'
+    },
+    de: {
+      title: 'Ticketmaster ist vorübergehend ausgelastet',
+      body: wait
+        ? `Das Ticketmaster API-Limit wurde erreicht. Damit das Limit nicht weiter belastet wird, pausieren wir das Laden kurz. Bitte versuche es in ${wait} erneut.`
+        : 'Das Ticketmaster API-Limit wurde erreicht. Bitte versuche es gleich erneut.',
+      retry: 'Erneut versuchen'
+    },
+    sk: {
+      title: 'Ticketmaster je dočasne preťažený',
+      body: wait
+        ? `Narazili sme na limit Ticketmaster API. Aby sme limit ďalej nezvyšovali, načítanie je na chvíľu pozastavené. Skúste to znova za ${wait}.`
+        : 'Narazili sme na limit Ticketmaster API. Skúste to prosím o chvíľu znova.',
+      retry: 'Skúsiť znova'
+    },
+    pl: {
+      title: 'Ticketmaster jest chwilowo przeciążony',
+      body: wait
+        ? `Osiągnęliśmy limit API Ticketmaster. Aby go dalej nie zwiększać, wstrzymujemy ładowanie. Spróbuj ponownie za ${wait}.`
+        : 'Osiągnęliśmy limit API Ticketmaster. Spróbuj ponownie za chwilę.',
+      retry: 'Spróbuj ponownie'
+    },
+    hu: {
+      title: 'A Ticketmaster átmenetileg túlterhelt',
+      body: wait
+        ? `Elértük a Ticketmaster API limitjét. Hogy ne növeljük tovább a terhelést, a betöltést rövid időre szüneteltetjük. Próbáld újra ${wait} múlva.`
+        : 'Elértük a Ticketmaster API limitjét. Kérjük, próbáld újra később.',
+      retry: 'Újrapróbálom'
+    }
+  };
+
+  return copy[currentLang] || copy.cs;
+}
+
+function ensureEventsStateStyles() {
+  injectOnce('ajsee-events-state-css', String.raw`
+    .ajsee-events-state{
+      max-width:720px;
+      margin:18px auto 0;
+      padding:22px 24px;
+      border:1px solid rgba(10,61,98,.14);
+      border-radius:24px;
+      background:rgba(255,255,255,.94);
+      box-shadow:0 18px 48px rgba(9,30,66,.10);
+      text-align:center;
+    }
+
+    .ajsee-events-state__eyebrow{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:38px;
+      height:38px;
+      border-radius:999px;
+      background:rgba(255,193,7,.16);
+      margin-bottom:10px;
+      font-size:20px;
+    }
+
+    .ajsee-events-state h3{
+      margin:0 0 8px;
+      color:#14213d;
+      font-size:22px;
+      line-height:1.2;
+    }
+
+    .ajsee-events-state p{
+      margin:0 auto 16px;
+      max-width:580px;
+      color:#667085;
+      line-height:1.55;
+    }
+
+    .ajsee-events-state button{
+      border:1px solid #0A3D62;
+      background:#0A3D62;
+      color:#fff;
+      border-radius:999px;
+      padding:11px 18px;
+      min-height:44px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(9,30,66,.12);
+    }
+  `);
+}
+
+function renderEventsStateMessage(kind = 'rateLimit') {
+  const list = document.getElementById('eventsList');
+  if (!list) return;
+
+  ensureEventsStateStyles();
+
+  const copy = getRateLimitCopy(kind);
+
+  updateResultsCount(0);
+
+  list.innerHTML = `
+    <div class="ajsee-events-state" role="status" aria-live="polite">
+      <div class="ajsee-events-state__eyebrow" aria-hidden="true">⏳</div>
+      <h3>${esc(copy.title)}</h3>
+      <p>${esc(copy.body)}</p>
+      <button type="button" data-ajsee-events-retry>${esc(copy.retry)}</button>
+    </div>
+  `;
+
+  const retry = list.querySelector('[data-ajsee-events-retry]');
+  if (retry) {
+    retry.addEventListener('click', () => {
+      if (isTicketmasterRateLimited()) {
+        renderEventsStateMessage(kind);
+        return;
+      }
+
+      _lastFetchSig = '';
+      resetEventsPager();
+      void renderAndSync({ resetPage: true });
+    }, { once: true });
+  }
+
+  updateEventsPagerControls();
+  announce(`${copy.title}. ${copy.body}`);
+}
+
 /* ───────── i18n ───────── */
 function deepMerge(a = {}, b = {}) {
   const out = { ...a };
@@ -3121,7 +3324,17 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       _lastFetchSig = '';
     }
 
+    if (eventsPager.buffer.length === 0 && isTicketmasterRateLimited()) {
+      renderEventsStateMessage('rateLimit');
+      return;
+    }
+
     await ensureEventsPageLoaded(locale, api, pagination.page);
+
+    if (eventsPager.buffer.length === 0 && isTicketmasterRateLimited()) {
+      renderEventsStateMessage('rateLimit');
+      return;
+    }
 
     const renderSig = JSON.stringify({
       filterSig,
@@ -3241,7 +3454,9 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   } catch {
     _lastFetchSig = '';
 
-    if (list) {
+    if (isTicketmasterRateLimited()) {
+      renderEventsStateMessage('rateLimit');
+    } else if (list) {
       list.innerHTML = `<p>${esc(t('events-load-error', 'Unable to load events. Try again later.'))}</p>`;
     }
 

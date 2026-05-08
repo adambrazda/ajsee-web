@@ -63,48 +63,117 @@ import {
 --------------------------------------------------------- */
 
 (function initIdentity() {
-  // 1) Načti widget, pokud ještě není
+  const IDENTITY_WIDGET_SRC = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
+
+  const IDENTITY_TOKEN_KEYS = [
+    'invite_token',
+    'confirmation_token',
+    'recovery_token',
+    'email_change_token',
+    'access_token',
+  ];
+
+  function getHashParams() {
+    try {
+      const rawHash = String(window.location.hash || '').replace(/^#\/?/, '');
+      return new URLSearchParams(rawHash);
+    } catch {
+      return new URLSearchParams();
+    }
+  }
+
+  function getSearchParams() {
+    try {
+      return new URLSearchParams(window.location.search || '');
+    } catch {
+      return new URLSearchParams();
+    }
+  }
+
+  function hasIdentityToken() {
+    const hash = getHashParams();
+    const qs = getSearchParams();
+
+    return IDENTITY_TOKEN_KEYS.some((key) => hash.has(key) || qs.has(key));
+  }
+
+  function isAdminPath() {
+    return /^\/admin(?:\/|$)/.test(window.location.pathname || '');
+  }
+
+  function shouldLoadIdentityWidget() {
+    if (window.netlifyIdentity) return true;
+    if (isAdminPath()) return true;
+    if (hasIdentityToken()) return true;
+
+    return false;
+  }
+
   function loadWidget() {
     return new Promise((resolve) => {
-      if (window.netlifyIdentity) return resolve(window.netlifyIdentity);
+      if (window.netlifyIdentity) {
+        resolve(window.netlifyIdentity);
+        return;
+      }
 
-      const s = document.createElement('script');
-      s.src = 'https://identity.netlify.com/v1/netlify-identity-widget.js';
-      s.defer = true;
-      s.onload = () => resolve(window.netlifyIdentity);
-      document.head.appendChild(s);
+      const existing = document.querySelector(`script[src="${IDENTITY_WIDGET_SRC}"]`);
+
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.netlifyIdentity), { once: true });
+        existing.addEventListener('error', () => resolve(null), { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = IDENTITY_WIDGET_SRC;
+      script.defer = true;
+      script.async = true;
+      script.onload = () => resolve(window.netlifyIdentity || null);
+      script.onerror = () => resolve(null);
+
+      document.head.appendChild(script);
     });
   }
 
-  // 2) Otevři modal ze „zvu“ odkazu (#invite_token)
-  function hasInviteToken() {
-    const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
-    const qs = new URLSearchParams(location.search);
+  function openInitialIdentityFlow(identity, user) {
+    if (!identity || user) return;
 
-    return hash.get('invite_token') || qs.get('invite_token');
+    if (hasIdentityToken()) {
+      identity.open('signup');
+      return;
+    }
+
+    if (isAdminPath()) {
+      identity.open('login');
+    }
   }
 
-  loadWidget().then((id) => {
-    if (!id) return;
+  function bootIdentity() {
+    loadWidget().then((identity) => {
+      if (!identity) return;
 
-    // Po initu: pokud nejsem přihlášen a mám invite token → otevři „Sign up“
-    id.on('init', (user) => {
-      if (!user && hasInviteToken()) id.open('signup');
+      identity.on('init', (user) => {
+        openInitialIdentityFlow(identity, user);
+      });
 
-      // Admin kvalita života: jdu-li přímo na /admin a nejsem přihlášen → otevři login
-      if (!user && /^\/admin\/?$/.test(location.pathname)) id.open('login');
+      identity.on('login', () => {
+        window.location.assign('/admin/');
+      });
+
+      identity.on('signup', () => {
+        // Netlify většinou rovnou vede na set password / confirmation flow.
+      });
+
+      identity.init();
     });
+  }
 
-    // Po loginu/přihlášení přesměruj do /admin
-    id.on('login', () => {
-      window.location.assign('/admin/');
-    });
+  // Veřejné stránky nesmí tahat 240KB Netlify Identity widget zbytečně.
+  // Widget načítáme pouze pro admin/token flow nebo při explicitním vyžádání.
+  if (shouldLoadIdentityWidget()) {
+    bootIdentity();
+  }
 
-    id.on('signup', () => {
-      // Netlify většinou rovnou vede na set password
-    });
-
-    // Spusť widget (vyvolá 'init')
-    id.init();
-  });
+  // Bezpečný veřejný hook pro případný budoucí login button.
+  window.AJSEE_LOAD_IDENTITY = bootIdentity;
 })();

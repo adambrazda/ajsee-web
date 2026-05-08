@@ -59,27 +59,73 @@
 
  <link rel="stylesheet" href="/src/styles/pages/faq-page.scss" />
 
-  <!-- Structured data: BreadcrumbList -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "AJSEE",
-          "item": "https://ajsee.cz/"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "FAQ",
-          "item": "https://ajsee.cz/faq"
-        }
-      ]
-    }
-  </script>
+ <!-- Structured data: FAQPage + BreadcrumbList -->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "FAQPage",
+        "@id": "https://ajsee.cz/faq#faq",
+        "url": "https://ajsee.cz/faq",
+        "name": "Často kladené dotazy k AJSEE",
+        "inLanguage": "cs",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Co je AJSEE?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AJSEE je platforma pro objevování koncertů, festivalů, sportu, divadla a dalších zážitků. Pomáhá najít zajímavé akce a rychleji se rozhodnout, kam vyrazit."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Prodává AJSEE vstupenky přímo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Ne. AJSEE aktuálně neprovozuje vlastní pokladnu ani platební bránu. U vybraných akcí tě odkážeme na ověřené partnery nebo oficiální ticketingové stránky, kde probíhá nákup, platba i potvrzení objednávky."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Jak funguje ubytování u akcí?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "U některých akcí a cestovatelských scénářů může AJSEE nabídnout také odkaz na ubytovacího partnera. Rezervace, platba a potvrzení ubytování probíhá vždy přímo u partnera. AJSEE není poskytovatelem ubytování."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Pro koho je AJSEE určené?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "AJSEE je pro fanoušky hudby, sportu, kultury a cestování, kteří chtějí objevovat akce přehledněji a s menší námahou. Zároveň pomáhá partnerům dostat relevantní nabídky k lidem, kteří už aktivně hledají zážitek."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://ajsee.cz/faq#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "AJSEE",
+            "item": "https://ajsee.cz/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "FAQ",
+            "item": "https://ajsee.cz/faq"
+          }
+        ]
+      }
+    ]
+  }
+</script>
 
   <!-- Kill-switch pro paralelní renderery + Impact tracking konfigurace -->
   <script>
@@ -188,24 +234,74 @@
   <section id="faq" class="faq-section">
     <div class="container">
       <h1 data-i18n-key="faq-title">Často kladené dotazy</h1>
-      <div class="faq-list">
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false" data-i18n-key="faq-q1"></button>
-          <div class="faq-answer" data-i18n-key="faq-a1"></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false" data-i18n-key="faq-q2"></button>
-          <div class="faq-answer" data-i18n-key="faq-a2"></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false" data-i18n-key="faq-q3"></button>
-          <div class="faq-answer" data-i18n-key="faq-a3"></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false" data-i18n-key="faq-q4"></button>
-          <div class="faq-answer" data-i18n-key="faq-a4"></div>
-        </div>
-      </div>
+     <div class="faq-list">
+  <div class="faq-item">
+    <button
+      class="faq-question"
+      type="button"
+      aria-expanded="false"
+      aria-controls="faq-answer-1"
+      data-i18n-key="faq-q1"
+    >
+      Co je AJSEE?
+    </button>
+    <div class="faq-answer" id="faq-answer-1" data-i18n-key="faq-a1">
+      AJSEE je platforma pro objevování koncertů, festivalů, sportu, divadla a dalších zážitků.
+      Pomáhá najít zajímavé akce a rychleji se rozhodnout, kam vyrazit.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button
+      class="faq-question"
+      type="button"
+      aria-expanded="false"
+      aria-controls="faq-answer-2"
+      data-i18n-key="faq-q2"
+    >
+      Prodává AJSEE vstupenky přímo?
+    </button>
+    <div class="faq-answer" id="faq-answer-2" data-i18n-key="faq-a2">
+      Ne. AJSEE aktuálně neprovozuje vlastní pokladnu ani platební bránu.
+      U vybraných akcí tě odkážeme na ověřené partnery nebo oficiální ticketingové stránky,
+      kde probíhá nákup, platba i potvrzení objednávky.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button
+      class="faq-question"
+      type="button"
+      aria-expanded="false"
+      aria-controls="faq-answer-3"
+      data-i18n-key="faq-q3"
+    >
+      Jak funguje ubytování u akcí?
+    </button>
+    <div class="faq-answer" id="faq-answer-3" data-i18n-key="faq-a3">
+      U některých akcí a cestovatelských scénářů může AJSEE nabídnout také odkaz na ubytovacího partnera.
+      Rezervace, platba a potvrzení ubytování probíhá vždy přímo u partnera.
+      AJSEE není poskytovatelem ubytování.
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button
+      class="faq-question"
+      type="button"
+      aria-expanded="false"
+      aria-controls="faq-answer-4"
+      data-i18n-key="faq-q4"
+    >
+      Pro koho je AJSEE určené?
+    </button>
+    <div class="faq-answer" id="faq-answer-4" data-i18n-key="faq-a4">
+      AJSEE je pro fanoušky hudby, sportu, kultury a cestování, kteří chtějí objevovat akce přehledněji
+      a s menší námahou. Zároveň pomáhá partnerům dostat relevantní nabídky k lidem,
+      kteří už aktivně hledají zážitek.
+    </div>
+  </div>
+</div>
     </div>
   </section>
 </main>

@@ -342,6 +342,38 @@ const METRO_CITY_ALIASES = {
   ]
 };
 
+const METRO_CITY_QUERY_ALIASES = {
+  'FR|paris': [
+    'Nanterre',
+    'Saint-Denis',
+    'Saint Denis',
+    'Boulogne-Billancourt',
+    'Puteaux',
+    'Courbevoie'
+  ]
+};
+
+function getMetroCityQueryAttempts(countryCode = '', selectedCity = '') {
+  const cc = String(countryCode || '').trim().toUpperCase();
+  const selectedKey = compactCity(cityKey(selectedCity));
+  const aliases = METRO_CITY_QUERY_ALIASES[`${cc}|${selectedKey}`] || [];
+
+  const out = [];
+  const seen = new Set([selectedKey]);
+
+  for (const alias of aliases) {
+    const city = String(alias || '').trim();
+    const key = compactCity(cityKey(city));
+
+    if (!city || !key || seen.has(key)) continue;
+
+    seen.add(key);
+    out.push(city);
+  }
+
+  return out;
+}
+
 function isSameCityOrMetro(evCity = '', selectedCity = '', countryCode = '') {
   if (isSameCity(evCity, selectedCity)) return true;
 
@@ -1026,6 +1058,19 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         strictCountry: selectedCityCountry,
         countryStrategy: ''
       });
+
+      for (const metroCity of getMetroCityQueryAttempts(selectedCityCountry, tmCity)) {
+        attempts.push({
+          mode: 'city',
+          city: metroCity,
+          countryCode: selectedCityCountry,
+          strictCity: tmCity,
+          strictCountry: selectedCityCountry,
+          countryStrategy: 'both',
+          force: true,
+          reason: 'metro'
+        });
+      }
     } else {
       attempts.push({
         mode: 'city',
@@ -1064,6 +1109,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     return true;
   });
 
+  const hasForcedAttempts = uniqAttempts.some((a) => !!a.force);
   const hasGeo = Boolean(filters.latlong || (filters.nearMeLat != null && filters.nearMeLon != null));
   const collectedRaw = [];
   let rateLimited = false;
@@ -1072,7 +1118,12 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   for (const locTry of locales) {
     for (const categoryVariant of categoryVariants) {
       for (const attempt of uniqAttempts) {
-        if (!shouldContinueAfterCollected(collectedRaw, size)) break outer;
+        const enoughCollected = !shouldContinueAfterCollected(collectedRaw, size);
+
+        if (enoughCollected && !attempt.force) {
+          if (hasForcedAttempts) continue;
+          break outer;
+        }
 
         const qs = new URLSearchParams();
         putCommonParams(qs, categoryVariant);
@@ -1171,4 +1222,5 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
 }
 
 export default { fetchEvents };
+
 

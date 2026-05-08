@@ -167,7 +167,7 @@ const MARKET_LOCALE_BY_COUNTRY = {
   DK: 'da-dk',
   SE: 'sv-se',
   FI: 'fi-fi',
-  NO: 'nb-no'
+  NO: 'en'
 };
 
 const COUNTRY_MARKET_HOST = {
@@ -1171,3 +1171,4 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
 }
 
 export default { fetchEvents };
+

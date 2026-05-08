@@ -276,11 +276,26 @@ async function loadAllCards(lang) {
   return [...microguides, ...articles].sort((a, b) => b.ts - a.ts);
 }
 
-function cardHref(card) {
-  if (card.type === 'microguide') {
-return `/microguides/${encodeURIComponent(card.slug)}?lang=${encodeURIComponent(card.lang)}`;
+function withLangQuery(path, lang) {
+  const normalizedLang = normalizeLang(lang);
+
+  if (normalizedLang === DEFAULT_LANG) {
+    return path;
+  }
+
+  return `${path}?lang=${encodeURIComponent(normalizedLang)}`;
 }
-return `/blog/${encodeURIComponent(card.slug)}?lang=${encodeURIComponent(card.lang)}`;}
+
+function cardHref(card) {
+  const lang = normalizeLang(card.lang || getLang());
+  const slug = encodeURIComponent(card.slug || '');
+
+  if (card.type === 'microguide') {
+    return withLangQuery(`/microguides/${slug}/`, lang);
+  }
+
+  return withLangQuery(`/blog/${slug}/`, lang);
+}
 
 // --- Render ----------------------------------------------------------------
 

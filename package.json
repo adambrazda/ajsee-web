@@ -23,7 +23,8 @@
     "webpack:dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack serve --mode development",
     "webpack:build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack --mode production",
     "check:locales": "node scripts/check-locales.js",
-    "blog:build": "node scripts/build-blog.mjs"
+    "blog:build": "node scripts/build-blog.mjs",
+    "seo:smoke": "node scripts/seo-smoke.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

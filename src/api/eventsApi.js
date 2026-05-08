@@ -109,6 +109,8 @@ function isRateLimitError(err) {
   );
 }
 
+const normalizeStr = normalizeText;
+
 function foldText(value) {
   return String(value || '')
     .trim()

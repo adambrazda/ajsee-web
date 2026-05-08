@@ -150,6 +150,21 @@ function esc(s = '') {
     .replace(/'/g, '&#39;');
 }
 
+
+function normalizeStr(s = '') {
+  return String(s || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\u00df/g, 'ss')
+    .replace(/\u0142/g, 'l')
+    .replace(/[\u2019'`\u00b4]/g, '')
+    .replace(/[().,;:/\\\-+_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function pad2(n) {
   return String(n).padStart(2, '0');
 }

@@ -14,6 +14,176 @@ const RESPONSE_CACHE = globalThis.__ajsee_tm_events_response_cache ||
 
 const FRESH_TTL_MS = 5 * 60 * 1000;
 const STALE_TTL_MS = 45 * 60 * 1000;
+const RATE_LIMIT_FALLBACK_COOLDOWN_MS = 15 * 60 * 1000;
+const RATE_LIMIT_GUARD_SAFETY_MS = 5 * 1000;
+
+const RATE_LIMIT_STATE = globalThis.__ajsee_tm_events_rate_limit_state ||
+  (globalThis.__ajsee_tm_events_rate_limit_state = {
+    until: 0,
+    reason: '',
+    rateLimit: {}
+  });
+
+function cleanHeaders(headers = {}) {
+  const out = {};
+
+  for (const [key, value] of Object.entries(headers || {})) {
+    if (value === undefined || value === null || value === '') continue;
+    out[key] = String(value);
+  }
+
+  return out;
+}
+
+function readRateLimitHeaders(resp) {
+  const get = (name) => {
+    try {
+      return resp?.headers?.get?.(name) || '';
+    } catch {
+      return '';
+    }
+  };
+
+  return {
+    rateLimit: get('Rate-Limit'),
+    rateLimitAvailable: get('Rate-Limit-Available'),
+    rateLimitOver: get('Rate-Limit-Over'),
+    rateLimitReset: get('Rate-Limit-Reset'),
+    retryAfter: get('Retry-After')
+  };
+}
+
+function parseRetryAfterUntil(value = '') {
+  const raw = String(value || '').trim();
+  if (!raw) return 0;
+
+  const n = Number(raw);
+  if (Number.isFinite(n)) {
+    return Date.now() + Math.max(0, n) * 1000;
+  }
+
+  const parsed = Date.parse(raw);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function parseRateLimitResetUntil(value = '') {
+  const raw = String(value || '').trim();
+  if (!raw) return 0;
+
+  const n = Number(raw);
+
+  if (Number.isFinite(n)) {
+    // Ticketmaster examples use epoch milliseconds.
+    if (n > 10_000_000_000) return n;
+
+    // Be tolerant if API ever returns epoch seconds.
+    if (n > 1_000_000_000) return n * 1000;
+  }
+
+  const parsed = Date.parse(raw);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function deriveRateLimitUntil(headers = {}) {
+  const now = Date.now();
+
+  const retryUntil = parseRetryAfterUntil(headers.retryAfter);
+  const resetUntil = parseRateLimitResetUntil(headers.rateLimitReset);
+
+  const hasAvailable = String(headers.rateLimitAvailable || '').trim() !== '';
+  const hasOver = String(headers.rateLimitOver || '').trim() !== '';
+
+  const available = hasAvailable ? Number(headers.rateLimitAvailable) : NaN;
+  const over = hasOver ? Number(headers.rateLimitOver) : NaN;
+
+  let until = 0;
+
+  if (retryUntil > now) {
+    until = retryUntil;
+  } else if (
+    resetUntil > now &&
+    (
+      (Number.isFinite(over) && over > 0) ||
+      (Number.isFinite(available) && available <= 0)
+    )
+  ) {
+    until = resetUntil;
+  } else if (resetUntil > now) {
+    until = resetUntil;
+  } else {
+    until = now + RATE_LIMIT_FALLBACK_COOLDOWN_MS;
+  }
+
+  return until + RATE_LIMIT_GUARD_SAFETY_MS;
+}
+
+function getServerRateLimitState() {
+  const now = Date.now();
+  const until = Number(RATE_LIMIT_STATE.until || 0);
+
+  if (until && until > now) {
+    return {
+      active: true,
+      until,
+      retryAfterMs: Math.max(0, until - now),
+      reason: RATE_LIMIT_STATE.reason || 'ticketmaster_rate_limited',
+      rateLimit: RATE_LIMIT_STATE.rateLimit || {}
+    };
+  }
+
+  RATE_LIMIT_STATE.until = 0;
+  RATE_LIMIT_STATE.reason = '';
+
+  return {
+    active: false,
+    until: 0,
+    retryAfterMs: 0,
+    reason: '',
+    rateLimit: RATE_LIMIT_STATE.rateLimit || {}
+  };
+}
+
+function setServerRateLimit(headers = {}, reason = 'ticketmaster_rate_limited') {
+  const until = deriveRateLimitUntil(headers);
+
+  RATE_LIMIT_STATE.until = Math.max(Number(RATE_LIMIT_STATE.until || 0), until);
+  RATE_LIMIT_STATE.reason = reason;
+  RATE_LIMIT_STATE.rateLimit = headers || {};
+
+  return getServerRateLimitState();
+}
+
+function buildAjseeRateLimitHeaders(state = {}) {
+  const rateLimit = state.rateLimit || {};
+
+  return cleanHeaders({
+    'x-ajsee-rate-limit-active': state.active ? '1' : '0',
+    'x-ajsee-rate-limit-reason': state.reason || '',
+    'x-ajsee-rate-limit-until': state.until ? String(Math.round(state.until)) : '',
+    'x-ajsee-retry-after-ms': state.retryAfterMs != null ? String(Math.max(0, Math.round(state.retryAfterMs))) : '',
+
+    'x-ajsee-tm-rate-limit': rateLimit.rateLimit || '',
+    'x-ajsee-tm-rate-limit-available': rateLimit.rateLimitAvailable || '',
+    'x-ajsee-tm-rate-limit-over': rateLimit.rateLimitOver || '',
+    'x-ajsee-tm-rate-limit-reset': rateLimit.rateLimitReset || '',
+    'x-ajsee-tm-retry-after': rateLimit.retryAfter || ''
+  });
+}
+
+function rateLimitedEmptyResponse(q, state, extraHeaders = {}) {
+  return json(200, emptyTicketmasterPayload(q, {
+    upstreamStatus: 429,
+    reason: state.reason || 'ticketmaster_rate_limited',
+    until: state.until || 0,
+    retryAfterMs: state.retryAfterMs || 0,
+    rateLimit: state.rateLimit || {}
+  }), {
+    'x-ajsee-cache': 'empty-rate-limited',
+    'x-ajsee-upstream-status': '429',
+    ...buildAjseeRateLimitHeaders(state),
+    ...extraHeaders
+  });
+}
 
 function cacheGet(key, { allowStale = false } = {}) {
   const hit = RESPONSE_CACHE.get(key);
@@ -432,18 +602,47 @@ export const handler = async (event) => {
     if (!url.searchParams.has('size')) url.searchParams.set('size', '50');
 
     const finalUrl = url.toString();
-    const cacheKey = makeCacheKey(finalUrl);
+const cacheKey = makeCacheKey(finalUrl);
 
-    if (!debugMode) {
-      const fresh = cacheGet(cacheKey);
-      if (fresh) {
-        return responseFromBody(fresh.statusCode || 200, fresh.body, { 'x-ajsee-cache': 'fresh' });
-      }
-    }
+// debug=1 uz nesmi automaticky vypinat cache.
+// Primy upstream test pouzij jen vedome pres forceUpstream=1.
+const forceUpstream =
+  q.forceUpstream === '1' ||
+  q.bypassCache === '1' ||
+  q.noCache === '1';
 
-    if (debugMode) {
-      console.log('[ticketmasterEvents] →', finalUrl.replace(/apikey=[^&]+/, 'apikey=***'));
-    }
+const serverRateLimit = getServerRateLimitState();
+
+if (serverRateLimit.active && !forceUpstream) {
+  const stale = cacheGet(cacheKey, { allowStale: true });
+
+  if (stale) {
+    return responseFromBody(200, stale.body, {
+      'x-ajsee-cache': 'stale-rate-limited',
+      'x-ajsee-upstream-status': '429',
+      ...buildAjseeRateLimitHeaders(serverRateLimit)
+    });
+  }
+
+  return rateLimitedEmptyResponse(q, serverRateLimit, {
+    'x-ajsee-cache': 'empty-server-rate-limited'
+  });
+}
+
+if (!forceUpstream) {
+  const fresh = cacheGet(cacheKey);
+
+  if (fresh) {
+    return responseFromBody(fresh.statusCode || 200, fresh.body, {
+      'x-ajsee-cache': 'fresh',
+      ...buildAjseeRateLimitHeaders(getServerRateLimitState())
+    });
+  }
+}
+
+if (debugMode) {
+  console.log('[ticketmasterEvents] →', finalUrl.replace(/apikey=[^&]+/, 'apikey=***'));
+}
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
@@ -462,30 +661,54 @@ export const handler = async (event) => {
     }
 
     let text = await resp.text();
+    const responseRateLimitHeaders = readRateLimitHeaders(resp);
 
-    if (!resp.ok) {
-      console.error('[ticketmasterEvents] Upstream error', resp.status, text.slice(0, 500));
+if (!resp.ok) {
+  console.error('[ticketmasterEvents] Upstream error', resp.status, text.slice(0, 500));
 
-      const stale = !debugMode ? cacheGet(cacheKey, { allowStale: true }) : null;
-      if (stale) {
-        return responseFromBody(200, stale.body, {
-          'x-ajsee-cache': 'stale-if-error',
-          'x-ajsee-upstream-status': String(resp.status)
-        });
-      }
+  if (resp.status === 429) {
+    const state = setServerRateLimit(responseRateLimitHeaders, 'ticketmaster_rate_limited');
 
-      if (resp.status === 429) {
-        return json(200, emptyTicketmasterPayload(q, {
-          upstreamStatus: 429,
-          reason: 'ticketmaster_rate_limited'
-        }), {
-          'x-ajsee-cache': 'empty-rate-limited',
-          'x-ajsee-upstream-status': '429'
-        });
-      }
+    const stale = !forceUpstream ? cacheGet(cacheKey, { allowStale: true }) : null;
 
-      return responseFromBody(resp.status, text, { 'x-ajsee-upstream-status': String(resp.status) });
+    if (stale) {
+      return responseFromBody(200, stale.body, {
+        'x-ajsee-cache': 'stale-if-rate-limited',
+        'x-ajsee-upstream-status': '429',
+        ...buildAjseeRateLimitHeaders(state)
+      });
     }
+
+    return rateLimitedEmptyResponse(q, state);
+  }
+
+  const stale = !forceUpstream ? cacheGet(cacheKey, { allowStale: true }) : null;
+
+  if (stale) {
+    return responseFromBody(200, stale.body, {
+      'x-ajsee-cache': 'stale-if-error',
+      'x-ajsee-upstream-status': String(resp.status),
+      ...buildAjseeRateLimitHeaders({
+        active: false,
+        until: 0,
+        retryAfterMs: 0,
+        reason: '',
+        rateLimit: responseRateLimitHeaders
+      })
+    });
+  }
+
+  return responseFromBody(resp.status, text, {
+    'x-ajsee-upstream-status': String(resp.status),
+    ...buildAjseeRateLimitHeaders({
+      active: false,
+      until: 0,
+      retryAfterMs: 0,
+      reason: '',
+      rateLimit: responseRateLimitHeaders
+    })
+  });
+}
 
     let ajseeDebug = null;
 
@@ -578,9 +801,18 @@ export const handler = async (event) => {
       }
     }
 
-    if (!debugMode) cacheSet(cacheKey, text, 200);
+if (!debugMode && !forceUpstream) cacheSet(cacheKey, text, 200);
 
-    return responseFromBody(200, text, { 'x-ajsee-cache': 'miss' });
+return responseFromBody(200, text, {
+  'x-ajsee-cache': forceUpstream ? 'miss-force-upstream' : 'miss',
+  ...buildAjseeRateLimitHeaders({
+    active: false,
+    until: 0,
+    retryAfterMs: 0,
+    reason: '',
+    rateLimit: responseRateLimitHeaders
+  })
+});
   } catch (err) {
     const isAbort = err?.name === 'AbortError';
     console.error('[ticketmasterEvents] Error:', err);

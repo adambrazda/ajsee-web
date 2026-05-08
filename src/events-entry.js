@@ -1,4 +1,4 @@
-﻿// /src/events-entry.js
+// /src/events-entry.js
 // ---------------------------------------------------------
 // AJSEE – Events page UI, i18n & filters
 // Stabilized version for Ticketmaster rate-limit handling.
@@ -2821,9 +2821,43 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   } catch (err) {
     _lastFetchSig = '';
 
+    console.error('[AJSEE events] renderEvents failed:', err);
+
+    try {
+      window.__ajsee = window.__ajsee || {};
+      window.__ajsee.lastEventsRenderError = {
+        message: err?.message || String(err),
+        stack: err?.stack || '',
+        filters: { ...currentFilters },
+        pager: {
+          page: pagination.page,
+          perPage: pagination.perPage,
+          bufferLength: eventsPager.buffer.length,
+          hasMore: eventsPager.hasMore,
+          apiPage: eventsPager.apiPage
+        },
+        sample: Array.isArray(eventsPager.buffer)
+          ? eventsPager.buffer.slice(0, 5).map((ev) => ({
+              id: ev?.id,
+              title: ev?.title,
+              datetime: ev?.datetime,
+              date: ev?.date,
+              city: ev?.location?.city,
+              actualCity: ev?.location?.actualCity || ev?.venue?.city,
+              country: ev?.location?.country,
+              url: ev?.url,
+              tickets: ev?.tickets
+            }))
+          : []
+      };
+    } catch {
+      /* noop */
+    }
+
     if (isTicketmasterRateLimitError(err) || isTicketmasterRateLimited()) {
       renderEventsStateMessage('rateLimit');
     } else if (list) {
+      list.__ajseeEventModalStore = new Map();
       list.innerHTML = `<p>${esc(t('events-load-error', 'Unable to load events. Try again later.'))}</p>`;
     }
 

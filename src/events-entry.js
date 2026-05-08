@@ -1,4 +1,4 @@
-// /src/events-entry.js
+﻿// /src/events-entry.js
 // ---------------------------------------------------------
 // AJSEE – Events page UI, i18n & filters
 // Stabilized version for Ticketmaster rate-limit handling.
@@ -995,25 +995,53 @@ function isTicketmasterRateLimitError(err) {
 }
 
 function formatRateLimitWait(ms = 0) {
-  const totalSeconds = Math.max(0, Math.ceil(Number(ms || 0) / 1000));
-  if (totalSeconds <= 0) return '';
+  const totalMinutes = Math.max(1, Math.ceil(Number(ms || 0) / 60000));
 
-  const minutes = Math.ceil(totalSeconds / 60);
-  if (minutes <= 1) {
-    if (currentLang === 'en') return 'about 1 minute';
-    if (currentLang === 'de') return 'ca. 1 Minute';
-    if (currentLang === 'sk') return 'približne 1 minútu';
-    if (currentLang === 'pl') return 'około 1 min';
-    if (currentLang === 'hu') return 'kb. 1 perc';
-    return 'přibližně 1 minutu';
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  const lang = currentLang || getUILang();
+
+  if (hours > 0) {
+    const compact = minutes > 0
+      ? `${hours} h ${minutes} min`
+      : `${hours} h`;
+
+    if (lang === 'en') return `about ${compact}`;
+    if (lang === 'de') return `ca. ${compact}`;
+    if (lang === 'sk') return `približne ${compact}`;
+    if (lang === 'pl') return `około ${compact}`;
+    if (lang === 'hu') return `kb. ${compact}`;
+
+    return `přibližně ${compact}`;
   }
 
-  if (currentLang === 'en') return `about ${minutes} minutes`;
-  if (currentLang === 'de') return `ca. ${minutes} Minuten`;
-  if (currentLang === 'sk') return `približne ${minutes} minút`;
-  if (currentLang === 'pl') return `około ${minutes} min`;
-  if (currentLang === 'hu') return `kb. ${minutes} perc`;
-  return `přibližně ${minutes} minut`;
+  if (lang === 'en') {
+    return totalMinutes === 1 ? 'about 1 minute' : `about ${totalMinutes} minutes`;
+  }
+
+  if (lang === 'de') {
+    return totalMinutes === 1 ? 'ca. 1 Minute' : `ca. ${totalMinutes} Minuten`;
+  }
+
+  if (lang === 'sk') {
+    if (totalMinutes === 1) return 'približne 1 minútu';
+    if (totalMinutes >= 2 && totalMinutes <= 4) return `približne ${totalMinutes} minúty`;
+    return `približne ${totalMinutes} minút`;
+  }
+
+  if (lang === 'pl') {
+    return `około ${totalMinutes} min`;
+  }
+
+  if (lang === 'hu') {
+    return `kb. ${totalMinutes} perc`;
+  }
+
+  if (totalMinutes === 1) return 'přibližně 1 minutu';
+  if (totalMinutes >= 2 && totalMinutes <= 4) return `přibližně ${totalMinutes} minuty`;
+
+  return `přibližně ${totalMinutes} minut`;
 }
 
 function getRateLimitCopy() {
@@ -3173,3 +3201,4 @@ if (!G.flags.mainDomReadyBound) {
     void bootstrapMain();
   });
 }
+

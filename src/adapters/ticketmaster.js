@@ -1,4 +1,4 @@
-// /src/adapters/ticketmaster.js
+﻿// /src/adapters/ticketmaster.js
 // ---------------------------------------------------------
 // Ticketmaster Discovery API adapter (via Netlify function proxy)
 //
@@ -754,10 +754,71 @@ function createRateLimitError(message = 'Ticketmaster rate limited') {
   return err;
 }
 
-function setRateLimitCooldown(reason = 'ticketmaster_rate_limited') {
-  RATE_LIMIT_UNTIL = Date.now() + RATE_LIMIT_COOLDOWN_MS;
-  writeStoredRateLimit(RATE_LIMIT_UNTIL, reason);
-  exposeRateLimitState(reason);
+function parsePositiveNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+function parseRetryAfterHeader(value, now = Date.now()) {
+  const raw = String(value || '').trim();
+  if (!raw) return 0;
+
+  const seconds = Number(raw);
+  if (Number.isFinite(seconds) && seconds > 0) {
+    return Math.round(seconds * 1000);
+  }
+
+  const asDate = Date.parse(raw);
+  if (Number.isFinite(asDate) && asDate > now) {
+    return asDate - now;
+  }
+
+  return 0;
+}
+
+function getRateLimitUntilFromResponse(res, data) {
+  const now = Date.now();
+  const headers = res?.headers;
+
+  const getHeader = (name) => {
+    try {
+      return headers?.get?.(name) || '';
+    } catch {
+      return '';
+    }
+  };
+
+  const candidates = [];
+
+  const headerUntil = parsePositiveNumber(getHeader('x-ajsee-rate-limit-until'));
+  if (headerUntil > now) candidates.push(headerUntil);
+
+  const tmReset = parsePositiveNumber(getHeader('x-ajsee-tm-rate-limit-reset'));
+  if (tmReset > now) candidates.push(tmReset + 5000);
+
+  const headerRetryMs = parsePositiveNumber(getHeader('x-ajsee-retry-after-ms'));
+  if (headerRetryMs > 0) candidates.push(now + headerRetryMs);
+
+  const retryAfterMs = parseRetryAfterHeader(getHeader('retry-after'), now);
+  if (retryAfterMs > 0) candidates.push(now + retryAfterMs);
+
+  const proxy = data?._ajseeProxy || {};
+
+  const payloadUntil = parsePositiveNumber(
+    proxy.rateLimitUntil ||
+    proxy.until ||
+    proxy.resetAt
+  );
+  if (payloadUntil > now) candidates.push(payloadUntil);
+
+  const payloadRetryMs = parsePositiveNumber(proxy.retryAfterMs);
+  if (payloadRetryMs > 0) candidates.push(now + payloadRetryMs);
+
+  if (candidates.length) {
+    return Math.max(...candidates);
+  }
+
+  return now + RATE_LIMIT_COOLDOWN_MS;
 }
 
 function isRateLimitPayload(data) {
@@ -765,6 +826,31 @@ function isRateLimitPayload(data) {
   const reason = String(data?._ajseeProxy?.reason || '').toLowerCase();
 
   return upstreamStatus === 429 || reason.includes('rate_limited') || reason.includes('rate limit');
+}
+
+function isServerRateLimitResponse(res) {
+  try {
+    const cacheState = String(res?.headers?.get?.('x-ajsee-cache') || '').toLowerCase();
+    const active = String(res?.headers?.get?.('x-ajsee-rate-limit-active') || '') === '1';
+
+    return active || cacheState.includes('rate-limited');
+  } catch {
+    return false;
+  }
+}
+
+function setRateLimitCooldown(reason = 'ticketmaster_rate_limited', untilOverride = 0) {
+  const now = Date.now();
+  const nextUntil = Number.isFinite(+untilOverride) && +untilOverride > now
+    ? +untilOverride
+    : now + RATE_LIMIT_COOLDOWN_MS;
+
+  RATE_LIMIT_UNTIL = Math.max(Number(RATE_LIMIT_UNTIL || 0), nextUntil);
+
+  writeStoredRateLimit(RATE_LIMIT_UNTIL, reason);
+  exposeRateLimitState(reason);
+
+  return RATE_LIMIT_UNTIL;
 }
 
 async function fetchJsonCached(url) {
@@ -794,9 +880,15 @@ async function fetchJsonCached(url) {
       data = null;
     }
 
-    if (status === 429 || isRateLimitPayload(data)) {
-      const reason = String(data?._ajseeProxy?.reason || '').trim() || 'ticketmaster_rate_limited';
-      setRateLimitCooldown(reason);
+    if (status === 429 || isRateLimitPayload(data) || isServerRateLimitResponse(res)) {
+      const reason =
+        String(data?._ajseeProxy?.reason || '').trim() ||
+        'ticketmaster_rate_limited';
+
+      const until = getRateLimitUntilFromResponse(res, data);
+
+      setRateLimitCooldown(reason, until);
+
       throw createRateLimitError(`Ticketmaster proxy ${status || 429}`);
     }
 
@@ -927,7 +1019,6 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         countryStrategy: 'both'
       });
 
-      // Jeden kontrolovaný broad fallback pro metro akce typu Paris → Saint-Denis / Nanterre.
       attempts.push({
         mode: 'broad',
         countryCode: selectedCityCountry,
@@ -1043,10 +1134,27 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   }
 
   if (rateLimited) {
-    exposeRateLimitState('rate_limited');
+    if (typeof exposeRateLimitState === 'function') {
+      exposeRateLimitState('rate_limited');
+    }
 
     if (debugTm) {
       console.warn('[Ticketmaster adapter] rate limited; stopped additional fallback requests.');
+    }
+
+    // Klíčová změna:
+    // Pokud API spadlo na rate limit a nemáme žádná data,
+    // nesmíme vrátit [] jako běžný prázdný výsledek.
+    // Chybu pošleme výš do eventsApi.js a UI pak ukáže správnou hlášku.
+    if (!collectedRaw.length) {
+      const err = createRateLimitError('Ticketmaster API is temporarily rate limited');
+      err.code = 'TICKETMASTER_RATE_LIMITED';
+      err.partner = 'ticketmaster';
+      err.retryAfterMs = RATE_LIMIT_UNTIL
+        ? Math.max(0, RATE_LIMIT_UNTIL - Date.now())
+        : RATE_LIMIT_COOLDOWN_MS;
+
+      throw err;
     }
   }
 

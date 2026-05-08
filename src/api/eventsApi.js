@@ -99,7 +99,15 @@ function normalizeText(s) {
     .replace(/\s+/g, ' ');
 }
 
-const normalizeStr = normalizeText;
+function isRateLimitError(err) {
+  return Boolean(
+    err?.rateLimited ||
+    err?.status === 429 ||
+    err?.code === 'TICKETMASTER_RATE_LIMITED' ||
+    Number(err?._ajseeProxy?.upstreamStatus || 0) === 429 ||
+    String(err?.message || '').toLowerCase().includes('rate limit')
+  );
+}
 
 function foldText(value) {
   return String(value || '')
@@ -824,16 +832,22 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     countryCode: requestCountryCode
   };
 
-  // --- Ticketmaster ---
-  try {
-    const tm = await fetchTicketmasterEvents({ locale: loc, filters: upstreamFilters });
+// --- Ticketmaster ---
+try {
+  const tm = await fetchTicketmasterEvents({ locale: loc, filters: upstreamFilters });
 
-    if (Array.isArray(tm)) {
-      all = all.concat(tm);
-    }
-  } catch (e) {
-    console.warn('[eventsApi] Ticketmaster fetch failed:', e);
+  if (Array.isArray(tm)) {
+    all = all.concat(tm);
   }
+} catch (e) {
+  if (isRateLimitError(e)) {
+    e.code = e.code || 'TICKETMASTER_RATE_LIMITED';
+    e.partner = e.partner || 'ticketmaster';
+    throw e;
+  }
+
+  console.warn('[eventsApi] Ticketmaster fetch failed:', e);
+}
 
   // --- Demo zdroj v DEV ---
   if (isDev) {

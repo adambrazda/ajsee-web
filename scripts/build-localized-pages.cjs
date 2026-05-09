@@ -374,6 +374,22 @@ function updateStaticGeneratedLabels(html, lang) {
   return html;
 }
 
+
+function updateStaticA11yLabels(html, dict, lang) {
+  const homeLabel = t(dict, 'nav-home') || (LANG_META[lang]?.label || LANG_META.cs.label);
+
+  html = html.replace(
+    /<a\b(?=[^>]*class="[^"]*\blogo-link\b[^"]*")[^>]*>/gi,
+    (full) => {
+      let out = replaceAttr(full, 'aria-label', homeLabel);
+      out = replaceAttr(out, 'title', homeLabel);
+      return out;
+    }
+  );
+
+  return html;
+}
+
 function isSkippableHref(href) {
   const value = String(href || '').trim();
 
@@ -479,6 +495,7 @@ function processPage(sourceHtml, file, lang) {
   html = translateHtml(html, dict);
   html = updateLangDropdown(html, lang);
   html = updateStaticGeneratedLabels(html, lang);
+  html = updateStaticA11yLabels(html, dict, lang);
   html = rewriteLinks(html, lang, route);
   html = applySeoLinks(html, route, lang);
 

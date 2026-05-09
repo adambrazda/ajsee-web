@@ -1070,6 +1070,8 @@ function setBtnLabel(el, txt) {
   (node || el).textContent = txt;
 }
 
+
+
 async function applyTranslations(lang) {
   window.translations = await loadTranslations(lang);
 
@@ -1127,7 +1129,7 @@ async function applyTranslations(lang) {
 window.applyTranslations = applyTranslations;
 
 function emitI18nReady(lang) {
-  try {
+try {
     window.dispatchEvent(new CustomEvent('ajsee:i18n-applied', { detail: { lang } }));
   } catch {
     /* noop */
@@ -3406,7 +3408,6 @@ async function bootstrapMain() {
     await renderAndSync({ resetPage: true });
   }
 }
-
 if (!G.flags.mainDomReadyBound) {
   G.flags.mainDomReadyBound = true;
 

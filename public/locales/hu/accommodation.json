@@ -1,0 +1,133 @@
+{
+  "nav-home": "Kezdőlap",
+  "nav-events": "Események",
+  "nav-accommodation": "Szállás",
+  "nav-partners": "Partnereknek",
+  "nav-about": "Rólunk",
+  "nav-blog": "Blog",
+  "nav-contact": "Kapcsolat",
+  "nav-faq": "GYIK",
+  "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Minden jog fenntartva.",
+
+  "seo": {
+    "accommodation": {
+      "title": "Szállás koncertekhez, sporthoz és eseményekhez az Egyesült Királyságban | AJSEE",
+      "description": "Találj szállást az Egyesült Királyságban, ha koncertre, sportra vagy más eseményre utazol. Az AJSEE összekapcsol a TrustedStays partnerrel; a foglalás a partnernél történik.",
+      "ogTitle": "Szállás koncertekhez, sporthoz és eseményekhez az Egyesült Királyságban | AJSEE",
+      "ogDescription": "Koncertre, sporteseményre vagy élő élményre utazol az Egyesült Királyságba? Az AJSEE összekapcsol a TrustedStays partnerrel, ahol az ajánlatkérés, foglalás és visszaigazolás történik."
+    }
+  },
+
+  "accommodation": {
+    "hero": {
+      "title": "Szállás az Egyesült Királyságban élményutazásokhoz",
+      "lead": "Koncertre, sporteseményre vagy más élő élményre utazol az Egyesült Királyságba? Az AJSEE összekapcsol a TrustedStays partnerrel, ahol az ajánlatkérést vagy foglalást közvetlenül a partnernél fejezheted be.",
+      "ctaPrimary": "UK szállások megtekintése",
+      "ctaSecondary": "Hogyan működik",
+      "micro": "Hivatalos partnerség • Jelenleg UK • Ajánlatkérés, foglalás és visszaigazolás a TrustedStays-en történik",
+      "trust": {
+        "1": "Partnerség a TrustedStays-szel",
+        "2": "Jelenleg UK — szállások az Egyesült Királyságban",
+        "3": "Ajánlatkérés vagy foglalás közvetlenül a TrustedStays-en"
+      }
+    },
+
+    "sticky": {
+      "text": "Gyorsan választanál UK szállást?",
+      "cta": "↗ Ajánlat megnyitása"
+    },
+
+    "partner": {
+      "label": "Az AJSEE hivatalos szálláspartnere",
+      "eyebrow": "Partner UK-szállásokhoz",
+      "about": "A TrustedStays ellenőrzött, akkreditált és professzionálisan kezelt szállásokat kínál az Egyesült Királyságban — a standardokra, biztonságra és következetes vendégélményre fókuszálva.",
+      "more": "Miért a TrustedStays? →",
+      "scope": "Megjegyzés: Ez az oldal jelenleg kizárólag az Egyesült Királyságban elérhető szállásokra vonatkozik.",
+      "points": {
+        "1": "Ellenőrzött szállások az Egyesült Királyságban",
+        "2": "Akkreditált szállások — fókusz a standardokra, biztonságra és professzionális kezelésre",
+        "3": "Ajánlatkérés vagy foglalás közvetlenül a TrustedStays-en"
+      }
+    },
+
+    "trustedstays": {
+      "title": "TrustedStays röviden",
+      "lead": "A TrustedStays akkreditált, professzionálisan kezelt és biztonságos szállásokat kínál az Egyesült Királyságban — alkalmas üzleti utakhoz, hosszabb tartózkodásokhoz és kiválasztott eseményutazásokhoz.",
+      "points": {
+        "1": "Jelenlegi fókusz: Egyesült Királyság",
+        "2": "Akkreditált szállások — fókusz a standardokra, biztonságra és professzionális kezelésre",
+        "3": "Rövid és hosszabb tartózkodásokhoz is megfelelő — néhány éjszakától akár több hónapig"
+      },
+      "scope": "Az ajánlatkérést vagy foglalást, a fizetést és a visszaigazolást közvetlenül a TrustedStays-en fejezed be.",
+      "cards": {
+        "1": {
+          "title": "Minőségbiztosított szállások az Egyesült Királyságban",
+          "text": "Ellenőrzött, akkreditált szállások következetes standardokkal."
+        },
+        "2": {
+          "title": "Üzleti utakhoz és hosszabb tartózkodáshoz",
+          "text": "Alkalmas szakembereknek, csapatoknak és hosszabb UK-tartózkodásokhoz."
+        },
+        "3": {
+          "title": "Egyszerű keresés, ajánlatkérés vagy foglalás",
+          "text": "Az ajánlatkérés vagy foglalás közvetlenül a TrustedStays-en történik. Az AJSEE nem értékesít szállást."
+        }
+      }
+    },
+
+    "support": {
+      "title": "AJSEE helyi támogatás",
+      "text": "Nem vagy biztos a lépésekben, vagy elakadtál? Írj nekünk — segítünk eligazodni az ajánlatkérésben vagy foglalásban a saját nyelveden.",
+      "textMobile": "Nem vagy biztos a lépésekben? Írj nekünk — segítünk eligazodni az ajánlatkérésben vagy foglalásban.",
+      "cta": "Kapcsolat az AJSEE-vel",
+      "ctaSecondary": "↗ TrustedStays megnyitása"
+    },
+
+    "how": {
+      "title": "Hogyan működik",
+      "steps": {
+        "1": {
+          "title": "Nyisd meg a kínálatot",
+          "text": "Kattints a gombra, és megnyílik a TrustedStays. Az oldal új lapon nyílik meg."
+        },
+        "2": {
+          "title": "Válaszd ki az úti célt és a dátumot",
+          "text": "Keress szállást az Egyesült Királyságban város, dátum, vendégszám és tartózkodási típus alapján."
+        },
+        "3": {
+          "title": "Kérj ajánlatot vagy foglalj",
+          "text": "Az ajánlatkérést vagy foglalást közvetlenül a TrustedStays-en fejezed be. A fizetés, visszaigazolás és további kommunikáció a partnernél történik."
+        }
+      }
+    },
+
+    "faq": {
+      "title": "GYIK",
+      "q1": {
+        "q": "Az AJSEE-n történik a foglalás?",
+        "a": "Nem. Az AJSEE összekapcsol a TrustedStays partnerrel, de az ajánlatkérést vagy foglalást közvetlenül az ő weboldalukon fejezed be."
+      },
+      "q2": {
+        "q": "Partnerségi linkről van szó?",
+        "a": "Igen. Referral linket használunk a TrustedStays felé irányított látogatások mérésére. Ha jutalék keletkezik, annak elvileg nem szabad befolyásolnia az általad fizetett árat."
+      },
+      "q3": {
+        "q": "Segítetek, ha elakadok?",
+        "a": "Igen. Írj nekünk — segítünk eligazodni a folyamatban vagy a kommunikációban a saját nyelveden."
+      },
+      "q4": {
+        "q": "Ki kezeli a lemondást vagy a foglalás módosítását?",
+        "a": "A lemondást, foglalásmódosítást, fizetést és visszaigazolást a TrustedStays kezeli a saját feltételei szerint. Az AJSEE segíthet eligazodni a folyamatban és a kommunikációban."
+      }
+    },
+
+    "disclaimer": "Az AJSEE nem szállásszolgáltató, nem utazási iroda és nem fizetési szolgáltató. Az ajánlatkérést, foglalást, fizetést, visszaigazolást és a tartózkodási feltételeket a TrustedStays kezeli.",
+
+    "final": {
+      "title": "Készen állsz? Válassz szállást az Egyesült Királyságban.",
+      "text": "A TrustedStays új lapon nyílik meg. Ott fejezheted be az ajánlatkérést vagy foglalást közvetlenül a partnernél.",
+      "ctaPrimary": "UK szállások megtekintése",
+      "ctaSecondary": "Kapcsolat az AJSEE-vel"
+    }
+  }
+}

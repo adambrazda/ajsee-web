@@ -14,6 +14,32 @@ function deepMerge(a = {}, b = {}) {
   return out;
 }
 
+
+function getRuntimePageName() {
+  try {
+    const bodyPage = document?.body?.dataset?.page || '';
+
+    if (bodyPage && bodyPage !== 'home') {
+      return String(bodyPage).trim();
+    }
+  } catch {
+    /* noop */
+  }
+
+  try {
+    const normalizedPath = String(location?.pathname || '/')
+      .replace(/\/+$/g, '');
+
+    if (!normalizedPath || normalizedPath === '/') return '';
+
+    const parts = normalizedPath.split('/').filter(Boolean);
+    const last = parts[parts.length - 1] || '';
+
+    return last.replace(/\.html$/i, '');
+  } catch {
+    return '';
+  }
+}
 async function fetchJSON(path) {
   try {
     const response = await fetch(path, { cache: 'no-store' });
@@ -27,9 +53,7 @@ export async function loadTranslations(lang) {
     (await fetchJSON(`/locales/${lang}.json`)) ||
     (await fetchJSON(`/src/locales/${lang}.json`)) ||
     {};
-
-  const rawPage = location.pathname.split('/').pop() || '';
-  const pageName = rawPage.replace(/\.html$/i, '');
+  const pageName = getRuntimePageName();
 
   const pagePart = pageName
     ? (await fetchJSON(`/locales/${lang}/${pageName}.json`)) ||
@@ -41,7 +65,23 @@ export async function loadTranslations(lang) {
 }
 
 function getByPath(obj, path) {
-  return path?.split('.').reduce((acc, key) => acc?.[key], obj);
+  
+  if (String(path || '').includes('|')) {
+    const parts = String(path)
+      .split('|')
+      .map(part => part.trim())
+      .filter(Boolean);
+
+    for (const part of parts) {
+      const value = getByPath(obj, part);
+      if (value !== undefined && value !== null && String(value).trim() !== '') {
+        return value;
+      }
+    }
+
+    return undefined;
+  }
+return path?.split('.').reduce((acc, key) => acc?.[key], obj);
 }
 
 export function setCurrentLang(lang = 'cs') {

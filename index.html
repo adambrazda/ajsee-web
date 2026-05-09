@@ -172,6 +172,37 @@
     }
   }
 </script>
+  <script>
+    (function () {
+      try {
+        var supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+        var params = new URLSearchParams(window.location.search || '');
+        var fromUrl = params.get('lang');
+
+        var fromStorage = '';
+        try {
+          fromStorage = window.localStorage.getItem('ajsee.lang') || '';
+        } catch (e) {}
+
+        var fromCookie = '';
+        var match = document.cookie.match(/(?:^|;\s*)aj_lang=([^;]+)/);
+        if (match) fromCookie = decodeURIComponent(match[1] || '');
+
+        var lang = String(fromUrl || fromStorage || fromCookie || 'cs')
+          .toLowerCase()
+          .slice(0, 2);
+
+        if (supported.indexOf(lang) === -1) lang = 'cs';
+
+        document.documentElement.lang = lang;
+        document.documentElement.classList.add('lang-' + lang);
+
+        if (lang !== 'cs') {
+}
+      } catch (e) {
+}
+    })();
+  </script>
 </head>
 <body data-page="home">
 <header class="site-header">
@@ -280,7 +311,7 @@
         </div>
 
         <h1 data-i18n-key="hero.headline">Světové akce bez bariér</h1>
-        <p data-i18n-key="hero.intro">Koncerty, divadlo, festivaly, sport i další zážitky na jednom místě, přehledně a jednoduše.</p>
+        <p data-i18n-key="hero.intro">Objevuj koncerty, festivaly, sport, divadlo i další zážitky z celého světa přehledně na jednom místě.</p>
 
         <div class="hero-buttons">
           <a href="/events" class="btn-primary" data-i18n-key="hero.cta-primary">Prozkoumat události</a>
@@ -296,7 +327,7 @@
         </div>
 
         <p class="hero-partner-note">
-          <a href="/partners" class="hero-partner-link" data-i18n-key="hero.partner-note">Pro partnery: Budujeme síť partnerů v oblasti vstupenek a zážitků.</a>
+          <a href="/partners" class="hero-partner-link" data-i18n-key="hero.partner-note">Pro partnery: Budujeme síť pro ticketing, kulturu, sport, cestování a zážitky.</a>
         </p>
       </div>
     </div>
@@ -307,12 +338,12 @@
     <div class="container">
 
       <div class="home-announcements" aria-label="Důležitá oznámení">
-        <div class="event-demo-badge hp-banner hp-banner--secondary" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel">
+        <div class="event-demo-badge hp-banner hp-banner--secondary" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel" aria-label="Informace o ubytování s TrustedStays pro vybrané akce v UK." title="Informace o ubytování s TrustedStays pro vybrané akce v UK.">
           <div class="hp-banner__icon ib-icon" aria-hidden="true">🏨</div>
 
           <div class="hp-banner__content">
             <strong class="hp-banner__title" data-i18n-key="event-demo.title">Nově i ubytování s TrustedStays</strong>
-            <span class="hp-banner__body" data-i18n-key="event-demo.body">Plánuješ cestu za zážitky do UK? U vybraných akcí ti pomůžeme i s ubytováním.</span>
+            <span class="hp-banner__body" data-i18n-key="event-demo.body">Plánuješ cestu za zážitky do UK? U vybraných akcí tě propojíme s ubytováním přes TrustedStays.</span>
           </div>
 
           <a class="ib-cta hp-banner__cta" id="demoBadgeCta" href="/accommodation" data-i18n-key="event-demo.cta">Najít ubytování</a>
@@ -321,7 +352,7 @@
 
       <div class="events-header">
         <h2 class="events-title" data-i18n-key="section-events-title">Nejbližší události</h2>
-        <p class="events-subtitle" data-i18n-key="section-events-subtitle">Získejte vstupenky na nejlepší kulturní zážitky ve vašem okolí</p>
+        <p class="events-subtitle" data-i18n-key="section-events-subtitle">Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa.</p>
       </div>
 
       <!-- Filtry -->
@@ -332,7 +363,7 @@
             <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend">Tento víkend</button>
             <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
           </div>
-          <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž" data-i18n-aria="filters.nearMe">
+          <button type="button" class="chip chip-near" id="chipNearMe" aria-label="V mém okolí" data-i18n-aria="filters.nearMe" title="V mém okolí">
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>
             <span data-i18n-key="filters.nearMe">V mém okolí</span>
           </button>
@@ -405,7 +436,7 @@
           </div>
 
           <div class="filter-actions">
-            <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe" data-i18n-aria="filters.nearMe">V mém okolí</button>
+            <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe" data-i18n-aria="filters.nearMe" aria-label="V mém okolí" title="V mém okolí">V mém okolí</button>
             <button type="submit" class="btn btn-primary" data-i18n-key="filters.apply">Použít filtry</button>
             <button type="reset" class="btn btn-ghost" data-i18n-key="filters.reset">Vymazat</button>
           </div>
@@ -426,14 +457,12 @@
         <div class="about-hero-text">
           <p class="about-home-kicker" data-i18n-key="about-lead">Zážitky nemají hranice.</p>
 
-          <p class="about-home-body" data-i18n-key="about-text">
-            AJSEE® vzniklo z potřeby cestovat za kulturou bez stresu a zbytečných bariér. Budujeme platformu, která ti otevře dveře ke koncertům, festivalům, divadlu i sportu – doma i v zahraničí.
-          </p>
+          <p class="about-home-body" data-i18n-key="about-text"><strong>AJSEE<sup>®</sup></strong> vzniklo z potřeby cestovat za kulturou bez stresu a zbytečných bariér. Budujeme platformu, která ti otevře dveře ke koncertům, festivalům, divadlu i sportu – doma i v zahraničí.</p>
         </div>
 
         <div class="about-hero-actions">
           <a href="/about" class="about-hero-cta btn-main btn-with-icon">
-            <span data-i18n-key="about-btn">Zjisti více o AJSEE®</span>
+            <span data-i18n-key="about-btn">Zjisti více o AJSEE<sup>®</sup></span>
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
               <circle cx="11" cy="11" r="11" fill="#14c2c5"/>
               <path d="M8 11H14M14 11L11.5 8.5M14 11L11.5 13.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -511,7 +540,7 @@
   <!-- BLOG -->
   <section class="homepage-blog blog" id="blog">
     <div class="container">
-      <h2 data-i18n-key="blog-headline-home">Blog & Recenze</h2>
+      <h2 data-i18n-key="blog-headline-home">Blog o zážitcích</h2>
 <div class="homepage-blog-cards blog-cards" id="homepage-blog-list" data-home-blog data-static-blog-list="true">
   <article class="blog-card" data-type="article" data-category="festival">
     <div class="card-media">
@@ -661,9 +690,7 @@
   </div>
 
   <div class="footer-meta">
-    <p class="footer-copy" data-i18n-key="footer-copyright">
-      &copy; 2025 AJSEE®. Všechna práva vyhrazena.
-    </p>
+    <p class="footer-copy" data-i18n-key="footer-copyright">© 2026 AJSEE®. Všechna práva vyhrazena.</p>
 
     <nav class="footer-legal" aria-label="Právní odkazy">
       <a

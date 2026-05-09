@@ -286,27 +286,27 @@
             <div class="form-row">
               <label for="c_name" data-i18n-key="comments.name">Jméno</label>
               <input id="c_name" name="name" type="text" required autocomplete="name"
-                     placeholder="Tvoje jméno" data-i18n-placeholder="comments.namePh" />
+                     placeholder="Vaše jméno" data-i18n-placeholder="comments.namePh" />
             </div>
 
             <div class="form-row">
               <label for="c_email" data-i18n-key="comments.email">E-mail</label>
               <input id="c_email" name="email" type="email" required autocomplete="email"
-                     placeholder="tvuj@email.cz" data-i18n-placeholder="comments.emailPh" />
-              <small class="hint" data-i18n-key="comments.emailHint">E-mail se nezobrazuje veřejně.</small>
+                     placeholder="vas@email.cz" data-i18n-placeholder="comments.emailPh" />
+              <small class="hint" data-i18n-key="comments.emailHint">E-mail nebude veřejně zobrazen.</small>
             </div>
 
             <div class="form-row">
-              <label for="c_website" data-i18n-key="comments.website">Web (nepovinné)</label>
+              <label for="c_website" data-i18n-key="comments.website">Web</label>
               <input id="c_website" name="website" type="url"
-                     placeholder="https://tvoje-stranka.cz" data-i18n-placeholder="comments.websitePh" />
-              <small class="hint" data-i18n-key="comments.websiteHint">Web se veřejně nezobrazuje.</small>
+                     placeholder="https://..." data-i18n-placeholder="comments.websitePh" />
+              <small class="hint" data-i18n-key="comments.websiteHint">Volitelné.</small>
             </div>
 
             <div class="form-row form-row--full">
               <label for="c_comment" data-i18n-key="comments.comment">Komentář</label>
               <textarea id="c_comment" name="comment" rows="5" required
-                        placeholder="Napiš svůj komentář…" data-i18n-placeholder="comments.commentPh"></textarea>
+                        placeholder="Napište svůj komentář…" data-i18n-placeholder="comments.commentPh"></textarea>
             </div>
 
             <div data-netlify-recaptcha="true"></div>
@@ -364,7 +364,7 @@
 
     function renderComments(items) {
       if (!Array.isArray(items) || !items.length) {
-        listEl.innerHTML = '<p class="comments-empty" data-i18n-key="comments.empty">Zatím žádné komentáře.</p>';
+        listEl.innerHTML = '<p class="comments-empty" data-i18n-key="comments.empty">Zatím tu nejsou žádné komentáře.</p>';
         return;
       }
       listEl.innerHTML = items.map(it => `

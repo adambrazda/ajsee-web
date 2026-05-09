@@ -186,15 +186,9 @@
     <section class="events-hero" aria-labelledby="events-hero-title">
       <div class="container events-hero-content">
         <div class="events-hero-text">
-          <h1 id="events-hero-title" class="events-hero-title" data-i18n-key="events-hero-title">
-            Nejlepší zážitky na dosah
-          </h1>
-          <p class="events-hero-desc" data-i18n-key="events-hero-desc">
-            Objevte koncerty, festivaly, divadlo i sportovní akce v jednom přehledném katalogu.
-          </p>
-          <a href="#upcoming-events" class="events-cta-btn" data-i18n-key="events-hero-cta">
-            Zjistit nejbližší události
-          </a>
+          <h1 id="events-hero-title" class="events-hero-title" data-i18n-key="events-hero-title">Koncerty, festivaly a sport na jednom místě</h1>
+          <p class="events-hero-desc" data-i18n-key="events-hero-desc">Objevuj koncerty, festivaly, divadlo, sportovní akce a další zážitky v jednom přehledném katalogu.</p>
+          <a href="#upcoming-events" class="events-cta-btn" data-i18n-key="events-hero-cta">Prozkoumat události</a>
         </div>
         <div class="events-hero-image" aria-hidden="true">
           <img src="/images/hero-events.svg" alt="" loading="lazy" />
@@ -214,7 +208,7 @@
               <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend">Tento víkend</button>
               <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
             </div>
-            <button type="button" class="chip chip-near" id="chipNearMe" aria-label="Najít akce poblíž" data-i18n-aria="filters.nearMe">
+            <button type="button" class="chip chip-near" id="chipNearMe" aria-label="V mém okolí" data-i18n-aria="filters.nearMe" title="V mém okolí">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"/></svg>
               <span data-i18n-key="filters.nearMe">V mém okolí</span>
             </button>
@@ -289,22 +283,22 @@
             </div>
 
             <div class="filter-actions">
-              <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe" data-i18n-aria="filters.nearMe">V mém okolí</button>
+              <button type="button" class="btn btn-ghost" id="filter-nearme" data-i18n-key="filters.nearMe" data-i18n-aria="filters.nearMe" aria-label="V mém okolí" title="V mém okolí">V mém okolí</button>
               <button type="submit" class="btn btn-primary" data-i18n-key="filters.apply">Použít filtry</button>
               <button type="reset" class="btn btn-ghost" data-i18n-key="filters.reset">Vymazat</button>
             </div>
           </fieldset>
         </form>
 
-        <div class="event-demo-badge" id="demoBadge" role="note" aria-live="polite" aria-label="" data-i18n-aria="event-demo.ariaLabel">
+        <div class="event-demo-badge" id="demoBadge" role="note" aria-live="polite" aria-label="Informace o ubytování s TrustedStays pro vybrané akce v UK." data-i18n-aria="event-demo.ariaLabel" title="Informace o ubytování s TrustedStays pro vybrané akce v UK.">
           <span class="ib-icon" aria-hidden="true">✨</span>
           <p class="ib-text">
-            <strong data-i18n-key="event-demo.title">Ukázkové události.</strong>
-            <span data-i18n-key="event-demo.body">Připravujeme reálný prodej vstupenek. Sledujte nás!</span>
+            <strong data-i18n-key="event-demo.title">Nově i ubytování s TrustedStays</strong>
+            <span data-i18n-key="event-demo.body">Plánuješ cestu za zážitky do UK? U vybraných akcí tě propojíme s ubytováním přes TrustedStays.</span>
           </p>
           <a class="ib-cta" id="demoBadgeCta"
              href="/coming-soon?utm_source=site&utm_medium=demo_badge&utm_campaign=waitlist"
-             data-i18n-key="event-demo.cta">Sleduj novinky</a>
+             data-i18n-key="event-demo.cta">Najít ubytování</a>
         </div>
 
         <h2 class="events-upcoming-title" id="events-upcoming-title" data-i18n-key="events-upcoming-title">Nejbližší události</h2>
@@ -323,15 +317,15 @@
         <div class="benefits-list" role="list">
           <div class="benefit" role="listitem">
             <span class="benefit-icon" aria-hidden="true">🎫</span>
-            <span data-i18n-key="events-benefit-1">Originální vstupenky přímo od pořadatelů</span>
+            <span data-i18n-key="events-benefit-1">Vstupenky u ověřených partnerů</span>
           </div>
           <div class="benefit" role="listitem">
             <span class="benefit-icon" aria-hidden="true">🤝</span>
-            <span data-i18n-key="events-benefit-2">Lokální zákaznická podpora</span>
+            <span data-i18n-key="events-benefit-2">Srozumitelné objevování akcí i v češtině</span>
           </div>
           <div class="benefit" role="listitem">
             <span class="benefit-icon" aria-hidden="true">⭐</span>
-            <span data-i18n-key="events-benefit-3">Pečlivě vybírané akce</span>
+            <span data-i18n-key="events-benefit-3">Pečlivě vybírané akce a zážitky</span>
           </div>
         </div>
       </div>
@@ -401,9 +395,7 @@
   </div>
 
   <div class="footer-meta">
-    <p class="footer-copy" data-i18n-key="footer-copyright">
-      &copy; 2025 AJSEE®. Všechna práva vyhrazena.
-    </p>
+    <p class="footer-copy" data-i18n-key="footer-copyright">© 2026 AJSEE®. Všechna práva vyhrazena.</p>
 
     <nav class="footer-legal" aria-label="Právní odkazy">
       <a

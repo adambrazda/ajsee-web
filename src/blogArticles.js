@@ -21,7 +21,7 @@ export const blogArticles = [
     },
     date: "2025-06-11",
     category: "concert",
-    image: "https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=700&q=80",
+    image: "https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=480&q=70",
     content: {
       cs: "<p>Coldplay přivezli do Prahy svou světovou tour a zaplnili stadion až po okraj. Atmosféra byla elektrizující...</p>",
       en: "<p>Coldplay brought their world tour to Prague and filled the stadium to the brim. The atmosphere was electrifying...</p>"
@@ -48,7 +48,7 @@ export const blogArticles = [
     },
     date: "2025-07-20",
     category: "theatre",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=700&q=80",
+    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=480&q=70",
     content: {
       cs: `<p>Letní shakespearovské slavnosti patří k nejtradičnějším divadelním událostem v Praze. Letos nabídnou nové inscenace i hvězdná jména českého herectví. Vystoupení pod otevřeným nebem před Pražským hradem má jedinečné kouzlo.</p>`,
       en: `<p>The Summer Shakespeare Festival is a highlight of Prague’s theatre season. This year brings new productions and top Czech actors. Open-air performances at Prague Castle have a unique charm you won't forget.</p>`
@@ -75,7 +75,7 @@ export const blogArticles = [
     },
     date: "2025-08-17",
     category: "festival",
-    image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=700&q=80",
+    image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=480&q=70",
     content: {
       cs: `<p>Sziget je fenomén! Tisíce návštěvníků, desítky pódií a hudba všech žánrů. Festival letos nabídl mimo jiné koncerty Dua Lipa, Arctic Monkeys a spoustu zajímavých doprovodných akcí.</p>`,
       en: `<p>Sziget is a phenomenon! Thousands of visitors, dozens of stages, and music of all genres. This year featured Dua Lipa, Arctic Monkeys, and much more in Budapest’s party island atmosphere.</p>`

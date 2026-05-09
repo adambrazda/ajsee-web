@@ -15,8 +15,61 @@ import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js
 
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
-import { initContactFormValidation } from './contact-validate.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
+let homeContactValidationModulePromise = null;
+
+function initHomeContactValidationLazy(options = {}) {
+  const hasContactForm = !!(
+    document.querySelector('form[name="contact"]') ||
+    document.querySelector('#contact form') ||
+    document.querySelector('form[data-netlify="true"]') ||
+    document.querySelector('.contact-form')
+  );
+
+  if (!hasContactForm) return;
+
+  const run = async () => {
+    try {
+      homeContactValidationModulePromise ||= import('./contact-validate.js');
+
+      const mod = await homeContactValidationModulePromise;
+      const init = mod?.initContactFormValidation;
+
+      if (typeof init === 'function') {
+        init(options);
+      }
+    } catch (error) {
+      console.warn('[AJSEE] contact validation lazy init failed:', error);
+    }
+  };
+
+  const contactSection =
+    document.getElementById('contact') ||
+    document.querySelector('[data-contact-section]') ||
+    document.querySelector('.contact-section');
+
+  if (contactSection && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+
+      observer.disconnect();
+      void run();
+    }, {
+      root: null,
+      rootMargin: '360px 0px',
+      threshold: 0
+    });
+
+    observer.observe(contactSection);
+    return;
+  }
+
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => void run(), { timeout: 3500 });
+  } else {
+    window.setTimeout(() => void run(), 1800);
+  }
+}
 let homeEventModalModulePromise = null;
 
 async function loadHomeEventModalModule() {
@@ -3118,7 +3171,7 @@ async function bootstrapMain() {
   updateHomeCtasWithLang();
 
   initNav({ lang: currentLang });
-  initContactFormValidation({ lang: currentLang, t });
+  initHomeContactValidationLazy({ lang: currentLang, t });
   // Event modal se na homepage načítá až po kliknutí na Detail.
 
   initLangDropdownCompat();

@@ -16,8 +16,34 @@ import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
 import { initContactFormValidation } from './contact-validate.js';
-import { initEventModal, openEventModal } from './event-modal.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
+let homeEventModalModulePromise = null;
+
+async function loadHomeEventModalModule() {
+  if (!homeEventModalModulePromise) {
+    homeEventModalModulePromise = import('./event-modal.js').then((mod) => {
+      try {
+        if (typeof mod.initEventModal === 'function') {
+          mod.initEventModal();
+        }
+      } catch {
+        // Modal se inicializuje best-effort až při prvním použití.
+      }
+
+      return mod;
+    });
+  }
+
+  return homeEventModalModulePromise;
+}
+
+async function lazyOpenHomeEventModal(eventData, locale, options = {}) {
+  const mod = await loadHomeEventModalModule();
+
+  if (typeof mod.openEventModal !== 'function') return;
+
+  return mod.openEventModal(eventData, locale, options);
+}
 
 /* ───────── global guard ───────── */
 (function ensureGlobals() {
@@ -2464,7 +2490,7 @@ qsa('.js-event-detail', list).forEach(btn => {
 
     if (!selectedEvent) return;
 
-    openEventModal(selectedEvent, locale, { t });
+    void lazyOpenHomeEventModal(selectedEvent, locale, { t });
   });
 });
 
@@ -3093,7 +3119,7 @@ async function bootstrapMain() {
 
   initNav({ lang: currentLang });
   initContactFormValidation({ lang: currentLang, t });
-  initEventModal();
+  // Event modal se na homepage načítá až po kliknutí na Detail.
 
   initLangDropdownCompat();
   initLanguageSwitchers();

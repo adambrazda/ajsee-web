@@ -3388,7 +3388,18 @@ async function bootstrapMain() {
 
 if (!G.flags.mainDomReadyBound) {
   G.flags.mainDomReadyBound = true;
-  document.addEventListener('DOMContentLoaded', () => {
+
+  const runBootstrapMainOnce = () => {
+    if (G.flags.mainBootstrapped) return;
+    G.flags.mainBootstrapped = true;
     void bootstrapMain();
-  });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runBootstrapMainOnce, { once: true });
+  } else if ('requestAnimationFrame' in window) {
+    window.requestAnimationFrame(runBootstrapMainOnce);
+  } else {
+    window.setTimeout(runBootstrapMainOnce, 0);
+  }
 }

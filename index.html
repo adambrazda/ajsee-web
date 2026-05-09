@@ -103,7 +103,75 @@
   </script>
 
   <!-- Vite vstup -->
-  <script type="module" src="/src/home-entry.js"></script>
+  <script type="module">
+  let homeAppPromise = null;
+
+  const loadHomeApp = () => {
+    if (!homeAppPromise) {
+      homeAppPromise = import('/src/home-entry.js');
+    }
+
+    return homeAppPromise;
+  };
+
+  const getInitialLang = () => {
+    try {
+      const fromUrl = new URLSearchParams(window.location.search).get('lang');
+      if (fromUrl) return fromUrl.toLowerCase().slice(0, 2);
+
+      const fromCookie = document.cookie
+        .split('; ')
+        .find((item) => item.startsWith('aj_lang='))
+        ?.split('=')[1];
+
+      if (fromCookie) return decodeURIComponent(fromCookie).toLowerCase().slice(0, 2);
+
+      const fromStorage = window.localStorage.getItem('ajsee.lang');
+      if (fromStorage) return fromStorage.toLowerCase().slice(0, 2);
+    } catch {
+      // Homepage keeps static CS fallback content.
+    }
+
+    return 'cs';
+  };
+
+  const hasStatefulUrl =
+    /[?&](lang|city|from|to|segment|q|sort|lat|lon|radius)=/.test(window.location.search) ||
+    window.location.hash === '#events';
+
+  const shouldLoadEarly = getInitialLang() !== 'cs' || hasStatefulUrl;
+
+  const wake = () => {
+    window.removeEventListener('pointerdown', wake);
+    window.removeEventListener('touchstart', wake);
+    window.removeEventListener('keydown', wake);
+    void loadHomeApp();
+  };
+
+  const schedule = () => {
+    const run = () => void loadHomeApp();
+
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(run, { timeout: 3000 });
+    } else {
+      window.setTimeout(run, 1600);
+    }
+  };
+
+  if (shouldLoadEarly) {
+    void loadHomeApp();
+  } else {
+    window.addEventListener('pointerdown', wake, { once: true, passive: true });
+    window.addEventListener('touchstart', wake, { once: true, passive: true });
+    window.addEventListener('keydown', wake, { once: true });
+
+    if (document.readyState === 'complete') {
+      schedule();
+    } else {
+      window.addEventListener('load', schedule, { once: true });
+    }
+  }
+</script>
 </head>
 <body data-page="home">
 <header class="site-header">

@@ -966,6 +966,24 @@ function getHomeBlogHost() {
     blog.querySelector('.homepage-blog-cards');
 }
 
+
+function optimizeCardImageUrl(url = '') {
+  return String(url)
+    .replace('w=700', 'w=480')
+    .replace('q=80', 'q=70');
+}
+
+function blogArticleHref(article, lang) {
+  const slug = article?.slug ? String(article.slug).trim() : '';
+
+  if (slug) {
+    return withLangParam(`/blog/${encodeURIComponent(slug)}/`, lang);
+  }
+
+  const rawHref = article?.url || article?.href || article?.link || article?.path || '/blog';
+  return withLangParam(rawHref, lang);
+}
+
 function renderHomeBlog() {
   if (!isHome()) return;
 
@@ -1013,9 +1031,9 @@ function renderHomeBlog() {
   host.innerHTML = top.map(article => {
     const title = esc(pickLocalized(article.title || article.name || article.heading, currentLang) || '');
     const excerpt = esc(pickLocalized(article.excerpt || article.perex || article.summary || article.description, currentLang) || '');
-    const img = esc(article.image || article.cover || article.hero || article.thumb || '/images/fallbacks/concert0.jpg');
-    const rawHref = article.url || article.href || article.link || article.path || '/blog';
-    const href = esc(withLangParam(rawHref, currentLang));
+    const rawImage = article.image || article.cover || article.hero || article.thumb || '/images/fallbacks/concert0.jpg';
+    const img = esc(optimizeCardImageUrl(rawImage));
+    const href = esc(blogArticleHref(article, currentLang));
 
     return `
       <a class="homepage-blog-card blog-card" href="${href}" aria-label="${title}">

@@ -1,4 +1,4 @@
-﻿// /src/blog.js
+// /src/blog.js
 // ---------------------------------------------------------
 // AJSEE – blog listing page
 // Renders blog articles + micro-guides into .blog-cards.
@@ -64,6 +64,13 @@ function escapeHtml(value = '') {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+
+function optimizeCardImageUrl(url = '') {
+  return String(url)
+    .replace('w=700', 'w=480')
+    .replace('q=80', 'q=70');
 }
 
 // --- Local blog UI texts ---------------------------------------------------
@@ -338,7 +345,7 @@ function renderCards(cards, lang) {
     const href = cardHref(card);
     const title = escapeHtml(card.title || '');
     const lead = escapeHtml(card.lead || '');
-    const image = escapeHtml(card.image || '');
+    const image = escapeHtml(optimizeCardImageUrl(card.image || ''));
     const readMore = escapeHtml(tReadMore(lang));
 
     if (card.type === 'microguide') {

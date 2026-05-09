@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------
+// ------------------------------------------------------
 // AJSEE – Homepage SCSS entry
 // ------------------------------------------------------
 
@@ -9,20 +9,9 @@
 @use '../partials/header';
 @use '../partials/hero';
 
-@use '../partials/events';
 @use '../partials/filters-premium';
-@use '../partials/typeahead';
-@use '../partials/date-popover';
 
-@use '../partials/about-section';
-@use '../partials/blog';
-@use '../partials/contact';
-@use '../partials/footer';
-
-@use '../partials/cookie-consent';
 @use '../partials/waitlist-banner';
-@use '../partials/tablet-responsive-fix';
-@use '../partials/filters-parity-final';
 
 // Page-level globals previously provided by main.scss
 html,

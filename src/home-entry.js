@@ -3138,7 +3138,41 @@ function bindFilterFormInteractions(formEl) {
 }
 
 /* ───────── DOM Ready ───────── */
+
+let homeDeferredStylesPromise = null;
+
+function loadHomeDeferredStylesOnce() {
+  if (homeDeferredStylesPromise) return homeDeferredStylesPromise;
+
+  homeDeferredStylesPromise = import('./styles/pages/home-deferred.scss')
+    .catch(() => {
+      homeDeferredStylesPromise = null;
+    });
+
+  return homeDeferredStylesPromise;
+}
+
+function scheduleHomeDeferredStyles() {
+  const run = () => {
+    void loadHomeDeferredStylesOnce();
+  };
+
+  const runWhenIdle = () => {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(run, { timeout: 3000 });
+    } else {
+      window.setTimeout(run, 1200);
+    }
+  };
+
+  if (document.readyState === 'complete') {
+    runWhenIdle();
+  } else {
+    window.addEventListener('load', runWhenIdle, { once: true });
+  }
+}
 async function bootstrapMain() {
+  scheduleHomeDeferredStyles();
   ensureRuntimeStyles();
   updateHeaderOffset();
   syncPopoverZIndex();

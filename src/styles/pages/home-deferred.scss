@@ -1,0 +1,20 @@
+// ------------------------------------------------------
+// AJSEE – Homepage deferred SCSS entry
+// Loaded non-render-blocking from index.html.
+// Keep above-the-fold header/hero/filter shell in home-page.scss.
+// ------------------------------------------------------
+
+@use '../globals' as *;
+
+@use '../partials/events';
+@use '../partials/typeahead';
+@use '../partials/date-popover';
+
+@use '../partials/about-section';
+@use '../partials/blog';
+@use '../partials/contact';
+@use '../partials/footer';
+
+@use '../partials/cookie-consent';
+@use '../partials/tablet-responsive-fix';
+@use '../partials/filters-parity-final';

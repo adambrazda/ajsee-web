@@ -3154,7 +3154,21 @@ async function bootstrapMain() {
     await renderAndSync({ resetPage: true });
   }, 'ajsee-lang-change-main');
 
-  await renderAndSync({ resetPage: true });
+  if (isHome()) {
+    const runInitialHomeEventsRender = () => {
+      void renderAndSync({ resetPage: true });
+    };
+
+    // Homepage hero musí dostat šanci vykreslit se dřív než začneme tahat
+    // Ticketmaster feed, event obrázky a související DOM práci.
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(runInitialHomeEventsRender, { timeout: 2200 });
+    } else {
+      window.setTimeout(runInitialHomeEventsRender, 900);
+    }
+  } else {
+    await renderAndSync({ resetPage: true });
+  }
 }
 
 if (!G.flags.mainDomReadyBound) {

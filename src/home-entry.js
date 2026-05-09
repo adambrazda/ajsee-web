@@ -3155,16 +3155,40 @@ async function bootstrapMain() {
   }, 'ajsee-lang-change-main');
 
   if (isHome()) {
+    let initialHomeEventsRenderQueued = false;
+
     const runInitialHomeEventsRender = () => {
+      if (initialHomeEventsRenderQueued) return;
+      initialHomeEventsRenderQueued = true;
+
       void renderAndSync({ resetPage: true });
     };
 
-    // Homepage hero musí dostat šanci vykreslit se dřív než začneme tahat
-    // Ticketmaster feed, event obrázky a související DOM práci.
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(runInitialHomeEventsRender, { timeout: 2200 });
+    const eventsAnchor =
+      document.getElementById('events') ||
+      document.getElementById('eventsList') ||
+      document.querySelector('[data-events-section]') ||
+      document.querySelector('.events-section');
+
+    // Homepage hero je LCP. Event feed je níž na stránce, proto ho netaháme
+    // během prvního renderu. Načte se až při přiblížení k event sekci.
+    if (eventsAnchor && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          runInitialHomeEventsRender();
+        }
+      }, {
+        root: null,
+        rootMargin: '450px 0px',
+        threshold: 0
+      });
+
+      observer.observe(eventsAnchor);
+    } else if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(runInitialHomeEventsRender, { timeout: 5200 });
     } else {
-      window.setTimeout(runInitialHomeEventsRender, 900);
+      window.setTimeout(runInitialHomeEventsRender, 3200);
     }
   } else {
     await renderAndSync({ resetPage: true });

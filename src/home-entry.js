@@ -1006,8 +1006,14 @@ async function applyTranslations(lang) {
     const value = t(key);
 
     if (value === undefined || String(value).trim() === '') return;
-    if (/[<][a-z]/i.test(value)) el.innerHTML = value;
-    else el.textContent = value;
+
+    const next = String(value);
+
+    if (/[<][a-z]/i.test(next)) {
+      if (el.innerHTML !== next) el.innerHTML = next;
+    } else if (el.textContent !== next) {
+      el.textContent = next;
+    }
   });
 
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {

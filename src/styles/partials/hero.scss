@@ -207,21 +207,6 @@
     color: #fff;
     text-shadow: 0 8px 28px rgba(0,0,0,.20);
   }
-h1 {
-    margin: 0 0 0.95rem;
-    width: min(100%, 24ch);
-    max-width: 24ch;
-
-    font-size: clamp(3.45rem, 4.25vw, 5.2rem);
-    line-height: 0.95;
-    font-weight: 900;
-    letter-spacing: -0.05em;
-    text-wrap: pretty;
-
-    color: #fff;
-    text-shadow: 0 8px 28px rgba(0,0,0,.20);
-  }
-
   .hero-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -576,5 +561,19 @@ body.lang-sk .hero-content .hero-badge {
   .hero-content .hero-buttons .btn-primary,
   .hero-content .hero-buttons .btn-secondary {
     transition: none;
+  }
+}
+
+/* Homepage mobile LCP paint guard */
+@media (max-width: 600px) {
+  body[data-page="home"] .hero-content h1 {
+    text-wrap: normal;
+    text-shadow: none;
+  }
+
+  body[data-page="home"] .hero-content .hero-badge,
+  body[data-page="home"] .hero-content .hero-buttons .btn-secondary {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }

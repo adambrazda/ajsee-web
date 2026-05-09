@@ -5,16 +5,7 @@
 // ------------------------------------------------------
 
 @use '../globals' as *;
-
-@use '../partials/events';
-@use '../partials/filters-premium';
-@use '../partials/typeahead';
-@use '../partials/date-popover';
-
 @use '../partials/about-section';
 @use '../partials/blog';
 @use '../partials/contact';
 @use '../partials/footer';
-
-@use '../partials/tablet-responsive-fix';
-@use '../partials/filters-parity-final';

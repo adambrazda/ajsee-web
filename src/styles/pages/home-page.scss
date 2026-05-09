@@ -8,8 +8,13 @@
 @use '../partials/layout';
 @use '../partials/header';
 @use '../partials/hero';
-
+@use '../partials/events';
+@use '../partials/filters-premium';
+@use '../partials/typeahead';
+@use '../partials/date-popover';
 @use '../partials/waitlist-banner';
+@use '../partials/tablet-responsive-fix';
+@use '../partials/filters-parity-final';
 @use '../partials/cookie-consent';
 
 // Page-level globals previously provided by main.scss

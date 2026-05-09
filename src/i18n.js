@@ -7,6 +7,83 @@ export const translations = {}; // živý objekt – neměň referenci
 const SUPPORTED = ['cs','en','de','sk','pl','hu'];
 const LANG_KEY = 'ajsee.lang';
 
+/* AJSEE language URL helpers: canonical path-prefix URLs, no runtime ?lang links. */
+const AJSEE_CANONICAL_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+
+function ajseeCanonicalLang(value) {
+  const lang = String(value || '').trim().toLowerCase().slice(0, 2);
+  return AJSEE_CANONICAL_LANGS.includes(lang) ? lang : 'cs';
+}
+
+function ajseePathLang(pathname = window.location.pathname) {
+  const match = String(pathname || '').match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
+  return match ? ajseeCanonicalLang(match[1]) : '';
+}
+
+function ajseeStripLangPrefix(pathname = '/') {
+  let path = String(pathname || '/');
+  path = path.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+  if (!path) path = '/';
+  if (!path.startsWith('/')) path = '/' + path;
+  return path;
+}
+
+function ajseeBuildLocalizedPath(pathname = '/', lang = 'cs') {
+  const targetLang = ajseeCanonicalLang(lang);
+  let path = ajseeStripLangPrefix(pathname || '/');
+
+  path = path.replace(/\/index\.html$/i, '/');
+  path = path.replace(/\.html$/i, '');
+  path = path.replace(/\/{2,}/g, '/');
+
+  if (!path.startsWith('/')) path = '/' + path;
+  if (path !== '/' && !path.endsWith('/')) path += '/';
+
+  return targetLang === 'cs'
+    ? path
+    : '/' + targetLang + (path === '/' ? '/' : path);
+}
+
+function ajseeLocalizedUrlForLang(lang, href = window.location.href) {
+  const targetLang = ajseeCanonicalLang(lang);
+
+  try {
+    const url = new URL(href, window.location.origin);
+    url.searchParams.delete('lang');
+    url.searchParams.delete('locale');
+    url.searchParams.delete('hl');
+    url.pathname = ajseeBuildLocalizedPath(url.pathname, targetLang);
+
+    const search = url.searchParams.toString();
+    return url.pathname + (search ? '?' + search : '') + (url.hash || '');
+  } catch {
+    return targetLang === 'cs' ? '/' : '/' + targetLang + '/';
+  }
+}
+
+function ajseeLocalizeInternalHref(rawHref, lang) {
+  if (!rawHref) return rawHref;
+  if (String(rawHref).startsWith('#')) return rawHref;
+  if (/^(mailto:|tel:|javascript:)/i.test(String(rawHref))) return rawHref;
+  if (/^https?:\/\//i.test(String(rawHref)) && !String(rawHref).startsWith(window.location.origin)) return rawHref;
+
+  try {
+    const url = new URL(rawHref, window.location.origin);
+    if (url.origin !== window.location.origin) return rawHref;
+
+    url.searchParams.delete('lang');
+    url.searchParams.delete('locale');
+    url.searchParams.delete('hl');
+    url.pathname = ajseeBuildLocalizedPath(url.pathname, lang);
+
+    const search = url.searchParams.toString();
+    return url.pathname + (search ? '?' + search : '') + (url.hash || '');
+  } catch {
+    return rawHref;
+  }
+}
+
+
 /**
  * Vite loader pro JSON v /src/locales (např. "./locales/cs/accommodation.json")
  * Klíče: "./locales/cs/accommodation.json" atd.
@@ -93,27 +170,18 @@ function setCookieLang(lang) {
 function persistLang(lang) {
   const l = normalizeLang(lang) || 'cs';
 
-  // ✅ storage (existing)
   try { localStorage.setItem(LANG_KEY, l); } catch {}
-
-  // ✅ cookie (NEW: unify language across pages)
   setCookieLang(l);
 
-  // ✅ html lang
   try { document.documentElement.setAttribute('lang', l); } catch {}
 
-  // sync URL (bez reloadu) – cs = čistá URL bez parametru
   try {
-    const url = new URL(window.location.href);
-    if (l === 'cs') url.searchParams.delete('lang');
-    else url.searchParams.set('lang', l);
-
-    if (url.toString() !== window.location.href) {
-      history.replaceState({}, '', url.toString());
+    const nextUrl = ajseeLocalizedUrlForLang(l);
+    if (nextUrl !== (window.location.pathname + window.location.search + window.location.hash)) {
+      history.replaceState({}, '', nextUrl);
     }
   } catch {}
 
-  // event pro ostatní části UI (nav linky apod.)
   try {
     window.dispatchEvent(new CustomEvent('ajsee:lang-changed', { detail: { lang: l } }));
   } catch {}
@@ -135,33 +203,24 @@ export function patchInternalLinksWithLang(lang) {
 
     if (raw.startsWith('#')) return;
     if (/^(mailto:|tel:|javascript:)/i.test(raw)) return;
-    if (/^https?:\/\//i.test(raw)) return;
+    if (/^https?:\/\//i.test(raw) && !raw.startsWith(window.location.origin)) return;
 
     let u;
     try { u = new URL(raw, window.location.origin); } catch { return; }
     if (u.origin !== window.location.origin) return;
     if (!isNavLinkCandidate(u)) return;
 
-    if (l === 'cs') u.searchParams.delete('lang');
-    else u.searchParams.set('lang', l);
-
-    const next =
-      u.pathname +
-      (u.searchParams.toString() ? `?${u.searchParams.toString()}` : '') +
-      (u.hash || '');
-    a.setAttribute('href', next);
+    a.setAttribute('href', ajseeLocalizeInternalHref(raw, l));
   });
 }
 
 /* ───────── veřejné API ───────── */
 export function detectLang() {
   const urlLang = normalizeLang(new URLSearchParams(location.search).get('lang'));
-  const cookieLang = getCookieLang();
-  const stored = getStoredLang();
-  const htmlLang = normalizeLang(document.documentElement.getAttribute('lang'));
+  const pathLang = ajseePathLang(location.pathname);
 
-  // ✅ pořadí sjednocené s main.js: URL -> cookie -> storage -> <html lang> -> cs
-  return urlLang || cookieLang || stored || htmlLang || 'cs';
+  // Canonical rule: URL/query decides language. Non-prefixed pages are always Czech.
+  return urlLang || pathLang || 'cs';
 }
 
 function getByPath(o, p) {
@@ -280,23 +339,34 @@ export async function applyTranslations(lang = detectLang()) {
     const k = el.getAttribute('data-i18n-key');
     const v = t(k);
     if (v === undefined || String(v).trim() === '') return;
-    if (/[<][a-z]/i.test(v)) el.innerHTML = v;
-    else el.textContent = v;
+    if (/[<][a-z]/i.test(v)) {
+      const next = String(v);
+      if (el.innerHTML !== next) el.innerHTML = next;
+    } else {
+      const next = String(v);
+      if (el.textContent !== next) el.textContent = next;
+    }
   });
 
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
     const k = el.getAttribute('data-i18n-placeholder');
     const v = t(k);
     if (!v) return;
-    el.setAttribute('placeholder', String(v));
+    {
+      const next = String(v);
+      if (el.getAttribute('placeholder') !== next) el.setAttribute('placeholder', next);
+    }
   });
 
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
     const k = el.getAttribute('data-i18n-aria');
     const v = t(k);
     if (typeof v === 'string' && v.trim()) {
-      el.setAttribute('aria-label', v);
-      el.setAttribute('title', v);
+      {
+      const next = String(v);
+      if (el.getAttribute('aria-label') !== next) el.setAttribute('aria-label', next);
+      if (el.getAttribute('title') !== next) el.setAttribute('title', next);
+    }
     }
   });
 
@@ -304,7 +374,10 @@ export async function applyTranslations(lang = detectLang()) {
     const k = el.getAttribute('data-i18n-alt');
     const v = t(k);
     if (!v) return;
-    el.setAttribute('alt', String(v));
+    {
+      const next = String(v);
+      if (el.getAttribute('alt') !== next) el.setAttribute('alt', next);
+    }
   });
 
   // meta/og content překlady (content="...")
@@ -312,11 +385,15 @@ export async function applyTranslations(lang = detectLang()) {
     const k = el.getAttribute('data-i18n-content');
     const v = t(k);
     if (v === undefined || String(v).trim() === '') return;
-    el.setAttribute('content', String(v));
+    {
+      const next = String(v);
+      if (el.getAttribute('content') !== next) el.setAttribute('content', next);
+    }
   });
 
   // 2b) oprav interní odkazy -> přenese lang dál
   try { patchInternalLinksWithLang(l); } catch {}
+  try { document.documentElement.classList.add('ajsee-i18n-ready', 'ajsee-i18n-head-ready'); } catch {}
 
   // 3) globální UI helpery
   try {

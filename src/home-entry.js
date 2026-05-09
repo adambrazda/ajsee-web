@@ -3155,41 +3155,47 @@ async function bootstrapMain() {
   }, 'ajsee-lang-change-main');
 
   if (isHome()) {
-    let initialHomeEventsRenderQueued = false;
+    let didRunInitialHomeEvents = false;
 
     const runInitialHomeEventsRender = () => {
-      if (initialHomeEventsRenderQueued) return;
-      initialHomeEventsRenderQueued = true;
+      if (didRunInitialHomeEvents) return;
 
+      didRunInitialHomeEvents = true;
       void renderAndSync({ resetPage: true });
     };
 
-    const eventsAnchor =
-      document.getElementById('events') ||
-      document.getElementById('eventsList') ||
-      document.querySelector('[data-events-section]') ||
-      document.querySelector('.events-section');
+    const armInitialHomeEventsRender = () => {
+      const eventsAnchor =
+        document.getElementById('events') ||
+        document.getElementById('eventsList') ||
+        document.querySelector('[data-events-section]') ||
+        document.querySelector('.events-section');
 
-    // Homepage hero je LCP. Event feed je níž na stránce, proto ho netaháme
-    // během prvního renderu. Načte se až při přiblížení k event sekci.
-    if (eventsAnchor && 'IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
+      if (eventsAnchor && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            observer.disconnect();
+            runInitialHomeEventsRender();
+          }
+        }, {
+          root: null,
+          rootMargin: '0px 0px',
+          threshold: 0.01
+        });
+
+        observer.observe(eventsAnchor);
+
+        window.setTimeout(() => {
           observer.disconnect();
           runInitialHomeEventsRender();
-        }
-      }, {
-        root: null,
-        rootMargin: '450px 0px',
-        threshold: 0
-      });
+        }, 5200);
+      } else {
+        window.setTimeout(runInitialHomeEventsRender, 5200);
+      }
+    };
 
-      observer.observe(eventsAnchor);
-    } else if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(runInitialHomeEventsRender, { timeout: 5200 });
-    } else {
-      window.setTimeout(runInitialHomeEventsRender, 3200);
-    }
+    // Homepage hero / LCP má prioritu před Ticketmaster feedem, event obrázky a DOM prací.
+    window.setTimeout(armInitialHomeEventsRender, 2800);
   } else {
     await renderAndSync({ resetPage: true });
   }

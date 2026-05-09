@@ -9,12 +9,36 @@ import './utils/ajsee-date-popover.js';
 import { initLangDropdown } from './utils/lang-dropdown.js';
 import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 
-import { getAllEvents } from './api/eventsApi.js';
 import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js';
 
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
+
+let homeEventsApiModulePromise = null;
+
+function loadHomeEventsApiModule() {
+  if (!homeEventsApiModulePromise) {
+    homeEventsApiModulePromise = import('./api/eventsApi.js')
+      .catch((err) => {
+        homeEventsApiModulePromise = null;
+        throw err;
+      });
+  }
+
+  return homeEventsApiModulePromise;
+}
+
+async function getAllHomeEvents(args) {
+  const mod = await loadHomeEventsApiModule();
+
+  if (typeof mod.getAllEvents !== 'function') {
+    throw new Error('getAllEvents unavailable');
+  }
+
+  return mod.getAllEvents(args);
+}
+
 
 let homeTypeaheadModulePromise = null;
 
@@ -2485,7 +2509,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     const sig = makeFetchSig(locale, api, pagination.page, pagination.perPage);
     if (sig === _lastFetchSig) return;
 
-    const events = await getAllEvents({ locale, filters: api }) || [];
+    const events = await getAllHomeEvents({ locale, filters: api }) || [];
     _lastFetchSig = sig;
 
     if (!window.translations) window.translations = await loadTranslations(locale);

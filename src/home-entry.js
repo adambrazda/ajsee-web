@@ -10,12 +10,60 @@ import { initLangDropdown } from './utils/lang-dropdown.js';
 import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 
 import { getAllEvents } from './api/eventsApi.js';
-import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js';
 
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
+
+let homeTypeaheadModulePromise = null;
+
+function loadHomeTypeaheadModule() {
+  if (!homeTypeaheadModulePromise) {
+    homeTypeaheadModulePromise = import('./city/typeahead.js')
+      .catch((err) => {
+        homeTypeaheadModulePromise = null;
+        throw err;
+      });
+  }
+
+  return homeTypeaheadModulePromise;
+}
+
+function bindHomeTypeaheadOnDemand(input, locale) {
+  if (!input || input.dataset.ajTypeaheadLazyBound === '1') return;
+
+  input.dataset.ajTypeaheadLazyBound = '1';
+  input.dataset.ajTypeaheadBound = input.dataset.ajTypeaheadBound || '0';
+  input.dataset.ajTypeaheadLoading = input.dataset.ajTypeaheadLoading || '0';
+
+  const run = () => {
+    if (input.dataset.ajTypeaheadBound === '1' || input.dataset.ajTypeaheadLoading === '1') return;
+
+    input.dataset.ajTypeaheadLoading = '1';
+
+    loadHomeTypeaheadModule()
+      .then((mod) => {
+        if (typeof mod.setupCityTypeahead !== 'function') {
+          throw new Error('setupCityTypeahead unavailable');
+        }
+
+        mod.setupCityTypeahead(input, buildCityTypeaheadOptions(input, locale));
+        input.dataset.ajTypeaheadBound = '1';
+        input.dataset.ajTypeaheadLoading = '0';
+      })
+      .catch(() => {
+        input.dataset.ajTypeaheadBound = '0';
+        input.dataset.ajTypeaheadLoading = '0';
+      });
+  };
+
+  input.addEventListener('focus', run, { once: true });
+  input.addEventListener('pointerdown', run, { once: true, passive: true });
+  input.addEventListener('keydown', run, { once: true });
+  input.addEventListener('input', run, { once: true });
+}
+
 let homeContactValidationModulePromise = null;
 
 function initHomeContactValidationLazy(options = {}) {
@@ -2315,13 +2363,7 @@ function initCityTypeahead(locale, { rebuild = false } = {}) {
   if (rebuild || input.dataset.ajTypeaheadBound === '1') {
     input = rebuildCityInput(input);
   }
-
-  try {
-    setupCityTypeahead(input, buildCityTypeaheadOptions(input, locale));
-    input.dataset.ajTypeaheadBound = '1';
-  } catch {
-    input.dataset.ajTypeaheadBound = '0';
-  }
+  bindHomeTypeaheadOnDemand(input, locale);
 
   bindCityInputShortcuts(input);
   ensureNearMeInlineButton(input);

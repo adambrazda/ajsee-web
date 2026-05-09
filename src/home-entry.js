@@ -3244,41 +3244,6 @@ function scheduleHomeDeferredStyles() {
   }
 }
 
-function scheduleHomeDefaultCsI18nWork(lang) {
-  let didRun = false;
-
-  const run = async () => {
-    if (didRun) return;
-    didRun = true;
-
-    try {
-      await ensureTranslations(lang);
-      prefetchTranslations();
-      syncCookieBanner();
-      renderHomeBlog();
-      updateHomeCtasWithLang();
-    } catch {
-      /* Homepage keeps static CS fallback content. */
-    }
-  };
-
-  const runWhenIdle = () => {
-    if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(() => void run(), { timeout: 2500 });
-    } else {
-      window.setTimeout(() => void run(), 900);
-    }
-  };
-
-  if (document.readyState === 'complete') {
-    window.setTimeout(runWhenIdle, 250);
-  } else {
-    window.addEventListener('load', () => {
-      window.setTimeout(runWhenIdle, 250);
-    }, { once: true });
-  }
-}
-
 async function bootstrapMain() {
   scheduleHomeDeferredStyles();
   ensureRuntimeStyles();
@@ -3304,17 +3269,13 @@ async function bootstrapMain() {
   currentFilters.countryCode = (ccCookie || langToCountry[currentLang] || 'CZ').toUpperCase();
 
   initFiltersFromURL();
-  const canDeferInitialI18n = isHome() && currentLang === 'cs';
+  await ensureTranslations(currentLang);
+  prefetchTranslations();
+  syncCookieBanner();
 
-  if (canDeferInitialI18n) {
-    scheduleHomeDefaultCsI18nWork(currentLang);
-  } else {
-    await ensureTranslations(currentLang);
-    prefetchTranslations();
-    syncCookieBanner();
-    renderHomeBlog();
-    updateHomeCtasWithLang();
-  }
+  renderHomeBlog();
+  updateHomeCtasWithLang();
+
   initNav({ lang: currentLang });
   initHomeContactValidationLazy({ lang: currentLang, t });
   // Event modal se na homepage načítá až po kliknutí na Detail.

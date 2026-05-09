@@ -1,4 +1,4 @@
-﻿// /src/adapters/ticketmaster.js
+// /src/adapters/ticketmaster.js
 // ---------------------------------------------------------
 // Ticketmaster Discovery API adapter (via Netlify function proxy)
 //
@@ -541,11 +541,57 @@ function pickDate(ev) {
 }
 
 function pickImage(ev) {
-  return (
-    (ev?.images || [])
-      .filter((im) => im?.url)
-      .sort((a, b) => (b.width || 0) - (a.width || 0))[0]?.url || ''
-  );
+  const images = Array.isArray(ev?.images) ? ev.images : [];
+
+  if (!images.length) return '';
+
+  const normalized = images
+    .map((image) => ({
+      url: String(image?.url || '').trim(),
+      width: Number(image?.width || 0),
+      height: Number(image?.height || 0),
+      ratio: String(image?.ratio || '').trim()
+    }))
+    .filter((image) => image.url);
+
+  if (!normalized.length) return '';
+
+  // Ticketmaster často vrací obří *_SOURCE soubory.
+  // Ty jsou nevhodné pro event card a extrémně zvedají LCP / total payload.
+  const nonSource = normalized.filter((image) => !/_SOURCE(?:[?#]|$)/i.test(image.url));
+
+  // Pro karty chceme cca 480–640 px, ideálně 16:9.
+  const pool = nonSource.length ? nonSource : normalized;
+
+  const scored = pool
+    .map((image) => {
+      const width = image.width || 0;
+      const height = image.height || 0;
+
+      let score = 0;
+
+      // Ideál pro mobilní i desktop kartu.
+      score += width ? Math.abs(width - 480) : 900;
+
+      // Příliš malé obrázky budou rozmazané.
+      if (width && width < 280) score += 2500;
+
+      // Příliš velké obrázky zbytečně nafukují payload.
+      if (width > 800) score += 5000;
+      if (width > 1200) score += 10000;
+
+      // Preferuj 16:9, protože event card je vizuálně horizontální.
+      if (image.ratio === '16_9') score -= 250;
+      if (image.ratio && image.ratio !== '16_9') score += 250;
+
+      // Když width chybí, ale height je extrémní, penalizuj.
+      if (!width && height > 600) score += 3000;
+
+      return { image, score };
+    })
+    .sort((a, b) => a.score - b.score);
+
+  return scored[0]?.image?.url || '';
 }
 
 function extractPreferredTicketmasterUrl(rawUrl = '') {

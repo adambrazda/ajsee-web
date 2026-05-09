@@ -129,6 +129,83 @@ const TRANSLATIONS_CACHE = new Map();
 const TRANSLATIONS_PROMISE_CACHE = new Map();
 const I18N_PREFETCHED = new Set();
 
+/* AJSEE language URL helpers: canonical path-prefix URLs, no runtime ?lang links. */
+const AJSEE_CANONICAL_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+
+function ajseeCanonicalLang(value) {
+  const lang = String(value || '').trim().toLowerCase().slice(0, 2);
+  return AJSEE_CANONICAL_LANGS.includes(lang) ? lang : 'cs';
+}
+
+function ajseePathLang(pathname = window.location.pathname) {
+  const match = String(pathname || '').match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
+  return match ? ajseeCanonicalLang(match[1]) : '';
+}
+
+function ajseeStripLangPrefix(pathname = '/') {
+  let path = String(pathname || '/');
+  path = path.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+  if (!path) path = '/';
+  if (!path.startsWith('/')) path = '/' + path;
+  return path;
+}
+
+function ajseeBuildLocalizedPath(pathname = '/', lang = 'cs') {
+  const targetLang = ajseeCanonicalLang(lang);
+  let path = ajseeStripLangPrefix(pathname || '/');
+
+  path = path.replace(/\/index\.html$/i, '/');
+  path = path.replace(/\.html$/i, '');
+  path = path.replace(/\/{2,}/g, '/');
+
+  if (!path.startsWith('/')) path = '/' + path;
+  if (path !== '/' && !path.endsWith('/')) path += '/';
+
+  return targetLang === 'cs'
+    ? path
+    : '/' + targetLang + (path === '/' ? '/' : path);
+}
+
+function ajseeLocalizedUrlForLang(lang, href = window.location.href) {
+  const targetLang = ajseeCanonicalLang(lang);
+
+  try {
+    const url = new URL(href, window.location.origin);
+    url.searchParams.delete('lang');
+    url.searchParams.delete('locale');
+    url.searchParams.delete('hl');
+    url.pathname = ajseeBuildLocalizedPath(url.pathname, targetLang);
+
+    const search = url.searchParams.toString();
+    return url.pathname + (search ? '?' + search : '') + (url.hash || '');
+  } catch {
+    return targetLang === 'cs' ? '/' : '/' + targetLang + '/';
+  }
+}
+
+function ajseeLocalizeInternalHref(rawHref, lang) {
+  if (!rawHref) return rawHref;
+  if (String(rawHref).startsWith('#')) return rawHref;
+  if (/^(mailto:|tel:|javascript:)/i.test(String(rawHref))) return rawHref;
+  if (/^https?:\/\//i.test(String(rawHref)) && !String(rawHref).startsWith(window.location.origin)) return rawHref;
+
+  try {
+    const url = new URL(rawHref, window.location.origin);
+    if (url.origin !== window.location.origin) return rawHref;
+
+    url.searchParams.delete('lang');
+    url.searchParams.delete('locale');
+    url.searchParams.delete('hl');
+    url.pathname = ajseeBuildLocalizedPath(url.pathname, lang);
+
+    const search = url.searchParams.toString();
+    return url.pathname + (search ? '?' + search : '') + (url.hash || '');
+  } catch {
+    return rawHref;
+  }
+}
+
+
 /* ───────── basic utils ───────── */
 const qs = (s, r = document) => r.querySelector(s);
 const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -225,19 +302,9 @@ function getUILang() {
   const fromUrl = normalize(sp.get('lang') || sp.get('locale') || sp.get('hl'));
   const pathMatch = location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
   const fromPath = normalize(pathMatch && pathMatch[1]);
-  const fromCookie = normalize(
-    (document.cookie.split('; ').find(r => r.startsWith('aj_lang=')) || '').split('=')[1]
-  );
 
-  let fromStorage = '';
-  try {
-    fromStorage = normalize(localStorage.getItem('ajsee.lang'));
-  } catch {
-    fromStorage = '';
-  }
-
-  const fromHtml = normalize(document.documentElement.getAttribute('lang'));
-  return fromUrl || fromPath || fromCookie || fromStorage || fromHtml || 'cs';
+  // Canonical rule: URL/query decides language. Non-prefixed pages are always Czech.
+  return fromUrl || fromPath || 'cs';
 }
 
 function setLangCookie(lang) {
@@ -774,23 +841,7 @@ function pickLocalized(val, lang) {
 }
 
 function withLangParam(href, lang) {
-  try {
-    const u = new URL(href, location.origin);
-    if (u.origin !== location.origin) return u.toString();
-    if (!u.searchParams.has('lang')) u.searchParams.set('lang', lang);
-    return u.toString();
-  } catch {
-    if (typeof href === 'string' && href.startsWith('/')) {
-      try {
-        const u = new URL(href, location.origin);
-        if (!u.searchParams.has('lang')) u.searchParams.set('lang', lang);
-        return u.toString();
-      } catch {
-        /* noop */
-      }
-    }
-    return href || '#';
-  }
+  return ajseeLocalizeInternalHref(href, lang);
 }
 
 function fixHomeBlog() {
@@ -1376,30 +1427,47 @@ async function applyTranslations(lang) {
     const key = el.getAttribute('data-i18n-key');
     const value = t(key);
     if (value === undefined || String(value).trim() === '') return;
-    if (/[<][a-z]/i.test(value)) el.innerHTML = value;
-    else el.textContent = value;
+    if (/[<][a-z]/i.test(value)) {
+      const next = String(value);
+      if (el.innerHTML !== next) el.innerHTML = next;
+    } else {
+      const next = String(value);
+      if (el.textContent !== next) el.textContent = next;
+    }
   });
 
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const value = t(el.getAttribute('data-i18n-placeholder'));
-    if (value) el.setAttribute('placeholder', String(value));
+    if (value) {
+      const next = String(value);
+      if (el.getAttribute('placeholder') !== next) el.setAttribute('placeholder', next);
+    }
   });
 
   document.querySelectorAll('[data-i18n-aria]').forEach(el => {
     const value = t(el.getAttribute('data-i18n-aria'));
     if (!value) return;
-    el.setAttribute('aria-label', String(value));
-    el.setAttribute('title', String(value));
+    {
+      const next = String(value);
+      if (el.getAttribute('aria-label') !== next) el.setAttribute('aria-label', next);
+      if (el.getAttribute('title') !== next) el.setAttribute('title', next);
+    }
   });
 
   document.querySelectorAll('[data-i18n-alt]').forEach(el => {
     const value = t(el.getAttribute('data-i18n-alt'));
-    if (value) el.setAttribute('alt', String(value));
+    if (value) {
+      const next = String(value);
+      if (el.getAttribute('alt') !== next) el.setAttribute('alt', next);
+    }
   });
 
   document.querySelectorAll('[data-i18n-content]').forEach(el => {
     const value = t(el.getAttribute('data-i18n-content'));
-    if (value !== undefined && String(value).trim() !== '') el.setAttribute('content', String(value));
+    if (value !== undefined && String(value).trim() !== '') {
+      const next = String(value);
+      if (el.getAttribute('content') !== next) el.setAttribute('content', next);
+    }
   });
 
   syncLocalizedCityLabelFromCurrentState();
@@ -2951,18 +3019,14 @@ function initEventsScrollGuard() {
 function changeLangTo(lang) {
   const next = String(lang || '').trim().toLowerCase();
   if (!SUPPORTED_LANGS.includes(next)) return;
-  if (next === currentLang) return;
+  if (next === currentLang && ajseePathLang(location.pathname) === next) return;
 
   currentLang = next;
   setLangCookie(currentLang);
 
   try { localStorage.setItem('ajsee.lang', currentLang); } catch { /* noop */ }
 
-  const u = new URL(location.href);
-  if (currentLang === 'cs') u.searchParams.delete('lang');
-  else u.searchParams.set('lang', currentLang);
-  history.replaceState(null, '', u.toString());
-
+  history.replaceState(null, '', ajseeLocalizedUrlForLang(currentLang));
   document.documentElement.lang = currentLang;
 
   window.dispatchEvent(new CustomEvent('AJSEE:langChanged', { detail: { lang: currentLang } }));
@@ -2998,11 +3062,13 @@ function syncLangDropdownUI(lang) {
       if (selected) {
         const img = btn.querySelector('img');
         if (img && currentFlag) {
-          currentFlag.src = img.getAttribute('src') || img.src;
-          currentFlag.alt = img.getAttribute('alt') || img.alt || '';
+          const nextSrc = img.getAttribute('src') || img.src;
+          const nextAlt = img.getAttribute('alt') || img.alt || '';
+          if (currentFlag.getAttribute('src') !== nextSrc) currentFlag.setAttribute('src', nextSrc);
+          if (currentFlag.getAttribute('alt') !== nextAlt) currentFlag.setAttribute('alt', nextAlt);
         }
         const txt = (btn.textContent || '').trim();
-        if (currentLabel && txt) currentLabel.textContent = txt;
+        if (currentLabel && txt && currentLabel.textContent !== txt) currentLabel.textContent = txt;
       }
     });
   });
@@ -3113,8 +3179,7 @@ function updateHomeCtasWithLang() {
   if (wlCta) {
     try {
       const u = new URL(wlCta.getAttribute('href') || wlCta.href || '/coming-soon', location.origin);
-      if (SUPPORTED_LANGS.includes(lang)) u.searchParams.set('lang', lang);
-      wlCta.href = u.toString();
+      if (SUPPORTED_LANGS.includes(lang)) wlCta.href = ajseeLocalizeInternalHref(u.pathname + u.search + u.hash, lang);
     } catch {
       /* noop */
     }
@@ -3134,8 +3199,7 @@ function updateHomeCtasWithLang() {
   if (demoCta) {
     try {
       const u = new URL(demoCta.getAttribute('href') || demoCta.href || '/coming-soon', location.origin);
-      u.searchParams.set('lang', lang);
-      demoCta.href = u.toString();
+      demoCta.href = ajseeLocalizeInternalHref(u.pathname + u.search + u.hash, lang);
     } catch {
       /* noop */
     }

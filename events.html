@@ -4,7 +4,70 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title data-i18n-key="events-page-title">Události a vstupenky na koncerty, festivaly a sport | AJSEE</title>
+  <style id="ajsee-header-boot-stability">
+    html:not(.ajsee-header-ready) .site-header,
+    html:not(.ajsee-header-ready) .site-header * {
+      transition: none !important;
+      animation: none !important;
+    }
+  </style>
+  <script id="ajsee-header-ready-script">
+    (function () {
+      try {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            document.documentElement.classList.add('ajsee-header-ready');
+          });
+        });
+      } catch (e) {
+        document.documentElement.classList.add('ajsee-header-ready');
+      }
+    })();
+  </script>
+
+
+
+  <script id="ajsee-lang-bootstrap">
+    (function () {
+      try {
+        var supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+        var url = new URL(window.location.href);
+        var queryLang = (url.searchParams.get('lang') || url.searchParams.get('locale') || url.searchParams.get('hl') || '').toLowerCase().slice(0, 2);
+        var pathMatch = url.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
+        var pathLang = pathMatch ? pathMatch[1].toLowerCase().slice(0, 2) : '';
+        var lang = supported.indexOf(queryLang) >= 0 ? queryLang : (supported.indexOf(pathLang) >= 0 ? pathLang : 'cs');
+
+        function stripPrefix(pathname) {
+          var clean = String(pathname || '/').replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+          if (!clean) clean = '/';
+          if (clean.charAt(0) !== '/') clean = '/' + clean;
+          clean = clean.replace(/\/index\.html$/i, '/').replace(/\.html$/i, '');
+          if (clean !== '/' && clean.charAt(clean.length - 1) !== '/') clean += '/';
+          return clean;
+        }
+
+        function localizedPath(pathname, targetLang) {
+          var clean = stripPrefix(pathname);
+          return targetLang === 'cs' ? clean : '/' + targetLang + (clean === '/' ? '/' : clean);
+        }
+
+        if (queryLang && supported.indexOf(queryLang) >= 0) {
+          url.searchParams.delete('lang');
+          url.searchParams.delete('locale');
+          url.searchParams.delete('hl');
+          url.pathname = localizedPath(url.pathname, queryLang);
+          window.location.replace(url.pathname + (url.search || '') + (url.hash || ''));
+          return;
+        }
+
+        document.documentElement.lang = lang;
+        document.documentElement.classList.add('lang-' + lang);
+        // Header texty už neschováváme: /en/ stránky jsou generované jako lokalizované HTML.
+
+      } catch (e) {}
+    })();
+  </script>
+<title data-i18n-key="events-page-title">Události a vstupenky na koncerty, festivaly a sport | AJSEE</title>
   <meta
     name="description"
     content="Najdi koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE ti pomůže objevovat akce, vstupenky a možnosti cestování přehledně na jednom místě."

@@ -4,7 +4,70 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title data-i18n-key="seo.home.title">Vstupenky na koncerty, festivaly a sport | AJSEE</title>
+  <style id="ajsee-header-boot-stability">
+    html:not(.ajsee-header-ready) .site-header,
+    html:not(.ajsee-header-ready) .site-header * {
+      transition: none !important;
+      animation: none !important;
+    }
+  </style>
+  <script id="ajsee-header-ready-script">
+    (function () {
+      try {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            document.documentElement.classList.add('ajsee-header-ready');
+          });
+        });
+      } catch (e) {
+        document.documentElement.classList.add('ajsee-header-ready');
+      }
+    })();
+  </script>
+
+
+
+  <script id="ajsee-lang-bootstrap">
+    (function () {
+      try {
+        var supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+        var url = new URL(window.location.href);
+        var queryLang = (url.searchParams.get('lang') || url.searchParams.get('locale') || url.searchParams.get('hl') || '').toLowerCase().slice(0, 2);
+        var pathMatch = url.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
+        var pathLang = pathMatch ? pathMatch[1].toLowerCase().slice(0, 2) : '';
+        var lang = supported.indexOf(queryLang) >= 0 ? queryLang : (supported.indexOf(pathLang) >= 0 ? pathLang : 'cs');
+
+        function stripPrefix(pathname) {
+          var clean = String(pathname || '/').replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+          if (!clean) clean = '/';
+          if (clean.charAt(0) !== '/') clean = '/' + clean;
+          clean = clean.replace(/\/index\.html$/i, '/').replace(/\.html$/i, '');
+          if (clean !== '/' && clean.charAt(clean.length - 1) !== '/') clean += '/';
+          return clean;
+        }
+
+        function localizedPath(pathname, targetLang) {
+          var clean = stripPrefix(pathname);
+          return targetLang === 'cs' ? clean : '/' + targetLang + (clean === '/' ? '/' : clean);
+        }
+
+        if (queryLang && supported.indexOf(queryLang) >= 0) {
+          url.searchParams.delete('lang');
+          url.searchParams.delete('locale');
+          url.searchParams.delete('hl');
+          url.pathname = localizedPath(url.pathname, queryLang);
+          window.location.replace(url.pathname + (url.search || '') + (url.hash || ''));
+          return;
+        }
+
+        document.documentElement.lang = lang;
+        document.documentElement.classList.add('lang-' + lang);
+        // Header texty už neschováváme: /en/ stránky jsou generované jako lokalizované HTML.
+
+      } catch (e) {}
+    })();
+  </script>
+<title data-i18n-key="seo.home.title">Vstupenky na koncerty, festivaly a sport | AJSEE</title>
   <meta
     name="description"
     data-i18n-content="seo.home.description"
@@ -114,25 +177,19 @@
     return homeAppPromise;
   };
 
-  const getInitialLang = () => {
+  
+const getInitialLang = () => {
     try {
+      const supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
       const fromUrl = new URLSearchParams(window.location.search).get('lang');
-      if (fromUrl) return fromUrl.toLowerCase().slice(0, 2);
+      const pathMatch = window.location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
+      const fromPath = pathMatch ? pathMatch[1] : '';
 
-      const fromCookie = document.cookie
-        .split('; ')
-        .find((item) => item.startsWith('aj_lang='))
-        ?.split('=')[1];
-
-      if (fromCookie) return decodeURIComponent(fromCookie).toLowerCase().slice(0, 2);
-
-      const fromStorage = window.localStorage.getItem('ajsee.lang');
-      if (fromStorage) return fromStorage.toLowerCase().slice(0, 2);
+      const lang = String(fromUrl || fromPath || 'cs').toLowerCase().slice(0, 2);
+      return supported.includes(lang) ? lang : 'cs';
     } catch {
-      // Homepage keeps static CS fallback content.
+      return 'cs';
     }
-
-    return 'cs';
   };
 
   const hasStatefulUrl =
@@ -188,7 +245,10 @@
         var match = document.cookie.match(/(?:^|;\s*)aj_lang=([^;]+)/);
         if (match) fromCookie = decodeURIComponent(match[1] || '');
 
-        var lang = String(fromUrl || fromStorage || fromCookie || 'cs')
+        var pathMatch = window.location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
+        var fromPath = pathMatch ? pathMatch[1] : '';
+
+        var lang = String(fromUrl || fromPath || 'cs')
           .toLowerCase()
           .slice(0, 2);
 
@@ -227,6 +287,7 @@
         <li><a href="/partners" data-i18n-key="nav-partners">Pro partnery</a></li>
         <li><a href="/about" data-i18n-key="nav-about">O nás</a></li>
         <li><a href="/blog" data-i18n-key="nav-blog">Blog</a></li>
+                <li><a href="/faq" data-i18n-key="nav-faq">FAQ</a></li>
         <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
       </ul>
 

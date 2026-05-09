@@ -101,6 +101,11 @@ function escapeAttr(value) {
   return escapeText(value).replace(/"/g, '&quot;');
 }
 
+function writeHtmlFile(file, html) {
+  ensureDir(path.dirname(file));
+  fs.writeFileSync(file, html, 'utf8');
+}
+
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
@@ -529,8 +534,16 @@ function main() {
 
   for (const page of pages) {
     const csHtml = processPage(page.html, page.file, 'cs');
-    fs.writeFileSync(page.file, csHtml, 'utf8');
+
+    writeHtmlFile(page.file, csHtml);
     written++;
+
+    const csPrettyTarget = targetFileForRoute(page.route, 'cs');
+
+    if (path.resolve(csPrettyTarget) !== path.resolve(page.file)) {
+      writeHtmlFile(csPrettyTarget, csHtml);
+      written++;
+    }
 
     for (const lang of PREFIXED_LANGS) {
       const localizedHtml = processPage(page.html, page.file, lang);

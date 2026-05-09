@@ -3229,19 +3229,40 @@ function scheduleHomeDeferredStyles() {
     void loadHomeDeferredStylesOnce();
   };
 
-  const runWhenIdle = () => {
+  let didSchedule = false;
+
+  const runOnce = () => {
+    if (didSchedule) return;
+    didSchedule = true;
+
+    cleanup();
+
     if ('requestIdleCallback' in window) {
-      window.requestIdleCallback(run, { timeout: 3000 });
+      window.requestIdleCallback(run, { timeout: 1200 });
     } else {
-      window.setTimeout(run, 1200);
+      window.setTimeout(run, 250);
     }
   };
 
-  if (document.readyState === 'complete') {
-    runWhenIdle();
-  } else {
-    window.addEventListener('load', runWhenIdle, { once: true });
-  }
+  const onScrollIntent = () => {
+    if (window.scrollY > 24) runOnce();
+  };
+
+  const cleanup = () => {
+    window.removeEventListener('scroll', onScrollIntent);
+    window.removeEventListener('wheel', runOnce);
+    window.removeEventListener('touchstart', runOnce);
+    window.removeEventListener('pointerdown', runOnce);
+    window.removeEventListener('keydown', runOnce);
+    window.removeEventListener('focusin', runOnce);
+  };
+
+  window.addEventListener('scroll', onScrollIntent, { passive: true });
+  window.addEventListener('wheel', runOnce, { once: true, passive: true });
+  window.addEventListener('touchstart', runOnce, { once: true, passive: true });
+  window.addEventListener('pointerdown', runOnce, { once: true, passive: true });
+  window.addEventListener('keydown', runOnce, { once: true });
+  window.addEventListener('focusin', runOnce, { once: true });
 }
 
 async function bootstrapMain() {

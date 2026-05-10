@@ -56,6 +56,31 @@ function normalizeSlug(value) {
   return String(value || '').trim();
 }
 
+function localizedRoute(route, langCode = DEFAULT_LANG) {
+  const lang = normalizeLang(langCode);
+
+  let pathname = String(route || '/').trim();
+
+  if (!pathname) pathname = '/';
+
+  pathname = pathname.replace(/^https?:\/\/[^/]+/i, '');
+  pathname = pathname.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+
+  if (!pathname.startsWith('/')) pathname = '/' + pathname;
+
+  pathname = pathname.replace(/\/{2,}/g, '/');
+
+  if (pathname !== '/' && !pathname.endsWith('/')) pathname += '/';
+
+  return lang === DEFAULT_LANG
+    ? pathname
+    : '/' + lang + pathname;
+}
+
+function localizedCanonical(route, langCode = DEFAULT_LANG) {
+  return SITE_ORIGIN + localizedRoute(route, langCode);
+}
+
 function isSafeSlug(slug) {
   return /^[a-z0-9][a-z0-9-]*$/i.test(slug);
 }
@@ -389,7 +414,7 @@ function buildArticleBody(data) {
 }
 
 function buildJsonLd(data, langCode, slug, ts = 0) {
-  const canonicalUrl = `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}/`;
+  const canonicalUrl = localizedCanonical('/microguides/' + encodeURIComponent(slug) + '/', langCode);
   const title = data.title || slug;
   const description = data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.';
   const image = toAbsoluteUrl(data.cover) || `${SITE_ORIGIN}/images/logo-ajsee.png`;
@@ -474,7 +499,7 @@ function removeHeadTag(html, pattern) {
 }
 
 function applyStaticSeoToTemplate(template, data, langCode, slug, ts = 0) {
-  const canonicalUrl = `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}/`;
+  const canonicalUrl = localizedCanonical('/microguides/' + encodeURIComponent(slug) + '/', langCode);
   const title = `${data.title || slug} | AJSEE`;
   const description = truncate(
     data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.',
@@ -559,8 +584,9 @@ function applyStaticSeoToTemplate(template, data, langCode, slug, ts = 0) {
 function buildStaticMain(data, langCode, slug) {
   const steps = Array.isArray(data.steps) ? data.steps : [];
   const readingMinutes = Number(data.readingMinutes || 5);
-  const blogHref = `/blog?lang=${encodeURIComponent(normalizeLang(langCode))}`;
-  const comingSoonHref = `/coming-soon?lang=${encodeURIComponent(normalizeLang(langCode))}`;
+  const currentLang = normalizeLang(langCode);
+  const blogHref = localizedRoute('/blog/', currentLang);
+  const comingSoonHref = localizedRoute('/coming-soon/', currentLang);
 
   const progressItems = steps
     .map((step) => `

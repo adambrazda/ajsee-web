@@ -127,20 +127,53 @@ const LABELS = {
 };
 
 // --- lang ---
-const urlLang = new URLSearchParams(location.search).get('lang');
-const rawLang = (
-  urlLang ||
-  window.AJSEE_LANG ||
-  document.documentElement.getAttribute('lang') ||
-  DEFAULT_LANG
-)
-  .toLowerCase()
-  .split(/[-_]/)[0];
+function normalizeLangCode(value, fallback = '') {
+  const langCode = String(value || '').trim().toLowerCase().split(/[-_]/)[0];
+  return SUPPORTED_LANGS.includes(langCode) ? langCode : fallback;
+}
 
-const lang = SUPPORTED_LANGS.includes(rawLang) ? rawLang : DEFAULT_LANG;
+function getPathLang(pathname = location.pathname) {
+  const match = String(pathname || '').match(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i);
+  return normalizeLangCode(match && match[1], '');
+}
+
+function stripLangPrefix(pathname = location.pathname) {
+  let cleanPath = String(pathname || '/').replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+
+  if (!cleanPath) cleanPath = '/';
+  if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+
+  return cleanPath;
+}
+
+function buildLocalizedPath(pathname = '/', langCode = DEFAULT_LANG) {
+  const targetLang = normalizeLangCode(langCode, DEFAULT_LANG);
+
+  let cleanPath = stripLangPrefix(pathname || '/');
+  cleanPath = cleanPath.replace(/\/{2,}/g, '/');
+
+  if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+  if (cleanPath !== '/' && !cleanPath.endsWith('/')) cleanPath += '/';
+
+  return targetLang === DEFAULT_LANG
+    ? cleanPath
+    : '/' + targetLang + cleanPath;
+}
+
+const urlLang = normalizeLangCode(new URLSearchParams(location.search).get('lang'), '');
+const pathLang = getPathLang(location.pathname);
+
+const rawLang =
+  pathLang ||
+  urlLang ||
+  normalizeLangCode(window.AJSEE_LANG, '') ||
+  normalizeLangCode(document.documentElement.getAttribute('lang'), '') ||
+  DEFAULT_LANG;
+
+const lang = normalizeLangCode(rawLang, DEFAULT_LANG);
 
 document.documentElement.setAttribute('lang', lang);
-
+window.AJSEE_LANG = lang;
 // --- helpers ---
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -176,7 +209,8 @@ function currentSlug() {
 
   if (q) return safeDecode(q);
 
-  const parts = u.pathname.replace(/\/+$/, '').split('/').filter(Boolean);
+  const cleanPath = stripLangPrefix(u.pathname).replace(/\/+$/, '');
+  const parts = cleanPath.split('/').filter(Boolean);
 
   if (parts[0] === 'microguides' && parts[1]) {
     return safeDecode(parts[1]);
@@ -230,8 +264,7 @@ async function loadGuide(slug, langCode) {
 async function loadMicroguidesIndex() {
   try {
     const response = await fetch('/content/microguides/index.json', {
-      cache: 'no-store',
-      headers: { Accept: 'application/json' }
+      cache: 'no-store'
     });
 
     if (!response.ok) {
@@ -239,23 +272,39 @@ async function loadMicroguidesIndex() {
     }
 
     const payload = await response.json();
-    const items = Array.isArray(payload) ? payload : payload.items;
+    const baseItems = Array.isArray(payload)
+      ? payload
+      : Array.isArray(payload?.items)
+        ? payload.items
+        : [];
 
-    if (!Array.isArray(items)) {
-      return [];
-    }
+    const publishedItems = baseItems.filter((item) => {
+      return (item?.status || 'published') === 'published' && item?.slug;
+    });
 
-    const bySlug = new Map();
+    const localizedItems = await Promise.all(
+      publishedItems.map(async (item) => {
+        const slug = String(item.slug || '').trim();
 
-    items
-      .filter((item) => item && item.slug && (item.status || 'published') === 'published')
-      .forEach((item) => {
-        if (!bySlug.has(item.slug)) {
-          bySlug.set(item.slug, item);
-        }
-      });
+        if (!slug) return null;
 
-    return Array.from(bySlug.values());
+        const loaded = await loadGuide(slug, lang);
+        const data = loaded?.data || {};
+
+        return {
+          ...item,
+          ...data,
+          slug,
+          language: loaded?.resolvedLang || item.language || lang,
+          title: data.title || item.title || slug,
+          summary: data.summary || item.summary || '',
+          cover: data.cover || item.cover || '',
+          coverAlt: data.coverAlt || item.coverAlt || ''
+        };
+      })
+    );
+
+    return localizedItems.filter(Boolean);
   } catch {
     return [];
   }
@@ -394,7 +443,17 @@ function mdToHtml(md = '') {
 function withLang(url) {
   try {
     const u = new URL(url, location.origin);
-    u.searchParams.set('lang', lang);
+
+    if (u.origin !== location.origin) {
+      return url;
+    }
+
+    u.pathname = buildLocalizedPath(u.pathname || '/', lang);
+
+    u.searchParams.delete('lang');
+    u.searchParams.delete('locale');
+    u.searchParams.delete('hl');
+
     return u.pathname + u.search + u.hash;
   } catch {
     return url;
@@ -500,8 +559,12 @@ function setPageMeta({
   upsertMeta('name', 'twitter:image:alt', imageAlt);
 }
 
-function buildMicroguideCanonicalUrl(slug) {
-  return `${SITE_ORIGIN}/microguides/${encodeURIComponent(slug)}/`;
+function buildMicroguidesIndexCanonicalUrl(langCode = lang) {
+  return SITE_ORIGIN + buildLocalizedPath('/microguides/', langCode);
+}
+
+function buildMicroguideCanonicalUrl(slug, langCode = lang) {
+  return SITE_ORIGIN + buildLocalizedPath('/microguides/' + encodeURIComponent(slug) + '/', langCode);
 }
 
 function buildMicroguideArticleBody(data) {
@@ -602,7 +665,7 @@ function renderMicroguideStructuredData(data, langCode, slug) {
 }
 
 function renderMicroguidesIndexStructuredData(items = []) {
-  const canonicalUrl = `${SITE_ORIGIN}/microguides/`;
+  const canonicalUrl = buildMicroguidesIndexCanonicalUrl();
 
   const graph = {
     '@context': 'https://schema.org',
@@ -678,7 +741,7 @@ function renderNotFound(root, slug = '') {
   setPageMeta({
     title: `${label('notFoundTitle')} | AJSEE`,
     description: label('notFoundText'),
-    canonicalUrl: `${SITE_ORIGIN}/microguides/`,
+    canonicalUrl: buildMicroguidesIndexCanonicalUrl(),
     robots: 'noindex, follow',
     type: 'website'
   });
@@ -736,7 +799,7 @@ async function renderIndex(root) {
   setPageMeta({
     title: label('indexTitle'),
     description: label('indexDescription'),
-    canonicalUrl: `${SITE_ORIGIN}/microguides/`,
+    canonicalUrl: buildMicroguidesIndexCanonicalUrl(),
     robots: 'index, follow',
     type: 'website'
   });
@@ -937,7 +1000,7 @@ async function renderDetail(root, slug) {
   const resolvedLang = loaded.resolvedLang || lang;
   const title = `${data.title || resolvedSlug} | AJSEE`;
   const desc = data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.';
-  const canonicalUrl = buildMicroguideCanonicalUrl(resolvedSlug);
+  const canonicalUrl = buildMicroguideCanonicalUrl(resolvedSlug, lang);
   const coverUrl = toAbsoluteUrl(data.cover);
 
   setPageMeta({

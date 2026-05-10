@@ -24,19 +24,33 @@ import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 
-function normalizeLang(value) {
+function normalizeLang(value, fallback = 'cs') {
   const lang = String(value || '').trim().toLowerCase().split(/[-_]/)[0];
-  return SUPPORTED_LANGS.includes(lang) ? lang : 'cs';
+  return SUPPORTED_LANGS.includes(lang) ? lang : fallback;
+}
+
+function getPathLang(pathname = window.location.pathname) {
+  const match = String(pathname || '').match(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i);
+  return match ? normalizeLang(match[1]) : null;
 }
 
 function getCurrentLang() {
-  return normalizeLang(
-    new URLSearchParams(window.location.search).get('lang') ||
+  const pathMatch = window.location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i);
+  const fromPath = normalizeLang(pathMatch && pathMatch[1], '');
+
+  const fromQuery = normalizeLang(
+    new URLSearchParams(window.location.search).get('lang'),
+    ''
+  );
+
+  const fromRuntimeState = normalizeLang(
     window.AJSEE_LANG ||
     detectLang() ||
-    document.documentElement.getAttribute('lang') ||
-    'cs'
+    document.documentElement.getAttribute('lang'),
+    ''
   );
+
+  return fromPath || fromQuery || fromRuntimeState || 'cs';
 }
 
 function exposeI18nHelpers() {

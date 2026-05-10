@@ -273,27 +273,15 @@ function getUILang() {
   };
 
   const sp = new URLSearchParams(location.search);
-
   const fromUrl = normalize(sp.get('lang') || sp.get('locale') || sp.get('hl'));
 
   const pathMatch = location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
   const fromPath = normalize(pathMatch && pathMatch[1]);
 
-  const fromCookie = normalize(
-    (document.cookie.split('; ').find(r => r.startsWith('aj_lang=')) || '').split('=')[1]
-  );
-
-  let fromStorage = '';
-  try {
-    fromStorage = normalize(localStorage.getItem('ajsee.lang'));
-  } catch {
-    fromStorage = '';
-  }
-
-  const fromHtml = normalize(document.documentElement.getAttribute('lang'));
-
-  // Důležité: <html lang="cs"> je v HTML defaultně, proto musí být cookie/storage před html.
-  return fromUrl || fromPath || fromCookie || fromStorage || fromHtml || 'cs';
+  // Canonical rule:
+  // URL/query decides language. Non-prefixed homepage "/" is always Czech.
+  // Do not read aj_lang cookie/localStorage here, otherwise "/" can be hijacked by a previous EN visit.
+  return fromUrl || fromPath || 'cs';
 }
 
 function setLangCookie(lang) {
@@ -2707,7 +2695,11 @@ function changeLangTo(lang) {
   const next = String(lang || '').trim().toLowerCase();
 
   if (!supported.includes(next)) return;
-  if (next === currentLang) return;
+
+  const currentPathLangMatch = location.pathname.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
+  const currentPathLang = currentPathLangMatch ? currentPathLangMatch[1].toLowerCase() : 'cs';
+
+  if (next === currentLang && next === currentPathLang) return;
 
   currentLang = next;
 
@@ -2721,13 +2713,30 @@ function changeLangTo(lang) {
 
   const u = new URL(location.href);
 
-  if (currentLang === 'cs') {
-    u.searchParams.delete('lang');
-  } else {
-    u.searchParams.set('lang', currentLang);
-  }
+  u.searchParams.delete('lang');
+  u.searchParams.delete('locale');
+  u.searchParams.delete('hl');
 
-  history.replaceState(null, '', u.toString());
+  let path = u.pathname || '/';
+
+  path = path.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+  path = path.replace(/\/index\.html$/i, '/');
+  path = path.replace(/\.html$/i, '');
+  path = path.replace(/\/{2,}/g, '/');
+
+  if (!path) path = '/';
+  if (!path.startsWith('/')) path = '/' + path;
+  if (path !== '/' && !path.endsWith('/')) path += '/';
+
+  u.pathname = currentLang === 'cs'
+    ? path
+    : '/' + currentLang + (path === '/' ? '/' : path);
+
+  const nextUrl = u.pathname + (u.search || '') + (u.hash || '');
+
+  if (nextUrl !== location.pathname + location.search + location.hash) {
+    history.replaceState(null, '', nextUrl);
+  }
 
   document.documentElement.lang = currentLang;
 

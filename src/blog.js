@@ -221,24 +221,32 @@ function setActiveCategory(category) {
 // --- Micro-guide loading ---------------------------------------------------
 
 async function loadMicroguideCards(lang) {
+  const currentLang = normalizeLang(lang || getLang());
   const paths = [
     '/content/microguides/index.json',
     '/public/content/microguides/index.json',
   ];
 
+  async function fetchJson(url) {
+    const response = await fetch(url, { cache: 'no-store' });
+
+    if (!response.ok) {
+      throw new Error(String(response.status));
+    }
+
+    return response.json();
+  }
+
   let raw = [];
 
   for (const path of paths) {
     try {
-      const response = await fetch(path, { cache: 'no-store' });
-      if (!response.ok) continue;
-
-      const json = await response.json();
+      const json = await fetchJson(path);
       raw = Array.isArray(json) ? json : (Array.isArray(json?.items) ? json.items : []);
 
       if (raw.length) break;
     } catch {
-      /* try next path */
+      // Try next path.
     }
   }
 
@@ -246,24 +254,107 @@ async function loadMicroguideCards(lang) {
 
   const seen = new Set();
 
-  return raw
+  const publishedItems = raw
     .filter((item) => !item.status || String(item.status).toLowerCase() === 'published')
-    .filter((item) => normalizeLang(item.language || DEFAULT_LANG) === lang)
     .filter((item) => {
-      if (!item.slug || seen.has(item.slug)) return false;
-      seen.add(item.slug);
+      const slug = String(item?.slug || '').trim();
+
+      if (!slug || seen.has(slug)) return false;
+
+      seen.add(slug);
       return true;
+    });
+
+  const localizedHref = (slug) => {
+    const basePath = '/microguides/' + encodeURIComponent(slug) + '/';
+    return currentLang === DEFAULT_LANG ? basePath : '/' + currentLang + basePath;
+  };
+
+  const loadLocalizedGuide = async (slug) => {
+    const encodedSlug = encodeURIComponent(slug);
+    const candidates = [];
+
+    const pushCandidate = (langCode) => {
+      const normalized = normalizeLang(langCode);
+
+      if (!normalized || candidates.includes(normalized)) return;
+
+      candidates.push(normalized);
+    };
+
+    pushCandidate(currentLang);
+    pushCandidate('en');
+    pushCandidate('cs');
+
+    for (const candidate of candidates) {
+      try {
+        const data = await fetchJson('/content/microguides/' + encodedSlug + '.' + candidate + '.json');
+
+        return {
+          data,
+          resolvedLang: candidate
+        };
+      } catch {
+        // Try next fallback language.
+      }
+    }
+
+    return null;
+  };
+
+  const cards = await Promise.all(
+    publishedItems.map(async (item) => {
+      const slug = String(item?.slug || '').trim();
+
+      if (!slug) return null;
+
+      const localized = await loadLocalizedGuide(slug);
+      const data = localized?.data || {};
+      const merged = {
+        ...item,
+        ...data
+      };
+
+      const title = merged.title || item.title || slug;
+      const summary = merged.summary || merged.lead || item.summary || item.lead || '';
+      const image = merged.image || merged.cover || item.image || item.cover || '/images/fallbacks/concert0.jpg';
+      const date = merged.publishedAt || item.publishedAt || merged.date || item.date || '';
+      const ts = Date.parse(date || 0) || 0;
+      const href = localizedHref(slug);
+
+      return {
+        ...merged,
+        type: 'microguide',
+        kind: 'microguide',
+        contentType: 'microguide',
+        slug,
+        lang: localized?.resolvedLang || currentLang,
+        language: localized?.resolvedLang || currentLang,
+        category: 'microguide',
+        dataCategory: 'microguide',
+        title,
+        titleText: title,
+        lead: summary,
+        leadText: summary,
+        summary,
+        excerpt: summary,
+        image,
+        cover: merged.cover || image,
+        coverAlt: merged.coverAlt || merged.alt || title,
+        date,
+        publishedAt: date,
+        href,
+        url: href,
+        link: href,
+        path: href,
+        _ts: ts
+      };
     })
-    .map((item) => ({
-      type: 'microguide',
-      slug: item.slug,
-      lang: normalizeLang(item.language || lang),
-      title: item.title || '',
-      lead: item.summary || '',
-      image: item.cover || '',
-      category: 'microguide',
-      ts: Date.parse(item.publishedAt || 0) || 0,
-    }));
+  );
+
+  return cards
+    .filter(Boolean)
+    .sort((a, b) => (b._ts || 0) - (a._ts || 0));
 }
 
 async function loadAllCards(lang) {

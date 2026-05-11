@@ -7,6 +7,54 @@ const ORIGIN = 'https://ajsee.cz';
 
 const LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const PREFIXED_LANGS = LANGS.filter((lang) => lang !== 'cs');
+
+const GOOGLE_VERIFICATION_FILE_RE = /^google[a-z0-9]+(?:\.html)?$/i;
+
+function cleanupGoogleVerificationCopies() {
+  // Google Search Console verification má zůstat jen v rootu jako .html soubor.
+  // Jazykové nebo extensionless kopie jsou technické duplicity.
+  const removeIfSafeGoogleVerificationCopy = (filePath, fileName, { keepRootHtml = false } = {}) => {
+    if (!GOOGLE_VERIFICATION_FILE_RE.test(String(fileName || ''))) return;
+
+    if (keepRootHtml && /\.html$/i.test(fileName)) {
+      return;
+    }
+
+    try {
+      fs.rmSync(filePath, { recursive: true, force: true });
+    } catch {
+      // noop
+    }
+  };
+
+  try {
+    if (fs.existsSync(DIST)) {
+      for (const entry of fs.readdirSync(DIST, { withFileTypes: true })) {
+        removeIfSafeGoogleVerificationCopy(
+          path.join(DIST, entry.name),
+          entry.name,
+          { keepRootHtml: true }
+        );
+      }
+    }
+
+    for (const lang of PREFIXED_LANGS) {
+      const langDir = path.join(DIST, lang);
+
+      if (!fs.existsSync(langDir)) continue;
+
+      for (const entry of fs.readdirSync(langDir, { withFileTypes: true })) {
+        removeIfSafeGoogleVerificationCopy(
+          path.join(langDir, entry.name),
+          entry.name,
+          { keepRootHtml: false }
+        );
+      }
+    }
+  } catch {
+    // Cleanup nesmí rozbít produkční build.
+  }
+}
 const CS_NO_TRAILING_CANONICAL_ROUTES = new Set([
   '/events/',
   '/accommodation/',
@@ -554,6 +602,8 @@ function main() {
       written++;
     }
   }
+
+  cleanupGoogleVerificationCopies();
 
   console.log('AJSEE localized static pages generated');
   console.log('============================================================');

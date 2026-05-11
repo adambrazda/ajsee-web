@@ -1,4 +1,4 @@
-// netlify/edge-functions/geo-country.js
+﻿// netlify/edge-functions/geo-country.js
 // ---------------------------------------------------------
 // AJSEE Geo country edge function
 //
@@ -8,11 +8,16 @@
 // - Zachovat kompatibilitu se starou cookie "ajsee_cc" a postupně ji uklidit.
 // - Nastavovat cookie pouze pro HTML odpovědi.
 // - Nedotýkat se API / Netlify functions / assetů.
+// - Čistit legacy ?lang= / ?locale= / ?hl= URL na path-based lokalizované URL.
 // ---------------------------------------------------------
 
 const COOKIE_NAME = 'aj_country';
 const LEGACY_COOKIE_NAME = 'ajsee_cc';
 const MAX_AGE = 60 * 60 * 24 * 30; // 30 dní
+
+const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+const DEFAULT_LANG = 'cs';
+const LANG_QUERY_KEYS = ['lang', 'locale', 'hl'];
 
 export default async (request, context) => {
   const url = new URL(request.url);
@@ -21,6 +26,18 @@ export default async (request, context) => {
   // Edge function má smysl jen pro HTML stránky.
   if (shouldSkipPath(url.pathname)) {
     return context.next();
+  }
+
+  // Canonical cleanup pro legacy URL typu:
+  // /?lang=en → /en/
+  // /events?lang=en → /en/events/
+  // Netlify redirecty zachovávají query string, proto čistíme lang query na Edge.
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    const legacyLangRedirect = buildLegacyLangRedirectUrl(url);
+
+    if (legacyLangRedirect) {
+      return Response.redirect(legacyLangRedirect, 301);
+    }
   }
 
   const existingCountry = readCookie(request, COOKIE_NAME);
@@ -89,7 +106,107 @@ export default async (request, context) => {
   });
 };
 
-// -------- helpers --------
+// -------- legacy lang redirect helpers --------
+
+function buildLegacyLangRedirectUrl(url) {
+  const explicitLang =
+    normalizeLang(url.searchParams.get('lang'), '') ||
+    normalizeLang(url.searchParams.get('locale'), '') ||
+    normalizeLang(url.searchParams.get('hl'), '');
+
+  if (!explicitLang) return '';
+
+  const target = new URL(url.toString());
+  const route = normalizeRouteForLangRedirect(target.pathname);
+
+  target.pathname = localizeRoute(route, explicitLang);
+
+  for (const key of LANG_QUERY_KEYS) {
+    target.searchParams.delete(key);
+  }
+
+  return target.href !== url.href ? target.href : '';
+}
+
+function normalizeLang(value = '', fallback = DEFAULT_LANG) {
+  const lang = String(value || '').trim().toLowerCase().split(/[-_]/)[0];
+  return SUPPORTED_LANGS.includes(lang) ? lang : fallback;
+}
+
+function stripLangPrefix(pathname = '') {
+  let path = String(pathname || '/').replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+
+  if (!path) path = '/';
+  if (!path.startsWith('/')) path = '/' + path;
+
+  return path;
+}
+
+function normalizeRouteForLangRedirect(pathname = '') {
+  let path = stripLangPrefix(pathname)
+    .replace(/\/+/g, '/')
+    .replace(/\/index\.html$/i, '/')
+    .replace(/\.html$/i, '');
+
+  if (!path.startsWith('/')) path = '/' + path;
+  if (path.length > 1) path = path.replace(/\/+$/g, '');
+
+  return path || '/';
+}
+
+function localizeRoute(route = '/', lang = DEFAULT_LANG) {
+  const normalizedLang = normalizeLang(lang);
+  const cleanRoute = route || '/';
+
+  if (normalizedLang === DEFAULT_LANG) {
+    return canonicalCsRoute(cleanRoute);
+  }
+
+  const trailingRoute = cleanRoute === '/' ? '/' : ensureTrailingSlash(cleanRoute);
+
+  return '/' + normalizedLang + trailingRoute;
+}
+
+function canonicalCsRoute(route = '/') {
+  const cleanRoute = route || '/';
+
+  if (cleanRoute === '/') return '/';
+
+  const noTrailingRoutes = new Set([
+    '/events',
+    '/accommodation',
+    '/partners',
+    '/about',
+    '/blog',
+    '/faq',
+    '/privacy-policy',
+    '/cookies-policy',
+    '/thank-you',
+    '/blog-detail'
+  ]);
+
+  if (noTrailingRoutes.has(cleanRoute)) {
+    return cleanRoute;
+  }
+
+  if (
+    cleanRoute === '/microguides' ||
+    cleanRoute.startsWith('/blog/') ||
+    cleanRoute.startsWith('/microguides/') ||
+    cleanRoute.startsWith('/coming-soon')
+  ) {
+    return ensureTrailingSlash(cleanRoute);
+  }
+
+  return cleanRoute;
+}
+
+function ensureTrailingSlash(pathname = '/') {
+  const path = String(pathname || '/');
+  return path === '/' || path.endsWith('/') ? path : path + '/';
+}
+
+// -------- cookie / response helpers --------
 
 function shouldSkipPath(pathname = '') {
   const p = String(pathname || '');
@@ -102,6 +219,7 @@ function shouldSkipPath(pathname = '') {
     p.startsWith('/images/') ||
     p.startsWith('/fonts/') ||
     p.startsWith('/locales/') ||
+    p.startsWith('/content/') ||
     p.startsWith('/blog-data/') ||
     p === '/favicon.ico' ||
     p === '/robots.txt' ||

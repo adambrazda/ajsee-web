@@ -5,6 +5,25 @@ const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const DEFAULT_LANG = 'cs';
 const SITE_ORIGIN = 'https://ajsee.cz';
 
+function normalizeBlogDetailLang(value, fallback = DEFAULT_LANG) {
+  const lang = String(value || '').trim().toLowerCase().split(/[-_]/)[0];
+  return SUPPORTED_LANGS.includes(lang) ? lang : fallback;
+}
+
+function getPathLang(pathname = window.location.pathname) {
+  const match = String(pathname || '').match(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i);
+  return normalizeBlogDetailLang(match && match[1], '');
+}
+
+function stripLangPrefix(pathname = window.location.pathname) {
+  let cleanPath = String(pathname || '/').replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+
+  if (!cleanPath) cleanPath = '/';
+  if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+
+  return cleanPath;
+}
+
 // Funkce na získání parametrů z URL
 function getUrlParam(name) {
   const params = new URLSearchParams(window.location.search);
@@ -18,7 +37,9 @@ function getArticleSlug() {
   const querySlug = (getUrlParam('slug') || '').trim();
   if (querySlug) return querySlug;
 
-  const match = window.location.pathname.match(/^\/blog\/([^/?#]+)\/?$/i);
+  const cleanPath = stripLangPrefix(window.location.pathname);
+  const match = cleanPath.match(/^\/blog\/([^/?#]+)\/?$/i);
+
   if (match && match[1]) {
     try {
       return decodeURIComponent(match[1]);
@@ -32,8 +53,16 @@ function getArticleSlug() {
 
 // Detekce jazyka z URL (nebo fallback na cs)
 function detectLang() {
-  const lang = (getUrlParam('lang') || '').toLowerCase().split(/[-_]/)[0];
-  return SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG;
+  const fromPath = getPathLang(window.location.pathname);
+  if (fromPath) return fromPath;
+
+  const fromQuery = normalizeBlogDetailLang(getUrlParam('lang'), '');
+  if (fromQuery) return fromQuery;
+
+  const fromHtml = normalizeBlogDetailLang(document.documentElement.getAttribute('lang'), '');
+  if (fromHtml) return fromHtml;
+
+  return DEFAULT_LANG;
 }
 
 // Bezpečné escapování textu do HTML
@@ -106,34 +135,40 @@ function upsertMetaProperty(property, content) {
   el.setAttribute('content', content);
 }
 
-function buildBlogCanonicalUrl(slug) {
-  return `${SITE_ORIGIN}/blog/${encodeURIComponent(slug)}/`;
+function buildBlogCanonicalUrl(slug, lang = DEFAULT_LANG) {
+  const normalizedLang = normalizeBlogDetailLang(lang);
+  const basePath = '/blog/' + encodeURIComponent(slug) + '/';
+
+  return normalizedLang === DEFAULT_LANG
+    ? SITE_ORIGIN + basePath
+    : SITE_ORIGIN + '/' + normalizedLang + basePath;
 }
 
 // Lehké sjednocení meta dat pro detail článku po načtení článku
 function updateArticleMeta(article, lang) {
   if (!article?.slug) return;
 
-  const canonicalUrl = buildBlogCanonicalUrl(article.slug);
-  const title = article.title?.[lang] || article.title?.cs || article.slug;
-  const description = article.lead?.[lang] || article.lead?.cs || '';
-  const image = article.image || `${SITE_ORIGIN}/images/logo-ajsee.png`;
+  const normalizedLang = normalizeBlogDetailLang(lang);
+  const canonicalUrl = buildBlogCanonicalUrl(article.slug, normalizedLang);
+  const title = article.title?.[normalizedLang] || article.title?.cs || article.slug;
+  const description = article.lead?.[normalizedLang] || article.lead?.cs || '';
+  const image = article.image || SITE_ORIGIN + '/images/logo-ajsee.png';
 
-  document.title = `${title} | AJSEE`;
+  document.title = title + ' | AJSEE';
 
   upsertMetaName('description', description);
-  upsertMetaName('robots', 'index, follow');
+  upsertMetaName('robots', normalizedLang === DEFAULT_LANG ? 'index, follow' : 'noindex, follow');
 
   upsertLink('canonical', canonicalUrl);
 
   upsertMetaProperty('og:type', 'article');
-  upsertMetaProperty('og:title', `${title} | AJSEE`);
+  upsertMetaProperty('og:title', title + ' | AJSEE');
   upsertMetaProperty('og:description', description);
   upsertMetaProperty('og:url', canonicalUrl);
   upsertMetaProperty('og:image', image);
 
   upsertMetaName('twitter:card', 'summary_large_image');
-  upsertMetaName('twitter:title', `${title} | AJSEE`);
+  upsertMetaName('twitter:title', title + ' | AJSEE');
   upsertMetaName('twitter:description', description);
   upsertMetaName('twitter:image', image);
 }
@@ -142,7 +177,7 @@ function updateArticleMeta(article, lang) {
 function renderBlogStructuredData(article, lang, categoryLabel) {
   if (!article?.slug) return;
 
-  const canonicalUrl = buildBlogCanonicalUrl(article.slug);
+  const canonicalUrl = buildBlogCanonicalUrl(article.slug, lang);
   const title = article.title?.[lang] || article.title?.cs || article.slug;
   const description = article.lead?.[lang] || article.lead?.cs || '';
   const content = article.content?.[lang] || article.content?.cs || '';
@@ -272,6 +307,7 @@ function getCategoryLabel(category, lang) {
 
 // Překlad tlačítka zpět
 function updateBackLink(lang) {
+  const normalizedLang = normalizeBlogDetailLang(lang);
   const backLink = document.querySelector('[data-i18n-key="blog-back"]');
   if (!backLink) return;
 
@@ -284,7 +320,11 @@ function updateBackLink(lang) {
     hu: '← Vissza a bloghoz'
   };
 
-  backLink.textContent = backKeys[lang] || backKeys.cs;
+  backLink.textContent = backKeys[normalizedLang] || backKeys.cs;
+  backLink.setAttribute(
+    'href',
+    normalizedLang === DEFAULT_LANG ? '/blog/' : '/' + normalizedLang + '/blog/'
+  );
 }
 
 // Vykreslení článku do DOM
@@ -303,7 +343,7 @@ async function renderArticle() {
   if (!article) {
     container.innerHTML = `<div class="blog-404" data-i18n-key="blog-not-found">Článek nebyl nalezen.</div>`;
     upsertMetaName('robots', 'noindex, follow');
-    upsertLink('canonical', `${SITE_ORIGIN}/blog`);
+    upsertLink('canonical', lang === DEFAULT_LANG ? SITE_ORIGIN + '/blog/' : SITE_ORIGIN + '/' + lang + '/blog/');
     return;
   }
 

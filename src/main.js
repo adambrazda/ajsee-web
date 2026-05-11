@@ -987,6 +987,75 @@ function fixHomeBlog() {
   host.classList.remove('blog-cards');
 }
 
+
+function normalizeRouteLang(lang) {
+  const value = String(lang || '').trim().toLowerCase().split(/[-_]/)[0];
+  return ['cs', 'en', 'de', 'sk', 'pl', 'hu'].includes(value) ? value : 'cs';
+}
+
+function localizedPath(pathname, lang) {
+  const targetLang = normalizeRouteLang(lang);
+
+  let path = String(pathname || '/').trim();
+
+  if (!path) path = '/';
+
+  path = path.replace(/^https?:\/\/[^/]+/i, '');
+  path = path.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+
+  if (!path.startsWith('/')) path = '/' + path;
+
+  path = path.replace(/\/{2,}/g, '/');
+
+  if (path !== '/' && !path.endsWith('/')) path += '/';
+
+  return targetLang === 'cs'
+    ? path
+    : '/' + targetLang + path;
+}
+
+function isMicroguideArticle(article) {
+  const values = [
+    article?.type,
+    article?.kind,
+    article?.contentType,
+    article?.category,
+    article?.section,
+    article?.url,
+    article?.href,
+    article?.link,
+    article?.path
+  ]
+    .filter(Boolean)
+    .map((value) => String(value).toLowerCase());
+
+  return values.some((value) => {
+    return value.includes('microguide') || value.includes('/microguides/');
+  });
+}
+
+function articleHref(article, lang) {
+  const slug = article?.slug ? String(article.slug).trim() : '';
+  const rawHref = article?.url || article?.href || article?.link || article?.path || '';
+
+  if (isMicroguideArticle(article)) {
+    if (slug) return localizedPath('/microguides/' + encodeURIComponent(slug) + '/', lang);
+    if (rawHref) return localizedPath(rawHref, lang);
+    return localizedPath('/microguides/', lang);
+  }
+
+  if (slug) {
+    return localizedPath('/blog/' + encodeURIComponent(slug) + '/', lang);
+  }
+
+  if (rawHref) {
+    return localizedPath(rawHref, lang);
+  }
+
+  return localizedPath('/blog/', lang);
+}
+
+
 function pickLocalized(val, lang) {
   if (!val) return '';
   if (typeof val === 'string') return val;
@@ -1001,6 +1070,102 @@ function pickLocalized(val, lang) {
 function withLangParam(href, lang) {
   return ajseeLocalizeInternalHref(href, lang);
 }
+
+
+function homeLocalizedPath(pathname, lang) {
+  const supported = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+  const targetLang = supported.includes(String(lang || '').toLowerCase())
+    ? String(lang || '').toLowerCase()
+    : 'cs';
+
+  let clean = String(pathname || '/').trim();
+  clean = clean.replace(/^https?:\/\/[^/]+/i, '');
+  clean = clean.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+
+  if (!clean.startsWith('/')) clean = '/' + clean;
+  clean = clean.replace(/\/{2,}/g, '/');
+
+  if (clean !== '/' && !clean.endsWith('/')) clean += '/';
+
+  return targetLang === 'cs' ? clean : '/' + targetLang + clean;
+}
+
+async function fetchJsonQuiet(url) {
+  try {
+    const response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+async function loadLocalizedMicroguideForHome(item, lang) {
+  const slug = String(item?.slug || '').trim();
+  if (!slug) return null;
+
+  const wantedLang = String(lang || 'cs').toLowerCase();
+  const candidates = Array.from(new Set([
+    wantedLang,
+    wantedLang !== 'en' ? 'en' : '',
+    wantedLang !== 'cs' ? 'cs' : ''
+  ].filter(Boolean)));
+
+  for (const candidateLang of candidates) {
+    const data = await fetchJsonQuiet(
+      '/content/microguides/' + encodeURIComponent(slug) + '.' + encodeURIComponent(candidateLang) + '.json'
+    );
+
+    if (data) {
+      return {
+        ...item,
+        ...data,
+        slug,
+        type: 'microguide',
+        _resolvedLang: candidateLang,
+        _ts: Date.parse(data.publishedAt || item?.publishedAt || 0) || 0,
+        url: homeLocalizedPath('/microguides/' + encodeURIComponent(slug) + '/', wantedLang)
+      };
+    }
+  }
+
+  return null;
+}
+
+async function getHomepageMicroguides(lang) {
+  const payload = await fetchJsonQuiet('/content/microguides/index.json');
+  const items = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.items)
+      ? payload.items
+      : [];
+
+  const published = items.filter((item) => {
+    return item?.slug && (item.status || 'published') === 'published';
+  });
+
+  const localized = await Promise.all(
+    published.map((item) => loadLocalizedMicroguideForHome(item, lang))
+  );
+
+  return localized
+    .filter(Boolean)
+    .sort((a, b) => (b._ts || 0) - (a._ts || 0));
+}
+
+function homepageCardHref(item, lang) {
+  if (item?.type === 'microguide' && item?.slug) {
+    return homeLocalizedPath('/microguides/' + encodeURIComponent(item.slug) + '/', lang);
+  }
+
+  if (item?.slug) {
+    return homeLocalizedPath('/blog/' + encodeURIComponent(item.slug) + '/', lang);
+  }
+
+  const rawHref = item?.url || item?.href || item?.link || item?.path || '/blog';
+  return homeLocalizedPath(rawHref, lang);
+}
+
 
 function getHomeBlogHost() {
   const blog = document.getElementById('blog') || qs('section#blog');
@@ -1019,17 +1184,10 @@ function optimizeCardImageUrl(url = '') {
 }
 
 function blogArticleHref(article, lang) {
-  const slug = article?.slug ? String(article.slug).trim() : '';
-
-  if (slug) {
-    return withLangParam(`/blog/${encodeURIComponent(slug)}/`, lang);
-  }
-
-  const rawHref = article?.url || article?.href || article?.link || article?.path || '/blog';
-  return withLangParam(rawHref, lang);
+  return articleHref(article, lang);
 }
 
-function renderHomeBlog() {
+async function renderHomeBlog() {
   if (!isHome()) return;
 
   fixHomeBlog();
@@ -1041,58 +1199,269 @@ function renderHomeBlog() {
   host.classList.add('homepage-blog-cards');
   host.classList.remove('blog-cards');
 
+  const supportedLangs = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+  const lang = supportedLangs.includes(String(currentLang || '').toLowerCase())
+    ? String(currentLang).toLowerCase()
+    : 'cs';
+
+  if (
+    host.dataset.ajRenderedLang === lang &&
+    host.dataset.ajHomeBlogMix === 'articles-2-mg-1' &&
+    host.children.length === 3
+  ) {
+    return;
+  }
+
+  const renderToken = lang + ':' + Date.now();
+  host.dataset.ajHomeBlogPending = renderToken;
+
+  function localizeHomepageHref(rawHref, targetLang = lang) {
+    if (!rawHref) return targetLang === 'cs' ? '/blog/' : '/' + targetLang + '/blog/';
+    if (String(rawHref).startsWith('#')) return rawHref;
+
+    try {
+      const url = new URL(rawHref, window.location.origin);
+
+      if (url.origin !== window.location.origin) {
+        return rawHref;
+      }
+
+      url.searchParams.delete('lang');
+      url.searchParams.delete('locale');
+      url.searchParams.delete('hl');
+
+      let pathname = url.pathname || '/';
+      pathname = pathname.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+
+      if (!pathname) pathname = '/';
+      if (!pathname.startsWith('/')) pathname = '/' + pathname;
+      pathname = pathname.replace(/\/{2,}/g, '/');
+
+      if (pathname !== '/' && !pathname.endsWith('/')) pathname += '/';
+
+      url.pathname = targetLang === 'cs'
+        ? pathname
+        : '/' + targetLang + pathname;
+
+      return url.pathname + url.search + url.hash;
+    } catch {
+      return rawHref;
+    }
+  }
+
+  function rawItemHref(item) {
+    return String(item?.url || item?.href || item?.link || item?.path || '').trim();
+  }
+
+  function isMicroguideItem(item) {
+    const type = String(
+      item?.type ||
+      item?.dataType ||
+      item?.kind ||
+      item?.contentType ||
+      item?.collection ||
+      ''
+    ).toLowerCase();
+
+    const href = rawItemHref(item).toLowerCase();
+
+    return (
+      type.includes('microguide') ||
+      type.includes('micro-guide') ||
+      href.includes('/microguides/')
+    );
+  }
+
+  function itemHref(item) {
+    const slug = String(item?.slug || '').trim();
+    const rawHref = rawItemHref(item);
+
+    if (isMicroguideItem(item)) {
+      if (rawHref) return localizeHomepageHref(rawHref, lang);
+      if (slug) return localizeHomepageHref('/microguides/' + encodeURIComponent(slug) + '/', lang);
+      return localizeHomepageHref('/microguides/', lang);
+    }
+
+    if (slug) {
+      return localizeHomepageHref('/blog/' + encodeURIComponent(slug) + '/', lang);
+    }
+
+    return localizeHomepageHref(rawHref || '/blog/', lang);
+  }
+
+  async function fetchJson(url) {
+    const response = await fetch(url, { cache: 'no-store' });
+
+    if (!response.ok) {
+      throw new Error(String(response.status));
+    }
+
+    return response.json();
+  }
+
+  async function loadLocalizedMicroguide(slug, targetLang) {
+    const encodedSlug = encodeURIComponent(slug);
+    const candidates = [];
+
+    const pushCandidate = (langCode) => {
+      if (!langCode || candidates.some((item) => item.lang === langCode)) return;
+      candidates.push({
+        lang: langCode,
+        url: '/content/microguides/' + encodedSlug + '.' + langCode + '.json'
+      });
+    };
+
+    pushCandidate(targetLang);
+    pushCandidate('en');
+    pushCandidate('cs');
+
+    for (const candidate of candidates) {
+      try {
+        const data = await fetchJson(candidate.url);
+        return {
+          data,
+          resolvedLang: candidate.lang
+        };
+      } catch {
+        // Try next fallback language.
+      }
+    }
+
+    return null;
+  }
+
+  async function loadHomepageMicroguide(targetLang) {
+    try {
+      const payload = await fetchJson('/content/microguides/index.json');
+
+      const items = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.items)
+          ? payload.items
+          : [];
+
+      const publishedItems = items
+        .filter((item) => (item?.status || 'published') === 'published' && item?.slug)
+        .sort((a, b) => {
+          const at = Date.parse(a?.publishedAt || a?.date || 0) || 0;
+          const bt = Date.parse(b?.publishedAt || b?.date || 0) || 0;
+          return bt - at;
+        });
+
+      for (const item of publishedItems) {
+        const slug = String(item.slug || '').trim();
+        if (!slug) continue;
+
+        const localized = await loadLocalizedMicroguide(slug, targetLang);
+        const data = localized?.data || item;
+
+        return {
+          ...item,
+          ...data,
+          slug,
+          type: 'microguide',
+          href: '/microguides/' + encodeURIComponent(slug) + '/',
+          url: '/microguides/' + encodeURIComponent(slug) + '/',
+          title: data.title || item.title || slug,
+          summary: data.summary || item.summary || '',
+          cover: data.cover || item.cover || '',
+          image: data.image || data.cover || item.image || item.cover || '',
+          coverAlt: data.coverAlt || item.coverAlt || data.title || item.title || '',
+          _resolvedLang: localized?.resolvedLang || item.language || targetLang
+        };
+      }
+    } catch {
+      // Homepage must still render blog articles if microguides JSON is temporarily unavailable.
+    }
+
+    return null;
+  }
+
   const more = blog.querySelector('a.homepage-blog-more') || blog.querySelector('a[data-i18n-key="blog-show-all"]');
   if (more) {
     more.classList.add('homepage-blog-more');
-    const raw = more.getAttribute('href') || more.href || '/blog';
-    more.href = withLangParam(raw, currentLang);
+    more.href = localizeHomepageHref('/blog/', lang);
   }
 
-  if (host.dataset.ajRenderedLang === currentLang && host.children.length) return;
-
-  let articles = [];
+  let articleItems = [];
   try {
-    articles = getSortedBlogArticles?.() || [];
+    const allArticles = getSortedBlogArticles?.(lang) || getSortedBlogArticles?.() || [];
+    articleItems = allArticles.filter((item) => !isMicroguideItem(item)).slice(0, 2);
   } catch {
-    articles = [];
+    articleItems = [];
   }
 
-  const top = (Array.isArray(articles) ? articles : []).slice(0, 3);
-  if (!top.length) {
+  const microguideItem = await loadHomepageMicroguide(lang);
+
+  if (host.dataset.ajHomeBlogPending !== renderToken) {
+    return;
+  }
+
+  const selectedItems = [...articleItems];
+
+  if (microguideItem) {
+    selectedItems.push(microguideItem);
+  }
+
+  if (selectedItems.length < 3) {
+    try {
+      const fallbackArticles = getSortedBlogArticles?.(lang) || getSortedBlogArticles?.() || [];
+      fallbackArticles.forEach((item) => {
+        if (selectedItems.length >= 3) return;
+        if (!selectedItems.includes(item)) selectedItems.push(item);
+      });
+    } catch {
+      // noop
+    }
+  }
+
+  if (!selectedItems.length) {
     host.innerHTML = '';
-    host.dataset.ajRenderedLang = currentLang;
+    host.dataset.ajRenderedLang = lang;
+    host.dataset.ajHomeBlogMix = 'articles-2-mg-1';
     return;
   }
 
   const readMore =
     (t('blog.readMore') && String(t('blog.readMore')).trim()) ? t('blog.readMore') :
-      (currentLang === 'en') ? 'Read more' :
-        (currentLang === 'de') ? 'Mehr lesen' :
-          (currentLang === 'sk') ? 'Čítať ďalej' :
-            (currentLang === 'pl') ? 'Czytaj dalej' :
-              (currentLang === 'hu') ? 'Tovább' :
+      (lang === 'en') ? 'Read more' :
+        (lang === 'de') ? 'Mehr lesen' :
+          (lang === 'sk') ? 'Čítať ďalej' :
+            (lang === 'pl') ? 'Czytaj dalej' :
+              (lang === 'hu') ? 'Tovább' :
                 'Číst dál';
 
-  host.innerHTML = top.map(article => {
-    const title = esc(pickLocalized(article.title || article.name || article.heading, currentLang) || '');
-    const excerpt = esc(pickLocalized(article.excerpt || article.perex || article.summary || article.description, currentLang) || '');
-    const rawImage = article.image || article.cover || article.hero || article.thumb || '/images/fallbacks/concert0.jpg';
-    const img = esc(optimizeCardImageUrl(rawImage));
-    const href = esc(blogArticleHref(article, currentLang));
+  const openGuide =
+    (lang === 'en') ? 'Open guide' :
+      (lang === 'de') ? 'Guide öffnen' :
+        (lang === 'sk') ? 'Otvoriť príručku' :
+          (lang === 'pl') ? 'Otwórz przewodnik' :
+            (lang === 'hu') ? 'Útmutató megnyitása' :
+              'Otevřít průvodce';
 
-    return `
-      <a class="homepage-blog-card blog-card" href="${href}" aria-label="${title}">
-        <img src="${img}" alt="${title}" loading="lazy" />
-        <div class="blog-card-content">
-          <h3>${title}</h3>
-          ${excerpt ? `<p>${excerpt}</p>` : ''}
-          <span class="btn-primary">${esc(readMore)}</span>
-        </div>
-      </a>
-    `;
+  host.innerHTML = selectedItems.slice(0, 3).map((article) => {
+    const isGuide = isMicroguideItem(article);
+    const title = esc(pickLocalized(article.title || article.name || article.heading, lang) || '');
+    const excerpt = esc(pickLocalized(article.excerpt || article.perex || article.summary || article.description, lang) || '');
+    const rawImage = article.image || article.cover || article.hero || article.thumb || '/images/fallbacks/concert0.jpg';
+    const img = esc(typeof optimizeCardImageUrl === 'function' ? optimizeCardImageUrl(rawImage) : rawImage);
+    const href = esc(itemHref(article));
+    const ctaLabel = isGuide ? openGuide : readMore;
+
+    return [
+      '<a class="homepage-blog-card blog-card" data-type="', isGuide ? 'microguide' : 'article', '" href="', href, '" aria-label="', title, '">',
+        '<img src="', img, '" alt="', title, '" loading="lazy" decoding="async" />',
+        '<div class="blog-card-content">',
+          '<h3>', title, '</h3>',
+          excerpt ? '<p>' + excerpt + '</p>' : '',
+          '<span class="btn-primary">', esc(ctaLabel), '</span>',
+        '</div>',
+      '</a>'
+    ].join('');
   }).join('');
 
-  host.dataset.ajRenderedLang = currentLang;
+  host.dataset.ajRenderedLang = lang;
+  host.dataset.ajHomeBlogMix = 'articles-2-mg-1';
 }
 
 /* ───────── live region ───────── */

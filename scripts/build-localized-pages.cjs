@@ -602,8 +602,48 @@ function main() {
       written++;
     }
   }
+function cleanupLocalizedBlogDetailRobots() {
+  // Non-CS blog detail pages are currently localized/fallback clones.
+  // Keep them available for visitors, but prevent indexing until full localized article details are ready.
+  const robotsMetaRe = /<meta\b(?=[^>]*\bname=["']robots["'])[^>]*>\s*/i;
+  const noindexMeta = '<meta name="robots" content="noindex, follow" />\n  ';
+
+  try {
+    for (const lang of PREFIXED_LANGS) {
+      const blogDir = path.join(DIST, lang, 'blog');
+
+      if (!fs.existsSync(blogDir)) continue;
+
+      for (const entry of fs.readdirSync(blogDir, { withFileTypes: true })) {
+        if (!entry.isDirectory()) continue;
+
+        const indexFile = path.join(blogDir, entry.name, 'index.html');
+
+        if (!fs.existsSync(indexFile)) continue;
+
+        const current = fs.readFileSync(indexFile, 'utf8');
+        let next = current;
+
+        if (robotsMetaRe.test(next)) {
+          next = next.replace(robotsMetaRe, noindexMeta);
+        } else {
+          next = next.replace(/<head\b[^>]*>/i, (match) => match + '\n  ' + noindexMeta.trim());
+        }
+
+        if (next !== current) {
+          fs.writeFileSync(indexFile, next, 'utf8');
+        }
+      }
+    }
+  } catch {
+    // This cleanup must never break the production build.
+  }
+}
+
 
   cleanupGoogleVerificationCopies();
+
+  cleanupLocalizedBlogDetailRobots();
 
   console.log('AJSEE localized static pages generated');
   console.log('============================================================');

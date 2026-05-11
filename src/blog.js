@@ -374,25 +374,59 @@ async function loadAllCards(lang) {
   return [...microguides, ...articles].sort((a, b) => b.ts - a.ts);
 }
 
-function withLangQuery(path, lang) {
+function withLangPath(path, lang) {
   const normalizedLang = normalizeLang(lang);
 
-  if (normalizedLang === DEFAULT_LANG) {
-    return path;
-  }
+  try {
+    const url = new URL(path || '/', window.location.origin);
 
-  return `${path}?lang=${encodeURIComponent(normalizedLang)}`;
+    let pathname = url.pathname || '/';
+
+    pathname = pathname.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
+
+    if (!pathname.startsWith('/')) {
+      pathname = '/' + pathname;
+    }
+
+    pathname = pathname.replace(/\/{2,}/g, '/');
+
+    if (pathname !== '/' && !pathname.endsWith('/')) {
+      pathname += '/';
+    }
+
+    url.searchParams.delete('lang');
+    url.searchParams.delete('locale');
+    url.searchParams.delete('hl');
+
+    const localizedPath = normalizedLang === DEFAULT_LANG
+      ? pathname
+      : '/' + normalizedLang + pathname;
+
+    return localizedPath + url.search + url.hash;
+  } catch {
+    const cleanPath = String(path || '/');
+
+    if (normalizedLang === DEFAULT_LANG) {
+      return cleanPath;
+    }
+
+    return '/' + normalizedLang + (cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath);
+  }
 }
 
-function cardHref(card) {
-  const lang = normalizeLang(card.lang || getLang());
+function cardHref(card, uiLang = getLang()) {
+  const lang = normalizeLang(uiLang);
   const slug = encodeURIComponent(card.slug || '');
 
-  if (card.type === 'microguide') {
-    return withLangQuery(`/microguides/${slug}/`, lang);
+  if (!slug) {
+    return withLangPath('/blog/', lang);
   }
 
-  return withLangQuery(`/blog/${slug}/`, lang);
+  if (card.type === 'microguide') {
+    return withLangPath(card.href || card.url || card.link || card.path || '/microguides/' + slug + '/', lang);
+  }
+
+  return withLangPath(card.href || card.url || card.link || card.path || '/blog/' + slug + '/', lang);
 }
 
 // --- Render ----------------------------------------------------------------
@@ -433,7 +467,7 @@ function renderCards(cards, lang) {
   }
 
   grid.innerHTML = cards.map((card) => {
-    const href = cardHref(card);
+    const href = cardHref(card, lang);
     const title = escapeHtml(card.title || '');
     const lead = escapeHtml(card.lead || '');
     const image = escapeHtml(optimizeCardImageUrl(card.image || ''));

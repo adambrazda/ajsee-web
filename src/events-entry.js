@@ -2255,24 +2255,175 @@ function ensureNearMeInlineButton(input) {
   const host = input.closest('.filter-group') || input.parentElement;
   if (!host) return;
 
-  const existing = host.querySelector('.btn-nearme-inline');
-  if (existing) existing.remove();
+  injectOnce('ajsee-city-inline-controls-css', String.raw`
+    :where(.filter-group.has-city-inline-controls, .field.has-city-inline-controls) {
+      position: relative;
+    }
 
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'btn-nearme-inline';
-  btn.setAttribute('aria-label', nearMeLabel());
-  btn.title = nearMeLabel();
-  btn.textContent = '📍';
+    :where(.filter-group.has-city-inline-controls, .field.has-city-inline-controls) input[type="text"],
+    :where(.filter-group.has-city-inline-controls, .field.has-city-inline-controls) input[type="search"] {
+      padding-right: 5.75rem !important;
+    }
 
-  host.style.position = 'relative';
-  host.appendChild(btn);
+    .btn-nearme-inline,
+    .btn-city-clear-inline {
+      position: absolute;
+      top: 50%;
+      z-index: 5;
+      width: 2rem;
+      height: 2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.82);
+      color: #1d4ed8;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+      transform: translateY(-50%);
+      cursor: pointer;
+      transition: opacity 160ms ease, transform 160ms ease, background 160ms ease;
+    }
 
-  wireOnce(btn, 'click', () => {
-    _userInteractedWithFilters = true;
+    .btn-nearme-inline {
+      right: 2.85rem;
+    }
+
+    .btn-city-clear-inline {
+      right: 0.65rem;
+      color: #667085;
+      font-size: 1.25rem;
+      line-height: 1;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .has-city-inline-controls.has-city-value .btn-city-clear-inline {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .btn-nearme-inline:hover,
+    .btn-city-clear-inline:hover {
+      background: #fff;
+      transform: translateY(-50%) scale(1.04);
+    }
+
+    .btn-nearme-inline:focus-visible,
+    .btn-city-clear-inline:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.22);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 720px) {
+      :where(.filter-group.has-city-inline-controls, .field.has-city-inline-controls) input[type="text"],
+      :where(.filter-group.has-city-inline-controls, .field.has-city-inline-controls) input[type="search"] {
+        padding-right: 6rem !important;
+      }
+
+      .btn-nearme-inline,
+      .btn-city-clear-inline {
+        width: 2.15rem;
+        height: 2.15rem;
+      }
+
+      .btn-nearme-inline {
+        right: 3rem;
+      }
+
+      .btn-city-clear-inline {
+        right: 0.65rem;
+      }
+    }
+  `);
+
+  host.classList.add('has-city-inline-controls');
+
+  const existingNearMe = host.querySelector('.btn-nearme-inline');
+  if (existingNearMe) existingNearMe.remove();
+
+  const existingClear = host.querySelector('.btn-city-clear-inline');
+  if (existingClear) existingClear.remove();
+
+  const nearMeBtn = document.createElement('button');
+  nearMeBtn.type = 'button';
+  nearMeBtn.className = 'btn-nearme-inline';
+  nearMeBtn.setAttribute('aria-label', nearMeLabel());
+  nearMeBtn.title = nearMeLabel();
+  nearMeBtn.textContent = '📍';
+
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button';
+  clearBtn.className = 'btn-city-clear-inline';
+  clearBtn.setAttribute('aria-label', t('filters.clearCity', 'Vymazat město'));
+  clearBtn.title = t('filters.clearCity', 'Vymazat město');
+  clearBtn.innerHTML = '<span aria-hidden="true">×</span>';
+
+  host.appendChild(nearMeBtn);
+  host.appendChild(clearBtn);
+
+  const hasCityValue = () => Boolean(
+    (input.value || '').trim() ||
+    currentFilters.city ||
+    currentFilters.cityLabel ||
+    currentFilters.placeType === 'country' ||
+    (currentFilters.nearMeLat && currentFilters.nearMeLon)
+  );
+
+  const syncClearVisibility = () => {
+    host.classList.toggle('has-city-value', hasCityValue());
+  };
+
+  const clearCityFilter = async () => {
+    currentFilters.placeType = '';
+    currentFilters.city = '';
+    currentFilters.cityLabel = '';
+    currentFilters.cityCountryCode = '';
+    currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+    currentFilters.nearMeLat = null;
+    currentFilters.nearMeLon = null;
+    currentFilters.nearMeRadiusKm = currentFilters.nearMeRadiusKm || 50;
+
+    input.value = '';
+    input.removeAttribute('data-autofromnearme');
+
+    try { _userInteractedWithFilters = true; } catch {}
+    try { _lastFetchSig = ''; } catch {}
+    try {
+      if (typeof resetEventsPager === 'function') resetEventsPager();
+    } catch {}
+
+    setFilterInputsFromState();
+    syncClearVisibility();
+    updateToggleBadge();
+
+    await renderAndSync({ resetPage: true });
+    expandFilters();
+
+    try {
+      input.focus({ preventScroll: true });
+    } catch {}
+  };
+
+  wireOnce(nearMeBtn, 'click', () => {
+    try { _userInteractedWithFilters = true; } catch {}
+
     const liveInput = getCityInputEl() || input;
-    void activateNearMeViaGeo(liveInput);
+    void activateNearMeViaGeo(liveInput).then(syncClearVisibility);
   }, 'nearme-inline-click');
+
+  wireOnce(clearBtn, 'click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    void clearCityFilter();
+  }, 'city-clear-inline-click');
+
+  wireOnce(input, 'input', syncClearVisibility, 'city-clear-sync-input');
+  wireOnce(input, 'change', syncClearVisibility, 'city-clear-sync-change');
+  wireOnce(input, 'focus', syncClearVisibility, 'city-clear-sync-focus');
+
+  syncClearVisibility();
+  setTimeout(syncClearVisibility, 0);
 }
 
 /* ───────── city typeahead ───────── */

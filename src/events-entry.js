@@ -1916,6 +1916,8 @@ function setFilterInputsFromState() {
     }
   }
 
+  if (city) updateCityInlineControls(city);
+
   if (from) from.value = currentFilters.dateFrom || '';
   if (to) to.value = currentFilters.dateTo || '';
   if (kw) kw.value = currentFilters.keyword || '';
@@ -2249,30 +2251,299 @@ async function activateNearMeViaGeo(input) {
   expandFilters();
 }
 
+function cityClearInlineLabel() {
+  const fallbackByLang = {
+    cs: 'Vymazat město nebo zemi',
+    en: 'Clear city or country',
+    de: 'Stadt oder Land löschen',
+    sk: 'Vymazať mesto alebo krajinu',
+    pl: 'Wyczyść miasto lub kraj',
+    hu: 'Város vagy ország törlése'
+  };
+
+  const lang = String(currentLang || getUILang?.() || 'cs').toLowerCase().slice(0, 2);
+  const fallback = fallbackByLang[lang] || fallbackByLang.en;
+
+  try {
+    const translated = t('filters.clearCity', fallback);
+    return translated && translated !== 'filters.clearCity' ? translated : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function hasActiveCityInlineValue(input) {
+  const inputValue = String(input?.value || '').trim();
+
+  return Boolean(
+    inputValue ||
+    currentFilters.city ||
+    currentFilters.cityLabel ||
+    currentFilters.placeType === 'country' ||
+    currentFilters.placeType === 'nearMe' ||
+    (currentFilters.nearMeLat != null && currentFilters.nearMeLon != null)
+  );
+}
+
+function updateCityInlineControls(input = null) {
+  const liveInput = input || getCityInputEl();
+  if (!liveInput) return;
+
+  const host = liveInput.closest('.filter-group') || liveInput.parentElement;
+  if (!host) return;
+
+  const clearBtn = host.querySelector('.btn-city-clear-inline');
+  const hasValue = hasActiveCityInlineValue(liveInput);
+
+  host.classList.toggle('has-city-clear-inline', hasValue);
+  liveInput.classList.toggle('has-city-clear-inline', hasValue);
+
+  if (clearBtn) {
+    clearBtn.hidden = !hasValue;
+    clearBtn.setAttribute('aria-hidden', hasValue ? 'false' : 'true');
+    clearBtn.tabIndex = hasValue ? 0 : -1;
+    clearBtn.setAttribute('aria-label', cityClearInlineLabel());
+    clearBtn.title = cityClearInlineLabel();
+  }
+}
+
+async function clearCityFilterFromInlineControl(input = null) {
+  const liveInput = input || getCityInputEl();
+
+  currentFilters.placeType = '';
+  currentFilters.city = '';
+  currentFilters.cityLabel = '';
+  currentFilters.cityCountryCode = '';
+  currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+  currentFilters.nearMeLat = null;
+  currentFilters.nearMeLon = null;
+
+  if (liveInput) {
+    liveInput.value = '';
+    liveInput.removeAttribute('data-autofromnearme');
+  }
+
+  if (typeof _userInteractedWithFilters !== 'undefined') {
+    _userInteractedWithFilters = true;
+  }
+
+  if (typeof _lastFetchSig !== 'undefined') {
+    _lastFetchSig = '';
+  }
+
+  if (typeof resetEventsPager === 'function') {
+    resetEventsPager();
+  }
+
+  updateCityInlineControls(liveInput);
+
+  await renderAndSync({ resetPage: true });
+
+  updateCityInlineControls(liveInput);
+
+  if (typeof expandFilters === 'function') {
+    expandFilters();
+  }
+
+  try {
+    liveInput?.focus?.({ preventScroll: true });
+  } catch {
+    // noop
+  }
+}
+
 function ensureNearMeInlineButton(input) {
   if (!input) return;
 
   const host = input.closest('.filter-group') || input.parentElement;
   if (!host) return;
 
-  const existing = host.querySelector('.btn-nearme-inline');
-  if (existing) existing.remove();
-
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'btn-nearme-inline';
-  btn.setAttribute('aria-label', nearMeLabel());
-  btn.title = nearMeLabel();
-  btn.textContent = '📍';
-
   host.style.position = 'relative';
-  host.appendChild(btn);
+  host.classList.add('has-city-inline-controls');
 
-  wireOnce(btn, 'click', () => {
-    _userInteractedWithFilters = true;
+  host.querySelectorAll('.btn-nearme-inline').forEach((el) => el.remove());
+  host.querySelectorAll('.btn-city-clear-inline, .btn-clear-city-inline').forEach((el) => el.remove());
+
+  const clearLabel =
+    t?.('filters.clearCity', '') ||
+    t?.('filters.clear', '') ||
+    'Vymazat město';
+
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button';
+  clearBtn.className = 'btn-city-clear-inline';
+  clearBtn.setAttribute('aria-label', clearLabel);
+  clearBtn.title = clearLabel;
+  clearBtn.textContent = '×';
+
+  const nearBtn = document.createElement('button');
+  nearBtn.type = 'button';
+  nearBtn.className = 'btn-nearme-inline';
+  nearBtn.setAttribute('aria-label', nearMeLabel());
+  nearBtn.title = nearMeLabel();
+  nearBtn.textContent = '📍';
+
+  const sharedStyle = {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: '32px',
+    height: '32px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '0',
+    borderRadius: '999px',
+    background: 'transparent',
+    cursor: 'pointer',
+    zIndex: '4',
+    lineHeight: '1'
+  };
+
+  Object.assign(clearBtn.style, sharedStyle, {
+    right: '46px',
+    fontSize: '22px',
+    color: '#667085'
+  });
+
+  Object.assign(nearBtn.style, sharedStyle, {
+    right: '12px',
+    fontSize: '17px'
+  });
+
+  const currentPaddingRight = parseFloat(getComputedStyle(input).paddingRight || '0') || 0;
+  if (currentPaddingRight < 86) {
+    input.style.paddingRight = '86px';
+  }
+
+  host.appendChild(clearBtn);
+  host.appendChild(nearBtn);
+
+  const hasActiveCityValue = () => {
+    const inputValue = String(input.value || '').trim();
+
+    return Boolean(
+      inputValue ||
+      currentFilters.city ||
+      currentFilters.cityLabel ||
+      currentFilters.cityCountryCode ||
+      currentFilters.placeType === 'country' ||
+      currentFilters.placeType === 'city' ||
+      currentFilters.placeType === 'nearMe' ||
+      (currentFilters.nearMeLat != null && currentFilters.nearMeLon != null)
+    );
+  };
+
+  const syncInlineControls = () => {
+    const active = hasActiveCityValue();
+
+    clearBtn.hidden = !active;
+    clearBtn.disabled = !active;
+    clearBtn.tabIndex = active ? 0 : -1;
+    clearBtn.setAttribute('aria-hidden', active ? 'false' : 'true');
+
+    host.classList.toggle('has-city-value', active);
+  };
+
+  const clearCityFilter = async () => {
+    input.value = '';
+    input.removeAttribute('data-autofromnearme');
+
+    try {
+      if (typeof setCityPlace === 'function') {
+        setCityPlace('', '');
+      } else {
+        currentFilters.placeType = '';
+        currentFilters.city = '';
+        currentFilters.cityLabel = '';
+        currentFilters.cityCountryCode = '';
+        currentFilters.nearMeLat = null;
+        currentFilters.nearMeLon = null;
+        currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+      }
+    } catch {
+      currentFilters.placeType = '';
+      currentFilters.city = '';
+      currentFilters.cityLabel = '';
+      currentFilters.cityCountryCode = '';
+      currentFilters.nearMeLat = null;
+      currentFilters.nearMeLon = null;
+      currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+    }
+
+    try {
+      if (typeof _userInteractedWithFilters !== 'undefined') {
+        _userInteractedWithFilters = true;
+      }
+    } catch {}
+
+    try {
+      _lastFetchSig = '';
+    } catch {}
+
+    try {
+      if (typeof resetEventsPager === 'function') resetEventsPager();
+    } catch {}
+
+    syncInlineControls();
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+
+    if (typeof renderAndSync === 'function') {
+      await renderAndSync({ resetPage: true });
+    }
+
+    if (typeof expandFilters === 'function') {
+      expandFilters();
+    }
+
+    syncInlineControls();
+
+    try {
+      input.focus({ preventScroll: true });
+    } catch {}
+  };
+
+  wireOnce(clearBtn, 'pointerdown', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, 'city-clear-inline-pointerdown');
+
+  wireOnce(clearBtn, 'click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    void clearCityFilter();
+  }, 'city-clear-inline-click');
+
+  wireOnce(nearBtn, 'click', () => {
+    try {
+      if (typeof _userInteractedWithFilters !== 'undefined') {
+        _userInteractedWithFilters = true;
+      }
+    } catch {}
+
     const liveInput = getCityInputEl() || input;
-    void activateNearMeViaGeo(liveInput);
+    void activateNearMeViaGeo(liveInput).finally(() => {
+      syncInlineControls();
+    });
   }, 'nearme-inline-click');
+
+  wireOnce(input, 'input', syncInlineControls, 'city-inline-controls-input-sync');
+  wireOnce(input, 'change', syncInlineControls, 'city-inline-controls-change-sync');
+
+  input.__ajseeSyncCityInlineControls = syncInlineControls;
+  window.__ajseeSyncCityInlineControls = () => {
+    const liveInput = getCityInputEl() || input;
+    if (liveInput && typeof liveInput.__ajseeSyncCityInlineControls === 'function') {
+      liveInput.__ajseeSyncCityInlineControls();
+    }
+  };
+
+  syncInlineControls();
+  requestAnimationFrame(syncInlineControls);
+  setTimeout(syncInlineControls, 0);
+  setTimeout(syncInlineControls, 250);
 }
 
 /* ───────── city typeahead ───────── */

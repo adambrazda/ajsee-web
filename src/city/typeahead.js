@@ -654,6 +654,76 @@ const DEFAULT_CITY_PRESET_COUNTRY = {
   wien: 'AT'
 };
 
+const LOCAL_CITY_FALLBACKS = [
+  {
+    countryCode: 'CZ',
+    labels: { cs: 'Praha', en: 'Prague', de: 'Prag', sk: 'Praha', pl: 'Praga', hu: 'Prága' },
+    aliases: ['praha', 'prague', 'prag', 'praga']
+  },
+  {
+    countryCode: 'CZ',
+    labels: { cs: 'Brno', en: 'Brno', de: 'Brünn', sk: 'Brno', pl: 'Brno', hu: 'Brno' },
+    aliases: ['brno', 'brunn', 'brünn']
+  },
+  {
+    countryCode: 'SK',
+    labels: { cs: 'Bratislava', en: 'Bratislava', de: 'Bratislava', sk: 'Bratislava', pl: 'Bratysława', hu: 'Pozsony' },
+    aliases: ['bratislava', 'bratyslawa', 'pozsony']
+  },
+  {
+    countryCode: 'HU',
+    labels: { cs: 'Budapešť', en: 'Budapest', de: 'Budapest', sk: 'Budapešť', pl: 'Budapeszt', hu: 'Budapest' },
+    aliases: ['budapest', 'budapest', 'budapeszt', 'budapest']
+  },
+  {
+    countryCode: 'AT',
+    labels: { cs: 'Vídeň', en: 'Vienna', de: 'Wien', sk: 'Viedeň', pl: 'Wiedeń', hu: 'Bécs' },
+    aliases: ['viden', 'vídeň', 'vienna', 'wien', 'vieden', 'wieden', 'becs', 'bécs']
+  },
+  {
+    countryCode: 'DE',
+    labels: { cs: 'Berlín', en: 'Berlin', de: 'Berlin', sk: 'Berlín', pl: 'Berlin', hu: 'Berlin' },
+    aliases: ['berlin', 'berlin']
+  },
+  {
+    countryCode: 'FR',
+    labels: { cs: 'Paříž', en: 'Paris', de: 'Paris', sk: 'Paríž', pl: 'Paryż', hu: 'Párizs' },
+    aliases: ['pariz', 'paříž', 'paris', 'paryz', 'paryż', 'parizs', 'párizs']
+  },
+  {
+    countryCode: 'GB',
+    labels: { cs: 'Londýn', en: 'London', de: 'London', sk: 'Londýn', pl: 'Londyn', hu: 'London' },
+    aliases: ['londyn', 'londýn', 'london']
+  }
+];
+
+function localCityFallbackItems(query = '', lang = 'cs') {
+  const q = norm(query);
+  if (!q) return [];
+
+  return LOCAL_CITY_FALLBACKS
+    .filter((item) => {
+      const label = item.labels?.[lang] || item.labels?.cs || item.labels?.en || '';
+      const haystack = [
+        label,
+        item.labels?.cs,
+        item.labels?.en,
+        item.labels?.de,
+        item.labels?.sk,
+        item.labels?.pl,
+        item.labels?.hu,
+        ...(item.aliases || [])
+      ].filter(Boolean);
+
+      return haystack.some((value) => norm(value).includes(q));
+    })
+    .map((item) => ({
+      city: item.labels?.[lang] || item.labels?.cs || item.labels?.en || '',
+      state: '',
+      countryCode: item.countryCode
+    }));
+}
+
 function getDefaultCityItems(lang = 'cs') {
   return Object.keys(DEFAULT_CITY_PRESETS).map((slug) => ({
     city: getPresetCity(slug, lang),
@@ -665,8 +735,44 @@ function getDefaultCityItems(lang = 'cs') {
 function filterDefaultCityItems(query, lang = 'cs') {
   const q = norm(query);
   const base = getDefaultCityItems(lang);
-  if (!q) return base;
-  return base.filter((it) => norm(it.city).includes(q));
+  const extra = localCityFallbackItems(query, lang);
+
+  const merged = q
+    ? base.filter((it) => norm(it.city).includes(q)).concat(extra)
+    : base.concat(extra);
+
+  const seen = new Set();
+
+  return merged.filter((item) => {
+    const key = [norm(item.city), String(item.countryCode || '').toUpperCase()].join('|');
+    if (!item.city || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+const CITY_SUGGEST_CACHE_TTL_MS = 10 * 60 * 1000;
+const CITY_SUGGEST_TIMEOUT_MS = 3500;
+const CITY_SUGGEST_CACHE = new Map();
+
+function citySuggestCacheKey({ locale = '', keyword = '', countryCode = '' } = {}) {
+  return [
+    String(locale || '').trim().toLowerCase(),
+    norm(keyword || ''),
+    String(countryCode || '').trim().toUpperCase()
+  ].join('|');
+}
+
+function withCitySuggestTimeout(promise, ms = CITY_SUGGEST_TIMEOUT_MS) {
+  let timer = null;
+
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(() => resolve({ __timeout: true }), ms);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
 }
 
 export function setupCityTypeahead(inputEl, opts = {}) {
@@ -1280,62 +1386,102 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   }
 
   async function load(getQueryFn) {
-    const q = typeof getQueryFn === 'function'
-      ? getQueryFn()
-      : getCurrentSearchValue();
+  const q = typeof getQueryFn === 'function'
+    ? getQueryFn()
+    : getCurrentSearchValue();
 
-    lastQuery = q;
+  lastQuery = q;
 
-    if (q.length < minChars) {
-      items = filterDefaultCityItems(q, locale);
-      loading = false;
-      render();
+  const setDesktopActiveAfterRender = () => {
+    if (isMobile()) return;
 
-      if (!isMobile()) {
-        openDesktop();
-        setActive(includeNearMe ? 0 : -1);
-      }
+    if (items.length) setActive(includeNearMe ? 1 : 0);
+    else setActive(includeNearMe ? 0 : -1);
+  };
 
-      return;
-    }
-
-    const myLoadId = ++lastLoadId;
-    loading = true;
-
-    if (!isMobile()) openDesktop();
+  if (q.length < minChars) {
+    items = filterDefaultCityItems(q, locale);
+    loading = false;
     render();
 
-    try {
-      const list = await suggestCities({
-        locale,
-        keyword: q,
-        size: 80,
-        countryCodes,
-        countryCode: Array.isArray(countryCodes) ? countryCodes.join(',') : String(countryCodes || '')
-      });
-
-      if (myLoadId !== lastLoadId) return;
-
-      items = normalizeAndDedupe(Array.isArray(list) ? list : []);
-      loading = false;
-      render();
-
-      if (!isMobile()) {
-        if (items.length) setActive(includeNearMe ? 1 : 0);
-        else setActive(includeNearMe ? 0 : -1);
-      }
-    } catch {
-      if (myLoadId !== lastLoadId) return;
-
-      items = [];
-      loading = false;
-      render();
-
-      if (!isMobile()) {
-        setActive(includeNearMe ? 0 : -1);
-      }
+    if (!isMobile()) {
+      openDesktop();
+      setActive(includeNearMe ? 0 : -1);
     }
+
+    return;
   }
+
+  const countryCodeKey = Array.isArray(countryCodes)
+    ? countryCodes.join(',')
+    : String(countryCodes || '');
+
+  const cacheKey = citySuggestCacheKey({
+    locale,
+    keyword: q,
+    countryCode: countryCodeKey
+  });
+
+  const now = Date.now();
+  const cached = CITY_SUGGEST_CACHE.get(cacheKey);
+
+  if (cached && cached.expiresAt > now) {
+    items = normalizeAndDedupe(Array.isArray(cached.items) ? cached.items : []);
+    loading = false;
+
+    if (!isMobile()) openDesktop();
+
+    render();
+    setDesktopActiveAfterRender();
+    return;
+  }
+
+  const instantItems = normalizeAndDedupe(filterDefaultCityItems(q, locale));
+
+  items = instantItems;
+  loading = instantItems.length === 0;
+
+  if (!isMobile()) openDesktop();
+
+  render();
+
+  const myLoadId = ++lastLoadId;
+
+  try {
+    const list = await withCitySuggestTimeout(suggestCities({
+      locale,
+      keyword: q,
+      size: 32,
+      countryCodes,
+      countryCode: countryCodeKey
+    }));
+
+    if (myLoadId !== lastLoadId) return;
+
+    const normalized = normalizeAndDedupe(
+      Array.isArray(list) ? list : []
+    );
+
+    const nextItems = normalized.length ? normalized : instantItems;
+
+    CITY_SUGGEST_CACHE.set(cacheKey, {
+      expiresAt: Date.now() + CITY_SUGGEST_CACHE_TTL_MS,
+      items: nextItems
+    });
+
+    items = nextItems;
+    loading = false;
+    render();
+    setDesktopActiveAfterRender();
+  } catch {
+    if (myLoadId !== lastLoadId) return;
+
+    items = instantItems;
+    loading = false;
+    render();
+    setDesktopActiveAfterRender();
+  }
+}
 
   function applyMode() {
     if (isMobile()) {

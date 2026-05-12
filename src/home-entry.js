@@ -2757,6 +2757,34 @@ function ensureNearMeInlineButton(input) {
     }
   };
 
+
+  const getCityClearFallbackCountryCode = () => {
+    try {
+      if (typeof defaultCountryCodeForLang === 'function') {
+        return defaultCountryCodeForLang(currentLang);
+      }
+    } catch {
+      // noop
+    }
+
+    const lang = String(
+      currentLang ||
+      document.documentElement?.lang ||
+      'cs'
+    ).toLowerCase().slice(0, 2);
+
+    const fallbackByLang = {
+      cs: 'CZ',
+      sk: 'SK',
+      pl: 'PL',
+      hu: 'HU',
+      de: 'DE',
+      en: 'GB'
+    };
+
+    return fallbackByLang[lang] || 'CZ';
+  };
+
   const forceClearCityState = () => {
     input.value = '';
     input.removeAttribute('data-autofromnearme');
@@ -2767,7 +2795,7 @@ function ensureNearMeInlineButton(input) {
     currentFilters.cityCountryCode = '';
     currentFilters.nearMeLat = null;
     currentFilters.nearMeLon = null;
-    currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+    currentFilters.countryCode = getCityClearFallbackCountryCode();
 
     host.classList.remove('has-city-value', 'has-city-clear-inline');
     input.classList.remove('has-city-clear-inline');

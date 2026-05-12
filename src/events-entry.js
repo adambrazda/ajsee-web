@@ -2445,64 +2445,112 @@ function ensureNearMeInlineButton(input) {
     host.classList.toggle('has-city-value', active);
   };
 
-  const clearCityFilter = async () => {
+
+  const removeCityQueryParams = () => {
+    try {
+      const url = new URL(window.location.href);
+
+      [
+        'city',
+        'cityCc',
+        'cityCountryCode',
+        'country',
+        'countryCode',
+        'placeType',
+        'nearMeLat',
+        'nearMeLon',
+        'lat',
+        'lon',
+        'lng',
+        'radius'
+      ].forEach((key) => url.searchParams.delete(key));
+
+      const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+      window.history.replaceState(window.history.state || {}, '', nextUrl || url.pathname);
+    } catch {
+      // noop
+    }
+  };
+
+  const forceClearCityState = () => {
     input.value = '';
     input.removeAttribute('data-autofromnearme');
 
-    try {
-      if (typeof setCityPlace === 'function') {
-        setCityPlace('', '');
-      } else {
-        currentFilters.placeType = '';
-        currentFilters.city = '';
-        currentFilters.cityLabel = '';
-        currentFilters.cityCountryCode = '';
-        currentFilters.nearMeLat = null;
-        currentFilters.nearMeLon = null;
-        currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
-      }
-    } catch {
-      currentFilters.placeType = '';
-      currentFilters.city = '';
-      currentFilters.cityLabel = '';
-      currentFilters.cityCountryCode = '';
-      currentFilters.nearMeLat = null;
-      currentFilters.nearMeLon = null;
-      currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
-    }
+    currentFilters.placeType = '';
+    currentFilters.city = '';
+    currentFilters.cityLabel = '';
+    currentFilters.cityCountryCode = '';
+    currentFilters.nearMeLat = null;
+    currentFilters.nearMeLon = null;
+    currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+
+    host.classList.remove('has-city-value', 'has-city-clear-inline');
+    input.classList.remove('has-city-clear-inline');
+
+    clearBtn.hidden = true;
+    clearBtn.disabled = true;
+    clearBtn.tabIndex = -1;
+    clearBtn.setAttribute('aria-hidden', 'true');
+  };
+
+  const clearCityFilter = async () => {
+    forceClearCityState();
+    removeCityQueryParams();
+    syncInlineControls();
 
     try {
       if (typeof _userInteractedWithFilters !== 'undefined') {
         _userInteractedWithFilters = true;
       }
-    } catch {}
+    } catch {
+      // noop
+    }
 
     try {
       _lastFetchSig = '';
-    } catch {}
+    } catch {
+      // noop
+    }
 
     try {
       if (typeof resetEventsPager === 'function') resetEventsPager();
-    } catch {}
+    } catch {
+      // noop
+    }
 
+    try {
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    } catch {
+      // noop
+    }
+
+    // Delegované input/change listenery mohou ještě číst formulář.
+    // Proto stav jistíme znovu před renderem.
+    forceClearCityState();
+    removeCityQueryParams();
     syncInlineControls();
-
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.dispatchEvent(new Event('change', { bubbles: true }));
 
     if (typeof renderAndSync === 'function') {
       await renderAndSync({ resetPage: true });
+    } else if (typeof syncURLFromFilters === 'function') {
+      syncURLFromFilters();
     }
+
+    // Render může propsat URL/UI podle starého stavu, proto finální pojistka.
+    forceClearCityState();
+    removeCityQueryParams();
+    syncInlineControls();
 
     if (typeof expandFilters === 'function') {
       expandFilters();
     }
 
-    syncInlineControls();
-
     try {
       input.focus({ preventScroll: true });
-    } catch {}
+    } catch {
+      // noop
+    }
   };
 
   wireOnce(clearBtn, 'pointerdown', (e) => {

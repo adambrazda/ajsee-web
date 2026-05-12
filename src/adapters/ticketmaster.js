@@ -864,18 +864,6 @@ function makeLocaleList({
   }
 
   return out.filter((v, i, arr) => !!v && arr.indexOf(v) === i);
-} = {}) {
-  const primary = marketLocale || locale || 'en-gb';
-  const out = [primary];
-
-  // V normálním provozu držíme 1 locale = 1 requestová větev.
-  // Debug režim dovolí jeden fallback pro diagnostiku, ale ne na běžném webu.
-  if (debug) {
-    const fallback = primary === 'en' ? 'en-gb' : 'en';
-    out.push(fallback);
-  }
-
-  return out.filter((v, i, arr) => !!v && arr.indexOf(v) === i);
 }
 
 function createRateLimitError(message = 'Ticketmaster rate limited') {

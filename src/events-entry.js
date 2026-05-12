@@ -621,23 +621,35 @@ function canonPreferredCity(label) {
 }
 
 function cityCountryCodeFromLabel(label, fallback = '') {
-  const fromFallback = firstCountryCodeFromInput(fallback);
-  if (fromFallback) return fromFallback;
-
   const raw = String(label || '').trim();
+  if (!raw) return '';
+
   const countryFromRaw = countryCodeFromInput(raw);
   if (countryFromRaw) return countryFromRaw;
 
+  // Důležité:
+  // U známých měst má náš canonical city mapping přednost před item.countryCode z typeaheadu.
+  // Typeahead fallback/preset může nést staré nebo příliš obecné "CZ".
+  let guessedCityCc = '';
+  try {
+    guessedCityCc = String(guessCountryCodeFromCity?.(raw) || '').trim().toUpperCase();
+  } catch {
+    guessedCityCc = '';
+  }
+
+  if (guessedCityCc) return guessedCityCc;
+
+  const fromFallback = firstCountryCodeFromInput(fallback);
+  if (fromFallback) return fromFallback;
+
+  // Když uživatel pouze znovu odešle stejné neznámé město, držíme dříve vybranou zemi.
+  // U známých měst už výše rozhodl guessedCityCc.
   const currentLabel = String(currentFilters.cityLabel || currentFilters.city || '').trim();
   if (raw && currentLabel && normKey(raw) === normKey(currentLabel) && currentFilters.cityCountryCode) {
     return String(currentFilters.cityCountryCode || '').trim().toUpperCase();
   }
 
-  try {
-    return String(guessCountryCodeFromCity?.(raw) || '').trim().toUpperCase();
-  } catch {
-    return '';
-  }
+  return '';
 }
 
 function setCountryPlace(rawLabel = '', code = '') {

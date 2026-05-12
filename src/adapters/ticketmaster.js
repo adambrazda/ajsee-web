@@ -342,6 +342,28 @@ const METRO_CITY_ALIASES = {
   ]
 };
 
+const MARKET_CITY_QUERY_ALIASES = {
+  // Ticketmaster market locale někdy očekává lokální název města,
+  // zatímco AJSEE interně drží kanonický EN název pro stabilní filtrování.
+  // Tyto aliasy jsou pouze dodatečné query pokusy do TM proxy.
+  'AT|vienna': ['Wien'],
+
+  'DE|munich': ['München'],
+  'DE|cologne': ['Köln'],
+  'DE|dusseldorf': ['Düsseldorf'],
+  'DE|nuremberg': ['Nürnberg'],
+
+  'CH|zurich': ['Zürich'],
+  'CH|geneva': ['Genève'],
+
+  'IT|rome': ['Roma'],
+  'IT|milan': ['Milano'],
+  'IT|florence': ['Firenze'],
+  'IT|venice': ['Venezia'],
+
+  'ES|seville': ['Sevilla']
+};
+
 const METRO_CITY_QUERY_ALIASES = {
   'FR|paris': [
     'Nanterre',
@@ -356,19 +378,26 @@ const METRO_CITY_QUERY_ALIASES = {
 function getMetroCityQueryAttempts(countryCode = '', selectedCity = '') {
   const cc = String(countryCode || '').trim().toUpperCase();
   const selectedKey = compactCity(cityKey(selectedCity));
-  const aliases = METRO_CITY_QUERY_ALIASES[`${cc}|${selectedKey}`] || [];
+  const selectedRawKey = compactCity(selectedCity);
+
+  const aliasGroups = [
+    MARKET_CITY_QUERY_ALIASES[`${cc}|${selectedKey}`] || [],
+    METRO_CITY_QUERY_ALIASES[`${cc}|${selectedKey}`] || []
+  ];
 
   const out = [];
-  const seen = new Set([selectedKey]);
+  const seenRaw = new Set([selectedRawKey].filter(Boolean));
 
-  for (const alias of aliases) {
-    const city = String(alias || '').trim();
-    const key = compactCity(cityKey(city));
+  for (const aliases of aliasGroups) {
+    for (const alias of aliases) {
+      const city = String(alias || '').trim();
+      const rawKey = compactCity(city);
 
-    if (!city || !key || seen.has(key)) continue;
+      if (!city || !rawKey || seenRaw.has(rawKey)) continue;
 
-    seen.add(key);
-    out.push(city);
+      seenRaw.add(rawKey);
+      out.push(city);
+    }
   }
 
   return out;
@@ -805,7 +834,37 @@ function shouldDebugTicketmaster(filters = {}) {
   return false;
 }
 
-function makeLocaleList({ marketLocale = '', locale = '', debug = false } = {}) {
+const CITY_LOCALE_FALLBACK_BY_COUNTRY = {
+  // Ověřeno na Discovery API:
+  // city=Vienna + locale=de-at může vracet 0,
+  // zatímco city=Vienna + locale=en-us vrací relevantní AT výsledky.
+  AT: ['en-us']
+};
+
+function makeLocaleList({
+  marketLocale = '',
+  locale = '',
+  debug = false,
+  countryCode = '',
+  hasCity = false
+} = {}) {
+  const cc = String(countryCode || '').trim().toUpperCase();
+  const primary = marketLocale || locale || 'en-gb';
+  const out = [primary];
+
+  if (hasCity && cc && CITY_LOCALE_FALLBACK_BY_COUNTRY[cc]) {
+    out.push(...CITY_LOCALE_FALLBACK_BY_COUNTRY[cc]);
+  }
+
+  // Debug režim dovolí jeden obecný fallback pro diagnostiku,
+  // ale držíme ho až za cílenými market fallbacky.
+  if (debug) {
+    const fallback = primary === 'en' ? 'en-gb' : 'en';
+    out.push(fallback);
+  }
+
+  return out.filter((v, i, arr) => !!v && arr.indexOf(v) === i);
+} = {}) {
   const primary = marketLocale || locale || 'en-gb';
   const out = [primary];
 
@@ -1050,7 +1109,13 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const category = filters.category || filters.segment || 'all';
   const categoryVariants = getCategoryQueryVariants(category);
   const debugTm = shouldDebugTicketmaster(filters);
-  const locales = makeLocaleList({ marketLocale, locale, debug: debugTm });
+  const locales = makeLocaleList({
+    marketLocale,
+    locale,
+    debug: debugTm,
+    countryCode: targetCountryForLocale,
+    hasCity: Boolean(tmCity)
+  });
 
   const putCommonParams = (qs, categoryVariant = {}) => {
     if (filters.keyword) qs.set('keyword', String(filters.keyword));

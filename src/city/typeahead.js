@@ -644,12 +644,21 @@ function getPresetCity(slug, lang = 'cs') {
   return row?.[lang] || row?.cs || slug;
 }
 
+const DEFAULT_CITY_PRESET_COUNTRY = {
+  praha: 'CZ',
+  brno: 'CZ',
+  ostrava: 'CZ',
+  plzen: 'CZ',
+  olomouc: 'CZ',
+  bratislava: 'SK',
+  wien: 'AT'
+};
+
 function getDefaultCityItems(lang = 'cs') {
-  const order = ['prague', 'brno', 'ostrava', 'plzen', 'liberec', 'olomouc'];
-  return order.map((slug) => ({
+  return Object.keys(DEFAULT_CITY_PRESETS).map((slug) => ({
     city: getPresetCity(slug, lang),
     state: '',
-    countryCode: 'CZ'
+    countryCode: DEFAULT_CITY_PRESET_COUNTRY[slug] || 'CZ'
   }));
 }
 

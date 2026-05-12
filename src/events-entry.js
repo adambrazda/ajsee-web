@@ -2358,114 +2358,192 @@ function ensureNearMeInlineButton(input) {
   const host = input.closest('.filter-group') || input.parentElement;
   if (!host) return;
 
-  injectOnce('ajsee-city-inline-controls-css', [
-    ':where(.filter-group) .btn-city-clear-inline {',
-    '  position: absolute;',
-    '  right: 52px;',
-    '  top: 14px;',
-    '  z-index: 4;',
-    '  width: 30px;',
-    '  height: 30px;',
-    '  display: inline-flex;',
-    '  align-items: center;',
-    '  justify-content: center;',
-    '  border: 0;',
-    '  border-radius: 999px;',
-    '  background: rgba(15, 23, 42, 0.08);',
-    '  color: #344054;',
-    '  font-size: 20px;',
-    '  line-height: 1;',
-    '  cursor: pointer;',
-    '  opacity: 0.82;',
-    '  transition: opacity 160ms ease, background-color 160ms ease, transform 160ms ease;',
-    '}',
-    ':where(.filter-group) .btn-city-clear-inline:hover {',
-    '  opacity: 1;',
-    '  background: rgba(15, 23, 42, 0.13);',
-    '}',
-    ':where(.filter-group) .btn-city-clear-inline:focus-visible {',
-    '  outline: 2px solid rgba(30, 92, 255, 0.45);',
-    '  outline-offset: 2px;',
-    '}',
-    ':where(.filter-group) .btn-city-clear-inline:active {',
-    '  transform: scale(0.94);',
-    '}',
-    ':where(.filter-group) .btn-city-clear-inline[hidden] {',
-    '  display: none !important;',
-    '}',
-    ':where(.filter-group) #filter-city,',
-    ':where(.filter-group) #events-city-filter {',
-    '  padding-right: 94px !important;',
-    '}',
-    '@media (max-width: 720px) {',
-    '  :where(.filter-group) .btn-city-clear-inline {',
-    '    right: 52px;',
-    '    top: 50%;',
-    '    transform: translateY(-50%);',
-    '  }',
-    '  :where(.filter-group) .btn-city-clear-inline:active {',
-    '    transform: translateY(-50%) scale(0.94);',
-    '  }',
-    '}'
-  ].join('\n'));
+  host.style.position = 'relative';
+  host.classList.add('has-city-inline-controls');
 
-  const existingNearMe = host.querySelector('.btn-nearme-inline');
-  if (existingNearMe) existingNearMe.remove();
+  host.querySelectorAll('.btn-nearme-inline').forEach((el) => el.remove());
+  host.querySelectorAll('.btn-city-clear-inline, .btn-clear-city-inline').forEach((el) => el.remove());
 
-  const existingClear = host.querySelector('.btn-city-clear-inline');
-  if (existingClear) existingClear.remove();
-
-  const nearMeBtn = document.createElement('button');
-  nearMeBtn.type = 'button';
-  nearMeBtn.className = 'btn-nearme-inline';
-  nearMeBtn.setAttribute('aria-label', nearMeLabel());
-  nearMeBtn.title = nearMeLabel();
-  nearMeBtn.textContent = '📍';
+  const clearLabel =
+    t?.('filters.clearCity', '') ||
+    t?.('filters.clear', '') ||
+    'Vymazat město';
 
   const clearBtn = document.createElement('button');
   clearBtn.type = 'button';
   clearBtn.className = 'btn-city-clear-inline';
-  clearBtn.setAttribute('aria-label', cityClearInlineLabel());
-  clearBtn.title = cityClearInlineLabel();
+  clearBtn.setAttribute('aria-label', clearLabel);
+  clearBtn.title = clearLabel;
   clearBtn.textContent = '×';
-  clearBtn.hidden = true;
-  clearBtn.tabIndex = -1;
 
-  host.style.position = 'relative';
-  host.appendChild(nearMeBtn);
+  const nearBtn = document.createElement('button');
+  nearBtn.type = 'button';
+  nearBtn.className = 'btn-nearme-inline';
+  nearBtn.setAttribute('aria-label', nearMeLabel());
+  nearBtn.title = nearMeLabel();
+  nearBtn.textContent = '📍';
+
+  const sharedStyle = {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: '32px',
+    height: '32px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '0',
+    borderRadius: '999px',
+    background: 'transparent',
+    cursor: 'pointer',
+    zIndex: '4',
+    lineHeight: '1'
+  };
+
+  Object.assign(clearBtn.style, sharedStyle, {
+    right: '46px',
+    fontSize: '22px',
+    color: '#667085'
+  });
+
+  Object.assign(nearBtn.style, sharedStyle, {
+    right: '12px',
+    fontSize: '17px'
+  });
+
+  const currentPaddingRight = parseFloat(getComputedStyle(input).paddingRight || '0') || 0;
+  if (currentPaddingRight < 86) {
+    input.style.paddingRight = '86px';
+  }
+
   host.appendChild(clearBtn);
+  host.appendChild(nearBtn);
 
-  wireOnce(nearMeBtn, 'click', () => {
-    if (typeof _userInteractedWithFilters !== 'undefined') {
-      _userInteractedWithFilters = true;
+  const hasActiveCityValue = () => {
+    const inputValue = String(input.value || '').trim();
+
+    return Boolean(
+      inputValue ||
+      currentFilters.city ||
+      currentFilters.cityLabel ||
+      currentFilters.cityCountryCode ||
+      currentFilters.placeType === 'country' ||
+      currentFilters.placeType === 'city' ||
+      currentFilters.placeType === 'nearMe' ||
+      (currentFilters.nearMeLat != null && currentFilters.nearMeLon != null)
+    );
+  };
+
+  const syncInlineControls = () => {
+    const active = hasActiveCityValue();
+
+    clearBtn.hidden = !active;
+    clearBtn.disabled = !active;
+    clearBtn.tabIndex = active ? 0 : -1;
+    clearBtn.setAttribute('aria-hidden', active ? 'false' : 'true');
+
+    host.classList.toggle('has-city-value', active);
+  };
+
+  const clearCityFilter = async () => {
+    input.value = '';
+    input.removeAttribute('data-autofromnearme');
+
+    try {
+      if (typeof setCityPlace === 'function') {
+        setCityPlace('', '');
+      } else {
+        currentFilters.placeType = '';
+        currentFilters.city = '';
+        currentFilters.cityLabel = '';
+        currentFilters.cityCountryCode = '';
+        currentFilters.nearMeLat = null;
+        currentFilters.nearMeLon = null;
+        currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+      }
+    } catch {
+      currentFilters.placeType = '';
+      currentFilters.city = '';
+      currentFilters.cityLabel = '';
+      currentFilters.cityCountryCode = '';
+      currentFilters.nearMeLat = null;
+      currentFilters.nearMeLon = null;
+      currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
     }
 
-    const liveInput = getCityInputEl() || input;
-    void activateNearMeViaGeo(liveInput).then(() => updateCityInlineControls(liveInput));
-  }, 'nearme-inline-click');
+    try {
+      if (typeof _userInteractedWithFilters !== 'undefined') {
+        _userInteractedWithFilters = true;
+      }
+    } catch {}
 
-  wireOnce(clearBtn, 'pointerdown', e => {
+    try {
+      _lastFetchSig = '';
+    } catch {}
+
+    try {
+      if (typeof resetEventsPager === 'function') resetEventsPager();
+    } catch {}
+
+    syncInlineControls();
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+
+    if (typeof renderAndSync === 'function') {
+      await renderAndSync({ resetPage: true });
+    }
+
+    if (typeof expandFilters === 'function') {
+      expandFilters();
+    }
+
+    syncInlineControls();
+
+    try {
+      input.focus({ preventScroll: true });
+    } catch {}
+  };
+
+  wireOnce(clearBtn, 'pointerdown', (e) => {
     e.preventDefault();
     e.stopPropagation();
   }, 'city-clear-inline-pointerdown');
 
-  wireOnce(clearBtn, 'click', e => {
+  wireOnce(clearBtn, 'click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    const liveInput = getCityInputEl() || input;
-    void clearCityFilterFromInlineControl(liveInput);
+    void clearCityFilter();
   }, 'city-clear-inline-click');
 
-  wireOnce(input, 'input', () => {
-    updateCityInlineControls(input);
-  }, 'city-inline-controls-input');
+  wireOnce(nearBtn, 'click', () => {
+    try {
+      if (typeof _userInteractedWithFilters !== 'undefined') {
+        _userInteractedWithFilters = true;
+      }
+    } catch {}
 
-  wireOnce(input, 'change', () => {
-    updateCityInlineControls(input);
-  }, 'city-inline-controls-change');
+    const liveInput = getCityInputEl() || input;
+    void activateNearMeViaGeo(liveInput).finally(() => {
+      syncInlineControls();
+    });
+  }, 'nearme-inline-click');
 
-  updateCityInlineControls(input);
+  wireOnce(input, 'input', syncInlineControls, 'city-inline-controls-input-sync');
+  wireOnce(input, 'change', syncInlineControls, 'city-inline-controls-change-sync');
+
+  input.__ajseeSyncCityInlineControls = syncInlineControls;
+  window.__ajseeSyncCityInlineControls = () => {
+    const liveInput = getCityInputEl() || input;
+    if (liveInput && typeof liveInput.__ajseeSyncCityInlineControls === 'function') {
+      liveInput.__ajseeSyncCityInlineControls();
+    }
+  };
+
+  syncInlineControls();
+  requestAnimationFrame(syncInlineControls);
+  setTimeout(syncInlineControls, 0);
+  setTimeout(syncInlineControls, 250);
 }
 
 /* ───────── city typeahead ───────── */

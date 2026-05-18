@@ -156,15 +156,60 @@ function shouldSkipForCountry(filters = {}) {
   return countryCode && countryCode !== 'CZ' && !hasCity && !hasNearMe(filters);
 }
 
-function matchesCity(ev, city = '') {
-  const selected = fold(city);
-  if (!selected) return true;
 
-  const eventCity = fold(getCity(ev));
-  if (!eventCity) return false;
+const CITY_ALIAS_GROUPS = [
+  // UI / Ticketmaster canonical value vs. Czech smsticket feed value
+  ['prague', 'praha', 'prag', 'praga', 'prága', 'hlavni mesto praha', 'hl. m. praha', 'hl m praha']
+];
 
-  return eventCity === selected || eventCity.includes(selected) || selected.includes(eventCity);
+function cityAliasTokens(value = '') {
+  const base = fold(value)
+    .replace(/\bcz\b/g, '')
+    .replace(/\bcesko\b/g, '')
+    .replace(/\bczech republic\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!base) return [];
+
+  const tokens = new Set([base]);
+
+  for (const group of CITY_ALIAS_GROUPS) {
+    const foldedGroup = group.map(fold);
+
+    if (foldedGroup.some((alias) => base === alias || base.includes(alias) || alias.includes(base))) {
+      foldedGroup.forEach((alias) => tokens.add(alias));
+    }
+  }
+
+  return [...tokens].filter(Boolean);
 }
+
+function cityTokenMatches(a = '', b = '') {
+  if (!a || !b) return false;
+
+  return (
+    a === b ||
+    a.includes(b) ||
+    b.includes(a)
+  );
+}
+
+function matchesCity(ev, city = '') {
+  const selectedTokens = cityAliasTokens(city);
+
+  if (!selectedTokens.length) return true;
+
+  const eventTokens = cityAliasTokens(getCity(ev));
+
+  if (!eventTokens.length) return false;
+
+  return selectedTokens.some((selected) => {
+    return eventTokens.some((eventCity) => cityTokenMatches(eventCity, selected));
+  });
+}
+
+
 
 function matchesCategory(ev, category = 'all') {
   const wanted = fold(category);

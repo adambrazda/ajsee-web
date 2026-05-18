@@ -1192,3 +1192,236 @@ window.__ajseeOpenEventModal = openEventModal;
   }
 })();
 
+
+/* AJSEE_MODAL_DESKTOP_CALENDAR_POLISH_v1
+   ---------------------------------------------------------
+   Desktop-only calendar layout polish for event modal.
+   Mobile layout intentionally unchanged.
+   --------------------------------------------------------- */
+
+(function installAjseeModalDesktopCalendarPolish() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (window.__ajseeModalDesktopCalendarPolishInstalled) return;
+
+  window.__ajseeModalDesktopCalendarPolishInstalled = true;
+
+  const STYLE_ID = 'ajsee-modal-desktop-calendar-polish-css';
+
+  function ensureStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = `
+      @media (min-width: 900px){
+        .ajsee-modal-calendar-group-v1{
+          display:grid;
+          grid-template-columns:1fr;
+          gap:10px;
+          align-items:start;
+          margin-top:18px;
+        }
+
+        .ajsee-modal-calendar-label-v1{
+          display:block;
+          margin:0;
+          font-weight:800;
+          line-height:1.25;
+        }
+
+        .ajsee-modal-calendar-actions-v1{
+          display:grid;
+          grid-template-columns:repeat(3, minmax(118px, 1fr));
+          gap:10px;
+          align-items:center;
+          width:min(100%, 520px);
+        }
+
+        .ajsee-modal-calendar-actions-v1 > a,
+        .ajsee-modal-calendar-actions-v1 > button{
+          width:100%;
+          min-height:44px;
+          white-space:nowrap;
+          text-align:center;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function isVisible(el) {
+    if (!el || !el.getBoundingClientRect) return false;
+
+    const rect = el.getBoundingClientRect();
+    const style = window.getComputedStyle(el);
+
+    return (
+      rect.width > 20 &&
+      rect.height > 20 &&
+      style.display !== 'none' &&
+      style.visibility !== 'hidden' &&
+      Number(style.opacity || 1) !== 0
+    );
+  }
+
+  function getVisibleModalRoots() {
+    return Array.from(document.querySelectorAll([
+      '[role="dialog"]',
+      '[aria-modal="true"]',
+      '.event-modal',
+      '.event-detail-modal',
+      '.ajsee-event-modal',
+      '.ajsee-modal',
+      '.modal',
+      '[class*="modal"]',
+      '[class*="dialog"]'
+    ].join(','))).filter(isVisible);
+  }
+
+  function normalizedText(el) {
+    return String(el?.textContent || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function isCalendarButton(el) {
+    const text = normalizedText(el).toLowerCase();
+    const href = String(el?.getAttribute?.('href') || '').toLowerCase();
+
+    return (
+      text === 'google' ||
+      text === 'outlook' ||
+      text === 'apple / ics' ||
+      text === 'apple/ics' ||
+      href.includes('calendar.google') ||
+      href.includes('outlook') ||
+      href.includes('.ics')
+    );
+  }
+
+  function findCalendarLabel(root) {
+    const candidates = Array.from(root.querySelectorAll('strong, b, p, span, div'))
+      .filter((el) => {
+        const text = normalizedText(el).toLowerCase();
+
+        if (!text) return false;
+        if (text.length > 80) return false;
+
+        return (
+          text.includes('přidat do kalendáře') ||
+          text.includes('pridat do kalendare') ||
+          text.includes('add to calendar') ||
+          text.includes('do kalendáře') ||
+          text.includes('do kalendare')
+        );
+      });
+
+    return candidates[0] || null;
+  }
+
+  function commonAncestor(elements) {
+    const valid = elements.filter(Boolean);
+
+    if (!valid.length) return null;
+    if (valid.length === 1) return valid[0].parentElement;
+
+    const paths = valid.map((el) => {
+      const path = [];
+      let node = el;
+
+      while (node && node !== document.documentElement) {
+        path.push(node);
+        node = node.parentElement;
+      }
+
+      return path;
+    });
+
+    return paths[0].find((node) => paths.every((path) => path.includes(node))) || null;
+  }
+
+  function directChildOf(parent, child) {
+    let node = child;
+
+    while (node && node.parentElement && node.parentElement !== parent) {
+      node = node.parentElement;
+    }
+
+    return node && node.parentElement === parent ? node : child;
+  }
+
+  function applyCalendarPolish(root) {
+    if (!root || root.dataset.ajseeCalendarPolishV1 === '1') return;
+
+    const buttons = Array.from(root.querySelectorAll('a, button')).filter(isCalendarButton);
+
+    if (buttons.length < 2) return;
+
+    const label = findCalendarLabel(root);
+    const group = commonAncestor(label ? [label, ...buttons] : buttons);
+
+    if (!group || group === document.body || group === document.documentElement) return;
+
+    const actionsCommon = commonAncestor(buttons);
+    const actionsChild = actionsCommon && group.contains(actionsCommon)
+      ? directChildOf(group, actionsCommon)
+      : null;
+
+    root.dataset.ajseeCalendarPolishV1 = '1';
+    group.classList.add('ajsee-modal-calendar-group-v1');
+
+    if (label) {
+      label.classList.add('ajsee-modal-calendar-label-v1');
+    }
+
+    if (actionsChild) {
+      actionsChild.classList.add('ajsee-modal-calendar-actions-v1');
+    } else {
+      const buttonParent = buttons[0]?.parentElement;
+
+      if (buttonParent) {
+        buttonParent.classList.add('ajsee-modal-calendar-actions-v1');
+      }
+    }
+
+    try {
+      window.__ajseeModalCalendarPolishLast = {
+        applied: true,
+        buttons: buttons.map((button) => normalizedText(button)),
+        at: new Date().toISOString()
+      };
+    } catch {
+      // noop
+    }
+  }
+
+  let scheduled = false;
+
+  function scan() {
+    scheduled = false;
+    ensureStyles();
+    getVisibleModalRoots().forEach(applyCalendarPolish);
+  }
+
+  function scheduleScan() {
+    if (scheduled) return;
+    scheduled = true;
+    window.setTimeout(scan, 80);
+  }
+
+  ensureStyles();
+
+  document.addEventListener('click', scheduleScan, true);
+  document.addEventListener('keydown', scheduleScan, true);
+
+  const observer = new MutationObserver(scheduleScan);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleScan, { once: true });
+  } else {
+    scheduleScan();
+  }
+})();
+

@@ -4055,3 +4055,149 @@ if (!G.flags.mainDomReadyBound) {
     window.setTimeout(runBootstrapMainOnce, 0);
   }
 }
+
+
+/* AJSEE_HOME_ENTRY_SMSTICKET_BADGE_DIRECT_v1
+   ---------------------------------------------------------
+   Homepage event cards run through home-entry.js.
+   Adds a partner badge for smsticket cards based on the ticket link.
+   --------------------------------------------------------- */
+
+(function installAjseeHomeEntrySmsticketBadge() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (window.__ajseeHomeEntrySmsticketBadgeInstalled) return;
+
+  window.__ajseeHomeEntrySmsticketBadgeInstalled = true;
+
+  const STYLE_ID = 'ajsee-home-entry-smsticket-badge-css';
+
+  function ensureStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = `
+      article[data-event-provider="smsticket"] .event-partner-badge,
+      .event-card[data-event-provider="smsticket"] .event-partner-badge{
+        display:block;
+        margin:0 0 12px;
+        line-height:1;
+      }
+
+      article[data-event-provider="smsticket"] .event-partner-badge span,
+      .event-card[data-event-provider="smsticket"] .event-partner-badge span{
+        display:inline-flex;
+        align-items:center;
+        min-height:24px;
+        padding:5px 10px;
+        border-radius:999px;
+        border:1px solid rgba(92,70,255,.16);
+        background:rgba(92,70,255,.08);
+        color:#342f75;
+        font-size:12px;
+        font-weight:800;
+        letter-spacing:.02em;
+        white-space:nowrap;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function isInsideModal(el) {
+    return !!el.closest('[role="dialog"], [aria-modal="true"], .modal, .ajsee-modal, .event-modal, [class*="modal"], [class*="dialog"]');
+  }
+
+  function findCard(link) {
+    return (
+      link.closest('article') ||
+      link.closest('.event-card') ||
+      link.closest('[data-event-id]') ||
+      link.closest('li')
+    );
+  }
+
+  function addBadgeForLink(link) {
+    if (!link || isInsideModal(link)) return;
+
+    const href = String(link.getAttribute('href') || '').toLowerCase();
+    if (!href.includes('smsticket.cz')) return;
+
+    const card = findCard(link);
+    if (!card || isInsideModal(card)) return;
+
+    card.dataset.eventProvider = 'smsticket';
+
+    if (card.querySelector('.event-partner-badge')) return;
+
+    const badge = document.createElement('p');
+    badge.className = 'event-partner-badge';
+    badge.dataset.provider = 'smsticket';
+    badge.innerHTML = '<span>smsticket</span>';
+
+    const actions =
+      link.closest('.event-buttons-group') ||
+      card.querySelector('.event-buttons-group, .event-actions, .card-actions');
+
+    const date = card.querySelector('.event-date, time, [class*="date"]');
+    const title = card.querySelector('h2, h3, .event-title, [class*="title"]');
+
+    if (date && date.parentElement && card.contains(date)) {
+      date.insertAdjacentElement('afterend', badge);
+      return;
+    }
+
+    if (actions && actions.parentElement && card.contains(actions)) {
+      actions.parentElement.insertBefore(badge, actions);
+      return;
+    }
+
+    if (title && title.parentElement && card.contains(title)) {
+      title.insertAdjacentElement('afterend', badge);
+      return;
+    }
+
+    link.insertAdjacentElement('beforebegin', badge);
+  }
+
+  let scheduled = false;
+
+  function scan() {
+    scheduled = false;
+    ensureStyles();
+
+    const links = Array.from(document.querySelectorAll('a[href*="smsticket.cz"]'))
+      .filter((link) => !isInsideModal(link));
+
+    links.forEach(addBadgeForLink);
+
+    try {
+      window.__ajseeHomeEntrySmsticketBadgeLast = {
+        links: links.length,
+        badges: document.querySelectorAll('article[data-event-provider="smsticket"] .event-partner-badge, .event-card[data-event-provider="smsticket"] .event-partner-badge').length,
+        at: new Date().toISOString()
+      };
+    } catch {
+      // noop
+    }
+  }
+
+  function scheduleScan() {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(scan);
+  }
+
+  ensureStyles();
+
+  document.addEventListener('DOMContentLoaded', scheduleScan, { once: true });
+  window.addEventListener('load', scheduleScan, { once: true });
+  window.addEventListener('resize', scheduleScan, { passive: true });
+  window.addEventListener('orientationchange', scheduleScan, { passive: true });
+
+  const observer = new MutationObserver(scheduleScan);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  scheduleScan();
+})();
+

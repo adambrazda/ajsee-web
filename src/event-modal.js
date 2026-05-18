@@ -918,3 +918,498 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
 }
 
 window.__ajseeOpenEventModal = openEventModal;
+
+
+/* AJSEE_MODAL_READ_MORE_PATCH_v1
+   ---------------------------------------------------------
+   Long descriptions in partner feeds, especially smsticket, can make
+   the modal too tall. This runtime layer clamps only long descriptions
+   and adds an accessible read-more toggle.
+   --------------------------------------------------------- */
+
+function ajseeModalReadMoreLang() {
+  try {
+    return String(document.documentElement.lang || document.body?.dataset?.lang || 'cs')
+      .toLowerCase()
+      .slice(0, 2);
+  } catch {
+    return 'cs';
+  }
+}
+
+function ajseeModalReadMoreCopy() {
+  const lang = ajseeModalReadMoreLang();
+
+  const map = {
+    cs: { more: 'Číst více', less: 'Zobrazit méně' },
+    sk: { more: 'Čítať viac', less: 'Zobraziť menej' },
+    en: { more: 'Read more', less: 'Show less' },
+    de: { more: 'Mehr lesen', less: 'Weniger anzeigen' },
+    pl: { more: 'Czytaj więcej', less: 'Pokaż mniej' },
+    hu: { more: 'Tovább olvasom', less: 'Kevesebb' }
+  };
+
+  return map[lang] || map.cs;
+}
+
+function ajseeEnsureModalReadMoreStyles() {
+  if (document.getElementById('ajsee-modal-readmore-css')) return;
+
+  const style = document.createElement('style');
+  style.id = 'ajsee-modal-readmore-css';
+  style.textContent = `
+    .ajsee-modal-description-clamp{
+      display:-webkit-box;
+      -webkit-line-clamp:7;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .ajsee-modal-description-clamp.is-expanded{
+      display:block;
+      -webkit-line-clamp:unset;
+      overflow:visible;
+    }
+
+    .ajsee-modal-readmore{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin:10px 0 14px;
+      padding:0;
+      border:0;
+      background:transparent;
+      color:#006fd6;
+      font:inherit;
+      font-size:14px;
+      font-weight:800;
+      line-height:1.3;
+      cursor:pointer;
+      text-decoration:none;
+    }
+
+    .ajsee-modal-readmore:hover{
+      text-decoration:underline;
+    }
+
+    .ajsee-modal-readmore:focus-visible{
+      outline:3px solid rgba(0,111,214,.28);
+      outline-offset:4px;
+      border-radius:8px;
+    }
+
+    @media (max-width: 760px){
+      .ajsee-modal-description-clamp{
+        -webkit-line-clamp:6;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+function ajseeModalFindDescription(root) {
+  if (!root || root.dataset?.ajseeReadMoreScanned === '1') return null;
+
+  const preferredSelectors = [
+    '[data-event-description]',
+    '[data-ajsee-event-description]',
+    '.event-modal-description',
+    '.event-detail-description',
+    '.event-description',
+    '.modal-description',
+    '.ajsee-event-modal__description',
+    '.event-modal__description',
+    '.modal-body p',
+    '.modal-content p'
+  ];
+
+  for (const selector of preferredSelectors) {
+    const candidates = Array.from(root.querySelectorAll(selector))
+      .filter((el) => {
+        const text = String(el.textContent || '').trim();
+        if (text.length < 360) return false;
+        if (el.closest('button, a')) return false;
+        if (el.querySelector('button, a, img, h1, h2, h3')) return false;
+        return true;
+      });
+
+    if (candidates.length) {
+      return candidates.sort((a, b) => String(b.textContent || '').length - String(a.textContent || '').length)[0];
+    }
+  }
+
+  const genericCandidates = Array.from(root.querySelectorAll('p, div'))
+    .filter((el) => {
+      const text = String(el.textContent || '').replace(/\s+/g, ' ').trim();
+
+      if (text.length < 430) return false;
+      if (el.closest('button, a')) return false;
+      if (el.matches('button, a, h1, h2, h3, nav')) return false;
+      if (el.querySelector('button, a, img, h1, h2, h3')) return false;
+
+      const lower = text.toLowerCase();
+      if (lower.includes('přidat do kalendáře')) return false;
+      if (lower.includes('add to calendar')) return false;
+      if (lower.includes('kategorie:')) return false;
+      if (lower.includes('vstupenky')) return false;
+
+      return true;
+    });
+
+  if (!genericCandidates.length) return null;
+
+  return genericCandidates.sort((a, b) => String(b.textContent || '').length - String(a.textContent || '').length)[0];
+}
+
+function ajseeModalApplyReadMore(root) {
+  if (!root || root.dataset?.ajseeReadMoreScanned === '1') return;
+
+  const description = ajseeModalFindDescription(root);
+  root.dataset.ajseeReadMoreScanned = '1';
+
+  if (!description) return;
+  if (description.dataset.ajseeReadMoreApplied === '1') return;
+
+  const text = String(description.textContent || '').replace(/\s+/g, ' ').trim();
+
+  // Text shorter than this usually does not need a clamp.
+  if (text.length < 520) return;
+
+  ajseeEnsureModalReadMoreStyles();
+
+  const copy = ajseeModalReadMoreCopy();
+  const id = description.id || ('ajsee-modal-description-' + Math.random().toString(36).slice(2, 10));
+
+  description.id = id;
+  description.classList.add('ajsee-modal-description-clamp');
+  description.dataset.ajseeReadMoreApplied = '1';
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'ajsee-modal-readmore';
+  button.setAttribute('aria-controls', id);
+  button.setAttribute('aria-expanded', 'false');
+  button.textContent = copy.more;
+
+  button.addEventListener('click', () => {
+    const expanded = description.classList.toggle('is-expanded');
+    button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    button.textContent = expanded ? copy.less : copy.more;
+
+    if (!expanded) {
+      try {
+        description.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch {
+        /* noop */
+      }
+    }
+  });
+
+  description.insertAdjacentElement('afterend', button);
+}
+
+function ajseeScanEventModalsForReadMore() {
+  const roots = Array.from(document.querySelectorAll([
+    '[role="dialog"]',
+    '[aria-modal="true"]',
+    '.event-modal',
+    '.event-detail-modal',
+    '.ajsee-event-modal',
+    '.ajsee-modal',
+    '.modal'
+  ].join(',')));
+
+  roots.forEach(ajseeModalApplyReadMore);
+}
+
+function ajseeInstallEventModalReadMore() {
+  if (window.__ajseeEventModalReadMoreInstalled) return;
+  window.__ajseeEventModalReadMoreInstalled = true;
+
+  ajseeEnsureModalReadMoreStyles();
+  ajseeScanEventModalsForReadMore();
+
+  const observer = new MutationObserver(() => {
+    window.requestAnimationFrame(ajseeScanEventModalsForReadMore);
+  });
+
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+
+  document.addEventListener('click', () => {
+    window.setTimeout(ajseeScanEventModalsForReadMore, 0);
+  }, true);
+}
+
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ajseeInstallEventModalReadMore, { once: true });
+  } else {
+    ajseeInstallEventModalReadMore();
+  }
+}
+
+
+/* AJSEE_MODAL_READ_MORE_FORCE_PATCH_v2
+   ---------------------------------------------------------
+   Stronger long-description clamp for event modal.
+   Finds the longest text block inside a visible fixed/dialog overlay
+   and adds an accessible "Číst více" / "Zobrazit méně" toggle.
+   --------------------------------------------------------- */
+
+(function installAjseeModalReadMoreForceV2() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (window.__ajseeModalReadMoreForceV2Installed) return;
+
+  window.__ajseeModalReadMoreForceV2Installed = true;
+
+  const STYLE_ID = 'ajsee-modal-readmore-force-v2-css';
+
+  function lang() {
+    return String(document.documentElement.lang || 'cs').toLowerCase().slice(0, 2);
+  }
+
+  function copy() {
+    const map = {
+      cs: { more: 'Číst více', less: 'Zobrazit méně' },
+      sk: { more: 'Čítať viac', less: 'Zobraziť menej' },
+      en: { more: 'Read more', less: 'Show less' },
+      de: { more: 'Mehr lesen', less: 'Weniger anzeigen' },
+      pl: { more: 'Czytaj więcej', less: 'Pokaż mniej' },
+      hu: { more: 'Tovább olvasom', less: 'Kevesebb' }
+    };
+
+    return map[lang()] || map.cs;
+  }
+
+  function ensureStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = `
+      .ajsee-modal-long-description-v2{
+        position:relative;
+      }
+
+      .ajsee-modal-long-description-v2:not(.is-expanded){
+        display:-webkit-box;
+        -webkit-box-orient:vertical;
+        -webkit-line-clamp:7;
+        overflow:hidden;
+        max-height:12.4em;
+      }
+
+      .ajsee-modal-long-description-v2.is-expanded{
+        display:block;
+        -webkit-line-clamp:unset;
+        max-height:none;
+        overflow:visible;
+      }
+
+      .ajsee-modal-readmore-v2{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        margin:10px 0 16px;
+        padding:0;
+        border:0;
+        background:transparent;
+        color:#006fd6;
+        font:inherit;
+        font-size:14px;
+        font-weight:800;
+        line-height:1.3;
+        cursor:pointer;
+      }
+
+      .ajsee-modal-readmore-v2:hover{
+        text-decoration:underline;
+      }
+
+      .ajsee-modal-readmore-v2:focus-visible{
+        outline:3px solid rgba(0,111,214,.28);
+        outline-offset:4px;
+        border-radius:8px;
+      }
+
+      @media (max-width:760px){
+        .ajsee-modal-long-description-v2:not(.is-expanded){
+          -webkit-line-clamp:6;
+          max-height:10.8em;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function isVisible(el) {
+    if (!el || !el.getBoundingClientRect) return false;
+
+    const rect = el.getBoundingClientRect();
+    const style = window.getComputedStyle(el);
+
+    return (
+      rect.width > 20 &&
+      rect.height > 20 &&
+      style.display !== 'none' &&
+      style.visibility !== 'hidden' &&
+      Number(style.opacity || 1) !== 0
+    );
+  }
+
+  function findOverlayAncestor(el) {
+    let node = el;
+
+    while (node && node !== document.body && node !== document.documentElement) {
+      if (!node.matches) {
+        node = node.parentElement;
+        continue;
+      }
+
+      const cls = String(node.className || '').toLowerCase();
+      const role = String(node.getAttribute('role') || '').toLowerCase();
+      const ariaModal = String(node.getAttribute('aria-modal') || '').toLowerCase();
+      const style = window.getComputedStyle(node);
+
+      if (
+        role === 'dialog' ||
+        ariaModal === 'true' ||
+        cls.includes('modal') ||
+        cls.includes('dialog') ||
+        style.position === 'fixed'
+      ) {
+        return node;
+      }
+
+      node = node.parentElement;
+    }
+
+    return null;
+  }
+
+  function isBadCandidate(el) {
+    if (!el || !el.matches) return true;
+
+    const tag = el.tagName.toLowerCase();
+    if (!['p', 'div', 'section', 'article'].includes(tag)) return true;
+
+    if (el.dataset.ajseeReadMoreV2 === '1') return true;
+    if (el.closest('.event-card')) return true;
+    if (el.closest('button, a')) return true;
+    if (el.matches('button, a, h1, h2, h3, nav, header, footer')) return true;
+
+    // Popis nesmí obsahovat ovládací prvky / strukturu celého modalu.
+    if (el.querySelector('button, a, img, picture, svg, input, select, textarea, h1, h2, h3')) return true;
+
+    const text = String(el.textContent || '').replace(/\s+/g, ' ').trim();
+    if (text.length < 520) return true;
+
+    const lower = text.toLowerCase();
+    if (lower.includes('přidat do kalendáře')) return true;
+    if (lower.includes('add to calendar')) return true;
+    if (lower.includes('vstupenky') && lower.includes('google') && lower.includes('outlook')) return true;
+
+    const overlay = findOverlayAncestor(el);
+    if (!overlay || !isVisible(overlay)) return true;
+
+    return false;
+  }
+
+  function findDescriptionCandidate() {
+    const nodes = Array.from(document.querySelectorAll('p, div, section, article'))
+      .filter((el) => !isBadCandidate(el))
+      .map((el) => ({
+        el,
+        textLength: String(el.textContent || '').replace(/\s+/g, ' ').trim().length,
+        rect: el.getBoundingClientRect()
+      }))
+      .filter((item) => item.rect.top < window.innerHeight && item.rect.bottom > 0)
+      .sort((a, b) => b.textLength - a.textLength);
+
+    return nodes[0]?.el || null;
+  }
+
+  function applyReadMore() {
+    ensureStyles();
+
+    const description = findDescriptionCandidate();
+    if (!description) return;
+
+    description.dataset.ajseeReadMoreV2 = '1';
+    description.classList.add('ajsee-modal-long-description-v2');
+
+    const id = description.id || ('ajsee-modal-description-v2-' + Math.random().toString(36).slice(2, 10));
+    description.id = id;
+
+    const labels = copy();
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ajsee-modal-readmore-v2';
+    button.textContent = labels.more;
+    button.setAttribute('aria-controls', id);
+    button.setAttribute('aria-expanded', 'false');
+
+    button.addEventListener('click', () => {
+      const expanded = description.classList.toggle('is-expanded');
+
+      button.textContent = expanded ? labels.less : labels.more;
+      button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+
+      try {
+        window.__ajseeModalReadMoreForceV2Last = {
+          expanded,
+          text: String(description.textContent || '').slice(0, 120),
+          at: new Date().toISOString()
+        };
+      } catch {
+        // noop
+      }
+    });
+
+    description.insertAdjacentElement('afterend', button);
+
+    try {
+      window.__ajseeModalReadMoreForceV2Last = {
+        applied: true,
+        textLength: String(description.textContent || '').length,
+        text: String(description.textContent || '').slice(0, 160),
+        at: new Date().toISOString()
+      };
+    } catch {
+      // noop
+    }
+  }
+
+  let scheduled = false;
+
+  function scheduleApply() {
+    if (scheduled) return;
+
+    scheduled = true;
+
+    window.setTimeout(() => {
+      scheduled = false;
+      applyReadMore();
+    }, 80);
+  }
+
+  document.addEventListener('click', scheduleApply, true);
+  document.addEventListener('keydown', scheduleApply, true);
+
+  const observer = new MutationObserver(scheduleApply);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleApply, { once: true });
+  } else {
+    scheduleApply();
+  }
+})();
+

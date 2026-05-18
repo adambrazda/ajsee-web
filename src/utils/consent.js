@@ -396,7 +396,7 @@ function applyConsent(consent) {
       reason: 'missing-consent',
     });
 
-    return;
+    return Promise.resolve(false);
   }
 
   writeDebug({
@@ -404,10 +404,36 @@ function applyConsent(consent) {
     analyticsConsent: !!consent.analytics,
   });
 
-  if (consent.analytics) {
-    loadGA4Direct();
+  if (!consent.analytics) {
+    return Promise.resolve(false);
   }
+
+  // Analytics consent granted:
+  // 1) keep direct GA4 measurement currently used by AJSEE,
+  // 2) also load GTM container so GTM tags/triggers such as partner_click can run.
+  return Promise.allSettled([
+    loadGA4Direct(),
+    loadGTM(),
+  ]).then((results) => {
+    const directGa4Loaded = results[0]?.status === 'fulfilled' && results[0]?.value === true;
+    const gtmContainerLoaded = results[1]?.status === 'fulfilled' && results[1]?.value === true;
+
+    writeDebug({
+      analyticsConsent: true,
+      analyticsRequested: true,
+      analyticsLoaded: directGa4Loaded,
+      gtmRequested: true,
+      gtmLoaded: gtmContainerLoaded,
+      source: 'apply-consent-ga4-plus-gtm',
+      gtmId: GTM_ID,
+      measurementId: GA4_MEASUREMENT_ID,
+    });
+
+    return directGa4Loaded || gtmContainerLoaded;
+  });
 }
+
+
 
 // Ruční diagnostika z konzole, kdyby bylo potřeba.
 try {

@@ -4201,3 +4201,287 @@ if (!G.flags.mainDomReadyBound) {
   scheduleScan();
 })();
 
+
+/* AJSEE_HOME_RESULT_SUMMARY_PREVIEW_v1
+   ---------------------------------------------------------
+   Homepage renders a preview set of event cards, not the full result set.
+   This patch changes misleading "Nalezeno: X" into
+   "Zobrazeno: Y z X událostí" and adds a CTA to the full events page.
+   --------------------------------------------------------- */
+
+(function installAjseeHomeResultSummaryPreview() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (window.__ajseeHomeResultSummaryPreviewInstalled) return;
+
+  window.__ajseeHomeResultSummaryPreviewInstalled = true;
+
+  const STYLE_ID = 'ajsee-home-result-summary-preview-css';
+
+  function ensureStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = `
+      .ajsee-home-result-summary{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:10px;
+        margin:0 auto 24px;
+        text-align:center;
+      }
+
+      .ajsee-home-result-summary-count{
+        font-weight:800;
+      }
+
+      .ajsee-home-result-summary-cta{
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:40px;
+        padding:0 18px;
+        border-radius:999px;
+        background:#0B78D0;
+        color:#fff;
+        font-size:14px;
+        font-weight:800;
+        text-decoration:none;
+        box-shadow:0 10px 24px rgba(11,120,208,.18);
+      }
+
+      .ajsee-home-result-summary-cta:hover{
+        transform:translateY(-1px);
+        box-shadow:0 14px 28px rgba(11,120,208,.22);
+      }
+
+      .ajsee-home-result-summary-cta:focus-visible{
+        outline:3px solid rgba(11,120,208,.28);
+        outline-offset:4px;
+      }
+
+      @media (max-width:760px){
+        .ajsee-home-result-summary{
+          gap:8px;
+          margin-bottom:20px;
+        }
+
+        .ajsee-home-result-summary-cta{
+          width:min(100%, 280px);
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function getLang() {
+    return String(document.documentElement.lang || 'cs').toLowerCase().slice(0, 2);
+  }
+
+  function copy() {
+    const map = {
+      cs: {
+        shown: 'Zobrazeno',
+        of: 'z',
+        events: 'událostí',
+        cta: 'Zobrazit všechny události'
+      },
+      sk: {
+        shown: 'Zobrazené',
+        of: 'z',
+        events: 'udalostí',
+        cta: 'Zobraziť všetky udalosti'
+      },
+      en: {
+        shown: 'Showing',
+        of: 'of',
+        events: 'events',
+        cta: 'View all events'
+      },
+      de: {
+        shown: 'Angezeigt',
+        of: 'von',
+        events: 'Events',
+        cta: 'Alle Events anzeigen'
+      },
+      pl: {
+        shown: 'Wyświetlono',
+        of: 'z',
+        events: 'wydarzeń',
+        cta: 'Zobacz wszystkie wydarzenia'
+      },
+      hu: {
+        shown: 'Megjelenítve',
+        of: '/',
+        events: 'esemény',
+        cta: 'Összes esemény megtekintése'
+      }
+    };
+
+    return map[getLang()] || map.cs;
+  }
+
+  function isInsideModal(el) {
+    return !!el.closest('[role="dialog"], [aria-modal="true"], .modal, .ajsee-modal, .event-modal, [class*="modal"], [class*="dialog"]');
+  }
+
+  function isVisible(el) {
+    if (!el || !el.getBoundingClientRect) return false;
+
+    const rect = el.getBoundingClientRect();
+    const style = window.getComputedStyle(el);
+
+    return (
+      rect.width > 20 &&
+      rect.height > 20 &&
+      style.display !== 'none' &&
+      style.visibility !== 'hidden' &&
+      Number(style.opacity || 1) !== 0
+    );
+  }
+
+  function findCountElement() {
+    const candidates = Array.from(document.querySelectorAll('p, div, span, strong'))
+      .filter((el) => {
+        if (isInsideModal(el)) return false;
+
+        const text = String(el.textContent || '').replace(/\s+/g, ' ').trim();
+
+        return (
+          /^Nalezeno:\s*\d+\+?$/i.test(text) ||
+          /^Found:\s*\d+\+?$/i.test(text) ||
+          /^Zobrazeno:\s*\d+\s+z\s+\d+/i.test(text) ||
+          /^Showing:\s*\d+\s+of\s+\d+/i.test(text)
+        );
+      });
+
+    return candidates[0] || null;
+  }
+
+  function parseTotal(text = '') {
+    const clean = String(text || '').replace(/\s+/g, ' ').trim();
+
+    const found = clean.match(/(?:Nalezeno|Found):\s*(\d+)\+?/i);
+    if (found) return Number(found[1]);
+
+    const shownCs = clean.match(/Zobrazeno:\s*\d+\s+z\s+(\d+)/i);
+    if (shownCs) return Number(shownCs[1]);
+
+    const shownEn = clean.match(/Showing:\s*\d+\s+of\s+(\d+)/i);
+    if (shownEn) return Number(shownEn[1]);
+
+    return 0;
+  }
+
+  function countVisibleHomepageCards() {
+    const cards = Array.from(document.querySelectorAll('article'))
+      .filter((article) => {
+        if (isInsideModal(article)) return false;
+        if (!isVisible(article)) return false;
+
+        const hasEventAction = !!article.querySelector('.event-buttons-group, a[href*="smsticket.cz"], a[href*="ticketmaster"], .btn-event');
+        const hasTitle = !!article.querySelector('h2, h3, .event-title, [class*="title"]');
+
+        return hasEventAction && hasTitle;
+      });
+
+    return cards.length;
+  }
+
+  function eventsUrl() {
+    const search = window.location.search || '';
+
+    if (/localhost|127\.0\.0\.1/i.test(window.location.hostname)) {
+      return '/events.html' + search;
+    }
+
+    return '/events/' + search;
+  }
+
+  function applySummary() {
+    ensureStyles();
+
+    const countEl = findCountElement();
+    if (!countEl) return;
+
+    const total = Number(countEl.dataset.ajseeTotalCount || parseTotal(countEl.textContent));
+    const shown = countVisibleHomepageCards();
+
+    if (!Number.isFinite(total) || total <= 0 || shown <= 0) return;
+
+    countEl.dataset.ajseeTotalCount = String(total);
+
+    const c = copy();
+    const wrapper = countEl.closest('.ajsee-home-result-summary') || document.createElement('div');
+
+    if (!wrapper.classList.contains('ajsee-home-result-summary')) {
+      wrapper.className = 'ajsee-home-result-summary';
+      countEl.parentElement.insertBefore(wrapper, countEl);
+      wrapper.appendChild(countEl);
+    }
+
+    countEl.classList.add('ajsee-home-result-summary-count');
+
+    if (shown < total) {
+      countEl.textContent = getLang() === 'en'
+        ? `${c.shown}: ${shown} ${c.of} ${total} ${c.events}`
+        : `${c.shown}: ${shown} ${c.of} ${total} ${c.events}`;
+
+      let cta = wrapper.querySelector('.ajsee-home-result-summary-cta');
+
+      if (!cta) {
+        cta = document.createElement('a');
+        cta.className = 'ajsee-home-result-summary-cta';
+        wrapper.appendChild(cta);
+      }
+
+      cta.href = eventsUrl();
+      cta.textContent = c.cta;
+    } else {
+      countEl.textContent = getLang() === 'en'
+        ? `${c.shown}: ${total} ${c.events}`
+        : `${c.shown}: ${total} ${c.events}`;
+
+      wrapper.querySelector('.ajsee-home-result-summary-cta')?.remove();
+    }
+
+    try {
+      window.__ajseeHomeResultSummaryLast = {
+        total,
+        shown,
+        href: wrapper.querySelector('.ajsee-home-result-summary-cta')?.href || null,
+        at: new Date().toISOString()
+      };
+    } catch {
+      // noop
+    }
+  }
+
+  let scheduled = false;
+
+  function scheduleApply() {
+    if (scheduled) return;
+
+    scheduled = true;
+
+    window.setTimeout(() => {
+      scheduled = false;
+      applySummary();
+    }, 90);
+  }
+
+  ensureStyles();
+
+  document.addEventListener('DOMContentLoaded', scheduleApply, { once: true });
+  window.addEventListener('load', scheduleApply, { once: true });
+  window.addEventListener('resize', scheduleApply, { passive: true });
+  window.addEventListener('orientationchange', scheduleApply, { passive: true });
+
+  const observer = new MutationObserver(scheduleApply);
+  observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+
+  scheduleApply();
+})();
+

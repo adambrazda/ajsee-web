@@ -57,16 +57,34 @@ function truncateText(value = '', max = 900) {
   return clean.slice(0, max).replace(/\s+\S*$/, '').trim() + '?';
 }
 
-function stripHtml(html = '') {
-  return String(html || '')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
+function decodeHtmlEntities(value = '') {
+  return String(value || '')
+    // handle double-escaped values first
+    .replace(/&amp;lt;/gi, '<')
+    .replace(/&amp;gt;/gi, '>')
+    .replace(/&amp;quot;/gi, '"')
+    .replace(/&amp;#39;/gi, "'")
+    .replace(/&amp;nbsp;/gi, ' ')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"')
     .replace(/&#39;/gi, "'")
-    .replace(/\s+/g, ' ')
+    .replace(/&apos;/gi, "'")
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&');
+}
+
+function stripHtml(html = '') {
+  return decodeHtmlEntities(html)
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '? ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s*\n\s*/g, '\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 
@@ -146,8 +164,8 @@ function isFutureOrActive(event) {
 function normalizeEvent(event) {
   const sourceId = text(event?.id);
   const title = text(event?.name);
-  const descriptionHtml = String(event?.description || '').trim();
-  const descriptionText = truncateText(stripHtml(descriptionHtml));
+  const rawDescription = decodeHtmlEntities(String(event?.description || '').trim());
+  const descriptionText = truncateText(stripHtml(rawDescription));
 
   const startDate = text(event?.dates?.start_date);
   const startTime = text(event?.dates?.start_time);
@@ -190,8 +208,6 @@ function normalizeEvent(event) {
     },
 
     description: { cs: descriptionText },
-
-    descriptionHtml,
 
     date: startDate,
     datetime: combineDateTime(startDate, startTime),

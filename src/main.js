@@ -4636,3 +4636,143 @@ if (!G.flags.mainDomReadyBound) {
     void bootstrapMain();
   });
 }
+
+
+/* AJSEE_EVENT_PARTNER_BADGE_STABILIZER_v1
+   ---------------------------------------------------------
+   Ensures partner badge is present after responsive/mobile re-renders.
+   --------------------------------------------------------- */
+
+(function installAjseeEventPartnerBadgeStabilizer() {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  if (window.__ajseeEventPartnerBadgeStabilizerInstalled) return;
+
+  window.__ajseeEventPartnerBadgeStabilizerInstalled = true;
+
+  function ensureStyles() {
+    if (document.getElementById('ajsee-event-partner-badge-stabilizer-css')) return;
+
+    const style = document.createElement('style');
+    style.id = 'ajsee-event-partner-badge-stabilizer-css';
+    style.textContent = `
+      #eventsList .event-card .event-partner-badge,
+      .events-list .event-card .event-partner-badge{
+        display:block;
+        margin:0 0 12px;
+        line-height:1;
+      }
+
+      #eventsList .event-card .event-partner-badge span,
+      .events-list .event-card .event-partner-badge span{
+        display:inline-flex;
+        align-items:center;
+        min-height:24px;
+        padding:5px 10px;
+        border-radius:999px;
+        border:1px solid rgba(10,61,98,.12);
+        background:rgba(10,61,98,.045);
+        color:#0A3D62;
+        font-size:12px;
+        font-weight:800;
+        letter-spacing:.02em;
+        white-space:nowrap;
+      }
+
+      #eventsList .event-card[data-event-provider="smsticket"] .event-partner-badge span,
+      .events-list .event-card[data-event-provider="smsticket"] .event-partner-badge span{
+        background:rgba(92,70,255,.08);
+        border-color:rgba(92,70,255,.16);
+        color:#342f75;
+      }
+
+      #eventsList .event-card[data-event-provider="ticketmaster"] .event-partner-badge span,
+      .events-list .event-card[data-event-provider="ticketmaster"] .event-partner-badge span{
+        background:rgba(0,116,224,.08);
+        border-color:rgba(0,116,224,.16);
+        color:#064c9b;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function detectPartner(card) {
+    const fromCard = String(card?.dataset?.eventProvider || '').trim().toLowerCase();
+    if (fromCard) return fromCard;
+
+    const link = card?.querySelector?.('.js-partner-click, a[href*="smsticket.cz"], a[href*="ticketmaster"]');
+    const fromLink = String(link?.dataset?.partner || '').trim().toLowerCase();
+    const href = String(link?.getAttribute?.('href') || '').toLowerCase();
+
+    if (fromLink.includes('smsticket') || href.includes('smsticket.cz')) return 'smsticket';
+    if (fromLink.includes('ticketmaster') || href.includes('ticketmaster')) return 'ticketmaster';
+
+    return '';
+  }
+
+  function labelForPartner(partner) {
+    if (partner === 'smsticket') return 'smsticket';
+    if (partner === 'ticketmaster') return 'Ticketmaster';
+    return '';
+  }
+
+  function ensureBadge(card) {
+    if (!card || card.querySelector('.event-partner-badge')) return;
+
+    const partner = detectPartner(card);
+    const label = labelForPartner(partner);
+
+    if (!partner || !label) return;
+
+    card.dataset.eventProvider = partner;
+
+    const badge = document.createElement('p');
+    badge.className = 'event-partner-badge';
+    badge.dataset.provider = partner;
+    badge.innerHTML = '<span>' + label + '</span>';
+
+    const date = card.querySelector('.event-date');
+    const buttons = card.querySelector('.event-buttons-group');
+    const content = card.querySelector('.event-content') || card;
+
+    if (date && date.parentElement) {
+      date.insertAdjacentElement('afterend', badge);
+      return;
+    }
+
+    if (buttons && buttons.parentElement) {
+      buttons.parentElement.insertBefore(badge, buttons);
+      return;
+    }
+
+    content.appendChild(badge);
+  }
+
+  let scheduled = false;
+
+  function scan() {
+    scheduled = false;
+    ensureStyles();
+
+    document.querySelectorAll('#eventsList .event-card, .events-list .event-card')
+      .forEach(ensureBadge);
+  }
+
+  function scheduleScan() {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(scan);
+  }
+
+  ensureStyles();
+
+  document.addEventListener('DOMContentLoaded', scheduleScan, { once: true });
+  window.addEventListener('resize', scheduleScan, { passive: true });
+  window.addEventListener('orientationchange', scheduleScan, { passive: true });
+
+  const observer = new MutationObserver(scheduleScan);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  scheduleScan();
+})();
+

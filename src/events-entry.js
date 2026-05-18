@@ -2782,6 +2782,179 @@ function initCityTypeahead(locale, { rebuild = false } = {}) {
 }
 
 /* ───────── render events / paging ───────── */
+
+function ajseeEventProviderKey(ev = {}) {
+  const raw = String(
+    ev?.partner ||
+    ev?.source ||
+    ev?.bookingProvider ||
+    ev?.affiliate?.provider ||
+    ''
+  ).trim().toLowerCase();
+
+  if (!raw) return '';
+  if (raw.includes('smsticket')) return 'smsticket';
+  if (raw.includes('ticketmaster')) return 'ticketmaster';
+
+  return raw
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function ajseeEventProviderLabel(ev = {}, lang = getUILang()) {
+  const key = ajseeEventProviderKey(ev);
+
+  if (key === 'smsticket') return 'smsticket';
+  if (key === 'ticketmaster') return 'Ticketmaster';
+
+  return '';
+}
+
+function eventProviderBadgeHtml(ev = {}, lang = getUILang()) {
+  const key = ajseeEventProviderKey(ev);
+  const label = ajseeEventProviderLabel(ev, lang);
+
+  if (!key || !label) return '';
+
+  return '<p class="event-partner-badge" data-provider="' + esc(key) + '">' +
+    '<span>' + esc(label) + '</span>' +
+  '</p>';
+}
+
+function eventImageOrFallback(ev = {}) {
+  const raw = String(
+    ev?.image ||
+    ev?.imageUrl ||
+    ev?.imageOriginal ||
+    ev?.images?.[0]?.url ||
+    ''
+  ).trim();
+
+  if (raw) {
+    return raw.replace(/^http:\/\//i, 'https://');
+  }
+
+  return '/images/fallbacks/concert0.jpg';
+}
+
+function injectProviderBadgeStyles() {
+  injectOnce('ajsee-event-provider-badge-css', String.raw`
+    .event-card[data-event-provider]{
+      position:relative;
+    }
+
+    .event-partner-badge{
+      margin:0 0 12px;
+      line-height:1;
+    }
+
+    .event-partner-badge span{
+      display:inline-flex;
+      align-items:center;
+      min-height:24px;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid rgba(10,61,98,.12);
+      background:rgba(10,61,98,.045);
+      color:#0A3D62;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.02em;
+      white-space:nowrap;
+    }
+
+    .event-card[data-event-provider="smsticket"] .event-partner-badge span{
+      background:rgba(92,70,255,.08);
+      border-color:rgba(92,70,255,.16);
+      color:#342f75;
+    }
+
+    .event-card[data-event-provider="ticketmaster"] .event-partner-badge span{
+      background:rgba(0,116,224,.08);
+      border-color:rgba(0,116,224,.16);
+      color:#064c9b;
+    }
+
+    .event-img{
+      background:#eef5fb;
+    }
+    `);
+
+  injectOnce('ajsee-event-card-image-stability-css', String.raw`
+    .event-card .event-img{
+      display:block;
+      width:100%;
+      aspect-ratio:16 / 9;
+      height:auto;
+      max-height:260px;
+      object-fit:cover;
+      object-position:center;
+      border-radius:18px;
+      background:#eef5fb;
+    }
+
+    @media (max-width: 760px){
+      .event-card .event-img{
+        max-height:220px;
+      }
+    }
+
+    @media (max-width: 420px){
+      .event-card .event-img{
+        max-height:190px;
+      }
+    }
+  `);
+}
+
+function trackPartnerClickFromLink(link) {
+  if (!link) return;
+
+  const partner = String(link.dataset.partner || '').trim();
+  const eventName = String(link.dataset.eventTitle || '').trim();
+  const city = String(link.dataset.eventCity || '').trim();
+  const outboundUrl = String(link.href || link.dataset.outboundUrl || '').trim();
+
+  if (!partner && !outboundUrl) return;
+
+  const payload = {
+    event: 'partner_click',
+    partner,
+    event_name: eventName,
+    city,
+    outbound_url: outboundUrl,
+    placement: 'event_card',
+    page_path: window.location.pathname,
+    ts: new Date().toISOString()
+  };
+
+  try {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+  } catch {
+    /* noop */
+  }
+
+  try {
+    window.__ajsee = window.__ajsee || {};
+    window.__ajsee.lastPartnerClick = payload;
+  } catch {
+    /* noop */
+  }
+
+  try {
+    sessionStorage.setItem('ajsee:lastPartnerClick', JSON.stringify(payload));
+  } catch {
+    /* noop */
+  }
+
+  try {
+    console.info('[AJSEE partner_click]', payload);
+  } catch {
+    /* noop */
+  }
+}
+
 function mapLangToTm(lang) {
   const map = { cs: 'cs-cz', sk: 'sk-sk', pl: 'pl-pl', de: 'de-de', hu: 'hu-hu', en: 'en-gb' };
   return map[(lang || 'en').slice(0, 2)] || 'en-gb';
@@ -3172,6 +3345,9 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       return;
     }
 
+    injectProviderBadgeStyles();
+
+
     const modalStore = new Map();
 
     list.innerHTML = toRender.map((ev, index) => {
@@ -3186,7 +3362,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
         ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
         : '';
 
-      const img = ev.image || '/images/fallbacks/concert0.jpg';
+      const img = eventImageOrFallback(ev);
       const sourcePage = isHp ? 'homepage' : 'events_page';
       const ticketsBaseUrl = withOutboundTracking(ev.tickets || ev.url || '', { sourcePage, placement: 'event_card' });
       const ticketsHref = safeUrl(adjustTicketmasterLanguage(ticketsBaseUrl, locale));
@@ -3197,18 +3373,23 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
       const detailLabel = esc(t('event-details', 'Detail'));
       const ticketLabel = esc(t('event-tickets', 'Vstupenky'));
+      const provider = ajseeEventProviderKey(ev);
+      const providerBadge = eventProviderBadgeHtml(ev, locale);
+      const eventCityAttr = esc(ev?.location?.city || ev?.venue?.city || ev?.place?.city || '');
+      const eventTitleAttr = esc(titleRaw);
 
       return `
-        <article class="event-card" data-event-id="${esc(modalId)}">
-          <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy"/>
+        <article class="event-card" data-event-id="${esc(modalId)}" data-event-provider="${esc(provider)}">
+          <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/images/fallbacks/concert0.jpg';"/>
           <div class="event-content">
             <h3 class="event-title">${title}</h3>
             <p class="event-date">${date}</p>
+            ${providerBadge}
             <div class="event-buttons-group">
               <button type="button" class="btn-event detail js-event-detail" data-event-id="${esc(modalId)}">
                 ${detailLabel}
               </button>
-              <a href="${ticketsHref}" class="btn-event ticket" target="_blank" rel="noopener noreferrer">
+              <a href="${ticketsHref}" class="btn-event ticket js-partner-click" target="_blank" rel="noopener noreferrer" data-partner="${esc(provider)}" data-event-title="${eventTitleAttr}" data-event-city="${eventCityAttr}" data-outbound-url="${ticketsHref}">
                 ${ticketLabel}
               </a>
             </div>
@@ -3228,6 +3409,20 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
         if (!selectedEvent) return;
         openEventModal(selectedEvent, locale, { t });
       });
+    });
+
+
+    qsa('.js-partner-click', list).forEach(link => {
+      let tracked = false;
+
+      const trackOnce = () => {
+        if (tracked) return;
+        tracked = true;
+        trackPartnerClickFromLink(link);
+      };
+
+      link.addEventListener('pointerdown', trackOnce, { passive: true });
+      link.addEventListener('click', trackOnce);
     });
 
     updateEventsPagerControls();

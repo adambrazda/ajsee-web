@@ -22,6 +22,7 @@
 // ---------------------------------------------------------
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
+import { fetchEvents as fetchSmsticketEvents } from '../adapters/smsticket.js';
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 
 // DEV detekce (localhost/Vite)
@@ -849,6 +850,23 @@ try {
   }
 
   console.warn('[eventsApi] Ticketmaster fetch failed:', e);
+}
+
+
+// --- smsticket ---
+// CZ affiliate/API zdroj. Adapter si s?m ?e?? filtrov?n? a str?nkov?n?,
+// tak?e nevrac? cel? feed najednou a neni?? prvn? render.
+try {
+  const smsticket = await fetchSmsticketEvents({
+    locale: loc,
+    filters: upstreamFilters
+  });
+
+  if (Array.isArray(smsticket)) {
+    all = all.concat(smsticket);
+  }
+} catch (e) {
+  console.warn('[eventsApi] smsticket fetch failed:', e);
 }
 
   // --- Demo zdroj v DEV ---

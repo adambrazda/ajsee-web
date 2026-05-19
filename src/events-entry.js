@@ -804,7 +804,7 @@ function patchFilterVisuals() {
     .ti-city{ font-size:17px; font-weight:700; color:#14213d; }
     .ti-city mark{ background:rgba(20,194,197,.14); color:inherit; border-radius:6px; padding:0 .08em; }
     .ti-meta{ font-size:13px; color:#667085; }
-    body.city-picker-open{ position:fixed; overflow:hidden; width:100%; left:0; right:0; touch-action:none; overscroll-behavior:none; }
+    body.city-picker-open{ position:fixed; overflow:hidden; width:100%; left:0; right:0; touch-action:auto; overscroll-behavior:none; }
     .city-sheet-backdrop{ position:fixed; inset:0; z-index:calc(var(--ajsee-popover-z, 10020) + 1); display:flex; align-items:flex-end; justify-content:center; background:rgba(11,16,32,.28); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); opacity:0; pointer-events:none; transition:opacity .18s ease; padding:12px 12px calc(12px + env(safe-area-inset-bottom, 0px)); }
     .city-sheet-backdrop.is-open{ opacity:1; pointer-events:auto; }
     .city-sheet{ width:min(100%,720px); height:min(calc(var(--city-sheet-vh,100vh) - env(safe-area-inset-top,0px) - 16px),760px); max-height:min(calc(var(--city-sheet-vh,100vh) - env(safe-area-inset-top,0px) - 16px),760px); min-height:min(460px,72vh); background:rgba(255,255,255,.98); border:1px solid rgba(217,225,239,.98); border-radius:28px; box-shadow:0 24px 60px rgba(9,30,66,.24); overflow:hidden; display:flex; flex-direction:column; transform:translateY(18px); transition:transform .18s ease; touch-action:pan-y; }

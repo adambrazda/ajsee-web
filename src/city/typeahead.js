@@ -18,7 +18,7 @@ function injectStylesOnce() {
       inset: 0;
       width: 100%;
       overflow: hidden;
-      touch-action: none;
+      touch-action: auto;
     }
 
     .typeahead-panel {

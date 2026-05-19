@@ -2024,7 +2024,7 @@ function patchFilterVisuals() {
       width:100%;
       left:0;
       right:0;
-      touch-action:none;
+      touch-action:auto;
       overscroll-behavior:none;
     }
 

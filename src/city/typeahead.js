@@ -864,6 +864,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   fieldEl.appendChild(live);
 
   let items = [];
+  let mobileRenderedItems = [];
   let activeIndex = -1;
   let loading = false;
   let lastQuery = '';
@@ -1272,6 +1273,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     const q = getCurrentSearchValue();
     const isSearching = q.trim().length >= minChars;
     const list = buildRenderList().filter((it) => !it.__nearMe);
+    mobileRenderedItems = list;
 
     if (sheetContent) {
       sheetContent.classList.toggle('is-searching', isSearching);
@@ -1302,7 +1304,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }
 
     sheetResults.innerHTML = list.map((it, idx) => {
-      const listIndex = includeNearMe ? idx + 1 : idx;
+      const listIndex = idx;
       const meta = [it.state, it.countryCode].filter(Boolean).join(', ');
       const htmlLabel = highlight(it.city, q);
 
@@ -1331,7 +1333,10 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   }
 
   function chooseCity(idx) {
-    const list = buildRenderList();
+    const list = isMobile() && sheetOpen && mobileRenderedItems.length
+      ? mobileRenderedItems
+      : buildRenderList();
+
     const it = list[idx];
     if (!it) return;
 

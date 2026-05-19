@@ -74,6 +74,31 @@ function bindHomeTypeaheadOnDemand(input, locale) {
 
         mod.setupCityTypeahead(input, buildCityTypeaheadOptions(input, locale));
         input.dataset.ajTypeaheadBound = '1';
+
+        // AJSEE_REPLAY_CITY_OPEN_AFTER_LAZY_v1
+        // The first mobile tap lazy-loads the typeahead module. After setup, replay
+        // the opening gesture so users do not need a second tap to open the city sheet.
+        if (window.matchMedia('(max-width: 720px)').matches) {
+          requestAnimationFrame(() => {
+            try {
+              input.dispatchEvent(new PointerEvent('pointerdown', {
+                bubbles: true,
+                cancelable: true,
+                pointerType: 'touch',
+                clientX: 1,
+                clientY: 1
+              }));
+            } catch {
+              input.dispatchEvent(new MouseEvent('pointerdown', {
+                bubbles: true,
+                cancelable: true,
+                clientX: 1,
+                clientY: 1
+              }));
+            }
+          });
+        }
+
         input.dataset.ajTypeaheadLoading = '0';
       })
       .catch(() => {
@@ -574,7 +599,13 @@ function canonPreferredCity(label) {
   if (!raw) return '';
 
   const slug = findSlugByAnyLabel(raw);
-  if (!slug) return canonForInputCity(raw);
+
+  if (!slug) {
+    // AJSEE_SAFE_CITY_CANONICAL_FALLBACK_v1
+    // Unknown but valid selected cities from typeahead (e.g. Jihlava) must not be
+    // fuzzy-canonicalized into unrelated cities by canonForInputCity().
+    return raw;
+  }
 
   const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || raw;
   return canonForInputCity(forApi);
@@ -3082,7 +3113,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   setBusy(true);
 
   try {
-    const api = { ...filters, city: filters.city ? canonForInputCity(filters.city) : '' };
+    const api = { ...filters, city: filters.city ? canonPreferredCity(filters.city) : '' };
 
     if (api.city && !api.cityCountryCode) {
       api.cityCountryCode = cityCountryCodeFromLabel(api.city, '');

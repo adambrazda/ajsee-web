@@ -694,7 +694,12 @@ const LOCAL_CITY_FALLBACKS = [
     countryCode: 'GB',
     labels: { cs: 'Londýn', en: 'London', de: 'London', sk: 'Londýn', pl: 'Londyn', hu: 'London' },
     aliases: ['londyn', 'londýn', 'london']
-  }
+  },
+  {
+    countryCode: 'CZ',
+    labels: { cs: 'Jihlava', en: 'Jihlava', de: 'Iglau', sk: 'Jihlava', pl: 'Igława', hu: 'Jihlava' },
+    aliases: ['jihlava', 'iglau', 'iglawa', 'igława']
+  },
 ];
 
 function localCityFallbackItems(query = '', lang = 'cs') {
@@ -749,6 +754,27 @@ function filterDefaultCityItems(query, lang = 'cs') {
     seen.add(key);
     return true;
   });
+}
+function cityItemMatchesQuery(item, query = '') {
+  const q = norm(query);
+  if (!q) return true;
+
+  const city = norm(item?.city || item?.name || item?.label || '');
+  const state = norm(item?.state || item?.region || '');
+
+  if (!city && !state) return false;
+
+  return (
+    city === q ||
+    city.startsWith(q) ||
+    city.includes(q) ||
+    state === q ||
+    state.startsWith(q)
+  );
+}
+
+function mergeCityItems(primary = [], secondary = []) {
+  return normalizeAndDedupe([...(primary || []), ...(secondary || [])]);
 }
 
 const CITY_SUGGEST_CACHE_TTL_MS = 10 * 60 * 1000;
@@ -838,6 +864,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   fieldEl.appendChild(live);
 
   let items = [];
+  let mobileRenderedItems = [];
   let activeIndex = -1;
   let loading = false;
   let lastQuery = '';
@@ -1162,7 +1189,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }, 40);
   }
 
-  function closeMobile() {
+  function closeMobile({ restoreFocus = false } = {}) {
     if (!backdrop || !sheetOpen) return;
 
     backdrop.classList.remove('is-open');
@@ -1177,9 +1204,14 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     cleanupViewport?.();
     cleanupViewport = null;
 
+    if (!restoreFocus) return;
+
     try {
       const target = previousFocus && typeof previousFocus.focus === 'function' ? previousFocus : inputEl;
-      target.focus({ preventScroll: true });
+
+      if (target && target !== inputEl) {
+        target.focus({ preventScroll: true });
+      }
     } catch {}
   }
 
@@ -1241,6 +1273,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     const q = getCurrentSearchValue();
     const isSearching = q.trim().length >= minChars;
     const list = buildRenderList().filter((it) => !it.__nearMe);
+    mobileRenderedItems = list;
 
     if (sheetContent) {
       sheetContent.classList.toggle('is-searching', isSearching);
@@ -1271,7 +1304,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }
 
     sheetResults.innerHTML = list.map((it, idx) => {
-      const listIndex = includeNearMe ? idx + 1 : idx;
+      const listIndex = idx;
       const meta = [it.state, it.countryCode].filter(Boolean).join(', ');
       const htmlLabel = highlight(it.city, q);
 
@@ -1300,7 +1333,10 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   }
 
   function chooseCity(idx) {
-    const list = buildRenderList();
+    const list = isMobile() && sheetOpen && mobileRenderedItems.length
+      ? mobileRenderedItems
+      : buildRenderList();
+
     const it = list[idx];
     if (!it) return;
 
@@ -1462,7 +1498,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       Array.isArray(list) ? list : []
     );
 
-    const nextItems = normalized.length ? normalized : instantItems;
+    const relevantRemoteItems = normalized.filter((item) => cityItemMatchesQuery(item, q));
+    const nextItems = mergeCityItems(instantItems, relevantRemoteItems);
 
     CITY_SUGGEST_CACHE.set(cacheKey, {
       expiresAt: Date.now() + CITY_SUGGEST_CACHE_TTL_MS,

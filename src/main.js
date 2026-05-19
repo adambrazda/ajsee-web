@@ -839,25 +839,10 @@ function canonPreferredCity(label) {
   const raw = String(label || '').trim();
   if (!raw) return '';
 
-  // Pokud uživatel zadal zemi, nesmíme ji kanonizovat jako město.
-  if (countryCodeFromInput(raw)) return '';
-
-  const slug = findSlugByAnyLabel(raw);
-
-  if (!slug) {
-    // AJSEE_SAFE_EVENTS_CITY_CANONICAL_FALLBACK_v1
-    // Unknown but valid selected cities from typeahead (e.g. Jihlava) must not be
-    // fuzzy-canonicalized into unrelated cities by canonForInputCity().
-    return raw;
-  }
-
-  const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || raw;
-
-  try {
-    return canonForInputCity(forApi) || forApi;
-  } catch {
-    return forApi;
-  }
+  // AJSEE_USER_FACING_CITY_URL_v1
+  // Keep UI/state/URL city user-facing. Provider-specific canonical values
+  // belong in eventsApi provider requests, not in URL/currentFilters.
+  return raw;
 }
 
 function cityCountryCodeFromLabel(label, fallback = '') {

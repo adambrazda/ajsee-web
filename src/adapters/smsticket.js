@@ -1,4 +1,4 @@
-﻿// /src/adapters/smsticket.js
+// /src/adapters/smsticket.js
 // ---------------------------------------------------------
 // AJSEE – smsticket adapter
 // Načítá předgenerovaný JSON z /public/data/smsticket-events.json.
@@ -7,6 +7,8 @@
 // - filtruje city/category/date/keyword/near-me už před eventsApi,
 // - stránkuje podle filters.page + filters.size.
 // ---------------------------------------------------------
+
+import { canonForInputCity } from '../city/canonical.js';
 
 const DATA_URL = '/data/smsticket-events.json';
 
@@ -173,6 +175,23 @@ function cityAliasTokens(value = '') {
   if (!base) return [];
 
   const tokens = new Set([base]);
+
+  // AJSEE_SMSTICKET_CANONICAL_CITY_ALIAS_TOKENS_v1
+  // Generic bridge for UI/local labels and provider canonical labels:
+  // Plzeň/Pilsen, Praha/Prague, Vídeň/Vienna, Mnichov/Munich, etc.
+  try {
+    const canon = canonForInputCity?.(value);
+    const canonBase = fold(canon)
+      .replace(/\bcz\b/g, '')
+      .replace(/\bcesko\b/g, '')
+      .replace(/\bczech republic\b/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (canonBase) tokens.add(canonBase);
+  } catch {
+    // keep base-only matching
+  }
 
   for (const group of CITY_ALIAS_GROUPS) {
     const foldedGroup = group.map(fold);

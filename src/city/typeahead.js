@@ -227,20 +227,11 @@ function injectStylesOnce() {
     }
 
     .city-sheet__content {
-      /* AJSEE_IOS_CITY_SHEET_CONTENT_SCROLL_V1
-         iOS Safari is more reliable when the sheet has one scroll container.
-         Keep results visible in DOM, but let the content area own vertical scroll. */
       min-height: 0;
       display: flex;
       flex-direction: column;
       gap: 10px;
       flex: 1 1 auto;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
-      touch-action: pan-y;
-      padding-bottom: 10px;
     }
 
     .city-sheet__content.is-searching .city-sheet__nearme {
@@ -293,11 +284,12 @@ function injectStylesOnce() {
     }
 
     .city-sheet__results {
-      flex: 0 0 auto;
+      flex: 1 1 auto;
       min-height: 0;
-      overflow: visible;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
       padding-bottom: 10px;
-      touch-action: pan-y;
     }
 
     .city-sheet__option,
@@ -919,20 +911,49 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   }
 
   function resetMobileResultsScroll() {
-    const scrollTargets = [sheetContent, sheetResults].filter(Boolean);
-    if (!scrollTargets.length) return;
+    if (!sheetResults) return;
 
     requestAnimationFrame(() => {
-      for (const target of scrollTargets) {
-        try {
-          target.scrollTop = 0;
-        } catch {
-          // noop
-        }
+      try {
+        sheetResults.scrollTop = 0;
+      } catch {
+        // noop
       }
     });
   }
 
+
+  // AJSEE_MOBILE_TOUCH_ACTIVATE_V1
+  // Real iOS Safari/Edge can retarget click after focus changes inside the sheet.
+  // Handle critical mobile sheet actions on pointerdown and suppress the follow-up synthetic click.
+  function suppressMobileSyntheticClick(ms = 450) {
+    ignoreMobileSyntheticClickUntil = Date.now() + ms;
+  }
+
+  function shouldSuppressMobileSyntheticClick() {
+    return Date.now() < ignoreMobileSyntheticClickUntil;
+  }
+
+  function activateMobilePointer(e, action) {
+    if (!isMobile()) return false;
+
+    const pointerType = String(e.pointerType || '').toLowerCase();
+    const isTouchLike = !pointerType || pointerType === 'touch' || pointerType === 'pen';
+    if (!isTouchLike) return false;
+
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    suppressMobileSyntheticClick();
+    action();
+    return true;
+  }
+
+  function chooseMobileCityButton(btn) {
+    if (!btn) return;
+    const idx = parseInt(btn.getAttribute('data-city-index'), 10);
+    if (!Number.isFinite(idx)) return;
+    chooseCity(idx);
+  }
   function setActive(idx) {
     activeIndex = idx;
 

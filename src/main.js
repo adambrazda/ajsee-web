@@ -3289,51 +3289,14 @@ function ensureNearMeInlineButton(input) {
     }
   };
 
-  // AJSEE_CITY_CLEAR_POINTERDOWN_V1
-  // Real iOS can retarget the synthetic click after the button hides.
-  // Clear on touch pointerdown and suppress the follow-up click globally.
-  if (!window.__ajseeCityClearInlineClickSuppressBound) {
-    window.__ajseeCityClearInlineClickSuppressBound = true;
-
-    document.addEventListener('click', (e) => {
-      const until = Number(window.__ajseeCityClearInlineClickSuppressUntil || 0);
-      if (!until || Date.now() >= until) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (typeof e.stopImmediatePropagation === 'function') {
-        e.stopImmediatePropagation();
-      }
-    }, true);
-  }
-
-  const suppressCityClearInlineFollowUpClick = (ms = 750) => {
-    window.__ajseeCityClearInlineClickSuppressUntil = Date.now() + ms;
-  };
-
-  const isTouchLikeCityClearPointer = (e) => {
-    const pointerType = String(e.pointerType || '').toLowerCase();
-    return !pointerType || pointerType === 'touch' || pointerType === 'pen';
-  };
-
   wireOnce(clearBtn, 'pointerdown', (e) => {
-    if (!isTouchLikeCityClearPointer(e)) return;
-
     e.preventDefault();
     e.stopPropagation();
-
-    suppressCityClearInlineFollowUpClick();
-    void clearCityFilter();
   }, 'city-clear-inline-pointerdown');
 
   wireOnce(clearBtn, 'click', (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    const until = Number(window.__ajseeCityClearInlineClickSuppressUntil || 0);
-    if (until && Date.now() < until) return;
-
     void clearCityFilter();
   }, 'city-clear-inline-click');
 

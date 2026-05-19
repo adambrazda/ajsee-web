@@ -601,18 +601,21 @@ function findSlugByAnyLabel(label) {
 function canonPreferredCity(label) {
   const raw = String(label || '').trim();
   if (!raw) return '';
+
+  // Pokud uživatel zadal zemi, nesmíme ji kanonizovat jako město.
   if (countryCodeFromInput(raw)) return '';
 
   const slug = findSlugByAnyLabel(raw);
+
   if (!slug) {
-    try {
-      return canonForInputCity(raw) || raw;
-    } catch {
-      return raw;
-    }
+    // AJSEE_SAFE_EVENTS_ENTRY_CITY_CANONICAL_FALLBACK_v1
+    // Unknown but valid selected cities from typeahead (e.g. Jihlava) must not be
+    // fuzzy-canonicalized into unrelated cities by canonForInputCity().
+    return raw;
   }
 
   const forApi = CITY_SYNONYMS[slug].en || CITY_SYNONYMS[slug].cs || raw;
+
   try {
     return canonForInputCity(forApi) || forApi;
   } catch {
@@ -627,9 +630,23 @@ function cityCountryCodeFromLabel(label, fallback = '') {
   const countryFromRaw = countryCodeFromInput(raw);
   if (countryFromRaw) return countryFromRaw;
 
-  // Důležité:
-  // U známých měst má náš canonical city mapping přednost před item.countryCode z typeaheadu.
-  // Typeahead fallback/preset může nést staré nebo příliš obecné "CZ".
+  const fromFallback = firstCountryCodeFromInput(fallback);
+  const slug = findSlugByAnyLabel(raw);
+
+  if (!slug) {
+    // AJSEE_SAFE_EVENTS_ENTRY_CITY_CC_FALLBACK_v1
+    // For unknown but explicitly selected city items, trust cityCc/item country.
+    // This prevents Jihlava + CZ from being guessed as Los Angeles + US.
+    if (fromFallback) return fromFallback;
+
+    const currentLabel = String(currentFilters.cityLabel || currentFilters.city || '').trim();
+    if (raw && currentLabel && normKey(raw) === normKey(currentLabel) && currentFilters.cityCountryCode) {
+      return String(currentFilters.cityCountryCode || '').trim().toUpperCase();
+    }
+
+    return '';
+  }
+
   let guessedCityCc = '';
   try {
     guessedCityCc = String(guessCountryCodeFromCity?.(raw) || '').trim().toUpperCase();
@@ -638,12 +655,8 @@ function cityCountryCodeFromLabel(label, fallback = '') {
   }
 
   if (guessedCityCc) return guessedCityCc;
-
-  const fromFallback = firstCountryCodeFromInput(fallback);
   if (fromFallback) return fromFallback;
 
-  // Když uživatel pouze znovu odešle stejné neznámé město, držíme dříve vybranou zemi.
-  // U známých měst už výše rozhodl guessedCityCc.
   const currentLabel = String(currentFilters.cityLabel || currentFilters.city || '').trim();
   if (raw && currentLabel && normKey(raw) === normKey(currentLabel) && currentFilters.cityCountryCode) {
     return String(currentFilters.cityCountryCode || '').trim().toUpperCase();
@@ -3231,7 +3244,7 @@ function buildApiFilters(filters) {
     (filters.city && countryFromPlace);
 
   const normalizedCity = (!isCountryPlace && filters.city)
-    ? (canonForInputCity(filters.city) || filters.city)
+    ? (canonPreferredCity(filters.city) || filters.city)
     : '';
 
   const api = {

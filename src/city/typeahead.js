@@ -1162,7 +1162,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     }, 40);
   }
 
-  function closeMobile() {
+  function closeMobile({ restoreFocus = false } = {}) {
     if (!backdrop || !sheetOpen) return;
 
     backdrop.classList.remove('is-open');
@@ -1177,9 +1177,14 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     cleanupViewport?.();
     cleanupViewport = null;
 
+    if (!restoreFocus) return;
+
     try {
       const target = previousFocus && typeof previousFocus.focus === 'function' ? previousFocus : inputEl;
-      target.focus({ preventScroll: true });
+
+      if (target && target !== inputEl) {
+        target.focus({ preventScroll: true });
+      }
     } catch {}
   }
 

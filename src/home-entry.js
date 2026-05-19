@@ -4391,13 +4391,66 @@ if (!G.flags.mainDomReadyBound) {
   }
 
   function eventsUrl() {
-    const search = window.location.search || '';
+    const params = new URLSearchParams(window.location.search || '');
 
-    if (/localhost|127\.0\.0\.1/i.test(window.location.hostname)) {
-      return '/events.html' + search;
+    const readInputValue = selector => {
+      const el = document.querySelector(selector);
+      return String(el?.value || '').trim();
+    };
+
+    const setClean = (key, value) => {
+      const normalized = String(value || '').trim();
+      if (!normalized) return false;
+
+      params.set(key, normalized);
+      return true;
+    };
+
+    const setIfMissing = (key, value) => {
+      if (params.get(key)) return true;
+      return setClean(key, value);
+    };
+
+    try {
+      const filters = typeof currentFilters === 'object' && currentFilters ? currentFilters : {};
+
+      const city =
+        params.get('city') ||
+        filters.cityLabel ||
+        filters.city ||
+        readInputValue('#filter-city') ||
+        readInputValue('input[name="city"]');
+
+      const cityCc =
+        params.get('cityCc') ||
+        filters.cityCountryCode ||
+        filters.countryCode ||
+        'CZ';
+
+      if (city) {
+        setClean('city', city);
+        setIfMissing('cityCc', cityCc);
+      } else {
+        params.delete('cityCc');
+      }
+
+      if (filters.category && filters.category !== 'all') {
+        setIfMissing('category', filters.category);
+      }
+
+      setIfMissing('dateFrom', filters.dateFrom || readInputValue('#filter-date-from') || readInputValue('input[name="date_from"]'));
+      setIfMissing('dateTo', filters.dateTo || readInputValue('#filter-date-to') || readInputValue('input[name="date_to"]'));
+      setIfMissing('keyword', filters.keyword || readInputValue('#filter-keyword') || readInputValue('input[name="keyword"]'));
+    } catch {
+      // If filters are not available for any reason, keep URL-only behaviour.
     }
 
-    return '/events/' + search;
+    const query = params.toString();
+    const path = /localhost|127\.0\.0\.1/i.test(window.location.hostname)
+      ? '/events.html'
+      : '/events/';
+
+    return query ? `${path}?${query}` : path;
   }
 
   function applySummary() {
@@ -4439,6 +4492,18 @@ if (!G.flags.mainDomReadyBound) {
 
       cta.href = eventsUrl();
       cta.textContent = c.cta;
+
+      if (!cta.dataset.ajseeHrefRefreshBound) {
+        cta.dataset.ajseeHrefRefreshBound = '1';
+
+        const refreshHref = () => {
+          cta.href = eventsUrl();
+        };
+
+        cta.addEventListener('pointerdown', refreshHref, { passive: true });
+        cta.addEventListener('focus', refreshHref, { passive: true });
+        cta.addEventListener('click', refreshHref, { capture: true });
+      }
     } else {
       countEl.textContent = getLang() === 'en'
         ? `${c.shown}: ${total} ${c.events}`

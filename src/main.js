@@ -2139,14 +2139,14 @@ function patchFilterVisuals() {
     }
 
     .city-sheet__content{
+      /* AJSEE_HOME_CITY_SHEET_RESULTS_SCROLL_V1
+         Keep homepage aligned with the stable shared typeahead behavior:
+         content is only a flex wrapper; results own the scroll. */
       flex:1 1 auto;
       min-height:0;
-      overflow-y:auto;
-      overflow-x:hidden;
+      overflow:visible;
       padding:0 18px calc(18px + env(safe-area-inset-bottom, 0px));
-      -webkit-overflow-scrolling:touch;
-      overscroll-behavior:contain;
-      touch-action:pan-y;
+      touch-action:auto;
     }
 
     .city-sheet__nearme{
@@ -2195,7 +2195,13 @@ function patchFilterVisuals() {
       display:flex;
       flex-direction:column;
       gap:8px;
-      min-height:1px;
+      flex:1 1 auto;
+      min-height:0;
+      overflow-y:auto;
+      overflow-x:hidden;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior:contain;
+      touch-action:pan-y;
       padding-bottom:max(16px, env(safe-area-inset-bottom, 0px));
     }
 
@@ -2916,16 +2922,25 @@ function syncCitySheetUsability(root = document) {
 
   const content = root.querySelector('.city-sheet__content');
   if (content) {
-    content.style.overflowY = 'auto';
-    content.style.overflowX = 'hidden';
-    content.style.webkitOverflowScrolling = 'touch';
-    content.style.overscrollBehavior = 'contain';
-    content.style.touchAction = 'pan-y';
+    // AJSEE_HOME_CITY_SHEET_RESULTS_SCROLL_V1
+    // Avoid nested scroll on homepage. The results list owns scroll.
+    content.style.minHeight = '0';
+    content.style.flex = '1 1 auto';
+    content.style.overflow = 'visible';
+    content.style.touchAction = 'auto';
+    content.style.removeProperty('-webkit-overflow-scrolling');
+    content.style.removeProperty('overscroll-behavior');
   }
 
   const results = root.querySelector('.city-sheet__results');
   if (results) {
-    results.style.minHeight = '1px';
+    results.style.flex = '1 1 auto';
+    results.style.minHeight = '0';
+    results.style.overflowY = 'auto';
+    results.style.overflowX = 'hidden';
+    results.style.webkitOverflowScrolling = 'touch';
+    results.style.overscrollBehavior = 'contain';
+    results.style.touchAction = 'pan-y';
     results.style.paddingBottom = 'max(16px, env(safe-area-inset-bottom, 0px))';
   }
 }

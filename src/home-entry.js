@@ -2910,6 +2910,7 @@ function ensureNearMeInlineButton(input) {
 /* ───────── city typeahead integration ───────── */
 function buildCityTypeaheadOptions(input, locale) {
   return {
+    mobileSheet: false,
     locale,
     t,
     minChars: 2,

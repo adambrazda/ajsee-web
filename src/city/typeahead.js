@@ -808,7 +808,13 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   };
 
   const mobileMq = window.matchMedia('(max-width: 720px)');
-  const isMobile = () => mobileMq.matches;
+
+  // AJSEE_MOBILE_CITY_SHEET_GUARD_v1
+  // iOS Safari has shown unstable behaviour with the custom bottom-sheet picker
+  // after repeated open/scroll/select cycles. Keep the default API compatible,
+  // but allow entry files to force the safer inline combobox behaviour on mobile.
+  const mobileSheetEnabled = options.mobileSheet !== false;
+  const isMobile = () => mobileSheetEnabled && mobileMq.matches;
 
   const fieldEl = inputEl.closest('.field') || inputEl.parentElement || inputEl;
 

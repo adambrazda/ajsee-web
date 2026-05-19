@@ -4498,22 +4498,11 @@ if (!G.flags.mainDomReadyBound) {
 
         const refreshHref = () => {
           cta.href = eventsUrl();
-          return cta.href;
         };
 
         cta.addEventListener('pointerdown', refreshHref, { passive: true });
         cta.addEventListener('focus', refreshHref, { passive: true });
-
-        cta.addEventListener('click', event => {
-          const href = refreshHref();
-
-          if (!href) return;
-
-          event.preventDefault();
-          event.stopPropagation();
-
-          window.location.assign(href);
-        }, { capture: true });
+        cta.addEventListener('click', refreshHref, { capture: true });
       }
     } else {
       countEl.textContent = getLang() === 'en'

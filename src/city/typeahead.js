@@ -884,6 +884,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   let cleanupViewport = null;
   let previousFocus = null;
   let scrollYBeforeLock = 0;
+  let ignoreMobileSyntheticClickUntil = 0;
 
   function announce(msg) {
     live.textContent = msg || '';
@@ -921,6 +922,38 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     });
   }
 
+
+  // AJSEE_MOBILE_TOUCH_ACTIVATE_V1
+  // Real iOS Safari/Edge can retarget click after focus changes inside the sheet.
+  // Handle critical mobile sheet actions on pointerdown and suppress the follow-up synthetic click.
+  function suppressMobileSyntheticClick(ms = 450) {
+    ignoreMobileSyntheticClickUntil = Date.now() + ms;
+  }
+
+  function shouldSuppressMobileSyntheticClick() {
+    return Date.now() < ignoreMobileSyntheticClickUntil;
+  }
+
+  function activateMobilePointer(e, action) {
+    if (!isMobile()) return false;
+
+    const pointerType = String(e.pointerType || '').toLowerCase();
+    const isTouchLike = !pointerType || pointerType === 'touch' || pointerType === 'pen';
+    if (!isTouchLike) return false;
+
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    suppressMobileSyntheticClick();
+    action();
+    return true;
+  }
+
+  function chooseMobileCityButton(btn) {
+    if (!btn) return;
+    const idx = parseInt(btn.getAttribute('data-city-index'), 10);
+    if (!Number.isFinite(idx)) return;
+    chooseCity(idx);
+  }
   function setActive(idx) {
     activeIndex = idx;
 
@@ -1038,22 +1071,52 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       if (e.target === backdrop) closeMobile();
     });
 
-    on(closeBtn, 'click', () => {
+    on(closeBtn, 'pointerdown', (e) => {
+      activateMobilePointer(e, () => closeMobile());
+    });
+
+    on(closeBtn, 'click', (e) => {
+      if (isMobile() && shouldSuppressMobileSyntheticClick()) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       closeMobile();
     });
 
-    on(sheetNearMe, 'click', () => {
+    on(sheetNearMe, 'pointerdown', (e) => {
+      activateMobilePointer(e, () => handleNearMe());
+    });
+
+    on(sheetNearMe, 'click', (e) => {
+      if (isMobile() && shouldSuppressMobileSyntheticClick()) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       handleNearMe();
     });
 
-    on(sheetResults, 'click', (e) => {
+    on(sheetResults, 'pointerdown', (e) => {
       const btn = e.target.closest('[data-city-index]');
       if (!btn) return;
 
-      const idx = parseInt(btn.getAttribute('data-city-index'), 10);
-      if (!Number.isFinite(idx)) return;
+      activateMobilePointer(e, () => chooseMobileCityButton(btn));
+    });
 
-      chooseCity(idx);
+    on(sheetResults, 'click', (e) => {
+      if (isMobile() && shouldSuppressMobileSyntheticClick()) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      const btn = e.target.closest('[data-city-index]');
+      if (!btn) return;
+
+      chooseMobileCityButton(btn);
     });
 
     on(sheetSearch, 'input', () => {
@@ -1090,6 +1153,16 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     });
   }
 
+  on(document, 'click', (e) => {
+    if (!isMobile() || !shouldSuppressMobileSyntheticClick()) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (typeof e.stopImmediatePropagation === 'function') {
+      e.stopImmediatePropagation();
+    }
+  }, true);
   function getFocusableInsideSheet() {
     if (!sheet) return [];
     return Array.from(sheet.querySelectorAll(
@@ -1168,17 +1241,14 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     inputEl.setAttribute('aria-expanded', 'true');
     inputEl.setAttribute('aria-haspopup', 'dialog');
 
-    const currentValue = inputEl.dataset.autofromnearme === '1' ? '' : (inputEl.value || '');
+    // AJSEE_MOBILE_EMPTY_SEARCH_ON_OPEN_V1
+    // Reopening the mobile picker should show favourites, not the last selected city.
+    const currentValue = '';
     sheetSearch.value = currentValue;
-    lastQuery = currentValue.trim();
-
-    if (lastQuery.length >= minChars) {
-      void load(() => sheetSearch.value.trim());
-    } else {
-      items = filterDefaultCityItems(lastQuery, locale);
-      loading = false;
-      renderMobile();
-    }
+    lastQuery = '';
+    items = filterDefaultCityItems('', locale);
+    loading = false;
+    renderMobile();
 
     setTimeout(() => {
       try {

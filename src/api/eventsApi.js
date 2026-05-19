@@ -775,7 +775,8 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   const countryFromCityInput = countryCodeFromInput(rawCityInput);
   const isCountrySearchFromCityField = Boolean(rawCityInput && countryFromCityInput);
 
-  let upstreamCity = isCountrySearchFromCityField ? '' : rawCityInput;
+  const localCityInput = isCountrySearchFromCityField ? '' : rawCityInput;
+  let upstreamCity = localCityInput;
 
   // City hotfix: když kanonizátor vrátí prázdno, ponecháme původní vstup.
   if (upstreamCity) {
@@ -835,6 +836,11 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     countryCode: requestCountryCode
   };
 
+  const localProviderFilters = {
+    ...upstreamFilters,
+    city: localCityInput || upstreamCity
+  };
+
 // --- Ticketmaster ---
 try {
   const tm = await fetchTicketmasterEvents({ locale: loc, filters: upstreamFilters });
@@ -859,7 +865,7 @@ try {
 try {
   const smsticket = await fetchSmsticketEvents({
     locale: loc,
-    filters: upstreamFilters
+    filters: localProviderFilters
   });
 
   if (Array.isArray(smsticket)) {
@@ -899,7 +905,7 @@ try {
 
     // Klíčová změna:
     // FE city filtr už nevidí "Francie" jako město.
-    city: upstreamCity,
+    city: localCityInput || upstreamCity,
 
     cityCountryCode: selectedCityCc,
     countryCode: requestCountryCode

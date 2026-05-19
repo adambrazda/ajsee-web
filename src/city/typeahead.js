@@ -284,11 +284,14 @@ function injectStylesOnce() {
     }
 
     .city-sheet__results {
-      flex: 1 1 auto;
-      min-height: 0;
+      flex: 0 1 auto;
+      min-height: min(260px, 42vh);
+      max-height: min(430px, 48vh);
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      touch-action: pan-y;
       padding-bottom: 10px;
     }
 
@@ -1037,8 +1040,22 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       if (e.target === backdrop) closeMobile();
     });
 
-    on(closeBtn, 'click', () => {
-      closeMobile();
+    // AJSEE_MOBILE_CLOSE_POINTER_GUARD_v1
+    let closeTapHandledAt = 0;
+
+    on(closeBtn, 'pointerup', (e) => {
+      e.preventDefault();
+      closeTapHandledAt = Date.now();
+      closeMobile({ restoreFocus: false });
+    });
+
+    on(closeBtn, 'click', (e) => {
+      if (Date.now() - closeTapHandledAt < 450) {
+        e.preventDefault();
+        return;
+      }
+
+      closeMobile({ restoreFocus: false });
     });
 
     on(sheetNearMe, 'click', () => {
@@ -1167,17 +1184,14 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     inputEl.setAttribute('aria-expanded', 'true');
     inputEl.setAttribute('aria-haspopup', 'dialog');
 
-    const currentValue = inputEl.dataset.autofromnearme === '1' ? '' : (inputEl.value || '');
+    const currentValue = '';
     sheetSearch.value = currentValue;
-    lastQuery = currentValue.trim();
+    lastQuery = '';
 
-    if (lastQuery.length >= minChars) {
-      void load(() => sheetSearch.value.trim());
-    } else {
-      items = filterDefaultCityItems(lastQuery, locale);
-      loading = false;
-      renderMobile();
-    }
+    items = filterDefaultCityItems('', locale);
+    loading = false;
+    renderMobile();
+    resetMobileResultsScroll();
 
     setTimeout(() => {
       try {

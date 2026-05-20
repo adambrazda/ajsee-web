@@ -23,6 +23,7 @@
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
 import { fetchEvents as fetchSmsticketEvents } from '../adapters/smsticket.js';
+import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 
 // DEV detekce (localhost/Vite)
@@ -873,6 +874,23 @@ try {
   }
 } catch (e) {
   console.warn('[eventsApi] smsticket fetch failed:', e);
+}
+
+// --- SeatPlan ---
+// London theatre affiliate source.
+// Adapter returns events only for explicit GB/London/theatre intent,
+// so default CZ/SK discovery is not polluted.
+try {
+  const seatplan = await fetchSeatPlanEvents({
+    locale: loc,
+    filters: localProviderFilters
+  });
+
+  if (Array.isArray(seatplan)) {
+    all = all.concat(seatplan);
+  }
+} catch (e) {
+  console.warn('[eventsApi] SeatPlan fetch failed:', e);
 }
 
   // --- Demo zdroj v DEV ---

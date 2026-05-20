@@ -23,6 +23,7 @@
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
 import { fetchEvents as fetchSmsticketEvents } from '../adapters/smsticket.js';
+import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 
 // DEV detekce (localhost/Vite)
@@ -761,6 +762,99 @@ function shouldUseCountryOnlyClientFilter({
  * Hlavní vstup pro FE:
  *   fetchEvents({ locale, filters })
  */
+
+/* AJSEE_SEATPLAN_PILOT_BOOST_v1
+   ---------------------------------------------------------
+   SeatPlan is a London theatre affiliate source.
+   We only boost it for explicit GB/London/theatre/search intent,
+   so CZ/SK discovery stays unchanged.
+   --------------------------------------------------------- */
+function isSeatPlanEvent(ev = {}) {
+  const raw = String(
+    ev?.partner ||
+    ev?.source ||
+    ev?.bookingProvider ||
+    ev?.affiliate?.provider ||
+    ''
+  ).trim().toLowerCase();
+
+  return raw.includes('seatplan');
+}
+
+function hasSeatPlanPilotIntent(filters = {}) {
+  const cc = String(
+    filters.cityCountryCode ||
+    filters.cityCc ||
+    filters.countryCode ||
+    filters.country ||
+    ''
+  ).trim().toUpperCase();
+
+  const city = normalizeStr(filters.city || filters.cityLabel || filters.location || '');
+  const category = normalizeStr(filters.category || filters.segment || '');
+  const keyword = normalizeStr(filters.keyword || filters.q || filters.search || '');
+
+  if (cc === 'GB') return true;
+  if (city === 'london' || city === 'londyn') return true;
+
+  return (
+    category === 'theatre' ||
+    category === 'divadlo' ||
+    category === 'musical' ||
+    category === 'musicals' ||
+    keyword.includes('london') ||
+    keyword.includes('londyn') ||
+    keyword.includes('theatre') ||
+    keyword.includes('theater') ||
+    keyword.includes('musical') ||
+    keyword.includes('west end') ||
+    keyword.length >= 3
+  );
+}
+
+function eventSearchText(ev = {}, loc = 'en') {
+  const title =
+    ev?.title?.[loc] ??
+    ev?.title?.cs ??
+    ev?.title?.en ??
+    ev?.title ??
+    ev?.name ??
+    '';
+
+  const desc =
+    ev?.description?.[loc] ??
+    ev?.description?.cs ??
+    ev?.description?.en ??
+    ev?.description ??
+    ev?.descriptionText ??
+    '';
+
+  return normalizeStr([
+    title,
+    ev?.titleI18n?.en,
+    ev?.titleI18n?.cs,
+    ev?.name,
+    desc,
+    ev?.location?.city,
+    ev?.venue?.name,
+    ev?.venueName,
+    ev?.rawUrl,
+    ev?.category,
+    ...(Array.isArray(ev?.categories) ? ev.categories : []),
+    ...(Array.isArray(ev?.types) ? ev.types : [])
+  ].filter(Boolean).join(' '));
+}
+
+function seatPlanBoostScore(ev = {}, filters = {}, loc = 'en') {
+  if (!isSeatPlanEvent(ev)) return 10;
+
+  const q = normalizeStr(filters.keyword || filters.q || filters.search || '');
+
+  if (q && eventSearchText(ev, loc).includes(q)) return 0;
+
+  return 1;
+}
+
 export async function fetchEvents({ locale, filters = {} } = {}) {
   const lng = (locale || detectLang()).toLowerCase();
   const loc = mapLangToLocale(lng);
@@ -827,7 +921,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     dateFrom: filters.dateFrom ?? filters.from ?? '',
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
-
+    keyword: filters.keyword ?? filters.q ?? filters.search ?? '',
     // Klíčová změna:
     // pokud uživatel zadal "Francie", neposíláme to dál jako city.
     city: upstreamCity,
@@ -875,6 +969,23 @@ try {
   console.warn('[eventsApi] smsticket fetch failed:', e);
 }
 
+// --- SeatPlan ---
+// London theatre affiliate source.
+// Adapter returns events only for explicit GB/London/theatre intent,
+// so default CZ/SK discovery is not polluted.
+try {
+  const seatplan = await fetchSeatPlanEvents({
+    locale: loc,
+    filters: localProviderFilters
+  });
+
+  if (Array.isArray(seatplan)) {
+    all = all.concat(seatplan);
+  }
+} catch (e) {
+  console.warn('[eventsApi] SeatPlan fetch failed:', e);
+}
+
   // --- Demo zdroj v DEV ---
   if (isDev) {
     try {
@@ -902,7 +1013,7 @@ try {
     dateFrom: filters.dateFrom ?? filters.from ?? '',
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
-
+    keyword: filters.keyword ?? filters.q ?? filters.search ?? '',
     // Klíčová změna:
     // FE city filtr už nevidí "Francie" jako město.
     city: localCityInput || upstreamCity,
@@ -1022,17 +1133,7 @@ try {
   if (keyword) {
     const q = normalizeStr(keyword);
 
-    all = all.filter((ev) => {
-      const title = ev?.title?.[loc] ?? ev?.title?.cs ?? ev?.title ?? '';
-      const desc = ev?.description?.[loc] ?? ev?.description?.cs ?? ev?.description ?? '';
-      const cityL = ev?.location?.city ?? '';
-
-      return (
-        normalizeStr(title).includes(q) ||
-        normalizeStr(desc).includes(q) ||
-        normalizeStr(cityL).includes(q)
-      );
-    });
+    all = all.filter((ev) => eventSearchText(ev, loc).includes(q));
   }
 
   if (dateFrom || dateTo) {
@@ -1049,6 +1150,25 @@ try {
 
     return sort === 'latest' ? db - da : da - db;
   });
+
+  if (hasSeatPlanPilotIntent(normalizedClientFilters)) {
+    all.sort((a, b) => {
+      const seatPlanDiff =
+        seatPlanBoostScore(a, normalizedClientFilters, loc) -
+        seatPlanBoostScore(b, normalizedClientFilters, loc);
+
+      if (seatPlanDiff !== 0) return seatPlanDiff;
+
+      const da = tsLocalMidday(a.datetime || a.date);
+      const db = tsLocalMidday(b.datetime || b.date);
+
+      if (!Number.isFinite(da) && !Number.isFinite(db)) return 0;
+      if (!Number.isFinite(da)) return 1;
+      if (!Number.isFinite(db)) return -1;
+
+      return sort === 'latest' ? db - da : da - db;
+    });
+  }
 
   return all;
 }

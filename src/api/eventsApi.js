@@ -1170,41 +1170,6 @@ try {
     });
   }
 
-  /* AJSEE_SEATPLAN_PILOT_DEBUG_v1 - temporary PR diagnostic */
-  try {
-    if (typeof window !== 'undefined') {
-      window.__AJSEE_SEATPLAN_PILOT_DEBUG__ = {
-        marker: 'AJSEE_SEATPLAN_PILOT_DEBUG_v1',
-        at: new Date().toISOString(),
-        filters: normalizedClientFilters,
-        hasIntent: hasSeatPlanPilotIntent(normalizedClientFilters),
-        total: all.length,
-        seatplanTotal: all.filter(isSeatPlanEvent).length,
-        first20: all.slice(0, 20).map((ev, index) => {
-          const rawTitle =
-            ev?.title?.[loc] ??
-            ev?.title?.cs ??
-            ev?.title?.en ??
-            ev?.title ??
-            ev?.name ??
-            '';
-
-          return {
-            index,
-            id: ev?.id || '',
-            partner: ev?.partner || '',
-            source: ev?.source || '',
-            bookingProvider: ev?.bookingProvider || '',
-            isSeatPlan: isSeatPlanEvent(ev),
-            title: typeof rawTitle === 'string' ? rawTitle : String(rawTitle || ''),
-            tickets: ev?.tickets || ev?.url || ''
-          };
-        })
-      };
-    }
-  } catch {
-    // noop
-  }
   return all;
 }
 

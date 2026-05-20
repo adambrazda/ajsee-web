@@ -2018,7 +2018,49 @@ function updateToggleBadge() {
   btn.setAttribute('aria-label', cnt ? `${base} (${cnt})` : base);
 }
 
+
+function ensureHomeResultsCountCtaStyles() {
+  if (document.getElementById('ajsee-home-results-count-cta-css')) return;
+
+  const style = document.createElement('style');
+  style.id = 'ajsee-home-results-count-cta-css';
+  style.textContent = `
+    /* AJSEE_HOME_RESULTS_COUNT_CTA_BUTTON_V1 */
+    .events-results-count.is-home-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+      margin: 18px auto 24px;
+    }
+
+    .events-results-count.is-home-preview .events-results-count__text {
+      display: block;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .events-results-count.is-home-preview .events-results-count__cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-height: 44px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 800;
+      line-height: 1.1;
+      box-shadow: 0 14px 34px rgba(20, 108, 255, .24);
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
 function updateResultsCount(total, options = {}) {
+  ensureHomeResultsCountCtaStyles();
   const host =
     qs('.events-upcoming-section .container') ||
     qs('#upcoming-events .container') ||
@@ -2072,6 +2114,7 @@ function updateResultsCount(total, options = {}) {
     }
   };
 
+  el.classList.toggle('is-home-preview', isTruncatedHomePreview);
   el.innerHTML = '';
 
   if (!isTruncatedHomePreview) {
@@ -2083,10 +2126,9 @@ function updateResultsCount(total, options = {}) {
   text.className = 'events-results-count__text';
   text.textContent = (copy[lang] || copy.en).showing;
   el.appendChild(text);
-  el.appendChild(document.createTextNode(' '));
 
   const link = document.createElement('a');
-  link.className = 'events-results-count__cta';
+  link.className = 'events-results-count__cta btn-primary';
   link.textContent = (copy[lang] || copy.en).showAll;
 
   try {

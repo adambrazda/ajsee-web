@@ -1896,7 +1896,10 @@ function patchFilterVisuals() {
       flex-direction:column;
       gap:8px;
       flex:1 1 auto;
-      min-height:0;
+      /* AJSEE_HOME_CITY_SHEET_MIN_TWO_ROWS_V1
+         Keep at least two favourite city rows visible on small iPhones. */
+      min-height:min(176px, 32vh);
+      min-height:min(176px, 32dvh);
       overflow-y:auto;
       overflow-x:hidden;
       -webkit-overflow-scrolling:touch;
@@ -2610,7 +2613,7 @@ function syncCitySheetUsability(root = document) {
   const results = root.querySelector('.city-sheet__results');
   if (results) {
     results.style.flex = '1 1 auto';
-    results.style.minHeight = '0';
+    results.style.minHeight = 'min(176px, 32dvh)';
     results.style.overflowY = 'auto';
     results.style.overflowX = 'hidden';
     results.style.webkitOverflowScrolling = 'touch';

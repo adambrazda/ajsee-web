@@ -2020,25 +2020,27 @@ function updateToggleBadge() {
 
 
 function ensureHomeResultsCountCtaStyles() {
-  if (document.getElementById('ajsee-home-results-count-cta-css')) return;
+  if (document.getElementById('ajsee-home-results-count-cta-style')) return;
 
   const style = document.createElement('style');
-  style.id = 'ajsee-home-results-count-cta-css';
+  style.id = 'ajsee-home-results-count-cta-style';
   style.textContent = `
-    /* AJSEE_HOME_RESULTS_COUNT_CTA_BUTTON_V1 */
+    /* AJSEE_HOME_RESULTS_COUNT_CTA_STYLE_V1 */
     .events-results-count.is-home-preview {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      justify-content: center;
+      gap: 14px;
       text-align: center;
       margin: 18px auto 24px;
     }
 
     .events-results-count.is-home-preview .events-results-count__text {
       display: block;
-      font-weight: 800;
       color: #0f172a;
+      font-weight: 800;
+      line-height: 1.35;
     }
 
     .events-results-count.is-home-preview .events-results-count__cta {
@@ -2052,7 +2054,26 @@ function ensureHomeResultsCountCtaStyles() {
       text-decoration: none;
       font-weight: 800;
       line-height: 1.1;
+      white-space: nowrap;
       box-shadow: 0 14px 34px rgba(20, 108, 255, .24);
+    }
+
+    .events-results-count.is-home-preview .events-results-count__cta:hover {
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 520px) {
+      .events-results-count.is-home-preview {
+        gap: 12px;
+        margin-top: 16px;
+        margin-bottom: 22px;
+      }
+
+      .events-results-count.is-home-preview .events-results-count__cta {
+        width: 100%;
+        max-width: 320px;
+      }
     }
   `;
 

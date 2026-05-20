@@ -3175,7 +3175,10 @@ async function fetchNextEventsBatch(locale, api) {
     }
 
     mergeEventsIntoBuffer(nextEvents);
-    sortBufferedEvents(api.sort || 'nearest');
+
+    if (!shouldPreserveSeatPlanApiOrder(requestFilters, eventsPager.buffer)) {
+      sortBufferedEvents(api.sort || 'nearest');
+    }
 
     if (nextEvents.length < EVENTS_API_BATCH_SIZE) eventsPager.hasMore = false;
   } catch (err) {
@@ -3386,8 +3389,10 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     if (filters.category && filters.category !== 'all') out = out.filter(e => e.category === filters.category);
 
-    if (filters.sort === 'nearest') out.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
-    else out.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
+    if (!shouldPreserveSeatPlanApiOrder(api, out)) {
+      if (filters.sort === 'nearest') out.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
+      else out.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
+    }
 
     updateResultsCount(`${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`);
 

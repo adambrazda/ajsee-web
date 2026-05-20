@@ -26,7 +26,8 @@
     "blog:build": "node scripts/build-blog.mjs",
     "seo:smoke": "node scripts/seo-smoke.mjs",
     "sitemap:build": "node scripts/generate-sitemap.cjs",
-    "smsticket:sync": "node scripts/sync-smsticket-events.mjs"
+    "smsticket:sync": "node scripts/sync-smsticket-events.mjs",
+    "fetch:seatplan": "node scripts/fetch-seatplan.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

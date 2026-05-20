@@ -191,16 +191,75 @@ function matchesDate(event = {}, filters = {}) {
   return true;
 }
 
+function localizedValue(value, fallback = '') {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object') {
+    return value.en || value.cs || Object.values(value).find(Boolean) || fallback;
+  }
+
+  return fallback;
+}
+
 function withRuntimeDefaults(event = {}) {
+  const titleText = localizedValue(event.title, event.name || '');
+  const descriptionText = localizedValue(event.description, '');
+
+  const city =
+    event.city ||
+    event.location?.city ||
+    event.venue?.city ||
+    'London';
+
+  const venueName =
+    event.venueName ||
+    event.venue?.name ||
+    event.location?.venue ||
+    '';
+
+  const tickets = event.tickets || event.url || '';
+
   return {
     ...event,
+
+    // Compatibility fields for shared AJSEE filtering/rendering.
+    title: titleText || event.title || 'Untitled',
+    titleI18n: event.title,
+    name: event.name || titleText,
+    descriptionText,
+
+    city,
+    venueName,
+
+    place: {
+      ...(event.place || {}),
+      city,
+      country: event.country || event.countryCode || 'GB',
+      venue: venueName
+    },
+
+    location: {
+      ...(event.location || {}),
+      city,
+      country: event.country || event.countryCode || 'GB',
+      venue: event.location?.venue || venueName
+    },
+
+    venue: {
+      ...(event.venue || {}),
+      city,
+      name: venueName || event.venue?.name || ''
+    },
+
     partner: 'seatplan',
     source: 'seatplan',
+    bookingProvider: 'seatplan',
+
     country: event.country || 'GB',
     countryCode: event.countryCode || 'GB',
     category: event.category || 'theatre',
-    tickets: event.tickets || event.url || '',
-    url: event.url || event.tickets || '',
+
+    tickets,
+    url: event.url || tickets
   };
 }
 

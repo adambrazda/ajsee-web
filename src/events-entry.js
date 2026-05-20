@@ -3072,6 +3072,71 @@ function mergeEventsIntoBuffer(nextEvents = []) {
   }
 }
 
+
+/* AJSEE_SEATPLAN_EVENTS_ENTRY_PRESERVE_ORDER_v1
+   ---------------------------------------------------------
+   eventsApi.js already boosts SeatPlan for explicit GB/London/theatre intent.
+   The events page must not re-sort that boosted order back by date.
+   --------------------------------------------------------- */
+function isSeatPlanEventEntryEvent(ev = {}) {
+  const provider = String(
+    ev?.partner ||
+    ev?.source ||
+    ev?.bookingProvider ||
+    ev?.affiliate?.provider ||
+    ''
+  ).trim().toLowerCase();
+
+  return provider.includes('seatplan');
+}
+
+function hasSeatPlanEventEntryIntent(filters = {}) {
+  const cc = String(
+    filters.cityCountryCode ||
+    filters.cityCc ||
+    filters.countryCode ||
+    filters.country ||
+    ''
+  ).trim().toUpperCase();
+
+  const city = String(filters.city || filters.cityLabel || filters.location || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  const category = String(filters.category || filters.segment || '')
+    .trim()
+    .toLowerCase();
+
+  const keyword = String(filters.keyword || filters.q || filters.search || '')
+    .trim()
+    .toLowerCase();
+
+  if (cc === 'GB') return true;
+  if (city === 'london' || city === 'londyn') return true;
+
+  return (
+    category === 'theatre' ||
+    category === 'divadlo' ||
+    category === 'musical' ||
+    category === 'musicals' ||
+    keyword.includes('london') ||
+    keyword.includes('londyn') ||
+    keyword.includes('theatre') ||
+    keyword.includes('theater') ||
+    keyword.includes('musical') ||
+    keyword.includes('west end') ||
+    keyword.length >= 3
+  );
+}
+
+function shouldPreserveSeatPlanApiOrder(filters = {}, events = []) {
+  return hasSeatPlanEventEntryIntent(filters) &&
+    Array.isArray(events) &&
+    events.some(isSeatPlanEventEntryEvent);
+}
+
 function sortBufferedEvents(sort = 'nearest') {
   eventsPager.buffer.sort((a, b) => {
     const da = new Date(a.datetime || a.date).getTime();

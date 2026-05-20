@@ -885,7 +885,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   let previousFocus = null;
   let scrollYBeforeLock = 0;
   let ignoreMobileSyntheticClickUntil = 0;
-
+  let mobileOptionPointer = null;
   function announce(msg) {
     live.textContent = msg || '';
   }
@@ -954,6 +954,73 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (!Number.isFinite(idx)) return;
     chooseCity(idx);
   }
+
+  // AJSEE_MOBILE_CITY_TAP_VS_SCROLL_V1
+  // Do not select a city on pointerdown. Wait for pointerup and only choose when the gesture stayed within tap tolerance.
+  const MOBILE_CITY_TAP_MAX_MOVE_PX = 10;
+
+  function isMobileTouchPointer(e) {
+    if (!isMobile()) return false;
+
+    const pointerType = String(e.pointerType || '').toLowerCase();
+    return !pointerType || pointerType === 'touch' || pointerType === 'pen';
+  }
+
+  function resetMobileOptionPointer() {
+    mobileOptionPointer = null;
+  }
+
+  function startMobileOptionPointer(e, btn) {
+    if (!isMobileTouchPointer(e) || !btn) return false;
+
+    mobileOptionPointer = {
+      pointerId: e.pointerId,
+      startX: Number(e.clientX || 0),
+      startY: Number(e.clientY || 0),
+      moved: false,
+      btn
+    };
+
+    return true;
+  }
+
+  function updateMobileOptionPointer(e) {
+    if (!mobileOptionPointer || !isMobileTouchPointer(e)) return false;
+    if (e.pointerId !== mobileOptionPointer.pointerId) return false;
+
+    const dx = Math.abs(Number(e.clientX || 0) - mobileOptionPointer.startX);
+    const dy = Math.abs(Number(e.clientY || 0) - mobileOptionPointer.startY);
+
+    if (dx > MOBILE_CITY_TAP_MAX_MOVE_PX || dy > MOBILE_CITY_TAP_MAX_MOVE_PX) {
+      mobileOptionPointer.moved = true;
+    }
+
+    return mobileOptionPointer.moved;
+  }
+
+  function finishMobileOptionPointer(e) {
+    if (!mobileOptionPointer || !isMobileTouchPointer(e)) return false;
+    if (e.pointerId !== mobileOptionPointer.pointerId) return false;
+
+    const state = mobileOptionPointer;
+    resetMobileOptionPointer();
+
+    const dx = Math.abs(Number(e.clientX || 0) - state.startX);
+    const dy = Math.abs(Number(e.clientY || 0) - state.startY);
+    const moved = state.moved || dx > MOBILE_CITY_TAP_MAX_MOVE_PX || dy > MOBILE_CITY_TAP_MAX_MOVE_PX;
+
+    if (moved) {
+      return false;
+    }
+
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+
+    suppressMobileSyntheticClick(350);
+    chooseMobileCityButton(state.btn);
+    return true;
+  }
+
   function setActive(idx) {
     activeIndex = idx;
 
@@ -1103,7 +1170,19 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       const btn = e.target.closest('[data-city-index]');
       if (!btn) return;
 
-      activateMobilePointer(e, () => chooseMobileCityButton(btn));
+      startMobileOptionPointer(e, btn);
+    });
+
+    on(sheetResults, 'pointermove', (e) => {
+      updateMobileOptionPointer(e);
+    });
+
+    on(sheetResults, 'pointerup', (e) => {
+      finishMobileOptionPointer(e);
+    });
+
+    on(sheetResults, 'pointercancel', () => {
+      resetMobileOptionPointer();
     });
 
     on(sheetResults, 'click', (e) => {

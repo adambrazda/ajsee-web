@@ -1940,6 +1940,68 @@ function patchFilterVisuals() {
       color:#667085;
     }
   `);
+
+  injectOnce('ajsee-home-city-sheet-compact-favourites-css', String.raw`
+    /* AJSEE_HOME_CITY_SHEET_COMPACT_FAVOURITES_V2
+       Give favourite cities more visible space on small iPhones.
+       Visual/layout only; selection and close handlers stay untouched. */
+    @media (max-width: 720px){
+      .city-sheet__header{
+        padding:10px 16px 6px !important;
+      }
+
+      .city-sheet__title{
+        font-size:19px !important;
+        line-height:1.1 !important;
+      }
+
+      .city-sheet__close{
+        width:38px !important;
+        height:38px !important;
+      }
+
+      .city-sheet__search-wrap{
+        padding:0 16px 8px !important;
+      }
+
+      .city-sheet__search{
+        height:48px !important;
+        border-radius:16px !important;
+      }
+
+      .city-sheet__content{
+        padding:0 16px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+
+      .city-sheet__nearme{
+        padding:9px 14px !important;
+        margin:0 0 8px !important;
+        border-radius:18px !important;
+        min-height:0 !important;
+      }
+
+      .city-sheet__nearme-sub{
+        display:none !important;
+      }
+
+      .city-sheet__section-title{
+        margin:0 0 8px !important;
+        font-size:11px !important;
+        line-height:1.2 !important;
+      }
+
+      .city-sheet__results{
+        min-height:min(230px, 42vh) !important;
+        min-height:min(230px, 42dvh) !important;
+      }
+
+      .city-sheet__option{
+        padding:11px 14px !important;
+        border-radius:16px !important;
+      }
+    }
+  `);
+
 }
 
 /* ───────── UI / filter text sync ───────── */

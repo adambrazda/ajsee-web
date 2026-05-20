@@ -1998,6 +1998,8 @@ function syncURLFromFilters() {
   currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from');
   currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to');
   (currentFilters.category && currentFilters.category !== 'all') ? p.set('segment', currentFilters.category) : p.delete('segment');
+  p.delete('keyword');
+  p.delete('search');
   currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q');
   (currentFilters.sort && currentFilters.sort !== 'nearest') ? p.set('sort', currentFilters.sort) : p.delete('sort');
 
@@ -2034,7 +2036,8 @@ function initFiltersFromURL() {
   if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
   if (sp.get('to')) currentFilters.dateTo = sp.get('to') || '';
   if (sp.get('segment')) currentFilters.category = sp.get('segment') || 'all';
-  if (sp.get('q')) currentFilters.keyword = sp.get('q') || '';
+  const urlKeyword = sp.get('q') || sp.get('keyword') || sp.get('search') || '';
+  if (urlKeyword) currentFilters.keyword = urlKeyword.trim();
   if (sp.get('sort')) currentFilters.sort = sp.get('sort') || 'nearest';
 
   if (sp.get('lat') && sp.get('lon')) {

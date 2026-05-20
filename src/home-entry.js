@@ -2018,7 +2018,7 @@ function updateToggleBadge() {
   btn.setAttribute('aria-label', cnt ? `${base} (${cnt})` : base);
 }
 
-function updateResultsCount(n) {
+function updateResultsCount(total, options = {}) {
   const host =
     qs('.events-upcoming-section .container') ||
     qs('#upcoming-events .container') ||
@@ -2037,10 +2037,75 @@ function updateResultsCount(n) {
     else host.appendChild(el);
   }
 
-  const label = t('events-found', 'Nalezeno') || 'Nalezeno';
-  el.textContent = `${label}: ${n}`;
-}
+  const count = Math.max(0, Number(total) || 0);
+  const visible = Math.max(0, Number(options.visible) || 0);
+  const isHomePreview = !!options.isHomePreview;
+  const isTruncatedHomePreview = isHomePreview && visible > 0 && count > visible;
 
+  const lang = String(currentLang || getUILang?.() || document.documentElement.lang || 'cs').toLowerCase().slice(0, 2);
+  const label = t('events-found', 'Nalezeno') || 'Nalezeno';
+
+  const copy = {
+    cs: {
+      showing: `Ukazujeme ${visible} z ${count} výsledků`,
+      showAll: `Zobrazit všech ${count} výsledků`
+    },
+    sk: {
+      showing: `Zobrazujeme ${visible} z ${count} výsledkov`,
+      showAll: `Zobraziť všetkých ${count} výsledkov`
+    },
+    en: {
+      showing: `Showing ${visible} of ${count} results`,
+      showAll: `View all ${count} results`
+    },
+    de: {
+      showing: `Wir zeigen ${visible} von ${count} Ergebnissen`,
+      showAll: `Alle ${count} Ergebnisse anzeigen`
+    },
+    pl: {
+      showing: `Pokazujemy ${visible} z ${count} wyników`,
+      showAll: `Zobacz wszystkie ${count} wyniki`
+    },
+    hu: {
+      showing: `${visible} / ${count} találat megjelenítve`,
+      showAll: `Az összes ${count} találat megtekintése`
+    }
+  };
+
+  el.innerHTML = '';
+
+  if (!isTruncatedHomePreview) {
+    el.textContent = `${label}: ${count}`;
+    return;
+  }
+
+  const text = document.createElement('span');
+  text.className = 'events-results-count__text';
+  text.textContent = (copy[lang] || copy.en).showing;
+  el.appendChild(text);
+  el.appendChild(document.createTextNode(' '));
+
+  const link = document.createElement('a');
+  link.className = 'events-results-count__cta';
+  link.textContent = (copy[lang] || copy.en).showAll;
+
+  try {
+    const targetLang = ['en', 'de', 'sk', 'pl', 'hu'].includes(lang) ? lang : '';
+    const eventsPath = targetLang ? `/${targetLang}/events/` : '/events/';
+    const url = new URL(eventsPath, window.location.origin);
+    const params = new URLSearchParams(window.location.search);
+
+    params.forEach((value, key) => {
+      if (value != null && value !== '') url.searchParams.set(key, value);
+    });
+
+    link.href = url.pathname + url.search + url.hash;
+  } catch {
+    link.href = '/events/' + window.location.search;
+  }
+
+  el.appendChild(link);
+}
 /* ───────── date range / combo label ───────── */
 function applyDateRangeFromDetail(detail = {}, options = {}) {
   const { triggerRender = true } = options || {};
@@ -3159,9 +3224,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     } else {
       out.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
     }
-
-    updateResultsCount(out.length);
-
     const isHp = isHome();
     let toRender = out;
 
@@ -3174,6 +3236,10 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
 const modalStore = new Map();
 
+    updateResultsCount(out.length, {
+      visible: toRender.length,
+      isHomePreview: true
+    });
 list.innerHTML = toRender.map((ev, index) => {
   const modalId = String(ev.id || `event-${index}`);
 

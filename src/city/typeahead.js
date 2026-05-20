@@ -885,6 +885,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   let previousFocus = null;
   let scrollYBeforeLock = 0;
   let ignoreMobileSyntheticClickUntil = 0;
+  let mobileOptionPress = null;
+  let ignoreMobileOptionClickUntil = 0;
 
   function announce(msg) {
     live.textContent = msg || '';
@@ -945,6 +947,76 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     e.stopPropagation();
     suppressMobileSyntheticClick();
     action();
+    return true;
+  }
+
+
+  // AJSEE_MOBILE_OPTION_TAP_AFTER_SCROLL_V1
+  // Do not select an option on pointerdown. On real iOS, users often start a
+  // scroll gesture on top of the first option. Select only on pointerup when
+  // the finger did not move and the results/content did not scroll.
+  function mobileEventPoint(e) {
+    const touch = e.changedTouches?.[0] || e.touches?.[0] || null;
+
+    return {
+      x: Number.isFinite(e.clientX) ? e.clientX : Number(touch?.clientX || 0),
+      y: Number.isFinite(e.clientY) ? e.clientY : Number(touch?.clientY || 0)
+    };
+  }
+
+  function startMobileOptionPress(e, btn) {
+    if (!isMobile() || !btn) return false;
+
+    const point = mobileEventPoint(e);
+
+    mobileOptionPress = {
+      btn,
+      x: point.x,
+      y: point.y,
+      sheetResultsScrollTop: Number(sheetResults?.scrollTop || 0),
+      sheetContentScrollTop: Number(sheetContent?.scrollTop || 0),
+      at: Date.now()
+    };
+
+    return true;
+  }
+
+  function cancelMobileOptionPress({ suppressClick = false } = {}) {
+    mobileOptionPress = null;
+
+    if (suppressClick) {
+      ignoreMobileOptionClickUntil = Date.now() + 450;
+    }
+  }
+
+  function finishMobileOptionPress(e, btn) {
+    if (!isMobile() || !mobileOptionPress || !btn) return false;
+
+    const press = mobileOptionPress;
+    const point = mobileEventPoint(e);
+
+    const moved =
+      Math.abs(point.x - press.x) > 10 ||
+      Math.abs(point.y - press.y) > 10;
+
+    const scrolled =
+      Math.abs(Number(sheetResults?.scrollTop || 0) - press.sheetResultsScrollTop) > 2 ||
+      Math.abs(Number(sheetContent?.scrollTop || 0) - press.sheetContentScrollTop) > 2;
+
+    const sameButton = btn === press.btn;
+
+    cancelMobileOptionPress({ suppressClick: moved || scrolled || !sameButton });
+
+    if (!sameButton || moved || scrolled) {
+      return false;
+    }
+
+    if (e.cancelable) e.preventDefault();
+    e.stopPropagation();
+
+    suppressMobileSyntheticClick();
+    chooseMobileCityButton(btn);
+
     return true;
   }
 
@@ -1103,11 +1175,31 @@ export function setupCityTypeahead(inputEl, opts = {}) {
       const btn = e.target.closest('[data-city-index]');
       if (!btn) return;
 
-      activateMobilePointer(e, () => chooseMobileCityButton(btn));
+      startMobileOptionPress(e, btn);
+    });
+
+    on(sheetResults, 'pointerup', (e) => {
+      const btn = e.target.closest('[data-city-index]');
+      if (!btn) {
+        cancelMobileOptionPress({ suppressClick: true });
+        return;
+      }
+
+      finishMobileOptionPress(e, btn);
+    });
+
+    on(sheetResults, 'pointercancel', () => {
+      cancelMobileOptionPress({ suppressClick: true });
     });
 
     on(sheetResults, 'click', (e) => {
-      if (isMobile() && shouldSuppressMobileSyntheticClick()) {
+      if (
+        isMobile() &&
+        (
+          shouldSuppressMobileSyntheticClick() ||
+          Date.now() < ignoreMobileOptionClickUntil
+        )
+      ) {
         e.preventDefault();
         e.stopPropagation();
         return;

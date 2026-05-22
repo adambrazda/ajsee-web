@@ -778,7 +778,9 @@ function mergeCityItems(primary = [], secondary = []) {
 }
 
 const CITY_SUGGEST_CACHE_TTL_MS = 10 * 60 * 1000;
-const CITY_SUGGEST_TIMEOUT_MS = 3500;
+// Remote city suggest is best-effort only.
+// Event results must not feel blocked by slow city autocomplete.
+const CITY_SUGGEST_TIMEOUT_MS = 900;
 const CITY_SUGGEST_CACHE = new Map();
 
 function citySuggestCacheKey({ locale = '', keyword = '', countryCode = '' } = {}) {

@@ -420,5 +420,12 @@
     "commentPh": "Írd meg a hozzászólásod…",
     "submit": "Hozzászólás küldése"
   },
-  "blog-list-title": "Élményblog"
+  "blog-list-title": "Élményblog",
+  "londonMusicals": {
+    "home": {
+      "title": "Londoni musicalek karnyújtásnyira",
+      "text": "Éld át a West End felejthetetlen hangulatát. Válassz a világhírű musicalek közül, nézd meg a jegyvásárlási lehetőségeket, és adj hozzá megbízható londoni szállást a tervedhez.",
+      "cta": "Musicalek megtekintése"
+    }
+  }
 }

@@ -420,5 +420,12 @@
     "commentPh": "Napisz komentarz…",
     "submit": "Dodaj komentarz"
   },
-  "blog-list-title": "Blog o przeżyciach"
+  "blog-list-title": "Blog o przeżyciach",
+  "londonMusicals": {
+    "home": {
+      "title": "Londyńskie musicale na wyciągnięcie ręki",
+      "text": "Poczuj niepowtarzalną atmosferę West Endu. Wybierz spośród światowej sławy musicali, przejdź do opcji biletów i dodaj do planu sprawdzony nocleg w Londynie.",
+      "cta": "Zobacz musicale"
+    }
+  }
 }

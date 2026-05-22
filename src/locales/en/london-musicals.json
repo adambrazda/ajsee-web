@@ -1,0 +1,78 @@
+{
+  "seo": {
+    "londonMusicals": {
+      "title": "London Musicals | West End Tickets and Accommodation | AJSEE",
+      "description": "Discover London musicals in the West End. Choose a show, find tickets through our partners, and add trusted London accommodation to your plan.",
+      "ogTitle": "London musicals within reach",
+      "ogDescription": "Experience the atmosphere of London’s West End. Choose a musical, find tickets and add trusted accommodation in London to your plan."
+    }
+  },
+  "londonMusicals": {
+    "hero": {
+      "eyebrow": "West End · Musicals · London",
+      "title": "London musicals",
+      "lead": "Experience the atmosphere of London’s West End. AJSEE helps you choose the right show, find tickets and arrange accommodation for your London stay.",
+      "ctaPrimary": "Browse musicals",
+      "ctaSecondary": "Find accommodation in London",
+      "microcopy": "Ticket and accommodation bookings are completed securely with our partners. AJSEE helps guide you there with confidence."
+    },
+    "list": {
+      "title": "What’s on in London",
+      "intro": "Browse the best musicals and theatre shows in London’s West End. For each show, you’ll find key details, an indicative price and a link to buy tickets through a partner.",
+      "points": {
+        "details": "Key show details",
+        "price": "Indicative prices from",
+        "link": "Link to ticket options"
+      }
+    },
+    "empty": {
+      "title": "Oops, the shows seem to have wandered off...",
+      "text": "The connection to London dropped for a moment and we couldn’t load the current selection. Please try again shortly, or explore more great events in London.",
+      "cta": "Explore events in London",
+      "retry": "Try again"
+    },
+    "stays": {
+      "title": "Coming to London for culture?\nArrange your accommodation too.",
+      "text": "Once you’ve chosen your musical, you can also find the right place to stay. Skip the endless searching and go straight to trusted options from TrustedStays, or first read how the partnership works.",
+      "badge1": {
+        "label": "Quick booking",
+        "title": "Book with TrustedStays",
+        "desc": "Go directly to accommodation options for your stay in London.",
+        "cta": "Find accommodation in London"
+      },
+      "badge2": {
+        "label": "Information",
+        "title": "How does it work?",
+        "desc": "Learn how our partnership works and where your booking, payment and confirmation take place.",
+        "cta": "More about accommodation"
+      }
+    },
+    "guide": {
+      "title": "How to choose the right musical",
+      "intro": "London’s West End is full of world-famous classics, hot new productions and more intimate theatre experiences. To make the most of your evening, it helps to think through a few basics before choosing your tickets.",
+      "step1": {
+        "title": "Start with the kind of experience you want",
+        "text": "Are you looking for a spectacular musical classic, a family-friendly show, a romantic night out or something modern and high-energy? Choosing by mood and genre can often help more than starting with the title alone."
+      },
+      "step2": {
+        "title": "Check the date and venue",
+        "text": "On AJSEE, you can quickly see where each show is playing. The West End is a compact area, but the exact theatre location can also help you decide where to stay in London."
+      },
+      "step3": {
+        "title": "Don’t leave tickets until the last minute",
+        "text": "For the most popular musicals, the best seats can disappear fast. If you’re travelling to London for a specific show, it’s worth sorting your tickets well in advance."
+      },
+      "step4": {
+        "title": "Treat “from” prices as a useful starting point",
+        "text": "The indicative price on AJSEE helps you compare shows quickly. The exact price, current seat availability and fee details will be shown on the partner website before you buy."
+      }
+    },
+    "final": {
+      "title": "Plan an unforgettable London theatre experience",
+      "text": "Choose your dream musical, find tickets and add trusted accommodation to your plan. With AJSEE, you have the essentials within easy reach — clearly and in one place.",
+      "ctaPrimary": "Browse musicals",
+      "ctaSecondary": "Find accommodation in London"
+    },
+    "disclaimer": "AJSEE helps you discover culture and plan your stay in London. We are not a seller — bookings, payments, availability, prices, dates and confirmations are handled directly by our partner services."
+  }
+}

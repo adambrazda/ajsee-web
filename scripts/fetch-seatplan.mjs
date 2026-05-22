@@ -245,18 +245,25 @@ async function main() {
   );
 
   const events = [];
+  let sourceOrder = 0;
 
   for (const show of shows) {
     for (const production of asArray(show.productions)) {
       const normalized = normalizeProduction(show, production, venueById);
-      if (normalized) events.push(normalized);
+      if (normalized) {
+        normalized.sourceOrder = sourceOrder++;
+        events.push(normalized);
+      }
     }
   }
 
   events.sort((a, b) => {
+    const aOrder = Number.isFinite(Number(a.sourceOrder)) ? Number(a.sourceOrder) : 999999;
+    const bOrder = Number.isFinite(Number(b.sourceOrder)) ? Number(b.sourceOrder) : 999999;
     const aDate = a.dateFrom || '9999-12-31';
     const bDate = b.dateFrom || '9999-12-31';
-    return aDate.localeCompare(bDate) || a.title.en.localeCompare(b.title.en);
+
+    return (aOrder - bOrder) || aDate.localeCompare(bDate) || a.title.en.localeCompare(b.title.en);
   });
 
   const payload = {

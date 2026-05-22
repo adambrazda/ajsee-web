@@ -420,5 +420,12 @@
     "commentPh": "Schreibe deinen Kommentar…",
     "submit": "Kommentar senden"
   },
-  "blog-list-title": "Erlebnis-Blog"
+  "blog-list-title": "Erlebnis-Blog",
+  "londonMusicals": {
+    "home": {
+      "title": "Londoner Musicals zum Greifen nah",
+      "text": "Erleben Sie die unverwechselbare Atmosphäre des West End. Wählen Sie aus weltbekannten Musicals, gehen Sie weiter zu den Ticketoptionen und ergänzen Sie Ihre Planung um eine geprüfte Unterkunft in London.",
+      "cta": "Musicals ansehen"
+    }
+  }
 }

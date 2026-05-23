@@ -8,6 +8,28 @@ const ORIGIN = 'https://ajsee.cz';
 const LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const PREFIXED_LANGS = LANGS.filter((lang) => lang !== 'cs');
 
+
+
+const LOCALIZED_ROUTE_ALIASES = [
+  {
+    cs: '/londynske-muzikaly/',
+    en: '/en/london-musicals/',
+    de: '/de/london-musicals/',
+    sk: '/sk/londynske-muzikaly/',
+    pl: '/pl/londynskie-musicale/',
+    hu: '/hu/londoni-musicalek/'
+  }
+];
+
+function findLocalizedRouteAlias(route) {
+  const normalized = normalizeRoute(route);
+
+  return LOCALIZED_ROUTE_ALIASES.find((group) => {
+    return Object.values(group).some((candidate) => {
+      return normalizeRoute(candidate) === normalized;
+    });
+  }) || null;
+}
 const GOOGLE_VERIFICATION_FILE_RE = /^google[a-z0-9]+(?:\.html)?$/i;
 
 function cleanupGoogleVerificationCopies() {
@@ -239,6 +261,11 @@ function normalizeRoute(route) {
 
 function localizedRoute(route, lang) {
   const clean = normalizeRoute(route);
+  const alias = findLocalizedRouteAlias(clean);
+
+  if (alias && alias[lang]) {
+    return alias[lang];
+  }
 
   if (lang === 'cs') return clean;
   if (clean === '/') return `/${lang}/`;

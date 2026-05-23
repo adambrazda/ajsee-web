@@ -778,7 +778,13 @@ function mergeCityItems(primary = [], secondary = []) {
 }
 
 const CITY_SUGGEST_CACHE_TTL_MS = 10 * 60 * 1000;
-const CITY_SUGGEST_TIMEOUT_MS = 3500;
+
+// Remote Ticketmaster city suggest is best-effort and should not run
+// for short intermediate typing states like "lon" / "lond".
+const CITY_SUGGEST_REMOTE_MIN_CHARS = 5;
+// Remote city suggest is best-effort only.
+// Event results must not feel blocked by slow city autocomplete.
+const CITY_SUGGEST_TIMEOUT_MS = 900;
 const CITY_SUGGEST_CACHE = new Map();
 
 function citySuggestCacheKey({ locale = '', keyword = '', countryCode = '' } = {}) {
@@ -1626,7 +1632,23 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   items = instantItems;
   loading = instantItems.length === 0;
 
-  if (!isMobile()) openDesktop();
+  
+  // AJSEE_TYPEAHEAD_REMOTE_MIN_CHARS_v1
+  // Keep autocomplete responsive while the user is still typing.
+  if (q.length < CITY_SUGGEST_REMOTE_MIN_CHARS) {
+    if (!isMobile()) openDesktop();
+
+    CITY_SUGGEST_CACHE.set(cacheKey, {
+      expiresAt: Date.now() + CITY_SUGGEST_CACHE_TTL_MS,
+      items: instantItems
+    });
+
+    loading = false;
+    render();
+    setDesktopActiveAfterRender();
+    return;
+  }
+if (!isMobile()) openDesktop();
 
   render();
 

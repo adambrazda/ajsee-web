@@ -1,0 +1,78 @@
+{
+  "seo": {
+    "londonMusicals": {
+      "title": "Londoni musicalek | West End, jegyek és szállás | AJSEE",
+      "description": "Fedezd fel a londoni West End musicaljeit. Válassz előadást, találj jegyeket partnereinken keresztül, és adj hozzá megbízható londoni szállást a tervedhez.",
+      "ogTitle": "Londoni musicalek karnyújtásnyira",
+      "ogDescription": "Éld át a londoni West End hangulatát. Válassz musicalt, találj jegyeket, és adj hozzá londoni szállást a tervedhez."
+    }
+  },
+  "londonMusicals": {
+    "hero": {
+      "eyebrow": "West End · musicalek · London",
+      "title": "Londoni musicalek",
+      "lead": "Éld át a londoni West End hangulatát. Az AJSEE segít kiválasztani a megfelelő előadást, jegyeket találni, és szállást intézni a londoni tartózkodásodhoz.",
+      "ctaPrimary": "Musicalek megtekintése",
+      "ctaSecondary": "Szállás keresése Londonban",
+      "microcopy": "A jegy- és szállásfoglalást biztonságosan, közvetlenül partnereinknél fejezheted be. Az AJSEE megbízhatóan elvezet a megfelelő helyre."
+    },
+    "list": {
+      "title": "Műsoron Londonban",
+      "intro": "Böngészd át a legjobb musicaleket és színházi előadásokat a londoni West Enden. Minden előadásnál megtalálod a legfontosabb információkat, az irányadó kezdőárat és a partnernél történő jegyvásárláshoz vezető linket.",
+      "points": {
+        "details": "Fontos információk az előadásról",
+        "price": "Irányadó árak ettől",
+        "link": "Link a jegyvásárláshoz"
+      }
+    },
+    "empty": {
+      "title": "Hoppá, az előadások mintha elkóboroltak volna...",
+      "text": "A londoni kapcsolat egy pillanatra megszakadt, ezért nem tudtuk betölteni az aktuális kínálatot. Próbáld meg újra kicsit később, vagy nézz meg más nagyszerű londoni eseményeket.",
+      "cta": "Londoni események megtekintése",
+      "retry": "Újrapróbálom"
+    },
+    "stays": {
+      "title": "Kulturális utazást tervezel Londonba?\nGondoskodj a szállásról is.",
+      "text": "A kiválasztott musical mellé rögtön megtalálhatod az ideális helyet az éjszakára. Hagyd ki a hosszadalmas keresgélést, és lépj tovább közvetlenül a TrustedStays megbízható ajánlataihoz, vagy olvasd el előbb, hogyan működik a partnerség.",
+      "badge1": {
+        "label": "Gyors foglalás",
+        "title": "Foglalás a TrustedStays oldalán",
+        "desc": "Lépj közvetlenül a londoni tartózkodásodhoz illő szálláslehetőségekhez.",
+        "cta": "Szállás keresése Londonban"
+      },
+      "badge2": {
+        "label": "Információ",
+        "title": "Hogyan működik?",
+        "desc": "Tudd meg, hogyan működik a partnerségünk, és hol történik a foglalás, a fizetés és a visszaigazolás.",
+        "cta": "Több információ a szállásról"
+      }
+    },
+    "guide": {
+      "title": "Hogyan válaszd ki a megfelelő musicalt?",
+      "intro": "A londoni West End híres klasszikusokkal, izgalmas újdonságokkal és meghittebb színházi élményekkel vár. Ahhoz, hogy az estéd igazán emlékezetes legyen, érdemes néhány alapvető dolgot átgondolni a jegyvásárlás előtt.",
+      "step1": {
+        "title": "Kezdd az élmény típusával",
+        "text": "Nagy musicalklasszikust keresel, családi előadást, romantikus estét kettesben, vagy inkább egy modern, energikus show-t? A hangulat és a műfaj szerinti választás gyakran többet segít, mint ha csak a cím alapján döntenél."
+      },
+      "step2": {
+        "title": "Ellenőrizd az időpontot és a helyszínt",
+        "text": "Az AJSEE-n minden előadásnál gyorsan láthatod, melyik színházban játsszák. A West End viszonylag kompakt terület, de a pontos színházi helyszín abban is segíthet, hogy hol érdemes szállást választani Londonban."
+      },
+      "step3": {
+        "title": "Ne hagyd az utolsó pillanatra a jegyvásárlást",
+        "text": "A legnépszerűbb musicaleknél a legjobb helyek nagyon gyorsan elfogyhatnak. Ha egy konkrét előadás miatt utazol Londonba, érdemes a jegyeket jó előre beszerezni."
+      },
+      "step4": {
+        "title": "Tekints a „kezdőárra” jó kiindulópontként",
+        "text": "Az AJSEE-n látható irányadó ár segít gyorsan összehasonlítani az egyes előadásokat. A pontos árat, az aktuálisan elérhető helyeket és az esetleges díjak részleteit a vásárlás előtt közvetlenül a partner weboldalán látod majd."
+      }
+    },
+    "final": {
+      "title": "Tervezd meg felejthetetlen londoni kulturális élményedet",
+      "text": "Válaszd ki az álommusicaledet, találj jegyeket, és adj hozzá megbízható szállást is a tervedhez. Az AJSEE-vel minden fontos lépés kéznél van — átláthatóan és egy helyen.",
+      "ctaPrimary": "Musicalek megtekintése",
+      "ctaSecondary": "Szállás keresése Londonban"
+    },
+    "disclaimer": "Az AJSEE segít felfedezni a kultúrát és megtervezni londoni tartózkodásodat. Nem vagyunk értékesítők — a foglalásokat, fizetéseket, elérhetőséget, árakat, időpontokat és visszaigazolásokat közvetlenül partnerszolgáltatásaink kezelik."
+  }
+}

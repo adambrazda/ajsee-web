@@ -420,5 +420,12 @@
     "commentPh": "Napište svůj komentář…",
     "submit": "Odeslat komentář"
   },
-  "blog-list-title": "Blog o zážitcích"
+  "blog-list-title": "Blog o zážitcích",
+  "londonMusicals": {
+    "home": {
+      "title": "Londýnské muzikály na dosah",
+      "text": "Zažijte neopakovatelnou atmosféru West Endu. Vyberte si ze slavných světových muzikálů, pokračujte k nákupu vstupenek a rovnou k plánu přidejte i prověřené ubytování v Londýně.",
+      "cta": "Prohlédnout muzikály"
+    }
+  }
 }

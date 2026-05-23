@@ -192,6 +192,7 @@ export default defineConfig({
           'privacy-policy': resolve(__dirname, 'privacy-policy.html'),
           'cookies-policy': resolve(__dirname, 'cookies-policy.html'),
           microguides: resolve(__dirname, 'microguides/index.html'),
+          'londynske-muzikaly': resolve(__dirname, 'londynske-muzikaly/index.html'),
           ...getMicroguideDetailInputs(),
         };
 

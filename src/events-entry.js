@@ -3140,6 +3140,160 @@ function shouldPreserveSeatPlanApiOrder(filters = {}, events = []) {
     events.some(isSeatPlanEventEntryEvent);
 }
 
+
+/* AJSEE_PROVIDER_MIX_VISIBLE_WINDOW_v1
+   Keeps SeatPlan boost, but avoids a first page owned by one provider only.
+   Applies only on full events pages, only when multiple providers are already loaded.
+   Does not fetch anything and does not affect API limits. */
+function ajseeProviderKeyForVisibleMix(ev = {}) {
+  try {
+    if (typeof ajseeEventProviderKey === 'function') {
+      const fromHelper = ajseeEventProviderKey(ev);
+      if (fromHelper) return fromHelper;
+    }
+  } catch {
+    /* noop */
+  }
+
+  const raw = String(
+    ev?.partner ||
+    ev?.source ||
+    ev?.bookingProvider ||
+    ev?.affiliate?.provider ||
+    ev?.tickets ||
+    ev?.url ||
+    ''
+  ).trim().toLowerCase();
+
+  if (raw.includes('seatplan')) return 'seatplan';
+  if (raw.includes('ticketmaster')) return 'ticketmaster';
+  if (raw.includes('smsticket')) return 'smsticket';
+
+  return raw
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function ajseeHasProviderMixIntent(filters = {}, api = {}) {
+  const keyword = String(
+    filters.keyword ||
+    filters.q ||
+    filters.search ||
+    api.keyword ||
+    api.q ||
+    api.search ||
+    ''
+  ).trim();
+
+  if (keyword) return false;
+
+  return Boolean(
+    filters.city ||
+    filters.cityLabel ||
+    filters.cityCountryCode ||
+    filters.countryCode ||
+    api.city ||
+    api.cityLabel ||
+    api.cityCountryCode ||
+    api.countryCode ||
+    api.placeType === 'country' ||
+    filters.placeType === 'country'
+  );
+}
+
+function ajseeApplyProviderMixForFirstPage(events = [], options = {}) {
+  if (!Array.isArray(events) || events.length < 2) return events;
+
+  const filters = options.filters || {};
+  const api = options.api || {};
+  const pageSize = Math.max(6, Number(options.pageSize) || 20);
+
+  if (!ajseeHasProviderMixIntent(filters, api)) return events;
+
+  const providerCounts = new Map();
+
+  for (const event of events) {
+    const provider = ajseeProviderKeyForVisibleMix(event);
+    if (!provider) continue;
+    providerCounts.set(provider, (providerCounts.get(provider) || 0) + 1);
+  }
+
+  const providers = Array.from(providerCounts.keys());
+  if (providers.length < 2) return events;
+
+  const windowSize = Math.min(pageSize, events.length);
+  const firstWindow = events.slice(0, windowSize);
+
+  const firstWindowCounts = new Map();
+
+  for (const event of firstWindow) {
+    const provider = ajseeProviderKeyForVisibleMix(event) || 'unknown';
+    firstWindowCounts.set(provider, (firstWindowCounts.get(provider) || 0) + 1);
+  }
+
+  const dominantProvider = Array.from(firstWindowCounts.entries())
+    .sort((a, b) => b[1] - a[1])[0]?.[0];
+
+  if (!dominantProvider) return events;
+
+  const nonDominantTotal = events.filter((event) => {
+    const provider = ajseeProviderKeyForVisibleMix(event);
+    return provider && provider !== dominantProvider;
+  }).length;
+
+  if (!nonDominantTotal) return events;
+
+  const currentNonDominantInWindow = firstWindow.filter((event) => {
+    const provider = ajseeProviderKeyForVisibleMix(event);
+    return provider && provider !== dominantProvider;
+  }).length;
+
+  const targetNonDominant = Math.min(
+    nonDominantTotal,
+    Math.max(2, Math.min(5, Math.floor(windowSize * 0.25)))
+  );
+
+  if (currentNonDominantInWindow >= targetNonDominant) return events;
+
+  const promoted = events
+    .filter((event) => {
+      const provider = ajseeProviderKeyForVisibleMix(event);
+      return provider && provider !== dominantProvider;
+    })
+    .slice(0, targetNonDominant);
+
+  if (!promoted.length) return events;
+
+  const promotedSet = new Set(promoted);
+  const remaining = events.filter((event) => !promotedSet.has(event));
+
+  const insertPositions = [2, 6, 10, 14, 18].filter((position) => position < windowSize);
+  const mixedFirstWindow = [];
+
+  let promotedIndex = 0;
+  let remainingIndex = 0;
+
+  for (let index = 0; index < windowSize; index += 1) {
+    if (insertPositions.includes(index) && promotedIndex < promoted.length) {
+      mixedFirstWindow.push(promoted[promotedIndex]);
+      promotedIndex += 1;
+      continue;
+    }
+
+    if (remainingIndex < remaining.length) {
+      mixedFirstWindow.push(remaining[remainingIndex]);
+      remainingIndex += 1;
+    }
+  }
+
+  while (mixedFirstWindow.length < windowSize && promotedIndex < promoted.length) {
+    mixedFirstWindow.push(promoted[promotedIndex]);
+    promotedIndex += 1;
+  }
+
+  return mixedFirstWindow.concat(remaining.slice(remainingIndex));
+}
+
 function sortBufferedEvents(sort = 'nearest') {
   eventsPager.buffer.sort((a, b) => {
     const da = new Date(a.datetime || a.date).getTime();
@@ -3395,6 +3549,14 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     if (!shouldPreserveSeatPlanApiOrder(api, out)) {
       if (filters.sort === 'nearest') out.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
       else out.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
+    }
+
+    if (!isHome()) {
+      out = ajseeApplyProviderMixForFirstPage(out, {
+        filters,
+        api,
+        pageSize: pagination.perPage || 20
+      });
     }
 
     updateResultsCount(`${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`);

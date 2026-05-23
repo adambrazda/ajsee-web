@@ -779,6 +779,15 @@ export async function suggestCities({
   if (scopeKey) {
     qsParams.set('countryCode', scopeKey);
   }
+  // AJSEE_SUGGEST_CLIENT_REMOTE_MIN_CHARS_v1
+  // Remote Ticketmaster city suggest is best-effort.
+  // Do not call it for short intermediate typing states like "lon" / "lond".
+  // The typeahead already renders local/default suggestions immediately.
+  if (q.length < 5) {
+    cache.set(cacheKey, localFallback);
+    return localFallback;
+  }
+
 
   let list = [];
 

@@ -420,5 +420,13 @@
     "commentPh": "Write your comment…",
     "submit": "Post comment"
   },
-  "blog-list-title": "Experience blog"
+  "blog-list-title": "Experience blog",
+  "londonMusicals": {
+    "home": {
+      "title": "London musicals within reach",
+      "text": "Experience the unforgettable atmosphere of the West End. Choose from world-famous musicals, continue to ticket options and add trusted accommodation in London to your plan.",
+      "cta": "Browse musicals"
+    }
+  },
+  "events-found": "Found"
 }

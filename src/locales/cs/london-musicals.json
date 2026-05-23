@@ -1,0 +1,78 @@
+{
+  "seo": {
+    "londonMusicals": {
+      "title": "Londýnské muzikály | West End, vstupenky a ubytování | AJSEE",
+      "description": "Objevte londýnské muzikály ve West Endu. Vyberte si představení, pokračujte k nákupu vstupenek a přidejte k plánu i prověřené ubytování v Londýně.",
+      "ogTitle": "Londýnské muzikály na dosah",
+      "ogDescription": "Zažijte atmosféru londýnského West Endu. Vyberte si muzikál, pokračujte ke vstupenkám a přidejte k plánu i ubytování v Londýně."
+    }
+  },
+  "londonMusicals": {
+    "hero": {
+      "eyebrow": "West End · muzikály · Londýn",
+      "title": "Londýnské muzikály",
+      "lead": "Zažijte atmosféru londýnského West Endu. AJSEE vám pomůže vybrat to nejlepší představení, sehnat vstupenky i zařídit ubytování.",
+      "ctaPrimary": "Prohlédnout muzikály",
+      "ctaSecondary": "Najít ubytování v UK",
+      "microcopy": "Rezervaci vstupenek i ubytování dokončíte bezpečně přímo u našich partnerů. AJSEE vás k nim spolehlivě nasměruje."
+    },
+    "list": {
+      "title": "Co se hraje v Londýně",
+      "intro": "Projděte si ty nejlepší muzikály a divadelní představení na londýnském West Endu. U každého představení najdete klíčové informace, orientační cenu a odkaz k nákupu vstupenek u partnera.",
+      "points": {
+        "details": "Klíčové informace o představení",
+        "price": "Orientační cena od",
+        "link": "Odkaz k nákupu vstupenek"
+      }
+    },
+    "empty": {
+      "title": "Jejda, představení se někam zatoulala...",
+      "text": "Spojení s Londýnem teď na moment vypadlo a nabídku se nám nepodařilo načíst. Zkuste to prosím za chvíli, nebo se rovnou podívejte na další skvělé události.",
+      "cta": "Prohlédnout události v Londýně",
+      "retry": "Zkusit znovu"
+    },
+    "stays": {
+      "title": "Jedete do Londýna za kulturou?\nZajistěte si i ubytování.",
+      "text": "K vybranému muzikálu si můžete rovnou vybrat ideální místo pro přespání. Přeskočte zdlouhavé hledání a přejděte přímo na prověřené nabídky od TrustedStays, nebo si nejdřív přečtěte, jak celé partnerství funguje.",
+      "badge1": {
+        "label": "Rychlá rezervace",
+        "title": "Rezervovat přes TrustedStays",
+        "desc": "Přejděte přímo k nabídce ubytování pro váš pobyt v Londýně.",
+        "cta": "Najít ubytování v Londýně"
+      },
+      "badge2": {
+        "label": "Informace",
+        "title": "Jak to funguje?",
+        "desc": "Zjistěte, jak vás AJSEE propojí s TrustedStays a kde probíhá poptávka, rezervace, platba i potvrzení pobytu.",
+        "cta": "Více o ubytování"
+      }
+    },
+    "guide": {
+      "title": "Jak vybrat ten pravý muzikál?",
+      "intro": "Londýnský West End žije slavnou klasikou, horkými novinkami i komorními divadelními zážitky. Aby byl váš večer dokonalý, stačí před nákupem vstupenek promyslet pár základních věcí.",
+      "step1": {
+        "title": "Začněte typem zážitku",
+        "text": "Hledáte velkolepou muzikálovou klasiku, rodinnou podívanou, romantiku ve dvou, nebo raději moderní a energickou show? Výběr podle žánru a nálady vám často pomůže víc než samotný název představení."
+      },
+      "step2": {
+        "title": "Zkontrolujte termín a místo konání",
+        "text": "U každé show na AJSEE hned uvidíte, ve kterém divadle se hraje. West End je sice kompaktní čtvrť, ale konkrétní lokace divadla vám skvěle napoví, kde si v Londýně nejlépe zařídit ubytování."
+      },
+      "step3": {
+        "title": "Nečekejte s nákupem na poslední chvíli",
+        "text": "U nejpopulárnějších muzikálů mizí nejlepší místa bleskovou rychlostí. Pokud jedete do Londýna kvůli konkrétnímu představení, doporučujeme zajistit si vstupenky s dostatečným předstihem."
+      },
+      "step4": {
+        "title": "Berte „cenu od“ jako skvělý odrazový můstek",
+        "text": "Orientační cena na AJSEE vám pomůže rychle porovnat jednotlivé show. Přesnou cenu, aktuální volná sedadla a detaily o poplatcích pak uvidíte přímo na webu partnera před samotným nákupem."
+      }
+    },
+    "final": {
+      "title": "Naplánujte si nezapomenutelný kulturní zážitek",
+      "text": "Vyberte si svůj vysněný muzikál, zajistěte si vstupenky a rovnou k nim přidejte i prověřené ubytování. S AJSEE máte vše potřebné na dosah ruky – přehledně a na jednom místě.",
+      "ctaPrimary": "Prohlédnout muzikály",
+      "ctaSecondary": "Najít ubytování v Londýně"
+    },
+    "disclaimer": "AJSEE vám pomáhá objevovat kulturu a plánovat pobyt v Londýně. Nejsme prodejci – rezervace, platby, dostupnost, ceny, termíny i potvrzení probíhají přímo u našich partnerských služeb."
+  }
+}

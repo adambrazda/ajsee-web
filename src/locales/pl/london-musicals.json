@@ -1,0 +1,78 @@
+{
+  "seo": {
+    "londonMusicals": {
+      "title": "Londyńskie musicale | West End, bilety i nocleg | AJSEE",
+      "description": "Odkryj londyńskie musicale na West Endzie. Wybierz spektakl, znajdź bilety u naszych partnerów i dodaj do planu sprawdzony nocleg w Londynie.",
+      "ogTitle": "Londyńskie musicale na wyciągnięcie ręki",
+      "ogDescription": "Poczuj atmosferę londyńskiego West Endu. Wybierz musical, znajdź bilety i dodaj do planu nocleg w Londynie."
+    }
+  },
+  "londonMusicals": {
+    "hero": {
+      "eyebrow": "West End · musicale · Londyn",
+      "title": "Londyńskie musicale",
+      "lead": "Poczuj atmosferę londyńskiego West Endu. AJSEE pomoże Ci wybrać najlepszy spektakl, znaleźć bilety i zorganizować nocleg na pobyt w Londynie.",
+      "ctaPrimary": "Zobacz musicale",
+      "ctaSecondary": "Znajdź nocleg w Londynie",
+      "microcopy": "Rezerwację biletów i noclegu finalizujesz bezpiecznie bezpośrednio u naszych partnerów. AJSEE sprawnie kieruje Cię we właściwe miejsce."
+    },
+    "list": {
+      "title": "Co grają w Londynie",
+      "intro": "Przejrzyj najlepsze musicale i spektakle teatralne na londyńskim West Endzie. Przy każdym spektaklu znajdziesz kluczowe informacje, orientacyjną cenę i link do zakupu biletów u partnera.",
+      "points": {
+        "details": "Kluczowe informacje o spektaklu",
+        "price": "Orientacyjna cena od",
+        "link": "Link do zakupu biletów"
+      }
+    },
+    "empty": {
+      "title": "Ups, spektakle gdzieś się zapodziały...",
+      "text": "Połączenie z Londynem na chwilę się urwało i nie udało nam się wczytać aktualnej oferty. Spróbuj ponownie za chwilę albo zobacz inne świetne wydarzenia w Londynie.",
+      "cta": "Zobacz wydarzenia w Londynie",
+      "retry": "Spróbuj ponownie"
+    },
+    "stays": {
+      "title": "Planujesz kulturalny wyjazd do Londynu?\nZadbaj też o nocleg.",
+      "text": "Do wybranego musicalu możesz od razu dobrać idealne miejsce na nocleg. Pomiń długie szukanie i przejdź prosto do sprawdzonych ofert TrustedStays albo najpierw przeczytaj, jak działa całe partnerstwo.",
+      "badge1": {
+        "label": "Szybka rezerwacja",
+        "title": "Rezerwuj przez TrustedStays",
+        "desc": "Przejdź bezpośrednio do opcji noclegu na swój pobyt w Londynie.",
+        "cta": "Znajdź nocleg w Londynie"
+      },
+      "badge2": {
+        "label": "Informacje",
+        "title": "Jak to działa?",
+        "desc": "Dowiedz się, jak działa nasze partnerstwo oraz gdzie odbywa się rezerwacja, płatność i potwierdzenie pobytu.",
+        "cta": "Więcej o noclegach"
+      }
+    },
+    "guide": {
+      "title": "Jak wybrać właściwy musical?",
+      "intro": "Londyński West End żyje wielkimi klasykami, gorącymi nowościami i bardziej kameralnymi doświadczeniami teatralnymi. Aby wieczór naprawdę się udał, warto przed zakupem biletów przemyśleć kilka podstawowych rzeczy.",
+      "step1": {
+        "title": "Zacznij od rodzaju przeżycia",
+        "text": "Szukasz wielkiego musicalowego klasyka, rodzinnego spektaklu, romantycznego wieczoru we dwoje, a może nowoczesnego i energetycznego widowiska? Wybór według nastroju i gatunku często pomaga bardziej niż sam tytuł przedstawienia."
+      },
+      "step2": {
+        "title": "Sprawdź termin i miejsce",
+        "text": "Przy każdym spektaklu na AJSEE od razu zobaczysz, w którym teatrze jest grany. West End to stosunkowo kompaktowy rejon, ale dokładna lokalizacja teatru świetnie podpowie, gdzie najlepiej zarezerwować nocleg w Londynie."
+      },
+      "step3": {
+        "title": "Nie zostawiaj zakupu biletów na ostatnią chwilę",
+        "text": "Przy najpopularniejszych musicalach najlepsze miejsca potrafią znikać bardzo szybko. Jeśli jedziesz do Londynu z myślą o konkretnym spektaklu, warto zadbać o bilety z odpowiednim wyprzedzeniem."
+      },
+      "step4": {
+        "title": "Traktuj „cenę od” jako dobry punkt wyjścia",
+        "text": "Orientacyjna cena na AJSEE pomoże Ci szybko porównać poszczególne spektakle. Dokładną cenę, aktualnie dostępne miejsca i szczegóły opłat zobaczysz bezpośrednio na stronie partnera przed zakupem."
+      }
+    },
+    "final": {
+      "title": "Zaplanuj niezapomniane kulturalne przeżycie",
+      "text": "Wybierz swój wymarzony musical, znajdź bilety i od razu dodaj do planu sprawdzony nocleg. Z AJSEE masz wszystko, czego potrzebujesz, pod ręką — przejrzyście i w jednym miejscu.",
+      "ctaPrimary": "Zobacz musicale",
+      "ctaSecondary": "Znajdź nocleg w Londynie"
+    },
+    "disclaimer": "AJSEE pomaga odkrywać kulturę i planować pobyt w Londynie. Nie jesteśmy sprzedawcą — rezerwacje, płatności, dostępność, ceny, terminy i potwierdzenia są obsługiwane bezpośrednio przez nasze usługi partnerskie."
+  }
+}

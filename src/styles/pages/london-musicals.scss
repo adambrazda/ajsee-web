@@ -1,0 +1,714 @@
+// ------------------------------------------------------
+// AJSEE – London Musicals landing SCSS entry
+// Uses shared AJSEE shell. Do not style header/footer locally.
+// ------------------------------------------------------
+
+@use '../globals' as *;
+@use '../utils/reset';
+
+@use '../partials/layout';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/cookie-consent';
+
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+
+:root {
+  --lm-blue: #0e6ba8;
+  --lm-blue-2: #087ca7;
+  --lm-cyan: #14c2c5;
+  --lm-sky: #eaf7fb;
+  --lm-ice: #f7fcff;
+  --lm-ivory: #fff9f0;
+  --lm-white: #ffffff;
+  --lm-ink: #102033;
+  --lm-muted: #5d6b78;
+  --lm-line: rgba(16, 32, 51, 0.12);
+  --lm-line-blue: rgba(14, 107, 168, 0.18);
+  --lm-shadow: 0 22px 70px rgba(10, 54, 82, 0.11);
+  --lm-radius: 26px;
+  --lm-header-offset: 92px;
+}
+
+body.page-london-musicals {
+  min-height: 100vh;
+  font-family: Inter, "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--lm-ink);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(20, 194, 197, 0.14), transparent 28rem),
+    radial-gradient(circle at 88% 18%, rgba(14, 107, 168, 0.11), transparent 28rem),
+    linear-gradient(180deg, #f7fcff 0%, #eef9fc 34%, #f8f4ed 100%);
+}
+
+body.page-london-musicals * {
+  box-sizing: border-box;
+}
+
+.lm-page {
+  overflow: hidden;
+}
+
+.lm-container {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+/* Hero */
+.lm-hero {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(46px, 5vw, 72px) 0 clamp(42px, 5vw, 66px);
+  background:
+    linear-gradient(135deg, rgba(234, 247, 251, 0.95) 0%, rgba(247, 252, 255, 0.98) 46%, rgba(255, 249, 240, 0.94) 100%);
+}
+
+.lm-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 16% 22%, rgba(20, 194, 197, 0.22), transparent 18rem),
+    radial-gradient(circle at 78% 26%, rgba(14, 107, 168, 0.18), transparent 22rem),
+    linear-gradient(120deg, transparent 0 58%, rgba(20, 194, 197, 0.08) 58% 100%);
+}
+
+.lm-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 72px;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(247, 252, 255, 0), #f7fcff);
+}
+
+.lm-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(420px, 1.05fr);
+  gap: clamp(34px, 6vw, 76px);
+  align-items: center;
+}
+
+.lm-hero-copy {
+  position: relative;
+  z-index: 2;
+}
+
+.lm-eyebrow,
+.lm-badge-label {
+  color: var(--lm-blue);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.76rem;
+}
+
+.lm-hero h1 {
+  max-width: 720px;
+  margin: 14px 0 16px;
+  color: #06192b;
+  font-size: clamp(3.2rem, 7.2vw, 6rem);
+  line-height: 1.01;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
+}
+
+.lm-lead {
+  max-width: 660px;
+  color: #375066;
+  font-size: clamp(1.08rem, 1.7vw, 1.22rem);
+  line-height: 1.68;
+}
+
+.lm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.lm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 950;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background-color .18s ease;
+}
+
+.lm-btn:hover {
+  transform: translateY(-1px);
+}
+
+.lm-btn:focus-visible,
+.lm-badge-card:focus-visible {
+  outline: 3px solid rgba(20, 194, 197, 0.58);
+  outline-offset: 3px;
+}
+
+.lm-btn--primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--lm-blue), var(--lm-cyan));
+  box-shadow: 0 18px 42px rgba(14, 107, 168, 0.18);
+}
+
+.lm-btn--secondary {
+  color: #06192b;
+  border-color: rgba(14, 107, 168, 0.18);
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.lm-microcopy {
+  max-width: 680px;
+  color: rgba(16, 32, 51, 0.62);
+  margin-top: 16px;
+  font-size: 0.94rem;
+  line-height: 1.58;
+}
+
+.lm-hero-art {
+  position: relative;
+  margin: 0;
+  padding: clamp(10px, 2vw, 18px);
+  border: 1px solid rgba(14, 107, 168, 0.12);
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.56));
+  box-shadow: 0 34px 90px rgba(10, 54, 82, 0.14);
+}
+
+.lm-hero-art::before {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  z-index: -1;
+  border-radius: 42px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(20, 194, 197, 0.18), transparent 16rem),
+    radial-gradient(circle at 80% 20%, rgba(14, 107, 168, 0.14), transparent 18rem);
+}
+
+.lm-hero-art img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 24px;
+}
+
+/* Sections */
+#london-musicals-list,
+.lm-accommodation-banner,
+.lm-section,
+.lm-final {
+  scroll-margin-top: var(--lm-header-offset);
+}
+
+.lm-section {
+  padding: clamp(38px, 4.4vw, 56px) 0;
+}
+
+.lm-section--list {
+  padding-top: clamp(34px, 4vw, 50px);
+  background: #f7fcff;
+}
+
+.lm-section-head {
+  margin-bottom: 22px;
+}
+
+.lm-section h2,
+.lm-accommodation-card h2,
+.lm-final h2 {
+  margin: 0 0 14px;
+  color: #06192b;
+  font-size: clamp(2rem, 4vw, 3.05rem);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.lm-accommodation-card h2 {
+  white-space: pre-line;
+  max-width: 660px;
+}
+
+.lm-section-head p,
+.lm-accommodation-card p,
+.lm-final p {
+  max-width: 760px;
+  color: var(--lm-muted);
+  font-size: clamp(1.01rem, 1.45vw, 1.15rem);
+  line-height: 1.7;
+}
+
+.lm-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.lm-points span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 13px;
+  border: 1px solid rgba(14, 107, 168, 0.13);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #06192b;
+  font-size: 0.9rem;
+  font-weight: 850;
+  box-shadow: 0 8px 24px rgba(10, 54, 82, 0.045);
+}
+
+.lm-points span::before {
+  content: "✦";
+  color: var(--lm-cyan);
+}
+
+/* Cards */
+.lm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lm-card,
+.lm-empty,
+.lm-accommodation-card,
+.lm-steps article,
+.lm-final {
+  border: 1px solid var(--lm-line);
+  border-radius: var(--lm-radius);
+  background: var(--lm-white);
+  box-shadow: var(--lm-shadow);
+}
+
+.lm-card {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.lm-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(14, 107, 168, 0.22);
+  box-shadow: 0 30px 82px rgba(10, 54, 82, 0.16);
+}
+
+.lm-card-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 198px;
+  padding: 10px;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(20, 194, 197, 0.16), transparent 12rem),
+    linear-gradient(135deg, #effaff, #ffffff);
+  border-bottom: 1px solid rgba(14, 107, 168, 0.08);
+}
+
+.lm-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 13px;
+}
+
+.lm-card-attr {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(7, 24, 39, 0.68);
+  font-size: .68rem;
+  font-weight: 800;
+}
+
+.lm-card-body {
+  padding: 18px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.lm-card h3 {
+  margin: 0;
+  color: var(--lm-ink);
+  font-size: 1.17rem;
+  line-height: 1.23;
+  letter-spacing: -0.018em;
+}
+
+.lm-card-meta {
+  display: grid;
+  gap: 7px;
+  margin: 2px 0 10px;
+  color: var(--lm-muted);
+  font-size: 0.92rem;
+  line-height: 1.42;
+}
+
+.lm-card-meta strong {
+  color: var(--lm-ink);
+}
+
+.lm-card-badge {
+  align-self: flex-start;
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: #06404a;
+  background: rgba(20, 194, 197, 0.16);
+  font-size: 0.73rem;
+  font-weight: 950;
+}
+
+.lm-card .lm-btn {
+  width: auto;
+  min-height: 40px;
+  margin-top: auto;
+  padding-inline: 16px;
+  align-self: flex-start;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--lm-blue), var(--lm-cyan));
+  box-shadow: 0 10px 28px rgba(14, 107, 168, 0.14);
+}
+
+.lm-empty {
+  padding: 28px;
+}
+
+/* TrustedStays */
+.lm-accommodation-banner {
+  padding: clamp(28px, 3.6vw, 44px) 0 clamp(30px, 3.8vw, 46px);
+  background: linear-gradient(180deg, #f7fcff, #f1f9fc);
+}
+
+.lm-accommodation-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
+  gap: 22px;
+  padding: clamp(22px, 3vw, 32px);
+  background:
+    radial-gradient(circle at 88% 12%, rgba(20, 194, 197, 0.12), transparent 18rem),
+    linear-gradient(135deg, #ffffff, #eefaff);
+  border-color: rgba(14, 107, 168, 0.13);
+}
+
+.lm-accommodation-card h2 {
+  font-size: clamp(2rem, 3.4vw, 2.85rem);
+}
+
+.lm-badges {
+  display: grid;
+  gap: 14px;
+}
+
+.lm-badge-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid rgba(14, 107, 168, 0.12);
+  border-radius: 20px;
+  color: var(--lm-ink);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.74);
+  transition: transform .18s ease, background-color .18s ease, border-color .18s ease;
+}
+
+.lm-badge-card:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  border-color: rgba(14, 107, 168, 0.22);
+}
+
+.lm-badge-card strong {
+  font-size: 1.05rem;
+  color: var(--lm-ink);
+}
+
+.lm-badge-card span:not(.lm-badge-label) {
+  color: var(--lm-muted);
+  line-height: 1.55;
+}
+
+.lm-badge-card em {
+  color: var(--lm-blue);
+  font-style: normal;
+  font-weight: 950;
+}
+
+/* Guide */
+.lm-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lm-steps article {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.lm-steps span {
+  color: var(--lm-cyan);
+  font-weight: 950;
+}
+
+.lm-steps h3 {
+  margin: 10px 0;
+  color: var(--lm-ink);
+  font-size: 1.16rem;
+}
+
+.lm-steps p {
+  margin: 0;
+  color: var(--lm-muted);
+  line-height: 1.66;
+}
+
+/* Final CTA */
+.lm-final {
+  width: min(1120px, calc(100% - 32px));
+  margin: clamp(24px, 3.4vw, 38px) auto clamp(28px, 3.8vw, 46px);
+  padding: clamp(26px, 4vw, 40px);
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 84% 20%, rgba(20, 194, 197, 0.26), transparent 15rem),
+    linear-gradient(135deg, #06192b, var(--lm-blue));
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.lm-final h2 {
+  max-width: 820px;
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 3.05rem);
+}
+
+.lm-final p {
+  max-width: 650px;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.lm-final .lm-btn--secondary {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Disclaimer */
+.lm-disclaimer {
+  padding: 0 0 22px;
+  color: rgba(16, 32, 51, 0.58);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+/* Mobile */
+@media (max-width: 950px) {
+  .lm-hero {
+    padding-top: 34px;
+    padding-bottom: 42px;
+  }
+
+  .lm-hero-grid,
+  .lm-grid,
+  .lm-accommodation-card,
+  .lm-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .lm-hero-art {
+    order: -1;
+  }
+
+  .lm-card-media {
+    height: 220px;
+  }
+
+  .lm-section,
+  .lm-accommodation-banner {
+    padding-top: 34px;
+    padding-bottom: 36px;
+  }
+}
+
+@media (max-width: 540px) {
+  .lm-container,
+  .lm-final {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .lm-hero {
+    padding-top: 42px;
+  }
+
+  .lm-hero h1 {
+    font-size: clamp(3rem, 15vw, 4.1rem);
+    line-height: 1.03;
+  }
+
+  .lm-section h2,
+  .lm-accommodation-card h2,
+  .lm-final h2 {
+    line-height: 1.14;
+  }
+
+  .lm-actions .lm-btn,
+  .lm-card .lm-btn {
+    width: 100%;
+  }
+
+  .lm-accommodation-card,
+  .lm-final {
+    padding: 20px;
+  }
+}
+
+/* AJSEE London Musicals — compact vertical rhythm */
+body.page-london-musicals {
+  --lm-section-y: clamp(26px, 3vw, 38px);
+  --lm-section-y-tight: clamp(20px, 2.4vw, 30px);
+}
+
+/* Hero should reveal the listing sooner */
+body.page-london-musicals .lm-hero {
+  padding-top: clamp(34px, 4vw, 56px);
+  padding-bottom: clamp(28px, 3.4vw, 46px);
+}
+
+/* Standard content sections */
+body.page-london-musicals .lm-section {
+  padding-top: var(--lm-section-y);
+  padding-bottom: var(--lm-section-y);
+}
+
+/* Listing begins closer after hero */
+body.page-london-musicals .lm-section--list {
+  padding-top: clamp(22px, 2.6vw, 34px);
+  padding-bottom: clamp(24px, 2.8vw, 36px);
+}
+
+/* Tighten heading groups */
+body.page-london-musicals .lm-section-head {
+  margin-bottom: 16px;
+}
+
+body.page-london-musicals .lm-section-head p {
+  margin-bottom: 0;
+}
+
+/* Chips closer to cards */
+body.page-london-musicals .lm-points {
+  margin-bottom: 14px;
+}
+
+/* Cards grid: keep breathing room, but remove exaggerated page height */
+body.page-london-musicals .lm-grid {
+  gap: 14px;
+}
+
+/* Reduce vertical bulk inside cards a bit */
+body.page-london-musicals .lm-card-body {
+  padding: 16px;
+  gap: 9px;
+}
+
+body.page-london-musicals .lm-card-meta {
+  margin-bottom: 8px;
+}
+
+/* TrustedStays should attach more naturally to listing */
+body.page-london-musicals .lm-accommodation-banner {
+  padding-top: clamp(18px, 2.2vw, 28px);
+  padding-bottom: clamp(22px, 2.6vw, 32px);
+}
+
+/* Banner itself remains premium, but less oversized */
+body.page-london-musicals .lm-accommodation-card {
+  padding: clamp(20px, 2.6vw, 28px);
+}
+
+/* Guide starts closer after TrustedStays */
+body.page-london-musicals .lm-accommodation-banner + .lm-section {
+  padding-top: clamp(22px, 2.6vw, 34px);
+}
+
+/* Guide cards tighter */
+body.page-london-musicals .lm-steps {
+  gap: 14px;
+}
+
+body.page-london-musicals .lm-steps article {
+  padding: 18px;
+}
+
+/* Final CTA closer to guide and footer */
+body.page-london-musicals .lm-final {
+  margin-top: clamp(14px, 2vw, 24px);
+  margin-bottom: clamp(18px, 2.4vw, 30px);
+  padding: clamp(22px, 3vw, 34px);
+}
+
+/* Disclaimer/footer closer */
+body.page-london-musicals .lm-disclaimer {
+  padding-bottom: 12px;
+}
+
+body.page-london-musicals .site-footer {
+  padding-top: 18px;
+}
+
+/* Mobile: even tighter because stacked layout gets long fast */
+@media (max-width: 950px) {
+  body.page-london-musicals .lm-hero {
+    padding-top: 28px;
+    padding-bottom: 32px;
+  }
+
+  body.page-london-musicals .lm-section,
+  body.page-london-musicals .lm-accommodation-banner {
+    padding-top: 24px;
+    padding-bottom: 26px;
+  }
+
+  body.page-london-musicals .lm-section--list {
+    padding-top: 22px;
+  }
+}
+
+@media (max-width: 540px) {
+  body.page-london-musicals .lm-section,
+  body.page-london-musicals .lm-accommodation-banner {
+    padding-top: 20px;
+    padding-bottom: 22px;
+  }
+
+  body.page-london-musicals .lm-final {
+    margin-top: 12px;
+    margin-bottom: 20px;
+  }
+}

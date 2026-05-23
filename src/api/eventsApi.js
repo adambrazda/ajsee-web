@@ -1,24 +1,24 @@
 // /src/api/eventsApi.js
 // ---------------------------------------------------------
-// Agreguje události z adapterů a aplikuje jednotné FE filtry.
+// Agreguje udĂˇlosti z adapterĹŻ a aplikuje jednotnĂ© FE filtry.
 //
 // Podporuje:
-// - město,
-// - zemi zadanou do stejného pole jako město,
-//   např. Francie / France / FR / Maďarsko / Hungary / HU,
-// - aliasy měst,
-// - sloučení městských částí,
+// - mÄ›sto,
+// - zemi zadanou do stejnĂ©ho pole jako mÄ›sto,
+//   napĹ™. Francie / France / FR / MaÄŹarsko / Hungary / HU,
+// - aliasy mÄ›st,
+// - slouÄŤenĂ­ mÄ›stskĂ˝ch ÄŤĂˇstĂ­,
 // - Near Me,
 // - keyword,
 // - datumy,
 // - kategorie,
 // - deduplikaci,
-// - bezpečné FE filtrování podle města a země.
+// - bezpeÄŤnĂ© FE filtrovĂˇnĂ­ podle mÄ›sta a zemÄ›.
 //
-// DŮLEŽITÉ:
-// Pokud uživatel zadá do pole města zemi, např. "Francie",
-// nesmí se to později filtrovat jako město.
-// Proto tady vstup převádíme na country-only search.
+// DĹ®LEĹ˝ITĂ‰:
+// Pokud uĹľivatel zadĂˇ do pole mÄ›sta zemi, napĹ™. "Francie",
+// nesmĂ­ se to pozdÄ›ji filtrovat jako mÄ›sto.
+// Proto tady vstup pĹ™evĂˇdĂ­me na country-only search.
 // ---------------------------------------------------------
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
@@ -34,12 +34,12 @@ const isDev =
 
 // ------- Utils -------
 
-/** Robustní převod na timestamp (ms); vrací NaN, pokud nelze převést. */
+/** RobustnĂ­ pĹ™evod na timestamp (ms); vracĂ­ NaN, pokud nelze pĹ™evĂ©st. */
 function ts(raw) {
   return new Date(raw).getTime();
 }
 
-/** "YYYY-MM-DD" -> lokální poledne (vyhne se posunům/DST); jinak nativní parser. */
+/** "YYYY-MM-DD" -> lokĂˇlnĂ­ poledne (vyhne se posunĹŻm/DST); jinak nativnĂ­ parser. */
 function tsLocalMidday(raw) {
   if (!raw) return NaN;
 
@@ -54,7 +54,7 @@ function tsLocalMidday(raw) {
   return new Date(y, mo, d, 12, 0, 0, 0).getTime();
 }
 
-/** Hranice dne z ISO "YYYY-MM-DD" v lokálním čase (start/end). */
+/** Hranice dne z ISO "YYYY-MM-DD" v lokĂˇlnĂ­m ÄŤase (start/end). */
 function boundaryMs(iso, isEnd = false) {
   if (!iso) return NaN;
 
@@ -94,9 +94,9 @@ function normalizeText(s) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/ß/g, 'ss')
-    .replace(/ł/g, 'l')
-    .replace(/[’'`´]/g, '')
+    .replace(/Ăź/g, 'ss')
+    .replace(/Ĺ‚/g, 'l')
+    .replace(/[â€™'`Â´]/g, '')
     .replace(/[().,;:/\\\-+_]/g, ' ')
     .replace(/\s+/g, ' ');
 }
@@ -120,7 +120,7 @@ function foldText(value) {
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/&/g, ' and ')
-    .replace(/['’`]/g, '')
+    .replace(/['â€™`]/g, '')
     .replace(/[^a-z0-9]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -182,9 +182,9 @@ addCountryAliases('CZ', [
   'CZ',
   'Czechia',
   'Czech Republic',
-  'Česko',
+  'ÄŚesko',
   'Cesko',
-  'Česká republika',
+  'ÄŚeskĂˇ republika',
   'Ceska republika'
 ]);
 
@@ -192,7 +192,7 @@ addCountryAliases('SK', [
   'SK',
   'Slovakia',
   'Slovensko',
-  'Slovenská republika',
+  'SlovenskĂˇ republika',
   'Slovenska republika'
 ]);
 
@@ -206,16 +206,16 @@ addCountryAliases('PL', [
 addCountryAliases('HU', [
   'HU',
   'Hungary',
-  'Maďarsko',
+  'MaÄŹarsko',
   'Madarsko',
-  'Magyarország',
+  'MagyarorszĂˇg',
   'Magyarorszag'
 ]);
 
 addCountryAliases('DE', [
   'DE',
   'Germany',
-  'Německo',
+  'NÄ›mecko',
   'Nemecko',
   'Deutschland',
   'Germania'
@@ -225,14 +225,14 @@ addCountryAliases('AT', [
   'AT',
   'Austria',
   'Rakousko',
-  'Österreich',
+  'Ă–sterreich',
   'Osterreich'
 ]);
 
 addCountryAliases('CH', [
   'CH',
   'Switzerland',
-  'Švýcarsko',
+  'Ĺ vĂ˝carsko',
   'Svycarsko',
   'Schweiz',
   'Suisse',
@@ -250,9 +250,9 @@ addCountryAliases('FR', [
 addCountryAliases('ES', [
   'ES',
   'Spain',
-  'Španělsko',
+  'Ĺ panÄ›lsko',
   'Spanelsko',
-  'España',
+  'EspaĂ±a',
   'Espana'
 ]);
 
@@ -271,13 +271,13 @@ addCountryAliases('BE', [
   'Belgium',
   'Belgie',
   'Belgique',
-  'België'
+  'BelgiĂ«'
 ]);
 
 addCountryAliases('IT', [
   'IT',
   'Italy',
-  'Itálie',
+  'ItĂˇlie',
   'Italie',
   'Italia'
 ]);
@@ -285,7 +285,7 @@ addCountryAliases('IT', [
 addCountryAliases('DK', [
   'DK',
   'Denmark',
-  'Dánsko',
+  'DĂˇnsko',
   'Dansko',
   'Danmark'
 ]);
@@ -293,7 +293,7 @@ addCountryAliases('DK', [
 addCountryAliases('SE', [
   'SE',
   'Sweden',
-  'Švédsko',
+  'Ĺ vĂ©dsko',
   'Svedsko',
   'Sverige'
 ]);
@@ -316,7 +316,7 @@ addCountryAliases('IE', [
   'IE',
   'Ireland',
   'Irsko',
-  'Éire',
+  'Ă‰ire',
   'Eire'
 ]);
 
@@ -330,9 +330,9 @@ addCountryAliases('GB', [
   'Scotland',
   'Wales',
   'Northern Ireland',
-  'Velká Británie',
+  'VelkĂˇ BritĂˇnie',
   'Velka Britanie',
-  'Spojené království',
+  'SpojenĂ© krĂˇlovstvĂ­',
   'Spojene kralovstvi',
   'Anglie'
 ]);
@@ -377,214 +377,40 @@ function firstCountryCodeFromInput(value) {
 
 const CITY_ALIASES = {
   // CZ / SK / PL / HU
-  Praha: ['Praha', 'Prague', 'Prag', 'Praga', 'Praag', 'Prága'],
-  Brno: ['Brno', 'Brünn'],
+  Praha: ['Praha', 'Prague', 'Prag', 'Praga', 'Praag'],
+  Brno: ['Brno', 'Bruenn', 'Brunn'],
   Ostrava: ['Ostrava', 'Ostrau', 'Ostrawa'],
-  Plzeň: ['Plzeň', 'Plzen', 'Pilsen', 'Pilzen'],
-  Olomouc: ['Olomouc', 'Olmütz'],
+  'Plze\u0148': ['Plze\u0148', 'Plzen', 'Pilsen', 'Pilzen'],
+  Olomouc: ['Olomouc', 'Olmuetz', 'Olmutz'],
   Bratislava: ['Bratislava', 'Pressburg', 'Pozsony'],
-  Košice: ['Košice', 'Kosice', 'Kassa'],
-  Žilina: ['Žilina', 'Zilina'],
-  Warszawa: ['Warszawa', 'Warsaw', 'Warschau', 'Varšava', 'Varsava'],
-  Kraków: ['Kraków', 'Krakow', 'Cracow', 'Krakau', 'Krakov'],
-  Wrocław: ['Wrocław', 'Wroclaw', 'Breslau'],
-  Gdańsk: ['Gdańsk', 'Gdansk', 'Danzig'],
-  Poznań: ['Poznań', 'Poznan'],
-  Łódź: ['Łódź', 'Lodz'],
-  Katowice: ['Katowice'],
-  Budapest: ['Budapest', 'Budapešť', 'Budapeszt', 'Budapesta'],
+  'Ko\u0161ice': ['Ko\u0161ice', 'Kosice', 'Kassa'],
+  '\u017Dilina': ['\u017Dilina', 'Zilina'],
+  Warszawa: ['Warszawa', 'Warsaw', 'Warschau', 'Varsava'],
+  Krakow: ['Krakow', 'Krak\u00F3w', 'Cracow', 'Krakau'],
+  Budapest: ['Budapest', 'Budape\u0161\u0165', 'Budapeszt'],
 
-  // DE / AT / CH
-  Berlin: ['Berlin', 'Berlín'],
-  Hamburg: ['Hamburg', 'Hamburk'],
-  München: ['München', 'Munich', 'Muenchen', 'Mnichov'],
-  Köln: ['Köln', 'Cologne', 'Kolín nad Rýnem', 'Koln'],
-  Frankfurt: ['Frankfurt', 'Frankfurt am Main'],
-  Stuttgart: ['Stuttgart'],
-  Düsseldorf: ['Düsseldorf', 'Dusseldorf'],
-  Dresden: ['Dresden', 'Drážďany'],
-  Leipzig: ['Leipzig'],
-  Nürnberg: ['Nürnberg', 'Nuremberg', 'Norimberk'],
-  Bremen: ['Bremen', 'Brémy'],
-  Hannover: ['Hannover', 'Hanover'],
-  Wien: ['Wien', 'Vienna', 'Vídeň', 'Viedeň', 'Wiedeń'],
-  Salzburg: ['Salzburg', 'Solnohrad'],
-  Linz: ['Linz'],
-  Graz: ['Graz', 'Štýrský Hradec'],
-  Zürich: ['Zürich', 'Zurich', 'Curych'],
-  Genf: ['Genf', 'Geneva', 'Ženeva'],
-  Basel: ['Basel', 'Basilej'],
-  Bern: ['Bern', 'Berno'],
-
-  // Benelux
-  Amsterdam: ['Amsterdam', 'Amsterodam'],
-  Rotterdam: ['Rotterdam'],
-  'The Hague': ['The Hague', 'Den Haag', 'Haag'],
-  Utrecht: ['Utrecht'],
-  Brussels: ['Brussels', 'Bruxelles', 'Brusel'],
-  Antwerp: ['Antwerp', 'Antwerpen', 'Antverpy'],
-  Ghent: ['Ghent', 'Gent'],
-  Bruges: ['Bruges', 'Brugge'],
-
-  // France
-  Paris: ['Paris', 'Paříž', 'Paríž', 'Pariz', 'París', 'Parigi', 'Paryż'],
-  Lyon: ['Lyon'],
-  Marseille: ['Marseille', 'Marseilles', 'Marsej'],
-  Toulouse: ['Toulouse'],
-  Bordeaux: ['Bordeaux'],
-  Lille: ['Lille'],
-  Nice: ['Nice'],
-  Nantes: ['Nantes'],
-  Strasbourg: ['Strasbourg', 'Štrasburk'],
-  Montpellier: ['Montpellier'],
-
-  // Iberia
-  Madrid: ['Madrid', 'Madryt'],
-  Barcelona: ['Barcelona', 'Barcelóna'],
-  Valencia: ['Valencia', 'Valencie'],
-  Seville: ['Seville', 'Sevilla'],
-  Bilbao: ['Bilbao'],
-  Malaga: ['Malaga', 'Málaga'],
-  Zaragoza: ['Zaragoza'],
-  Lisbon: ['Lisbon', 'Lisabon', 'Lisboa'],
-  Porto: ['Porto', 'Oporto'],
-
-  // Italy
-  Rome: ['Rome', 'Roma', 'Řím', 'Rim'],
-  Milan: ['Milan', 'Milano', 'Milán'],
-  Naples: ['Naples', 'Napoli', 'Neapol'],
-  Turin: ['Turin', 'Torino', 'Turín'],
-  Florence: ['Florence', 'Firenze', 'Florencie'],
-  Venice: ['Venice', 'Venezia', 'Benátky', 'Benatky'],
-  Bologna: ['Bologna'],
-  Genoa: ['Genoa', 'Genova', 'Janov'],
-
-  // Nordics & Baltics
-  Stockholm: ['Stockholm', 'Štokholm'],
-  Gothenburg: ['Gothenburg', 'Göteborg', 'Goteborg'],
-  Malmö: ['Malmö', 'Malmo'],
-  Copenhagen: ['Copenhagen', 'København', 'Kobenhavn', 'Kodaň'],
-  Oslo: ['Oslo'],
-  Bergen: ['Bergen'],
-  Helsinki: ['Helsinki', 'Helsinky'],
-  Tampere: ['Tampere'],
-  Reykjavik: ['Reykjavik', 'Reykjavík', 'Rejkjavik'],
-  Tallinn: ['Tallinn', 'Talin'],
-  Riga: ['Riga', 'Ryga'],
-  Vilnius: ['Vilnius', 'Vilno', 'Wilno'],
-  Kaunas: ['Kaunas', 'Kovno'],
-
-  // Balkans & SE Europe
-  Ljubljana: ['Ljubljana', 'Lublaň'],
-  Zagreb: ['Zagreb', 'Záhřeb', 'Zahreb'],
-  Split: ['Split'],
-  Rijeka: ['Rijeka'],
-  Belgrade: ['Belgrade', 'Beograd', 'Bělehrad'],
-  'Novi Sad': ['Novi Sad'],
-  Sarajevo: ['Sarajevo'],
-  Skopje: ['Skopje'],
-  Sofia: ['Sofia'],
-  Bucharest: ['Bucharest', 'Bukurešť', 'București'],
-  'Cluj-Napoca': ['Cluj-Napoca', 'Cluj'],
-  Timișoara: ['Timișoara', 'Timisoara'],
-  Athens: ['Athens', 'Athény', 'Athína'],
-  Thessaloniki: ['Thessaloniki', 'Soluň', 'Saloniki'],
-  Istanbul: ['Istanbul'],
-  Ankara: ['Ankara'],
-  Izmir: ['Izmir', 'Smyrna'],
-
-  // Ukraine / Belarus
-  Kyiv: ['Kyiv', 'Kyjev', 'Kiev'],
-  Lviv: ['Lviv', 'Lvov'],
-  Odesa: ['Odesa', 'Odessa'],
-  Kharkiv: ['Kharkiv'],
-  Minsk: ['Minsk'],
-
-  // UK & Ireland
-  London: ['London', 'Londýn', 'Londyn', 'Londres', 'Londra', 'Londen'],
+  // UK / Western Europe
+  London: ['London', 'Londyn', 'Lond\u00FDn', 'Lond\u00FDn', 'Londres'],
   Manchester: ['Manchester'],
   Birmingham: ['Birmingham'],
   Liverpool: ['Liverpool'],
-  Leeds: ['Leeds'],
-  'Newcastle upon Tyne': ['Newcastle', 'Newcastle upon Tyne'],
+  Edinburgh: ['Edinburgh'],
   Glasgow: ['Glasgow'],
-  Edinburgh: ['Edinburgh', 'Edinburk'],
-  Bristol: ['Bristol'],
-  Cardiff: ['Cardiff'],
-  Belfast: ['Belfast'],
-  Dublin: ['Dublin'],
-
-  // Middle East
-  'Tel Aviv': ['Tel Aviv', 'Tel-Aviv', 'TelAviv'],
-  Jerusalem: ['Jerusalem', 'Jeruzalém'],
-  Dubai: ['Dubai', 'Dubaj'],
-  'Abu Dhabi': ['Abu Dhabi', 'Abú Zabí'],
-  Doha: ['Doha'],
-  Riyadh: ['Riyadh', 'Rijád'],
-
-  // North America
-  'New York': ['New York', 'NYC', 'NewYork', 'Nový York', 'Nowy Jork'],
-  'Los Angeles': ['Los Angeles', 'LA'],
-  'San Francisco': ['San Francisco', 'SF'],
-  Chicago: ['Chicago', 'Čikágo'],
-  Boston: ['Boston'],
-  Miami: ['Miami'],
-  Washington: ['Washington', 'Washington DC', 'DC'],
-  Seattle: ['Seattle'],
-  'San Diego': ['San Diego'],
-  'Las Vegas': ['Las Vegas', 'Vegas'],
-  Dallas: ['Dallas'],
-  Houston: ['Houston'],
-  Austin: ['Austin'],
-  Atlanta: ['Atlanta'],
-  Philadelphia: ['Philadelphia', 'Philly'],
-  Phoenix: ['Phoenix'],
-  Denver: ['Denver'],
-  Detroit: ['Detroit'],
-  Minneapolis: ['Minneapolis'],
-
-  // Canada / South America / Asia / Oceania
-  Toronto: ['Toronto'],
-  Vancouver: ['Vancouver'],
-  Montreal: ['Montreal', 'Montréal', 'Montreál'],
-  'Mexico City': ['Mexico City', 'Ciudad de México', 'Mexiko City'],
-  'São Paulo': ['São Paulo', 'Sao Paulo'],
-  'Rio de Janeiro': ['Rio de Janeiro', 'Rio'],
-  'Buenos Aires': ['Buenos Aires'],
-  Santiago: ['Santiago', 'Santiago de Chile'],
-  Tokyo: ['Tokyo', 'Tokio'],
-  Osaka: ['Osaka'],
-  Kyoto: ['Kyoto', 'Kjóto', 'Kjoto'],
-  Yokohama: ['Yokohama'],
-  Nagoya: ['Nagoya'],
-  Seoul: ['Seoul', 'Soul'],
-  Busan: ['Busan', 'Pusan'],
-  Beijing: ['Beijing', 'Peking'],
-  Shanghai: ['Shanghai', 'Šanghaj'],
-  Shenzhen: ['Shenzhen', 'Šenčen', 'Šen-čen'],
-  Guangzhou: ['Guangzhou', 'Kanton'],
-  'Hong Kong': ['Hong Kong', 'Hongkong'],
-  Taipei: ['Taipei', 'Tchaj-pej'],
-  Singapore: ['Singapore', 'Singapur'],
-  Bangkok: ['Bangkok'],
-  'Kuala Lumpur': ['Kuala Lumpur'],
-  Jakarta: ['Jakarta', 'Džakarta'],
-  Manila: ['Manila'],
-  Mumbai: ['Mumbai', 'Bombaj'],
-  Delhi: ['Delhi', 'Dillí', 'New Delhi', 'Nové Dillí'],
-  Bengaluru: ['Bengaluru', 'Bangalore'],
-  Colombo: ['Colombo'],
-  Sydney: ['Sydney', 'Sydnej'],
-  Melbourne: ['Melbourne', 'Melbourn'],
-  Brisbane: ['Brisbane'],
-  Perth: ['Perth'],
-  Adelaide: ['Adelaide', 'Adelaida'],
-  Canberra: ['Canberra'],
-  Auckland: ['Auckland', 'Okland'],
-  Wellington: ['Wellington']
+  Paris: ['Paris', 'Pa\u0159\u00ED\u017E', 'Pary\u017C', 'Par\u00ED\u017E'],
+  Berlin: ['Berlin', 'Berl\u00EDn'],
+  Vienna: ['Vienna', 'Wien', 'V\u00EDde\u0148', 'Viede\u0148'],
+  Munich: ['Munich', 'M\u00FCnchen', 'Mnichov'],
+  Hamburg: ['Hamburg'],
+  Cologne: ['Cologne', 'K\u00F6ln', 'Kol\u00EDn nad R\u00FDnem'],
+  Amsterdam: ['Amsterdam'],
+  Brussels: ['Brussels', 'Bruxelles', 'Brusel'],
+  Madrid: ['Madrid'],
+  Barcelona: ['Barcelona'],
+  Milan: ['Milan', 'Milano', 'Mil\u00E1n'],
+  Rome: ['Rome', 'Roma', '\u0158\u00EDm']
 };
 
-// Kanonický label -> stabilní EN id
+// KanonickĂ˝ label -> stabilnĂ­ EN id
 const LABEL_TO_ID = {};
 
 for (const canonical of Object.keys(CITY_ALIASES)) {
@@ -745,21 +571,21 @@ function shouldUseCountryOnlyClientFilter({
   nearMeLat = null,
   nearMeLon = null
 } = {}) {
-  // Když uživatel výslovně zadal zemi do městského pole,
-  // chceme bránit tomu, aby FE pustil event z jiné země.
+  // KdyĹľ uĹľivatel vĂ˝slovnÄ› zadal zemi do mÄ›stskĂ©ho pole,
+  // chceme brĂˇnit tomu, aby FE pustil event z jinĂ© zemÄ›.
   if (countryFromCityInput) return true;
 
-  // Near Me nesmí být uměle omezen defaultní zemí.
+  // Near Me nesmĂ­ bĂ˝t umÄ›le omezen defaultnĂ­ zemĂ­.
   if (nearMeLat != null && nearMeLon != null) return false;
 
-  // Pokud je skutečné město, země se řeší ve city filtru.
+  // Pokud je skuteÄŤnĂ© mÄ›sto, zemÄ› se Ĺ™eĹˇĂ­ ve city filtru.
   if (rawCityInput && normalizedCity) return false;
 
   return false;
 }
 
 /**
- * Hlavní vstup pro FE:
+ * HlavnĂ­ vstup pro FE:
  *   fetchEvents({ locale, filters })
  */
 
@@ -864,21 +690,21 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   const rawCityInput = String(filters.city || '').trim();
 
   // Novinka:
-  // Jestli uživatel zadal do pole města zemi, např. "Francie",
-  // chováme se dál jako country-only search.
+  // Jestli uĹľivatel zadal do pole mÄ›sta zemi, napĹ™. "Francie",
+  // chovĂˇme se dĂˇl jako country-only search.
   const countryFromCityInput = countryCodeFromInput(rawCityInput);
   const isCountrySearchFromCityField = Boolean(rawCityInput && countryFromCityInput);
 
   const localCityInput = isCountrySearchFromCityField ? '' : rawCityInput;
   let upstreamCity = localCityInput;
 
-  // City hotfix: když kanonizátor vrátí prázdno, ponecháme původní vstup.
+  // City hotfix: kdyĹľ kanonizĂˇtor vrĂˇtĂ­ prĂˇzdno, ponechĂˇme pĹŻvodnĂ­ vstup.
   if (upstreamCity) {
     try {
       const canon = canonForInputCity(upstreamCity);
       upstreamCity = canon || upstreamCity;
     } catch {
-      // fallback na původní vstup
+      // fallback na pĹŻvodnĂ­ vstup
     }
   }
 
@@ -905,8 +731,8 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     ? String(explicitCityCountry || guessedCityCc || explicitCountry || '').trim().toUpperCase()
     : '';
 
-  // Pokud je to country-only search, rozhodující je země zadaná v city inputu.
-  // Pokud není nic zadané, držíme současný default CZ.
+  // Pokud je to country-only search, rozhodujĂ­cĂ­ je zemÄ› zadanĂˇ v city inputu.
+  // Pokud nenĂ­ nic zadanĂ©, drĹľĂ­me souÄŤasnĂ˝ default CZ.
   const countryOnlyCc =
     countryFromCityInput ||
     (!upstreamCity ? explicitCountry : '') ||
@@ -922,8 +748,8 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
     keyword: filters.keyword ?? filters.q ?? filters.search ?? '',
-    // Klíčová změna:
-    // pokud uživatel zadal "Francie", neposíláme to dál jako city.
+    // KlĂ­ÄŤovĂˇ zmÄ›na:
+    // pokud uĹľivatel zadal "Francie", neposĂ­lĂˇme to dĂˇl jako city.
     city: upstreamCity,
 
     cityCountryCode: selectedCityCc,
@@ -954,19 +780,47 @@ try {
 
 
 // --- smsticket ---
-// CZ affiliate/API zdroj. Adapter si s?m ?e?? filtrov?n? a str?nkov?n?,
-// tak?e nevrac? cel? feed najednou a neni?? prvn? render.
-try {
-  const smsticket = await fetchSmsticketEvents({
-    locale: loc,
-    filters: localProviderFilters
-  });
+// AJSEE_SKIP_SMSTICKET_NON_CZSK_INLINE_v3
+// SMS Ticket is a CZ/SK local affiliate source.
+// Skip its large static feed for explicit non-CZ/SK contexts such as London/GB.
+var ajseeSmsTicketCityText = String([
+  filters && filters.city,
+  filters && filters.cityLabel,
+  filters && filters.location
+].filter(Boolean).join(' '))
+  .trim()
+  .toLowerCase()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '');
 
-  if (Array.isArray(smsticket)) {
-    all = all.concat(smsticket);
+var ajseeSmsTicketCc = String(
+  (filters && (
+    filters.cityCountryCode ||
+    filters.cityCc ||
+    filters.countryCode ||
+    filters.country
+  )) ||
+  ''
+).trim().toUpperCase();
+
+var ajseeSkipSmsTicket =
+  ajseeSmsTicketCityText.includes('london') ||
+  ajseeSmsTicketCityText.includes('west end') ||
+  (ajseeSmsTicketCc && ajseeSmsTicketCc !== 'CZ' && ajseeSmsTicketCc !== 'SK');
+
+if (!ajseeSkipSmsTicket) {
+  try {
+    const smsticket = await fetchSmsticketEvents({
+      locale: loc,
+      filters: localProviderFilters
+    });
+
+    if (Array.isArray(smsticket)) {
+      all = all.concat(smsticket);
+    }
+  } catch (e) {
+    console.warn('[eventsApi] smsticket fetch failed:', e);
   }
-} catch (e) {
-  console.warn('[eventsApi] smsticket fetch failed:', e);
 }
 
 // --- SeatPlan ---
@@ -1014,8 +868,8 @@ try {
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
     keyword: filters.keyword ?? filters.q ?? filters.search ?? '',
-    // Klíčová změna:
-    // FE city filtr už nevidí "Francie" jako město.
+    // KlĂ­ÄŤovĂˇ zmÄ›na:
+    // FE city filtr uĹľ nevidĂ­ "Francie" jako mÄ›sto.
     city: localCityInput || upstreamCity,
 
     cityCountryCode: selectedCityCc,
@@ -1061,7 +915,7 @@ try {
   }
 
   // Country-only ochrana:
-  // Použije se hlavně pro city input typu "Francie", "Maďarsko", "FR", "HU".
+  // PouĹľije se hlavnÄ› pro city input typu "Francie", "MaÄŹarsko", "FR", "HU".
   const shouldCountryFilter = shouldUseCountryOnlyClientFilter({
     countryFromCityInput,
     rawCityInput,
@@ -1173,5 +1027,6 @@ try {
   return all;
 }
 
-// Backward-compat: starší kód volá getAllEvents
+// Backward-compat: starĹˇĂ­ kĂłd volĂˇ getAllEvents
 export { fetchEvents as getAllEvents };
+

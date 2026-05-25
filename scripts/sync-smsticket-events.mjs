@@ -12,7 +12,20 @@ import path from 'node:path';
 
 const SMSTICKET_API_URL = 'https://www.smsticket.cz/api/public/v1.1/events';
 const OUT_FILE = path.resolve('public/data/smsticket-events.json');
+const OUT_DIR = path.dirname(OUT_FILE);
 const AFFILIATE_PARAM = 'a_box=d4n78jy6';
+
+// AJSEE_SMSTICKET_CITY_SUBSETS_v1
+// Keep the full feed as the canonical fallback, but also write small city feeds
+// for explicit high-traffic city searches so the browser does not need to
+// download and parse the whole SMS Ticket dataset.
+const CITY_SUBSETS = [
+  { slug: 'praha', aliases: ['praha', 'prague'] },
+  { slug: 'brno', aliases: ['brno'] },
+  { slug: 'ostrava', aliases: ['ostrava'] },
+  { slug: 'bratislava', aliases: ['bratislava'] },
+  { slug: 'kosice', aliases: ['kosice', 'košice'] }
+];
 
 function toArray(value) {
   if (!value) return [];
@@ -270,6 +283,81 @@ function normalizeEvent(event) {
   };
 }
 
+
+function foldSubsetCity(value = '') {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getSubsetCity(event = {}) {
+  return foldSubsetCity(
+    event?.place?.city ||
+    event?.venue?.city ||
+    event?.city ||
+    ''
+  );
+}
+
+function matchesSubsetCity(event, definition) {
+  const city = getSubsetCity(event);
+
+  if (!city) return false;
+
+  return definition.aliases.some((alias) => {
+    const foldedAlias = foldSubsetCity(alias);
+
+    return (
+      city === foldedAlias ||
+      city.startsWith(foldedAlias + ' ') ||
+      city.endsWith(' ' + foldedAlias) ||
+      city.includes(' ' + foldedAlias + ' ')
+    );
+  });
+}
+
+function createSubsetPayload(payload, definition, events) {
+  return {
+    ...payload,
+    subset: {
+      type: 'city',
+      slug: definition.slug,
+      aliases: definition.aliases
+    },
+    count: events.length,
+    events
+  };
+}
+
+async function writeSmsticketPayloads(payload) {
+  await mkdir(OUT_DIR, { recursive: true });
+
+  await writeFile(OUT_FILE, JSON.stringify(payload, null, 2), 'utf8');
+
+  console.log('[smsticket] synced ' + payload.events.length + ' events -> ' + OUT_FILE);
+
+  for (const definition of CITY_SUBSETS) {
+    const subsetEvents = payload.events.filter((event) => matchesSubsetCity(event, definition));
+    const subsetFile = path.join(OUT_DIR, 'smsticket-events-' + definition.slug + '.json');
+    const subsetPayload = createSubsetPayload(payload, definition, subsetEvents);
+
+    await writeFile(subsetFile, JSON.stringify(subsetPayload, null, 2), 'utf8');
+
+    console.log(
+      '[smsticket] city subset ' +
+      definition.slug +
+      ': ' +
+      subsetEvents.length +
+      ' events -> ' +
+      subsetFile
+    );
+  }
+}
 async function readExistingFallback() {
   if (!existsSync(OUT_FILE)) return null;
 
@@ -332,10 +420,7 @@ async function main() {
       events
     };
 
-    await mkdir(path.dirname(OUT_FILE), { recursive: true });
-    await writeFile(OUT_FILE, JSON.stringify(payload, null, 2), 'utf8');
-
-    console.log(`[smsticket] synced ${events.length} events -> ${OUT_FILE}`);
+    await writeSmsticketPayloads(payload);
   } catch (error) {
     console.warn(`[smsticket] sync failed: ${error?.message || error}`);
 
@@ -346,7 +431,7 @@ async function main() {
       return;
     }
 
-    await mkdir(path.dirname(OUT_FILE), { recursive: true });
+    await mkdir(OUT_DIR, { recursive: true });
     await writeFile(
       OUT_FILE,
       JSON.stringify({

@@ -131,7 +131,22 @@
         </div>
 
         <figure class="lm-hero-art">
-          <img src="/images/london-theatre.svg" alt="" loading="eager" decoding="async" />
+          <picture>
+            <source
+              srcset="/images/london-theatre-960.webp 960w, /images/london-theatre-1440.webp 1440w"
+              sizes="(max-width: 950px) calc(100vw - 24px), min(52vw, 620px)"
+              type="image/webp"
+            />
+            <img
+              src="/images/london-theatre-1440.webp"
+              alt=""
+              width="1440"
+              height="960"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+            />
+          </picture>
         </figure>
       </div>
     </section>

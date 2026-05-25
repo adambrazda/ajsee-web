@@ -1053,6 +1053,22 @@ function shouldContinueAfterCollected(collectedRaw, requestedSize) {
   return collectedRaw.length < Math.max(1, Number(requestedSize) || 12);
 }
 
+// AJSEE_TM_SKIP_CZSK_CITY_BROAD_FALLBACK_v1
+// CZ/SK explicit city searches already have a local provider fallback
+// via SMS Ticket. Avoid the large country-level Ticketmaster fallback
+// after city=Prague/Brno/... because it downloads many irrelevant events
+// and filters them client-side.
+function shouldSkipCzSkCityBroadFallback({ city = '', countryCode = '', filters = {} } = {}) {
+  const cc = String(countryCode || '').trim().toUpperCase();
+
+  if (!city || !['CZ', 'SK'].includes(cc)) return false;
+
+  // Allow debug/manual override if we need to investigate coverage later.
+  if (filters.forceTicketmasterBroadFallback === true) return false;
+
+  return true;
+}
+
 export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const rawCity = String(filters.city || '').trim();
 
@@ -1139,6 +1155,21 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
 
   const attempts = [];
 
+
+  const skipCzSkCityBroadFallback = shouldSkipCzSkCityBroadFallback({
+
+
+    city: tmCity,
+
+
+    countryCode: selectedCityCountry,
+
+
+    filters
+
+
+  });
+
   if (tmCity) {
     if (selectedCityCountry) {
       attempts.push({
@@ -1150,13 +1181,31 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         countryStrategy: 'both'
       });
 
-      attempts.push({
-        mode: 'broad',
-        countryCode: selectedCityCountry,
-        strictCity: tmCity,
-        strictCountry: selectedCityCountry,
-        countryStrategy: ''
-      });
+      if (!skipCzSkCityBroadFallback) {
+
+
+        attempts.push({
+
+
+          mode: 'broad',
+
+
+          countryCode: selectedCityCountry,
+
+
+          strictCity: tmCity,
+
+
+          strictCountry: selectedCityCountry,
+
+
+          countryStrategy: ''
+
+
+        });
+
+
+      }
 
       for (const metroCity of getMetroCityQueryAttempts(selectedCityCountry, tmCity)) {
         attempts.push({

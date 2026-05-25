@@ -164,6 +164,10 @@ const CITY_ALIAS_GROUPS = [
   ['prague', 'praha', 'prag', 'praga', 'prága', 'hlavni mesto praha', 'hl. m. praha', 'hl m praha']
 ];
 
+// AJSEE_SMSTICKET_FOLDED_CITY_ALIAS_GROUPS_v1
+// Avoid rebuilding folded alias groups for every event in large static feeds.
+const FOLDED_CITY_ALIAS_GROUPS = CITY_ALIAS_GROUPS.map((group) => group.map(fold));
+
 function cityAliasTokens(value = '') {
   const base = fold(value)
     .replace(/\bcz\b/g, '')
@@ -193,9 +197,7 @@ function cityAliasTokens(value = '') {
     // keep base-only matching
   }
 
-  for (const group of CITY_ALIAS_GROUPS) {
-    const foldedGroup = group.map(fold);
-
+  for (const foldedGroup of FOLDED_CITY_ALIAS_GROUPS) {
     if (foldedGroup.some((alias) => base === alias || base.includes(alias) || alias.includes(base))) {
       foldedGroup.forEach((alias) => tokens.add(alias));
     }
@@ -228,6 +230,42 @@ function matchesCity(ev, city = '') {
   });
 }
 
+
+
+
+// AJSEE_SMSTICKET_CITY_TOKEN_CACHE_v1
+// Fast path for fetchEvents(): selected city tokens are computed once,
+// event city tokens are cached by raw city label.
+function cachedCityAliasTokens(value = '', cacheMap = new Map()) {
+  const key = String(value || '').trim().toLowerCase();
+
+  if (!key) return [];
+
+  if (cacheMap.has(key)) {
+    return cacheMap.get(key);
+  }
+
+  const tokens = cityAliasTokens(value);
+  cacheMap.set(key, tokens);
+
+  return tokens;
+}
+
+function cityTokenListsMatch(eventTokens = [], selectedTokens = []) {
+  if (!eventTokens.length || !selectedTokens.length) return false;
+
+  return selectedTokens.some((selected) => {
+    return eventTokens.some((eventCity) => cityTokenMatches(eventCity, selected));
+  });
+}
+
+function matchesCityWithPreparedTokens(ev, selectedTokens = [], cacheMap = new Map()) {
+  if (!selectedTokens.length) return true;
+
+  const eventTokens = cachedCityAliasTokens(getCity(ev), cacheMap);
+
+  return cityTokenListsMatch(eventTokens, selectedTokens);
+}
 
 
 function matchesCategory(ev, category = 'all') {
@@ -319,10 +357,13 @@ export async function fetchEvents({ filters = {} } = {}) {
   const dateFrom = filters.dateFrom ?? filters.from ?? '';
   const dateTo = filters.dateTo ?? filters.to ?? '';
 
+  const selectedCityTokens = city ? cityAliasTokens(city) : [];
+  const eventCityTokenCache = new Map();
+
   const candidates = [];
 
   for (const ev of events) {
-    if (city && !matchesCity(ev, city)) continue;
+    if (selectedCityTokens.length && !matchesCityWithPreparedTokens(ev, selectedCityTokens, eventCityTokenCache)) continue;
     if (!matchesCategory(ev, category)) continue;
     if (keyword && !matchesKeyword(ev, keyword)) continue;
     if ((dateFrom || dateTo) && !inDateRange(ev, dateFrom, dateTo)) continue;

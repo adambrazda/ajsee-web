@@ -309,15 +309,29 @@ export async function fetchEvents({ filters = {} } = {}) {
 
   const events = await loadSmsticketData();
 
-  const filtered = sortEvents(
-    events
-      .filter((ev) => matchesCategory(ev, filters.category ?? filters.segment ?? 'all'))
-      .filter((ev) => matchesCity(ev, filters.city || ''))
-      .filter((ev) => matchesKeyword(ev, filters.keyword || ''))
-      .filter((ev) => inDateRange(ev, filters.dateFrom ?? filters.from ?? '', filters.dateTo ?? filters.to ?? ''))
-      .filter((ev) => matchesNearMe(ev, filters)),
-    filters.sort || 'nearest'
-  );
+  // AJSEE_SMSTICKET_SINGLE_PASS_FILTER_v1
+  // Keep the adapter result equivalent, but avoid several full-array passes
+  // over the large static feed. City is checked first because explicit city
+  // searches usually reduce the candidate set the most.
+  const city = filters.city || '';
+  const category = filters.category ?? filters.segment ?? 'all';
+  const keyword = filters.keyword || '';
+  const dateFrom = filters.dateFrom ?? filters.from ?? '';
+  const dateTo = filters.dateTo ?? filters.to ?? '';
+
+  const candidates = [];
+
+  for (const ev of events) {
+    if (city && !matchesCity(ev, city)) continue;
+    if (!matchesCategory(ev, category)) continue;
+    if (keyword && !matchesKeyword(ev, keyword)) continue;
+    if ((dateFrom || dateTo) && !inDateRange(ev, dateFrom, dateTo)) continue;
+    if (!matchesNearMe(ev, filters)) continue;
+
+    candidates.push(ev);
+  }
+
+  const filtered = sortEvents(candidates, filters.sort || 'nearest');
 
   return pageSlice(filtered, filters);
 }

@@ -321,16 +321,41 @@ function matchesSubsetCity(event, definition) {
   });
 }
 
+// AJSEE_SMSTICKET_LIGHT_CITY_SUBSETS_v1
+// City subset feeds are listing payloads. Keep the full smsticket-events.json
+// unchanged as the canonical fallback, but strip fields that are not needed for
+// event cards, city/category/date/keyword filtering, provider badges or links.
+function createLightCitySubsetEvent(event = {}) {
+  const {
+    description,
+    imageOriginal,
+    rawUrl,
+    bookingEndsAt,
+    ...lightEvent
+  } = event;
+
+  return lightEvent;
+}
+
 function createSubsetPayload(payload, definition, events) {
+  const lightEvents = events.map(createLightCitySubsetEvent);
+
   return {
     ...payload,
     subset: {
       type: 'city',
       slug: definition.slug,
-      aliases: definition.aliases
+      aliases: definition.aliases,
+      payload: 'listing-light',
+      removedFields: [
+        'description',
+        'imageOriginal',
+        'rawUrl',
+        'bookingEndsAt'
+      ]
     },
-    count: events.length,
-    events
+    count: lightEvents.length,
+    events: lightEvents
   };
 }
 

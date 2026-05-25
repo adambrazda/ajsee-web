@@ -10,39 +10,121 @@
 
 import { canonForInputCity } from '../city/canonical.js';
 
-const DATA_URL = '/data/smsticket-events.json';
+const DEFAULT_DATA_URL = '/data/smsticket-events.json';
 
-let cache = null;
-let cachePromise = null;
+// AJSEE_SMSTICKET_CITY_SUBSET_FEEDS_v1
+// Prefer a small city-specific static feed when the user explicitly searches
+// a supported CZ/SK city. If the subset is missing or fails to load, fall back
+// to the original full feed.
+const CITY_DATA_URLS = [
+  { url: '/data/smsticket-events-praha.json', aliases: ['praha', 'prague'] },
+  { url: '/data/smsticket-events-brno.json', aliases: ['brno'] },
+  { url: '/data/smsticket-events-ostrava.json', aliases: ['ostrava'] },
+  { url: '/data/smsticket-events-bratislava.json', aliases: ['bratislava'] },
+  { url: '/data/smsticket-events-kosice.json', aliases: ['kosice', 'košice'] }
+];
 
-async function loadSmsticketData() {
-  if (cache) return cache;
-  if (cachePromise) return cachePromise;
+const dataCache = new Map();
+const dataPromiseCache = new Map();
 
-  cachePromise = (async () => {
+function getFilterCityText(filters = {}) {
+  return String([
+    filters.city,
+    filters.cityLabel,
+    filters.location
+  ].filter(Boolean).join(' ')).trim();
+}
+
+function getCanonicalCityText(cityText = '') {
+  try {
+    const canonical = canonForInputCity(cityText);
+
+    if (!canonical) return '';
+
+    if (typeof canonical === 'string') return canonical;
+
+    return String(
+      canonical.city ||
+      canonical.name ||
+      canonical.label ||
+      canonical.value ||
+      ''
+    );
+  } catch {
+    return '';
+  }
+}
+
+function resolveSmsticketDataUrl(filters = {}) {
+  const cityText = getFilterCityText(filters);
+
+  if (!cityText) return DEFAULT_DATA_URL;
+
+  const folded = fold([
+    cityText,
+    getCanonicalCityText(cityText)
+  ].filter(Boolean).join(' '));
+
+  const match = CITY_DATA_URLS.find((definition) =>
+    definition.aliases.some((alias) => {
+      const foldedAlias = fold(alias);
+
+      return (
+        folded === foldedAlias ||
+        folded.startsWith(foldedAlias + ' ') ||
+        folded.endsWith(' ' + foldedAlias) ||
+        folded.includes(' ' + foldedAlias + ' ')
+      );
+    })
+  );
+
+  return match?.url || DEFAULT_DATA_URL;
+}
+
+async function loadSmsticketDataUrl(dataUrl = DEFAULT_DATA_URL) {
+  if (dataCache.has(dataUrl)) return dataCache.get(dataUrl);
+  if (dataPromiseCache.has(dataUrl)) return dataPromiseCache.get(dataUrl);
+
+  const promise = (async () => {
     try {
-      const response = await fetch(DATA_URL, { cache: 'default' });
+      const response = await fetch(dataUrl, { cache: 'default' });
 
       if (!response.ok) {
-        cache = [];
-        return cache;
+        dataCache.set(dataUrl, null);
+        return null;
       }
 
       const payload = await response.json();
       const events = Array.isArray(payload?.events) ? payload.events : [];
 
-      cache = events;
-      return cache;
+      dataCache.set(dataUrl, events);
+      return events;
     } catch (error) {
-      console.warn('[smsticket adapter] failed to load data:', error);
-      cache = [];
-      return cache;
+      console.warn('[smsticket adapter] failed to load data from ' + dataUrl + ':', error);
+      dataCache.set(dataUrl, null);
+      return null;
     } finally {
-      cachePromise = null;
+      dataPromiseCache.delete(dataUrl);
     }
   })();
 
-  return cachePromise;
+  dataPromiseCache.set(dataUrl, promise);
+  return promise;
+}
+
+async function loadSmsticketData(filters = {}) {
+  const primaryUrl = resolveSmsticketDataUrl(filters);
+  const primaryEvents = await loadSmsticketDataUrl(primaryUrl);
+
+  if (Array.isArray(primaryEvents)) return primaryEvents;
+
+  if (primaryUrl !== DEFAULT_DATA_URL) {
+    const fallbackEvents = await loadSmsticketDataUrl(DEFAULT_DATA_URL);
+
+    if (Array.isArray(fallbackEvents)) return fallbackEvents;
+  }
+
+  return [];
 }
 
 function fold(value = '') {
@@ -345,7 +427,7 @@ export async function fetchEvents({ filters = {} } = {}) {
   if (filters.includeSmsticket === false) return [];
   if (shouldSkipForCountry(filters)) return [];
 
-  const events = await loadSmsticketData();
+  const events = await loadSmsticketData(filters);
 
   // AJSEE_SMSTICKET_SINGLE_PASS_FILTER_v1
   // Keep the adapter result equivalent, but avoid several full-array passes

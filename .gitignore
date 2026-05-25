@@ -29,3 +29,6 @@ dist-ssr
 .env
 # Local AJSEE debug/archive files
 _local-debug-archive/
+
+# Generated SMS Ticket city subset feeds
+public/data/smsticket-events-*.json

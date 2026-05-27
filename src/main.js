@@ -1630,6 +1630,14 @@ async function loadTranslations(lang) {
 function prefetchTranslations() {
   const pageKey = getPageKeyForI18n();
 
+  // AJSEE_EVENTS_SKIP_EAGER_I18N_PREFETCH_v1
+  // Events pages are data-heavy and already load provider feeds on startup.
+  // Do not prefetch every other locale during initial load; the selected
+  // language is loaded via ensureTranslations(), and another language is
+  // loaded on demand when the user switches language.
+  if (pageKey === 'events') return;
+
+
   if (I18N_PREFETCHED.has(pageKey)) return;
   I18N_PREFETCHED.add(pageKey);
 

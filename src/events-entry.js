@@ -1365,15 +1365,11 @@ async function loadTranslations(lang) {
 }
 
 function prefetchTranslations() {
-  const pageKey = getPageKeyForI18n();
-  if (I18N_PREFETCHED.has(pageKey)) return;
-  I18N_PREFETCHED.add(pageKey);
-
-  const langsToPrefetch = ['cs', 'en', 'de', 'sk', 'pl', 'hu'].filter(lang => lang !== currentLang);
-  const run = () => langsToPrefetch.forEach(lang => loadTranslations(lang).catch(() => {}));
-
-  if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 2500 });
-  else window.setTimeout(run, 1200);
+  // AJSEE_EVENTS_ENTRY_SKIP_EAGER_I18N_PREFETCH_v1
+  // Events page is data-heavy and already loads provider feeds on startup.
+  // Current language is loaded via ensureTranslations()/applyTranslations().
+  // Other locales are loaded on demand when the user switches language.
+  return;
 }
 
 function getByPath(obj, path) {

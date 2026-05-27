@@ -1627,41 +1627,8 @@ async function loadTranslations(lang) {
   return promise;
 }
 
-function isEventsRuntimePageForI18nPrefetch(pageKey = '') {
-  try {
-    const bodyPage = String(document?.body?.dataset?.page || '').trim().toLowerCase();
-    if (bodyPage === 'events') return true;
-  } catch {}
-
-  try {
-    const normalizedPath = String(location?.pathname || '')
-      .toLowerCase()
-      .replace(/\/+/g, '/')
-      .replace(/\/+$/g, '');
-
-    if (
-      normalizedPath === '/events' ||
-      normalizedPath === '/events.html' ||
-      normalizedPath.endsWith('/events') ||
-      normalizedPath.endsWith('/events.html')
-    ) {
-      return true;
-    }
-  } catch {}
-
-  return String(pageKey || '').trim().toLowerCase() === 'events';
-}
-
 function prefetchTranslations() {
   const pageKey = getPageKeyForI18n();
-
-  // AJSEE_EVENTS_SKIP_EAGER_I18N_PREFETCH_v1
-  // Events pages are data-heavy and already load provider feeds on startup.
-  // Do not prefetch every other locale during initial load; the selected
-  // language is loaded via ensureTranslations(), and another language is
-  // loaded on demand when the user switches language.
-  if (isEventsRuntimePageForI18nPrefetch(pageKey)) return;
-
 
   if (I18N_PREFETCHED.has(pageKey)) return;
   I18N_PREFETCHED.add(pageKey);

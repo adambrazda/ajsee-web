@@ -2907,22 +2907,69 @@ function injectProviderBadgeStyles() {
 function trackPartnerClickFromLink(link) {
   if (!link) return;
 
-  const partner = String(link.dataset.partner || '').trim();
-  const eventName = String(link.dataset.eventTitle || '').trim();
-  const city = String(link.dataset.eventCity || '').trim();
-  const outboundUrl = String(link.href || link.dataset.outboundUrl || '').trim();
+  const cleanText = value => String(value || '').replace(/\s+/g, ' ').trim();
+
+  const getUrlHost = value => {
+    try {
+      return new URL(value, window.location.origin).hostname;
+    } catch {
+      return '';
+    }
+  };
+
+  const getLang = () =>
+    cleanText(document.documentElement.getAttribute('lang'))
+      .slice(0, 2)
+      .toLowerCase() || 'cs';
+
+  const partner = cleanText(link.dataset.partner);
+  const eventName = cleanText(link.dataset.eventTitle);
+  const city = cleanText(link.dataset.eventCity);
+  const clickedHref = cleanText(link.href || link.getAttribute('href'));
+  const outboundUrl = cleanText(link.dataset.outboundUrl) || clickedHref;
+
+  let routeCity = '';
+  let routeCountryCode = '';
+
+  try {
+    const params = new URLSearchParams(window.location.search);
+    routeCity = cleanText(params.get('city'));
+    routeCountryCode = cleanText(
+      params.get('cityCc') ||
+      params.get('country') ||
+      params.get('countryCode')
+    ).toUpperCase();
+  } catch {
+    /* noop */
+  }
 
   if (!partner && !outboundUrl) return;
 
   const payload = {
     event: 'partner_click',
+
+    // Existing fields kept for backward compatibility.
     partner,
     event_name: eventName,
     city,
     outbound_url: outboundUrl,
     placement: 'event_card',
-    page_path: window.location.pathname,
-    ts: new Date().toISOString()
+    page_path: window.location.pathname + window.location.search,
+    ts: new Date().toISOString(),
+
+    // Extended analytics fields.
+    event_title: eventName,
+    event_city: city || routeCity,
+    event_provider: partner,
+    destination_url: outboundUrl,
+    destination_host: getUrlHost(outboundUrl),
+    clicked_href: clickedHref,
+    clicked_host: getUrlHost(clickedHref),
+    route_city: routeCity,
+    route_country_code: routeCountryCode,
+    page_location: window.location.href,
+    language: getLang(),
+    link_text: cleanText(link.textContent)
   };
 
   try {

@@ -109,6 +109,7 @@ function shouldInclude(url) {
   if (/\/admin(\/|$)/i.test(pathname)) return false;
   if (/\/blog-detail\/?$/i.test(pathname)) return false;
   if (/\/coming-soon(\/|$)/i.test(pathname)) return false;
+  if (/\/soutez-instagram\/?$/i.test(pathname)) return false;
   if (/\/thank-you\/?$/i.test(pathname)) return false;
 
   // Important: localized blog article clones currently reuse Czech article content.

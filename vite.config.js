@@ -193,6 +193,7 @@ export default defineConfig({
           'cookies-policy': resolve(__dirname, 'cookies-policy.html'),
           microguides: resolve(__dirname, 'microguides/index.html'),
           'londynske-muzikaly': resolve(__dirname, 'londynske-muzikaly/index.html'),
+          'londynske-muzikaly-soutez-instagram': resolve(__dirname, 'londynske-muzikaly/soutez-instagram/index.html'),
           ...getMicroguideDetailInputs(),
         };
 

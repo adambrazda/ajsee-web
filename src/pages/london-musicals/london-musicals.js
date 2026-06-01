@@ -4,8 +4,11 @@ import { initNav } from '../../nav-core.js';
 import { applyTranslations, detectLang } from '../../i18n.js';
 
 const SUPPORTED = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
-const MAX_SHOWS = 12;
+const INITIAL_VISIBLE_SHOWS = 24;
 const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+
+let londonMusicalsShows = [];
+let londonMusicalsExpanded = false;
 
 const RUNTIME_COPY = {
   cs: {
@@ -79,6 +82,34 @@ const ROUTES = {
   hu: '/hu/londoni-musicalek/'
 };
 
+
+
+const SHOW_MORE_COPY = {
+  cs: {
+    showAll: 'Zobrazit všechna představení',
+    showing: 'Zobrazeno {shown} z {total} produkcí'
+  },
+  en: {
+    showAll: 'Show all shows',
+    showing: 'Showing {shown} of {total} productions'
+  },
+  de: {
+    showAll: 'Alle Vorstellungen anzeigen',
+    showing: '{shown} von {total} Produktionen angezeigt'
+  },
+  sk: {
+    showAll: 'Zobraziť všetky predstavenia',
+    showing: 'Zobrazené {shown} z {total} produkcií'
+  },
+  pl: {
+    showAll: 'Pokaż wszystkie spektakle',
+    showing: 'Wyświetlono {shown} z {total} produkcji'
+  },
+  hu: {
+    showAll: 'Összes előadás megjelenítése',
+    showing: '{shown} / {total} produkció megjelenítve'
+  }
+};
 function normLang(value) {
   const lang = String(value || '').toLowerCase().slice(0, 2);
   return SUPPORTED.includes(lang) ? lang : 'cs';
@@ -226,6 +257,70 @@ async function loadSeatPlanEvents() {
   return Array.isArray(payload?.events) ? payload.events : [];
 }
 
+function showMoreCopy(lang, key, values = {}) {
+  const messages = SHOW_MORE_COPY[lang] || SHOW_MORE_COPY.cs;
+
+  return String(messages[key] || SHOW_MORE_COPY.cs[key] || '')
+    .replace('{shown}', String(values.shown ?? ''))
+    .replace('{total}', String(values.total ?? ''));
+}
+
+function ensureShowMoreControls(grid) {
+  let controls = document.getElementById('londonMusicalsControls');
+
+  if (controls) return controls;
+
+  controls = document.createElement('div');
+  controls.id = 'londonMusicalsControls';
+  controls.className = 'lm-show-more';
+  controls.innerHTML = [
+    '<p class="lm-show-count" id="londonMusicalsCount" aria-live="polite"></p>',
+    '<button type="button" class="lm-btn lm-btn--primary" id="londonMusicalsShowAll"></button>'
+  ].join('');
+
+  grid.insertAdjacentElement('afterend', controls);
+  return controls;
+}
+
+function hideShowMoreControls() {
+  const controls = document.getElementById('londonMusicalsControls');
+  if (controls) controls.hidden = true;
+}
+
+function renderVisibleShows(grid, lang) {
+  const total = londonMusicalsShows.length;
+  const visibleCount = londonMusicalsExpanded
+    ? total
+    : Math.min(INITIAL_VISIBLE_SHOWS, total);
+
+  const visibleShows = londonMusicalsShows.slice(0, visibleCount);
+  grid.innerHTML = visibleShows.map((event) => cardHtml(event, lang)).join('');
+
+  const controls = ensureShowMoreControls(grid);
+  const count = document.getElementById('londonMusicalsCount');
+  const button = document.getElementById('londonMusicalsShowAll');
+
+  controls.hidden = false;
+
+  if (count) {
+    count.textContent = showMoreCopy(lang, 'showing', {
+      shown: visibleCount,
+      total
+    });
+  }
+
+  if (button) {
+    button.hidden = visibleCount >= total;
+    button.textContent = showMoreCopy(lang, 'showAll');
+
+    button.onclick = () => {
+      londonMusicalsExpanded = true;
+      renderVisibleShows(grid, lang);
+      button.blur();
+    };
+  }
+}
+
 async function renderShows() {
   const lang = normLang(detectLang());
   const grid = document.getElementById('londonMusicalsGrid');
@@ -237,21 +332,24 @@ async function renderShows() {
     grid.setAttribute('aria-busy', 'true');
 
     const events = await loadSeatPlanEvents();
-    const shows = events
-      .filter(isRelevantLondonShow)
-      .sort(sortBySeatPlanPriority)
-      .slice(0, MAX_SHOWS);
 
-    if (!shows.length) {
+    londonMusicalsExpanded = false;
+    londonMusicalsShows = events
+      .filter(isRelevantLondonShow)
+      .sort(sortBySeatPlanPriority);
+
+    if (!londonMusicalsShows.length) {
       grid.innerHTML = '';
+      hideShowMoreControls();
       if (empty) empty.hidden = false;
       return;
     }
 
     if (empty) empty.hidden = true;
-    grid.innerHTML = shows.map((event) => cardHtml(event, lang)).join('');
+    renderVisibleShows(grid, lang);
   } catch {
     grid.innerHTML = '';
+    hideShowMoreControls();
     if (empty) empty.hidden = false;
   } finally {
     grid.removeAttribute('aria-busy');

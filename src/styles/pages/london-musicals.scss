@@ -914,3 +914,36 @@ body.page-london-musicals .lm-rules-footer-cta {
   }
 }
 
+/* AJSEE_LONDON_MUSICALS_PROGRESSIVE_REVEAL_v1
+   Keep the first page fast, then let users reveal the full SeatPlan catalogue. */
+body.page-london-musicals .lm-show-more {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: clamp(18px, 2.6vw, 30px);
+  padding-top: clamp(6px, 1vw, 12px);
+}
+
+body.page-london-musicals .lm-show-count {
+  margin: 0;
+  color: var(--lm-muted);
+  font-size: 0.96rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+body.page-london-musicals .lm-show-more .lm-btn {
+  min-width: min(100%, 280px);
+  justify-content: center;
+}
+
+body.page-london-musicals .lm-show-more[hidden] {
+  display: none;
+}
+
+@media (max-width: 540px) {
+  body.page-london-musicals .lm-show-more .lm-btn {
+    width: 100%;
+  }
+}
+

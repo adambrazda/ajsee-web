@@ -13,7 +13,7 @@ import path from 'node:path';
 const SMSTICKET_API_URL = 'https://www.smsticket.cz/api/public/v1.1/events';
 const OUT_FILE = path.resolve('public/data/smsticket-events.json');
 const OUT_DIR = path.dirname(OUT_FILE);
-const AFFILIATE_PARAM = 'a_box=d4n78jy6';
+const AFFILIATE_PARAM = 'a_box=d4n78jv6';
 
 // AJSEE_SMSTICKET_CITY_SUBSETS_v1
 // Keep the full feed as the canonical fallback, but also write small city feeds

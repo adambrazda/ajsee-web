@@ -357,8 +357,122 @@ async function loadMicroguideCards(lang) {
     .sort((a, b) => (b._ts || 0) - (a._ts || 0));
 }
 
+async function loadReviewCards(lang) {
+  const currentLang = normalizeLang(lang || getLang());
+
+  async function fetchJson(url) {
+    const response = await fetch(url, { cache: 'no-store' });
+
+    if (!response.ok) {
+      throw new Error(String(response.status));
+    }
+
+    return response.json();
+  }
+
+  let payload = null;
+
+  try {
+    payload = await fetchJson('/content/reviews/index.json');
+  } catch {
+    return [];
+  }
+
+  const raw = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.items)
+      ? payload.items
+      : [];
+
+  if (!raw.length) return [];
+
+  const reviewBadge = {
+    cs: 'Recenze',
+    en: 'Review',
+    de: 'Rezension',
+    sk: 'Recenzia',
+    pl: 'Recenzja',
+    hu: 'V?lem?ny'
+  };
+
+  const fallbackLangs = Array.from(new Set([currentLang, 'en', 'cs']));
+
+  const pickTranslation = (item) => {
+    const translations = item?.translations || {};
+
+    for (const candidate of fallbackLangs) {
+      const block = translations[candidate];
+
+      if (block && (block.title || block.excerpt || block.seoTitle)) {
+        return {
+          lang: candidate,
+          data: block
+        };
+      }
+    }
+
+    return {
+      lang: currentLang,
+      data: {}
+    };
+  };
+
+  return raw
+    .filter((item) => item?.slug)
+    .filter((item) => String(item.status || '').toLowerCase() === 'published')
+    .filter((item) => item.published === true)
+    .map((item) => {
+      const localized = pickTranslation(item);
+      const data = localized.data || {};
+      const slug = String(item.slug || '').trim();
+
+      const title = data.title || item.showTitle || slug;
+      const lead = data.excerpt || data.subtitle || item.productionTitle || '';
+      const image = item.cover || '/images/fallbacks/concert0.jpg';
+      const date = item.publishedAt || item.reviewDate || item.sortDate || '';
+      const ts = Date.parse(date || 0) || 0;
+
+      const href = currentLang === DEFAULT_LANG
+        ? '/reviews/' + encodeURIComponent(slug) + '/'
+        : '/' + currentLang + '/reviews/' + encodeURIComponent(slug) + '/';
+
+      return {
+        ...item,
+        type: 'review',
+        kind: 'review',
+        contentType: 'review',
+        category: 'review',
+        dataCategory: 'review',
+        slug,
+        lang: localized.lang,
+        language: localized.lang,
+        title,
+        titleText: title,
+        lead,
+        leadText: lead,
+        summary: lead,
+        excerpt: lead,
+        image,
+        cover: image,
+        coverAlt: item.coverAlt || title,
+        date,
+        publishedAt: date,
+        href,
+        url: href,
+        link: href,
+        path: href,
+        badge: reviewBadge[currentLang] || reviewBadge.en,
+        _ts: ts,
+        ts
+      };
+    })
+    .sort((a, b) => (b._ts || 0) - (a._ts || 0));
+}
+
+
 async function loadAllCards(lang) {
   const microguides = await loadMicroguideCards(lang);
+  const reviews = await loadReviewCards(lang);
 
   const articles = getSortedBlogArticles(lang).map((article) => ({
     type: 'article',
@@ -371,7 +485,11 @@ async function loadAllCards(lang) {
     ts: article._ts,
   }));
 
-  return [...microguides, ...articles].sort((a, b) => b.ts - a.ts);
+  return [...reviews, ...microguides, ...articles].sort((a, b) => {
+    const bTime = b.ts || b._ts || 0;
+    const aTime = a.ts || a._ts || 0;
+    return bTime - aTime;
+  });
 }
 
 function withLangPath(path, lang) {
@@ -422,11 +540,24 @@ function cardHref(card, uiLang = getLang()) {
     return withLangPath('/blog/', lang);
   }
 
-  if (card.type === 'microguide') {
-    return withLangPath(card.href || card.url || card.link || card.path || '/microguides/' + slug + '/', lang);
+  if (card.type === 'review') {
+    return withLangPath(
+      card.href || card.url || card.link || card.path || '/reviews/' + slug + '/',
+      lang
+    );
   }
 
-  return withLangPath(card.href || card.url || card.link || card.path || '/blog/' + slug + '/', lang);
+  if (card.type === 'microguide') {
+    return withLangPath(
+      card.href || card.url || card.link || card.path || '/microguides/' + slug + '/',
+      lang
+    );
+  }
+
+  return withLangPath(
+    card.href || card.url || card.link || card.path || '/blog/' + slug + '/',
+    lang
+  );
 }
 
 // --- Render ----------------------------------------------------------------
@@ -457,7 +588,7 @@ function renderCards(cards, lang) {
   const grid = getGrid();
   if (!grid) return;
 
-  // Pojistka proti případným legacy třídám z homepage rendereru.
+  // Pojistka proti p??padn?m legacy t??d?m z homepage rendereru.
   grid.classList.add('blog-cards');
   grid.classList.remove('homepage-blog-cards');
 
@@ -472,6 +603,28 @@ function renderCards(cards, lang) {
     const lead = escapeHtml(card.lead || '');
     const image = escapeHtml(optimizeCardImageUrl(card.image || ''));
     const readMore = escapeHtml(tReadMore(lang));
+
+    if (card.type === 'review') {
+      const badge = escapeHtml(tFilter('review', lang) || 'Review');
+      const alt = escapeHtml(card.coverAlt || card.title || '');
+
+      return `
+        <article class="blog-card is-review" data-type="review" data-href="${escapeHtml(href)}">
+          <div class="card-media">
+            ${image ? `<img src="${image}" alt="${alt || title}" loading="lazy" decoding="async">` : ''}
+            <span class="card-badge">${badge}</span>
+          </div>
+
+          <div class="blog-card-body">
+            <h3 class="blog-card-title">${title}</h3>
+            <div class="blog-card-lead">${lead}</div>
+            <div class="blog-card-actions">
+              <a class="blog-readmore" href="${escapeHtml(href)}">${readMore}</a>
+            </div>
+          </div>
+        </article>
+      `;
+    }
 
     if (card.type === 'microguide') {
       return `
@@ -493,7 +646,7 @@ function renderCards(cards, lang) {
     }
 
     return `
-      <article class="blog-card" data-type="article">
+      <article class="blog-card" data-type="article" data-href="${escapeHtml(href)}">
         <div class="card-media">
           ${image ? `<img src="${image}" alt="${title}" loading="lazy" decoding="async">` : ''}
         </div>
@@ -513,11 +666,11 @@ function renderCards(cards, lang) {
     grid.dataset.blogCardClickBound = '1';
 
     grid.addEventListener('click', (event) => {
-      const microguideCard = event.target.closest('.blog-card.is-microguide[data-href]');
-      if (!microguideCard) return;
+      const card = event.target.closest('.blog-card[data-href]');
+      if (!card) return;
       if (event.target.closest('a')) return;
 
-      window.location.assign(microguideCard.dataset.href);
+      window.location.assign(card.dataset.href);
     });
   }
 
@@ -555,9 +708,11 @@ async function renderBlogArticles(category = activeCategory) {
 
     let list = [...cardsCache.get(lang)];
 
-    if (activeCategory !== 'all') {
+    if (activeCategory && activeCategory !== 'all') {
       if (activeCategory === 'microguide') {
         list = list.filter((card) => card.type === 'microguide');
+      } else if (activeCategory === 'review') {
+        list = list.filter((card) => card.type === 'review');
       } else {
         list = list.filter((card) => card.type === 'article' && card.category === activeCategory);
       }

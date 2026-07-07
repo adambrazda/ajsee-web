@@ -1,0 +1,213 @@
+backend:
+  name: git-gateway
+  branch: main
+  base_url: https://ajsee.cz/
+
+# Local testing without Netlify Identity.
+# Run in a separate terminal: npx decap-server
+local_backend: true
+
+site_url: https://ajsee.cz
+display_url: https://ajsee.cz
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+locale: en
+
+collections:
+  - name: "review_submissions"
+    label: "Review submissions"
+    label_singular: "Review submission"
+    folder: "content/reviews/submissions"
+    create: true
+    format: json
+    identifier_field: "showTitle"
+    slug: "{{fields.slug}}"
+    sortable_fields: ["submittedAt", "showTitle", "status"]
+    search_fields: ["slug", "showTitle", "venue", "city", "english.title"]
+    editor:
+      preview: false
+    fields:
+      - label: "Review slug"
+        name: "slug"
+        widget: "string"
+        hint: "Example: jesus-christ-superstar-london-2026. Use lowercase letters, numbers and hyphens only."
+        pattern: ['^[a-z0-9-]+$', 'Use lowercase letters, numbers and hyphens only.']
+
+      - label: "Submission status"
+        name: "status"
+        widget: "select"
+        options:
+          - { label: "Draft", value: "draft" }
+          - { label: "Ready for Adam review", value: "ready_for_adam_review" }
+          - { label: "Needs changes", value: "needs_changes" }
+          - { label: "Approved by Adam", value: "approved_by_adam" }
+        default: "draft"
+        hint: "Choose 'Ready for Adam review' when the English review is finished."
+
+      - label: "Show title"
+        name: "showTitle"
+        widget: "string"
+        hint: "Example: Jesus Christ Superstar"
+
+      - label: "Production / event title"
+        name: "productionTitle"
+        widget: "string"
+        required: false
+        hint: "Optional. Use only if different from the show title."
+
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Theatre", value: "theatre" }
+          - { label: "Concert", value: "concert" }
+          - { label: "Festival", value: "festival" }
+          - { label: "Sport", value: "sport" }
+        default: "theatre"
+
+      - label: "Venue"
+        name: "venue"
+        widget: "string"
+        required: false
+        hint: "Example: London Palladium"
+
+      - label: "City"
+        name: "city"
+        widget: "string"
+        hint: "Example: London"
+
+      - label: "Country"
+        name: "country"
+        widget: "string"
+        hint: "Example: United Kingdom"
+
+      - label: "Performance date"
+        name: "performanceDate"
+        widget: "datetime"
+        required: false
+        picker_utc: true
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+
+      - label: "Submitted date"
+        name: "submittedAt"
+        widget: "datetime"
+        required: true
+        picker_utc: true
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+        hint: "Date when the review is submitted."
+
+      - label: "Author name"
+        name: "author"
+        widget: "string"
+        hint: "Example: Oya Canli"
+
+      - label: "Rating"
+        name: "rating"
+        widget: "number"
+        required: false
+        value_type: "float"
+        min: 0
+        max: 5
+        step: 0.5
+        hint: "Optional. Use 0?5."
+
+      - label: "Ticket URL"
+        name: "ticketUrl"
+        widget: "string"
+        required: false
+        hint: "Optional. Add ticket or partner URL if available."
+
+      - label: "Photos"
+        name: "photos"
+        widget: "object"
+        fields:
+          - label: "Cover image"
+            name: "cover"
+            widget: "image"
+            allow_multiple: false
+            choose_url: true
+            required: true
+            hint: "Main image used for the review."
+
+          - label: "Cover image alt text"
+            name: "coverAlt"
+            widget: "string"
+            required: true
+            hint: "Describe the image for accessibility."
+
+          - label: "Gallery images"
+            name: "gallery"
+            widget: "list"
+            required: false
+            label_singular: "Gallery image"
+            summary: "{{fields.image}}"
+            fields:
+              - label: "Image"
+                name: "image"
+                widget: "image"
+                choose_url: true
+              - label: "Alt text"
+                name: "alt"
+                widget: "string"
+                required: true
+              - label: "Photo credit"
+                name: "credit"
+                widget: "string"
+                required: false
+
+      - label: "English review"
+        name: "english"
+        widget: "object"
+        fields:
+          - label: "Review title"
+            name: "title"
+            widget: "string"
+            required: true
+
+          - label: "Subtitle"
+            name: "subtitle"
+            widget: "string"
+            required: false
+
+          - label: "Short excerpt"
+            name: "excerpt"
+            widget: "text"
+            required: true
+            hint: "2?3 sentences for the review card and intro."
+
+          - label: "Full review text"
+            name: "body"
+            widget: "markdown"
+            required: true
+            hint: "Paste the full English review here."
+
+          - label: "Call-to-action text"
+            name: "ctaText"
+            widget: "string"
+            required: false
+            default: "Check tickets"
+
+      - label: "SEO"
+        name: "seo"
+        widget: "object"
+        collapsed: true
+        fields:
+          - label: "SEO title"
+            name: "title"
+            widget: "string"
+            required: true
+            hint: "Example: Jesus Christ Superstar London Review | AJSEE"
+
+          - label: "SEO description"
+            name: "description"
+            widget: "text"
+            required: true
+            hint: "Short search result description."
+
+      - label: "Notes for Adam"
+        name: "notesForAdam"
+        widget: "text"
+        required: false
+        hint: "Optional private notes for Adam. Not shown on the website."

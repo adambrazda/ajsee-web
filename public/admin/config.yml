@@ -10,7 +10,7 @@ media_folder: "public/uploads"   # kam se uloží soubory v repo
 public_folder: "/uploads"        # jak budou dostupné na webu
 
 publish_mode: editorial_workflow
-locale: cs
+locale: en
 
 # ---------------------------------------------------------
 # Kolekce
@@ -141,3 +141,255 @@ collections:
 
       - { label: "Závěrečná otázka/CTA", name: "ctaQuestion", widget: "string", required: false }
       - { label: "Status", name: "status", widget: "select", options: ["draft","published"], default: "published" }
+
+
+  # ?? Reviews ??
+  - name: "reviews"
+    label: "Reviews"
+    label_singular: "Review"
+    folder: "content/reviews/items"
+    create: true
+    format: json
+    identifier_field: "showTitle"
+    slug: "{{fields.slug}}"
+    sortable_fields: ["reviewDate", "publishedAt", "showTitle", "status"]
+    search_fields: ["slug", "showTitle", "venue", "city", "translations.en.title"]
+    editor:
+      preview: false
+    fields:
+      - label: "Review slug"
+        name: "slug"
+        widget: "string"
+        hint: "Example: jesus-christ-superstar-london-2026. Use lowercase letters, numbers and hyphens only."
+        pattern: ['^[a-z0-9-]+$', 'Use lowercase letters, numbers and hyphens only.']
+
+      - label: "Workflow status"
+        name: "status"
+        widget: "select"
+        options:
+          - { label: "Draft", value: "draft" }
+          - { label: "Ready for review", value: "ready_for_review" }
+          - { label: "Needs changes", value: "needs_changes" }
+          - { label: "Approved", value: "approved" }
+          - { label: "Published", value: "published" }
+          - { label: "Archived", value: "archived" }
+        default: "draft"
+        hint: "Use Ready for review when the English version is finished and ready for Adam."
+
+      - label: "Published on website"
+        name: "published"
+        widget: "boolean"
+        default: false
+        hint: "Keep this OFF until Adam approves the review and all language versions are ready."
+
+      - label: "Featured review"
+        name: "featured"
+        widget: "boolean"
+        default: false
+        required: false
+
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Theatre", value: "theatre" }
+          - { label: "Concert", value: "concert" }
+          - { label: "Festival", value: "festival" }
+          - { label: "Sport", value: "sport" }
+        default: "theatre"
+
+      - label: "Show title"
+        name: "showTitle"
+        widget: "string"
+        hint: "Example: Jesus Christ Superstar"
+
+      - label: "Production / event title"
+        name: "productionTitle"
+        widget: "string"
+        required: false
+
+      - label: "Venue"
+        name: "venue"
+        widget: "string"
+        required: false
+        hint: "Example: London Palladium"
+
+      - label: "City"
+        name: "city"
+        widget: "string"
+        hint: "Example: London"
+
+      - label: "Country"
+        name: "country"
+        widget: "string"
+        hint: "Example: United Kingdom"
+
+      - label: "Performance date"
+        name: "performanceDate"
+        widget: "datetime"
+        required: false
+        picker_utc: true
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+
+      - label: "Review date"
+        name: "reviewDate"
+        widget: "datetime"
+        required: true
+        picker_utc: true
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+
+      - label: "Published date"
+        name: "publishedAt"
+        widget: "datetime"
+        required: false
+        picker_utc: true
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+        hint: "Fill this only when the review is ready to be published."
+
+      - label: "Author name"
+        name: "author"
+        widget: "string"
+        hint: "Example: Oya Canli"
+
+      - label: "Rating"
+        name: "rating"
+        widget: "number"
+        required: false
+        value_type: "float"
+        min: 0
+        max: 5
+        step: 0.5
+
+      - label: "Ticket URL"
+        name: "ticketUrl"
+        widget: "string"
+        required: false
+
+      - label: "Cover image"
+        name: "cover"
+        widget: "image"
+        allow_multiple: false
+        choose_url: true
+        required: true
+        hint: "Main image used on the review card and detail page."
+
+      - label: "Cover image alt text"
+        name: "coverAlt"
+        widget: "string"
+        required: true
+        hint: "Describe the image for accessibility."
+
+      - label: "Gallery images"
+        name: "gallery"
+        widget: "list"
+        required: false
+        label_singular: "Gallery image"
+        summary: "{{fields.image}}"
+        fields:
+          - label: "Image"
+            name: "image"
+            widget: "image"
+            choose_url: true
+          - label: "Alt text"
+            name: "alt"
+            widget: "string"
+            required: true
+          - label: "Photo credit"
+            name: "credit"
+            widget: "string"
+            required: false
+
+      - label: "Translations"
+        name: "translations"
+        widget: "object"
+        fields:
+          - label: "English content"
+            name: "en"
+            widget: "object"
+            fields:
+              - { label: "Review title", name: "title", widget: "string", required: true }
+              - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - label: "Short excerpt"
+                name: "excerpt"
+                widget: "text"
+                required: true
+                hint: "2?3 sentences for the review card and intro."
+              - label: "Full review text"
+                name: "body"
+                widget: "markdown"
+                required: true
+                hint: "Paste the full English review here."
+              - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false, default: "Check tickets" }
+              - { label: "SEO title", name: "seoTitle", widget: "string", required: true }
+              - { label: "SEO description", name: "seoDescription", widget: "text", required: true }
+
+          - label: "Czech content"
+            name: "cs"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Review title", name: "title", widget: "string", required: false }
+              - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
+              - { label: "Full review text", name: "body", widget: "markdown", required: false }
+              - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
+              - { label: "SEO title", name: "seoTitle", widget: "string", required: false }
+              - { label: "SEO description", name: "seoDescription", widget: "text", required: false }
+
+          - label: "Slovak content"
+            name: "sk"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Review title", name: "title", widget: "string", required: false }
+              - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
+              - { label: "Full review text", name: "body", widget: "markdown", required: false }
+              - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
+              - { label: "SEO title", name: "seoTitle", widget: "string", required: false }
+              - { label: "SEO description", name: "seoDescription", widget: "text", required: false }
+
+          - label: "Hungarian content"
+            name: "hu"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Review title", name: "title", widget: "string", required: false }
+              - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
+              - { label: "Full review text", name: "body", widget: "markdown", required: false }
+              - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
+              - { label: "SEO title", name: "seoTitle", widget: "string", required: false }
+              - { label: "SEO description", name: "seoDescription", widget: "text", required: false }
+
+          - label: "Polish content"
+            name: "pl"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Review title", name: "title", widget: "string", required: false }
+              - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
+              - { label: "Full review text", name: "body", widget: "markdown", required: false }
+              - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
+              - { label: "SEO title", name: "seoTitle", widget: "string", required: false }
+              - { label: "SEO description", name: "seoDescription", widget: "text", required: false }
+
+          - label: "German content"
+            name: "de"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Review title", name: "title", widget: "string", required: false }
+              - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
+              - { label: "Full review text", name: "body", widget: "markdown", required: false }
+              - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
+              - { label: "SEO title", name: "seoTitle", widget: "string", required: false }
+              - { label: "SEO description", name: "seoDescription", widget: "text", required: false }
+
+      - label: "Internal notes"
+        name: "internalNotes"
+        widget: "text"
+        required: false
+        hint: "Private editorial notes. Not shown on the website."

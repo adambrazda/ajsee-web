@@ -978,3 +978,746 @@ body.page-london-musicals .lm-card--partner-purchase .lm-card-note {
   font-size: 0.94rem;
   line-height: 1.6;
 }
+
+
+/* AJSEE_LONDON_THEATRE_CLEAN_V3
+   Premium West End visual redesign without cascade priority hacks. */
+html body.page-london-musicals,
+html body.page-london-musicals main.lm-page {
+  --lm-theatre-bg: #020814;
+  --lm-theatre-bg-2: #06192b;
+  --lm-theatre-card: rgba(8, 24, 46, 0.92);
+  --lm-theatre-card-2: rgba(10, 35, 66, 0.88);
+  --lm-theatre-border: rgba(255, 255, 255, 0.14);
+  --lm-theatre-border-strong: rgba(244, 195, 101, 0.34);
+  --lm-theatre-text: #f7fbff;
+  --lm-theatre-muted: rgba(224, 239, 248, 0.78);
+  --lm-theatre-soft: rgba(224, 239, 248, 0.62);
+  --lm-theatre-gold: #f4c365;
+  --lm-theatre-cyan: #14c2c5;
+  --lm-theatre-blue: #0e6ba8;
+  --lm-theatre-pink: #ff2f6d;
+
+  color: var(--lm-theatre-text);
+  background: #020814;
+}
+
+html body.page-london-musicals main.lm-page {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 14% 0%, rgba(20, 194, 197, 0.2), transparent 28rem),
+    radial-gradient(circle at 86% 8%, rgba(255, 47, 109, 0.12), transparent 30rem),
+    radial-gradient(circle at 50% 34%, rgba(244, 195, 101, 0.08), transparent 34rem),
+    linear-gradient(180deg, #020814 0%, #06192b 42%, #020814 100%);
+}
+
+html body.page-london-musicals main.lm-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(244, 195, 101, 0.055) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.28) 48%, transparent);
+}
+
+/* Header */
+html body.page-london-musicals .site-header {
+  background: rgba(2, 8, 20, 0.86);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(18px);
+}
+
+html body.page-london-musicals .site-header a,
+html body.page-london-musicals .site-header button {
+  color: #f7fbff;
+}
+
+/* Hero */
+html body.page-london-musicals section.lm-hero {
+  position: relative;
+  min-height: min(760px, calc(100vh - var(--lm-header-offset)));
+  padding-top: clamp(44px, 6vw, 88px);
+  padding-bottom: clamp(48px, 6vw, 92px);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(20, 194, 197, 0.26), transparent 24rem),
+    radial-gradient(circle at 84% 10%, rgba(244, 195, 101, 0.18), transparent 25rem),
+    linear-gradient(135deg, rgba(2, 8, 20, 0.98), rgba(6, 25, 43, 0.96) 58%, rgba(2, 8, 20, 0.98));
+}
+
+html body.page-london-musicals section.lm-hero::before {
+  background:
+    radial-gradient(ellipse at 50% -12%, rgba(20, 194, 197, 0.2), transparent 46%),
+    linear-gradient(105deg, rgba(255, 255, 255, 0.08), transparent 24% 76%, rgba(244, 195, 101, 0.07));
+  opacity: 1;
+}
+
+html body.page-london-musicals section.lm-hero::after {
+  height: 140px;
+  background: linear-gradient(180deg, rgba(2, 8, 20, 0), #020814);
+}
+
+html body.page-london-musicals .lm-hero-grid {
+  position: relative;
+  z-index: 1;
+  grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1.08fr);
+  gap: clamp(28px, 6vw, 84px);
+}
+
+html body.page-london-musicals .lm-eyebrow,
+html body.page-london-musicals .lm-badge-label {
+  color: var(--lm-theatre-gold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+html body.page-london-musicals .lm-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  padding: 8px 12px;
+  border: 1px solid rgba(244, 195, 101, 0.32);
+  border-radius: 999px;
+  background: rgba(244, 195, 101, 0.1);
+  box-shadow: 0 0 34px rgba(244, 195, 101, 0.14);
+}
+
+html body.page-london-musicals .lm-hero h1 {
+  color: #ffffff;
+  text-shadow: 0 20px 64px rgba(20, 194, 197, 0.2);
+}
+
+html body.page-london-musicals .lm-hero h1::after {
+  content: "";
+  display: block;
+  width: min(230px, 52vw);
+  height: 3px;
+  margin-top: 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--lm-theatre-gold), var(--lm-theatre-cyan), transparent);
+  box-shadow: 0 0 28px rgba(244, 195, 101, 0.36);
+}
+
+html body.page-london-musicals .lm-lead,
+html body.page-london-musicals .lm-microcopy {
+  color: var(--lm-theatre-muted);
+}
+
+html body.page-london-musicals .lm-microcopy {
+  max-width: 680px;
+  padding: 14px 16px;
+  border: 1px solid rgba(20, 194, 197, 0.18);
+  border-radius: 18px;
+  background: rgba(8, 24, 46, 0.68);
+}
+
+/* Hero image */
+html body.page-london-musicals .lm-hero-art {
+  overflow: hidden;
+  border: 1px solid rgba(244, 195, 101, 0.3);
+  border-radius: 34px;
+  background:
+    linear-gradient(135deg, rgba(244, 195, 101, 0.18), rgba(20, 194, 197, 0.1)),
+    rgba(8, 24, 46, 0.76);
+  box-shadow:
+    0 38px 110px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+html body.page-london-musicals .lm-hero-art img {
+  filter: saturate(1.08) contrast(1.1) brightness(0.82);
+}
+
+/* Buttons */
+html body.page-london-musicals .lm-btn {
+  min-height: 48px;
+  border-radius: 999px;
+  font-weight: 850;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+html body.page-london-musicals .lm-btn:hover {
+  transform: translateY(-2px);
+}
+
+html body.page-london-musicals .lm-btn:focus-visible {
+  outline: 3px solid rgba(244, 195, 101, 0.72);
+  outline-offset: 3px;
+}
+
+html body.page-london-musicals .lm-btn--primary {
+  color: #ffffff;
+  border: 1px solid rgba(20, 194, 197, 0.34);
+  background:
+    radial-gradient(circle at 22% 0%, rgba(255, 255, 255, 0.25), transparent 32%),
+    linear-gradient(135deg, #0e6ba8, #14c2c5);
+  box-shadow:
+    0 18px 42px rgba(20, 194, 197, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+html body.page-london-musicals .lm-btn--secondary {
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.075);
+  backdrop-filter: blur(14px);
+}
+
+/* Sections */
+html body.page-london-musicals .lm-section,
+html body.page-london-musicals .lm-section--list,
+html body.page-london-musicals .lm-accommodation-banner,
+html body.page-london-musicals .lm-disclaimer {
+  background: transparent;
+}
+
+html body.page-london-musicals .lm-section {
+  padding-top: clamp(42px, 5.2vw, 76px);
+  padding-bottom: clamp(42px, 5.2vw, 76px);
+}
+
+html body.page-london-musicals .lm-section-head {
+  margin-bottom: clamp(22px, 3vw, 34px);
+}
+
+html body.page-london-musicals .lm-section h2,
+html body.page-london-musicals .lm-accommodation-card h2,
+html body.page-london-musicals .lm-final h2,
+html body.page-london-musicals .lm-empty h3 {
+  color: #ffffff;
+  text-shadow: 0 12px 44px rgba(20, 194, 197, 0.14);
+}
+
+html body.page-london-musicals .lm-section-head p,
+html body.page-london-musicals .lm-accommodation-card p,
+html body.page-london-musicals .lm-final p,
+html body.page-london-musicals .lm-empty p {
+  color: var(--lm-theatre-muted);
+}
+
+html body.page-london-musicals .lm-points span {
+  color: rgba(247, 251, 255, 0.9);
+  border: 1px solid rgba(244, 195, 101, 0.2);
+  background: rgba(244, 195, 101, 0.08);
+}
+
+/* Cards */
+html body.page-london-musicals .lm-card,
+html body.page-london-musicals .lm-accommodation-card,
+html body.page-london-musicals .lm-steps article,
+html body.page-london-musicals .lm-final,
+html body.page-london-musicals .lm-empty {
+  color: #ffffff;
+  border: 1px solid var(--lm-theatre-border);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(20, 194, 197, 0.1), transparent 16rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+    var(--lm-theatre-card);
+  box-shadow: 0 22px 68px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(18px);
+}
+
+html body.page-london-musicals .lm-card h3,
+html body.page-london-musicals .lm-steps h3,
+html body.page-london-musicals .lm-accommodation-card strong {
+  color: #ffffff;
+}
+
+html body.page-london-musicals .lm-card p,
+html body.page-london-musicals .lm-card span,
+html body.page-london-musicals .lm-steps p,
+html body.page-london-musicals .lm-accommodation-card span,
+html body.page-london-musicals .lm-accommodation-card em {
+  color: var(--lm-theatre-muted);
+}
+
+/* TodayTix panel */
+html body.page-london-musicals .lm-card--partner-purchase {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  border-color: rgba(244, 195, 101, 0.34);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(20, 194, 197, 0.22), transparent 22rem),
+    radial-gradient(circle at 92% 12%, rgba(255, 47, 109, 0.24), transparent 24rem),
+    radial-gradient(circle at 82% 90%, rgba(244, 195, 101, 0.18), transparent 18rem),
+    linear-gradient(135deg, rgba(8, 24, 46, 0.98), rgba(9, 31, 59, 0.9));
+}
+
+html body.page-london-musicals .lm-card--partner-purchase::before {
+  content: "AJSEE × TodayTix";
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  z-index: 2;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 47, 109, 0.34);
+  border-radius: 999px;
+  color: #ffffff;
+  background:
+    linear-gradient(135deg, rgba(255, 47, 109, 0.26), rgba(20, 194, 197, 0.14)),
+    rgba(2, 8, 20, 0.52);
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  box-shadow: 0 0 34px rgba(255, 47, 109, 0.18);
+}
+
+html body.page-london-musicals .lm-card--partner-purchase .lm-card-body {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  padding: clamp(24px, 4vw, 42px);
+}
+
+html body.page-london-musicals .lm-card--partner-purchase .lm-card-badge {
+  color: #ffe7ad;
+  border: 1px solid rgba(244, 195, 101, 0.32);
+  background: rgba(244, 195, 101, 0.11);
+}
+
+html body.page-london-musicals .lm-card--partner-purchase h3 {
+  color: #ffffff;
+  font-size: clamp(1.65rem, 3.4vw, 2.7rem);
+  line-height: 1.1;
+}
+
+html body.page-london-musicals .lm-card--partner-purchase .lm-card-note {
+  color: var(--lm-theatre-soft);
+}
+
+/* Steps */
+html body.page-london-musicals .lm-steps {
+  gap: clamp(14px, 2.2vw, 22px);
+}
+
+html body.page-london-musicals .lm-steps article {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(20px, 3vw, 28px);
+  border-radius: 24px;
+}
+
+html body.page-london-musicals .lm-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  color: #06192b;
+  background: linear-gradient(135deg, #f4c365, #ffd98a);
+  font-weight: 950;
+  box-shadow: 0 12px 30px rgba(244, 195, 101, 0.2);
+}
+
+/* Accommodation */
+html body.page-london-musicals .lm-accommodation-card {
+  border-color: rgba(20, 194, 197, 0.2);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(20, 194, 197, 0.16), transparent 22rem),
+    linear-gradient(135deg, rgba(8, 24, 46, 0.92), rgba(2, 8, 20, 0.82));
+}
+
+html body.page-london-musicals .lm-accommodation-card a {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Final CTA */
+html body.page-london-musicals .lm-final {
+  position: relative;
+  overflow: hidden;
+  margin-top: clamp(28px, 4vw, 52px);
+  margin-bottom: clamp(34px, 5vw, 70px);
+  border-color: rgba(244, 195, 101, 0.3);
+  background:
+    radial-gradient(circle at 86% 18%, rgba(255, 47, 109, 0.22), transparent 24rem),
+    radial-gradient(circle at 16% 0%, rgba(20, 194, 197, 0.22), transparent 22rem),
+    linear-gradient(135deg, rgba(6, 25, 43, 0.98), rgba(2, 8, 20, 0.94));
+  box-shadow: 0 34px 100px rgba(0, 0, 0, 0.42);
+}
+
+/* Disclaimer + footer */
+html body.page-london-musicals .lm-disclaimer p {
+  color: rgba(224, 239, 248, 0.62);
+}
+
+html body.page-london-musicals .site-footer {
+  background: #020814;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Mobile */
+@media (max-width: 950px) {
+  html body.page-london-musicals section.lm-hero {
+    min-height: auto;
+    padding-top: 34px;
+    padding-bottom: 44px;
+  }
+
+  html body.page-london-musicals .lm-hero-grid {
+    gap: 24px;
+  }
+
+  html body.page-london-musicals .lm-hero-art {
+    order: -1;
+  }
+
+  html body.page-london-musicals .lm-card--partner-purchase::before {
+    position: relative;
+    top: auto;
+    right: auto;
+    display: inline-flex;
+    margin: 20px 20px 0;
+  }
+}
+
+@media (max-width: 540px) {
+  html body.page-london-musicals .lm-hero h1 {
+    font-size: clamp(2.9rem, 15vw, 4.15rem);
+  }
+
+  html body.page-london-musicals .lm-actions .lm-btn,
+  html body.page-london-musicals .lm-card .lm-btn {
+    width: 100%;
+  }
+
+  html body.page-london-musicals .lm-section {
+    padding-top: 34px;
+    padding-bottom: 34px;
+  }
+
+  html body.page-london-musicals .lm-card--partner-purchase .lm-card-body,
+  html body.page-london-musicals .lm-accommodation-card,
+  html body.page-london-musicals .lm-final {
+    padding: 20px;
+  }
+}
+
+
+/* AJSEE_LONDON_THEATRE_HEADER_LOGO_FIX_V1
+   Make AJSEE header logo readable on the dark theatre header. */
+html body.page-london-musicals .site-header .logo img,
+html body.page-london-musicals .site-header .site-logo img,
+html body.page-london-musicals .site-header .brand img,
+html body.page-london-musicals .site-header a[href="/"] img,
+html body.page-london-musicals .site-header a[href="/en/"] img,
+html body.page-london-musicals .site-header img[src*="logo"] {
+  filter: brightness(0) invert(1);
+  opacity: 1;
+}
+
+html body.page-london-musicals .site-header .logo,
+html body.page-london-musicals .site-header .site-logo,
+html body.page-london-musicals .site-header .brand,
+html body.page-london-musicals .site-header a[href="/"],
+html body.page-london-musicals .site-header a[href="/en/"] {
+  opacity: 1;
+}
+
+html body.page-london-musicals .site-header .logo img,
+html body.page-london-musicals .site-header .site-logo img,
+html body.page-london-musicals .site-header .brand img {
+  max-height: 30px;
+  width: auto;
+}
+
+
+/* AJSEE_LONDON_THEATRE_POLISH_V4
+   Visual polish for the clean dark theatre redesign. No priority hacks. */
+
+/* Page rhythm */
+html body.page-london-musicals .lm-container {
+  width: min(100% - 32px, 1080px);
+}
+
+html body.page-london-musicals main.lm-page {
+  background:
+    radial-gradient(circle at 50% -4%, rgba(20, 194, 197, 0.24), transparent 28rem),
+    radial-gradient(circle at 92% 12%, rgba(255, 47, 109, 0.12), transparent 30rem),
+    radial-gradient(circle at 12% 46%, rgba(244, 195, 101, 0.08), transparent 34rem),
+    linear-gradient(180deg, #020814 0%, #06192b 38%, #020814 100%);
+}
+
+/* Header polish */
+html body.page-london-musicals .site-header {
+  min-height: 58px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+}
+
+html body.page-london-musicals .site-header nav,
+html body.page-london-musicals .site-header .nav,
+html body.page-london-musicals .site-header .main-nav {
+  border-radius: 999px;
+}
+
+html body.page-london-musicals .site-header a {
+  text-shadow: 0 1px 12px rgba(20, 194, 197, 0.16);
+}
+
+/* Hero should feel premium, but not too empty */
+html body.page-london-musicals section.lm-hero {
+  min-height: auto;
+  padding-top: clamp(46px, 5.2vw, 78px);
+  padding-bottom: clamp(46px, 5.2vw, 78px);
+}
+
+html body.page-london-musicals .lm-hero-grid {
+  align-items: center;
+}
+
+html body.page-london-musicals .lm-hero-copy {
+  max-width: 640px;
+}
+
+html body.page-london-musicals .lm-eyebrow {
+  margin-bottom: 14px;
+  font-size: 0.78rem;
+}
+
+html body.page-london-musicals .lm-hero h1 {
+  max-width: 620px;
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: clamp(3.1rem, 6.6vw, 5.6rem);
+  letter-spacing: -0.065em;
+}
+
+html body.page-london-musicals .lm-lead {
+  max-width: 560px;
+  font-size: clamp(1.02rem, 1.45vw, 1.18rem);
+  line-height: 1.72;
+}
+
+html body.page-london-musicals .lm-actions {
+  margin-top: 22px;
+}
+
+html body.page-london-musicals .lm-microcopy {
+  margin-top: 18px;
+  font-size: 0.94rem;
+}
+
+/* Hero image should feel more cinematic until final AJSEE x TodayTix asset is inserted */
+html body.page-london-musicals .lm-hero-art {
+  max-width: 560px;
+  justify-self: end;
+}
+
+html body.page-london-musicals .lm-hero-art picture {
+  aspect-ratio: 4 / 3;
+}
+
+html body.page-london-musicals .lm-hero-art::after {
+  content: "";
+  position: absolute;
+  inset: clamp(10px, 1.6vw, 16px);
+  z-index: 3;
+  pointer-events: none;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(2, 8, 20, 0.02), rgba(2, 8, 20, 0.24)),
+    radial-gradient(circle at 24% 16%, rgba(20, 194, 197, 0.16), transparent 16rem),
+    radial-gradient(circle at 78% 18%, rgba(244, 195, 101, 0.18), transparent 16rem);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Section dividers */
+html body.page-london-musicals .lm-section-head::before,
+html body.page-london-musicals .lm-accommodation-card > div:first-child::before,
+html body.page-london-musicals .lm-final .lm-container::before {
+  content: "";
+  display: block;
+  width: 78px;
+  height: 2px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--lm-theatre-gold), var(--lm-theatre-cyan), transparent);
+  box-shadow: 0 0 22px rgba(244, 195, 101, 0.24);
+}
+
+html body.page-london-musicals .lm-section h2,
+html body.page-london-musicals .lm-accommodation-card h2,
+html body.page-london-musicals .lm-final h2 {
+  margin-bottom: 12px;
+  font-size: clamp(2rem, 3.7vw, 3rem);
+}
+
+/* Buttons */
+html body.page-london-musicals .lm-btn--primary {
+  background:
+    radial-gradient(circle at 24% 0%, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(135deg, #0d7cc4 0%, #14c2c5 100%);
+  box-shadow:
+    0 18px 44px rgba(20, 194, 197, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+html body.page-london-musicals .lm-btn--primary:hover {
+  box-shadow:
+    0 24px 60px rgba(20, 194, 197, 0.34),
+    0 0 0 5px rgba(20, 194, 197, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+html body.page-london-musicals .lm-btn--secondary:hover {
+  border-color: rgba(244, 195, 101, 0.38);
+  background: rgba(244, 195, 101, 0.1);
+}
+
+/* Partner purchase area */
+html body.page-london-musicals .lm-section--list {
+  padding-top: clamp(50px, 6vw, 86px);
+  padding-bottom: clamp(42px, 5vw, 72px);
+}
+
+html body.page-london-musicals .lm-points {
+  margin-bottom: 18px;
+}
+
+html body.page-london-musicals .lm-points span {
+  border-radius: 999px;
+  font-size: 0.86rem;
+}
+
+html body.page-london-musicals .lm-card--partner-purchase {
+  min-height: 320px;
+  border-width: 1px;
+  border-color: rgba(244, 195, 101, 0.42);
+  border-radius: 30px;
+  box-shadow:
+    0 36px 110px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(244, 195, 101, 0.08) inset;
+}
+
+html body.page-london-musicals .lm-card--partner-purchase::before {
+  top: 24px;
+  right: 24px;
+}
+
+html body.page-london-musicals .lm-card--partner-purchase .lm-card-body {
+  padding: clamp(28px, 4.5vw, 52px);
+}
+
+html body.page-london-musicals .lm-card--partner-purchase h3 {
+  max-width: 620px;
+  margin-bottom: 12px;
+}
+
+html body.page-london-musicals .lm-card--partner-purchase p {
+  max-width: 660px;
+}
+
+/* Steps and guide cards */
+html body.page-london-musicals .lm-steps article {
+  min-height: 190px;
+  border-color: rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(20, 194, 197, 0.12), transparent 15rem),
+    radial-gradient(circle at 92% 14%, rgba(244, 195, 101, 0.08), transparent 15rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035)),
+    rgba(9, 31, 59, 0.88);
+}
+
+html body.page-london-musicals .lm-steps article:hover {
+  border-color: rgba(244, 195, 101, 0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 28px 78px rgba(0, 0, 0, 0.34);
+}
+
+html body.page-london-musicals .lm-steps h3 {
+  margin-bottom: 8px;
+}
+
+html body.page-london-musicals .lm-steps p {
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+/* Accommodation block should stay secondary but attractive */
+html body.page-london-musicals .lm-accommodation-card {
+  border-radius: 30px;
+  box-shadow: 0 28px 84px rgba(0, 0, 0, 0.28);
+}
+
+html body.page-london-musicals .lm-accommodation-card a:hover {
+  border-color: rgba(244, 195, 101, 0.32);
+  background: rgba(244, 195, 101, 0.08);
+}
+
+/* Final CTA */
+html body.page-london-musicals .lm-final {
+  border-radius: 30px;
+}
+
+html body.page-london-musicals .lm-final h2 {
+  max-width: 760px;
+}
+
+html body.page-london-musicals .lm-final p {
+  max-width: 680px;
+}
+
+/* Footer */
+html body.page-london-musicals .site-footer {
+  padding-top: 28px;
+}
+
+/* Responsive polish */
+@media (max-width: 950px) {
+  html body.page-london-musicals .lm-hero-art {
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  html body.page-london-musicals .lm-hero-art picture {
+    aspect-ratio: 16 / 10;
+  }
+
+  html body.page-london-musicals .lm-hero-copy {
+    max-width: none;
+  }
+
+  html body.page-london-musicals .lm-card--partner-purchase::before {
+    margin: 22px 22px 0;
+  }
+}
+
+@media (max-width: 540px) {
+  html body.page-london-musicals .lm-container {
+    width: min(100% - 24px, 1080px);
+  }
+
+  html body.page-london-musicals section.lm-hero {
+    padding-top: 30px;
+    padding-bottom: 38px;
+  }
+
+  html body.page-london-musicals .lm-hero h1 {
+    font-size: clamp(3rem, 14vw, 4.1rem);
+  }
+
+  html body.page-london-musicals .lm-lead {
+    font-size: 1rem;
+  }
+
+  html body.page-london-musicals .lm-card--partner-purchase {
+    min-height: auto;
+  }
+
+  html body.page-london-musicals .lm-card--partner-purchase::before {
+    margin: 18px 18px 0;
+    font-size: 0.84rem;
+  }
+
+  html body.page-london-musicals .lm-steps article {
+    min-height: auto;
+  }
+}
+

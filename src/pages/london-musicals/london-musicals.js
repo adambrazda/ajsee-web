@@ -6,6 +6,7 @@ import { applyTranslations, detectLang } from '../../i18n.js';
 const SUPPORTED = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const INITIAL_VISIBLE_SHOWS = 24;
 const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+const TODAYTIX_PURCHASE_BASE_URL = 'https://ajsee.tixculture.com/';
 
 let londonMusicalsShows = [];
 let londonMusicalsExpanded = false;
@@ -243,19 +244,13 @@ function cardHtml(event, lang) {
           '<span><strong>', esc(copy(lang, 'dates')), ':</strong> ', esc(formatDates(event, lang)), '</span>',
           '<span><strong>', esc(copy(lang, 'priceFrom')), ':</strong> ', esc(formatPrice(event, lang)), '</span>',
         '</div>',
-        '<a class="lm-btn lm-btn--primary js-lm-partner-click" href="', esc(href), '" target="_blank" rel="noopener noreferrer sponsored" data-partner="seatplan" data-event-title="', esc(title), '" data-event-city="London" data-outbound-url="', esc(href), '" data-placement="london_musicals_card">', esc(copy(lang, 'cta')), '</a>',
+        '<a class="lm-btn lm-btn--primary js-lm-partner-click" href="', esc(href), '" target="_blank" rel="noopener noreferrer sponsored" data-partner="todaytix" data-event-title="', esc(title), '" data-event-city="London" data-outbound-url="', esc(href), '" data-placement="london_musicals_card">', esc(copy(lang, 'cta')), '</a>',
       '</div>',
     '</article>'
   ].join('');
 }
 
-async function loadSeatPlanEvents() {
-  const response = await fetch('/data/seatplan-events.json', { cache: 'no-store' });
-  if (!response.ok) throw new Error('SeatPlan feed unavailable');
-
-  const payload = await response.json();
-  return Array.isArray(payload?.events) ? payload.events : [];
-}
+/* SeatPlan feed loading disabled: London ticket purchase now goes through TodayTix/Encore. */
 
 function showMoreCopy(lang, key, values = {}) {
   const messages = SHOW_MORE_COPY[lang] || SHOW_MORE_COPY.cs;
@@ -330,6 +325,79 @@ function renderVisibleShows(grid, lang) {
   }
 }
 
+
+const PARTNER_PURCHASE_COPY = {
+  cs: {
+    badge: 'Nákup přes TodayTix',
+    title: 'Vstupenky na londýnské muzikály',
+    text: 'Aktuální nabídku představení, termínů a cen najdete na naší partnerské stránce pro nákup vstupenek. Nákupní prostředí je zatím v angličtině.',
+    cta: 'Zobrazit vstupenky',
+    note: 'Výběr sedadel, platba a zákaznická podpora probíhají u našeho ticketingového partnera TodayTix.'
+  },
+  en: {
+    badge: 'Book through TodayTix',
+    title: 'London musical tickets',
+    text: 'See current shows, dates and prices on our partner purchase page. The ticket purchase experience is currently in English.',
+    cta: 'View tickets',
+    note: 'Seat selection, payment and customer support are handled by our ticketing partner TodayTix.'
+  },
+  de: {
+    badge: 'Buchung über TodayTix',
+    title: 'Tickets für Londoner Musicals',
+    text: 'Aktuelle Shows, Termine und Preise finden Sie auf unserer Partnerseite für den Ticketkauf. Der Kaufbereich ist derzeit auf Englisch.',
+    cta: 'Tickets ansehen',
+    note: 'Sitzplatzauswahl, Zahlung und Kundenservice erfolgen über unseren Ticketing-Partner TodayTix.'
+  },
+  sk: {
+    badge: 'Nákup cez TodayTix',
+    title: 'Vstupenky na londýnske muzikály',
+    text: 'Aktuálnu ponuku predstavení, termínov a cien nájdete na našej partnerskej stránke pre nákup vstupeniek. Nákupné prostredie je zatiaľ v angličtine.',
+    cta: 'Zobraziť vstupenky',
+    note: 'Výber sedadiel, platba a zákaznícka podpora prebiehajú u nášho ticketingového partnera TodayTix.'
+  },
+  pl: {
+    badge: 'Zakup przez TodayTix',
+    title: 'Bilety na londyńskie musicale',
+    text: 'Aktualne spektakle, terminy i ceny znajdziesz na naszej partnerskiej stronie zakupu biletów. Proces zakupu jest obecnie dostępny w języku angielskim.',
+    cta: 'Zobacz bilety',
+    note: 'Wybór miejsc, płatność i obsługa klienta odbywają się u naszego partnera ticketingowego TodayTix.'
+  },
+  hu: {
+    badge: 'Vásárlás a TodayTix-en keresztül',
+    title: 'Jegyek londoni musicalekre',
+    text: 'Az aktuális előadásokat, időpontokat és árakat partneri jegyvásárlási oldalunkon találod. A vásárlási felület jelenleg angol nyelvű.',
+    cta: 'Jegyek megtekintése',
+    note: 'Az ülőhelyválasztást, a fizetést és az ügyfélszolgálatot ticketing partnerünk, a TodayTix kezeli.'
+  }
+};
+
+function getTodayTixPurchaseUrl(lang = 'cs') {
+  const url = new URL(TODAYTIX_PURCHASE_BASE_URL);
+  url.searchParams.set('utm_source', 'ajsee');
+  url.searchParams.set('utm_medium', 'referral');
+  url.searchParams.set('utm_campaign', 'london_musicals');
+  url.searchParams.set('utm_content', normLang(lang));
+  return url.toString();
+}
+
+function partnerPurchasePanelHtml(lang) {
+  const safeLang = normLang(lang);
+  const purchaseCopy = PARTNER_PURCHASE_COPY[safeLang] || PARTNER_PURCHASE_COPY.cs;
+  const href = getTodayTixPurchaseUrl(safeLang);
+
+  return [
+    '<article class="lm-card lm-card--partner-purchase">',
+      '<div class="lm-card-body">',
+        '<span class="lm-card-badge">', esc(purchaseCopy.badge), '</span>',
+        '<h3>', esc(purchaseCopy.title), '</h3>',
+        '<p>', esc(purchaseCopy.text), '</p>',
+        '<a class="lm-btn lm-btn--primary js-lm-partner-click" href="', esc(href), '" target="_blank" rel="noopener noreferrer sponsored" data-partner="todaytix" data-event-title="London musicals" data-event-city="London" data-outbound-url="', esc(href), '" data-placement="london_musicals_partner_purchase_panel">', esc(purchaseCopy.cta), '</a>',
+        '<p class="lm-card-note">', esc(purchaseCopy.note), '</p>',
+      '</div>',
+    '</article>'
+  ].join('');
+}
+
 async function renderShows() {
   const lang = normLang(detectLang());
   const grid = document.getElementById('londonMusicalsGrid');
@@ -337,25 +405,19 @@ async function renderShows() {
 
   if (!grid) return;
 
+  grid.setAttribute('aria-busy', 'true');
+
   try {
-    grid.setAttribute('aria-busy', 'true');
-
-    const events = await loadSeatPlanEvents();
-
     londonMusicalsExpanded = false;
-    londonMusicalsShows = events
-      .filter(isRelevantLondonShow)
-      .sort(sortBySeatPlanPriority);
+    londonMusicalsShows = [];
 
-    if (!londonMusicalsShows.length) {
-      grid.innerHTML = '';
-      hideShowMoreControls();
-      if (empty) empty.hidden = false;
-      return;
-    }
+    hideShowMoreControls();
 
     if (empty) empty.hidden = true;
-    renderVisibleShows(grid, lang);
+
+    // SeatPlan is no longer used. London ticket purchase now goes through
+    // the AJSEE partner purchase page powered by TodayTix/Encore.
+    grid.innerHTML = partnerPurchasePanelHtml(lang);
   } catch {
     grid.innerHTML = '';
     hideShowMoreControls();
@@ -385,7 +447,7 @@ function syncYear() {
 
 
 /* AJSEE_LONDON_MUSICALS_TRACKING_V1
-   Track SeatPlan card click-outs and key London musicals funnel actions. */
+   Track TodayTix partner purchase clicks and key London musicals funnel actions. */
 function cleanTrackingText(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
 }
@@ -443,7 +505,7 @@ function pushAnalyticsEvent(payload) {
 function trackLondonMusicalsPartnerClick(link) {
   if (!link) return;
 
-  const partner = cleanTrackingText(link.dataset.partner || 'seatplan');
+  const partner = cleanTrackingText(link.dataset.partner || 'todaytix');
   const eventTitle = cleanTrackingText(link.dataset.eventTitle || link.closest('.lm-card')?.querySelector('h3')?.textContent);
   const eventCity = cleanTrackingText(link.dataset.eventCity || 'London');
   const clickedHref = cleanTrackingText(link.href || link.getAttribute('href'));

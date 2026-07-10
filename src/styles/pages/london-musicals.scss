@@ -947,3 +947,34 @@ body.page-london-musicals .lm-show-more[hidden] {
   }
 }
 
+
+
+/* AJSEE_TODAYTIX_PARTNER_PURCHASE_PANEL_v1
+   SeatPlan catalogue is disabled. Use a clear partner purchase panel instead. */
+body.page-london-musicals .lm-card--partner-purchase {
+  grid-column: 1 / -1;
+}
+
+body.page-london-musicals .lm-card--partner-purchase .lm-card-body {
+  max-width: 780px;
+}
+
+body.page-london-musicals .lm-card--partner-purchase .lm-card-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(20, 194, 197, 0.12);
+  color: #075e69;
+  font-size: 0.86rem;
+  font-weight: 750;
+}
+
+body.page-london-musicals .lm-card--partner-purchase .lm-card-note {
+  margin-top: 12px;
+  color: var(--lm-muted);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}

@@ -1,28 +1,28 @@
 {
   "seo": {
     "londonMusicals": {
-      "title": "Londyńskie musicale | West End, bilety i nocleg | AJSEE",
-      "description": "Odkryj londyńskie musicale na West Endzie. Wybierz spektakl, znajdź bilety u naszych partnerów i dodaj do planu sprawdzony nocleg w Londynie.",
-      "ogTitle": "Londyńskie musicale na wyciągnięcie ręki",
-      "ogDescription": "Poczuj atmosferę londyńskiego West Endu. Wybierz musical, znajdź bilety i dodaj do planu nocleg w Londynie."
+      "title": "Londyńskie musicale i bilety na West End | AJSEE × TodayTix",
+      "description": "Odkryj londyńskie musicale na West Endzie. AJSEE prowadzi do partnerskiej strony TodayTix umożliwiającej bezpieczny zakup biletów.",
+      "ogTitle": "Londyńskie musicale z AJSEE × TodayTix",
+      "ogDescription": "Wybierz londyński musical i przejdź do partnerskiej strony TodayTix."
     }
   },
   "londonMusicals": {
     "hero": {
-      "eyebrow": "West End · musicale · Londyn",
+      "eyebrow": "West End · AJSEE × TodayTix",
       "title": "Londyńskie musicale",
-      "lead": "Poczuj atmosferę londyńskiego West Endu. AJSEE pomoże Ci wybrać najlepszy spektakl, znaleźć bilety i zorganizować nocleg na pobyt w Londynie.",
-      "ctaPrimary": "Zobacz musicale",
-      "ctaSecondary": "Znajdź nocleg w Londynie",
-      "microcopy": "Rezerwację biletów i noclegu finalizujesz bezpiecznie bezpośrednio u naszych partnerów. AJSEE sprawnie kieruje Cię we właściwe miejsce."
+      "lead": "Poczuj atmosferę londyńskiego West Endu. Bilety kupisz prosto i bezpiecznie przez naszą partnerską stronę zakupu.",
+      "ctaPrimary": "Zobacz bilety",
+      "ctaSecondary": "Jak działa zakup",
+      "microcopy": "Wybór miejsc, płatność i potwierdzenie obsługuje nasz partner ticketingowy TodayTix."
     },
     "list": {
-      "title": "Co grają w Londynie",
-      "intro": "Przejrzyj najlepsze musicale i spektakle teatralne na londyńskim West Endzie. Przy każdym spektaklu znajdziesz kluczowe informacje, orientacyjną cenę i link do zakupu biletów u partnera.",
+      "title": "Bilety na West End przez TodayTix",
+      "intro": "Aktualne spektakle, terminy i ceny znajdziesz na partnerskiej stronie AJSEE obsługiwanej technologicznie przez TodayTix.",
       "points": {
-        "details": "Kluczowe informacje o spektaklu",
-        "price": "Orientacyjna cena od",
-        "link": "Link do zakupu biletów"
+        "details": "Partnerska strona zakupu biletów",
+        "price": "Aktualne terminy i dostępność",
+        "link": "Bezpieczny zakup w TodayTix"
       }
     },
     "empty": {
@@ -68,11 +68,31 @@
       }
     },
     "final": {
-      "title": "Zaplanuj niezapomniane kulturalne przeżycie",
-      "text": "Wybierz swój wymarzony musical, znajdź bilety i od razu dodaj do planu sprawdzony nocleg. Z AJSEE masz wszystko, czego potrzebujesz, pod ręką — przejrzyście i w jednym miejscu.",
-      "ctaPrimary": "Zobacz musicale",
-      "ctaSecondary": "Znajdź nocleg w Londynie"
+      "title": "Gotowy na niezapomniany wieczór na West Endzie?",
+      "text": "Wybierz musical, przejdź do partnerskiej strony TodayTix i zarezerwuj bilety na wyjątkowy wieczór w Londynie.",
+      "ctaPrimary": "Zobacz bilety",
+      "ctaSecondary": "Jak działa zakup"
     },
-    "disclaimer": "AJSEE pomaga odkrywać kulturę i planować pobyt w Londynie. Nie jesteśmy sprzedawcą — rezerwacje, płatności, dostępność, ceny, terminy i potwierdzenia są obsługiwane bezpośrednio przez nasze usługi partnerskie."
+    "disclaimer": "AJSEE pomaga odkrywać kulturę i planować pobyt w Londynie. Nie jesteśmy sprzedawcą biletów – wybór miejsc, płatność, dostępność, ceny, terminy i potwierdzenia obsługuje nasz partner ticketingowy TodayTix.",
+    "purchaseGuide": {
+      "title": "Jak działa zakup",
+      "intro": "Bilety wybierasz na partnerskiej stronie AJSEE obsługiwanej przez TodayTix. Proces jest prosty, bezpieczny i składa się z kilku kroków.",
+      "step1": {
+        "title": "Wybierz spektakl",
+        "text": "Przejrzyj aktualną ofertę londyńskich musicali i wybierz show pasujące do terminu i nastroju."
+      },
+      "step2": {
+        "title": "Wybierz datę i miejsca",
+        "text": "Na stronie partnera wybierzesz termin, kategorię miejsc i liczbę biletów zgodnie z dostępnością."
+      },
+      "step3": {
+        "title": "Zapłać bezpiecznie",
+        "text": "Płatność i potwierdzenie zamówienia obsługuje bezpośrednio nasz partner ticketingowy TodayTix."
+      },
+      "step4": {
+        "title": "Ciesz się West Endem",
+        "text": "Po zakupie otrzymasz informacje o biletach e-mailem i możesz czekać na spektakl."
+      }
+    }
   }
 }

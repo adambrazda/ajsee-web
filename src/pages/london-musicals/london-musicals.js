@@ -427,6 +427,16 @@ async function renderShows() {
   }
 }
 
+function syncPurchaseLinks(lang) {
+  const href = getTodayTixPurchaseUrl(lang);
+
+  document.querySelectorAll('.js-lm-purchase-link').forEach((link) => {
+    link.href = href;
+    link.dataset.outboundUrl = href;
+    link.dataset.partner = 'todaytix';
+  });
+}
+
 function localizeLanguageButtons(currentLang) {
   document.querySelectorAll('.lang-btn[data-lang]').forEach((button) => {
     const lang = normLang(button.getAttribute('data-lang'));

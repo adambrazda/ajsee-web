@@ -1,28 +1,28 @@
 {
   "seo": {
     "londonMusicals": {
-      "title": "Londýnske muzikály | West End, vstupenky a ubytovanie | AJSEE",
-      "description": "Objavte londýnske muzikály vo West Ende. Vyberte si predstavenie, pokračujte k nákupu vstupeniek a pridajte si k plánu aj overené ubytovanie v Londýne.",
-      "ogTitle": "Londýnske muzikály na dosah",
-      "ogDescription": "Zažite atmosféru londýnskeho West Endu. Vyberte si muzikál, pokračujte k vstupenkám a pridajte si k plánu aj ubytovanie v Londýne."
+      "title": "Londýnske muzikály a vstupenky na West End | AJSEE × TodayTix",
+      "description": "Objavte londýnske muzikály na West Ende. AJSEE vás prepojí s partnerskou stránkou TodayTix pre bezpečný nákup vstupeniek.",
+      "ogTitle": "Londýnske muzikály s AJSEE × TodayTix",
+      "ogDescription": "Vyberte si londýnsky muzikál a pokračujte na partnerskú stránku TodayTix."
     }
   },
   "londonMusicals": {
     "hero": {
-      "eyebrow": "West End · muzikály · Londýn",
+      "eyebrow": "West End · AJSEE × TodayTix",
       "title": "Londýnske muzikály",
-      "lead": "Zažite atmosféru londýnskeho West Endu. AJSEE vám pomôže vybrať to najlepšie predstavenie, zohnať vstupenky aj zariadiť ubytovanie.",
-      "ctaPrimary": "Prezrieť muzikály",
-      "ctaSecondary": "Nájsť ubytovanie v Londýne",
-      "microcopy": "Rezerváciu vstupeniek aj ubytovania dokončíte bezpečne priamo u našich partnerov. AJSEE vás k nim spoľahlivo nasmeruje."
+      "lead": "Zažite atmosféru londýnskeho West Endu. Vstupenky jednoducho a bezpečne kúpite cez našu partnerskú stránku.",
+      "ctaPrimary": "Zobraziť vstupenky",
+      "ctaSecondary": "Ako nákup funguje",
+      "microcopy": "Výber sedadiel, platba a potvrdenie prebiehajú u nášho ticketingového partnera TodayTix."
     },
     "list": {
-      "title": "Čo sa hrá v Londýne",
-      "intro": "Prezrite si tie najlepšie muzikály a divadelné predstavenia v londýnskom West Ende. Pri každom predstavení nájdete kľúčové informácie, orientačnú cenu a odkaz na nákup vstupeniek u partnera.",
+      "title": "Vstupenky na West End cez TodayTix",
+      "intro": "Aktuálnu ponuku predstavení, termínov a cien nájdete na partnerskej stránke AJSEE, ktorú technologicky zaisťuje TodayTix.",
       "points": {
-        "details": "Kľúčové informácie o predstavení",
-        "price": "Orientačná cena od",
-        "link": "Odkaz na nákup vstupeniek"
+        "details": "Partnerská stránka pre nákup vstupeniek",
+        "price": "Aktuálne termíny a dostupnosť",
+        "link": "Bezpečný nákup u TodayTix"
       }
     },
     "empty": {
@@ -68,11 +68,31 @@
       }
     },
     "final": {
-      "title": "Naplánujte si nezabudnuteľný kultúrny zážitok",
-      "text": "Vyberte si svoj vysnívaný muzikál, zabezpečte si vstupenky a rovno k nim pridajte aj overené ubytovanie. S AJSEE máte všetko potrebné na dosah ruky – prehľadne a na jednom mieste.",
-      "ctaPrimary": "Prezrieť muzikály",
-      "ctaSecondary": "Nájsť ubytovanie v Londýne"
+      "title": "Pripravení zažiť West End naplno?",
+      "text": "Vyberte si muzikál, prejdite na partnerskú stránku TodayTix a zaistite si vstupenky na nezabudnuteľný londýnsky večer.",
+      "ctaPrimary": "Zobraziť vstupenky",
+      "ctaSecondary": "Ako nákup funguje"
     },
-    "disclaimer": "AJSEE vám pomáha objavovať kultúru a plánovať pobyt v Londýne. Nie sme predajcovia – rezervácie, platby, dostupnosť, ceny, termíny aj potvrdenia prebiehajú priamo u našich partnerských služieb."
+    "disclaimer": "AJSEE vám pomáha objavovať kultúru a plánovať pobyt v Londýne. Nie sme predajca vstupeniek – výber sedadiel, platba, dostupnosť, ceny, termíny a potvrdenia prebiehajú u nášho ticketingového partnera TodayTix.",
+    "purchaseGuide": {
+      "title": "Ako nákup funguje",
+      "intro": "Vstupenky vyberáte na partnerskej stránke AJSEE, ktorú technologicky zaisťuje TodayTix. Nákup je jednoduchý, bezpečný a prebieha v niekoľkých krokoch.",
+      "step1": {
+        "title": "Vyberte predstavenie",
+        "text": "Prezrite si aktuálnu ponuku londýnskych muzikálov a vyberte show podľa termínu a nálady."
+      },
+      "step2": {
+        "title": "Zvoľte dátum a miesta",
+        "text": "Na stránke partnera si vyberiete termín, kategóriu miest a počet vstupeniek podľa dostupnosti."
+      },
+      "step3": {
+        "title": "Dokončite bezpečnú platbu",
+        "text": "Platba a potvrdenie objednávky prebiehajú priamo u nášho ticketingového partnera TodayTix."
+      },
+      "step4": {
+        "title": "Užite si West End",
+        "text": "Po dokončení nákupu dostanete informácie ku vstupenkám e-mailom a môžete sa tešiť na predstavenie."
+      }
+    }
   }
 }

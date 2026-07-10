@@ -1,28 +1,28 @@
 {
   "seo": {
     "londonMusicals": {
-      "title": "Musicals in London | West End Tickets und Unterkunft | AJSEE",
-      "description": "Entdecken Sie Musicals im Londoner West End. Wählen Sie eine Show, finden Sie Tickets über unsere Partner und ergänzen Sie Ihre Planung um eine geprüfte Unterkunft in London.",
-      "ogTitle": "Londoner Musicals zum Greifen nah",
-      "ogDescription": "Erleben Sie die Atmosphäre des Londoner West End. Wählen Sie ein Musical, finden Sie Tickets und ergänzen Sie Ihre Planung um eine Unterkunft in London."
+      "title": "Londoner Musicals und West-End-Tickets | AJSEE × TodayTix",
+      "description": "Entdecken Sie Londoner Musicals im West End. AJSEE verbindet Sie mit einer von TodayTix unterstützten Partnerseite für den sicheren Ticketkauf.",
+      "ogTitle": "Londoner Musicals mit AJSEE × TodayTix",
+      "ogDescription": "Wählen Sie ein Londoner Musical und kaufen Sie Tickets über die TodayTix-Partnerseite."
     }
   },
   "londonMusicals": {
     "hero": {
-      "eyebrow": "West End · Musicals · London",
+      "eyebrow": "West End · AJSEE × TodayTix",
       "title": "Musicals in London",
-      "lead": "Erleben Sie die Atmosphäre des Londoner West End. AJSEE hilft Ihnen, die passende Show zu finden, Tickets zu entdecken und eine Unterkunft für Ihren Aufenthalt in London zu organisieren.",
-      "ctaPrimary": "Musicals ansehen",
-      "ctaSecondary": "Unterkunft in London finden",
-      "microcopy": "Ticket- und Unterkunftsbuchungen schließen Sie sicher direkt bei unseren Partnern ab. AJSEE leitet Sie zuverlässig dorthin weiter."
+      "lead": "Erleben Sie die Atmosphäre des Londoner West End. Tickets kaufen Sie einfach und sicher über unsere Partnerseite.",
+      "ctaPrimary": "Tickets ansehen",
+      "ctaSecondary": "So funktioniert der Kauf",
+      "microcopy": "Sitzplatzauswahl, Zahlung und Bestätigung erfolgen über unseren Ticketing-Partner TodayTix."
     },
     "list": {
-      "title": "Was läuft in London?",
-      "intro": "Entdecken Sie die besten Musicals und Theateraufführungen im Londoner West End. Zu jeder Show finden Sie die wichtigsten Informationen, einen Richtpreis und einen Link zum Ticketkauf bei einem Partner.",
+      "title": "West-End-Tickets über TodayTix",
+      "intro": "Aktuelle Shows, Termine und Preise finden Sie auf der AJSEE-Partnerseite, die von TodayTix unterstützt wird.",
       "points": {
-        "details": "Wichtige Informationen zur Vorstellung",
-        "price": "Richtpreise ab",
-        "link": "Link zu Ticketoptionen"
+        "details": "Partnerseite für den Ticketkauf",
+        "price": "Aktuelle Termine und Verfügbarkeit",
+        "link": "Sicherer Kauf bei TodayTix"
       }
     },
     "empty": {
@@ -68,11 +68,31 @@
       }
     },
     "final": {
-      "title": "Planen Sie ein unvergessliches Kulturerlebnis in London",
-      "text": "Wählen Sie Ihr Wunschmusical, finden Sie Tickets und ergänzen Sie Ihre Planung direkt um eine geprüfte Unterkunft. Mit AJSEE haben Sie alles Wichtige in Reichweite — übersichtlich und an einem Ort.",
-      "ctaPrimary": "Musicals ansehen",
-      "ctaSecondary": "Unterkunft in London finden"
+      "title": "Bereit für einen unvergesslichen West-End-Abend?",
+      "text": "Wählen Sie Ihr Musical, gehen Sie zur TodayTix-Partnerseite und sichern Sie sich Tickets für einen besonderen Abend in London.",
+      "ctaPrimary": "Tickets ansehen",
+      "ctaSecondary": "So funktioniert der Kauf"
     },
-    "disclaimer": "AJSEE hilft Ihnen, Kultur zu entdecken und Ihren Aufenthalt in London zu planen. Wir sind kein Verkäufer — Buchungen, Zahlungen, Verfügbarkeit, Preise, Termine und Bestätigungen werden direkt über unsere Partnerdienste abgewickelt."
+    "disclaimer": "AJSEE hilft Ihnen, Kultur zu entdecken und Ihren Aufenthalt in London zu planen. Wir verkaufen keine Tickets – Sitzplatzauswahl, Zahlung, Verfügbarkeit, Preise, Termine und Bestätigungen erfolgen über unseren Ticketing-Partner TodayTix.",
+    "purchaseGuide": {
+      "title": "So funktioniert der Kauf",
+      "intro": "Sie wählen Tickets auf der AJSEE-Partnerseite, die von TodayTix unterstützt wird. Der Kauf ist einfach, sicher und erfolgt in wenigen Schritten.",
+      "step1": {
+        "title": "Show auswählen",
+        "text": "Entdecken Sie aktuelle Londoner Musicals und wählen Sie die Show, die zu Ihrem Termin passt."
+      },
+      "step2": {
+        "title": "Datum und Plätze wählen",
+        "text": "Auf der Partnerseite wählen Sie Termin, Sitzplatzkategorie und Anzahl der Tickets nach Verfügbarkeit."
+      },
+      "step3": {
+        "title": "Sicher bezahlen",
+        "text": "Zahlung und Bestätigung erfolgen direkt über unseren Ticketing-Partner TodayTix."
+      },
+      "step4": {
+        "title": "West End genießen",
+        "text": "Nach dem Kauf erhalten Sie die Ticketinformationen per E-Mail und können sich auf die Vorstellung freuen."
+      }
+    }
   }
 }

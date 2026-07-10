@@ -32,6 +32,13 @@ const isDev =
     /^(localhost|127\.|0\.0\.0\.0)/.test(window.location.hostname)) ||
   (typeof import.meta !== 'undefined' && import.meta?.env?.DEV);
 
+// AJSEE_SEATPLAN_DISABLED_TODAYTIX_EXCLUSIVE_v1
+// London theatre/musical ticket sales are now handled exclusively
+// through the AJSEE partner purchase page powered by TodayTix/Encore.
+// Keep the legacy adapter file in the repo, but do not load SeatPlan data,
+// do not render SeatPlan cards, and do not run SeatPlan-specific boosting.
+const ENABLE_SEATPLAN = false;
+
 // ------- Utils -------
 
 /** RobustnĂ­ pĹ™evod na timestamp (ms); vracĂ­ NaN, pokud nelze pĹ™evĂ©st. */
@@ -824,20 +831,21 @@ if (!ajseeSkipSmsTicket) {
 }
 
 // --- SeatPlan ---
-// London theatre affiliate source.
-// Adapter returns events only for explicit GB/London/theatre intent,
-// so default CZ/SK discovery is not polluted.
-try {
-  const seatplan = await fetchSeatPlanEvents({
-    locale: loc,
-    filters: localProviderFilters
-  });
+// Disabled: London theatre/musical ticket sales are now handled through
+// the AJSEE partner purchase page powered by TodayTix/Encore.
+if (ENABLE_SEATPLAN) {
+  try {
+    const seatplan = await fetchSeatPlanEvents({
+      locale: loc,
+      filters: localProviderFilters
+    });
 
-  if (Array.isArray(seatplan)) {
-    all = all.concat(seatplan);
+    if (Array.isArray(seatplan)) {
+      all = all.concat(seatplan);
+    }
+  } catch (e) {
+    console.warn('[eventsApi] SeatPlan fetch failed:', e);
   }
-} catch (e) {
-  console.warn('[eventsApi] SeatPlan fetch failed:', e);
 }
 
   // --- Demo zdroj v DEV ---
@@ -1005,7 +1013,7 @@ try {
     return sort === 'latest' ? db - da : da - db;
   });
 
-  if (hasSeatPlanPilotIntent(normalizedClientFilters)) {
+  if (ENABLE_SEATPLAN && hasSeatPlanPilotIntent(normalizedClientFilters)) {
     all.sort((a, b) => {
       const seatPlanDiff =
         seatPlanBoostScore(a, normalizedClientFilters, loc) -

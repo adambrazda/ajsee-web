@@ -427,8 +427,25 @@ async function renderShows() {
   }
 }
 
+function getCurrentPageLang(fallback = 'cs') {
+  const path = cleanTrackingText(window.location?.pathname || '');
+
+  if (path.startsWith('/en/')) return 'en';
+  if (path.startsWith('/de/')) return 'de';
+  if (path.startsWith('/sk/')) return 'sk';
+  if (path.startsWith('/pl/')) return 'pl';
+  if (path.startsWith('/hu/')) return 'hu';
+
+  const htmlLang = cleanTrackingText(document.documentElement.getAttribute('lang')).slice(0, 2).toLowerCase();
+
+  if (htmlLang) return normLang(htmlLang);
+
+  return normLang(fallback);
+}
+
 function syncPurchaseLinks(lang) {
-  const href = getTodayTixPurchaseUrl(lang);
+  const currentLang = getCurrentPageLang(lang);
+  const href = getTodayTixPurchaseUrl(currentLang);
 
   document.querySelectorAll('.js-lm-purchase-link').forEach((link) => {
     link.href = href;
@@ -617,6 +634,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await applyTranslations(lang);
   syncYear();
   localizeLanguageButtons(lang);
+  syncPurchaseLinks(lang);
   initLondonMusicalsTracking();
   trackTrustedStaysClicks();
 
@@ -624,4 +642,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (retry) retry.addEventListener('click', () => void renderShows());
 
   await renderShows();
+  syncPurchaseLinks(lang);
 });

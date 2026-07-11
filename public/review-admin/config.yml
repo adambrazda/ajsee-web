@@ -179,7 +179,7 @@ collections:
 
           - label: "Full review text"
             name: "body"
-            widget: "markdown"
+            widget: "text"
             required: true
             hint: "Paste the full English review here."
 

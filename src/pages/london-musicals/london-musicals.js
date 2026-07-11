@@ -399,6 +399,11 @@ function partnerPurchasePanelHtml(lang) {
 }
 
 async function renderShows() {
+  // TT_STATIC_MICROSITE_GUARD_V11
+  if (document.querySelector('[data-tt-static-page="true"]')) {
+    return;
+  }
+
   const lang = normLang(detectLang());
   const grid = document.getElementById('londonMusicalsGrid');
   const empty = document.getElementById('londonMusicalsEmpty');

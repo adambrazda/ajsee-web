@@ -1721,3 +1721,1336 @@ html body.page-london-musicals .site-footer {
   }
 }
 
+
+/* AJSEE_TODAYTIX_PREMIUM_MICROSITE_V11
+   Rebuilds the London musicals page as a compact premium microsite.
+   Uses tt-* classes to avoid old layout conflicts. No priority hacks. */
+
+html body.page-london-musicals main.lm-page.tt-page {
+  padding: clamp(18px, 3vw, 42px) 0 clamp(30px, 5vw, 64px);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(20, 194, 197, 0.12), transparent 30rem),
+    radial-gradient(circle at 50% 36rem, rgba(244, 195, 101, 0.08), transparent 34rem),
+    linear-gradient(180deg, #020814 0%, #06192b 48%, #020814 100%);
+}
+
+html body.page-london-musicals .tt-shell {
+  width: min(100% - 28px, 980px);
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid rgba(244, 195, 101, 0.28);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(13, 124, 196, 0.18), transparent 32rem),
+    linear-gradient(180deg, rgba(4, 17, 39, 0.99), rgba(2, 8, 20, 0.995));
+  box-shadow:
+    0 46px 150px rgba(0, 0, 0, 0.52),
+    0 0 0 1px rgba(255, 255, 255, 0.045) inset;
+}
+
+html body.page-london-musicals .tt-section,
+html body.page-london-musicals .tt-final,
+html body.page-london-musicals .tt-trust,
+html body.page-london-musicals .tt-disclaimer {
+  border-top: 1px solid rgba(244, 195, 101, 0.13);
+}
+
+html body.page-london-musicals .tt-hero-art {
+  margin: 0;
+  overflow: hidden;
+}
+
+html body.page-london-musicals .tt-hero-art picture {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 7.2;
+  overflow: hidden;
+}
+
+html body.page-london-musicals .tt-hero-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 44%;
+  filter: saturate(1.08) contrast(1.04);
+  -webkit-mask-image: linear-gradient(180deg, black 0%, black 84%, transparent 100%);
+  mask-image: linear-gradient(180deg, black 0%, black 84%, transparent 100%);
+}
+
+html body.page-london-musicals .tt-hero-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.68fr);
+  gap: clamp(28px, 4vw, 50px);
+  align-items: center;
+  padding: clamp(30px, 5vw, 58px);
+  margin-top: -26px;
+}
+
+html body.page-london-musicals .tt-kicker {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 0 18px;
+  padding: 7px 14px;
+  border: 1px solid rgba(244, 195, 101, 0.42);
+  border-radius: 999px;
+  background: rgba(244, 195, 101, 0.08);
+  color: #f4c365;
+  font-size: 0.82rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+html body.page-london-musicals .tt-hero h1 {
+  max-width: 570px;
+  margin: 0 0 18px;
+  font-size: clamp(2.45rem, 5vw, 4.15rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+  background: linear-gradient(180deg, #fff 0%, #fff 48%, #f4c365 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+html body.page-london-musicals .tt-lead {
+  max-width: 530px;
+  margin: 0;
+  color: rgba(224, 239, 248, 0.78);
+  font-size: clamp(1rem, 1.24vw, 1.1rem);
+  line-height: 1.65;
+}
+
+html body.page-london-musicals .tt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+html body.page-london-musicals .tt-microcopy {
+  max-width: 520px;
+  margin: 20px 0 0;
+  color: rgba(244, 195, 101, 0.9);
+  line-height: 1.55;
+}
+
+html body.page-london-musicals .tt-theatre-shot {
+  min-height: 230px;
+  border: 1px solid rgba(244, 195, 101, 0.42);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(2, 8, 20, 0.06), rgba(2, 8, 20, 0.2)),
+    url("/images/london-theatre-1440.webp") center / cover no-repeat;
+  box-shadow:
+    0 24px 78px rgba(0, 0, 0, 0.38),
+    0 0 36px rgba(244, 195, 101, 0.08);
+}
+
+html body.page-london-musicals .tt-section {
+  padding: clamp(34px, 4.5vw, 56px) clamp(24px, 4vw, 48px);
+}
+
+html body.page-london-musicals .tt-section-head {
+  max-width: 760px;
+  margin: 0 auto clamp(24px, 3vw, 34px);
+  text-align: center;
+}
+
+html body.page-london-musicals .tt-section-head::before {
+  content: "";
+  display: block;
+  width: 86px;
+  height: 2px;
+  margin: 0 auto 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f4c365, #14c2c5, transparent);
+  box-shadow: 0 0 22px rgba(244, 195, 101, 0.24);
+}
+
+html body.page-london-musicals .tt-section-head h2 {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  color: #fff;
+}
+
+html body.page-london-musicals .tt-section-head p {
+  margin: 0;
+  color: rgba(224, 239, 248, 0.78);
+  font-size: clamp(1rem, 1.35vw, 1.14rem);
+  line-height: 1.65;
+}
+
+html body.page-london-musicals .tt-benefit-grid,
+html body.page-london-musicals .tt-points,
+html body.page-london-musicals .tt-steps,
+html body.page-london-musicals .tt-show-strip,
+html body.page-london-musicals .tt-trust {
+  display: grid;
+  gap: 16px;
+}
+
+html body.page-london-musicals .tt-benefit-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+html body.page-london-musicals .tt-benefit-card,
+html body.page-london-musicals .tt-steps article {
+  padding: 24px 20px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(20, 194, 197, 0.12), transparent 12rem),
+    rgba(8, 24, 46, 0.72);
+}
+
+html body.page-london-musicals .tt-icon,
+html body.page-london-musicals .tt-steps article span {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
+  font-weight: 950;
+}
+
+html body.page-london-musicals .tt-icon {
+  border: 1px solid rgba(20, 194, 197, 0.48);
+  color: #14c2c5;
+}
+
+html body.page-london-musicals .tt-steps article span {
+  background: #f4c365;
+  color: #020814;
+}
+
+html body.page-london-musicals .tt-benefit-card h3,
+html body.page-london-musicals .tt-steps h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-size: 1.12rem;
+}
+
+html body.page-london-musicals .tt-benefit-card p,
+html body.page-london-musicals .tt-steps p {
+  margin: 0;
+  color: rgba(224, 239, 248, 0.76);
+  line-height: 1.55;
+}
+
+html body.page-london-musicals .tt-points {
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 24px;
+}
+
+html body.page-london-musicals .tt-points span {
+  min-height: 58px;
+  display: grid;
+  place-items: center;
+  padding: 13px 14px;
+  border: 1px solid rgba(244, 195, 101, 0.18);
+  border-radius: 16px;
+  text-align: center;
+  color: #fff;
+  font-weight: 900;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(20, 194, 197, 0.16), transparent 9rem),
+    rgba(7, 24, 48, 0.74);
+}
+
+html body.page-london-musicals .tt-purchase-card {
+  padding: clamp(28px, 4.5vw, 50px);
+  border: 1px solid rgba(244, 195, 101, 0.36);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(20, 194, 197, 0.18), transparent 20rem),
+    radial-gradient(circle at 92% 4%, rgba(255, 47, 109, 0.2), transparent 20rem),
+    linear-gradient(180deg, rgba(8, 24, 46, 0.96), rgba(3, 12, 28, 0.98));
+}
+
+html body.page-london-musicals .tt-purchase-card h3 {
+  max-width: 600px;
+  margin: 0 0 14px;
+  color: #fff;
+  font-size: clamp(1.8rem, 3.4vw, 2.7rem);
+  line-height: 1.04;
+}
+
+html body.page-london-musicals .tt-purchase-card p {
+  max-width: 650px;
+  color: rgba(224, 239, 248, 0.78);
+}
+
+html body.page-london-musicals .tt-note {
+  margin-top: 20px;
+  color: rgba(224, 239, 248, 0.68);
+}
+
+html body.page-london-musicals .tt-steps {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+html body.page-london-musicals .tt-steps article {
+  min-height: 220px;
+}
+
+html body.page-london-musicals .tt-experience-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+html body.page-london-musicals .tt-experience-card {
+  position: relative;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid rgba(244, 195, 101, 0.25);
+  border-radius: 18px;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(8, 24, 46, 0.76);
+}
+
+html body.page-london-musicals .tt-experience-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 44%;
+  opacity: 0.86;
+  background-size: cover;
+  background-position: center;
+}
+
+html body.page-london-musicals .tt-experience-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(2, 8, 20, 0.05), rgba(2, 8, 20, 0.98) 66%);
+}
+
+html body.page-london-musicals .tt-experience-card--stay::before {
+  background-image: url("/images/london-musicals-todaytix-hero-960.webp");
+}
+
+html body.page-london-musicals .tt-experience-card--guide::before {
+  background-image: url("/images/london-theatre-1440.webp");
+}
+
+html body.page-london-musicals .tt-experience-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+html body.page-london-musicals .tt-experience-card span {
+  color: #f4c365;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+html body.page-london-musicals .tt-experience-card strong {
+  margin-top: 8px;
+  font-size: 1.45rem;
+}
+
+html body.page-london-musicals .tt-experience-card p {
+  margin: 10px 0 0;
+  color: rgba(224, 239, 248, 0.76);
+}
+
+html body.page-london-musicals .tt-show-strip {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+html body.page-london-musicals .tt-show-strip span {
+  min-height: 116px;
+  display: grid;
+  place-items: end center;
+  padding: 12px;
+  border: 1px solid rgba(244, 195, 101, 0.24);
+  border-radius: 14px;
+  color: #fff;
+  text-align: center;
+  font-weight: 900;
+  font-size: 0.88rem;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(244, 195, 101, 0.16), transparent 7rem),
+    linear-gradient(180deg, rgba(9, 31, 59, 0.7), rgba(3, 12, 28, 0.98));
+}
+
+html body.page-london-musicals .tt-center-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+html body.page-london-musicals .tt-final {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 22px;
+  align-items: center;
+  margin: 0;
+  padding: 28px clamp(24px, 4vw, 48px);
+  background:
+    radial-gradient(circle at 8% 50%, rgba(244, 195, 101, 0.13), transparent 16rem),
+    radial-gradient(circle at 92% 50%, rgba(255, 47, 109, 0.18), transparent 18rem),
+    rgba(8, 24, 46, 0.72);
+}
+
+html body.page-london-musicals .tt-final-icon {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border: 1px solid rgba(244, 195, 101, 0.34);
+  border-radius: 999px;
+  font-size: 1.7rem;
+}
+
+html body.page-london-musicals .tt-final h2 {
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: clamp(1.45rem, 2.8vw, 2.05rem);
+}
+
+html body.page-london-musicals .tt-final p {
+  margin: 0;
+  color: rgba(224, 239, 248, 0.75);
+}
+
+html body.page-london-musicals .tt-trust {
+  grid-template-columns: repeat(3, 1fr);
+  padding: 28px clamp(24px, 4vw, 48px);
+}
+
+html body.page-london-musicals .tt-trust div {
+  display: grid;
+  gap: 5px;
+}
+
+html body.page-london-musicals .tt-trust strong {
+  color: #fff;
+}
+
+html body.page-london-musicals .tt-trust span {
+  color: rgba(224, 239, 248, 0.68);
+}
+
+html body.page-london-musicals .tt-disclaimer {
+  padding: 22px clamp(24px, 4vw, 48px) 28px;
+}
+
+html body.page-london-musicals .tt-disclaimer p {
+  max-width: 840px;
+  margin: 0 auto;
+  color: rgba(224, 239, 248, 0.6);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+html body.page-london-musicals .tt-shell .lm-btn--primary::after {
+  content: " →";
+}
+
+@media (max-width: 900px) {
+  html body.page-london-musicals .tt-hero-body,
+  html body.page-london-musicals .tt-benefit-grid,
+  html body.page-london-musicals .tt-points,
+  html body.page-london-musicals .tt-experience-grid,
+  html body.page-london-musicals .tt-trust,
+  html body.page-london-musicals .tt-final {
+    grid-template-columns: 1fr;
+  }
+
+  html body.page-london-musicals .tt-steps,
+  html body.page-london-musicals .tt-show-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  html body.page-london-musicals .tt-theatre-shot {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 620px) {
+  html body.page-london-musicals .tt-shell {
+    width: min(100% - 18px, 980px);
+    border-radius: 18px;
+  }
+
+  html body.page-london-musicals .tt-hero-art picture {
+    aspect-ratio: 4 / 3;
+  }
+
+  html body.page-london-musicals .tt-hero-body,
+  html body.page-london-musicals .tt-section,
+  html body.page-london-musicals .tt-final,
+  html body.page-london-musicals .tt-trust,
+  html body.page-london-musicals .tt-disclaimer {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  html body.page-london-musicals .tt-hero h1 {
+    font-size: clamp(2.35rem, 12vw, 3.5rem);
+  }
+
+  html body.page-london-musicals .tt-steps,
+  html body.page-london-musicals .tt-show-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* AJSEE_TODAYTIX_PREMIUM_MICROSITE_V12
+   Tightens V11 into a more compact premium poster-like landing page.
+   CSS-only refinement. No priority hacks. */
+
+html body.page-london-musicals main.lm-page.tt-page {
+  padding-top: clamp(14px, 2.2vw, 30px);
+  padding-bottom: clamp(26px, 4vw, 54px);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(20, 194, 197, 0.1), transparent 26rem),
+    radial-gradient(circle at 50% 32rem, rgba(244, 195, 101, 0.08), transparent 30rem),
+    linear-gradient(180deg, #020814 0%, #061629 48%, #020814 100%);
+}
+
+html body.page-london-musicals .tt-shell {
+  width: min(100% - 30px, 840px);
+  border-radius: 18px;
+  border-color: rgba(244, 195, 101, 0.34);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(13, 124, 196, 0.16), transparent 28rem),
+    linear-gradient(180deg, rgba(3, 15, 34, 0.995), rgba(2, 8, 20, 1));
+  box-shadow:
+    0 42px 140px rgba(0, 0, 0, 0.56),
+    0 0 0 1px rgba(255, 255, 255, 0.045) inset;
+}
+
+/* Top artwork closer to the reference: wide but not oversized */
+html body.page-london-musicals .tt-hero-art picture {
+  aspect-ratio: 16 / 6.8;
+}
+
+html body.page-london-musicals .tt-hero-art img {
+  object-position: center 43%;
+  opacity: 0.98;
+  filter: saturate(1.1) contrast(1.06) brightness(0.92);
+  -webkit-mask-image: linear-gradient(180deg, black 0%, black 80%, transparent 100%);
+  mask-image: linear-gradient(180deg, black 0%, black 80%, transparent 100%);
+}
+
+/* Intro block: more compact, less web-page-like */
+html body.page-london-musicals .tt-hero-body {
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 300px);
+  gap: 28px;
+  align-items: center;
+  padding: 30px 34px 34px;
+  margin-top: -22px;
+}
+
+html body.page-london-musicals .tt-kicker {
+  margin-bottom: 14px;
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  letter-spacing: 0.095em;
+}
+
+html body.page-london-musicals .tt-hero h1 {
+  max-width: 460px;
+  margin-bottom: 14px;
+  font-size: clamp(2.2rem, 4.2vw, 3.35rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  background: linear-gradient(180deg, #fff 0%, #fff 52%, #f4c365 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+html body.page-london-musicals .tt-lead {
+  max-width: 430px;
+  font-size: 0.98rem;
+  line-height: 1.58;
+}
+
+html body.page-london-musicals .tt-actions {
+  gap: 12px;
+  margin-top: 20px;
+}
+
+html body.page-london-musicals .tt-actions .lm-btn {
+  min-height: 44px;
+  padding: 0.78rem 1.08rem;
+  font-size: 0.9rem;
+}
+
+html body.page-london-musicals .tt-microcopy {
+  max-width: 430px;
+  margin-top: 16px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+html body.page-london-musicals .tt-theatre-shot {
+  min-height: 178px;
+  border-radius: 14px;
+  border-color: rgba(244, 195, 101, 0.38);
+  box-shadow:
+    0 18px 54px rgba(0, 0, 0, 0.32),
+    0 0 24px rgba(244, 195, 101, 0.07);
+}
+
+/* Section rhythm: target screenshot is tighter */
+html body.page-london-musicals .tt-section {
+  padding: 34px 34px;
+}
+
+html body.page-london-musicals .tt-section-head {
+  max-width: 680px;
+  margin-bottom: 24px;
+}
+
+html body.page-london-musicals .tt-section-head::before {
+  width: 70px;
+  margin-bottom: 14px;
+}
+
+html body.page-london-musicals .tt-section-head h2 {
+  font-size: clamp(1.65rem, 3vw, 2.28rem);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+html body.page-london-musicals .tt-section-head p {
+  max-width: 610px;
+  margin-inline: auto;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* Benefits */
+html body.page-london-musicals .tt-benefit-grid {
+  gap: 12px;
+}
+
+html body.page-london-musicals .tt-benefit-card {
+  min-height: 158px;
+  padding: 22px 16px;
+  border-radius: 14px;
+}
+
+html body.page-london-musicals .tt-icon {
+  width: 42px;
+  height: 42px;
+  margin-bottom: 14px;
+  font-size: 1rem;
+}
+
+html body.page-london-musicals .tt-benefit-card h3 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+html body.page-london-musicals .tt-benefit-card p {
+  font-size: 0.86rem;
+  line-height: 1.48;
+}
+
+/* Ticketing card */
+html body.page-london-musicals .tt-points {
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+html body.page-london-musicals .tt-points span {
+  min-height: 46px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+}
+
+html body.page-london-musicals .tt-purchase-card {
+  padding: 28px 30px;
+  border-radius: 18px;
+}
+
+html body.page-london-musicals .tt-purchase-card h3 {
+  max-width: 470px;
+  font-size: clamp(1.55rem, 3vw, 2.25rem);
+  line-height: 1.06;
+}
+
+html body.page-london-musicals .tt-purchase-card p {
+  max-width: 540px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+html body.page-london-musicals .tt-purchase-card .lm-btn {
+  min-height: 42px;
+  padding: 0.78rem 1.08rem;
+  font-size: 0.88rem;
+}
+
+html body.page-london-musicals .tt-note {
+  margin-top: 16px;
+  font-size: 0.84rem;
+}
+
+/* Steps: closer to compact process cards */
+html body.page-london-musicals .tt-steps {
+  gap: 12px;
+}
+
+html body.page-london-musicals .tt-steps article {
+  min-height: 176px;
+  padding: 20px 14px;
+  border-radius: 14px;
+}
+
+html body.page-london-musicals .tt-steps article span {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 14px;
+  font-size: 0.92rem;
+}
+
+html body.page-london-musicals .tt-steps h3 {
+  margin-bottom: 8px;
+  font-size: 0.96rem;
+  line-height: 1.25;
+}
+
+html body.page-london-musicals .tt-steps p {
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+/* Experience image cards */
+html body.page-london-musicals .tt-experience-grid {
+  gap: 14px;
+}
+
+html body.page-london-musicals .tt-experience-card {
+  min-height: 192px;
+  padding: 20px;
+  border-radius: 14px;
+}
+
+html body.page-london-musicals .tt-experience-card::before {
+  inset: 0 0 45%;
+}
+
+html body.page-london-musicals .tt-experience-card span {
+  font-size: 0.74rem;
+}
+
+html body.page-london-musicals .tt-experience-card strong {
+  font-size: 1.22rem;
+}
+
+html body.page-london-musicals .tt-experience-card p {
+  font-size: 0.88rem;
+  line-height: 1.48;
+}
+
+/* Popular shows */
+html body.page-london-musicals .tt-show-strip {
+  gap: 10px;
+}
+
+html body.page-london-musicals .tt-show-strip span {
+  min-height: 82px;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+}
+
+html body.page-london-musicals .tt-center-action {
+  margin-top: 18px;
+}
+
+/* Final CTA and trust row */
+html body.page-london-musicals .tt-final {
+  grid-template-columns: 52px 1fr auto;
+  gap: 18px;
+  padding: 24px 34px;
+}
+
+html body.page-london-musicals .tt-final-icon {
+  width: 52px;
+  height: 52px;
+  font-size: 1.35rem;
+}
+
+html body.page-london-musicals .tt-final h2 {
+  font-size: clamp(1.25rem, 2.4vw, 1.72rem);
+}
+
+html body.page-london-musicals .tt-final p {
+  font-size: 0.88rem;
+  line-height: 1.48;
+}
+
+html body.page-london-musicals .tt-final .lm-btn {
+  min-height: 44px;
+  padding: 0.82rem 1.12rem;
+  font-size: 0.88rem;
+}
+
+html body.page-london-musicals .tt-trust {
+  gap: 14px;
+  padding: 24px 34px;
+}
+
+html body.page-london-musicals .tt-trust strong {
+  font-size: 0.92rem;
+}
+
+html body.page-london-musicals .tt-trust span {
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+html body.page-london-musicals .tt-disclaimer {
+  padding: 20px 34px 24px;
+}
+
+html body.page-london-musicals .tt-disclaimer p {
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+/* Reduce accidental oversized inherited button treatment inside microsite */
+html body.page-london-musicals .tt-shell .lm-btn {
+  border-radius: 999px;
+  white-space: normal;
+}
+
+/* Tablet/mobile */
+@media (max-width: 900px) {
+  html body.page-london-musicals .tt-shell {
+    width: min(100% - 22px, 680px);
+  }
+
+  html body.page-london-musicals .tt-hero-body {
+    grid-template-columns: 1fr;
+    padding: 28px;
+  }
+
+  html body.page-london-musicals .tt-theatre-shot {
+    min-height: 170px;
+  }
+
+  html body.page-london-musicals .tt-benefit-grid,
+  html body.page-london-musicals .tt-points,
+  html body.page-london-musicals .tt-trust,
+  html body.page-london-musicals .tt-final {
+    grid-template-columns: 1fr;
+  }
+
+  html body.page-london-musicals .tt-steps,
+  html body.page-london-musicals .tt-show-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  html body.page-london-musicals .tt-final {
+    text-align: left;
+  }
+}
+
+@media (max-width: 620px) {
+  html body.page-london-musicals .tt-shell {
+    width: min(100% - 16px, 680px);
+    border-radius: 16px;
+  }
+
+  html body.page-london-musicals .tt-hero-art picture {
+    aspect-ratio: 4 / 3;
+  }
+
+  html body.page-london-musicals .tt-hero-body,
+  html body.page-london-musicals .tt-section,
+  html body.page-london-musicals .tt-final,
+  html body.page-london-musicals .tt-trust,
+  html body.page-london-musicals .tt-disclaimer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  html body.page-london-musicals .tt-hero h1 {
+    font-size: clamp(2.15rem, 11vw, 3.05rem);
+  }
+
+  html body.page-london-musicals .tt-actions {
+    align-items: stretch;
+  }
+
+  html body.page-london-musicals .tt-actions .lm-btn,
+  html body.page-london-musicals .tt-purchase-card .lm-btn,
+  html body.page-london-musicals .tt-final .lm-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  html body.page-london-musicals .tt-steps,
+  html body.page-london-musicals .tt-show-strip,
+  html body.page-london-musicals .tt-experience-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* AJSEE_TODAYTIX_REMOVE_OLD_THEATRE_V13
+   Removes the legacy THEATRE image from the premium microsite. */
+
+html body.page-london-musicals .tt-theatre-shot {
+  background:
+    radial-gradient(circle at 52% 34%, rgba(244, 195, 101, 0.18), transparent 38%),
+    radial-gradient(circle at 50% 100%, rgba(20, 194, 197, 0.14), transparent 55%),
+    linear-gradient(145deg, #081b34 0%, #030b1a 58%, #170d1e 100%);
+}
+
+html body.page-london-musicals .tt-theatre-shot::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(244, 195, 101, 0.2);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, transparent 0 70%, rgba(244, 195, 101, 0.06)),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 38px,
+      rgba(255, 255, 255, 0.025) 38px 39px
+    );
+}
+
+html body.page-london-musicals .tt-experience-card--guide::before {
+  background-image:
+    radial-gradient(circle at 68% 30%, rgba(244, 195, 101, 0.24), transparent 26%),
+    linear-gradient(145deg, #102843 0%, #061226 58%, #151127 100%);
+}
+
+
+/* AJSEE_TODAYTIX_HERO_SPLIT_V14
+   Hero only: copy on the left, AJSEE x TodayTix artwork on the right.
+   Removes the legacy theatre placeholder. */
+
+/* Desktop hero layout */
+html body.page-london-musicals .tt-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+  column-gap: clamp(34px, 4vw, 64px);
+  align-items: center;
+  min-height: min(700px, calc(100vh - 112px));
+  padding: clamp(42px, 5vw, 70px);
+  background:
+    radial-gradient(circle at 82% 38%, rgba(20, 194, 197, 0.12), transparent 28rem),
+    radial-gradient(circle at 10% 28%, rgba(244, 195, 101, 0.08), transparent 22rem),
+    linear-gradient(135deg, rgba(4, 17, 39, 0.99), rgba(2, 8, 20, 1));
+}
+
+/* Allow the hero copy to become a direct grid child */
+html body.page-london-musicals .tt-hero-body {
+  display: contents;
+}
+
+/* Copy on the left */
+html body.page-london-musicals .tt-hero-copy {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+  z-index: 2;
+  align-self: center;
+  max-width: 520px;
+}
+
+/* Artwork on the right */
+html body.page-london-musicals .tt-hero-art {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(244, 195, 101, 0.34);
+  border-radius: 20px;
+  background: #031027;
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.42),
+    0 0 42px rgba(20, 194, 197, 0.08);
+}
+
+html body.page-london-musicals .tt-hero-art picture {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+}
+
+html body.page-london-musicals .tt-hero-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 1;
+  filter: saturate(1.06) contrast(1.04) brightness(0.96);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* Remove the old THEATRE placeholder entirely */
+html body.page-london-musicals .tt-theatre-shot {
+  display: none;
+}
+
+/* More controlled hero typography */
+html body.page-london-musicals .tt-hero h1 {
+  max-width: 500px;
+  margin: 0 0 18px;
+  font-size: clamp(2.65rem, 4.5vw, 4.15rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+html body.page-london-musicals .tt-lead {
+  max-width: 470px;
+  font-size: clamp(1rem, 1.2vw, 1.12rem);
+  line-height: 1.62;
+}
+
+html body.page-london-musicals .tt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+html body.page-london-musicals .tt-actions .lm-btn {
+  min-height: 46px;
+  padding: 0.82rem 1.15rem;
+  font-size: 0.92rem;
+}
+
+html body.page-london-musicals .tt-microcopy {
+  max-width: 470px;
+  margin-top: 18px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* Tablet */
+@media (max-width: 980px) {
+  html body.page-london-musicals .tt-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr);
+    column-gap: 30px;
+    min-height: auto;
+    padding: 42px 34px;
+  }
+
+  html body.page-london-musicals .tt-hero h1 {
+    font-size: clamp(2.4rem, 5vw, 3.5rem);
+  }
+}
+
+/* Mobile: text first, artwork below */
+@media (max-width: 760px) {
+  html body.page-london-musicals .tt-hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 30px 22px;
+  }
+
+  html body.page-london-musicals .tt-hero-copy {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: none;
+  }
+
+  html body.page-london-musicals .tt-hero-art {
+    grid-column: 1;
+    grid-row: 2;
+    border-radius: 16px;
+  }
+
+  html body.page-london-musicals .tt-hero-art picture {
+    aspect-ratio: 3 / 2;
+  }
+
+  html body.page-london-musicals .tt-hero h1 {
+    max-width: none;
+    font-size: clamp(2.35rem, 11vw, 3.35rem);
+  }
+
+  html body.page-london-musicals .tt-lead,
+  html body.page-london-musicals .tt-microcopy {
+    max-width: none;
+  }
+
+  html body.page-london-musicals .tt-actions {
+    align-items: stretch;
+  }
+
+  html body.page-london-musicals .tt-actions .lm-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* AJSEE_TODAYTIX_HERO_FULL_HEIGHT_V15
+   Full-width page without an outer card frame.
+   Hero copy left, artwork filling the complete right side. */
+
+/* Remove the narrow framed microsite container */
+html body.page-london-musicals main.lm-page.tt-page {
+  padding: 0;
+}
+
+html body.page-london-musicals .tt-shell {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(13, 124, 196, 0.14), transparent 34rem),
+    linear-gradient(180deg, rgba(3, 15, 34, 0.995), rgba(2, 8, 20, 1));
+  box-shadow: none;
+}
+
+/* Full-width hero */
+html body.page-london-musicals .tt-hero {
+  display: grid;
+  grid-template-columns: minmax(420px, 0.88fr) minmax(540px, 1.12fr);
+  align-items: stretch;
+  min-height: clamp(600px, calc(100svh - 112px), 760px);
+  padding: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 75% 36%, rgba(20, 194, 197, 0.12), transparent 30rem),
+    radial-gradient(circle at 14% 30%, rgba(244, 195, 101, 0.08), transparent 24rem),
+    linear-gradient(135deg, #031126 0%, #020814 58%, #030711 100%);
+}
+
+/* Make copy and artwork direct grid children */
+html body.page-london-musicals .tt-hero-body {
+  display: contents;
+}
+
+/* Left column */
+html body.page-london-musicals .tt-hero-copy {
+  grid-column: 1;
+  grid-row: 1;
+  align-self: center;
+  width: 100%;
+  max-width: 680px;
+  margin-left: auto;
+  padding:
+    clamp(52px, 7vw, 110px)
+    clamp(38px, 5vw, 78px)
+    clamp(52px, 7vw, 110px)
+    clamp(38px, 7vw, 120px);
+  position: relative;
+  z-index: 2;
+}
+
+/* Right artwork fills the entire hero height */
+html body.page-london-musicals .tt-hero-art {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: stretch;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  margin: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: #031027;
+  box-shadow: none;
+}
+
+html body.page-london-musicals .tt-hero-art picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+html body.page-london-musicals .tt-hero-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  object-fit: cover;
+  object-position: center center;
+  opacity: 1;
+  filter: saturate(1.07) contrast(1.05) brightness(0.94);
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* The legacy THEATRE placeholder is not part of the hero anymore */
+html body.page-london-musicals .tt-theatre-shot {
+  display: none;
+}
+
+/* Keep all primary hero content visible */
+html body.page-london-musicals .tt-hero h1 {
+  max-width: 570px;
+  margin: 0 0 18px;
+  font-size: clamp(2.75rem, 4.6vw, 4.65rem);
+  line-height: 0.97;
+  letter-spacing: -0.058em;
+}
+
+html body.page-london-musicals .tt-lead {
+  max-width: 520px;
+  font-size: clamp(1rem, 1.2vw, 1.14rem);
+  line-height: 1.62;
+}
+
+html body.page-london-musicals .tt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+html body.page-london-musicals .tt-actions .lm-btn {
+  min-height: 46px;
+  padding: 0.82rem 1.18rem;
+  font-size: 0.92rem;
+}
+
+html body.page-london-musicals .tt-microcopy {
+  max-width: 510px;
+  margin-top: 18px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* Sections can use the page width, but their content stays readable */
+html body.page-london-musicals .tt-section {
+  width: 100%;
+  padding-left: clamp(28px, 5vw, 80px);
+  padding-right: clamp(28px, 5vw, 80px);
+}
+
+html body.page-london-musicals .tt-section > .tt-section-head,
+html body.page-london-musicals .tt-section > .tt-benefit-grid,
+html body.page-london-musicals .tt-section > .tt-points,
+html body.page-london-musicals .tt-section > .tt-purchase-card,
+html body.page-london-musicals .tt-section > .tt-steps,
+html body.page-london-musicals .tt-section > .tt-experience-grid,
+html body.page-london-musicals .tt-section > .tt-show-strip,
+html body.page-london-musicals .tt-section > .tt-center-action {
+  width: min(100%, 1320px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+html body.page-london-musicals .tt-final,
+html body.page-london-musicals .tt-trust,
+html body.page-london-musicals .tt-disclaimer {
+  width: min(calc(100% - 56px), 1320px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Desktop with less available width */
+@media (max-width: 1120px) {
+  html body.page-london-musicals .tt-hero {
+    grid-template-columns: minmax(390px, 0.94fr) minmax(450px, 1.06fr);
+    min-height: 610px;
+  }
+
+  html body.page-london-musicals .tt-hero-copy {
+    padding-left: 42px;
+    padding-right: 36px;
+  }
+
+  html body.page-london-musicals .tt-hero h1 {
+    font-size: clamp(2.55rem, 4.8vw, 3.85rem);
+  }
+}
+
+/* Tablet and mobile */
+@media (max-width: 840px) {
+  html body.page-london-musicals .tt-hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  html body.page-london-musicals .tt-hero-copy {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: none;
+    margin: 0;
+    padding: 38px 26px 30px;
+  }
+
+  html body.page-london-musicals .tt-hero-art {
+    grid-column: 1;
+    grid-row: 2;
+    height: clamp(300px, 62vw, 500px);
+    min-height: 0;
+  }
+
+  html body.page-london-musicals .tt-hero-art picture,
+  html body.page-london-musicals .tt-hero-art img {
+    min-height: 0;
+  }
+
+  html body.page-london-musicals .tt-hero h1 {
+    max-width: 620px;
+    font-size: clamp(2.45rem, 10vw, 3.8rem);
+  }
+
+  html body.page-london-musicals .tt-lead,
+  html body.page-london-musicals .tt-microcopy {
+    max-width: 620px;
+  }
+}
+
+@media (max-width: 560px) {
+  html body.page-london-musicals .tt-hero-copy {
+    padding: 30px 20px 26px;
+  }
+
+  html body.page-london-musicals .tt-actions {
+    align-items: stretch;
+  }
+
+  html body.page-london-musicals .tt-actions .lm-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  html body.page-london-musicals .tt-section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  html body.page-london-musicals .tt-final,
+  html body.page-london-musicals .tt-trust,
+  html body.page-london-musicals .tt-disclaimer {
+    width: calc(100% - 32px);
+  }
+}
+

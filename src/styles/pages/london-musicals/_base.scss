@@ -1,0 +1,151 @@
+@use "./mixins" as m;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap");
+
+.page-london-musicals-todaytix {
+  min-height: 100%;
+  margin: 0;
+  color: var(--text-primary);
+  background-color: var(--bg-main);
+  background-image: none;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+
+  .tt-page,
+  .tt-shell {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .tt-page {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .tt-shell {
+    overflow: clip;
+  }
+
+  .tt-page::before,
+  .tt-page::after,
+  .tt-shell::before,
+  .tt-shell::after {
+    content: none;
+  }
+
+  h1,
+  h2,
+  .serif-text {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  figure {
+    margin-top: 0;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  .lm-btn {
+    @include m.focus-ring;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0.78rem 1.2rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      transform 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &--primary {
+      color: #fff;
+      background: var(--brand-todaytix);
+      border-color: var(--brand-todaytix);
+
+      &:hover {
+        background: var(--brand-todaytix-hover);
+        border-color: var(--brand-todaytix-hover);
+      }
+    }
+
+    &--secondary {
+      color: var(--text-primary);
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.22);
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.04);
+      }
+    }
+  }
+
+  .tt-theatre-shot {
+    display: none;
+  }
+}
+
+/* AJSEE_LONDON_FINAL_BASE_V31_START */
+.page-london-musicals-todaytix {
+  overflow-x: clip;
+
+  &,
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  .tt-page,
+  .tt-shell,
+  .tt-section,
+  .site-header,
+  .site-footer {
+    max-width: 100%;
+  }
+
+  img,
+  svg {
+    max-width: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto;
+      transition-duration: 0.01ms;
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+    }
+  }
+}
+/* AJSEE_LONDON_FINAL_BASE_V31_END */

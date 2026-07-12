@@ -14,7 +14,11 @@
       "lead": "Choose your show and continue securely to the TodayTix partner ticketing page. AJSEE guides you to the right place.",
       "ctaPrimary": "Buy tickets via TodayTix",
       "ctaSecondary": "How buying works",
-      "microcopy": "The official purchase is handled by our ticketing partner TodayTix. AJSEE guides you there safely."
+      "microcopy": "The official purchase is handled by our ticketing partner TodayTix. AJSEE guides you there safely.",
+      "titleMain": "London musicals.",
+      "titleAccent": "Unforgettable experiences.",
+      "descriptionLine1": "Choose your musical and continue safely to the TodayTix partner page.",
+      "descriptionLine2": "AJSEE will guide you to the right place."
     },
     "list": {
       "title": "West End tickets through TodayTix",
@@ -96,18 +100,18 @@
     },
     "premium": {
       "benefits": {
-        "title": "Why book through our partner?",
+        "title": "Why buy tickets through TodayTix?",
         "verified": {
-          "title": "Verified tickets",
-          "text": "The purchase is handled by TodayTix, a specialist ticketing partner for theatre and live experiences."
+          "title": "Experienced ticketing partner",
+          "text": "Your purchase is completed through TodayTix, a partner to London theatres and musical productions."
         },
         "selection": {
-          "title": "Wide selection",
-          "text": "The partner page shows current dates, availability and purchase options for London shows."
+          "title": "Up-to-date availability",
+          "text": "On the partner page, you will find current performance dates, availability and ticket prices for London musicals."
         },
         "simple": {
           "title": "Simple booking",
-          "text": "AJSEE guides you to the right place. Seat selection, payment and confirmation are handled by TodayTix."
+          "text": "AJSEE takes you straight to the right offer. Seat selection, payment and order confirmation are handled by TodayTix."
         }
       },
       "ticketing": {
@@ -126,19 +130,19 @@
         "text": "Booking is simple. AJSEE sends you to the partner page and the reservation is completed with TodayTix.",
         "one": {
           "title": "Choose a musical",
-          "text": "Browse London shows and choose the experience that suits you."
+          "text": "Browse a selection of the best shows in the West End."
         },
         "two": {
-          "title": "Pick date and seats",
-          "text": "On the partner page, choose the date, seat category and number of tickets."
+          "title": "Choose a date and seats",
+          "text": "Select a date, seating category and number of tickets."
         },
         "three": {
           "title": "Pay securely",
-          "text": "Payment and order confirmation are handled directly by TodayTix."
+          "text": "Payment is made directly with TodayTix – quickly and securely."
         },
         "four": {
           "title": "Enjoy the show",
-          "text": "After purchase, you receive ticket information and can look forward to your West End night."
+          "text": "Your tickets will arrive by email, and you can head off for an unforgettable experience!"
         }
       },
       "experience": {
@@ -155,23 +159,20 @@
         }
       },
       "popular": {
-        "title": "Popular West End musicals",
-        "cta": "View offers"
+        "title": "Popular musicals in the West End",
+        "cta": "Browse the selection"
       },
-      "trust": {
-        "help": {
-          "title": "Help within reach",
-          "text": "We are here before and during your trip."
-        },
-        "partner": {
-          "title": "Trusted partnership",
-          "text": "Purchases are handled by our ticketing partner TodayTix."
-        },
-        "memory": {
-          "title": "A night to remember",
-          "text": "London, musicals and an evening worth the trip."
-        }
+      "accommodation": {
+        "title": "Accommodation in London",
+        "body": "Once you have chosen your musical, find the ideal place to stay straight away. Browse vetted offers from TrustedStays, or first learn how our partnership works.",
+        "primaryCta": "Find accommodation",
+        "secondaryCta": "Learn more",
+        "partnerLabel": "Accommodation in partnership with"
       }
+    },
+    "seo": {
+      "title": "London musicals and West End tickets | AJSEE × TodayTix",
+      "description": "Choose a London West End musical and continue securely to buy tickets through our ticketing partner TodayTix."
     }
   }
 }

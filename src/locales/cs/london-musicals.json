@@ -14,7 +14,11 @@
       "lead": "Vyberte si muzikál a přejděte bezpečně na partnerskou stránku TodayTix. AJSEE vás navede na správné místo.",
       "ctaPrimary": "Koupit vstupenky přes TodayTix",
       "ctaSecondary": "Jak nákup funguje",
-      "microcopy": "Oficiální nákup probíhá u našeho ticketingového partnera TodayTix. AJSEE vás bezpečně nasměruje."
+      "microcopy": "Oficiální nákup probíhá u našeho ticketingového partnera TodayTix. AJSEE vás bezpečně nasměruje.",
+      "titleMain": "Londýnské muzikály.",
+      "titleAccent": "Nezapomenutelné zážitky.",
+      "descriptionLine1": "Vyberte si muzikál a přejděte bezpečně na partnerskou stránku TodayTix.",
+      "descriptionLine2": "AJSEE vás navede na správné místo."
     },
     "list": {
       "title": "Vstupenky na West End přes TodayTix",
@@ -96,18 +100,18 @@
     },
     "premium": {
       "benefits": {
-        "title": "Proč kupovat přes našeho partnera?",
+        "title": "Proč koupit vstupenky přes TodayTix?",
         "verified": {
-          "title": "Ověřené vstupenky",
-          "text": "Nákup probíhá u TodayTix, specializovaného ticketingového partnera pro divadla a živé zážitky."
+          "title": "Zkušený ticketingový partner",
+          "text": "Nákup probíhá přes TodayTix, partnera londýnských divadel a muzikálových produkcí."
         },
         "selection": {
-          "title": "Široký výběr",
-          "text": "Na partnerské stránce najdete aktuální termíny, dostupnost a možnosti nákupu pro londýnské show."
+          "title": "Aktuální nabídka",
+          "text": "Na partnerské stránce najdete aktuální termíny, dostupnost a ceny vstupenek na londýnské muzikály."
         },
         "simple": {
           "title": "Jednoduchý nákup",
-          "text": "AJSEE vás navede na správné místo. Výběr sedadel, platba a potvrzení probíhají u TodayTix."
+          "text": "AJSEE vás nasměruje přímo k nabídce. Výběr míst, platba i potvrzení objednávky proběhnou u TodayTix."
         }
       },
       "ticketing": {
@@ -123,22 +127,22 @@
       },
       "steps": {
         "title": "Jak to funguje?",
-        "text": "Nákup je jednoduchý. AJSEE vás nasměruje na partnerskou stránku a rezervace proběhne u TodayTix.",
+        "text": "",
         "one": {
           "title": "Vyberte muzikál",
-          "text": "Projděte si nabídku londýnských show a vyberte si zážitek, který vám sedí."
+          "text": "Projděte si nabídku nejlepších představení na West Endu."
         },
         "two": {
           "title": "Zvolte datum a místa",
-          "text": "Na stránce partnera vyberete termín, kategorii míst a počet vstupenek."
+          "text": "Vyberte si termín, kategorii a počet vstupenek."
         },
         "three": {
           "title": "Bezpečně zaplaťte",
-          "text": "Platba a potvrzení objednávky proběhnou přímo u TodayTix."
+          "text": "Platba probíhá přímo u TodayTix – rychle a bezpečně."
         },
         "four": {
           "title": "Užijte si představení",
-          "text": "Po nákupu obdržíte informace ke vstupenkám a můžete se těšit na večer ve West Endu."
+          "text": "Vstupenky obdržíte e-mailem a můžete vyrazit na nezapomenutelný zážitek!"
         }
       },
       "experience": {
@@ -155,23 +159,20 @@
         }
       },
       "popular": {
-        "title": "Oblíbené muzikály na West End",
+        "title": "Oblíbené muzikály na West Endu",
         "cta": "Prohlédnout nabídku"
       },
-      "trust": {
-        "help": {
-          "title": "Pomoc na dosah ruky",
-          "text": "Jsme tu pro vás před cestou i během ní."
-        },
-        "partner": {
-          "title": "Důvěryhodné partnerství",
-          "text": "Nákup zajišťuje náš ticketingový partner TodayTix."
-        },
-        "memory": {
-          "title": "Zážitek, na který vzpomenete",
-          "text": "Londýn, muzikál a večer, který stojí za cestu."
-        }
+      "accommodation": {
+        "title": "Ubytování v Londýně",
+        "body": "K vybranému muzikálu si rovnou najděte ideální místo k pobytu. Přejděte na prověřené nabídky TrustedStays, nebo si nejdřív přečtěte, jak naše partnerství funguje.",
+        "primaryCta": "Najít ubytování",
+        "secondaryCta": "Zjistit více",
+        "partnerLabel": "Ubytování ve spolupráci s"
       }
+    },
+    "seo": {
+      "title": "Londýnské muzikály a vstupenky na West End | AJSEE × TodayTix",
+      "description": "Vyberte si muzikál na londýnském West Endu a přejděte bezpečně k nákupu vstupenek přes ticketingového partnera TodayTix."
     }
   }
 }

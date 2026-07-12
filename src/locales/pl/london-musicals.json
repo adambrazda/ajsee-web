@@ -14,7 +14,11 @@
       "lead": "Choose your show and continue securely to the TodayTix partner ticketing page. AJSEE guides you to the right place.",
       "ctaPrimary": "Buy tickets via TodayTix",
       "ctaSecondary": "Jak działa zakup",
-      "microcopy": "The official purchase is handled by our ticketing partner TodayTix. AJSEE guides you there safely."
+      "microcopy": "The official purchase is handled by our ticketing partner TodayTix. AJSEE guides you there safely.",
+      "titleMain": "Londyńskie musicale.",
+      "titleAccent": "Niezapomniane przeżycia.",
+      "descriptionLine1": "Wybierz musical i przejdź bezpiecznie na stronę partnerską TodayTix.",
+      "descriptionLine2": "AJSEE poprowadzi Cię we właściwe miejsce."
     },
     "list": {
       "title": "Bilety na West End przez TodayTix",
@@ -96,18 +100,18 @@
     },
     "premium": {
       "benefits": {
-        "title": "Why book through our partner?",
+        "title": "Dlaczego warto kupić bilety przez TodayTix?",
         "verified": {
-          "title": "Verified tickets",
-          "text": "The purchase is handled by TodayTix, a specialist ticketing partner for theatre and live experiences."
+          "title": "Doświadczony partner sprzedaży biletów",
+          "text": "Zakup odbywa się przez TodayTix, partnera londyńskich teatrów i produkcji musicalowych."
         },
         "selection": {
-          "title": "Wide selection",
-          "text": "The partner page shows current dates, availability and purchase options for London shows."
+          "title": "Aktualna oferta",
+          "text": "Na stronie partnerskiej znajdziesz aktualne terminy, dostępność i ceny biletów na londyńskie musicale."
         },
         "simple": {
-          "title": "Simple booking",
-          "text": "AJSEE guides you to the right place. Seat selection, payment and confirmation are handled by TodayTix."
+          "title": "Prosty zakup",
+          "text": "AJSEE przekieruje Cię bezpośrednio do odpowiedniej oferty. Wybór miejsc, płatność i potwierdzenie zamówienia odbywają się w TodayTix."
         }
       },
       "ticketing": {
@@ -125,20 +129,20 @@
         "title": "How does it work?",
         "text": "Booking is simple. AJSEE sends you to the partner page and the reservation is completed with TodayTix.",
         "one": {
-          "title": "Choose a musical",
-          "text": "Browse London shows and choose the experience that suits you."
+          "title": "Wybierz musical",
+          "text": "Przejrzyj ofertę najlepszych przedstawień na West Endzie."
         },
         "two": {
-          "title": "Pick date and seats",
-          "text": "On the partner page, choose the date, seat category and number of tickets."
+          "title": "Wybierz termin i miejsca",
+          "text": "Wybierz termin, kategorię miejsc i liczbę biletów."
         },
         "three": {
-          "title": "Pay securely",
-          "text": "Payment and order confirmation are handled directly by TodayTix."
+          "title": "Zapłać bezpiecznie",
+          "text": "Płatność odbywa się bezpośrednio w TodayTix – szybko i bezpiecznie."
         },
         "four": {
-          "title": "Enjoy the show",
-          "text": "After purchase, you receive ticket information and can look forward to your West End night."
+          "title": "Ciesz się spektaklem",
+          "text": "Bilety otrzymasz e-mailem i możesz ruszyć po niezapomniane wrażenia!"
         }
       },
       "experience": {
@@ -155,23 +159,20 @@
         }
       },
       "popular": {
-        "title": "Popular West End musicals",
-        "cta": "View offers"
+        "title": "Popularne musicale na West Endzie",
+        "cta": "Zobacz ofertę"
       },
-      "trust": {
-        "help": {
-          "title": "Help within reach",
-          "text": "We are here before and during your trip."
-        },
-        "partner": {
-          "title": "Trusted partnership",
-          "text": "Purchases are handled by our ticketing partner TodayTix."
-        },
-        "memory": {
-          "title": "A night to remember",
-          "text": "London, musicals and an evening worth the trip."
-        }
+      "accommodation": {
+        "title": "Noclegi w Londynie",
+        "body": "Do wybranego musicalu od razu znajdź idealne miejsce na pobyt. Przejdź do sprawdzonych ofert TrustedStays albo najpierw przeczytaj, jak działa nasza współpraca.",
+        "primaryCta": "Znajdź nocleg",
+        "secondaryCta": "Dowiedz się więcej",
+        "partnerLabel": "Noclegi we współpracy z"
       }
+    },
+    "seo": {
+      "title": "Londyńskie musicale i bilety na West End | AJSEE × TodayTix",
+      "description": "Wybierz musical na londyńskim West Endzie i bezpiecznie przejdź do zakupu biletów u naszego partnera ticketingowego TodayTix."
     }
   }
 }

@@ -10,11 +10,15 @@
   "londonMusicals": {
     "hero": {
       "eyebrow": "West End · AJSEE × TodayTix",
-      "title": "Londoni musicalek",
-      "lead": "Éld át a londoni West End hangulatát. A jegyeket egyszerűen és biztonságosan vásárolhatod meg partneri vásárlási oldalunkon.",
-      "ctaPrimary": "Jegyek megtekintése",
+      "title": "London musicals. Unforgettable nights.",
+      "lead": "Choose your show and continue securely to the TodayTix partner ticketing page. AJSEE guides you to the right place.",
+      "ctaPrimary": "Buy tickets via TodayTix",
       "ctaSecondary": "Hogyan működik a vásárlás",
-      "microcopy": "Az ülőhelyválasztást, a fizetést és a visszaigazolást ticketing partnerünk, a TodayTix kezeli."
+      "microcopy": "The official purchase is handled by our ticketing partner TodayTix. AJSEE guides you there safely.",
+      "titleMain": "Londoni musicalek.",
+      "titleAccent": "Felejthetetlen élmények.",
+      "descriptionLine1": "Válassza ki a musicalt, és lépjen tovább biztonságosan a TodayTix partneroldalára.",
+      "descriptionLine2": "Az AJSEE a megfelelő helyre irányítja."
     },
     "list": {
       "title": "West End jegyek a TodayTix-en keresztül",
@@ -93,6 +97,82 @@
         "title": "Élvezd a West Endet",
         "text": "A vásárlás után e-mailben kapod meg a jegyinformációkat, és készülhetsz az előadásra."
       }
+    },
+    "premium": {
+      "benefits": {
+        "title": "Miért érdemes a TodayTixen keresztül jegyet vásárolni?",
+        "verified": {
+          "title": "Tapasztalt jegyértékesítési partner",
+          "text": "A vásárlás a TodayTixen keresztül történik, amely londoni színházak és musicalprodukciók partnere."
+        },
+        "selection": {
+          "title": "Aktuális kínálat",
+          "text": "A partneroldalon megtalálja a londoni musicalek aktuális időpontjait, elérhetőségét és jegyárait."
+        },
+        "simple": {
+          "title": "Egyszerű vásárlás",
+          "text": "Az AJSEE közvetlenül a megfelelő ajánlathoz irányítja. A helyválasztás, a fizetés és a rendelés visszaigazolása a TodayTix felületén történik."
+        }
+      },
+      "ticketing": {
+        "title": "West End tickets via TodayTix",
+        "text": "Current shows, dates and prices are available on the AJSEE partner page powered by TodayTix.",
+        "point1": "Partner ticketing page",
+        "point2": "Current dates and availability",
+        "point3": "Secure purchase with TodayTix",
+        "kicker": "Booking via TodayTix",
+        "cardTitle": "Tickets for London musicals",
+        "cardText": "Continue to the partner page and choose your show, date, seat category and number of tickets.",
+        "note": "Availability, prices, seats, fees and confirmation are shown directly by TodayTix before checkout."
+      },
+      "steps": {
+        "title": "How does it work?",
+        "text": "Booking is simple. AJSEE sends you to the partner page and the reservation is completed with TodayTix.",
+        "one": {
+          "title": "Válasszon musicalt",
+          "text": "Tekintse meg a West End legjobb előadásainak kínálatát."
+        },
+        "two": {
+          "title": "Válasszon időpontot és helyeket",
+          "text": "Válassza ki az időpontot, az ülőhelykategóriát és a jegyek számát."
+        },
+        "three": {
+          "title": "Fizessen biztonságosan",
+          "text": "A fizetés közvetlenül a TodayTix felületén történik – gyorsan és biztonságosan."
+        },
+        "four": {
+          "title": "Élvezze az előadást",
+          "text": "Jegyeit e-mailben kapja meg, és már indulhat is egy felejthetetlen élményre!"
+        }
+      },
+      "experience": {
+        "title": "Your London experience starts here",
+        "stay": {
+          "kicker": "Accommodation in London",
+          "title": "Find a stay",
+          "text": "Go to verified accommodation options for your London trip."
+        },
+        "guide": {
+          "kicker": "London around the show",
+          "title": "Learn more",
+          "text": "Learn how AJSEE connects musicals, accommodation and trip planning."
+        }
+      },
+      "popular": {
+        "title": "Népszerű musicalek a West Enden",
+        "cta": "Kínálat megtekintése"
+      },
+      "accommodation": {
+        "title": "Szállás Londonban",
+        "body": "A kiválasztott musical mellé rögtön megtalálhatja az ideális szállást. Tekintse meg a TrustedStays ellenőrzött ajánlatait, vagy előbb olvassa el, hogyan működik az együttműködésünk.",
+        "primaryCta": "Szállás keresése",
+        "secondaryCta": "További információ",
+        "partnerLabel": "Szállás együttműködésben a következővel:"
+      }
+    },
+    "seo": {
+      "title": "Londoni musicalek és West End-jegyek | AJSEE × TodayTix",
+      "description": "Válasszon musicalt a londoni West End kínálatából, majd biztonságosan vásároljon jegyet ticketingpartnerünknél, a TodayTixnél."
     }
   }
 }

@@ -1,0 +1,552 @@
+.page-london-musicals-todaytix {
+  .tt-hero {
+    display: grid;
+    width: min(calc(100% - 48px), 1280px);
+    min-height: auto;
+    margin-inline: auto;
+    padding:
+      clamp(24px, 3vw, 40px)
+      0
+      clamp(42px, 5vw, 64px);
+    grid-template-columns:
+      minmax(0, 1.02fr)
+      minmax(440px, 0.98fr);
+    gap: clamp(42px, 6vw, 84px);
+    align-items: center;
+    color: var(--text-primary);
+    background:
+      radial-gradient(
+        circle at 82% 44%,
+        rgba(227, 24, 55, 0.08),
+        transparent 28rem
+      ),
+      radial-gradient(
+        circle at 20% 30%,
+        rgba(212, 175, 55, 0.06),
+        transparent 24rem
+      ),
+      var(--bg-main);
+    text-align: left;
+  }
+
+  /*
+   * Textová část je na desktopu vlevo.
+   * HTML pořadí nemusíme měnit.
+   */
+  .tt-hero-body {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    max-width: 650px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tt-hero-copy {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tt-kicker {
+    display: inline-flex;
+    min-height: 30px;
+    margin: 0 0 18px;
+    padding: 0.38rem 0.72rem;
+    align-items: center;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 999px;
+    color: var(--brand-gold-soft);
+    background: rgba(212, 175, 55, 0.05);
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .tt-hero h1 {
+    max-width: 650px;
+    margin: 0 0 20px;
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+    font-size: clamp(3.15rem, 4.65vw, 5.1rem);
+    font-weight: 700;
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+
+    > span {
+      display: block;
+    }
+  }
+
+  .tt-hero-title-accent {
+    color: var(--brand-gold);
+    font-size: 0.9em;
+  }
+
+  .tt-lead {
+    max-width: 610px;
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: clamp(1rem, 1.15vw, 1.1rem);
+    line-height: 1.58;
+
+    .tt-lead-break {
+      display: block;
+    }
+  }
+
+  .tt-actions {
+    display: flex;
+    margin-top: 26px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+
+    .lm-btn {
+      min-height: 48px;
+      padding: 0.82rem 1.3rem;
+      font-size: 0.92rem;
+    }
+
+    .lm-btn--primary {
+      color: #fff;
+      border-color: var(--brand-todaytix);
+      background: var(--brand-todaytix);
+      box-shadow: 0 16px 38px rgba(227, 24, 55, 0.24);
+
+      &:hover {
+        border-color: var(--brand-todaytix-hover);
+        background: var(--brand-todaytix-hover);
+      }
+    }
+
+    .lm-btn--secondary {
+      color: var(--text-primary);
+      border-color: rgba(255, 255, 255, 0.24);
+      background: transparent;
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.44);
+        background: rgba(255, 255, 255, 0.04);
+      }
+    }
+  }
+
+  .tt-microcopy {
+    max-width: 600px;
+    margin: 16px 0 0;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  /*
+   * Vizuál je napravo a vždy se zobrazuje celý.
+   * Žádné cover, žádný crop, žádné procentuální posouvání.
+   */
+  .tt-hero-art {
+    position: relative;
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    max-width: 610px;
+    margin: 0;
+    justify-self: end;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: #051027;
+    box-shadow:
+      0 32px 90px rgba(0, 0, 0, 0.34),
+      0 0 50px rgba(227, 24, 55, 0.04);
+
+    picture {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 2;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 3 / 2;
+      object-fit: contain;
+      object-position: center;
+      opacity: 1;
+      filter:
+        saturate(1.04)
+        contrast(1.03)
+        brightness(0.98);
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
+
+  .tt-theatre-shot {
+    display: none;
+  }
+
+  /*
+   * Notebooky s menší výškou.
+   */
+  @media (min-width: 901px) and (max-height: 820px) {
+    .tt-hero {
+      min-height: auto;
+      padding-top: 18px;
+      padding-bottom: 30px;
+    }
+
+    .tt-hero h1 {
+      margin-bottom: 16px;
+      font-size: clamp(2.9rem, 4vw, 4.25rem);
+    }
+
+    .tt-actions {
+      margin-top: 20px;
+    }
+
+    .tt-microcopy {
+      margin-top: 12px;
+    }
+
+    .tt-hero-art {
+      max-width: 540px;
+    }
+  }
+
+  /*
+   * Užší notebooky a větší tablety stále používají dva sloupce.
+   */
+  @media (max-width: 1100px) {
+    .tt-hero {
+      width: min(calc(100% - 40px), 1080px);
+      min-height: auto;
+      grid-template-columns:
+        minmax(0, 1fr)
+        minmax(390px, 0.9fr);
+      gap: 36px;
+    }
+
+    .tt-hero h1 {
+      font-size: clamp(2.75rem, 5vw, 4rem);
+    }
+
+    .tt-hero-art {
+      max-width: 520px;
+    }
+  }
+
+  /*
+   * Mobilní a menší tabletová verze:
+   * konverzní obsah první, obrázek až pod CTA.
+   */
+  @media (max-width: 900px) {
+    .tt-hero {
+      width: min(calc(100% - 36px), 720px);
+      min-height: auto;
+      padding:
+        38px
+        0
+        48px;
+      grid-template-columns: 1fr;
+      gap: 34px;
+      text-align: center;
+    }
+
+    .tt-hero-body {
+      grid-column: 1;
+      grid-row: 1;
+      max-width: 680px;
+      margin-inline: auto;
+    }
+
+    .tt-kicker {
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .tt-hero h1,
+    .tt-lead,
+    .tt-microcopy {
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .tt-actions {
+      justify-content: center;
+    }
+
+    .tt-hero-art {
+      grid-column: 1;
+      grid-row: 2;
+      width: min(100%, 620px);
+      max-width: none;
+      margin-inline: auto;
+      justify-self: center;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .tt-hero {
+      width: calc(100% - 32px);
+      padding-top: 30px;
+      gap: 28px;
+    }
+
+    .tt-hero h1 {
+      font-size: clamp(2.45rem, 10vw, 3.35rem);
+      line-height: 0.98;
+    }
+
+    .tt-lead {
+      font-size: 0.96rem;
+    }
+
+    .tt-actions {
+      width: min(100%, 420px);
+      margin-right: auto;
+      margin-left: auto;
+      align-items: stretch;
+
+      .lm-btn {
+        width: 100%;
+      }
+    }
+
+    .tt-hero-art {
+      border-radius: 14px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .tt-hero h1 {
+      font-size: clamp(2.15rem, 10.5vw, 2.75rem);
+    }
+
+    .tt-kicker {
+      font-size: 0.67rem;
+    }
+
+    .tt-microcopy {
+      font-size: 0.72rem;
+    }
+  }
+}
+
+/* AJSEE_LONDON_FINAL_HERO_V31_START */
+.page-london-musicals-todaytix {
+  .tt-hero {
+    margin-bottom: 0;
+    padding-bottom: clamp(18px, 1.8vw, 26px);
+  }
+
+  .tt-hero-copy {
+    > .tt-kicker,
+    > .tt-eyebrow,
+    > .tt-badge,
+    > [data-i18n-key*="eyebrow"],
+    > [data-i18n-key*="badge"],
+    > :first-child:not(h1) {
+      display: inline-flex;
+      width: fit-content;
+      min-height: 46px;
+      padding: 0.68rem 1.16rem;
+      align-items: center;
+      justify-content: center;
+
+      color: #f4d066;
+      border: 1px solid transparent;
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          rgba(10, 14, 24, 0.96),
+          rgba(10, 14, 24, 0.96)
+        )
+        padding-box,
+        linear-gradient(
+          135deg,
+          #f6d369 0%,
+          rgba(212, 175, 55, 0.56) 52%,
+          rgba(255, 255, 255, 0.13) 100%
+        )
+        border-box;
+
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.25),
+        0 0 25px rgba(212, 175, 55, 0.075),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+      font-size: clamp(0.76rem, 0.9vw, 0.86rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.085em;
+      text-transform: uppercase;
+    }
+  }
+
+  .tt-hero-actions {
+    display: grid;
+    width: min(100%, 730px);
+    max-width: 100%;
+    margin-top: clamp(24px, 2.2vw, 31px);
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 14px;
+
+    > a {
+      position: relative;
+      display: inline-flex;
+      width: 100%;
+      min-width: 0;
+      min-height: 66px;
+      padding: 0.95rem clamp(1.2rem, 2vw, 1.75rem);
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+
+      overflow: hidden;
+      border-radius: 999px;
+
+      font-size: clamp(0.96rem, 1.05vw, 1.06rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      text-align: center;
+      text-decoration: none;
+      white-space: nowrap;
+
+      transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease,
+        filter 180ms ease;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &:focus-visible {
+        outline: 3px solid rgba(244, 204, 83, 0.52);
+        outline-offset: 5px;
+      }
+    }
+
+    > a:first-child {
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.15),
+          transparent 45%
+        ),
+        linear-gradient(
+          135deg,
+          #ff2b54 0%,
+          #ed173e 44%,
+          #cf0e31 100%
+        );
+
+      box-shadow:
+        0 22px 48px rgba(227, 24, 55, 0.32),
+        0 7px 20px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.31),
+        inset 0 -1px 0 rgba(76, 0, 18, 0.38);
+
+      text-shadow:
+        0 1px 1px rgba(50, 0, 12, 0.3);
+
+      &::after {
+        content: "→";
+        display: inline-block;
+        font-size: 1.1em;
+        line-height: 1;
+        transition: transform 180ms ease;
+      }
+
+      &:hover {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.4);
+        filter: brightness(1.06);
+
+        box-shadow:
+          0 28px 60px rgba(227, 24, 55, 0.4),
+          0 9px 24px rgba(0, 0, 0, 0.28),
+          inset 0 1px 0 rgba(255, 255, 255, 0.37);
+
+        &::after {
+          transform: translateX(4px);
+        }
+      }
+    }
+
+    > a:nth-child(2) {
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.21);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.07),
+          rgba(255, 255, 255, 0.018)
+        );
+
+      box-shadow:
+        0 15px 34px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045);
+
+      backdrop-filter: blur(8px);
+
+      &:hover {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.4);
+
+        background:
+          linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.11),
+            rgba(255, 255, 255, 0.035)
+          );
+
+        box-shadow:
+          0 19px 42px rgba(0, 0, 0, 0.23),
+          inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      }
+    }
+  }
+
+  @media (max-width: 820px) {
+    .tt-hero-actions {
+      width: min(100%, 440px);
+      grid-template-columns: 1fr;
+
+      > a {
+        min-height: 62px;
+      }
+    }
+  }
+
+  @media (max-width: 430px) {
+    .tt-hero-actions > a {
+      min-height: 58px;
+      padding-right: 1rem;
+      padding-left: 1rem;
+      font-size: 0.94rem;
+      white-space: normal;
+    }
+  }
+}
+/* AJSEE_LONDON_FINAL_HERO_V31_END */

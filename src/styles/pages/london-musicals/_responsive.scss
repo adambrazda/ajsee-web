@@ -1,0 +1,138 @@
+.page-london-musicals-todaytix {
+  @media (max-width: 1024px) {
+    .tt-benefit-grid,
+    .tt-points {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .tt-show-strip {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 760px) {
+    .tt-benefit-grid,
+    .tt-points,
+    .tt-experience-grid,
+    .tt-trust {
+      grid-template-columns: 1fr;
+    }
+
+    .tt-steps {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+
+      &::before {
+        top: 20px;
+        right: auto;
+        bottom: 20px;
+        left: 19px;
+        width: 0;
+        height: auto;
+        border-top: 0;
+        border-left: 2px dashed rgba(255, 255, 255, 0.18);
+      }
+
+      article {
+        display: grid;
+        width: 100%;
+        grid-template-columns: 40px minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        column-gap: 16px;
+        text-align: left;
+
+        > span {
+          grid-column: 1;
+          grid-row: 1 / span 2;
+          margin: 0;
+        }
+
+        h3 {
+          grid-column: 2;
+          grid-row: 1;
+          margin-bottom: 5px;
+        }
+
+        p {
+          grid-column: 2;
+          grid-row: 2;
+        }
+      }
+    }
+
+    .tt-show-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tt-final {
+      width: min(calc(100% - 32px), var(--content-width));
+      grid-template-columns: 52px minmax(0, 1fr);
+      padding: 24px;
+
+      .lm-btn {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tt-section {
+      padding-right: 16px;
+      padding-left: 16px;
+
+      > * {
+        width: 100%;
+      }
+    }
+
+    .tt-show-strip {
+      gap: 10px;
+    }
+
+    .tt-final {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .tt-final-icon {
+      margin-inline: auto;
+    }
+
+    .tt-trust,
+    .tt-disclaimer {
+      width: calc(100% - 32px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto;
+      transition-duration: 0.01ms;
+      animation-duration: 0.01ms;
+      animation-iteration-count: 1;
+    }
+  }
+}
+
+/* LONDON_MUSICALS_HOW_IT_WORKS_ICONS_MOBILE_V22_START */
+.page-london-musicals-todaytix {
+  @media (max-width: 760px) {
+    .tt-steps {
+      article {
+        h3::before {
+          width: 40px;
+          height: 40px;
+          margin:
+            0
+            0
+            10px;
+        }
+      }
+    }
+  }
+}
+/* LONDON_MUSICALS_HOW_IT_WORKS_ICONS_MOBILE_V22_END */

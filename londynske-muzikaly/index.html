@@ -4,12 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title data-i18n-key="seo.londonMusicals.title">Londýnské muzikály | West End, vstupenky a ubytování | AJSEE</title>
-  <meta
-    name="description"
-    data-i18n-content="seo.londonMusicals.description"
-    content="Objevte londýnské muzikály ve West Endu. Vyberte si představení, pokračujte k nákupu vstupenek a přidejte k plánu i prověřené ubytování v Londýně."
-  />
+  <title data-i18n-key="londonMusicals.seo.title">Londýnské muzikály a vstupenky na West End | AJSEE × TodayTix</title>
+  <meta name="description" content="Vyberte si muzikál na londýnském West Endu a přejděte bezpečně k nákupu vstupenek přes ticketingového partnera TodayTix." data-i18n-key="londonMusicals.seo.description" data-i18n-attr="content">
 
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#0b1020" />
@@ -45,9 +41,122 @@
 
   <link rel="stylesheet" href="/src/styles/pages/london-musicals.scss" />
   <script type="module" src="/src/pages/london-musicals/london-musicals.js"></script>
+
+  <!-- LM_FONT_LOADING_FINAL_START -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <!-- LM_FONT_LOADING_FINAL_END -->
+
+  <!-- LM_SEO_SCHEMA_FINAL_START -->
+  <script>
+    (() => {
+      const seo = {"cs":{"title":"Londýnské muzikály a vstupenky na West End | AJSEE × TodayTix","description":"Vyberte si muzikál na londýnském West Endu a přejděte bezpečně k nákupu vstupenek přes ticketingového partnera TodayTix.","breadcrumb":"Londýnské muzikály"},"en":{"title":"London musicals and West End tickets | AJSEE × TodayTix","description":"Choose a London West End musical and continue securely to buy tickets through our ticketing partner TodayTix.","breadcrumb":"London musicals"},"de":{"title":"Londoner Musicals und Tickets fürs West End | AJSEE × TodayTix","description":"Wählen Sie ein Musical im Londoner West End und gelangen Sie sicher zum Ticketkauf bei unserem Ticketing-Partner TodayTix.","breadcrumb":"Londoner Musicals"},"sk":{"title":"Londýnske muzikály a vstupenky na West End | AJSEE × TodayTix","description":"Vyberte si muzikál na londýnskom West Ende a prejdite bezpečne k nákupu vstupeniek cez ticketingového partnera TodayTix.","breadcrumb":"Londýnske muzikály"},"pl":{"title":"Londyńskie musicale i bilety na West End | AJSEE × TodayTix","description":"Wybierz musical na londyńskim West Endzie i bezpiecznie przejdź do zakupu biletów u naszego partnera ticketingowego TodayTix.","breadcrumb":"Londyńskie musicale"},"hu":{"title":"Londoni musicalek és West End-jegyek | AJSEE × TodayTix","description":"Válasszon musicalt a londoni West End kínálatából, majd biztonságosan vásároljon jegyet ticketingpartnerünknél, a TodayTixnél.","breadcrumb":"Londoni musicalek"}};
+      const rawLang =
+        document.documentElement.lang ||
+        "cs";
+      const lang =
+        rawLang.slice(0, 2).toLowerCase();
+      const content =
+        seo[lang] || seo.cs;
+
+      document.title = content.title;
+
+      let description =
+        document.querySelector(
+          'meta[name="description"]'
+        );
+
+      if (!description) {
+        description =
+          document.createElement("meta");
+        description.name = "description";
+        document.head.append(description);
+      }
+
+      description.content =
+        content.description;
+
+      const currentUrl =
+        window.location.origin +
+        window.location.pathname;
+
+      const schema = {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://ajsee.cz/#organization",
+            "name": "AJSEE",
+            "url": "https://ajsee.cz/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://ajsee.cz/images/logo-ajsee.png"
+            }
+          },
+          {
+            "@type": "WebPage",
+            "@id": currentUrl + "#webpage",
+            "url": currentUrl,
+            "name": content.title,
+            "description": content.description,
+            "isPartOf": {
+              "@id": "https://ajsee.cz/#website"
+            },
+            "about": {
+              "@id": "https://ajsee.cz/#organization"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": currentUrl + "#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "AJSEE",
+                "item": "https://ajsee.cz/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": content.breadcrumb,
+                "item": currentUrl
+              }
+            ]
+          }
+        ]
+      };
+
+      const oldSchema =
+        document.getElementById(
+          "lm-structured-data"
+        );
+
+      if (oldSchema) {
+        oldSchema.remove();
+      }
+
+      const script =
+        document.createElement("script");
+
+      script.id =
+        "lm-structured-data";
+
+      script.type =
+        "application/ld+json";
+
+      script.textContent =
+        JSON.stringify(schema);
+
+      document.head.append(script);
+    })();
+  </script>
+  <!-- LM_SEO_SCHEMA_FINAL_END -->
 </head>
 
-<body class="page-london-musicals" data-page="london-musicals">
+<body class="page-london-musicals page-london-musicals-todaytix" data-page="london-musicals">
   <header class="site-header">
     <div class="header-inner">
       <a href="/" class="logo-link" aria-label="Domů">
@@ -114,32 +223,19 @@
     </div>
   </header>
 
-  <main id="main" class="lm-page">
-    <section class="lm-hero">
-      <div class="lm-container lm-hero-grid">
-        <div class="lm-hero-copy">
-          <p class="lm-eyebrow" data-i18n-key="londonMusicals.hero.eyebrow">West End · muzikály · Londýn</p>
-          <h1 data-i18n-key="londonMusicals.hero.title">Londýnské muzikály</h1>
-          <p class="lm-lead" data-i18n-key="londonMusicals.hero.lead">Zažijte atmosféru londýnského West Endu. AJSEE vám pomůže vybrat to nejlepší představení, sehnat vstupenky i zařídit ubytování.</p>
-
-          <div class="lm-actions">
-            <a class="lm-btn lm-btn--primary js-lm-partner-click js-lm-purchase-link" href="https://ajsee.tixculture.com/?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals&utm_content=cs" target="_blank" rel="noopener noreferrer sponsored" data-partner="todaytix" data-event-title="London musicals" data-event-city="London" data-outbound-url="https://ajsee.tixculture.com/?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals&utm_content=cs" data-placement="london_musicals_hero" data-i18n-key="londonMusicals.hero.ctaPrimary">Zobrazit vstupenky</a>
-            <a class="lm-btn lm-btn--secondary" href="#jak-nakup-funguje" data-i18n-key="londonMusicals.hero.ctaSecondary">Jak nákup funguje</a>
-          </div>
-
-          <p class="lm-microcopy" data-i18n-key="londonMusicals.hero.microcopy">Rezervaci vstupenek i ubytování dokončíte bezpečně přímo u našich partnerů. AJSEE vás k nim spolehlivě nasměruje.</p>
-        </div>
-
-        <figure class="lm-hero-art">
+  <main class="lm-page tt-page" data-tt-static-page="true">
+    <section class="tt-shell" aria-labelledby="tt-hero-title">
+      <section class="tt-hero" aria-label="AJSEE × TodayTix">
+        <figure class="tt-hero-art">
           <picture>
             <source
-              srcset="/images/london-theatre-960.webp 960w, /images/london-theatre-1440.webp 1440w"
-              sizes="(max-width: 950px) calc(100vw - 24px), min(52vw, 620px)"
+              srcset="/images/london-musicals-todaytix-hero-960.webp 960w, /images/london-musicals-todaytix-hero-1440.webp 1440w"
+              sizes="(max-width: 720px) calc(100vw - 18px), 980px"
               type="image/webp"
             />
             <img
-              src="/images/london-theatre-1440.webp"
-              alt=""
+              src="/images/london-musicals-todaytix-hero-1440.webp"
+              alt="AJSEE × TodayTix"
               width="1440"
               height="960"
               loading="eager"
@@ -148,162 +244,318 @@
             />
           </picture>
         </figure>
-      </div>
-    </section>
-  <!-- AJSEE_INSTAGRAM_CONTEST_BANNER_v1 -->
-  <section class="lm-section lm-section--list" id="london-musicals-list">
-      <div class="lm-container">
-        <div class="lm-section-head">
-          <h2 data-i18n-key="londonMusicals.list.title">Co se hraje v Londýně</h2>
-          <p data-i18n-key="londonMusicals.list.intro">Projděte si ty nejlepší muzikály a divadelní představení na londýnském West Endu. U každého představení najdete klíčové informace, orientační cenu a odkaz k nákupu vstupenek u partnera.</p>
-        </div>
 
-        <div class="lm-points" aria-label="Co najdete u každého představení">
-          <span data-i18n-key="londonMusicals.list.points.details">Klíčové informace o představení</span>
-          <span data-i18n-key="londonMusicals.list.points.price">Orientační cena od</span>
-          <span data-i18n-key="londonMusicals.list.points.link">Odkaz k nákupu vstupenek</span>
-        </div>
+        <div class="tt-hero-body">
+          <div class="tt-hero-copy">
+            <p class="tt-kicker" data-i18n-key="londonMusicals.hero.eyebrow">West End · AJSEE × TodayTix</p>
+            <h1 id="tt-hero-title">
+            <span data-i18n-key="londonMusicals.hero.titleMain">Londýnské muzikály.</span>
+            <span class="tt-hero-title-accent" data-i18n-key="londonMusicals.hero.titleAccent">Nezapomenutelné zážitky.</span>
+          </h1>
+            <p class="tt-lead">
+  <span data-i18n-key="londonMusicals.hero.descriptionLine1">
+    Vyberte si muzikál a přejděte bezpečně na partnerskou stránku TodayTix.
+  </span>
+  <span class="tt-lead-break" data-i18n-key="londonMusicals.hero.descriptionLine2">
+    AJSEE vás navede na správné místo.
+  </span>
+</p>
 
-        <div id="londonMusicalsGrid" class="lm-grid" aria-live="polite"></div>
+            <div class="tt-actions">
+              <a class="lm-btn lm-btn--primary js-lm-partner-click js-lm-purchase-link" href="https://ajsee.tixculture.com/?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals&utm_content=cs" target="_blank" rel="noopener noreferrer sponsored" data-partner="todaytix" data-event-title="London musicals" data-event-city="London" data-outbound-url="${purchaseHref}" data-placement="london_musicals_hero" data-i18n-key="londonMusicals.hero.ctaPrimary">Koupit vstupenky přes TodayTix</a>
+              <a class="lm-btn lm-btn--secondary" href="#jak-nakup-funguje" data-i18n-key="londonMusicals.hero.ctaSecondary">Jak nákup funguje</a>
+            </div>
 
-        <div id="londonMusicalsEmpty" class="lm-empty" hidden>
-          <h3 data-i18n-key="londonMusicals.empty.title">Jejda, představení se někam zatoulala...</h3>
-          <p data-i18n-key="londonMusicals.empty.text">Spojení s Londýnem teď na moment vypadlo a nabídku se nám nepodařilo načíst. Zkuste to prosím za chvíli, nebo se rovnou podívejte na další skvělé události.</p>
-          <div class="lm-actions">
-            <button type="button" class="lm-btn lm-btn--primary" id="londonMusicalsRetry" data-i18n-key="londonMusicals.empty.retry">Zkusit znovu</button>
-            <a class="lm-btn lm-btn--secondary" href="/events/?city=London&cityCc=GB" data-i18n-key="londonMusicals.empty.cta">Prohlédnout události v Londýně</a>
+
           </div>
+
+          <div class="tt-theatre-shot" aria-hidden="true"></div>
         </div>
+      </section>
+
+      <section class="tt-section tt-benefits" aria-labelledby="tt-benefits-title">
+        <header class="tt-section-head">
+          <h2 id="tt-benefits-title" data-i18n-key="londonMusicals.premium.benefits.title">Proč koupit vstupenky přes TodayTix?</h2>
+        </header>
+
+        <div class="tt-benefit-grid">
+          <article class="tt-benefit-card">
+            <span class="tt-icon" aria-hidden="true">✓</span>
+            <h3 data-i18n-key="londonMusicals.premium.benefits.verified.title">Zkušený ticketingový partner</h3>
+            <p data-i18n-key="londonMusicals.premium.benefits.verified.text">Nákup probíhá přes TodayTix, partnera londýnských divadel a muzikálových produkcí.</p>
+          </article>
+
+          <article class="tt-benefit-card">
+            <span class="tt-icon" aria-hidden="true">🎟</span>
+            <h3 data-i18n-key="londonMusicals.premium.benefits.selection.title">Aktuální nabídka</h3>
+            <p data-i18n-key="londonMusicals.premium.benefits.selection.text">Na partnerské stránce najdete aktuální termíny, dostupnost a ceny vstupenek na londýnské muzikály.</p>
+          </article>
+
+          <article class="tt-benefit-card">
+            <span class="tt-icon" aria-hidden="true">★</span>
+            <h3 data-i18n-key="londonMusicals.premium.benefits.simple.title">Jednoduchý nákup</h3>
+            <p data-i18n-key="londonMusicals.premium.benefits.simple.text">AJSEE vás nasměruje přímo k nabídce. Výběr míst, platba i potvrzení objednávky proběhnou u TodayTix.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="tt-section tt-steps-section" id="jak-nakup-funguje" aria-labelledby="tt-steps-title">
+        <header class="tt-section-head">
+          <h2 id="tt-steps-title" data-i18n-key="londonMusicals.premium.steps.title">Jak to funguje?</h2>
+</header>
+
+        <div class="tt-steps">
+          <article>
+            <span>1</span>
+            <h3 data-i18n-key="londonMusicals.premium.steps.one.title">Vyberte muzikál</h3>
+            <p data-i18n-key="londonMusicals.premium.steps.one.text">Projděte si nabídku nejlepších představení na West Endu.</p>
+          </article>
+          <article>
+            <span>2</span>
+            <h3 data-i18n-key="londonMusicals.premium.steps.two.title">Zvolte datum a místa</h3>
+            <p data-i18n-key="londonMusicals.premium.steps.two.text">Vyberte si termín, kategorii a počet vstupenek.</p>
+          </article>
+          <article>
+            <span>3</span>
+            <h3 data-i18n-key="londonMusicals.premium.steps.three.title">Bezpečně zaplaťte</h3>
+            <p data-i18n-key="londonMusicals.premium.steps.three.text">Platba probíhá přímo u TodayTix – rychle a bezpečně.</p>
+          </article>
+          <article>
+            <span>4</span>
+            <h3 data-i18n-key="londonMusicals.premium.steps.four.title">Užijte si představení</h3>
+            <p data-i18n-key="londonMusicals.premium.steps.four.text">Vstupenky obdržíte e-mailem a můžete vyrazit na nezapomenutelný zážitek!</p>
+          </article>
+        </div>
+      </section>
+
+      <section
+  class="tt-section tt-accommodation"
+  aria-labelledby="tt-accommodation-title"
+>
+  <div class="tt-accommodation-card">
+    <div class="tt-accommodation-copy">
+      <h2
+        id="tt-accommodation-title"
+        data-i18n-key="londonMusicals.premium.accommodation.title"
+      >Ubytování v Londýně</h2>
+
+      <p
+        class="tt-accommodation-text"
+        data-i18n-key="londonMusicals.premium.accommodation.body"
+      >K vybranému muzikálu si můžete rovnou vybrat ideální místo pro přespání. Přeskočte zdlouhavé hledání a přejděte přímo na prověřené nabídky od TrustedStays, nebo si nejdřív přečtěte, jak celé partnerství funguje.</p>
+
+      <div class="tt-accommodation-actions">
+        <a
+          class="lm-btn tt-accommodation-primary"
+          href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch"
+          target="_blank"
+          rel="sponsored noopener noreferrer"
+          data-partner="trustedstays"
+          data-placement="london_musicals_accommodation"
+          data-i18n-key="londonMusicals.premium.accommodation.primaryCta"
+        >Najít ubytování</a>
+
+        <a
+          class="lm-btn lm-btn--secondary"
+          href="/accommodation"
+          data-lang-link
+          data-i18n-key="londonMusicals.premium.accommodation.secondaryCta"
+        >Zjistit více</a>
       </div>
-    </section>
+    </div>
 
-    
-    <section class="lm-section lm-section--purchase-guide" id="jak-nakup-funguje">
-      <div class="lm-container">
-        <div class="lm-section-head">
-          <h2 data-i18n-key="londonMusicals.purchaseGuide.title">Jak nákup funguje?</h2>
-          <p data-i18n-key="londonMusicals.purchaseGuide.intro">Vstupenky vybíráte na partnerské stránce AJSEE, kterou technologicky zajišťuje TodayTix. Celý nákup je jednoduchý, bezpečný a probíhá v několika krocích.</p>
-        </div>
+    <div class="tt-accommodation-brand">
+      <span
+        data-i18n-key="londonMusicals.premium.accommodation.partnerLabel"
+      >Ubytování ve spolupráci s</span>
 
-        <div class="lm-steps lm-purchase-steps">
-          <article>
-            <span class="lm-step-number">01</span>
-            <h3 data-i18n-key="londonMusicals.purchaseGuide.step1.title">Vyberte představení</h3>
-            <p data-i18n-key="londonMusicals.purchaseGuide.step1.text">Projděte si aktuální nabídku londýnských muzikálů a vyberte show, která se hodí k vašemu termínu i náladě.</p>
-          </article>
+      <img
+        src="/images/partners/trustedstays/TrustedStays_Reversed_RGB_R.png"
+        alt="TrustedStays"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  </div>
+</section>
 
-          <article>
-            <span class="lm-step-number">02</span>
-            <h3 data-i18n-key="londonMusicals.purchaseGuide.step2.title">Zvolte datum a místa</h3>
-            <p data-i18n-key="londonMusicals.purchaseGuide.step2.text">Na stránce partnera si vyberete termín, kategorii míst a počet vstupenek podle dostupnosti.</p>
-          </article>
+      <section
+  class="tt-section tt-popular"
+  aria-labelledby="tt-popular-title"
+>
+  <div class="tt-section-head">
+    <h2
+      id="tt-popular-title"
+      data-i18n-key="londonMusicals.premium.popular.title"
+    >Oblíbené muzikály na West Endu</h2>
+  </div>
 
-          <article>
-            <span class="lm-step-number">03</span>
-            <h3 data-i18n-key="londonMusicals.purchaseGuide.step3.title">Dokončete bezpečnou platbu</h3>
-            <p data-i18n-key="londonMusicals.purchaseGuide.step3.text">Platba a potvrzení objednávky probíhají přímo u našeho ticketingového partnera TodayTix.</p>
-          </article>
+  <div class="tt-show-grid" role="list">
+    <article class="tt-show-card" role="listitem">
+      <div class="tt-show-card-media">
+        <img
+          src="/images/london-musicals/posters/the-lion-king.webp"
+          alt="The Lion King"
+          width="480"
+          height="720"
+          loading="lazy"
+          decoding="async"
+        />
+</div>
+    </article>
+<article class="tt-show-card" role="listitem">
+      <div class="tt-show-card-media">
+        <img
+          src="/images/london-musicals/posters/six.webp"
+          alt="SIX"
+          width="480"
+          height="720"
+          loading="lazy"
+          decoding="async"
+        />
+</div>
+    </article>
+<article class="tt-show-card" role="listitem">
+      <div class="tt-show-card-media">
+        <img
+          src="/images/london-musicals/posters/les-miserables.webp"
+          alt="Les Misérables"
+          width="480"
+          height="720"
+          loading="lazy"
+          decoding="async"
+        />
+</div>
+    </article>
+<article class="tt-show-card" role="listitem">
+      <div class="tt-show-card-media">
+        <img
+          src="/images/london-musicals/posters/phantom-of-the-opera.webp"
+          alt="The Phantom of the Opera"
+          width="480"
+          height="720"
+          loading="lazy"
+          decoding="async"
+        />
+</div>
+    </article>
+<article class="tt-show-card" role="listitem">
+      <div class="tt-show-card-media">
+        <img
+          src="/images/london-musicals/posters/mamma-mia.webp"
+          alt="Mamma Mia!"
+          width="480"
+          height="720"
+          loading="lazy"
+          decoding="async"
+        />
+</div>
+    </article>
+<article class="tt-show-card" role="listitem">
+      <div class="tt-show-card-media">
+        <img
+          src="/images/london-musicals/posters/hamilton.webp"
+          alt="Hamilton"
+          width="480"
+          height="720"
+          loading="lazy"
+          decoding="async"
+        />
+</div>
+    </article>
+  </div>
 
-          <article>
-            <span class="lm-step-number">04</span>
-            <h3 data-i18n-key="londonMusicals.purchaseGuide.step4.title">Užijte si West End</h3>
-            <p data-i18n-key="londonMusicals.purchaseGuide.step4.text">Po dokončení nákupu obdržíte informace ke vstupenkám e-mailem a můžete se těšit na představení.</p>
-          </article>
-        </div>
-      </div>
-    </section>
+  <div class="tt-popular-actions">
+    <a
+      class="lm-btn js-lm-purchase-link tt-popular-cta"
+      href="https://ajsee.tixculture.com/?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals&utm_content=cs"
+      target="_blank"
+      rel="sponsored noopener noreferrer"
+      data-partner="todaytix"
+      data-placement="london_musicals_popular"
+      data-i18n-key="londonMusicals.premium.popular.cta"
+    >Prohlédnout nabídku</a>
+  </div>
+</section>
 
-<section class="lm-accommodation-banner">
-      <div class="lm-container lm-accommodation-card">
-        <div>
-          <h2 data-i18n-key="londonMusicals.stays.title">Jedete do Londýna za kulturou?\nZajistěte si i ubytování.</h2>
-          <p data-i18n-key="londonMusicals.stays.text">K vybranému muzikálu si můžete rovnou vybrat ideální místo pro přespání. Přeskočte zdlouhavé hledání a přejděte přímo na prověřené nabídky od TrustedStays, nebo si nejdřív přečtěte, jak celé partnerství funguje.</p>
-        </div>
 
-        <div class="lm-badges">
-          <a class="lm-badge-card" href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch" target="_blank" rel="noopener noreferrer sponsored">
-            <span class="lm-badge-label" data-i18n-key="londonMusicals.stays.badge1.label">Rychlá rezervace</span>
-            <strong data-i18n-key="londonMusicals.stays.badge1.title">Rezervovat přes TrustedStays</strong>
-            <span data-i18n-key="londonMusicals.stays.badge1.desc">Přejděte přímo k nabídce ubytování pro váš pobyt v Londýně.</span>
-            <em data-i18n-key="londonMusicals.stays.badge1.cta">Najít ubytování v Londýně</em>
-          </a>
 
-          <a class="lm-badge-card" href="/accommodation/">
-            <span class="lm-badge-label" data-i18n-key="londonMusicals.stays.badge2.label">Informace</span>
-            <strong data-i18n-key="londonMusicals.stays.badge2.title">Jak to funguje?</strong>
-            <span data-i18n-key="londonMusicals.stays.badge2.desc">Zjistěte, jak vás AJSEE propojí s TrustedStays a kde probíhá poptávka, rezervace, platba i potvrzení pobytu.</span>
-            <em data-i18n-key="londonMusicals.stays.badge2.cta">Více o ubytování</em>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="lm-section">
-      <div class="lm-container">
-        <div class="lm-section-head">
-          <h2 data-i18n-key="londonMusicals.guide.title">Jak vybrat ten pravý muzikál?</h2>
-          <p data-i18n-key="londonMusicals.guide.intro">Londýnský West End žije slavnou klasikou, horkými novinkami i komorními divadelními zážitky. Aby byl váš večer dokonalý, stačí před nákupem vstupenek promyslet pár základních věcí.</p>
-        </div>
-
-        <div class="lm-steps">
-          <article>
-            <span>01</span>
-            <h3 data-i18n-key="londonMusicals.guide.step1.title">Začněte typem zážitku</h3>
-            <p data-i18n-key="londonMusicals.guide.step1.text">Hledáte velkolepou muzikálovou klasiku, rodinnou podívanou, romantiku ve dvou, nebo raději moderní a energickou show? Výběr podle žánru a nálady vám často pomůže víc než samotný název představení.</p>
-          </article>
-
-          <article>
-            <span>02</span>
-            <h3 data-i18n-key="londonMusicals.guide.step2.title">Zkontrolujte termín a místo konání</h3>
-            <p data-i18n-key="londonMusicals.guide.step2.text">U každé show na AJSEE hned uvidíte, ve kterém divadle se hraje. West End je sice kompaktní čtvrť, ale konkrétní lokace divadla vám skvěle napoví, kde si v Londýně nejlépe zařídit ubytování.</p>
-          </article>
-
-          <article>
-            <span>03</span>
-            <h3 data-i18n-key="londonMusicals.guide.step3.title">Nečekejte s nákupem na poslední chvíli</h3>
-            <p data-i18n-key="londonMusicals.guide.step3.text">U nejpopulárnějších muzikálů mizí nejlepší místa bleskovou rychlostí. Pokud jedete do Londýna kvůli konkrétnímu představení, doporučujeme zajistit si vstupenky s dostatečným předstihem.</p>
-          </article>
-
-          <article>
-            <span>04</span>
-            <h3 data-i18n-key="londonMusicals.guide.step4.title">Berte „cenu od“ jako skvělý odrazový můstek</h3>
-            <p data-i18n-key="londonMusicals.guide.step4.text">Orientační cena na AJSEE vám pomůže rychle porovnat jednotlivé show. Přesnou cenu, aktuální volná sedadla a detaily o poplatcích pak uvidíte přímo na webu partnera před samotným nákupem.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="lm-final">
-      <div class="lm-container">
-        <h2 data-i18n-key="londonMusicals.final.title">Naplánujte si nezapomenutelný kulturní zážitek</h2>
-        <p data-i18n-key="londonMusicals.final.text">Vyberte si svůj vysněný muzikál, zajistěte si vstupenky a rovnou k nim přidejte i prověřené ubytování. S AJSEE máte vše potřebné na dosah ruky – přehledně a na jednom místě.</p>
-        <div class="lm-actions">
-          <a class="lm-btn lm-btn--primary js-lm-partner-click js-lm-purchase-link" href="https://ajsee.tixculture.com/?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals&utm_content=cs" target="_blank" rel="noopener noreferrer sponsored" data-partner="todaytix" data-event-title="London musicals" data-event-city="London" data-outbound-url="https://ajsee.tixculture.com/?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals&utm_content=cs" data-placement="london_musicals_final" data-i18n-key="londonMusicals.final.ctaPrimary">Zobrazit vstupenky</a>
-          <a class="lm-btn lm-btn--secondary" href="#jak-nakup-funguje" data-i18n-key="londonMusicals.final.ctaSecondary">Jak nákup funguje</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="lm-disclaimer">
-      <div class="lm-container">
-        <p data-i18n-key="londonMusicals.disclaimer">AJSEE vám pomáhá objevovat kulturu a plánovat pobyt v Londýně. Nejsme prodejci – rezervace, platby, dostupnost, ceny, termíny i potvrzení probíhají přímo u našich partnerských služeb.</p>
-      </div>
     </section>
   </main>
 
   <footer class="site-footer">
   <div class="footer-social">
     <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener" aria-label="Instagram">
-      <img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy" />
+      <svg
+  class="footer-social-icon"
+  viewBox="0 0 24 24"
+  aria-hidden="true"
+  focusable="false"
+>
+  <rect
+    x="3"
+    y="3"
+    width="18"
+    height="18"
+    rx="5"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+  />
+  <circle
+    cx="12"
+    cy="12"
+    r="4.2"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.8"
+  />
+  <circle
+    cx="17.4"
+    cy="6.6"
+    r="1.15"
+    fill="currentColor"
+  />
+</svg>
     </a>
     <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener" aria-label="Facebook">
-      <img src="/images/icons/facebook.svg" alt="Facebook" loading="lazy" />
+      <svg
+  class="footer-social-icon"
+  viewBox="0 0 24 24"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path
+    fill="currentColor"
+    d="M13.8 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5H17V3.9c-.3 0-1.4-.1-2.6-.1-2.6 0-4.4 1.6-4.4 4.5V10H7v3h3v8h3.8Z"
+  />
+</svg>
     </a>
     <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener" aria-label="X">
-      <img src="/images/icons/twitter.svg" alt="X" loading="lazy" />
+      <svg
+  class="footer-social-icon"
+  viewBox="0 0 24 24"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path
+    fill="currentColor"
+    d="M4.5 4h3.4l4.5 6.1L17.6 4h1.9l-6.2 7.5L20 20h-3.4l-4.8-6.5L6.3 20H4.4l6.5-7.8L4.5 4Zm2.7 1.5 10.2 13h1L8.1 5.5h-.9Z"
+  />
+</svg>
     </a>
     <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener" aria-label="LinkedIn">
-      <img src="/images/icons/linkedin.svg" alt="LinkedIn" loading="lazy" />
+      <svg
+  class="footer-social-icon"
+  viewBox="0 0 24 24"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path
+    fill="currentColor"
+    d="M5.3 7.7A2.2 2.2 0 1 0 5.3 3.3a2.2 2.2 0 0 0 0 4.4ZM3.5 9.3h3.6V20H3.5V9.3Zm5.8 0h3.4v1.5h.1c.5-.9 1.7-1.9 3.5-1.9 3.7 0 4.4 2.4 4.4 5.6V20h-3.6v-4.9c0-1.2 0-2.7-1.7-2.7s-2 1.3-2 2.6v5H9.3V9.3Z"
+  />
+</svg>
     </a>
   </div>
 

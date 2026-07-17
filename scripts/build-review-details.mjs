@@ -9,6 +9,10 @@ const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const TEMPLATE_PATH = path.join(ROOT, 'blog-detail.html');
 const REVIEWS_INPUT_DIR = path.join(ROOT, 'content', 'reviews', 'items');
 const REVIEWS_OUT_DIR = path.join(ROOT, 'reviews');
+const PREVIEW_MODE = process.env.REVIEW_PREVIEW === '1';
+const REVIEW_OUTPUT_DIR = PREVIEW_MODE
+  ? path.join(ROOT, 'review-preview')
+  : REVIEWS_OUT_DIR;
 
 function escapeHtml(value = '') {
   return String(value)
@@ -319,13 +323,71 @@ function buildMetaRow(review, lang = DEFAULT_LANG) {
   return parts.join(' <span aria-hidden="true">&middot;</span> ');
 }
 
+
+const REVIEW_GALLERY_LABELS = {
+  cs: 'Fotogalerie',
+  en: 'Photo gallery',
+  de: 'Fotogalerie',
+  sk: 'Fotogal?ria',
+  pl: 'Galeria zdj??',
+  hu: 'Fot?gal?ria'
+};
+
+function buildReviewGalleryHtml(gallery, lang = DEFAULT_LANG) {
+  const images = Array.isArray(gallery)
+    ? gallery.filter((item) => item && item.image)
+    : [];
+
+  if (images.length === 0) {
+    return '';
+  }
+
+  const galleryLabel =
+    REVIEW_GALLERY_LABELS[normalizeLang(lang)] ||
+    REVIEW_GALLERY_LABELS[DEFAULT_LANG];
+
+  const itemsHtml = images
+    .map((item) => {
+      const image = String(item.image || '').trim();
+      const alt = String(item.alt || '').trim();
+      const credit = String(item.credit || '').trim();
+
+      return `
+              <figure class="review-gallery-item">
+                <img
+                  src="${escapeAttr(image)}"
+                  alt="${escapeAttr(alt)}"
+                  loading="lazy"
+                  decoding="async"
+                >
+                ${credit ? `<figcaption>${escapeHtml(credit)}</figcaption>` : ''}
+              </figure>
+      `;
+    })
+    .join('');
+
+  return `
+          <section class="review-gallery" aria-labelledby="review-gallery-title">
+            <h2 id="review-gallery-title" class="review-gallery-title">
+              ${escapeHtml(galleryLabel)}
+            </h2>
+
+            <div class="review-gallery-grid">
+              ${itemsHtml}
+            </div>
+          </section>
+  `;
+}
+
 function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   const title = translation.title || review.showTitle || review.slug;
   const subtitle = translation.subtitle || '';
   const excerpt = translation.excerpt || '';
   const bodyHtml = markdownToHtml(translation.body || '');
+  const galleryHtml = buildReviewGalleryHtml(review.gallery, lang);
   const cover = review.cover || '';
   const coverAlt = review.coverAlt || title;
+  const coverCredit = review.coverCredit || '';
   const metaRow = buildMetaRow(review, lang);
   const ctaText = translation.ctaText || 'Check tickets';
 
@@ -344,7 +406,10 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
 
             ${
               cover
-                ? `<img class="blog-image review-cover" src="${escapeAttr(cover)}" alt="${escapeAttr(coverAlt)}" loading="eager" decoding="async">`
+                ? `<figure class="review-cover-figure">
+                    <img class="blog-image review-cover" src="${escapeAttr(cover)}" alt="${escapeAttr(coverAlt)}" loading="eager" decoding="async">
+                    ${coverCredit ? `<figcaption class="review-cover-credit">${escapeHtml(coverCredit)}</figcaption>` : ''}
+                  </figure>`
                 : ''
             }
           </header>
@@ -352,6 +417,8 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
           <div class="blog-content review-content">
             ${bodyHtml}
           </div>
+
+          ${galleryHtml}
 
           ${
             review.ticketUrl
@@ -434,17 +501,17 @@ async function readJson(filePath) {
 }
 
 async function cleanGeneratedReviewsDir() {
-  await ensureDir(REVIEWS_OUT_DIR);
+  await ensureDir(REVIEW_OUTPUT_DIR);
 
-  const entries = await fs.readdir(REVIEWS_OUT_DIR, { withFileTypes: true }).catch(() => []);
+  const entries = await fs.readdir(REVIEW_OUTPUT_DIR, { withFileTypes: true }).catch(() => []);
 
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
 
-    const indexPath = path.join(REVIEWS_OUT_DIR, entry.name, 'index.html');
+    const indexPath = path.join(REVIEW_OUTPUT_DIR, entry.name, 'index.html');
 
     if (await fs.stat(indexPath).then(() => true).catch(() => false)) {
-      await fs.rm(path.join(REVIEWS_OUT_DIR, entry.name), { recursive: true, force: true });
+      await fs.rm(path.join(REVIEW_OUTPUT_DIR, entry.name), { recursive: true, force: true });
     }
   }
 }
@@ -452,7 +519,7 @@ async function cleanGeneratedReviewsDir() {
 async function writeReviewDetail(review, template) {
   const slug = normalizeSlug(review.slug);
 
-  if (!slug || !isPublishedReview(review)) return false;
+  if (!slug || (!PREVIEW_MODE && !isPublishedReview(review))) return false;
 
   const localized = pickTranslation(review, DEFAULT_LANG);
 
@@ -462,7 +529,7 @@ async function writeReviewDetail(review, template) {
   html = injectReviewArticle(html, review, localized.data, localized.lang);
   html = patchTemplateForReviews(html, review);
 
-  const outDir = path.join(REVIEWS_OUT_DIR, slug);
+  const outDir = path.join(REVIEW_OUTPUT_DIR, slug);
   const outPath = path.join(outDir, 'index.html');
 
   await ensureDir(outDir);
@@ -487,7 +554,7 @@ async function run() {
     }
   }
 
-  console.log(`Static review detail pages generated (${count} items).`);
+  console.log(`${PREVIEW_MODE ? 'Local review preview pages' : 'Static review detail pages'} generated (${count} items).`);
 }
 
 run().catch((error) => {

@@ -32,3 +32,4 @@ _local-debug-archive/
 
 # Generated SMS Ticket city subset feeds
 public/data/smsticket-events-*.json
+review-preview/

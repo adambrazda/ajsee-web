@@ -158,11 +158,131 @@
   .blog-content { font-size: 1.08rem; color: #334b69; line-height: 1.7; margin-bottom: 1.5rem; p { margin-bottom: 1.1em; } }
 }
 
+
+
+.review-cover-figure {
+  margin: 0 0 1.2rem;
+}
+
+.review-cover-figure .review-cover {
+  margin-bottom: 0;
+}
+
+.review-cover-credit {
+  margin-top: 0.45rem;
+  padding: 0 0.15rem;
+  color: #52677d;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+
+.review-content ul {
+  margin: 0 0 1.4rem;
+  padding-left: 1.5rem;
+  list-style: disc;
+}
+
+.review-content li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.15rem;
+}
+
+.review-content li::marker {
+  color: #14c2c5;
+}
+
+/* -------- REVIEW GALLERY ---------------------------------------------- */
+
+.review-gallery {
+  margin: 2rem 0 1.5rem;
+}
+
+.review-gallery-title {
+  margin: 0 0 1rem;
+  color: #184469;
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.review-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.review-gallery-item {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(24, 68, 105, 0.12);
+  border-radius: 1rem;
+  box-shadow: 0 2px 14px rgba(0, 119, 204, 0.08);
+}
+
+.review-gallery-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  background: #102538;
+}
+
+.review-gallery-item figcaption {
+  padding: 0.7rem 0.85rem;
+  color: #52677d;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .review-gallery {
+    margin-top: 1.5rem;
+  }
+
+  .review-gallery-title {
+    font-size: 1.2rem;
+  }
+
+  .review-gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .review-gallery-item img {
+    aspect-ratio: auto;
+    max-height: 520px;
+  }
+}
+
 /* -------- RESPONZIVITA ------------------------------------------------ */
 @media (max-width: 600px) {
   .blog-hero, .blog-filters, .blog-list, .blog-detail { padding-left: .2rem; padding-right: .2rem; }
   .blog-list { --blog-card-img-h: 120px; }
-  .blog-detail .container { padding: 1.1rem .3rem; }
-  .blog-title { font-size: 1.15rem; }
-  .blog-lead, .blog-content { font-size: .97rem; }
+  .blog-detail .container {
+    padding: 1.1rem 0.75rem;
+  }
+
+  .blog-detail .blog-title {
+    font-size: 1.55rem;
+    line-height: 1.2;
+  }
+
+  .blog-detail .blog-lead {
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+
+  .blog-detail .blog-content {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .blog-detail .review-excerpt {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
 }

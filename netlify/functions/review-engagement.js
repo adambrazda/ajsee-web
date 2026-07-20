@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { connectLambda, getStore } from '@netlify/blobs';
+import { getStore } from '@netlify/blobs';
 
 const STORE_NAME = 'review-engagement-v1';
 const MAX_BODY_BYTES = 4096;
@@ -346,7 +346,7 @@ async function writeEngagementAction({
 }
 
 export function createReviewEngagementHandler({
-  connectLambdaFn = connectLambda,
+  connectLambdaFn = null,
   getStoreFn = getStore
 } = {}) {
   return async function reviewEngagementHandler(
@@ -382,7 +382,11 @@ export function createReviewEngagementHandler({
     }
 
     try {
-      connectLambdaFn(event);
+      if (
+        typeof connectLambdaFn === 'function'
+      ) {
+        connectLambdaFn(event);
+      }
 
       const store = getStoreFn({
         name: resolveStoreName(event),
@@ -490,5 +494,64 @@ export function createReviewEngagementHandler({
   };
 }
 
-export const handler =
-  createReviewEngagementHandler();
+function requestToLegacyEvent(request) {
+  const url = new URL(request.url);
+
+  const headers = Object.fromEntries(
+    request.headers.entries()
+  );
+
+  // The public Request URL is the reliable deploy host.
+  // This preserves preview-specific Blobs isolation even
+  // when the runtime omits the original Host header.
+  headers.host = url.host;
+
+  return {
+    httpMethod: String(
+      request.method || 'GET'
+    ).toUpperCase(),
+
+    headers,
+
+    queryStringParameters:
+      Object.fromEntries(
+        url.searchParams.entries()
+      )
+  };
+}
+
+export function createModernReviewEngagementHandler({
+  legacyHandler = createReviewEngagementHandler()
+} = {}) {
+  return async function modernReviewEngagementHandler(
+    request,
+    _context
+  ) {
+    const event = requestToLegacyEvent(request);
+
+    if (
+      event.httpMethod !== 'GET' &&
+      event.httpMethod !== 'HEAD'
+    ) {
+      event.body = await request.text();
+    }
+
+    const result = await legacyHandler(event);
+
+    const status = Number(
+      result?.statusCode
+    ) || 200;
+
+    const body = [204, 205, 304].includes(status)
+      ? null
+      : result?.body ?? '';
+
+    return new Response(body, {
+      status,
+      headers: result?.headers || {}
+    });
+  };
+}
+
+export default
+  createModernReviewEngagementHandler();

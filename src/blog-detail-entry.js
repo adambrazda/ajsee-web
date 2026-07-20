@@ -23,6 +23,7 @@ import { initLangDropdown } from './utils/lang-dropdown.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 import { initNav } from './nav-core.js';
 import { initReviewEngagement } from './review-engagement.js';
+import { initReviewReactions } from './review-reactions.js';
 
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 
@@ -107,6 +108,12 @@ async function bootBlogDetailEntry() {
     initReviewEngagement();
   } catch {
     // Engagement controls must not block the article.
+  }
+
+  try {
+    initReviewReactions();
+  } catch {
+    // Read and like controls must not block the article.
   }
 
   window.addEventListener('resize', updateHeaderOffset, { passive: true });

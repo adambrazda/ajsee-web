@@ -524,3 +524,146 @@
     transition: none;
   }
 }
+
+/* REVIEW REACTIONS AND READ METRICS */
+.review-engagement__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+}
+
+.review-engagement__read-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  min-height: 28px;
+  padding: 0.3rem 0.62rem;
+  border: 1px solid rgba(34, 34, 59, 0.1);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: rgba(34, 34, 59, 0.72);
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.review-engagement__metric-icon {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
+
+.review-engagement__read-count {
+  display: inline-block;
+  min-width: 4rem;
+}
+
+.review-engagement__button--like {
+  border-color: rgba(34, 34, 59, 0.18);
+  background: #ffffff;
+  color: #22223b;
+}
+
+.review-engagement__button--like:hover:not(:disabled) {
+  border-color: rgba(180, 35, 65, 0.55);
+}
+
+.review-engagement__button--like.is-liked {
+  border-color: rgba(180, 35, 65, 0.42);
+  background: rgba(180, 35, 65, 0.08);
+  color: #a51f3b;
+}
+
+.review-engagement__heart {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  transition:
+    fill 0.16s ease,
+    transform 0.16s ease;
+}
+
+.review-engagement__button--like.is-liked
+.review-engagement__heart {
+  fill: currentColor;
+  transform: scale(1.04);
+}
+
+.review-engagement__like-label {
+  white-space: nowrap;
+}
+
+.review-engagement__like-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.7rem;
+  min-height: 1.7rem;
+  padding: 0 0.38rem;
+  border-radius: 999px;
+  background: rgba(34, 34, 59, 0.08);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.review-engagement__button--like.is-liked
+.review-engagement__like-count {
+  background: rgba(180, 35, 65, 0.12);
+}
+
+.review-engagement__read-count.is-loading,
+.review-engagement__like-count.is-loading {
+  position: relative;
+  overflow: hidden;
+  color: transparent;
+}
+
+.review-engagement__read-count.is-loading::after,
+.review-engagement__like-count.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(34, 34, 59, 0.06),
+      rgba(34, 34, 59, 0.13),
+      rgba(34, 34, 59, 0.06)
+    );
+  background-size: 200% 100%;
+  animation:
+    review-engagement-loading 1.2s linear infinite;
+}
+
+.review-engagement__button--like.is-unavailable {
+  opacity: 0.58;
+}
+
+@keyframes review-engagement-loading {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-engagement__heart {
+    transition: none;
+  }
+
+  .review-engagement__read-count.is-loading::after,
+  .review-engagement__like-count.is-loading::after {
+    animation: none;
+  }
+}

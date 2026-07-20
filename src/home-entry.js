@@ -909,7 +909,7 @@ async function renderHomeBlog() {
 
   if (
     host.dataset.ajRenderedLang === lang &&
-    host.dataset.ajHomeBlogMix === 'articles-2-mg-1' &&
+    host.dataset.ajHomeBlogMix === 'review-1-article-1-mg-1' &&
     host.children.length === 3
   ) {
     return;
@@ -975,6 +975,25 @@ async function renderHomeBlog() {
     );
   }
 
+  function isReviewItem(item) {
+    const type = String(
+      item?.type ||
+      item?.dataType ||
+      item?.kind ||
+      item?.contentType ||
+      item?.collection ||
+      ''
+    ).toLowerCase();
+
+    const href = rawItemHref(item).toLowerCase();
+
+    return (
+      type === 'review' ||
+      type.includes('review') ||
+      href.includes('/reviews/')
+    );
+  }
+
   function itemHref(item) {
     const slug = String(item?.slug || '').trim();
     const rawHref = rawItemHref(item);
@@ -985,7 +1004,21 @@ async function renderHomeBlog() {
       return localizeHomepageHref('/microguides/', lang);
     }
 
-    if (slug) {
+        if (isReviewItem(item)) {
+      if (rawHref) {
+        return localizeHomepageHref(rawHref, lang);
+      }
+
+      if (slug) {
+        return localizeHomepageHref(
+          '/reviews/' + encodeURIComponent(slug) + '/',
+          lang
+        );
+      }
+
+      return localizeHomepageHref('/blog/', lang);
+    }
+if (slug) {
       return localizeHomepageHref('/blog/' + encodeURIComponent(slug) + '/', lang);
     }
 
@@ -1028,6 +1061,121 @@ async function renderHomeBlog() {
       } catch {
         // Try next fallback language.
       }
+    }
+
+    return null;
+  }
+
+  async function loadHomepageReview(targetLang) {
+    try {
+      const payload = await fetchJson(
+        '/content/reviews/index.json'
+      );
+
+      const items = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.items)
+          ? payload.items
+          : [];
+
+      const publishedItems = items
+        .filter((item) => {
+          return (
+            item?.slug &&
+            item?.status === 'published' &&
+            item?.published === true
+          );
+        })
+        .sort((a, b) => {
+          const featuredDifference =
+            Number(Boolean(b?.featured)) -
+            Number(Boolean(a?.featured));
+
+          if (featuredDifference !== 0) {
+            return featuredDifference;
+          }
+
+          const at = Date.parse(
+            a?.sortDate ||
+            a?.publishedAt ||
+            a?.reviewDate ||
+            0
+          ) || 0;
+
+          const bt = Date.parse(
+            b?.sortDate ||
+            b?.publishedAt ||
+            b?.reviewDate ||
+            0
+          ) || 0;
+
+          return bt - at;
+        });
+
+      for (const item of publishedItems) {
+        const slug = String(item.slug || '').trim();
+        if (!slug) continue;
+
+        const translations =
+          item.translations &&
+          typeof item.translations === 'object'
+            ? item.translations
+            : {};
+
+        const candidates = Array.from(
+          new Set([
+            targetLang,
+            'en',
+            'cs',
+            ...Object.keys(translations)
+          ].filter(Boolean))
+        );
+
+        const resolvedLang = candidates.find(
+          (candidate) => translations[candidate]?.title
+        );
+
+        const translation = resolvedLang
+          ? translations[resolvedLang]
+          : null;
+
+        if (!translation) continue;
+
+        return {
+          ...item,
+          ...translation,
+          slug,
+          type: 'review',
+          href: '/reviews/' + encodeURIComponent(slug) + '/',
+          url: '/reviews/' + encodeURIComponent(slug) + '/',
+          title:
+            translation.title ||
+            item.productionTitle ||
+            item.showTitle ||
+            slug,
+          excerpt:
+            translation.excerpt ||
+            translation.subtitle ||
+            '',
+          image: item.cover || item.image || '',
+          cover: item.cover || item.image || '',
+          coverAlt:
+            item.coverAlt ||
+            translation.title ||
+            item.productionTitle ||
+            item.showTitle ||
+            '',
+          _resolvedLang: resolvedLang || targetLang,
+          _ts: Date.parse(
+            item.sortDate ||
+            item.publishedAt ||
+            item.reviewDate ||
+            0
+          ) || 0
+        };
+      }
+    } catch {
+      // Homepage remains usable if the review index is unavailable.
     }
 
     return null;
@@ -1088,30 +1236,50 @@ async function renderHomeBlog() {
 
   let articleItems = [];
   try {
-    const allArticles = getSortedBlogArticles?.(lang) || getSortedBlogArticles?.() || [];
-    articleItems = allArticles.filter((item) => !isMicroguideItem(item)).slice(0, 2);
+    const allArticles =
+      getSortedBlogArticles?.(lang) ||
+      getSortedBlogArticles?.() ||
+      [];
+
+    articleItems = allArticles
+      .filter((item) => {
+        return (
+          !isMicroguideItem(item) &&
+          !isReviewItem(item)
+        );
+      })
+      .slice(0, 1);
   } catch {
     articleItems = [];
   }
 
-  const microguideItem = await loadHomepageMicroguide(lang);
+  const [reviewItem, microguideItem] = await Promise.all([
+    loadHomepageReview(lang),
+    loadHomepageMicroguide(lang)
+  ]);
 
   if (host.dataset.ajHomeBlogPending !== renderToken) {
     return;
   }
 
-  const selectedItems = [...articleItems];
-
-  if (microguideItem) {
-    selectedItems.push(microguideItem);
-  }
+  const selectedItems = [
+    reviewItem,
+    ...articleItems,
+    microguideItem
+  ].filter(Boolean);
 
   if (selectedItems.length < 3) {
     try {
       const fallbackArticles = getSortedBlogArticles?.(lang) || getSortedBlogArticles?.() || [];
       fallbackArticles.forEach((item) => {
         if (selectedItems.length >= 3) return;
-        if (!selectedItems.includes(item)) selectedItems.push(item);
+        if (
+          !isMicroguideItem(item) &&
+          !isReviewItem(item) &&
+          !selectedItems.includes(item)
+        ) {
+          selectedItems.push(item);
+        }
       });
     } catch {
       // noop
@@ -1121,7 +1289,7 @@ async function renderHomeBlog() {
   if (!selectedItems.length) {
     host.innerHTML = '';
     host.dataset.ajRenderedLang = lang;
-    host.dataset.ajHomeBlogMix = 'articles-2-mg-1';
+    host.dataset.ajHomeBlogMix = 'review-1-article-1-mg-1';
     return;
   }
 
@@ -1142,18 +1310,41 @@ async function renderHomeBlog() {
             (lang === 'hu') ? 'Útmutató megnyitása' :
               'Otevřít průvodce';
 
+  const readReview =
+    (lang === 'en') ? 'Read review' :
+      (lang === 'de') ? 'Rezension lesen' :
+        (lang === 'sk') ? 'Pre\u010d\u00edta\u0165 recenziu' :
+          (lang === 'pl') ? 'Przeczytaj recenzj\u0119' :
+            (lang === 'hu') ? 'Kritika elolvas\u00e1sa' :
+              'P\u0159e\u010d\u00edst recenzi';
+
   host.innerHTML = selectedItems.slice(0, 3).map((article) => {
     const isGuide = isMicroguideItem(article);
+    const isReview = isReviewItem(article);
+    const cardType = isGuide
+      ? 'microguide'
+      : isReview
+        ? 'review'
+        : 'article';
     const title = esc(pickLocalized(article.title || article.name || article.heading, lang) || '');
     const excerpt = esc(pickLocalized(article.excerpt || article.perex || article.summary || article.description, lang) || '');
     const rawImage = article.image || article.cover || article.hero || article.thumb || '/images/fallbacks/concert0.jpg';
-    const img = esc(typeof optimizeCardImageUrl === 'function' ? optimizeCardImageUrl(rawImage) : rawImage);
+    const img = esc(
+      typeof optimizeCardImageUrl === 'function'
+        ? optimizeCardImageUrl(rawImage)
+        : rawImage
+    );
+    const imageAlt = esc(article.coverAlt || title);
     const href = esc(itemHref(article));
-    const ctaLabel = isGuide ? openGuide : readMore;
+    const ctaLabel = isGuide
+      ? openGuide
+      : isReview
+        ? readReview
+        : readMore;
 
     return [
-      '<a class="homepage-blog-card blog-card" data-type="', isGuide ? 'microguide' : 'article', '" href="', href, '" aria-label="', title, '">',
-        '<img src="', img, '" alt="', title, '" loading="lazy" decoding="async" />',
+      '<a class="homepage-blog-card blog-card" data-type="', cardType, '" href="', href, '" aria-label="', title, '">',
+        '<img src="', img, '" alt="', imageAlt, '" loading="lazy" decoding="async" />',
         '<div class="blog-card-content">',
           '<h3>', title, '</h3>',
           excerpt ? '<p>' + excerpt + '</p>' : '',
@@ -1164,7 +1355,7 @@ async function renderHomeBlog() {
   }).join('');
 
   host.dataset.ajRenderedLang = lang;
-  host.dataset.ajHomeBlogMix = 'articles-2-mg-1';
+  host.dataset.ajHomeBlogMix = 'review-1-article-1-mg-1';
 }
 
 /* ───────── live region ───────── */

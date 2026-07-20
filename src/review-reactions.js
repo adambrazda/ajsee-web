@@ -8,6 +8,8 @@ const QUALIFIED_ACTIVE_MS = 30_000;
 const QUALIFIED_PROGRESS = 0.5;
 const REQUEST_TIMEOUT_MS = 8_000;
 const READ_RETRY_DELAY_MS = 15_000;
+const STATUS_VISIBLE_MS = 4_500;
+const STATUS_FADE_MS = 220;
 
 const SUPPORTED_LANGS = [
   'cs',
@@ -463,10 +465,24 @@ function announce(
   status.classList.add('is-visible');
 
   const timer = window.setTimeout(() => {
-    if (status.textContent === message) {
-      status.classList.remove('is-visible');
+    if (status.textContent !== message) {
+      return;
     }
-  }, 3_500);
+
+    status.classList.remove('is-visible');
+
+    const clearTimer = window.setTimeout(() => {
+      if (
+        status.textContent === message &&
+        !status.classList.contains('is-visible')
+      ) {
+        status.textContent = '';
+        status.classList.remove('is-error');
+      }
+    }, STATUS_FADE_MS);
+
+    statusTimers.set(panel, clearTimer);
+  }, STATUS_VISIBLE_MS);
 
   statusTimers.set(panel, timer);
 }

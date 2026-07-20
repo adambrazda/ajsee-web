@@ -288,7 +288,7 @@ export function createReviewEngagementHandler({
         'Access-Control-Allow-Methods':
           'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers':
-          'Content-Type',
+          'Content-Type, X-AJSEE-Visitor-ID',
         Allow: 'GET, POST, OPTIONS'
       });
     }
@@ -322,8 +322,16 @@ export function createReviewEngagementHandler({
           query.slug || ''
         );
 
+        const requestHeaders =
+          event.headers || {};
+
+        const visitorHeader =
+          requestHeaders['x-ajsee-visitor-id'] ||
+          requestHeaders['X-AJSEE-Visitor-ID'] ||
+          '';
+
         const visitorId = normalizeVisitorId(
-          query.visitorId || '',
+          visitorHeader || query.visitorId || '',
           { optional: true }
         );
 

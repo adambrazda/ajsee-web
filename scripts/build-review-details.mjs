@@ -44,6 +44,21 @@ function truncate(value = '', max = 160) {
   return `${text.slice(0, max - 1).trim().replace(/[.,;:!?-]+$/, '')}…`;
 }
 
+function addLanguageTracking(value = '', lang = DEFAULT_LANG) {
+  const rawUrl = String(value || '').trim();
+
+  if (!rawUrl) return '';
+
+  try {
+    const url = new URL(rawUrl);
+    url.searchParams.set('utm_content', lang);
+    return url.toString();
+  } catch {
+    const separator = rawUrl.includes('?') ? '&' : '?';
+    return `${rawUrl}${separator}utm_content=${encodeURIComponent(lang)}`;
+  }
+}
+
 function normalizeSlug(value = '') {
   return String(value)
     .trim()
@@ -390,6 +405,10 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   const coverCredit = review.coverCredit || '';
   const metaRow = buildMetaRow(review, lang);
   const ctaText = translation.ctaText || 'Check tickets';
+  const ticketUrl = addLanguageTracking(
+    translation.ticketUrl || review.ticketUrl || '',
+    lang
+  );
 
   return `
         <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}">
@@ -421,8 +440,8 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
           ${galleryHtml}
 
           ${
-            review.ticketUrl
-              ? `<p class="review-cta"><a class="btn-primary" href="${escapeAttr(review.ticketUrl)}" target="_blank" rel="noopener sponsored">${escapeHtml(ctaText)}</a></p>`
+            ticketUrl
+              ? `<p class="review-cta"><a class="btn-primary" href="${escapeAttr(ticketUrl)}" target="_blank" rel="noopener sponsored">${escapeHtml(ctaText)}</a></p>`
               : ''
           }
         </article>

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { getStore } from '@netlify/blobs';
+import { connectLambda, getStore } from '@netlify/blobs';
 
 const STORE_NAME = 'review-engagement-v1';
 const MAX_BODY_BYTES = 4096;
@@ -346,6 +346,7 @@ async function writeEngagementAction({
 }
 
 export function createReviewEngagementHandler({
+  connectLambdaFn = connectLambda,
   getStoreFn = getStore
 } = {}) {
   return async function reviewEngagementHandler(
@@ -381,6 +382,8 @@ export function createReviewEngagementHandler({
     }
 
     try {
+      connectLambdaFn(event);
+
       const store = getStoreFn({
         name: resolveStoreName(event),
         consistency: 'strong'

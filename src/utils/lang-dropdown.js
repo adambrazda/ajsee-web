@@ -280,6 +280,20 @@ async function goToLang(lang, options = {}) {
     return;
   }
 
+  const isStaticReviewDetail =
+    document.body?.dataset.page === 'review-detail' ||
+    Boolean(document.querySelector('[data-review-slug]'));
+
+  if (isStaticReviewDetail) {
+    persistLang(nextLang);
+    syncAllDropdowns(nextLang);
+
+    window.location.assign(
+      ajseeLocalizedUrlForLang(nextLang)
+    );
+
+    return;
+  }
   const shouldPreserveScroll = options.preserveScroll !== false;
   const scrollSnapshot = shouldPreserveScroll ? getScrollSnapshot() : null;
 

@@ -562,10 +562,6 @@ function patchTemplateForReviews(
     `<a href="${escapeAttr(backHref)}" class="back-link">&larr; ${escapeHtml(backLabel)}</a>`
   );
 
-  next = next.replace(
-    /<script type="module" src="\/src\/blog-detail-entry\.js"><\/script>\s*/gi,
-    ''
-  );
 
   next = next.replace(
     /<script type="module" src="\/src\/blog-detail\.js"><\/script>\s*/gi,

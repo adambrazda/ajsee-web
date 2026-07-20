@@ -247,9 +247,102 @@
 </head>
 <body data-page="blog-detail">
 <header class="site-header">
-  <!-- Pokud už máš jednotný header řešený přes main.js,
-       tady nechávám placeholder jak jsi měl. -->
-  <!-- ... stejný header jako jinde ... -->
+  <div class="header-inner">
+
+    <!-- Logo -->
+    <a href="/" class="logo-link" aria-label="Domů">
+      <img src="/images/logo-ajsee-header.png" alt="AJSEE Logo" class="logo" width="64" height="56" loading="eager" decoding="async" />
+    </a>
+
+    <!-- Hamburger menu (pouze mobil) -->
+    <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Navigace (hlavní menu) -->
+    <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+      <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+
+      <ul>
+        <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
+        <li><a href="/events" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/accommodation" data-i18n-key="nav-accommodation">Ubytování</a></li>
+        <li><a href="/partners" data-i18n-key="nav-partners">Pro partnery</a></li>
+        <li><a href="/about" data-i18n-key="nav-about">O nás</a></li>
+        <li><a href="/blog" data-i18n-key="nav-blog" aria-current="page">Blog</a></li>
+        <li><a href="/faq" data-i18n-key="nav-faq">FAQ</a></li>
+        <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+      </ul>
+
+      <!-- Jazykové přepínače v mobilním menu -->
+      <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+        <details class="lang-dropdown" id="langDropdownMobile">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16" />
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
+
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16" /> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16" /> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16" /> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16" /> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16" /> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16" /> Magyar
+            </button>
+          </div>
+        </details>
+      </div>
+    </nav>
+
+    <!-- Jazykové přepínače – desktop -->
+    <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+      <details class="lang-dropdown" id="langDropdownDesktop">
+        <summary class="lang-current" aria-label="Změnit jazyk">
+          <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16" />
+          <span class="lang-current-label">Čeština</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </summary>
+
+        <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+          <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+            <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16" /> Čeština
+          </button>
+          <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+            <img src="/images/flags/gb.svg" alt="English" width="22" height="16" /> English
+          </button>
+          <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+            <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16" /> Deutsch
+          </button>
+          <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+            <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16" /> Slovenčina
+          </button>
+          <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+            <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16" /> Polski
+          </button>
+          <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+            <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16" /> Magyar
+          </button>
+        </div>
+      </details>
+    </div>
+
+    <!-- Overlay pozadí menu -->
+    <div class="menu-overlay-bg" aria-hidden="true"></div>
+
+  </div>
 </header>
 
 <main>

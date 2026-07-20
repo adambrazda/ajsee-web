@@ -21,6 +21,7 @@ import {
 
 import { initLangDropdown } from './utils/lang-dropdown.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
+import { initNav } from './nav-core.js';
 
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 
@@ -69,6 +70,12 @@ async function bootBlogDetailEntry() {
 
   ensureRuntimeStyles();
   updateHeaderOffset();
+
+  try {
+    initNav();
+  } catch {
+    // Navigation must not block the article.
+  }
 
   try {
     await applyTranslations(currentLang);

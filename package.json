@@ -18,7 +18,7 @@
     "dev:ntl": "netlify dev",
     "start": "npm run dev",
     "prebuild": "npm run smsticket:sync && npx cpy-cli src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run reviews:build && npm run review-details:build && npm run blog:build",
-    "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build && node scripts/build-localized-pages.cjs && node scripts/generate-sitemap.cjs",
+    "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build && node scripts/build-localized-pages.cjs && npm run review-details:localize && node scripts/generate-sitemap.cjs",
     "preview": "vite preview",
     "webpack:dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack serve --mode development",
     "webpack:build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack --mode production",
@@ -29,7 +29,8 @@
     "smsticket:sync": "node scripts/sync-smsticket-events.mjs",
     "fetch:seatplan": "node scripts/fetch-seatplan.mjs",
     "reviews:build": "node scripts/build-reviews.mjs",
-    "review-details:build": "node scripts/build-review-details.mjs"
+    "review-details:build": "node scripts/build-review-details.mjs",
+    "review-details:localize": "cross-env REVIEW_LOCALIZE=1 node scripts/build-review-details.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

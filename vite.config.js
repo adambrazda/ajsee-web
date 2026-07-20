@@ -73,6 +73,27 @@ function addGeneratedBlogDetails(inputs) {
   return inputs;
 }
 
+// Přidá staticky vygenerované detailní stránky recenzí:
+// /reviews/{slug}/index.html
+function addGeneratedReviewDetails(inputs) {
+  const reviewsRoot = resolve(__dirname, 'reviews');
+
+  if (!existsSync(reviewsRoot)) return inputs;
+
+  for (const entry of readdirSync(reviewsRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+
+    const inputPath = resolve(reviewsRoot, entry.name, 'index.html');
+    const key = safeInputKey(`reviews-${entry.name}`);
+
+    if (key) {
+      addIfExists(inputs, key, inputPath);
+    }
+  }
+
+  return inputs;
+}
+
 // Dev-only middleware: přesměruj staré cesty bez /src/
 function devRedirectPlugin() {
   return {
@@ -201,6 +222,7 @@ export default defineConfig({
         addIfExists(inputs, 'coming-soon-thanks', resolve(__dirname, 'coming-soon/thanks.html'));
 
         addGeneratedBlogDetails(inputs);
+        addGeneratedReviewDetails(inputs);
 
 
 

@@ -137,6 +137,12 @@
 
 
 # ------------ REDIRECTS / REWRITES ------------
+# Review engagement API:
+[[redirects]]
+  from = "/api/review-engagement"
+  to = "/.netlify/functions/review-engagement"
+  status = 200
+
 # Shortlink manager:
 # /go/:slug → Netlify function go.js
 [[redirects]]

@@ -22,6 +22,7 @@ import {
 import { initLangDropdown } from './utils/lang-dropdown.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 import { initNav } from './nav-core.js';
+import { initReviewEngagement } from './review-engagement.js';
 
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 
@@ -100,6 +101,12 @@ async function bootBlogDetailEntry() {
     initLangDropdown();
   } catch {
     // Header je na blog detailu aktuálně placeholder, absence dropdownu nevadí.
+  }
+
+  try {
+    initReviewEngagement();
+  } catch {
+    // Engagement controls must not block the article.
   }
 
   window.addEventListener('resize', updateHeaderOffset, { passive: true });

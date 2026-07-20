@@ -10,6 +10,78 @@ const ALLOWED_ACTIONS = new Set([
   'unlike'
 ]);
 
+function getRequestHeader(
+  headers = {},
+  name
+) {
+  const normalizedName = String(name)
+    .trim()
+    .toLowerCase();
+
+  for (
+    const [key, value]
+    of Object.entries(headers)
+  ) {
+    if (
+      String(key).toLowerCase() ===
+      normalizedName
+    ) {
+      return String(value || '').trim();
+    }
+  }
+
+  return '';
+}
+
+function getRequestHostname(event = {}) {
+  const headers = event.headers || {};
+
+  const forwardedHost = getRequestHeader(
+    headers,
+    'x-forwarded-host'
+  );
+
+  const host =
+    forwardedHost ||
+    getRequestHeader(headers, 'host');
+
+  return host
+    .split(',')[0]
+    .trim()
+    .toLowerCase()
+    .replace(/:\d+$/, '');
+}
+
+function resolveStoreName(event = {}) {
+  const hostname = getRequestHostname(event);
+
+  const deployPreviewMatch = hostname.match(
+    /^deploy-preview-(\d+)--/
+  );
+
+  if (deployPreviewMatch) {
+    return (
+      STORE_NAME +
+      '-preview-' +
+      deployPreviewMatch[1]
+    );
+  }
+
+  const agentPreviewMatch = hostname.match(
+    /^agent-([a-z0-9-]+)--/
+  );
+
+  if (agentPreviewMatch) {
+    return (
+      STORE_NAME +
+      '-agent-' +
+      agentPreviewMatch[1].slice(0, 48)
+    );
+  }
+
+  return STORE_NAME;
+}
+
 const RESPONSE_HEADERS = {
   'Content-Type': 'application/json; charset=utf-8',
   'Cache-Control': 'no-store',
@@ -310,7 +382,7 @@ export function createReviewEngagementHandler({
 
     try {
       const store = getStoreFn({
-        name: STORE_NAME,
+        name: resolveStoreName(event),
         consistency: 'strong'
       });
 

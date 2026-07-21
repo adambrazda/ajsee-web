@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+    <meta
+      name="robots"
+      content="noindex, nofollow, noarchive"
+    />
+
+    <title>Moderace komentářů | AJSEE</title>
+
+    <link
+      rel="stylesheet"
+      href="/comment-admin/styles.css"
+    />
+
+    <script
+      defer
+      src="https://identity.netlify.com/v1/netlify-identity-widget.js"
+    ></script>
+
+    <script
+      defer
+      src="/comment-admin/app.js"
+    ></script>
+  </head>
+
+  <body>
+    <a
+      class="skip-link"
+      href="#main-content"
+    >
+      Přeskočit na hlavní obsah
+    </a>
+
+    <header class="admin-header">
+      <div class="admin-header__inner">
+        <a
+          class="brand"
+          href="/"
+          aria-label="AJSEE – přejít na web"
+        >
+          <span class="brand__name">AJSEE</span>
+          <span class="brand__section">
+            Moderace komentářů
+          </span>
+        </a>
+
+        <nav
+          class="admin-links"
+          aria-label="Administrační odkazy"
+        >
+          <a href="/admin/">
+            Hlavní administrace
+          </a>
+
+          <a href="/review-admin/">
+            Recenze
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main
+      id="main-content"
+      class="admin-main"
+      tabindex="-1"
+    >
+      <section
+        id="loading-panel"
+        class="panel panel--compact"
+        aria-live="polite"
+      >
+        <span
+          class="spinner"
+          aria-hidden="true"
+        ></span>
+
+        <p>
+          Ověřuji přihlášení…
+        </p>
+      </section>
+
+      <section
+        id="signed-out-panel"
+        class="panel panel--compact"
+        hidden
+      >
+        <p class="eyebrow">
+          Chráněná administrace
+        </p>
+
+        <h1>
+          Moderace komentářů
+        </h1>
+
+        <p class="panel__description">
+          Pro zobrazení čekajících komentářů se přihlas
+          pomocí účtu Netlify Identity.
+        </p>
+
+        <button
+          id="login-button"
+          class="button button--primary"
+          type="button"
+        >
+          Přihlásit se
+        </button>
+      </section>
+
+      <section
+        id="forbidden-panel"
+        class="panel panel--compact"
+        hidden
+      >
+        <p class="eyebrow">
+          Přístup zamítnut
+        </p>
+
+        <h1>
+          Nemáš oprávnění k moderaci
+        </h1>
+
+        <p class="panel__description">
+          Přihlášený účet nemá roli
+          <strong>admin</strong>.
+        </p>
+
+        <button
+          id="forbidden-logout-button"
+          class="button button--secondary"
+          type="button"
+        >
+          Odhlásit se
+        </button>
+      </section>
+
+      <section
+        id="error-panel"
+        class="panel panel--compact panel--error"
+        role="alert"
+        hidden
+      >
+        <p class="eyebrow">
+          Chyba
+        </p>
+
+        <h1>
+          Administraci se nepodařilo načíst
+        </h1>
+
+        <p
+          id="error-message"
+          class="panel__description"
+        ></p>
+
+        <button
+          id="retry-button"
+          class="button button--primary"
+          type="button"
+        >
+          Zkusit znovu
+        </button>
+      </section>
+
+      <section
+        id="admin-application"
+        hidden
+      >
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">
+              AJSEE Community
+            </p>
+
+            <h1>
+              Moderace komentářů
+            </h1>
+
+            <p class="page-heading__description">
+              Nové komentáře se zveřejní až po schválení.
+              E-mail autora je soukromý a viditelný pouze zde.
+            </p>
+          </div>
+
+          <div class="account-box">
+            <span>
+              Přihlášený účet
+            </span>
+
+            <strong id="account-email">
+              —
+            </strong>
+
+            <button
+              id="logout-button"
+              class="button button--text"
+              type="button"
+            >
+              Odhlásit se
+            </button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div
+            class="tabs"
+            role="tablist"
+            aria-label="Stav komentářů"
+          >
+            <button
+              class="tab"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              tabindex="0"
+              data-comment-status="pending"
+            >
+              Čekající
+            </button>
+
+            <button
+              class="tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              tabindex="-1"
+              data-comment-status="approved"
+            >
+              Schválené
+            </button>
+
+            <button
+              class="tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              tabindex="-1"
+              data-comment-status="rejected"
+            >
+              Zamítnuté
+            </button>
+          </div>
+
+          <button
+            id="refresh-button"
+            class="button button--secondary"
+            type="button"
+          >
+            Obnovit seznam
+          </button>
+        </div>
+
+        <div
+          id="operation-status"
+          class="operation-status"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <section
+          class="comments-region"
+          aria-labelledby="comments-heading"
+        >
+          <div class="comments-region__heading">
+            <h2 id="comments-heading">
+              Čekající komentáře
+            </h2>
+
+            <span
+              id="comments-count"
+              class="count-badge"
+              aria-label="Počet komentářů"
+            >
+              0
+            </span>
+          </div>
+
+          <div
+            id="comments-list"
+            class="comments-list"
+            aria-live="polite"
+            aria-busy="false"
+          ></div>
+        </section>
+      </section>
+    </main>
+
+    <noscript>
+      <div class="noscript-message">
+        Pro moderaci komentářů je nutné povolit JavaScript.
+      </div>
+    </noscript>
+  </body>
+</html>

@@ -149,6 +149,12 @@
   to = "/.netlify/functions/article-comments"
   status = 200
 
+# Article comments moderation API:
+[[redirects]]
+  from = "/api/article-comments-admin"
+  to = "/.netlify/functions/article-comments-admin"
+  status = 200
+
 # Shortlink manager:
 # /go/:slug → Netlify function go.js
 [[redirects]]

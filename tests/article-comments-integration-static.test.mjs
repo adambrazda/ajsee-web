@@ -205,3 +205,95 @@ test(
     }
   }
 );
+
+
+test(
+  'microguide template and runtime use the moderated comments integration',
+  async () => {
+    const [
+      microguideTemplate,
+      microguideRuntime
+    ] = await Promise.all([
+      readProjectFile(
+        'microguides/index.html'
+      ),
+
+      readProjectFile(
+        'src/mg-runtime.js'
+      )
+    ]);
+
+    const mountCount =
+      microguideTemplate.split(
+        'id="articleComments"'
+      ).length - 1;
+
+    assert.equal(
+      mountCount,
+      1
+    );
+
+    for (
+      const requiredTemplatePattern of [
+        '<section id="articleComments" hidden></section>',
+        'src="/src/mg-runtime.js"'
+      ]
+    ) {
+      assert.equal(
+        microguideTemplate.includes(
+          requiredTemplatePattern
+        ),
+        true,
+        'Missing microguide template pattern: ' +
+          requiredTemplatePattern
+      );
+    }
+
+    for (
+      const requiredRuntimePattern of [
+        "from './article-comments.js'",
+        'initializeArticleComments',
+        "$('#articleComments')",
+        'comments.dataset.articleComments',
+        'comments.dataset.postType',
+        "'microguide'",
+        'comments.dataset.postId',
+        'comments.dataset.lang',
+        'comments.hidden'
+      ]
+    ) {
+      assert.equal(
+        microguideRuntime.includes(
+          requiredRuntimePattern
+        ),
+        true,
+        'Missing microguide runtime pattern: ' +
+          requiredRuntimePattern
+      );
+    }
+
+    for (
+      const legacyPattern of [
+        'id="commentForm"',
+        'site-comments',
+        'get-comments',
+        'commentPostId',
+        'commentPostType',
+        'commentLang',
+        "$('#comments')"
+      ]
+    ) {
+      assert.equal(
+        microguideTemplate.includes(
+          legacyPattern
+        ) ||
+        microguideRuntime.includes(
+          legacyPattern
+        ),
+        false,
+        'Legacy microguide pattern remains: ' +
+          legacyPattern
+      );
+    }
+  }
+);

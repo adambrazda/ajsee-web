@@ -1,5 +1,6 @@
 ﻿import { renderSharePanel } from './mg-share.js';
 import { renderRelatedMicroguides } from './mg-related.js';
+import { initializeArticleComments } from './article-comments.js';
 
 // --- constants ---
 const SITE_ORIGIN = 'https://ajsee.cz';
@@ -718,21 +719,43 @@ function renderMicroguidesIndexStructuredData(items = []) {
 }
 
 function hideComments() {
-  const comments = $('#comments');
-  if (comments) comments.hidden = true;
+  const comments =
+    $('#articleComments');
+
+  if (comments) {
+    comments.hidden =
+      true;
+  }
 }
 
-function setCommentsContext(slug) {
-  const comments = $('#comments');
-  if (comments) comments.hidden = false;
+function setCommentsContext(
+  slug
+) {
+  const comments =
+    $('#articleComments');
 
-  const commentLang = $('#commentLang');
-  const commentPostType = $('#commentPostType');
-  const commentPostId = $('#commentPostId');
+  if (!comments) {
+    return;
+  }
 
-  if (commentLang) commentLang.value = lang;
-  if (commentPostType) commentPostType.value = 'microguide';
-  if (commentPostId) commentPostId.value = slug;
+  comments.dataset.articleComments =
+    '';
+
+  comments.dataset.postType =
+    'microguide';
+
+  comments.dataset.postId =
+    slug;
+
+  comments.dataset.lang =
+    lang;
+
+  comments.hidden =
+    false;
+
+  initializeArticleComments(
+    comments
+  );
 }
 
 function renderNotFound(root, slug = '') {

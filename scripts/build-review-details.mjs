@@ -569,27 +569,13 @@ function patchTemplateForReviews(
   );
 
   next = next.replace(
-    /<!-- COMMENTS: begin[\s\S]*?<!-- COMMENTS: end -->/i,
-    ''
-  );
-
-  next = next.replace(
     /<script\b[^>]*>[\s\S]*?<\/script>\s*/gi,
     (block) => {
-      const isCommentScript =
-        block.includes('commentPostId') ||
-        block.includes('commentPostType') ||
-        block.includes('commentLang') ||
-        block.includes('commentForm') ||
-        block.includes('commentsList') ||
-        block.includes('get-comments') ||
-        block.includes('site-comments');
-
       const isDynamicBlogSeoScript =
         block.includes('const canonicalUrl = slug') &&
         block.includes('upsertLink');
 
-      return isCommentScript || isDynamicBlogSeoScript
+      return isDynamicBlogSeoScript
         ? ''
         : block;
     }

@@ -390,7 +390,8 @@ function createField({
   id,
   label,
   input,
-  hint
+  hint,
+  fullWidth = false
 }) {
   const wrapper =
     createElement(
@@ -400,6 +401,12 @@ function createField({
           'article-comments__field'
       }
     );
+
+  if (fullWidth) {
+    wrapper.classList.add(
+      'article-comments__field--full'
+    );
+  }
 
   const labelElement =
     createElement(
@@ -477,13 +484,11 @@ function commentCountText(
   count,
   copy
 ) {
-  if (count === 1) {
-    return copy.oneComment;
-  }
-
-  return copy.manyComments.replace(
-    '{count}',
-    String(count)
+  return (
+    copy.title +
+    ' (' +
+    String(count) +
+    ')'
   );
 }
 
@@ -676,6 +681,15 @@ export function initializeArticleComments(
       }
     );
 
+  root.removeAttribute(
+    'hidden'
+  );
+
+  root.setAttribute(
+    'aria-labelledby',
+    idPrefix + '-title'
+  );
+
   const intro =
     createElement(
       'p',
@@ -858,7 +872,9 @@ export function initializeArticleComments(
       label:
         copy.comment,
       input:
-        commentInput
+        commentInput,
+      fullWidth:
+        true
     }),
 
     honeypot,

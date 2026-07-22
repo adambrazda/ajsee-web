@@ -25,6 +25,10 @@ import { initNav } from './nav-core.js';
 import { initReviewEngagement } from './review-engagement.js';
 import { initReviewReactions } from './review-reactions.js';
 
+import {
+  initializeArticleComments
+} from './article-comments.js';
+
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 
 function normalizeLang(value) {
@@ -62,6 +66,156 @@ function syncLang(lang) {
   } catch {
     // noop
   }
+}
+
+function normalizeCommentPostId(
+  value
+) {
+  const postId =
+    String(value || '')
+      .trim()
+      .toLowerCase();
+
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(
+    postId
+  )
+    ? postId
+    : '';
+}
+
+function getCommentPostIdFromPath(
+  postType
+) {
+  const collection =
+    postType === 'review'
+      ? 'reviews'
+      : 'blog';
+
+  const segments =
+    window.location.pathname
+      .split('/')
+      .filter(Boolean)
+      .map((segment) => {
+        try {
+          return decodeURIComponent(
+            segment
+          );
+        } catch {
+          return segment;
+        }
+      });
+
+  const collectionIndex =
+    segments.lastIndexOf(
+      collection
+    );
+
+  if (
+    collectionIndex < 0 ||
+    collectionIndex >=
+      segments.length - 1
+  ) {
+    return '';
+  }
+
+  return normalizeCommentPostId(
+    segments[
+      collectionIndex + 1
+    ]
+  );
+}
+
+function resolveCommentPostId(
+  postType
+) {
+  const query =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const queryPostId =
+    normalizeCommentPostId(
+      query.get('slug') ||
+      query.get('id')
+    );
+
+  if (queryPostId) {
+    return queryPostId;
+  }
+
+  if (postType === 'review') {
+    const reviewArticle =
+      document.querySelector(
+        '[data-review-slug]'
+      );
+
+    const reviewPostId =
+      normalizeCommentPostId(
+        reviewArticle
+          ?.dataset
+          ?.reviewSlug
+      );
+
+    if (reviewPostId) {
+      return reviewPostId;
+    }
+  }
+
+  return getCommentPostIdFromPath(
+    postType
+  );
+}
+
+function initializeCommentsForPage(
+  language
+) {
+  const root =
+    document.getElementById(
+      'articleComments'
+    );
+
+  if (!root) {
+    return;
+  }
+
+  const postType =
+    document.body.dataset.page ===
+    'review-detail'
+      ? 'review'
+      : 'blog';
+
+  const postId =
+    resolveCommentPostId(
+      postType
+    );
+
+  if (!postId) {
+    root.hidden =
+      true;
+
+    return;
+  }
+
+  root.hidden =
+    false;
+
+  root.dataset.articleComments =
+    '';
+
+  root.dataset.postType =
+    postType;
+
+  root.dataset.postId =
+    postId;
+
+  root.dataset.lang =
+    normalizeLang(
+      language
+    );
+
+  initializeArticleComments(
+    root
+  );
 }
 
 async function bootBlogDetailEntry() {
@@ -114,6 +268,14 @@ async function bootBlogDetailEntry() {
     initReviewReactions();
   } catch {
     // Read and like controls must not block the article.
+  }
+
+  try {
+    initializeCommentsForPage(
+      currentLang
+    );
+  } catch {
+    // Comments must not block the article.
   }
 
   window.addEventListener('resize', updateHeaderOffset, { passive: true });

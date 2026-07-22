@@ -569,11 +569,6 @@ function patchTemplateForReviews(
   );
 
   next = next.replace(
-    /<!-- COMMENTS: begin[\s\S]*?<!-- COMMENTS: end -->/i,
-    ''
-  );
-
-  next = next.replace(
     /<script\b[^>]*>[\s\S]*?<\/script>\s*/gi,
     (block) => {
       const isCommentScript =

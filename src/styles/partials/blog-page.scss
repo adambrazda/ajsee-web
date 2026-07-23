@@ -667,3 +667,12 @@
     animation: none;
   }
 }
+/* Preserve the complete Phantom artwork, including the rose. */
+.review-cover-figure .review-cover[src$='phantom-of-the-opera-mask-rose-todaytix.webp'] {
+  width: 100%;
+  height: clamp(320px, 55vw, 560px);
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+  background: #17233b;
+}

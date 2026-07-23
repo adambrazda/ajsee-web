@@ -29,10 +29,12 @@ const REVIEWS_INPUT_DIR = path.join(ROOT, 'content', 'reviews', 'items');
 const REVIEWS_OUT_DIR = path.join(ROOT, 'reviews');
 const PREVIEW_MODE = process.env.REVIEW_PREVIEW === '1';
 const LOCALIZE_MODE = process.env.REVIEW_LOCALIZE === '1';
+const NETLIFY_DEPLOY_PREVIEW = process.env.CONTEXT === 'deploy-preview';
 const DIST_DIR = path.join(ROOT, 'dist');
-const REVIEW_OUTPUT_DIR = PREVIEW_MODE
-  ? path.join(ROOT, 'review-preview')
-  : REVIEWS_OUT_DIR;
+const REVIEW_OUTPUT_DIR =
+  PREVIEW_MODE && !NETLIFY_DEPLOY_PREVIEW
+    ? path.join(ROOT, 'review-preview')
+    : REVIEWS_OUT_DIR;
 
 function escapeHtml(value = '') {
   return String(value)

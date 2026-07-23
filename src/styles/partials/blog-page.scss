@@ -154,7 +154,17 @@
   .blog-title { font-size: 2rem; color: #184469; font-weight: 800; margin-bottom: .3rem; }
   .blog-meta { color: #14c2c5; font-size: 1rem; margin-bottom: 1.4rem; }
   .blog-lead { font-size: 1.15rem; margin-bottom: 1.2rem; color: #184469; font-weight: 500; }
-  .blog-image { width: 100%; max-height: 340px; object-fit: cover; border-radius: 1em; margin-bottom: 1.2rem; box-shadow: 0 2px 18px #0077cc19; }
+  .blog-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
+    background: transparent;
+    border-radius: 1em;
+    margin: 0 auto 1.2rem;
+    box-shadow: 0 2px 18px #0077cc19;
+  }
   .blog-content { font-size: 1.08rem; color: #334b69; line-height: 1.7; margin-bottom: 1.5rem; p { margin-bottom: 1.1em; } }
 }
 
@@ -226,9 +236,10 @@
 .review-gallery-item img {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: auto;
+  max-height: none;
   object-fit: contain;
-  background: #102538;
+  background: transparent;
 }
 
 .review-gallery-item figcaption {
@@ -252,10 +263,6 @@
     gap: 0.85rem;
   }
 
-  .review-gallery-item img {
-    aspect-ratio: auto;
-    max-height: 520px;
-  }
 }
 
 /* -------- RESPONZIVITA ------------------------------------------------ */
@@ -667,12 +674,100 @@
     animation: none;
   }
 }
-/* Preserve the complete Phantom artwork, including the rose. */
-.review-cover-figure .review-cover[src$='phantom-of-the-opera-mask-rose-todaytix.webp'] {
-  width: 100%;
-  height: clamp(320px, 55vw, 560px);
+
+/* -------- ARTICLE IMAGE LIGHTBOX --------------------------------------- */
+
+/* Images are shown without artificial cards or colored filler areas. */
+.review-gallery-item {
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.review-gallery-item img {
+  border-radius: 0.75rem;
+}
+
+.review-gallery-item figcaption {
+  padding: 0.55rem 0 0;
+}
+
+#blogArticle img[data-article-lightbox="true"] {
+  cursor: zoom-in;
+}
+
+#blogArticle img[data-article-lightbox="true"]:focus-visible {
+  outline: 3px solid #14c2c5;
+  outline-offset: 4px;
+}
+
+.article-image-lightbox {
+  width: min(96vw, 1440px);
+  max-width: none;
+  height: 94vh;
   max-height: none;
+  margin: auto;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+.article-image-lightbox::backdrop {
+  background: rgba(7, 18, 32, 0.92);
+  backdrop-filter: blur(3px);
+}
+
+.article-image-lightbox__frame {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+}
+
+.article-image-lightbox__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 94vh;
   object-fit: contain;
-  object-position: center;
-  background: #17233b;
+  border-radius: 0.5rem;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+  cursor: zoom-out;
+}
+
+.article-image-lightbox__close {
+  position: fixed;
+  z-index: 2;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  background: rgba(7, 18, 32, 0.84);
+  color: #fff;
+  font: inherit;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.article-image-lightbox__close:hover {
+  background: #0077cc;
+}
+
+.article-image-lightbox__close:focus-visible {
+  outline: 3px solid #14c2c5;
+  outline-offset: 3px;
+}
+
+body.article-image-lightbox-open {
+  overflow: hidden;
 }

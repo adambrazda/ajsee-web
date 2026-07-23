@@ -627,8 +627,22 @@ async function writeReviewDetail(review, template) {
     return 0;
   }
 
+  const availableLanguages =
+    getAvailableTranslationLangs(review);
+
+  /*
+   * Netlify potrebuje jednu standardni zdrojovou stranku
+   * v /reviews/<slug>/. Lokalizacni build z ni nasledne
+   * vytvori stranky pro vsechny skutecne dostupne jazyky.
+   */
   const languages = PREVIEW_MODE
-    ? getAvailableTranslationLangs(review)
+    ? NETLIFY_DEPLOY_PREVIEW
+      ? [
+          availableLanguages.includes(DEFAULT_LANG)
+            ? DEFAULT_LANG
+            : availableLanguages[0]
+        ].filter(Boolean)
+      : availableLanguages
     : [DEFAULT_LANG];
 
   let written = 0;
@@ -661,14 +675,22 @@ async function writeReviewDetail(review, template) {
     );
 
     const outDir =
-      PREVIEW_MODE && lang !== DEFAULT_LANG
+      PREVIEW_MODE && NETLIFY_DEPLOY_PREVIEW
         ? path.join(
             REVIEW_OUTPUT_DIR,
-            lang,
-            'reviews',
             slug
           )
-        : path.join(REVIEW_OUTPUT_DIR, slug);
+        : PREVIEW_MODE && lang !== DEFAULT_LANG
+          ? path.join(
+              REVIEW_OUTPUT_DIR,
+              lang,
+              'reviews',
+              slug
+            )
+          : path.join(
+              REVIEW_OUTPUT_DIR,
+              slug
+            );
 
     const outPath = path.join(outDir, 'index.html');
 
@@ -717,14 +739,20 @@ async function fileExists(filePath) {
 async function writeLocalizedDistReview(review) {
   const slug = normalizeSlug(review.slug);
 
-  if (!slug || !isPublishedReview(review)) {
+  if (
+    !slug ||
+    (!PREVIEW_MODE && !isPublishedReview(review))
+  ) {
     return 0;
   }
 
   const availableLanguages =
     new Set(getAvailableTranslationLangs(review));
 
-  if (!availableLanguages.has(DEFAULT_LANG)) {
+  if (
+    !PREVIEW_MODE &&
+    !availableLanguages.has(DEFAULT_LANG)
+  ) {
     throw new Error(
       `Published review "${slug}" is missing the Czech translation.`
     );
@@ -741,12 +769,10 @@ async function writeLocalizedDistReview(review) {
      * jazyky. Kopie bez skutečného překladu odstraníme.
      */
     if (!availableLanguages.has(lang)) {
-      if (lang !== DEFAULT_LANG) {
-        await fs.rm(outDir, {
-          recursive: true,
-          force: true
-        });
-      }
+      await fs.rm(outDir, {
+        recursive: true,
+        force: true
+      });
 
       continue;
     }

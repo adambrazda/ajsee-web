@@ -7,12 +7,12 @@ const DEFAULT_LANG = 'cs';
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 
 const REVIEW_BACK_LABELS = {
-  cs: 'Zpět na blog',
-  en: 'Back to blog',
-  de: 'Zurück zum Blog',
-  sk: 'Späť na blog',
-  pl: 'Wróć do bloga',
-  hu: 'Vissza a bloghoz'
+  cs: 'Zpět na recenze',
+  en: 'Back to reviews',
+  de: 'Zurück zu den Rezensionen',
+  sk: 'Späť na recenzie',
+  pl: 'Wróć do recenzji',
+  hu: 'Vissza az értékelésekhez'
 };
 
 const OG_LOCALES = {
@@ -326,18 +326,15 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Blog',
-            item: `${SITE_ORIGIN}/blog`
+            name: 'Reviews',
+            item:
+              lang === DEFAULT_LANG
+                ? `${SITE_ORIGIN}/reviews/`
+                : `${SITE_ORIGIN}/${lang}/reviews/`
           },
           {
             '@type': 'ListItem',
             position: 3,
-            name: 'Reviews',
-            item: `${SITE_ORIGIN}/blog`
-          },
-          {
-            '@type': 'ListItem',
-            position: 4,
             name: title,
             item: canonicalUrl
           }
@@ -544,8 +541,8 @@ function patchTemplateForReviews(
 
   const backHref =
     currentLang === DEFAULT_LANG
-      ? '/blog'
-      : `/${currentLang}/blog`;
+      ? '/reviews/'
+      : `/${currentLang}/reviews/`;
 
   let next = html;
 

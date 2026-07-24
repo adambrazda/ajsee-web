@@ -156,9 +156,10 @@
   .blog-lead { font-size: 1.15rem; margin-bottom: 1.2rem; color: #184469; font-weight: 500; }
   .blog-image {
     display: block;
-    width: 100%;
+    width: auto;
+    max-width: 100%;
     height: auto;
-    max-height: none;
+    max-height: 560px;
     object-fit: contain;
     background: transparent;
     border-radius: 1em;
@@ -674,6 +675,14 @@
     animation: none;
   }
 }
+
+/* Mobile article cover height */
+@media (max-width: 600px) {
+  .blog-detail .blog-image {
+    max-height: 360px;
+  }
+}
+
 
 /* -------- ARTICLE IMAGE LIGHTBOX --------------------------------------- */
 

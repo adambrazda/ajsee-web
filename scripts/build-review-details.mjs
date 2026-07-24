@@ -7,12 +7,12 @@ const DEFAULT_LANG = 'cs';
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 
 const REVIEW_BACK_LABELS = {
-  cs: 'Zpět na blog',
-  en: 'Back to blog',
-  de: 'Zurück zum Blog',
-  sk: 'Späť na blog',
-  pl: 'Wróć do bloga',
-  hu: 'Vissza a bloghoz'
+  cs: 'Zpět na recenze',
+  en: 'Back to reviews',
+  de: 'Zurück zu den Rezensionen',
+  sk: 'Späť na recenzie',
+  pl: 'Wróć do recenzji',
+  hu: 'Vissza az értékelésekhez'
 };
 
 const OG_LOCALES = {
@@ -29,10 +29,12 @@ const REVIEWS_INPUT_DIR = path.join(ROOT, 'content', 'reviews', 'items');
 const REVIEWS_OUT_DIR = path.join(ROOT, 'reviews');
 const PREVIEW_MODE = process.env.REVIEW_PREVIEW === '1';
 const LOCALIZE_MODE = process.env.REVIEW_LOCALIZE === '1';
+const NETLIFY_DEPLOY_PREVIEW = process.env.CONTEXT === 'deploy-preview';
 const DIST_DIR = path.join(ROOT, 'dist');
-const REVIEW_OUTPUT_DIR = PREVIEW_MODE
-  ? path.join(ROOT, 'review-preview')
-  : REVIEWS_OUT_DIR;
+const REVIEW_OUTPUT_DIR =
+  PREVIEW_MODE && !NETLIFY_DEPLOY_PREVIEW
+    ? path.join(ROOT, 'review-preview')
+    : REVIEWS_OUT_DIR;
 
 function escapeHtml(value = '') {
   return String(value)
@@ -324,18 +326,15 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Blog',
-            item: `${SITE_ORIGIN}/blog`
+            name: 'Reviews',
+            item:
+              lang === DEFAULT_LANG
+                ? `${SITE_ORIGIN}/reviews/`
+                : `${SITE_ORIGIN}/${lang}/reviews/`
           },
           {
             '@type': 'ListItem',
             position: 3,
-            name: 'Reviews',
-            item: `${SITE_ORIGIN}/blog`
-          },
-          {
-            '@type': 'ListItem',
-            position: 4,
             name: title,
             item: canonicalUrl
           }
@@ -542,8 +541,8 @@ function patchTemplateForReviews(
 
   const backHref =
     currentLang === DEFAULT_LANG
-      ? '/blog'
-      : `/${currentLang}/blog`;
+      ? '/reviews/'
+      : `/${currentLang}/reviews/`;
 
   let next = html;
 
@@ -625,8 +624,22 @@ async function writeReviewDetail(review, template) {
     return 0;
   }
 
+  const availableLanguages =
+    getAvailableTranslationLangs(review);
+
+  /*
+   * Netlify potrebuje jednu standardni zdrojovou stranku
+   * v /reviews/<slug>/. Lokalizacni build z ni nasledne
+   * vytvori stranky pro vsechny skutecne dostupne jazyky.
+   */
   const languages = PREVIEW_MODE
-    ? getAvailableTranslationLangs(review)
+    ? NETLIFY_DEPLOY_PREVIEW
+      ? [
+          availableLanguages.includes(DEFAULT_LANG)
+            ? DEFAULT_LANG
+            : availableLanguages[0]
+        ].filter(Boolean)
+      : availableLanguages
     : [DEFAULT_LANG];
 
   let written = 0;
@@ -659,14 +672,22 @@ async function writeReviewDetail(review, template) {
     );
 
     const outDir =
-      PREVIEW_MODE && lang !== DEFAULT_LANG
+      PREVIEW_MODE && NETLIFY_DEPLOY_PREVIEW
         ? path.join(
             REVIEW_OUTPUT_DIR,
-            lang,
-            'reviews',
             slug
           )
-        : path.join(REVIEW_OUTPUT_DIR, slug);
+        : PREVIEW_MODE && lang !== DEFAULT_LANG
+          ? path.join(
+              REVIEW_OUTPUT_DIR,
+              lang,
+              'reviews',
+              slug
+            )
+          : path.join(
+              REVIEW_OUTPUT_DIR,
+              slug
+            );
 
     const outPath = path.join(outDir, 'index.html');
 
@@ -715,14 +736,20 @@ async function fileExists(filePath) {
 async function writeLocalizedDistReview(review) {
   const slug = normalizeSlug(review.slug);
 
-  if (!slug || !isPublishedReview(review)) {
+  if (
+    !slug ||
+    (!PREVIEW_MODE && !isPublishedReview(review))
+  ) {
     return 0;
   }
 
   const availableLanguages =
     new Set(getAvailableTranslationLangs(review));
 
-  if (!availableLanguages.has(DEFAULT_LANG)) {
+  if (
+    !PREVIEW_MODE &&
+    !availableLanguages.has(DEFAULT_LANG)
+  ) {
     throw new Error(
       `Published review "${slug}" is missing the Czech translation.`
     );
@@ -739,12 +766,10 @@ async function writeLocalizedDistReview(review) {
      * jazyky. Kopie bez skutečného překladu odstraníme.
      */
     if (!availableLanguages.has(lang)) {
-      if (lang !== DEFAULT_LANG) {
-        await fs.rm(outDir, {
-          recursive: true,
-          force: true
-        });
-      }
+      await fs.rm(outDir, {
+        recursive: true,
+        force: true
+      });
 
       continue;
     }

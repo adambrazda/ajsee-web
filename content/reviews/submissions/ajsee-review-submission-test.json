@@ -4,7 +4,9 @@
   "submittedAt": "2026-07-28T08:46:00Z",
   "author": "Oya Canli",
   "photos": {
-    "gallery": []
+    "gallery": [],
+    "cover": "/uploads/les-miserables-cover.jpeg",
+    "coverAlt": "Test image for the AJSEE review submission workflow"
   },
   "english": {
     "ctaText": "Check tickets",

@@ -1,0 +1,15 @@
+{
+  "status": "ready_for_adam_review",
+  "category": "theatre",
+  "submittedAt": "2026-07-28T08:46:00Z",
+  "author": "Oya Canli",
+  "photos": {
+    "gallery": []
+  },
+  "english": {
+    "ctaText": "Check tickets",
+    "title": "Test submission – do not publish",
+    "body": "This is the first test paragraph.\n\nThis is the second test paragraph."
+  },
+  "showTitle": "AJSEE Review Submission Test"
+}

@@ -2,10 +2,9 @@ backend:
   name: git-gateway
   branch: main
   base_url: https://ajsee.cz/
+  squash_merges: true
 
-# Local testing without Netlify Identity.
-# Run in a separate terminal: npx decap-server
-local_backend: true
+publish_mode: editorial_workflow
 
 site_url: https://ajsee.cz
 display_url: https://ajsee.cz
@@ -19,43 +18,45 @@ collections:
   - name: "review_submissions"
     label: "Review submissions"
     label_singular: "Review submission"
+    description: "Submit an English review for Adam to check. Saving creates a review request and does not publish anything on the AJSEE website."
     folder: "content/reviews/submissions"
     create: true
+    publish: false
+    delete: false
     format: json
     identifier_field: "showTitle"
-    slug: "{{fields.slug}}"
+    slug: "{{slug}}"
     sortable_fields: ["submittedAt", "showTitle", "status"]
-    search_fields: ["slug", "showTitle", "venue", "city", "english.title"]
+    search_fields:
+      - "showTitle"
+      - "productionTitle"
+      - "venue"
+      - "city"
+      - "english.title"
     editor:
       preview: false
+
     fields:
       - label: "Review slug"
         name: "slug"
-        widget: "string"
-        hint: "Example: jesus-christ-superstar-london-2026. Use lowercase letters, numbers and hyphens only."
-        pattern: ['^[a-z0-9-]+$', 'Use lowercase letters, numbers and hyphens only.']
+        widget: "hidden"
+        required: false
 
       - label: "Submission status"
         name: "status"
-        widget: "select"
-        options:
-          - { label: "Draft", value: "draft" }
-          - { label: "Ready for Adam review", value: "ready_for_adam_review" }
-          - { label: "Needs changes", value: "needs_changes" }
-          - { label: "Approved by Adam", value: "approved_by_adam" }
-        default: "draft"
-        hint: "Choose 'Ready for Adam review' when the English review is finished."
+        widget: "hidden"
+        default: "ready_for_adam_review"
 
       - label: "Show title"
         name: "showTitle"
         widget: "string"
-        hint: "Example: Jesus Christ Superstar"
+        hint: "Example: Sweeney Todd"
 
       - label: "Production / event title"
         name: "productionTitle"
         widget: "string"
         required: false
-        hint: "Optional. Use only if different from the show title."
+        hint: "Optional. Complete only when the production title differs from the show title."
 
       - label: "Category"
         name: "category"
@@ -76,11 +77,13 @@ collections:
       - label: "City"
         name: "city"
         widget: "string"
+        required: false
         hint: "Example: London"
 
       - label: "Country"
         name: "country"
         widget: "string"
+        required: false
         hint: "Example: United Kingdom"
 
       - label: "Performance date"
@@ -90,18 +93,19 @@ collections:
         picker_utc: true
         format: "YYYY-MM-DDTHH:mm:ss[Z]"
 
-      - label: "Submitted date"
+      - label: "Submission date"
         name: "submittedAt"
         widget: "datetime"
         required: true
+        default: "{{now}}"
         picker_utc: true
         format: "YYYY-MM-DDTHH:mm:ss[Z]"
-        hint: "Date when the review is submitted."
+        hint: "Filled automatically. You normally do not need to change it."
 
       - label: "Author name"
         name: "author"
         widget: "string"
-        hint: "Example: Oya Canli"
+        default: "Oya Canli"
 
       - label: "Rating"
         name: "rating"
@@ -111,36 +115,40 @@ collections:
         min: 0
         max: 5
         step: 0.5
-        hint: "Optional. Use 0?5."
+        hint: "Optional. Use a value from 0 to 5."
 
       - label: "Ticket URL"
         name: "ticketUrl"
         widget: "string"
         required: false
-        hint: "Optional. Add ticket or partner URL if available."
+        hint: "Optional. Adam can add the verified AJSEE ticket link later."
 
       - label: "Photos"
         name: "photos"
         widget: "object"
+        required: false
+        collapsed: true
+        summary: "Optional photographs"
         fields:
           - label: "Cover image"
             name: "cover"
             widget: "image"
             allow_multiple: false
             choose_url: true
-            required: true
-            hint: "Main image used for the review."
+            required: false
+            hint: "Optional. The review can be submitted without a photograph."
 
           - label: "Cover image alt text"
             name: "coverAlt"
             widget: "string"
-            required: true
-            hint: "Describe the image for accessibility."
+            required: false
+            hint: "Optional at submission stage. Adam can complete it later."
 
           - label: "Gallery images"
             name: "gallery"
             widget: "list"
             required: false
+            default: []
             label_singular: "Gallery image"
             summary: "{{fields.image}}"
             fields:
@@ -148,10 +156,13 @@ collections:
                 name: "image"
                 widget: "image"
                 choose_url: true
+                required: false
+
               - label: "Alt text"
                 name: "alt"
                 widget: "string"
-                required: true
+                required: false
+
               - label: "Photo credit"
                 name: "credit"
                 widget: "string"
@@ -174,14 +185,24 @@ collections:
           - label: "Short excerpt"
             name: "excerpt"
             widget: "text"
-            required: true
-            hint: "2?3 sentences for the review card and intro."
+            required: false
+            hint: "Optional. Adam can prepare the final card excerpt later."
 
           - label: "Full review text"
             name: "body"
-            widget: "text"
+            widget: "markdown"
             required: true
-            hint: "Paste the full English review here."
+            hint: "Paste the complete English review here. Paragraphs, headings and lists are supported."
+            buttons:
+              - bold
+              - italic
+              - link
+              - heading-two
+              - heading-three
+              - quote
+              - bulleted-list
+              - numbered-list
+            editor_components: []
 
           - label: "Call-to-action text"
             name: "ctaText"
@@ -192,22 +213,22 @@ collections:
       - label: "SEO"
         name: "seo"
         widget: "object"
+        required: false
         collapsed: true
+        summary: "Optional — Adam can complete this section"
         fields:
           - label: "SEO title"
             name: "title"
             widget: "string"
-            required: true
-            hint: "Example: Jesus Christ Superstar London Review | AJSEE"
+            required: false
 
           - label: "SEO description"
             name: "description"
             widget: "text"
-            required: true
-            hint: "Short search result description."
+            required: false
 
       - label: "Notes for Adam"
         name: "notesForAdam"
         widget: "text"
         required: false
-        hint: "Optional private notes for Adam. Not shown on the website."
+        hint: "Optional private notes. These are not shown on the AJSEE website."

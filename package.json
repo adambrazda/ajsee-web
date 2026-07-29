@@ -30,7 +30,8 @@
     "fetch:seatplan": "node scripts/fetch-seatplan.mjs",
     "reviews:build": "node scripts/build-reviews.mjs",
     "review-details:build": "node scripts/build-review-details.mjs",
-    "review-details:localize": "cross-env REVIEW_LOCALIZE=1 node scripts/build-review-details.mjs"
+    "review-details:localize": "cross-env REVIEW_LOCALIZE=1 node scripts/build-review-details.mjs",
+    "reviews:test": "node --test --test-concurrency=1 tests/reviews.test.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

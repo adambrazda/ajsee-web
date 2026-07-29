@@ -4779,7 +4779,7 @@ if (!G.flags.mainDomReadyBound) {
       }
 
       if (filters.category && filters.category !== 'all') {
-        setIfMissing('category', filters.category);
+        setIfMissing('segment', filters.category);
       }
 
       setIfMissing('dateFrom', filters.dateFrom || readInputValue('#filter-date-from') || readInputValue('input[name="date_from"]'));

@@ -139,6 +139,7 @@ for (const file of files) {
 
     items.push({
       slug,
+      previewOnly: PREVIEW_MODE && !isPublicReview(review),
       type: 'review',
       status: review.status || 'draft',
       published: Boolean(review.published),

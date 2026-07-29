@@ -10,6 +10,8 @@ const outputIndex = path.join(outputDir, 'index.json');
 
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 
+const PREVIEW_MODE = process.env.REVIEW_PREVIEW === '1';
+
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
@@ -120,7 +122,7 @@ for (const file of files) {
     const translations = review.translations || {};
     const availableLanguages = SUPPORTED_LANGS.filter((lang) => hasContent(translations[lang]));
 
-    if (!isPublicReview(review)) {
+    if (!PREVIEW_MODE && !isPublicReview(review)) {
       continue;
     }
 
@@ -137,6 +139,7 @@ for (const file of files) {
 
     items.push({
       slug,
+      previewOnly: PREVIEW_MODE && !isPublicReview(review),
       type: 'review',
       status: review.status || 'draft',
       published: Boolean(review.published),

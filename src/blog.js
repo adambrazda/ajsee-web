@@ -419,8 +419,13 @@ async function loadReviewCards(lang) {
 
   return raw
     .filter((item) => item?.slug)
-    .filter((item) => String(item.status || '').toLowerCase() === 'published')
-    .filter((item) => item.published === true)
+    .filter((item) => {
+      const isPublished =
+        String(item.status || '').toLowerCase() === 'published' &&
+        item.published === true;
+
+      return isPublished || item.previewOnly === true;
+    })
     .map((item) => {
       const localized = pickTranslation(item);
       const data = localized.data || {};

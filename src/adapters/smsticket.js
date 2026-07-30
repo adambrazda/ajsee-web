@@ -350,11 +350,61 @@ function matchesCityWithPreparedTokens(ev, selectedTokens = [], cacheMap = new M
 }
 
 
-function matchesCategory(ev, category = 'all') {
-  const wanted = fold(category);
-  if (!wanted || wanted === 'all') return true;
+export function normalizeSmsticketCategory(category = '') {
+  const normalized = fold(category);
 
-  return fold(ev?.category) === wanted;
+  switch (normalized) {
+    case 'music':
+    case 'concert':
+      return 'concert';
+
+    case 'arts':
+    case 'theatre':
+      return 'theatre';
+
+    case 'sports':
+    case 'sport':
+      return 'sport';
+
+    case 'festival':
+      return 'festival';
+
+    case 'all':
+      return 'all';
+
+    default:
+      return normalized || 'other';
+  }
+}
+
+function hasFestivalHint(ev = {}) {
+  const values = [
+    asText(ev?.title),
+    ...(Array.isArray(ev?.categories) ? ev.categories : []),
+    ...(Array.isArray(ev?.genres) ? ev.genres : []),
+    ...(Array.isArray(ev?.types) ? ev.types : []),
+  ];
+
+  const tokens = fold(values.join(' '))
+    .split(' ')
+    .filter(Boolean);
+
+  return tokens.some((token) => {
+    return token === 'fest' || token.startsWith('festival');
+  });
+}
+
+export function normalizeSmsticketEventCategory(ev = {}) {
+  if (hasFestivalHint(ev)) return 'festival';
+
+  return normalizeSmsticketCategory(ev?.category);
+}
+
+function matchesCategory(ev, category = 'all') {
+  const wanted = normalizeSmsticketCategory(category);
+  if (wanted === 'all') return true;
+
+  return normalizeSmsticketEventCategory(ev) === wanted;
 }
 
 function matchesKeyword(ev, keyword = '') {
@@ -451,7 +501,22 @@ export async function fetchEvents({ filters = {} } = {}) {
     if ((dateFrom || dateTo) && !inDateRange(ev, dateFrom, dateTo)) continue;
     if (!matchesNearMe(ev, filters)) continue;
 
-    candidates.push(ev);
+    const normalizedCategory = normalizeSmsticketEventCategory(ev);
+
+
+    candidates.push(
+
+
+      normalizedCategory === ev?.category
+
+
+        ? ev
+
+
+        : { ...ev, category: normalizedCategory }
+
+
+    );
   }
 
   const filtered = sortEvents(candidates, filters.sort || 'nearest');

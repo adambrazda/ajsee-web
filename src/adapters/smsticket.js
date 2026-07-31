@@ -206,6 +206,43 @@ function inDateRange(ev, dateFrom = '', dateTo = '') {
   return true;
 }
 
+export function isSmsticketEventAvailable(ev = {}, now = new Date()) {
+  const nowDate = now instanceof Date ? now : new Date(now);
+  const nowMs = nowDate.getTime();
+
+  if (!Number.isFinite(nowMs)) return false;
+
+  const eventDateSource = String(
+    ev?.datetime || ev?.date || ''
+  ).trim();
+
+  const dateMatch = eventDateSource.match(
+    /^(\d{4}-\d{2}-\d{2})/
+  );
+
+  const eventDayEndMs = eventDateSource
+    ? boundaryMs(
+        dateMatch?.[1] || eventDateSource,
+        true
+      )
+    : Number.NaN;
+
+  const bookingEndMs = boundaryMs(
+    ev?.bookingEndsAt,
+    true
+  );
+
+  const eventIsCurrent =
+    Number.isFinite(eventDayEndMs) &&
+    eventDayEndMs >= nowMs;
+
+  const bookingIsCurrent =
+    Number.isFinite(bookingEndMs) &&
+    bookingEndMs >= nowMs;
+
+  return eventIsCurrent || bookingIsCurrent;
+}
+
 function haversineKm(lat1, lon1, lat2, lon2) {
   if (
     lat1 == null || lon1 == null ||
@@ -495,6 +532,7 @@ export async function fetchEvents({ filters = {} } = {}) {
   const candidates = [];
 
   for (const ev of events) {
+    if (!isSmsticketEventAvailable(ev)) continue;
     if (selectedCityTokens.length && !matchesCityWithPreparedTokens(ev, selectedCityTokens, eventCityTokenCache)) continue;
     if (!matchesCategory(ev, category)) continue;
     if (keyword && !matchesKeyword(ev, keyword)) continue;

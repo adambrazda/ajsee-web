@@ -571,6 +571,362 @@ function ensureModalStyles() {
   `);
 }
 
+// AJSEE_EVENT_MODAL_TICKET_OPTIONS_v1
+function normalizeModalTicketOptions(eventData) {
+  const rawOptions = Array.isArray(eventData?.ticketOptions)
+    ? eventData.ticketOptions
+    : [];
+
+  const seenUrls = new Set();
+  const options = [];
+
+  for (const rawOption of rawOptions) {
+    const url = String(rawOption?.url || '').trim();
+
+    if (!url || seenUrls.has(url)) continue;
+
+    seenUrls.add(url);
+
+    options.push({
+      url,
+      priceFrom: String(rawOption?.priceFrom || '').trim(),
+      currency: String(rawOption?.currency || '').trim(),
+      provider: String(rawOption?.provider || eventData?.partner || '').trim(),
+    });
+  }
+
+  return options;
+}
+
+function modalTicketOptionLabel(
+  options,
+  option,
+  index,
+  lang
+) {
+  const base = i18n(lang, 'tickets');
+  const price = String(option?.priceFrom || '').trim();
+
+  const samePriceCount = price
+    ? options.filter(
+        (candidate) => String(candidate?.priceFrom || '').trim() === price
+      ).length
+    : options.length;
+
+  const numberedBase = samePriceCount > 1
+    ? base + ' ' + String(index + 1)
+    : base;
+
+  return price
+    ? numberedBase + ' \u00b7 ' + price
+    : numberedBase;
+}
+
+
+// AJSEE_EVENT_MODAL_PARTNER_TRACKING_v1
+function modalTrackingText(value) {
+  return String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function modalTrackingHost(value) {
+  try {
+    return new URL(
+      value,
+      window.location.origin
+    ).hostname;
+  } catch {
+    return '';
+  }
+}
+
+function trackModalPartnerClickFromLink(link) {
+  if (!link) return;
+
+  const partner =
+    modalTrackingText(link.dataset.partner);
+
+  const eventName =
+    modalTrackingText(
+      link.dataset.eventTitle
+    );
+
+  const city =
+    modalTrackingText(
+      link.dataset.eventCity
+    );
+
+  const clickedHref =
+    modalTrackingText(
+      link.href ||
+      link.getAttribute('href')
+    );
+
+  const outboundUrl =
+    modalTrackingText(
+      link.dataset.outboundUrl
+    ) || clickedHref;
+
+  const placement =
+    modalTrackingText(
+      link.dataset.placement
+    ) || 'event_modal';
+
+  if (!partner && !outboundUrl) return;
+
+  let routeCity = '';
+  let routeCountryCode = '';
+
+  try {
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    routeCity =
+      modalTrackingText(
+        params.get('city')
+      );
+
+    routeCountryCode =
+      modalTrackingText(
+        params.get('cityCc') ||
+        params.get('country') ||
+        params.get('countryCode')
+      ).toUpperCase();
+  } catch {
+    /* noop */
+  }
+
+  const language =
+    modalTrackingText(
+      document.documentElement
+        .getAttribute('lang')
+    )
+      .slice(0, 2)
+      .toLowerCase() || 'cs';
+
+  const payload = {
+    event: 'partner_click',
+
+    // Existing analytics contract.
+    partner,
+    event_name: eventName,
+    city,
+    outbound_url: outboundUrl,
+    placement,
+    page_path:
+      window.location.pathname +
+      window.location.search,
+    ts: new Date().toISOString(),
+
+    // Extended context.
+    event_title: eventName,
+    event_city: city || routeCity,
+    event_provider: partner,
+    destination_url: outboundUrl,
+    destination_host:
+      modalTrackingHost(outboundUrl),
+    clicked_href: clickedHref,
+    clicked_host:
+      modalTrackingHost(clickedHref),
+    route_city: routeCity,
+    route_country_code:
+      routeCountryCode,
+    page_location:
+      window.location.href,
+    language,
+    link_text:
+      modalTrackingText(
+        link.textContent
+      ),
+
+    ticket_price_from:
+      modalTrackingText(
+        link.dataset.ticketPriceFrom
+      ),
+
+    ticket_currency:
+      modalTrackingText(
+        link.dataset.ticketCurrency
+      ),
+
+    ticket_option_index:
+      modalTrackingText(
+        link.dataset.ticketOptionIndex
+      ),
+  };
+
+  try {
+    window.dataLayer =
+      window.dataLayer || [];
+
+    window.dataLayer.push(payload);
+  } catch {
+    /* noop */
+  }
+
+  try {
+    window.__ajsee =
+      window.__ajsee || {};
+
+    window.__ajsee.lastPartnerClick =
+      payload;
+  } catch {
+    /* noop */
+  }
+
+  try {
+    sessionStorage.setItem(
+      'ajsee:lastPartnerClick',
+      JSON.stringify(payload)
+    );
+  } catch {
+    /* noop */
+  }
+
+  try {
+    console.info(
+      '[AJSEE partner_click]',
+      payload
+    );
+  } catch {
+    /* noop */
+  }
+}
+
+function bindModalPartnerClickTracking(link) {
+  if (!link) return;
+
+  if (
+    link.dataset
+      .ajseeModalTrackingBound === '1'
+  ) {
+    return;
+  }
+
+  link.dataset.ajseeModalTrackingBound =
+    '1';
+
+  link.addEventListener('click', () => {
+    trackModalPartnerClickFromLink(link);
+  });
+}
+
+function renderModalTicketOptions(
+  container,
+  eventData,
+  options,
+  lang,
+  title,
+  opts
+) {
+  if (!container) return 0;
+
+  container.replaceChildren();
+  container.hidden = true;
+  container.setAttribute('role', 'group');
+  container.setAttribute('aria-label', i18n(lang, 'tickets'));
+
+  const eventCity =
+    eventData?.location?.city ||
+    eventData?.venue?.city ||
+    eventData?.place?.city ||
+    '';
+
+  let renderedCount = 0;
+
+  options.forEach((option, index) => {
+    const optionEventData = {
+      ...eventData,
+      tickets: option.url,
+      url: option.url,
+      __ajseeTicketsHref: '',
+    };
+
+    const href = toSafeUrl(
+      buildModalTicketHref(
+        option.url,
+        optionEventData,
+        opts
+      )
+    );
+
+    if (!href) return;
+
+    const link = document.createElement('a');
+    link.className = 'modal-ticket-cta modal-ticket-option js-partner-click';
+    link.href = href;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+
+    const label = modalTicketOptionLabel(
+      options,
+      option,
+      index,
+      lang
+    );
+
+    link.textContent = label;
+    link.setAttribute(
+      'aria-label',
+      label + ': ' + title
+    );
+
+    link.dataset.partner =
+      option.provider || eventData?.partner || '';
+
+    link.dataset.eventTitle = title;
+    link.dataset.eventCity = eventCity;
+    link.dataset.outboundUrl = href;
+    link.dataset.placement = 'event_modal';
+
+    link.dataset.ticketPriceFrom =
+      String(option?.priceFrom || '').trim();
+
+    link.dataset.ticketCurrency =
+      String(option?.currency || '').trim();
+
+    link.dataset.ticketOptionIndex =
+      String(index + 1);
+
+    bindModalPartnerClickTracking(link);
+
+    container.appendChild(link);
+    renderedCount += 1;
+  });
+
+  container.hidden = renderedCount === 0;
+
+  return renderedCount;
+}
+
+function ensureTicketOptionsStyles() {
+  injectOnce('ajsee-event-ticket-options-css', `
+    .modal-ticket-options {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+      margin: 16px 0 0;
+    }
+
+    .modal-ticket-options[hidden] {
+      display: none !important;
+    }
+
+    .modal-ticket-options .modal-ticket-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      text-align: center;
+    }
+  `);
+}
+
 function ensureEventModalShell() {
   ensureModalStyles();
 
@@ -612,6 +968,12 @@ function ensureEventModalShell() {
             <span id="modalCategory"></span>
           </p>
 
+          <div
+            id="modalTicketOptions"
+            class="modal-ticket-options"
+            hidden
+          ></div>
+
           <a id="modalTicketsLink" class="modal-ticket-cta" href="#" target="_blank" rel="noopener noreferrer">
             Vstupenky
           </a>
@@ -641,6 +1003,8 @@ function ensureEventModalShell() {
   }
 
   ensureTicketCta(modal);
+  ensureTicketOptionsContainer(modal);
+  ensureTicketOptionsStyles();
 
   return modal;
 }
@@ -670,6 +1034,29 @@ function ensureTicketCta(modal) {
   return ticket;
 }
 
+function ensureTicketOptionsContainer(modal) {
+  if (!modal) return null;
+
+  let container = modal.querySelector('#modalTicketOptions');
+
+  if (container) return container;
+
+  container = document.createElement('div');
+  container.id = 'modalTicketOptions';
+  container.className = 'modal-ticket-options';
+  container.hidden = true;
+
+  const ticket = modal.querySelector('#modalTicketsLink');
+  const details = modal.querySelector('.modal-details');
+
+  if (ticket?.parentNode) {
+    ticket.parentNode.insertBefore(container, ticket);
+  } else if (details) {
+    details.appendChild(container);
+  }
+
+  return container;
+}
 function setStaticModalLabels(modal, lang) {
   const closeBtn = modal.querySelector('#modalClose');
   if (closeBtn) {
@@ -806,6 +1193,9 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   // Preferujeme ticket link spočítaný při renderu karty,
   // ale pro modal přepíšeme tmOutbound placement na event_modal.
   // Tím neobcházíme affiliate flow a zároveň v Impactu oddělíme kliky z modalu.
+  const ticketOptions =
+    normalizeModalTicketOptions(eventData);
+
   const rawTicketHref =
     eventData.__ajseeTicketsHref ||
     eventData.tickets ||
@@ -823,6 +1213,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const descEl = modal.querySelector('#modalDescription');
   const categoryEl = modal.querySelector('#modalCategory');
   const ticketEl = modal.querySelector('#modalTicketsLink');
+  const ticketOptionsEl = modal.querySelector('#modalTicketOptions');
 
   if (titleEl) titleEl.textContent = title;
 
@@ -836,16 +1227,72 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   if (descEl) descEl.textContent = description;
   if (categoryEl) categoryEl.textContent = translateCategory(eventData.category, lang);
 
+  const renderedTicketOptions =
+    ticketOptions.length > 1
+      ? renderModalTicketOptions(
+          ticketOptionsEl,
+          eventData,
+          ticketOptions,
+          lang,
+          title,
+          opts
+        )
+      : 0;
+
+  if (ticketOptionsEl && renderedTicketOptions === 0) {
+    ticketOptionsEl.replaceChildren();
+    ticketOptionsEl.hidden = true;
+  }
+
   if (ticketEl) {
     ticketEl.textContent = i18n(lang, 'tickets');
 
-    if (ticketHref) {
+    ticketEl.dataset.partner = String(
+      eventData?.partner ||
+      eventData?.source ||
+      ''
+    ).trim();
+
+    ticketEl.dataset.eventTitle = title;
+
+    ticketEl.dataset.eventCity = String(
+      locationObj?.city ||
+      eventData?.venue?.city ||
+      eventData?.place?.city ||
+      ''
+    ).trim();
+
+    ticketEl.dataset.outboundUrl =
+      ticketHref || '';
+
+    ticketEl.dataset.placement = 'event_modal';
+
+    ticketEl.dataset.ticketPriceFrom =
+      String(
+        eventData?.priceFrom ||
+        ''
+      ).trim();
+
+    ticketEl.dataset.ticketCurrency = '';
+    ticketEl.dataset.ticketOptionIndex = '1';
+
+    bindModalPartnerClickTracking(ticketEl);
+
+    if (renderedTicketOptions > 1) {
+      ticketEl.href = '#';
+      ticketEl.hidden = true;
+      ticketEl.removeAttribute('aria-label');
+    } else if (ticketHref) {
       ticketEl.href = ticketHref;
       ticketEl.hidden = false;
-      ticketEl.setAttribute('aria-label', `${i18n(lang, 'tickets')}: ${title}`);
+      ticketEl.setAttribute(
+        'aria-label',
+        i18n(lang, 'tickets') + ': ' + title
+      );
     } else {
       ticketEl.href = '#';
       ticketEl.hidden = true;
+      ticketEl.removeAttribute('aria-label');
     }
   }
 

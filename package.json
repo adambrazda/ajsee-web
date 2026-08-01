@@ -31,7 +31,7 @@
     "reviews:build": "node scripts/build-reviews.mjs",
     "review-details:build": "node scripts/build-review-details.mjs",
     "review-details:localize": "cross-env REVIEW_LOCALIZE=1 node scripts/build-review-details.mjs",
-    "reviews:test": "node --test --test-concurrency=1 tests/reviews.test.mjs tests/event-categories.test.mjs tests/smsticket-availability.test.mjs tests/smsticket-ticket-options.test.mjs tests/event-modal-ticket-options-dom.test.mjs tests/events-filter-ux.test.mjs",
+    "reviews:test": "node --test --test-concurrency=1 tests/reviews.test.mjs tests/event-categories.test.mjs tests/smsticket-availability.test.mjs tests/smsticket-ticket-options.test.mjs tests/event-modal-ticket-options-dom.test.mjs tests/events-filter-ux.test.mjs tests/event-taxonomy.test.mjs tests/event-taxonomy-runtime.test.mjs",
     "events:modal:test": "node --test --test-concurrency=1 tests/event-modal-ticket-options-dom.test.mjs",
     "events:filters:test": "node --test --test-concurrency=1 tests/events-filter-ux.test.mjs"
   },

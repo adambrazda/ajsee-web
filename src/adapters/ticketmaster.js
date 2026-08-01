@@ -16,6 +16,11 @@
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 
+import {
+  buildTicketmasterTaxonomy,
+  deriveLegacyCategory
+} from '../taxonomy/event-taxonomy.js';
+
 const AJSEE_TM_PATCH_MARKER = 'AJSEE_TM_RATE_LIMIT_GUARD_20260507C';
 
 const REQUEST_CACHE_TTL_MS = 60_000;
@@ -662,8 +667,19 @@ function buildTicketmasterOutboundUrl(rawUrl = '', eventId = '', countryCode = '
   return `/.netlify/functions/tmOutbound?${qs.toString()}`;
 }
 
-function mapTicketmasterEvent(ev, locale, context = {}) {
-  const cat = mapSegmentToCategory(ev);
+export function mapTicketmasterEvent(
+  ev,
+  locale,
+  context = {}
+) {
+  const taxonomy =
+    buildTicketmasterTaxonomy(ev);
+
+  const category =
+    deriveLegacyCategory(
+      taxonomy
+    );
+
   const dt = pickDate(ev);
   const img = pickImage(ev);
 
@@ -702,7 +718,8 @@ function mapTicketmasterEvent(ev, locale, context = {}) {
     id: `ticketmaster-${ev.id}`,
     title: { [locale]: ev.name },
     description: desc ? { [locale]: desc } : {},
-    category: cat,
+    category,
+    taxonomy,
     datetime: dt,
     location: {
       city: displayCity,

@@ -3980,7 +3980,13 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     let out = [...eventsPager.buffer];
 
-    if (filters.category && filters.category !== 'all') out = out.filter(e => e.category === filters.category);
+    /*
+     * Category and audience filtering is already applied by
+     * eventsApi through the shared taxonomy matcher before
+     * pagination. Do not re-filter the returned events by the
+     * legacy event.category value here: film and expanded sport
+     * results intentionally retain their original legacy category.
+     */
 
     if (!shouldPreserveSeatPlanApiOrder(api, out)) {
       if (filters.sort === 'nearest') out.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));

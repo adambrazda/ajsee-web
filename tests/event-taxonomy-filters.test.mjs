@@ -510,3 +510,29 @@ test(
     );
   }
 );
+
+test(
+  'events page preserves taxonomy-filtered results without legacy category refiltering',
+  () => {
+    const entrySource =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.equal(
+      entrySource.includes(
+        'out = out.filter(e => e.category === filters.category)'
+      ),
+      false
+    );
+
+    assert.match(
+      entrySource,
+      /Category and audience filtering is already applied by[\s\S]*?shared taxonomy matcher before[\s\S]*?pagination/
+    );
+  }
+);

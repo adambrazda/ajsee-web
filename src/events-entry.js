@@ -16,6 +16,12 @@
 
 import './identity-init.js';
 import './utils/ajsee-date-popover.js';
+import {
+  detectDatePreset,
+  getActiveFilterDescriptors,
+  getDatePresetRange,
+  renderEventsFilterSummary
+} from './events-filter-ux.js';
 
 import { initLangDropdown } from './utils/lang-dropdown.js';
 import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
@@ -722,7 +728,12 @@ function forceInlineFilters(doc = document) {
     .forEach(sel => doc.querySelectorAll(sel).forEach(el => el.remove()));
 
   const toolbar = doc.querySelector('.filters-toolbar');
-  if (toolbar) toolbar.remove();
+
+  /* AJSEE_PRESERVE_EVENTS_QUICK_FILTERS_V1 */
+  const preserveEventsToolbar =
+    doc.body?.dataset?.page === 'events';
+
+  if (toolbar && !preserveEventsToolbar) toolbar.remove();
 
   form.hidden = false;
   form.classList.remove('is-hidden', 'is-collapsed', 'is-open');
@@ -1231,8 +1242,13 @@ function renderEventsStateMessage(kind = 'rateLimit') {
     ? getRateLimitCopy()
     : {
         title: t('events-empty-title', currentLang === 'en' ? 'No events found' : 'Nenašli jsme žádné akce'),
-        body: t('events-empty-body', currentLang === 'en' ? 'Try changing the city, date or category.' : 'Zkuste upravit město, datum nebo kategorii.'),
-        retry: t('filters.apply', currentLang === 'en' ? 'Apply filters' : 'Použít filtry')
+        body: t(
+          'events-empty-body',
+          currentLang === 'en'
+            ? 'Remove one of the active filters or clear them all.'
+            : 'Odeberte některý z aktivních filtrů nebo je všechny vymažte.'
+        ),
+        retry: t('events-empty-clear', currentLang === 'en' ? 'Clear filters' : 'Vymazat filtry')
       };
 
   updateResultsCount(kind === 'rateLimit' ? 'dočasně pozastaveno' : 0);
@@ -1251,6 +1267,11 @@ function renderEventsStateMessage(kind = 'rateLimit') {
     retry.addEventListener('click', () => {
       if (kind === 'rateLimit' && isTicketmasterRateLimited()) {
         renderEventsStateMessage(kind);
+        return;
+      }
+
+      if (kind === 'empty') {
+        void resetAllEventFilters();
         return;
       }
 
@@ -1624,15 +1645,39 @@ function expandFilters() {
   announce(ariaToggleText('expanded'));
 }
 
+/* AJSEE_EVENTS_FILTER_UX_V1 */
+function getEventsFilterUxLabels() {
+  return {
+    found: t('events-found', currentLang === 'en' ? 'Found' : 'Nalezeno'),
+    activeFilters: t('events-active-filters', currentLang === 'en' ? 'Active filters' : 'Aktivní filtry'),
+    clearAll: t('events-clear-filters', currentLang === 'en' ? 'Clear all' : 'Vymazat vše'),
+    removeFilter: t('events-remove-filter', currentLang === 'en' ? 'Remove filter' : 'Odebrat filtr'),
+    nearMe: nearMeLabel(),
+    from: t('filters.from', currentLang === 'en' ? 'From' : 'Od'),
+    to: t('filters.to', currentLang === 'en' ? 'To' : 'Do'),
+    datePresets: {
+      today: t('filters.today', currentLang === 'en' ? 'Today' : 'Dnes'),
+      tomorrow: t('filters.tomorrow', currentLang === 'en' ? 'Tomorrow' : 'Zítra'),
+      thisWeek: t('filters.thisWeek', currentLang === 'en' ? 'This week' : 'Tento týden'),
+      weekend: t('filters.weekend', currentLang === 'en' ? 'This weekend' : 'Tento víkend')
+    },
+    categories: {
+      concert: t('category-concert', 'Koncerty'),
+      festival: t('category-festival', 'Festivaly'),
+      sport: t('category-sport', 'Sport'),
+      theatre: t('category-theatre', 'Divadlo')
+    },
+    sorts: {
+      latest: t('filters.latest', currentLang === 'en' ? 'Newest' : 'Nejnovější')
+    }
+  };
+}
+
 function computeActiveFiltersCount(filters = currentFilters) {
-  let count = 0;
-  if (filters.category && filters.category !== 'all') count++;
-  if (filters.city || filters.cityLabel || filters.placeType === 'country') count++;
-  if (filters.keyword) count++;
-  if (filters.sort && filters.sort !== 'nearest') count++;
-  if (filters.dateFrom || filters.dateTo) count++;
-  if (filters.nearMeLat && filters.nearMeLon) count++;
-  return count;
+  return getActiveFilterDescriptors(filters, {
+    locale: currentLang,
+    labels: getEventsFilterUxLabels()
+  }).length;
 }
 
 function updateToggleBadge() {
@@ -1653,6 +1698,112 @@ function updateToggleBadge() {
   btn.setAttribute('aria-label', cnt ? `${base} (${cnt})` : base);
 }
 
+function syncQuickDateButtons() {
+  const activePreset = detectDatePreset(currentFilters);
+
+  [
+    ['#chipToday', 'today'],
+    ['#chipTomorrow', 'tomorrow'],
+    ['#chipThisWeek', 'thisWeek'],
+    ['#chipWeekend', 'weekend']
+  ].forEach(([selector, preset]) => {
+    const button = qs(selector);
+    if (!button) return;
+
+    const active = activePreset === preset;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+async function applyQuickDatePreset(preset) {
+  const activePreset = detectDatePreset(currentFilters);
+
+  if (activePreset === preset) {
+    currentFilters.dateFrom = '';
+    currentFilters.dateTo = '';
+  } else {
+    const range = getDatePresetRange(preset);
+    currentFilters.dateFrom = range.from;
+    currentFilters.dateTo = range.to;
+  }
+
+  _userInteractedWithFilters = true;
+  _lastFetchSig = '';
+  setFilterInputsFromState();
+  updateToggleBadge();
+  syncQuickDateButtons();
+  resetEventsPager();
+  await renderAndSync({ resetPage: true });
+}
+
+async function clearSingleEventFilter(key) {
+  switch (key) {
+    case 'category':
+      currentFilters.category = 'all';
+      break;
+
+    case 'place':
+      currentFilters.placeType = '';
+      currentFilters.city = '';
+      currentFilters.cityLabel = '';
+      currentFilters.cityCountryCode = '';
+      currentFilters.nearMeLat = null;
+      currentFilters.nearMeLon = null;
+      currentFilters.nearMeRadiusKm = 50;
+      currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+      break;
+
+    case 'date':
+      currentFilters.dateFrom = '';
+      currentFilters.dateTo = '';
+      break;
+
+    case 'keyword':
+      currentFilters.keyword = '';
+      break;
+
+    case 'sort':
+      currentFilters.sort = 'nearest';
+      break;
+
+    default:
+      return;
+  }
+
+  _userInteractedWithFilters = true;
+  _lastFetchSig = '';
+  setFilterInputsFromState();
+  updateToggleBadge();
+  syncQuickDateButtons();
+  resetEventsPager();
+  await renderAndSync({ resetPage: true });
+}
+
+async function resetAllEventFilters() {
+  currentFilters.category = 'all';
+  currentFilters.sort = 'nearest';
+  currentFilters.placeType = '';
+  currentFilters.city = '';
+  currentFilters.cityLabel = '';
+  currentFilters.cityCountryCode = '';
+  currentFilters.dateFrom = '';
+  currentFilters.dateTo = '';
+  currentFilters.keyword = '';
+  currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+  currentFilters.nearMeLat = null;
+  currentFilters.nearMeLon = null;
+  currentFilters.nearMeRadiusKm = 50;
+
+  _userInteractedWithFilters = true;
+  _lastFetchSig = '';
+  setFilterInputsFromState();
+  updateToggleBadge();
+  syncQuickDateButtons();
+  resetEventsPager();
+  await renderAndSync({ resetPage: true });
+}
+
 function updateResultsCount(n) {
   const host =
     qs('.events-upcoming-section .container') ||
@@ -1660,19 +1811,25 @@ function updateResultsCount(n) {
     (qs('#eventsList') ? qs('#eventsList').parentElement : null) ||
     document.body;
 
-  let el = host.querySelector('#eventsResultsCount');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'eventsResultsCount';
-    el.className = 'events-results-count';
+  const list = qs('#eventsList');
 
-    const list = qs('#eventsList');
-    if (list && list.parentElement === host) host.insertBefore(el, list);
-    else host.appendChild(el);
-  }
+  renderEventsFilterSummary({
+    document,
+    host,
+    list,
+    count: n,
+    filters: currentFilters,
+    locale: currentLang,
+    labels: getEventsFilterUxLabels(),
+    onRemove: key => {
+      void clearSingleEventFilter(key);
+    },
+    onClear: () => {
+      void resetAllEventFilters();
+    }
+  });
 
-  const label = t('events-found', 'Nalezeno') || 'Nalezeno';
-  el.textContent = `${label}: ${n}`;
+  syncQuickDateButtons();
 }
 
 /* ───────── date range / combo label ───────── */
@@ -2062,6 +2219,29 @@ function bindFilterFormInteractions(formEl) {
     }, 'category-change');
   }
 
+  [
+    ['#chipToday', 'today'],
+    ['#chipTomorrow', 'tomorrow'],
+    ['#chipThisWeek', 'thisWeek'],
+    ['#chipWeekend', 'weekend']
+  ].forEach(([selector, preset]) => {
+    const button = qs(selector);
+    if (!button) return;
+
+    wireOnce(button, 'click', async () => {
+      await applyQuickDatePreset(preset);
+    }, `quick-date-${preset}`);
+  });
+
+  const clearQuickFilters = qs('#chipClear');
+  if (clearQuickFilters) {
+    wireOnce(clearQuickFilters, 'click', async () => {
+      await resetAllEventFilters();
+    }, 'quick-clear-all');
+  }
+
+  syncQuickDateButtons();
+
   wireOnce(formEl, 'submit', async e => {
     e.preventDefault();
     _userInteractedWithFilters = true;
@@ -2151,6 +2331,46 @@ function upgradeSortToSegmented() {
 }
 
 /* ───────── geolocation / Near Me ───────── */
+/* AJSEE_QUICK_NEAR_ME_BINDING_V1 */
+function bindQuickNearMeButton() {
+  const quickNearBtn = document.getElementById('chipNearMe');
+
+  if (!quickNearBtn) return;
+
+  wireOnce(quickNearBtn, 'click', async () => {
+    if (quickNearBtn.getAttribute('aria-busy') === 'true') {
+      return;
+    }
+
+    const cityInput = getCityInputEl();
+
+    _userInteractedWithFilters = true;
+
+    quickNearBtn.disabled = true;
+    quickNearBtn.setAttribute('aria-busy', 'true');
+
+    try {
+      await activateNearMeViaGeo(cityInput);
+
+      const isActive =
+        currentFilters.nearMeLat !== null &&
+        currentFilters.nearMeLat !== undefined &&
+        currentFilters.nearMeLon !== null &&
+        currentFilters.nearMeLon !== undefined;
+
+      quickNearBtn.setAttribute(
+        'aria-pressed',
+        String(isActive)
+      );
+
+      setFilterInputsFromState();
+      updateToggleBadge();
+    } finally {
+      quickNearBtn.disabled = false;
+      quickNearBtn.removeAttribute('aria-busy');
+    }
+  }, 'quick-near-me-click');
+}
 async function acquireGeolocation({ timeout = 15000, highAccuracy = false } = {}) {
   if (!('geolocation' in navigator)) {
     const err = new Error('no-geo');
@@ -4052,9 +4272,11 @@ async function bootstrapMain() {
   safeInitLangDropdown();
 
   const formEl = qs('#events-filters-form');
-  const topToolbar = document.querySelector('.filters-toolbar');
-  if (topToolbar) topToolbar.remove();
 
+  /* AJSEE_KEEP_EVENTS_QUICK_FILTERS_BOOTSTRAP_V1
+     Quick filters are permanent product UI and must remain
+     in the DOM throughout bootstrap.
+  */
   const legacyNearBtn = document.getElementById('filter-nearme');
   if (legacyNearBtn) legacyNearBtn.remove();
 
@@ -4062,6 +4284,7 @@ async function bootstrapMain() {
   normalizeFilterFormUI();
   installCitySheetObserver();
   bindFilterFormInteractions(formEl);
+  bindQuickNearMeButton();
 
   installDatePopoverScrollBridges();
   bindDatePopoverGlue();

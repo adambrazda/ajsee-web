@@ -191,7 +191,9 @@
     "geoDenied": "Prístup k polohe je zamietnutý. Povolenia môžete zmeniť v nastaveniach prehliadača.",
     "geoTimeout": "Získanie polohy trvalo príliš dlho. Skúste to prosím znova.",
     "apply": "Použiť filtre",
-    "reset": "Vymazať"
+    "reset": "Vymazať",
+    "tomorrow": "Zajtra",
+    "thisWeek": "Tento týždeň"
   },
   "filter-category": "Kategória",
   "filter-sort": "Triedenie",
@@ -427,5 +429,12 @@
       "text": "Zažite neopakovateľnú atmosféru West Endu. Vyberte si zo slávnych svetových muzikálov, pokračujte k nákupu vstupeniek a rovno si k plánu pridajte aj overené ubytovanie v Londýne.",
       "cta": "Prezrieť muzikály"
     }
-  }
+  },
+  "events-found": "Nájdené",
+  "events-active-filters": "Aktívne filtre",
+  "events-clear-filters": "Vymazať všetko",
+  "events-remove-filter": "Odstrániť filter",
+  "events-empty-title": "Nenašli sme žiadne podujatia",
+  "events-empty-body": "Odstráňte niektorý z aktívnych filtrov alebo ich všetky vymažte.",
+  "events-empty-clear": "Vymazať filtre"
 }

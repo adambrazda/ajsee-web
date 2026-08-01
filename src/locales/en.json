@@ -194,7 +194,9 @@
     "geoDenied": "Location access is denied. You can enable it in your browser settings.",
     "geoTimeout": "Getting location took too long. Please try again.",
     "apply": "Apply filters",
-    "reset": "Clear"
+    "reset": "Clear",
+    "tomorrow": "Tomorrow",
+    "thisWeek": "This week"
   },
   "filter-category": "Category",
   "filter-sort": "Sort by",
@@ -428,5 +430,11 @@
       "cta": "Browse musicals"
     }
   },
-  "events-found": "Found"
+  "events-found": "Found",
+  "events-active-filters": "Active filters",
+  "events-clear-filters": "Clear all",
+  "events-remove-filter": "Remove filter",
+  "events-empty-title": "No events found",
+  "events-empty-body": "Remove one of the active filters or clear them all.",
+  "events-empty-clear": "Clear filters"
 }

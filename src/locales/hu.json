@@ -194,7 +194,9 @@
     "geoDenied": "A helyhozzáférés le van tiltva. A böngésző beállításaiban módosíthatod.",
     "geoTimeout": "A hely meghatározása túl sokáig tartott. Próbáld újra.",
     "apply": "Szűrők alkalmazása",
-    "reset": "Törlés"
+    "reset": "Törlés",
+    "tomorrow": "Holnap",
+    "thisWeek": "Ezen a héten"
   },
   "filter-category": "Kategória",
   "filter-sort": "Rendezés",
@@ -427,5 +429,12 @@
       "text": "Éld át a West End felejthetetlen hangulatát. Válassz a világhírű musicalek közül, nézd meg a jegyvásárlási lehetőségeket, és adj hozzá megbízható londoni szállást a tervedhez.",
       "cta": "Musicalek megtekintése"
     }
-  }
+  },
+  "events-found": "Találatok",
+  "events-active-filters": "Aktív szűrők",
+  "events-clear-filters": "Összes törlése",
+  "events-remove-filter": "Szűrő eltávolítása",
+  "events-empty-title": "Nem találtunk eseményeket",
+  "events-empty-body": "Távolítson el egy aktív szűrőt, vagy törölje az összeset.",
+  "events-empty-clear": "Szűrők törlése"
 }

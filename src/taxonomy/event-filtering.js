@@ -115,12 +115,19 @@ export function matchesEventCategoryFilter(
     );
   }
 
+  if (wanted === 'theatre') {
+    return (
+      legacyCategory === 'theatre' ||
+      eventTypes.includes('theatre')
+    );
+  }
+
   /*
-   * Concert, festival and theatre intentionally retain
-   * the existing legacy category semantics in filter v1.
+   * Concert and festival retain their existing legacy
+   * category semantics in filter v1.
    *
-   * Their taxonomy domains currently overlap too broadly
-   * for a safe public filter migration.
+   * Their taxonomy domains and event types currently
+   * overlap too broadly for a safe public migration.
    */
   return (
     legacyCategory ===

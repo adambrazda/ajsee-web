@@ -17,7 +17,7 @@ import {
 } from '../src/adapters/ticketmaster.js';
 
 test(
-  'legacy concert, festival and theatre filters keep exact category semantics',
+  'concert keeps legacy semantics and stage domain alone is not theatre',
   () => {
     const party = {
       category: 'concert',
@@ -51,6 +51,65 @@ test(
       matchesEventCategoryFilter(
         otherShow,
         'theatre'
+      ),
+      false
+    );
+  }
+);
+
+test(
+  'theatre filter includes family theatre by taxonomy event type',
+  () => {
+    const familyTheatre = {
+      category: 'family',
+
+      taxonomy: {
+        domains: [
+          'stage'
+        ],
+
+        eventTypes: [
+          'theatre',
+          'show'
+        ],
+
+        audiences: [
+          'family'
+        ]
+      }
+    };
+
+    assert.equal(
+      matchesEventCategoryFilter(
+        familyTheatre,
+        'theatre'
+      ),
+      true
+    );
+
+    assert.equal(
+      matchesEventAudienceFilter(
+        familyTheatre,
+        'family'
+      ),
+      true
+    );
+
+    assert.equal(
+      matchesEventDiscoveryFilters(
+        familyTheatre,
+        {
+          category: 'theatre',
+          audience: 'family'
+        }
+      ),
+      true
+    );
+
+    assert.equal(
+      matchesEventCategoryFilter(
+        familyTheatre,
+        'concert'
       ),
       false
     );

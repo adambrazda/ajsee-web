@@ -484,6 +484,315 @@ function matchesNearMe(ev, filters = {}) {
   return haversineKm(+filters.nearMeLat, +filters.nearMeLon, +lat, +lon) <= radius;
 }
 
+
+// AJSEE_SMSTICKET_TICKET_OPTIONS_v1
+function smsticketDedupeText(value) {
+  if (!value) return '';
+
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (typeof value === 'object') {
+    return String(
+      value.cs ||
+      value.sk ||
+      value.en ||
+      Object.values(value)[0] ||
+      ''
+    );
+  }
+
+  return String(value);
+}
+
+function normalizeSmsticketOccurrencePart(value) {
+  return smsticketDedupeText(value)
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function smsticketOccurrenceTitle(event) {
+  return normalizeSmsticketOccurrencePart(
+    event?.title
+  );
+}
+
+function smsticketOccurrenceLocation(event) {
+  const place = event?.place || {};
+  const venue = event?.venue || {};
+  const location = event?.location || {};
+
+  const placeId = String(
+    place?.id || ''
+  ).trim();
+
+  const venueName =
+    venue?.name ||
+    place?.company ||
+    event?.venueName ||
+    '';
+
+  const city =
+    venue?.city ||
+    location?.city ||
+    place?.city ||
+    '';
+
+  const street =
+    venue?.address?.street ||
+    place?.street ||
+    event?.address ||
+    '';
+
+  const latitude =
+    location?.lat ??
+    location?.latitude ??
+    venue?.location?.lat ??
+    venue?.location?.latitude ??
+    '';
+
+  const longitude =
+    location?.lon ??
+    location?.longitude ??
+    venue?.location?.lon ??
+    venue?.location?.longitude ??
+    '';
+
+  const hasLocation =
+    placeId ||
+    venueName ||
+    city ||
+    street ||
+    latitude !== '' ||
+    longitude !== '';
+
+  if (!hasLocation) return '';
+
+  return [
+    placeId ? 'place-' + placeId : '',
+    venueName,
+    city,
+    street,
+    latitude !== '' ? String(latitude) : '',
+    longitude !== '' ? String(longitude) : '',
+  ]
+    .map(normalizeSmsticketOccurrencePart)
+    .filter(Boolean)
+    .join('|');
+}
+
+function smsticketExactOccurrenceKey(event) {
+  const title = smsticketOccurrenceTitle(event);
+
+  const datetime = String(
+    event?.datetime ||
+    event?.date ||
+    ''
+  ).trim();
+
+  const location =
+    smsticketOccurrenceLocation(event);
+
+  if (!title || !datetime || !location) {
+    return '';
+  }
+
+  return [
+    title,
+    datetime,
+    location,
+  ].join('||');
+}
+
+function smsticketTicketCurrency(event) {
+  const price = String(
+    event?.priceFrom || ''
+  ).trim();
+
+  if (price.includes('\u004b\u010d') || /CZK/i.test(price)) {
+    return 'CZK';
+  }
+
+  if (price.includes('\u20ac') || /EUR/i.test(price)) {
+    return 'EUR';
+  }
+
+  if (price.includes('\u00a3') || /GBP/i.test(price)) {
+    return 'GBP';
+  }
+
+  if (price.includes('$') || /USD/i.test(price)) {
+    return 'USD';
+  }
+
+  return '';
+}
+function smsticketTicketOption(event) {
+  const url = String(
+    event?.tickets ||
+    event?.url ||
+    ''
+  ).trim();
+
+  if (!url) return null;
+
+  return {
+    url,
+    priceFrom: String(
+      event?.priceFrom || ''
+    ).trim(),
+    currency:
+      smsticketTicketCurrency(event),
+    provider: 'smsticket',
+  };
+}
+
+function smsticketBookingEndMs(event) {
+  const parsed = new Date(
+    event?.bookingEndsAt || ''
+  );
+
+  return Number.isFinite(parsed.getTime())
+    ? parsed.getTime()
+    : Number.NEGATIVE_INFINITY;
+}
+
+function smsticketCurrencyRank(event) {
+  const currency =
+    smsticketTicketCurrency(event);
+
+  if (currency === 'CZK') return 0;
+  if (currency === 'EUR') return 1;
+  if (currency === 'GBP') return 2;
+  if (currency === 'USD') return 3;
+
+  return 4;
+}
+
+function compareSmsticketPrimaryEvents(
+  left,
+  right
+) {
+  const currencyDifference =
+    smsticketCurrencyRank(left) -
+    smsticketCurrencyRank(right);
+
+  if (currencyDifference !== 0) {
+    return currencyDifference;
+  }
+
+  const bookingDifference =
+    smsticketBookingEndMs(right) -
+    smsticketBookingEndMs(left);
+
+  if (bookingDifference !== 0) {
+    return bookingDifference;
+  }
+
+  const leftId = Number(
+    left?.sourceId ||
+    String(left?.id || '').replace(/\D+/g, '')
+  );
+
+  const rightId = Number(
+    right?.sourceId ||
+    String(right?.id || '').replace(/\D+/g, '')
+  );
+
+  if (
+    Number.isFinite(leftId) &&
+    Number.isFinite(rightId)
+  ) {
+    return rightId - leftId;
+  }
+
+  return String(left?.id || '').localeCompare(
+    String(right?.id || '')
+  );
+}
+
+export function mergeExactSmsticketOccurrences(
+  events = []
+) {
+  if (!Array.isArray(events) || events.length < 2) {
+    return Array.isArray(events)
+      ? [...events]
+      : [];
+  }
+
+  const groups = new Map();
+  const orderedGroups = [];
+
+  for (const event of events) {
+    const key =
+      smsticketExactOccurrenceKey(event);
+
+    if (!key) {
+      orderedGroups.push({
+        key: '',
+        events: [event],
+      });
+
+      continue;
+    }
+
+    let group = groups.get(key);
+
+    if (!group) {
+      group = {
+        key,
+        events: [],
+      };
+
+      groups.set(key, group);
+      orderedGroups.push(group);
+    }
+
+    group.events.push(event);
+  }
+
+  return orderedGroups.map((group) => {
+    if (group.events.length === 1) {
+      return group.events[0];
+    }
+
+    const sortedEvents = [
+      ...group.events,
+    ].sort(compareSmsticketPrimaryEvents);
+
+    const primary = sortedEvents[0];
+    const ticketOptions = [];
+    const seenUrls = new Set();
+
+    for (const event of sortedEvents) {
+      const option =
+        smsticketTicketOption(event);
+
+      if (!option || seenUrls.has(option.url)) {
+        continue;
+      }
+
+      seenUrls.add(option.url);
+      ticketOptions.push(option);
+    }
+
+    if (ticketOptions.length < 2) {
+      return primary;
+    }
+
+    return {
+      ...primary,
+      ticketOptions,
+    };
+  });
+}
+
 function sortEvents(events, sort = 'nearest') {
   return [...events].sort((a, b) => {
     const da = getDateMs(a?.datetime || a?.date);
@@ -557,7 +866,13 @@ export async function fetchEvents({ filters = {} } = {}) {
     );
   }
 
-  const filtered = sortEvents(candidates, filters.sort || 'nearest');
+  const deduplicated =
+    mergeExactSmsticketOccurrences(candidates);
+
+  const filtered = sortEvents(
+    deduplicated,
+    filters.sort || 'nearest'
+  );
 
   return pageSlice(filtered, filters);
 }

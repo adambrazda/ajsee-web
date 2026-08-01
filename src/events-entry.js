@@ -2121,18 +2121,15 @@ function setFilterInputsFromState() {
       currentFilters.audience ===
       'family';
 
-    audience.checked =
-      active;
+    audience.setAttribute(
+      'aria-pressed',
+      String(active)
+    );
 
-    audience
-      .closest(
-        '.family-audience-chip'
-      )
-      ?.classList
-      .toggle(
-        'is-active',
-        active
-      );
+    audience.classList.toggle(
+      'is-active',
+      active
+    );
   }
 
   if (sort) {
@@ -2185,20 +2182,20 @@ function syncFiltersFromForm() {
     'all';
 
   if (audience) {
+    const active =
+      audience.getAttribute(
+        'aria-pressed'
+      ) === 'true';
+
     currentFilters.audience =
-      audience.checked
+      active
         ? 'family'
         : '';
 
-    audience
-      .closest(
-        '.family-audience-chip'
-      )
-      ?.classList
-      .toggle(
-        'is-active',
-        audience.checked
-      );
+    audience.classList.toggle(
+      'is-active',
+      active
+    );
   }
 
   currentFilters.sort =
@@ -2375,10 +2372,25 @@ function bindFilterFormInteractions(formEl) {
   if (audience) {
     wireOnce(
       audience,
-      'change',
+      'click',
       async () => {
         _userInteractedWithFilters =
           true;
+
+        const nextActive =
+          audience.getAttribute(
+            'aria-pressed'
+          ) !== 'true';
+
+        audience.setAttribute(
+          'aria-pressed',
+          String(nextActive)
+        );
+
+        audience.classList.toggle(
+          'is-active',
+          nextActive
+        );
 
         syncFiltersFromForm();
         resetEventsPager();
@@ -2388,7 +2400,7 @@ function bindFilterFormInteractions(formEl) {
             true
         });
       },
-      'family-audience-change'
+      'family-audience-click'
     );
   }
 

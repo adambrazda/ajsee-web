@@ -745,37 +745,3 @@ body[data-page="events"] .events-filter-chip__remove {
     justify-content: center;
   }
 }
-
- /* AJSEE_EVENTS_FAMILY_AUDIENCE_FILTER_V1 */
-html body[data-page="events"]
-main#main
-section#upcoming-events.events-upcoming-section
-form#events-filters-form.events-filters.filter-dock
-.family-audience-chip {
-  position: relative;
-  user-select: none;
-}
-
-html body[data-page="events"]
-main#main
-section#upcoming-events.events-upcoming-section
-form#events-filters-form.events-filters.filter-dock
-.family-audience-chip:focus-within {
-  outline: 3px solid rgba(14, 136, 240, 0.34);
-  outline-offset: 2px;
-}
-
-html body[data-page="events"]
-main#main
-section#upcoming-events.events-upcoming-section
-form#events-filters-form.events-filters.filter-dock
-.family-audience-chip.is-active {
-  color: #0d4f78;
-  border-color: rgba(14, 136, 240, 0.34);
-  background:
-    linear-gradient(
-      135deg,
-      rgba(20, 194, 197, 0.18),
-      rgba(14, 136, 240, 0.14)
-    );
-}

@@ -291,7 +291,12 @@ test('events page exposes film and family filters with URL state', () => {
 
   assert.match(
     html,
-    /id="filter-audience-family"[^>]*type="checkbox"[^>]*value="family"/
+    /<button(?=[^>]*id="filter-audience-family")(?=[^>]*data-i18n-key="filters\.family")(?=[^>]*aria-pressed="false")[^>]*>/
+  );
+
+  assert.doesNotMatch(
+    html,
+    /<label[^>]*for="filter-audience-family"/
   );
 
   assert.match(
@@ -304,9 +309,19 @@ test('events page exposes film and family filters with URL state', () => {
     /sp\.get\('audience'\) ===\s*'family'/
   );
 
-  assert.match(
+  assert.doesNotMatch(
     styles,
     /AJSEE_EVENTS_FAMILY_AUDIENCE_FILTER_V1/
+  );
+
+  assert.match(
+    entry,
+    /family-audience-click/
+  );
+
+  assert.match(
+    entry,
+    /aria-pressed/
   );
 
   for (

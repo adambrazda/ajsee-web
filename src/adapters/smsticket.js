@@ -10,6 +10,11 @@
 
 import { canonForInputCity } from '../city/canonical.js';
 
+import {
+  buildSmsticketTaxonomy,
+  deriveLegacyCategory
+} from '../taxonomy/event-taxonomy.js';
+
 const DEFAULT_DATA_URL = '/data/smsticket-events.json';
 
 // AJSEE_SMSTICKET_CITY_SUBSET_FEEDS_v1
@@ -437,11 +442,31 @@ export function normalizeSmsticketEventCategory(ev = {}) {
   return normalizeSmsticketCategory(ev?.category);
 }
 
+export function withSmsticketTaxonomy(ev = {}) {
+  const taxonomy =
+    buildSmsticketTaxonomy(ev);
+
+  return {
+    ...ev,
+
+    category:
+      deriveLegacyCategory(
+        taxonomy
+      ),
+
+    taxonomy
+  };
+}
+
 function matchesCategory(ev, category = 'all') {
-  const wanted = normalizeSmsticketCategory(category);
+  const wanted =
+    normalizeSmsticketCategory(
+      category
+    );
+
   if (wanted === 'all') return true;
 
-  return normalizeSmsticketEventCategory(ev) === wanted;
+  return ev?.category === wanted;
 }
 
 function matchesKeyword(ev, keyword = '') {
@@ -842,27 +867,62 @@ export async function fetchEvents({ filters = {} } = {}) {
 
   for (const ev of events) {
     if (!isSmsticketEventAvailable(ev)) continue;
-    if (selectedCityTokens.length && !matchesCityWithPreparedTokens(ev, selectedCityTokens, eventCityTokenCache)) continue;
-    if (!matchesCategory(ev, category)) continue;
-    if (keyword && !matchesKeyword(ev, keyword)) continue;
-    if ((dateFrom || dateTo) && !inDateRange(ev, dateFrom, dateTo)) continue;
-    if (!matchesNearMe(ev, filters)) continue;
 
-    const normalizedCategory = normalizeSmsticketEventCategory(ev);
+    if (
+      selectedCityTokens.length &&
+      !matchesCityWithPreparedTokens(
+        ev,
+        selectedCityTokens,
+        eventCityTokenCache
+      )
+    ) {
+      continue;
+    }
 
+    const normalizedEvent =
+      withSmsticketTaxonomy(ev);
+
+    if (
+      !matchesCategory(
+        normalizedEvent,
+        category
+      )
+    ) {
+      continue;
+    }
+
+    if (
+      keyword &&
+      !matchesKeyword(
+        normalizedEvent,
+        keyword
+      )
+    ) {
+      continue;
+    }
+
+    if (
+      (dateFrom || dateTo) &&
+      !inDateRange(
+        normalizedEvent,
+        dateFrom,
+        dateTo
+      )
+    ) {
+      continue;
+    }
+
+    if (
+      !matchesNearMe(
+        normalizedEvent,
+        filters
+      )
+    ) {
+      continue;
+    }
 
     candidates.push(
-
-
-      normalizedCategory === ev?.category
-
-
-        ? ev
-
-
-        : { ...ev, category: normalizedCategory }
-
-
+      normalizedEvent
     );
   }
 

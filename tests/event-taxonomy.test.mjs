@@ -55,7 +55,7 @@ test(
 );
 
 test(
-  'family musical remains theatre-compatible and family discoverable',
+  'family musical exposes stage taxonomy while preserving family legacy category',
   () => {
     const taxonomy =
       buildSmsticketTaxonomy({
@@ -103,7 +103,7 @@ test(
       deriveLegacyCategory(
         taxonomy
       ),
-      'theatre'
+      'family'
     );
   }
 );
@@ -320,6 +320,149 @@ test(
         ),
 
       /Unsupported event taxonomy provider/
+    );
+  }
+);
+
+test(
+  'raw SMS Ticket music without a type keeps concert legacy compatibility',
+  () => {
+    const taxonomy =
+      buildSmsticketTaxonomy({
+        category: 'music',
+        categories: ['Hudba']
+      });
+
+    assert.deepEqual(
+      taxonomy.domains,
+      ['music']
+    );
+
+    assert.deepEqual(
+      taxonomy.eventTypes,
+      []
+    );
+
+    assert.equal(
+      deriveLegacyCategory(
+        taxonomy
+      ),
+      'concert'
+    );
+  }
+);
+
+test(
+  'SMS Ticket festival hint in a localized title is normalized into eventTypes',
+  () => {
+    const taxonomy =
+      buildSmsticketTaxonomy({
+        category: 'music',
+
+        title: {
+          cs:
+            'Letní hudební festival 2026'
+        },
+
+        categories: ['Hudba'],
+        genres: ['Rock'],
+        types: ['Koncert']
+      });
+
+    assert.deepEqual(
+      taxonomy.eventTypes,
+      [
+        'festival',
+        'concert'
+      ]
+    );
+
+    assert.equal(
+      deriveLegacyCategory(
+        taxonomy
+      ),
+      'festival'
+    );
+  }
+);
+
+
+test(
+  'raw SMS Ticket other show keeps its existing other category',
+  () => {
+    const taxonomy =
+      buildSmsticketTaxonomy({
+        category: 'other',
+        categories: [
+          'Stand-up / Talk show'
+        ],
+        types: [
+          'Show / Vystoupení'
+        ]
+      });
+
+    assert.deepEqual(
+      taxonomy.domains,
+      ['stage']
+    );
+
+    assert.deepEqual(
+      taxonomy.eventTypes,
+      ['show']
+    );
+
+    assert.equal(
+      deriveLegacyCategory(
+        taxonomy
+      ),
+      'other'
+    );
+  }
+);
+
+test(
+  'raw SMS Ticket arts event keeps theatre category despite concert metadata',
+  () => {
+    const taxonomy =
+      buildSmsticketTaxonomy({
+        category: 'arts',
+
+        categories: [
+          'Gastro',
+          'Hudba'
+        ],
+
+        types: [
+          'Kino / Projekce',
+          'Koncert',
+          'Divadlo',
+          'Podcast'
+        ]
+      });
+
+    assert.ok(
+      taxonomy.domains.includes(
+        'music'
+      )
+    );
+
+    assert.ok(
+      taxonomy.domains.includes(
+        'stage'
+      )
+    );
+
+    assert.ok(
+      taxonomy.eventTypes.includes(
+        'concert'
+      )
+    );
+
+    assert.equal(
+      deriveLegacyCategory(
+        taxonomy
+      ),
+      'theatre'
     );
   }
 );

@@ -6,6 +6,30 @@ function text(value) {
   return String(value).trim();
 }
 
+function localizedText(value) {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+
+  if (
+    value &&
+    typeof value === 'object'
+  ) {
+    const preferred =
+      value.cs ??
+      value.en ??
+      Object.values(value)
+        .find(
+          (item) =>
+            typeof item === 'string'
+        );
+
+    return text(preferred);
+  }
+
+  return text(value);
+}
+
 function rawValues(value) {
   const input =
     Array.isArray(value)
@@ -479,9 +503,25 @@ export function deriveLegacyCategory(
       ? taxonomy.audiences
       : [];
 
+  const source =
+    taxonomy.source &&
+    typeof taxonomy.source === 'object'
+      ? taxonomy.source
+      : {};
+
+  const provider =
+    fold(
+      source.provider
+    );
+
+  const rawCategory =
+    fold(
+      source.rawCategory
+    );
+
   /*
-   * Preserve current AJSEE filtering behaviour.
-   * Festival remains the strongest legacy classification.
+   * Existing AJSEE behaviour gives every festival hint
+   * priority over the provider's broad category.
    */
   if (
     eventTypes.includes('festival')
@@ -489,8 +529,53 @@ export function deriveLegacyCategory(
     return 'festival';
   }
 
+  /*
+   * Until the UI migrates to taxonomy filters, SMS Ticket
+   * must keep the exact legacy classification semantics.
+   *
+   * Detailed discovery is available through domains,
+   * eventTypes, genres and audiences without silently
+   * moving an event between the existing category filters.
+   */
   if (
-    eventTypes.includes('concert')
+    provider.includes(
+      'smsticket'
+    )
+  ) {
+    switch (rawCategory) {
+      case 'music':
+      case 'concert':
+        return 'concert';
+
+      case 'arts':
+      case 'theatre':
+        return 'theatre';
+
+      case 'sports':
+      case 'sport':
+        return 'sport';
+
+      case 'festival':
+        return 'festival';
+
+      case 'family':
+        return 'family';
+
+      case 'other':
+        return 'other';
+
+      default:
+        return rawCategory || 'other';
+    }
+  }
+
+  /*
+   * Ticketmaster and future providers use the shared
+   * normalized taxonomy and the historical AJSEE priority.
+   */
+  if (
+    eventTypes.includes('concert') ||
+    domains.includes('music')
   ) {
     return 'concert';
   }
@@ -539,10 +624,38 @@ export function buildSmsticketTaxonomy(
       event.type
     );
 
-  const eventTypes =
+  let eventTypes =
     normalizeEventTypes(
       rawTypes
     );
+
+  const festivalTokens =
+    fold([
+      localizedText(event.title),
+      ...rawCategories,
+      ...rawGenres,
+      ...rawTypes
+    ].join(' '))
+      .split(' ')
+      .filter(Boolean);
+
+  const hasFestivalHint =
+    festivalTokens.some(
+      (token) =>
+        token === 'fest' ||
+        token.startsWith('festival')
+    );
+
+  if (
+    hasFestivalHint &&
+    !eventTypes.includes('festival')
+  ) {
+    eventTypes =
+      unique([
+        'festival',
+        ...eventTypes
+      ]);
+  }
 
   const genres =
     normalizeGenres(

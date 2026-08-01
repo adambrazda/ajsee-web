@@ -15,6 +15,10 @@ import {
   deriveLegacyCategory
 } from '../taxonomy/event-taxonomy.js';
 
+import {
+  matchesEventDiscoveryFilters
+} from '../taxonomy/event-filtering.js';
+
 const DEFAULT_DATA_URL = '/data/smsticket-events.json';
 
 // AJSEE_SMSTICKET_CITY_SUBSET_FEEDS_v1
@@ -458,15 +462,23 @@ export function withSmsticketTaxonomy(ev = {}) {
   };
 }
 
-function matchesCategory(ev, category = 'all') {
-  const wanted =
-    normalizeSmsticketCategory(
-      category
-    );
+function matchesDiscoveryFilters(
+  ev,
+  filters = {}
+) {
+  return matchesEventDiscoveryFilters(
+    ev,
+    {
+      category:
+        filters.category ??
+        filters.segment ??
+        'all',
 
-  if (wanted === 'all') return true;
-
-  return ev?.category === wanted;
+      audience:
+        filters.audience ??
+        ''
+    }
+  );
 }
 
 function matchesKeyword(ev, keyword = '') {
@@ -856,6 +868,7 @@ export async function fetchEvents({ filters = {} } = {}) {
   // searches usually reduce the candidate set the most.
   const city = filters.city || '';
   const category = filters.category ?? filters.segment ?? 'all';
+  const audience = filters.audience ?? '';
   const keyword = filters.keyword || '';
   const dateFrom = filters.dateFrom ?? filters.from ?? '';
   const dateTo = filters.dateTo ?? filters.to ?? '';
@@ -883,9 +896,12 @@ export async function fetchEvents({ filters = {} } = {}) {
       withSmsticketTaxonomy(ev);
 
     if (
-      !matchesCategory(
+      !matchesDiscoveryFilters(
         normalizedEvent,
-        category
+        {
+          category,
+          audience
+        }
       )
     ) {
       continue;

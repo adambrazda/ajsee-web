@@ -25,6 +25,7 @@ import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster
 import { fetchEvents as fetchSmsticketEvents } from '../adapters/smsticket.js';
 import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
+import { matchesEventDiscoveryFilters } from '../taxonomy/event-filtering.js';
 
 // DEV detekce (localhost/Vite)
 const isDev =
@@ -754,6 +755,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     dateFrom: filters.dateFrom ?? filters.from ?? '',
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
+    audience: filters.audience ?? '',
     keyword: filters.keyword ?? filters.q ?? filters.search ?? '',
     // KlĂ­ÄŤovĂˇ zmÄ›na:
     // pokud uĹľivatel zadal "Francie", neposĂ­lĂˇme to dĂˇl jako city.
@@ -875,6 +877,7 @@ if (ENABLE_SEATPLAN) {
     dateFrom: filters.dateFrom ?? filters.from ?? '',
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
+    audience: filters.audience ?? '',
     keyword: filters.keyword ?? filters.q ?? filters.search ?? '',
     // KlĂ­ÄŤovĂˇ zmÄ›na:
     // FE city filtr uĹľ nevidĂ­ "Francie" jako mÄ›sto.
@@ -886,6 +889,7 @@ if (ENABLE_SEATPLAN) {
 
   const {
     category = 'all',
+    audience = '',
     city = '',
     keyword = '',
     dateFrom = '',
@@ -916,10 +920,23 @@ if (ENABLE_SEATPLAN) {
     return true;
   });
 
-  if (category && category !== 'all') {
-    const want = normalizeStr(category);
-
-    all = all.filter((ev) => normalizeStr(ev.category) === want);
+  if (
+    (
+      category &&
+      category !== 'all'
+    ) ||
+    audience
+  ) {
+    all = all.filter(
+      (event) =>
+        matchesEventDiscoveryFilters(
+          event,
+          {
+            category,
+            audience
+          }
+        )
+    );
   }
 
   // Country-only ochrana:

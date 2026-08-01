@@ -141,6 +141,28 @@ export function getActiveFilterDescriptors(
     });
   }
 
+  const audience =
+    String(
+      filters.audience ||
+      ''
+    ).trim();
+
+  if (
+    audience &&
+    audience !== 'all'
+  ) {
+    descriptors.push({
+      key:
+        'audience',
+
+      label:
+        labels.audiences?.[
+          audience
+        ] ||
+        audience
+    });
+  }
+
   const nearMe = hasCoordinates(filters);
   const placeLabel = nearMe
     ? String(labels.nearMe || filters.cityLabel || 'Near me').trim()

@@ -31,7 +31,8 @@
     "reviews:build": "node scripts/build-reviews.mjs",
     "review-details:build": "node scripts/build-review-details.mjs",
     "review-details:localize": "cross-env REVIEW_LOCALIZE=1 node scripts/build-review-details.mjs",
-    "reviews:test": "node --test --test-concurrency=1 tests/reviews.test.mjs tests/event-categories.test.mjs tests/smsticket-availability.test.mjs tests/smsticket-ticket-options.test.mjs"
+    "reviews:test": "node --test --test-concurrency=1 tests/reviews.test.mjs tests/event-categories.test.mjs tests/smsticket-availability.test.mjs tests/smsticket-ticket-options.test.mjs tests/event-modal-ticket-options-dom.test.mjs",
+    "events:modal:test": "node --test --test-concurrency=1 tests/event-modal-ticket-options-dom.test.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",
@@ -41,6 +42,7 @@
     "css-loader": "^6.9.1",
     "cwebp-bin": "^8.0.0",
     "fast-xml-parser": "^5.8.0",
+    "jsdom": "26.1.0",
     "mini-css-extract-plugin": "^2.7.6",
     "netlify-cli": "^23.9.1",
     "sass-embedded": "^1.90.0",

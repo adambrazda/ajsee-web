@@ -196,7 +196,9 @@
     "apply": "Apply filters",
     "reset": "Clear",
     "tomorrow": "Tomorrow",
-    "thisWeek": "This week"
+    "thisWeek": "This week",
+    "film": "Film & cinema",
+    "family": "Family-friendly"
   },
   "filter-category": "Category",
   "filter-sort": "Sort by",
@@ -436,5 +438,6 @@
   "events-remove-filter": "Remove filter",
   "events-empty-title": "No events found",
   "events-empty-body": "Remove one of the active filters or clear them all.",
-  "events-empty-clear": "Clear filters"
+  "events-empty-clear": "Clear filters",
+  "category-film": "Film & cinema"
 }

@@ -271,6 +271,10 @@
               <button type="button" class="chip" id="chipTomorrow" data-i18n-key="filters.tomorrow" aria-pressed="false">Zítra</button>
               <button type="button" class="chip" id="chipThisWeek" data-i18n-key="filters.thisWeek" aria-pressed="false">Tento týden</button>
               <button type="button" class="chip" id="chipWeekend" data-i18n-key="filters.weekend" aria-pressed="false">Tento víkend</button>
+              <label class="chip family-audience-chip" for="filter-audience-family">
+                <input id="filter-audience-family" type="checkbox" name="audience" value="family" class="sr-only" />
+                <span data-i18n-key="filters.family">Pro rodiny</span>
+              </label>
               <button type="button" class="chip ghost" id="chipClear" data-i18n-key="filters.reset">Vymazat</button>
             </div>
             <button type="button" class="chip chip-near" id="chipNearMe" aria-pressed="false" aria-label="V mém okolí" data-i18n-aria="filters.nearMe" title="V mém okolí">
@@ -298,8 +302,9 @@
                 <option value="all" data-i18n-key="filters.all">Vše</option>
                 <option value="concert" data-i18n-key="category-concert">Koncerty</option>
                 <option value="festival" data-i18n-key="category-festival">Festivaly</option>
-                <option value="sport" data-i18n-key="category-sport">Sport</option>
                 <option value="theatre" data-i18n-key="category-theatre">Divadlo</option>
+                <option value="sport" data-i18n-key="category-sport">Sport</option>
+                <option value="film" data-i18n-key="category-film">Film a kino</option>
               </select>
             </div>
 

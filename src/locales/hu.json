@@ -196,7 +196,9 @@
     "apply": "Szűrők alkalmazása",
     "reset": "Törlés",
     "tomorrow": "Holnap",
-    "thisWeek": "Ezen a héten"
+    "thisWeek": "Ezen a héten",
+    "film": "Film és mozi",
+    "family": "Családoknak"
   },
   "filter-category": "Kategória",
   "filter-sort": "Rendezés",
@@ -436,5 +438,6 @@
   "events-remove-filter": "Szűrő eltávolítása",
   "events-empty-title": "Nem találtunk eseményeket",
   "events-empty-body": "Távolítson el egy aktív szűrőt, vagy törölje az összeset.",
-  "events-empty-clear": "Szűrők törlése"
+  "events-empty-clear": "Szűrők törlése",
+  "category-film": "Film és mozi"
 }

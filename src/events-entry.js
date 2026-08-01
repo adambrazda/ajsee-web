@@ -91,6 +91,7 @@ const SUPPORTED_COUNTRY_CODES = new Set([
 
 let currentFilters = {
   category: 'all',
+  audience: '',
   sort: 'nearest',
   placeType: '',
   city: '',
@@ -1662,11 +1663,49 @@ function getEventsFilterUxLabels() {
       weekend: t('filters.weekend', currentLang === 'en' ? 'This weekend' : 'Tento víkend')
     },
     categories: {
-      concert: t('category-concert', 'Koncerty'),
-      festival: t('category-festival', 'Festivaly'),
-      sport: t('category-sport', 'Sport'),
-      theatre: t('category-theatre', 'Divadlo')
+      concert:
+        t(
+          'category-concert',
+          'Koncerty'
+        ),
+
+      festival:
+        t(
+          'category-festival',
+          'Festivaly'
+        ),
+
+      theatre:
+        t(
+          'category-theatre',
+          'Divadlo'
+        ),
+
+      sport:
+        t(
+          'category-sport',
+          'Sport'
+        ),
+
+      film:
+        t(
+          'category-film',
+          currentLang === 'en'
+            ? 'Film & cinema'
+            : 'Film a kino'
+        )
     },
+
+    audiences: {
+      family:
+        t(
+          'filters.family',
+          currentLang === 'en'
+            ? 'Family-friendly'
+            : 'Pro rodiny'
+        )
+    },
+
     sorts: {
       latest: t('filters.latest', currentLang === 'en' ? 'Newest' : 'Nejnovější')
     }
@@ -1743,6 +1782,10 @@ async function clearSingleEventFilter(key) {
       currentFilters.category = 'all';
       break;
 
+    case 'audience':
+      currentFilters.audience = '';
+      break;
+
     case 'place':
       currentFilters.placeType = '';
       currentFilters.city = '';
@@ -1782,6 +1825,7 @@ async function clearSingleEventFilter(key) {
 
 async function resetAllEventFilters() {
   currentFilters.category = 'all';
+  currentFilters.audience = '';
   currentFilters.sort = 'nearest';
   currentFilters.placeType = '';
   currentFilters.city = '';
@@ -2047,15 +2091,55 @@ function bindDatePopoverGlue() {
 
 /* ───────── form sync / URL sync ───────── */
 function setFilterInputsFromState() {
-  const cat = qs('#filter-category') || qs('#events-category-filter');
-  const sort = qs('#filter-sort') || qs('#events-sort-filter');
-  const city = getCityInputEl();
+  const cat =
+    qs('#filter-category') ||
+    qs('#events-category-filter');
+
+  const audience =
+    qs(
+      '#filter-audience-family'
+    );
+
+  const sort =
+    qs('#filter-sort') ||
+    qs('#events-sort-filter');
+
+  const city =
+    getCityInputEl();
   const from = qs('#filter-date-from') || qs('#events-date-from');
   const to = qs('#filter-date-to') || qs('#events-date-to');
   const kw = qs('#filter-keyword');
 
-  if (cat) cat.value = currentFilters.category || 'all';
-  if (sort) sort.value = currentFilters.sort || 'nearest';
+  if (cat) {
+    cat.value =
+      currentFilters.category ||
+      'all';
+  }
+
+  if (audience) {
+    const active =
+      currentFilters.audience ===
+      'family';
+
+    audience.checked =
+      active;
+
+    audience
+      .closest(
+        '.family-audience-chip'
+      )
+      ?.classList
+      .toggle(
+        'is-active',
+        active
+      );
+  }
+
+  if (sort) {
+    sort.value =
+      currentFilters.sort ||
+      'nearest';
+  }
 
   if (city) {
     if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
@@ -2077,15 +2161,49 @@ function setFilterInputsFromState() {
 }
 
 function syncFiltersFromForm() {
-  const cat = qs('#filter-category') || qs('#events-category-filter');
-  const sort = qs('#filter-sort') || qs('#events-sort-filter');
-  const city = getCityInputEl();
+  const cat =
+    qs('#filter-category') ||
+    qs('#events-category-filter');
+
+  const audience =
+    qs(
+      '#filter-audience-family'
+    );
+
+  const sort =
+    qs('#filter-sort') ||
+    qs('#events-sort-filter');
+
+  const city =
+    getCityInputEl();
   const from = qs('#filter-date-from') || qs('#events-date-from');
   const to = qs('#filter-date-to') || qs('#events-date-to');
   const kw = qs('#filter-keyword');
 
-  currentFilters.category = cat?.value || 'all';
-  currentFilters.sort = sort?.value || 'nearest';
+  currentFilters.category =
+    cat?.value ||
+    'all';
+
+  if (audience) {
+    currentFilters.audience =
+      audience.checked
+        ? 'family'
+        : '';
+
+    audience
+      .closest(
+        '.family-audience-chip'
+      )
+      ?.classList
+      .toggle(
+        'is-active',
+        audience.checked
+      );
+  }
+
+  currentFilters.sort =
+    sort?.value ||
+    'nearest';
   currentFilters.keyword = (kw?.value || '').trim();
   currentFilters.dateFrom = from?.value || currentFilters.dateFrom || '';
   currentFilters.dateTo = to?.value || currentFilters.dateTo || '';
@@ -2151,6 +2269,11 @@ function syncURLFromFilters() {
   currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from');
   currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to');
   (currentFilters.category && currentFilters.category !== 'all') ? p.set('segment', currentFilters.category) : p.delete('segment');
+
+  currentFilters.audience === 'family'
+    ? p.set('audience', 'family')
+    : p.delete('audience');
+
   p.delete('keyword');
   p.delete('search');
   currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q');
@@ -2188,7 +2311,18 @@ function initFiltersFromURL() {
 
   if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
   if (sp.get('to')) currentFilters.dateTo = sp.get('to') || '';
-  if (sp.get('segment')) currentFilters.category = sp.get('segment') || 'all';
+  if (sp.get('segment')) {
+    currentFilters.category =
+      sp.get('segment') ||
+      'all';
+  }
+
+  currentFilters.audience =
+    sp.get('audience') ===
+    'family'
+      ? 'family'
+      : '';
+
   const urlKeyword = sp.get('q') || sp.get('keyword') || sp.get('search') || '';
   if (urlKeyword) currentFilters.keyword = urlKeyword.trim();
   if (sp.get('sort')) currentFilters.sort = sp.get('sort') || 'nearest';
@@ -2209,14 +2343,53 @@ function initFiltersFromURL() {
 function bindFilterFormInteractions(formEl) {
   if (!formEl) return;
 
-  const category = qs('#filter-category') || qs('#events-category-filter');
+  const category =
+    qs('#filter-category') ||
+    qs('#events-category-filter');
+
   if (category) {
-    wireOnce(category, 'change', async () => {
-      _userInteractedWithFilters = true;
-      syncFiltersFromForm();
-      resetEventsPager();
-      await renderAndSync({ resetPage: true });
-    }, 'category-change');
+    wireOnce(
+      category,
+      'change',
+      async () => {
+        _userInteractedWithFilters =
+          true;
+
+        syncFiltersFromForm();
+        resetEventsPager();
+
+        await renderAndSync({
+          resetPage:
+            true
+        });
+      },
+      'category-change'
+    );
+  }
+
+  const audience =
+    qs(
+      '#filter-audience-family'
+    );
+
+  if (audience) {
+    wireOnce(
+      audience,
+      'change',
+      async () => {
+        _userInteractedWithFilters =
+          true;
+
+        syncFiltersFromForm();
+        resetEventsPager();
+
+        await renderAndSync({
+          resetPage:
+            true
+        });
+      },
+      'family-audience-change'
+    );
   }
 
   [

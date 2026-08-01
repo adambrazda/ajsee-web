@@ -193,7 +193,9 @@
     "apply": "Zastosuj filtry",
     "reset": "Wyczyść",
     "tomorrow": "Jutro",
-    "thisWeek": "W tym tygodniu"
+    "thisWeek": "W tym tygodniu",
+    "film": "Film i kino",
+    "family": "Dla rodzin"
   },
   "filter-category": "Kategoria",
   "filter-sort": "Sortowanie",
@@ -436,5 +438,6 @@
   "events-remove-filter": "Usuń filtr",
   "events-empty-title": "Nie znaleziono wydarzeń",
   "events-empty-body": "Usuń jeden z aktywnych filtrów albo wyczyść je wszystkie.",
-  "events-empty-clear": "Wyczyść filtry"
+  "events-empty-clear": "Wyczyść filtry",
+  "category-film": "Film i kino"
 }

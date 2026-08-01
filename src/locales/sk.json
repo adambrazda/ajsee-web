@@ -193,7 +193,9 @@
     "apply": "Použiť filtre",
     "reset": "Vymazať",
     "tomorrow": "Zajtra",
-    "thisWeek": "Tento týždeň"
+    "thisWeek": "Tento týždeň",
+    "film": "Film a kino",
+    "family": "Pre rodiny"
   },
   "filter-category": "Kategória",
   "filter-sort": "Triedenie",
@@ -436,5 +438,6 @@
   "events-remove-filter": "Odstrániť filter",
   "events-empty-title": "Nenašli sme žiadne podujatia",
   "events-empty-body": "Odstráňte niektorý z aktívnych filtrov alebo ich všetky vymažte.",
-  "events-empty-clear": "Vymazať filtre"
+  "events-empty-clear": "Vymazať filtre",
+  "category-film": "Film a kino"
 }

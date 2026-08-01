@@ -192,7 +192,9 @@
     "apply": "Použít filtry",
     "reset": "Vymazat",
     "tomorrow": "Zítra",
-    "thisWeek": "Tento týden"
+    "thisWeek": "Tento týden",
+    "film": "Film a kino",
+    "family": "Pro rodiny"
   },
   "filter-category": "Kategorie",
   "filter-sort": "Řazení",
@@ -436,5 +438,6 @@
   "events-remove-filter": "Odebrat filtr",
   "events-empty-title": "Nenašli jsme žádné akce",
   "events-empty-body": "Odeberte některý z aktivních filtrů nebo je všechny vymažte.",
-  "events-empty-clear": "Vymazat filtry"
+  "events-empty-clear": "Vymazat filtry",
+  "category-film": "Film a kino"
 }

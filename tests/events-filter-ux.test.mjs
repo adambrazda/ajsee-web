@@ -222,6 +222,131 @@ test('summary renders accessible removable chips and clear-all action', () => {
   assert.equal(cleared, 1);
 });
 
+test('family audience is represented as a removable active filter', () => {
+  const descriptors =
+    getActiveFilterDescriptors(
+      {
+        category: 'film',
+        audience: 'family'
+      },
+      {
+        labels: {
+          categories: {
+            film: 'Film a kino'
+          },
+          audiences: {
+            family: 'Pro rodiny'
+          }
+        }
+      }
+    );
+
+  assert.deepEqual(
+    descriptors,
+    [
+      {
+        key: 'category',
+        label: 'Film a kino'
+      },
+      {
+        key: 'audience',
+        label: 'Pro rodiny'
+      }
+    ]
+  );
+});
+
+test('events page exposes film and family filters with URL state', () => {
+  const html =
+    readFileSync(
+      new URL(
+        '../events.html',
+        import.meta.url
+      ),
+      'utf8'
+    );
+
+  const entry =
+    readFileSync(
+      new URL(
+        '../src/events-entry.js',
+        import.meta.url
+      ),
+      'utf8'
+    );
+
+  const styles =
+    readFileSync(
+      new URL(
+        '../src/styles/partials/_filters-parity-final.scss',
+        import.meta.url
+      ),
+      'utf8'
+    );
+
+  assert.match(
+    html,
+    /<option value="film"[^>]*data-i18n-key="category-film"/
+  );
+
+  assert.match(
+    html,
+    /id="filter-audience-family"[^>]*type="checkbox"[^>]*value="family"/
+  );
+
+  assert.match(
+    entry,
+    /p\.set\('audience', 'family'\)/
+  );
+
+  assert.match(
+    entry,
+    /sp\.get\('audience'\) ===\s*'family'/
+  );
+
+  assert.match(
+    styles,
+    /AJSEE_EVENTS_FAMILY_AUDIENCE_FILTER_V1/
+  );
+
+  for (
+    const locale of [
+      'cs',
+      'en',
+      'de',
+      'sk',
+      'pl',
+      'hu'
+    ]
+  ) {
+    const messages =
+      JSON.parse(
+        readFileSync(
+          new URL(
+            `../src/locales/${locale}.json`,
+            import.meta.url
+          ),
+          'utf8'
+        )
+      );
+
+    assert.equal(
+      typeof messages['category-film'],
+      'string'
+    );
+
+    assert.equal(
+      typeof messages.filters?.film,
+      'string'
+    );
+
+    assert.equal(
+      typeof messages.filters?.family,
+      'string'
+    );
+  }
+});
+
 test('events page preserves the quick-filter toolbar', () => {
   const source = readFileSync(
     new URL('../src/events-entry.js', import.meta.url),

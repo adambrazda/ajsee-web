@@ -808,28 +808,129 @@ function sortRawEvents(events = [], sort = 'date,asc', countryCode = '') {
   });
 }
 
-function getCategoryQueryVariants(category = 'all') {
-  const cat = String(category || 'all').trim().toLowerCase();
+function getCategoryQueryVariants(
+  category = 'all',
+  audience = ''
+) {
+  const cat =
+    String(
+      category ||
+      'all'
+    )
+      .trim()
+      .toLowerCase();
+
+  const familyAudience =
+    String(
+      audience ||
+      ''
+    )
+      .trim()
+      .toLowerCase() ===
+    'family';
+
+  let variants;
 
   switch (cat) {
     case 'concert':
-      return [{ segmentName: 'Music' }];
+      variants = [
+        {
+          segmentName:
+            'Music'
+        }
+      ];
+      break;
+
     case 'sport':
-      return [{ segmentName: 'Sports' }];
+      variants = [
+        {
+          segmentName:
+            'Sports'
+        }
+      ];
+      break;
+
     case 'theatre':
-      return [
-        { segmentName: 'Arts & Theatre' },
-        { classificationName: 'Theatre' }
+      variants = [
+        {
+          segmentName:
+            'Arts & Theatre'
+        },
+
+        {
+          classificationName:
+            'Theatre'
+        }
       ];
+      break;
+
     case 'festival':
-      return [
-        { classificationName: 'Festival' },
-        { segmentName: 'Music' }
+      variants = [
+        {
+          classificationName:
+            'Festival'
+        },
+
+        {
+          segmentName:
+            'Music'
+        }
       ];
+      break;
+
+    case 'film':
+      variants = [
+        {
+          classificationName:
+            'Film'
+        },
+
+        {
+          classificationName:
+            'Cinema'
+        }
+      ];
+      break;
+
     case 'all':
     default:
-      return [{}];
+      variants = [
+        {}
+      ];
+      break;
   }
+
+  if (
+    familyAudience &&
+    cat === 'all'
+  ) {
+    return [
+      {
+        classificationName:
+          'Family'
+      }
+    ];
+  }
+
+  if (familyAudience) {
+    return [
+      ...variants
+    ].sort(
+      (left, right) =>
+        Number(
+          Boolean(
+            left.classificationName
+          )
+        ) -
+        Number(
+          Boolean(
+            right.classificationName
+          )
+        )
+    );
+  }
+
+  return variants;
 }
 
 function categoryVariantKey(v = {}) {
@@ -1128,7 +1229,13 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const size = Number.isFinite(+filters.size) ? String(+filters.size) : '12';
 
   const category = filters.category || filters.segment || 'all';
-  const categoryVariants = getCategoryQueryVariants(category);
+
+  const categoryVariants =
+    getCategoryQueryVariants(
+      category,
+      filters.audience ||
+      ''
+    );
   const debugTm = shouldDebugTicketmaster(filters);
   const locales = makeLocaleList({
     marketLocale,
@@ -1143,6 +1250,25 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     if (categoryVariant.segmentName) qs.set('segmentName', String(categoryVariant.segmentName));
     if (categoryVariant.classificationName) qs.set('classificationName', String(categoryVariant.classificationName));
     if (filters.classificationName) qs.set('classificationName', String(filters.classificationName));
+
+    if (
+      String(
+        filters.audience ||
+        ''
+      )
+        .trim()
+        .toLowerCase() ===
+        'family' &&
+      !qs.has(
+        'classificationName'
+      )
+    ) {
+      qs.set(
+        'classificationName',
+        'Family'
+      );
+    }
+
     if (filters.dateFrom) qs.set('dateFrom', String(filters.dateFrom));
     if (filters.dateTo) qs.set('dateTo', String(filters.dateTo));
 

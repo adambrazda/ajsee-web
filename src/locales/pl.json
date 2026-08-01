@@ -191,7 +191,9 @@
     "geoDenied": "Dostęp do lokalizacji jest zablokowany. Możesz zmienić uprawnienia w ustawieniach przeglądarki.",
     "geoTimeout": "Pobieranie lokalizacji trwało zbyt długo. Spróbuj ponownie.",
     "apply": "Zastosuj filtry",
-    "reset": "Wyczyść"
+    "reset": "Wyczyść",
+    "tomorrow": "Jutro",
+    "thisWeek": "W tym tygodniu"
   },
   "filter-category": "Kategoria",
   "filter-sort": "Sortowanie",
@@ -427,5 +429,12 @@
       "text": "Poczuj niepowtarzalną atmosferę West Endu. Wybierz spośród światowej sławy musicali, przejdź do opcji biletów i dodaj do planu sprawdzony nocleg w Londynie.",
       "cta": "Zobacz musicale"
     }
-  }
+  },
+  "events-found": "Znaleziono",
+  "events-active-filters": "Aktywne filtry",
+  "events-clear-filters": "Wyczyść wszystko",
+  "events-remove-filter": "Usuń filtr",
+  "events-empty-title": "Nie znaleziono wydarzeń",
+  "events-empty-body": "Usuń jeden z aktywnych filtrów albo wyczyść je wszystkie.",
+  "events-empty-clear": "Wyczyść filtry"
 }

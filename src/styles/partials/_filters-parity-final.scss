@@ -142,8 +142,30 @@ html body[data-page="events"] main#main section#upcoming-events.events-upcoming-
     radial-gradient(100% 90% at 100% 0%, rgba(14, 136, 240, 0.08) 0%, rgba(14, 136, 240, 0) 42%);
 }
 
+/* AJSEE_EVENTS_QUICK_FILTERS_VISIBLE_V1 */
 html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 2px 2px 6px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chip {
+  flex: 0 0 auto;
+  min-height: 44px;
 }
 
 html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.native-date,
@@ -500,5 +522,226 @@ body[data-page="events"] #demoBadge.event-demo-badge {
   body[data-page="events"] #demoBadge.event-demo-badge {
     width: min(calc(100% - 32px), 100%);
     max-width: min(calc(100% - 32px), 100%);
+  }
+}
+
+/* AJSEE_EVENTS_FILTER_UX_V1 */
+html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chip {
+  min-height: 40px;
+  padding: 0.58rem 0.9rem;
+  font-size: 0.88rem;
+}
+
+body[data-page="events"] .events-filter-summary {
+  width: min(calc(100% - 32px), 1100px);
+  margin: 0 auto 1.35rem;
+}
+
+body[data-page="events"] .events-filter-summary__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+body[data-page="events"] .events-results-count {
+  margin: 0;
+  color: #173a62;
+  font-size: clamp(1rem, 1.2vw, 1.12rem);
+  font-weight: 900;
+}
+
+body[data-page="events"] .events-filter-summary__clear {
+  min-height: 44px;
+  padding: 0.65rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #0b5ed7;
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+body[data-page="events"] .events-filter-summary__clear:hover {
+  background: rgba(14, 136, 240, 0.08);
+}
+
+body[data-page="events"] .events-filter-summary__clear:focus-visible,
+body[data-page="events"] .events-filter-chip:focus-visible {
+  outline: 3px solid rgba(14, 136, 240, 0.28);
+  outline-offset: 3px;
+}
+
+body[data-page="events"] .events-filter-summary__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+body[data-page="events"] .events-filter-summary__item {
+  display: inline-flex;
+}
+
+body[data-page="events"] .events-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 42px;
+  padding: 0.62rem 0.82rem 0.62rem 0.95rem;
+  border: 1px solid rgba(14, 136, 240, 0.2);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff, #f4f9ff);
+  color: #173a62;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(12, 36, 80, 0.06);
+}
+
+body[data-page="events"] .events-filter-chip:hover {
+  border-color: rgba(14, 136, 240, 0.38);
+  background: #eef7ff;
+}
+
+body[data-page="events"] .events-filter-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(14, 136, 240, 0.1);
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+@media (max-width: 720px) {
+  html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar {
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 2px 2px 8px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html body[data-page="events"] main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar #chipNearMe {
+    display: none;
+  }
+
+  body[data-page="events"] .events-filter-summary {
+    width: min(calc(100% - 32px), 1100px);
+  }
+
+  body[data-page="events"] .events-filter-summary__top {
+    align-items: flex-start;
+  }
+
+  body[data-page="events"] .events-filter-summary__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 2px 2px 8px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body[data-page="events"] .events-filter-summary__item {
+    flex: 0 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="events"] .events-filter-chip,
+  body[data-page="events"] .events-filter-summary__clear {
+    transition: none;
+  }
+}
+/* AJSEE_EVENTS_MOBILE_QUICK_FILTER_LAYOUT_V2 */
+@media (max-width: 720px) {
+  html body[data-page="events"]
+  main#main
+  section#upcoming-events.events-upcoming-section
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 10px;
+    overflow: visible;
+    padding: 0;
+  }
+
+  html body[data-page="events"]
+  main#main
+  section#upcoming-events.events-upcoming-section
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  .chips {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    overflow: visible;
+    padding: 0;
+  }
+
+  html body[data-page="events"]
+  main#main
+  section#upcoming-events.events-upcoming-section
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  .chips
+  .chip {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    justify-content: center;
+    padding-inline: 0.65rem;
+    white-space: normal;
+    text-align: center;
+  }
+
+  html body[data-page="events"]
+  main#main
+  section#upcoming-events.events-upcoming-section
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  #chipClear {
+    grid-column: 1 / -1;
+  }
+
+  html body[data-page="events"]
+  main#main
+  section#upcoming-events.events-upcoming-section
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  #chipNearMe {
+    display: inline-flex !important;
+    width: 100%;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
   }
 }

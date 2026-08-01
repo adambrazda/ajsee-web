@@ -191,7 +191,9 @@
     "geoDenied": "Zugriff auf Standort verweigert. Sie können die Berechtigung in den Browsereinstellungen ändern.",
     "geoTimeout": "Die Standortermittlung hat zu lange gedauert. Bitte erneut versuchen.",
     "apply": "Filter anwenden",
-    "reset": "Zurücksetzen"
+    "reset": "Zurücksetzen",
+    "tomorrow": "Morgen",
+    "thisWeek": "Diese Woche"
   },
   "filter-category": "Kategorie",
   "filter-sort": "Sortieren nach",
@@ -427,5 +429,12 @@
       "text": "Erleben Sie die unverwechselbare Atmosphäre des West End. Wählen Sie aus weltbekannten Musicals, gehen Sie weiter zu den Ticketoptionen und ergänzen Sie Ihre Planung um eine geprüfte Unterkunft in London.",
       "cta": "Musicals ansehen"
     }
-  }
+  },
+  "events-found": "Gefunden",
+  "events-active-filters": "Aktive Filter",
+  "events-clear-filters": "Alle löschen",
+  "events-remove-filter": "Filter entfernen",
+  "events-empty-title": "Keine Veranstaltungen gefunden",
+  "events-empty-body": "Entfernen Sie einen aktiven Filter oder löschen Sie alle Filter.",
+  "events-empty-clear": "Filter löschen"
 }

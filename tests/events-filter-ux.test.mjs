@@ -1,13 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import {
+  readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 
 import {
   detectDatePreset,
   getActiveFilterDescriptors,
   getDatePresetRange,
-  renderEventsFilterSummary
+  renderEventsFilterSummary,
+  getEmptyStateRecommendation,
+  getEmptyStateRecommendationLabel
 } from '../src/events-filter-ux.js';
 
 test('tomorrow preset uses the next local calendar day', () => {
@@ -497,3 +500,280 @@ test('mobile quick filters expose all actions and bind near-me', () => {
     /#chipNearMe\s*\{[\s\S]*?display:\s*inline-flex\s*!important;/
   );
 });
+
+
+/* AJSEE_SMART_EMPTY_STATE_V1_TESTS */
+test(
+  'smart empty-state recommendation removes narrow filters before location',
+  () => {
+    const recommendation =
+      getEmptyStateRecommendation(
+        {
+          category:
+            'theatre',
+
+          audience:
+            'family',
+
+          city:
+            'Praha',
+
+          cityLabel:
+            'Praha',
+
+          dateFrom:
+            '2026-08-02',
+
+          dateTo:
+            '2026-08-02',
+
+          keyword:
+            'loutky',
+
+          sort:
+            'latest'
+        },
+        {
+          locale:
+            'cs',
+
+          labels: {
+            categories: {
+              theatre:
+                'Divadlo'
+            },
+
+            audiences: {
+              family:
+                'Pro rodiny'
+            }
+          }
+        }
+      );
+
+    assert.deepEqual(
+      recommendation,
+      {
+        key:
+          'keyword',
+
+        label:
+          '“loutky”'
+      }
+    );
+  }
+);
+
+test(
+  'smart empty-state recommendation preserves place until other restrictions are removed',
+  () => {
+    const recommendation =
+      getEmptyStateRecommendation(
+        {
+          category:
+            'film',
+
+          city:
+            'Brno',
+
+          cityLabel:
+            'Brno'
+        },
+        {
+          labels: {
+            categories: {
+              film:
+                'Film a kino'
+            }
+          }
+        }
+      );
+
+    assert.deepEqual(
+      recommendation,
+      {
+        key:
+          'category',
+
+        label:
+          'Film a kino'
+      }
+    );
+  }
+);
+
+test(
+  'sort alone does not create a smart empty-state recommendation',
+  () => {
+    const recommendation =
+      getEmptyStateRecommendation({
+        category:
+          'all',
+
+        sort:
+          'latest'
+      });
+
+    assert.equal(
+      recommendation,
+      null
+    );
+  }
+);
+
+test(
+  'events page exposes targeted empty-state recovery in every locale',
+  () => {
+    const entry =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.match(
+      entry,
+      /data-ajsee-events-remove-filter/
+    );
+
+    assert.match(
+      entry,
+      /data-ajsee-events-clear/
+    );
+
+    assert.match(
+      entry,
+      /focusEventsResultsSummary/
+    );
+
+    for (
+      const locale of [
+        'cs',
+        'en',
+        'de',
+        'sk',
+        'pl',
+        'hu'
+      ]
+    ) {
+      const source =
+        readFileSync(
+          new URL(
+            `../src/locales/${locale}.json`,
+            import.meta.url
+          ),
+          'utf8'
+        );
+
+      assert.match(
+        source,
+        /"events-empty-remove"/
+      );
+
+      assert.match(
+        source,
+        /"events-empty-no-filters"/
+      );
+    }
+  }
+);
+
+
+/* AJSEE_EMPTY_STATE_SINGLE_QUOTES_REGRESSION */
+test(
+  'empty-state keyword label has exactly one translated pair of quotes',
+  () => {
+    const keyword =
+      'ajsee-no-results-987654';
+
+    const label =
+      getEmptyStateRecommendationLabel({
+        key:
+          'keyword',
+
+        label:
+          `“${keyword}”`
+      });
+
+    assert.equal(
+      label,
+      keyword
+    );
+
+    assert.equal(
+      getEmptyStateRecommendationLabel({
+        key:
+          'category',
+
+        label:
+          'Divadlo'
+      }),
+      'Divadlo'
+    );
+
+    for (
+      const locale of [
+        'cs',
+        'en',
+        'de',
+        'sk',
+        'pl',
+        'hu'
+      ]
+    ) {
+      const json =
+        JSON.parse(
+          readFileSync(
+            new URL(
+              `../src/locales/${locale}.json`,
+              import.meta.url
+            ),
+            'utf8'
+          )
+        );
+
+      for (
+        const key of [
+          'events-empty-body',
+          'events-empty-remove'
+        ]
+      ) {
+        const template =
+          json[key];
+
+        assert.equal(
+          (
+            template.match(
+              /\{filter\}/g
+            ) ||
+            []
+          ).length,
+          1
+        );
+
+        const rendered =
+          template.replace(
+            '{filter}',
+            label
+          );
+
+        assert.equal(
+          (
+            rendered.match(
+              /ajsee-no-results-987654/g
+            ) ||
+            []
+          ).length,
+          1
+        );
+
+        assert.doesNotMatch(
+          rendered,
+          /[„“”"«»]{2,}/
+        );
+      }
+    }
+  }
+);

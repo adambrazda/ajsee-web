@@ -437,7 +437,9 @@
   "events-clear-filters": "Clear all",
   "events-remove-filter": "Remove filter",
   "events-empty-title": "No events found",
-  "events-empty-body": "Remove one of the active filters or clear them all.",
+  "events-empty-body": "Try removing “{filter}” while keeping the other settings.",
   "events-empty-clear": "Clear filters",
+  "events-empty-remove": "Remove “{filter}”",
+  "events-empty-no-filters": "No events are currently available for this selection.",
   "category-film": "Film & cinema"
 }

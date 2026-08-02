@@ -437,7 +437,9 @@
   "events-clear-filters": "Összes törlése",
   "events-remove-filter": "Szűrő eltávolítása",
   "events-empty-title": "Nem találtunk eseményeket",
-  "events-empty-body": "Távolítson el egy aktív szűrőt, vagy törölje az összeset.",
+  "events-empty-body": "Próbálja meg eltávolítani a(z) „{filter}” szűrőt, a többi beállítás megtartásával.",
   "events-empty-clear": "Szűrők törlése",
+  "events-empty-remove": "„{filter}” eltávolítása",
+  "events-empty-no-filters": "Ehhez a választáshoz jelenleg nem érhetők el események.",
   "category-film": "Film és mozi"
 }

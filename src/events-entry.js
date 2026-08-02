@@ -20,7 +20,9 @@ import {
   detectDatePreset,
   getActiveFilterDescriptors,
   getDatePresetRange,
-  renderEventsFilterSummary
+  renderEventsFilterSummary,
+  getEmptyStateRecommendation,
+  getEmptyStateRecommendationLabel
 } from './events-filter-ux.js';
 
 import { initLangDropdown } from './utils/lang-dropdown.js';
@@ -1230,60 +1232,357 @@ function ensureEventsStateStyles() {
       cursor:pointer;
       box-shadow:0 10px 24px rgba(9,30,66,.12);
     }
+    .ajsee-events-state__actions{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin-top:18px;
+    }
+    .ajsee-events-state__secondary{
+      background:#fff !important;
+      color:#0A3D62 !important;
+      box-shadow:none !important;
+    }
+    .ajsee-events-state button:hover{
+      transform:translateY(-1px);
+    }
+    .ajsee-events-state button:focus-visible{
+      outline:3px solid rgba(14,136,240,.32);
+      outline-offset:3px;
+    }
+    .ajsee-events-state button:disabled{
+      cursor:wait;
+      opacity:.65;
+      transform:none;
+    }
+    @media (max-width:520px){
+      .ajsee-events-state__actions{
+        align-items:stretch;
+        flex-direction:column;
+      }
+      .ajsee-events-state__actions button{
+        width:100%;
+      }
+    }
   `);
 }
 
+function formatEventsMessage(
+  template,
+  values = {}
+) {
+  return Object.entries(
+    values
+  ).reduce(
+    (
+      result,
+      [key, value]
+    ) =>
+      result
+        .split(
+          `{${key}}`
+        )
+        .join(
+          String(value)
+        ),
+    String(
+      template ||
+      ''
+    )
+  );
+}
+
+function focusEventsResultsSummary() {
+  const count =
+    qs('#eventsResultsCount');
+
+  if (!count) {
+    return;
+  }
+
+  count.setAttribute(
+    'tabindex',
+    '-1'
+  );
+
+  count.focus({
+    preventScroll:
+      false
+  });
+
+  count.addEventListener(
+    'blur',
+    () => {
+      count.removeAttribute(
+        'tabindex'
+      );
+    },
+    {
+      once:
+        true
+    }
+  );
+}
+
 function renderEventsStateMessage(kind = 'rateLimit') {
-  const list = document.getElementById('eventsList');
-  if (!list) return;
+  const list =
+    document.getElementById(
+      'eventsList'
+    );
+
+  if (!list) {
+    return;
+  }
 
   ensureEventsStateStyles();
 
-  const copy = kind === 'rateLimit'
-    ? getRateLimitCopy()
-    : {
-        title: t('events-empty-title', currentLang === 'en' ? 'No events found' : 'Nenašli jsme žádné akce'),
-        body: t(
-          'events-empty-body',
-          currentLang === 'en'
-            ? 'Remove one of the active filters or clear them all.'
-            : 'Odeberte některý z aktivních filtrů nebo je všechny vymažte.'
-        ),
-        retry: t('events-empty-clear', currentLang === 'en' ? 'Clear filters' : 'Vymazat filtry')
-      };
+  const isRateLimit =
+    kind === 'rateLimit';
 
-  updateResultsCount(kind === 'rateLimit' ? 'dočasně pozastaveno' : 0);
+  const uxLabels =
+    getEventsFilterUxLabels();
 
-  list.innerHTML = `
-    <div class="ajsee-events-state" role="status" aria-live="polite">
-      <div class="ajsee-events-state__eyebrow" aria-hidden="true">${kind === 'rateLimit' ? '⏳' : '🔎'}</div>
-      <h3>${esc(copy.title)}</h3>
-      <p>${esc(copy.body)}</p>
-      <button type="button" data-ajsee-events-retry>${esc(copy.retry)}</button>
-    </div>
-  `;
+  const recommendation =
+    isRateLimit
+      ? null
+      : getEmptyStateRecommendation(
+          currentFilters,
+          {
+            locale:
+              currentLang,
 
-  const retry = list.querySelector('[data-ajsee-events-retry]');
-  if (retry) {
-    retry.addEventListener('click', () => {
-      if (kind === 'rateLimit' && isTicketmasterRateLimited()) {
-        renderEventsStateMessage(kind);
-        return;
-      }
+            labels:
+              uxLabels
+          }
+        );
 
-      if (kind === 'empty') {
-        void resetAllEventFilters();
-        return;
-      }
+  const recommendationLabel =
+    getEmptyStateRecommendationLabel(
+      recommendation
+    );
 
-      _lastFetchSig = '';
-      resetEventsPager();
-      void renderAndSync({ resetPage: true });
-    }, { once: true });
+  const copy =
+    isRateLimit
+      ? getRateLimitCopy()
+      : {
+          title:
+            t(
+              'events-empty-title',
+              currentLang === 'en'
+                ? 'No events found'
+                : 'Nenašli jsme žádné akce'
+            ),
+
+          body:
+            recommendation
+              ? formatEventsMessage(
+                  t(
+                    'events-empty-body',
+                    currentLang === 'en'
+                      ? 'Try removing “{filter}” while keeping the other settings.'
+                      : 'Zkuste odebrat filtr „{filter}“ a ponechat ostatní nastavení.'
+                  ),
+                  {
+                    filter:
+                      recommendationLabel
+                  }
+                )
+              : t(
+                  'events-empty-no-filters',
+                  currentLang === 'en'
+                    ? 'No events are currently available for this selection.'
+                    : 'Pro aktuální výběr zatím nejsou dostupné žádné akce.'
+                ),
+
+          remove:
+            recommendation
+              ? formatEventsMessage(
+                  t(
+                    'events-empty-remove',
+                    currentLang === 'en'
+                      ? 'Remove “{filter}”'
+                      : 'Odebrat „{filter}“'
+                  ),
+                  {
+                    filter:
+                      recommendationLabel
+                  }
+                )
+              : '',
+
+          clear:
+            t(
+              'events-empty-clear',
+              currentLang === 'en'
+                ? 'Clear all filters'
+                : 'Vymazat všechny filtry'
+            )
+        };
+
+  updateResultsCount(
+    isRateLimit
+      ? 'dočasně pozastaveno'
+      : 0
+  );
+
+  if (isRateLimit) {
+    list.innerHTML = `
+      <div
+        class="ajsee-events-state"
+        role="status"
+        aria-live="polite"
+      >
+        <div
+          class="ajsee-events-state__eyebrow"
+          aria-hidden="true"
+        >⏳</div>
+
+        <h3>${esc(copy.title)}</h3>
+        <p>${esc(copy.body)}</p>
+
+        <button
+          type="button"
+          data-ajsee-events-retry
+        >${esc(copy.retry)}</button>
+      </div>
+    `;
+
+    const retry =
+      list.querySelector(
+        '[data-ajsee-events-retry]'
+      );
+
+    if (retry) {
+      retry.addEventListener(
+        'click',
+        () => {
+          if (
+            isTicketmasterRateLimited()
+          ) {
+            renderEventsStateMessage(
+              kind
+            );
+
+            return;
+          }
+
+          _lastFetchSig =
+            '';
+
+          resetEventsPager();
+
+          void renderAndSync({
+            resetPage:
+              true
+          });
+        },
+        {
+          once:
+            true
+        }
+      );
+    }
+  } else {
+    const actions =
+      recommendation
+        ? `
+          <div class="ajsee-events-state__actions">
+            <button
+              type="button"
+              data-ajsee-events-remove-filter
+            >${esc(copy.remove)}</button>
+
+            <button
+              type="button"
+              class="ajsee-events-state__secondary"
+              data-ajsee-events-clear
+            >${esc(copy.clear)}</button>
+          </div>
+        `
+        : '';
+
+    list.innerHTML = `
+      <div
+        class="ajsee-events-state"
+        role="region"
+        aria-labelledby="eventsEmptyStateTitle"
+      >
+        <div
+          class="ajsee-events-state__eyebrow"
+          aria-hidden="true"
+        >🔎</div>
+
+        <h3 id="eventsEmptyStateTitle">
+          ${esc(copy.title)}
+        </h3>
+
+        <p>
+          ${esc(copy.body)}
+        </p>
+
+        ${actions}
+      </div>
+    `;
+
+    const removeButton =
+      list.querySelector(
+        '[data-ajsee-events-remove-filter]'
+      );
+
+    if (
+      removeButton &&
+      recommendation
+    ) {
+      removeButton.addEventListener(
+        'click',
+        async () => {
+          removeButton.disabled =
+            true;
+
+          await clearSingleEventFilter(
+            recommendation.key
+          );
+
+          focusEventsResultsSummary();
+        },
+        {
+          once:
+            true
+        }
+      );
+    }
+
+    const clearButton =
+      list.querySelector(
+        '[data-ajsee-events-clear]'
+      );
+
+    if (clearButton) {
+      clearButton.addEventListener(
+        'click',
+        async () => {
+          clearButton.disabled =
+            true;
+
+          await resetAllEventFilters();
+
+          focusEventsResultsSummary();
+        },
+        {
+          once:
+            true
+        }
+      );
+    }
   }
 
   updateEventsPagerControls();
-  announce(`${copy.title}. ${copy.body}`);
+
+  announce(
+    `${copy.title}. ${copy.body}`
+  );
 }
 
 function bindTicketmasterRateLimitEvents() {

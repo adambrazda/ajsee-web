@@ -22,7 +22,8 @@ import {
   getDatePresetRange,
   renderEventsFilterSummary,
   getEmptyStateRecommendation,
-  getEmptyStateRecommendationLabel
+  getEmptyStateRecommendationLabel,
+  getEventsEmptyStateAnalyticsContext
 } from './events-filter-ux.js';
 
 import { initLangDropdown } from './utils/lang-dropdown.js';
@@ -1326,6 +1327,168 @@ function focusEventsResultsSummary() {
   );
 }
 
+let _lastEventsEmptyStateViewSignature =
+  '';
+
+function makeEventsEmptyStateViewSignature(
+  recommendation = null
+) {
+  /*
+   * Raw values are used only in this in-memory signature
+   * to distinguish changed states. They are never included
+   * in the analytics payload.
+   */
+  return JSON.stringify({
+    language:
+      currentLang,
+
+    recommendedFilter:
+      recommendation?.key ||
+      'none',
+
+    category:
+      currentFilters.category ||
+      'all',
+
+    audience:
+      currentFilters.audience ||
+      '',
+
+    placeType:
+      currentFilters.placeType ||
+      '',
+
+    city:
+      currentFilters.city ||
+      '',
+
+    cityLabel:
+      currentFilters.cityLabel ||
+      '',
+
+    cityCountryCode:
+      currentFilters.cityCountryCode ||
+      '',
+
+    dateFrom:
+      currentFilters.dateFrom ||
+      '',
+
+    dateTo:
+      currentFilters.dateTo ||
+      '',
+
+    keyword:
+      currentFilters.keyword ||
+      '',
+
+    nearMeLat:
+      currentFilters.nearMeLat ??
+      null,
+
+    nearMeLon:
+      currentFilters.nearMeLon ??
+      null,
+
+    nearMeRadiusKm:
+      currentFilters.nearMeRadiusKm ??
+      null
+  });
+}
+
+function pushEventsEmptyStateAnalytics(
+  eventName,
+  recommendation,
+  labels
+) {
+  const context =
+    getEventsEmptyStateAnalyticsContext(
+      currentFilters,
+      recommendation,
+      {
+        locale:
+          currentLang,
+
+        labels
+      }
+    );
+
+  const payload = {
+    event:
+      eventName,
+
+    source:
+      'events_empty_state',
+
+    /*
+     * Path deliberately excludes query parameters because
+     * they may contain a keyword or place entered by a user.
+     */
+    page_path:
+      window.location.pathname,
+
+    ...context
+  };
+
+  try {
+    window.dataLayer =
+      window.dataLayer ||
+      [];
+
+    window.dataLayer.push(
+      payload
+    );
+  } catch {
+    /* noop */
+  }
+
+  try {
+    window.__ajsee =
+      window.__ajsee ||
+      {};
+
+    window.__ajsee.lastEventsEmptyStateEvent =
+      payload;
+  } catch {
+    /* noop */
+  }
+
+  return payload;
+}
+
+function trackEventsEmptyStateView(
+  recommendation,
+  labels
+) {
+  const signature =
+    makeEventsEmptyStateViewSignature(
+      recommendation
+    );
+
+  if (
+    signature ===
+    _lastEventsEmptyStateViewSignature
+  ) {
+    return false;
+  }
+
+  _lastEventsEmptyStateViewSignature =
+    signature;
+
+  pushEventsEmptyStateAnalytics(
+    'events_empty_state_view',
+    recommendation,
+    labels
+  );
+
+  return true;
+}
+
+function resetEventsEmptyStateViewTracking() {
+  _lastEventsEmptyStateViewSignature =
+    '';
+}
+
 function renderEventsStateMessage(kind = 'rateLimit') {
   const list =
     document.getElementById(
@@ -1362,6 +1525,15 @@ function renderEventsStateMessage(kind = 'rateLimit') {
     getEmptyStateRecommendationLabel(
       recommendation
     );
+
+  if (isRateLimit) {
+    resetEventsEmptyStateViewTracking();
+  } else {
+    trackEventsEmptyStateView(
+      recommendation,
+      uxLabels
+    );
+  }
 
   const copy =
     isRateLimit
@@ -1538,6 +1710,12 @@ function renderEventsStateMessage(kind = 'rateLimit') {
       removeButton.addEventListener(
         'click',
         async () => {
+          pushEventsEmptyStateAnalytics(
+            'events_empty_state_remove_filter',
+            recommendation,
+            uxLabels
+          );
+
           removeButton.disabled =
             true;
 
@@ -1563,6 +1741,12 @@ function renderEventsStateMessage(kind = 'rateLimit') {
       clearButton.addEventListener(
         'click',
         async () => {
+          pushEventsEmptyStateAnalytics(
+            'events_empty_state_clear_all',
+            recommendation,
+            uxLabels
+          );
+
           clearButton.disabled =
             true;
 
@@ -4330,6 +4514,13 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       else renderEventsStateMessage('empty');
       return;
     }
+
+    /*
+     * A successful result state ends the current empty-state
+     * impression. Returning to the same zero-result filters
+     * later may therefore create a new legitimate view.
+     */
+    resetEventsEmptyStateViewTracking();
 
     injectProviderBadgeStyles();
 

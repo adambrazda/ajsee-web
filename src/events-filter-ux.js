@@ -230,6 +230,111 @@ export function getActiveFilterDescriptors(
   return descriptors;
 }
 
+/*
+ * Smart empty-state recommendation v1.
+ *
+ * The order preserves the user's strongest intent:
+ * location is removed only after narrower discovery filters.
+ * Sort is excluded because it cannot reduce the result count.
+ */
+const EMPTY_STATE_FILTER_PRIORITY =
+  Object.freeze([
+    'keyword',
+    'date',
+    'audience',
+    'category',
+    'place'
+  ]);
+
+export function getEmptyStateRecommendation(
+  filters = {},
+  {
+    locale = 'cs',
+    labels = {},
+    now = new Date(),
+    priority =
+      EMPTY_STATE_FILTER_PRIORITY
+  } = {}
+) {
+  const descriptors =
+    getActiveFilterDescriptors(
+      filters,
+      {
+        locale,
+        labels,
+        now
+      }
+    );
+
+  for (const key of priority) {
+    const descriptor =
+      descriptors.find(
+        (item) =>
+          item.key === key
+      );
+
+    if (descriptor) {
+      return descriptor;
+    }
+  }
+
+  return null;
+}
+
+export function getEmptyStateRecommendationLabel(
+  recommendation = null
+) {
+  const label =
+    String(
+      recommendation?.label ||
+      ''
+    ).trim();
+
+  if (
+    !label ||
+    recommendation?.key !== 'keyword'
+  ) {
+    return label;
+  }
+
+  const quotePairs = [
+    ['“', '”'],
+    ['„', '“'],
+    ['„', '”'],
+    ['"', '"'],
+    ['«', '»']
+  ];
+
+  for (
+    const [
+      openingQuote,
+      closingQuote
+    ] of quotePairs
+  ) {
+    if (
+      label.startsWith(
+        openingQuote
+      ) &&
+      label.endsWith(
+        closingQuote
+      ) &&
+      label.length >
+        openingQuote.length +
+        closingQuote.length
+    ) {
+      return label
+        .slice(
+          openingQuote.length,
+          label.length -
+            closingQuote.length
+        )
+        .trim();
+    }
+  }
+
+  return label;
+}
+
 export function renderEventsFilterSummary({
   document,
   host,

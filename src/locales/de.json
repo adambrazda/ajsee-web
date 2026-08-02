@@ -437,7 +437,9 @@
   "events-clear-filters": "Alle löschen",
   "events-remove-filter": "Filter entfernen",
   "events-empty-title": "Keine Veranstaltungen gefunden",
-  "events-empty-body": "Entfernen Sie einen aktiven Filter oder löschen Sie alle Filter.",
+  "events-empty-body": "Entfernen Sie zunächst den Filter „{filter}“ und behalten Sie die übrigen Einstellungen bei.",
   "events-empty-clear": "Filter löschen",
+  "events-empty-remove": "„{filter}“ entfernen",
+  "events-empty-no-filters": "Für diese Auswahl sind derzeit keine Veranstaltungen verfügbar.",
   "category-film": "Film & Kino"
 }

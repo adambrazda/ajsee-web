@@ -437,7 +437,9 @@
   "events-clear-filters": "Vymazať všetko",
   "events-remove-filter": "Odstrániť filter",
   "events-empty-title": "Nenašli sme žiadne podujatia",
-  "events-empty-body": "Odstráňte niektorý z aktívnych filtrov alebo ich všetky vymažte.",
+  "events-empty-body": "Skúste odstrániť filter „{filter}“ a ponechať ostatné nastavenia.",
   "events-empty-clear": "Vymazať filtre",
+  "events-empty-remove": "Odstrániť „{filter}“",
+  "events-empty-no-filters": "Pre aktuálny výber momentálne nie sú dostupné žiadne podujatia.",
   "category-film": "Film a kino"
 }

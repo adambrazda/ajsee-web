@@ -335,6 +335,121 @@ export function getEmptyStateRecommendationLabel(
   return label;
 }
 
+/*
+ * Privacy-safe context for empty-state analytics.
+ *
+ * Raw keyword, city, coordinates and full URLs are
+ * intentionally excluded from the returned payload.
+ * Sort is not counted as a restrictive filter.
+ */
+export function getEventsEmptyStateAnalyticsContext(
+  filters = {},
+  recommendation = null,
+  {
+    locale = 'cs',
+    labels = {},
+    now = new Date()
+  } = {}
+) {
+  const descriptors =
+    getActiveFilterDescriptors(
+      filters,
+      {
+        locale,
+        labels,
+        now
+      }
+    );
+
+  const activeKeys =
+    new Set(
+      descriptors.map(
+        (descriptor) =>
+          descriptor.key
+      )
+    );
+
+  const restrictiveFilterCount =
+    descriptors.filter(
+      (descriptor) =>
+        descriptor.key !== 'sort'
+    ).length;
+
+  const category =
+    String(
+      filters.category ||
+      'all'
+    )
+      .trim()
+      .toLowerCase();
+
+  const audience =
+    String(
+      filters.audience ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+  const language =
+    String(
+      locale ||
+      'cs'
+    )
+      .trim()
+      .toLowerCase()
+      .slice(
+        0,
+        2
+      ) ||
+    'cs';
+
+  return Object.freeze({
+    recommended_filter:
+      String(
+        recommendation?.key ||
+        'none'
+      ),
+
+    active_filter_count:
+      restrictiveFilterCount,
+
+    filter_category:
+      category &&
+      category !== 'all'
+        ? category
+        : 'all',
+
+    filter_audience:
+      audience === 'family'
+        ? 'family'
+        : 'all',
+
+    has_place_filter:
+      activeKeys.has(
+        'place'
+      )
+        ? 1
+        : 0,
+
+    has_date_filter:
+      activeKeys.has(
+        'date'
+      )
+        ? 1
+        : 0,
+
+    has_keyword_filter:
+      activeKeys.has(
+        'keyword'
+      )
+        ? 1
+        : 0,
+
+    language
+  });
+}
+
 export function renderEventsFilterSummary({
   document,
   host,

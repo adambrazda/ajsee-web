@@ -10,7 +10,8 @@ import {
   getDatePresetRange,
   renderEventsFilterSummary,
   getEmptyStateRecommendation,
-  getEmptyStateRecommendationLabel
+  getEmptyStateRecommendationLabel,
+  getEventsEmptyStateAnalyticsContext
 } from '../src/events-filter-ux.js';
 
 test('tomorrow preset uses the next local calendar day', () => {
@@ -775,5 +776,217 @@ test(
         );
       }
     }
+  }
+);
+
+
+/* AJSEE_EVENTS_EMPTY_STATE_ANALYTICS_V1 */
+test(
+  'empty-state analytics context contains only privacy-safe filter metadata',
+  () => {
+    const context =
+      getEventsEmptyStateAnalyticsContext(
+        {
+          category:
+            'theatre',
+
+          audience:
+            'family',
+
+          city:
+            'Praha',
+
+          cityLabel:
+            'Praha',
+
+          cityCountryCode:
+            'CZ',
+
+          dateFrom:
+            '2026-08-02',
+
+          dateTo:
+            '2026-08-02',
+
+          keyword:
+            'tajne-hledani-987654',
+
+          sort:
+            'latest'
+        },
+        {
+          key:
+            'keyword',
+
+          label:
+            '“tajne-hledani-987654”'
+        },
+        {
+          locale:
+            'cs',
+
+          labels: {
+            categories: {
+              theatre:
+                'Divadlo'
+            },
+
+            audiences: {
+              family:
+                'Pro rodiny'
+            },
+
+            sorts: {
+              latest:
+                'Nejnovější'
+            }
+          },
+
+          now:
+            new Date(
+              2026,
+              7,
+              2,
+              12,
+              0,
+              0
+            )
+        }
+      );
+
+    assert.deepEqual(
+      context,
+      {
+        recommended_filter:
+          'keyword',
+
+        active_filter_count:
+          5,
+
+        filter_category:
+          'theatre',
+
+        filter_audience:
+          'family',
+
+        has_place_filter:
+          1,
+
+        has_date_filter:
+          1,
+
+        has_keyword_filter:
+          1,
+
+        language:
+          'cs'
+      }
+    );
+
+    const serialized =
+      JSON.stringify(
+        context
+      );
+
+    assert.doesNotMatch(
+      serialized,
+      /Praha/
+    );
+
+    assert.doesNotMatch(
+      serialized,
+      /tajne-hledani/
+    );
+
+    assert.equal(
+      Object.hasOwn(
+        context,
+        'city'
+      ),
+      false
+    );
+
+    assert.equal(
+      Object.hasOwn(
+        context,
+        'keyword'
+      ),
+      false
+    );
+
+    assert.equal(
+      Object.hasOwn(
+        context,
+        'nearMeLat'
+      ),
+      false
+    );
+
+    assert.equal(
+      Object.hasOwn(
+        context,
+        'page_location'
+      ),
+      false
+    );
+  }
+);
+
+test(
+  'events empty-state analytics use dataLayer events and deduplicate unchanged views',
+  () => {
+    const entry =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    for (
+      const eventName of [
+        'events_empty_state_view',
+        'events_empty_state_remove_filter',
+        'events_empty_state_clear_all'
+      ]
+    ) {
+      assert.match(
+        entry,
+        new RegExp(
+          eventName
+        )
+      );
+    }
+
+    assert.match(
+      entry,
+      /window\.dataLayer\.push\(\s*payload\s*\)/
+    );
+
+    assert.match(
+      entry,
+      /_lastEventsEmptyStateViewSignature/
+    );
+
+    assert.match(
+      entry,
+      /signature\s*===\s*_lastEventsEmptyStateViewSignature/
+    );
+
+    assert.match(
+      entry,
+      /page_path:\s*window\.location\.pathname/
+    );
+
+    assert.match(
+      entry,
+      /lastEventsEmptyStateEvent/
+    );
+
+    assert.match(
+      entry,
+      /resetEventsEmptyStateViewTracking\(\);[\s\S]*?injectProviderBadgeStyles/
+    );
   }
 );

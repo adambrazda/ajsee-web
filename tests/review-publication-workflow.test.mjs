@@ -187,6 +187,16 @@ test(
       /name:\s*"publishedAt"\s*\r?\n\s+widget:\s*"hidden"/
     );
 
+    assert.match(
+      reviewsCollection,
+      /publish:\s*false/
+    );
+
+    assert.match(
+      reviewsCollection,
+      /delete:\s*false/
+    );
+
     assert.doesNotMatch(
       reviewsCollection,
       /label:\s*"Published",\s*value:\s*"published"/

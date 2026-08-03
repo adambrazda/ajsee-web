@@ -150,6 +150,8 @@ collections:
     description: "Edit review content here. Publishing and unpublishing are handled only through the validated AJSEE publication commands."
     folder: "content/reviews/items"
     create: true
+    publish: false
+    delete: false
     format: json
     identifier_field: "showTitle"
     slug: "{{fields.slug}}"

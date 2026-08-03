@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
@@ -338,6 +340,11 @@ test(
 
     assert.match(
       mainInbox,
+      /filter:\s*\r?\n\s+field:\s*"status"\s*\r?\n\s+value:\s*"ready_for_adam_review"/
+    );
+
+    assert.match(
+      mainInbox,
       /does not publish the review on the public website/
     );
 
@@ -375,5 +382,224 @@ test(
       contributorFields,
       'Adam and Oya must use the same submission data schema.'
     );
+  }
+);
+
+test(
+  'package exposes the review promotion command',
+  () => {
+    const packageJson =
+      JSON.parse(
+        fs.readFileSync(
+          path.join(
+            root,
+            'package.json'
+          ),
+          'utf8'
+        )
+      );
+
+    assert.equal(
+      packageJson.scripts[
+        'reviews:promote'
+      ],
+      'node scripts/promote-review-submission.mjs'
+    );
+  }
+);
+
+test(
+  'promotion creates an internal review and archives the source submission',
+  () => {
+    const tempRoot =
+      fs.mkdtempSync(
+        path.join(
+          os.tmpdir(),
+          'ajsee-review-promotion-'
+        )
+      );
+
+    try {
+      const submissionsDirectory =
+        path.join(
+          tempRoot,
+          'content',
+          'reviews',
+          'submissions'
+        );
+
+      const itemsDirectory =
+        path.join(
+          tempRoot,
+          'content',
+          'reviews',
+          'items'
+        );
+
+      fs.mkdirSync(
+        submissionsDirectory,
+        {
+          recursive: true
+        }
+      );
+
+      fs.mkdirSync(
+        itemsDirectory,
+        {
+          recursive: true
+        }
+      );
+
+      const submissionPath =
+        path.join(
+          submissionsDirectory,
+          'sweeney-todd.json'
+        );
+
+      fs.writeFileSync(
+        submissionPath,
+
+        JSON.stringify(
+          {
+            slug:
+              'sweeney-todd',
+
+            status:
+              'ready_for_adam_review',
+
+            showTitle:
+              'Sweeney Todd',
+
+            venue:
+              'Prague State Opera',
+
+            submittedAt:
+              '2026-08-03T09:15:00Z',
+
+            author:
+              'Oya Canli',
+
+            photos: {
+              cover: '',
+              coverAlt: '',
+              gallery: []
+            },
+
+            english: {
+              title:
+                'Sweeney Todd: Musical Theatre\'s Darkest Barber',
+
+              body:
+                'Test review body.'
+            }
+          },
+          null,
+          2
+        ) + '\n',
+
+        'utf8'
+      );
+
+      const result =
+        spawnSync(
+          process.execPath,
+
+          [
+            path.join(
+              root,
+              'scripts',
+              'promote-review-submission.mjs'
+            ),
+
+            'sweeney-todd',
+            'sweeney-todd-prague-2026'
+          ],
+
+          {
+            cwd:
+              tempRoot,
+
+            encoding:
+              'utf8'
+          }
+        );
+
+      assert.equal(
+        result.status,
+        0,
+        result.stderr || result.stdout
+      );
+
+      const promotedSubmission =
+        JSON.parse(
+          fs.readFileSync(
+            submissionPath,
+            'utf8'
+          )
+        );
+
+      const review =
+        JSON.parse(
+          fs.readFileSync(
+            path.join(
+              itemsDirectory,
+              'sweeney-todd-prague-2026.json'
+            ),
+            'utf8'
+          )
+        );
+
+      assert.equal(
+        promotedSubmission.status,
+        'promoted'
+      );
+
+      assert.equal(
+        promotedSubmission.promotedReviewSlug,
+        'sweeney-todd-prague-2026'
+      );
+
+      assert.ok(
+        Number.isFinite(
+          Date.parse(
+            promotedSubmission.promotedAt
+          )
+        )
+      );
+
+      assert.equal(
+        review.slug,
+        'sweeney-todd-prague-2026'
+      );
+
+      assert.equal(
+        review.status,
+        'approved'
+      );
+
+      assert.equal(
+        review.published,
+        false
+      );
+
+      assert.equal(
+        review.publishedAt,
+        ''
+      );
+
+      assert.match(
+        review.internalNotes,
+        /Promoted from review submission: sweeney-todd/
+      );
+    }
+    finally {
+      fs.rmSync(
+        tempRoot,
+        {
+          recursive: true,
+          force: true
+        }
+      );
+    }
   }
 );

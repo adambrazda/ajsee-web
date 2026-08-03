@@ -400,6 +400,9 @@ collections:
     create: false
     publish: true
     delete: false
+    filter:
+      field: "status"
+      value: "ready_for_adam_review"
     format: json
     identifier_field: "showTitle"
     slug: "{{slug}}"

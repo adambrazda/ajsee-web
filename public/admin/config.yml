@@ -147,8 +147,11 @@ collections:
   - name: "reviews"
     label: "Reviews"
     label_singular: "Review"
+    description: "Edit review content here. Publishing and unpublishing are handled only through the validated AJSEE publication commands."
     folder: "content/reviews/items"
     create: true
+    publish: false
+    delete: false
     format: json
     identifier_field: "showTitle"
     slug: "{{fields.slug}}"
@@ -163,24 +166,15 @@ collections:
         hint: "Example: jesus-christ-superstar-london-2026. Use lowercase letters, numbers and hyphens only."
         pattern: ['^[a-z0-9-]+$', 'Use lowercase letters, numbers and hyphens only.']
 
-      - label: "Workflow status"
+      - label: "Workflow status — managed automatically"
         name: "status"
-        widget: "select"
-        options:
-          - { label: "Draft", value: "draft" }
-          - { label: "Ready for review", value: "ready_for_review" }
-          - { label: "Needs changes", value: "needs_changes" }
-          - { label: "Approved", value: "approved" }
-          - { label: "Published", value: "published" }
-          - { label: "Archived", value: "archived" }
+        widget: "hidden"
         default: "draft"
-        hint: "Use Ready for review when the English version is finished and ready for Adam."
 
-      - label: "Published on website"
+      - label: "Published on website — managed automatically"
         name: "published"
-        widget: "boolean"
+        widget: "hidden"
         default: false
-        hint: "Keep this OFF until Adam approves the review and all language versions are ready."
 
       - label: "Featured review"
         name: "featured"
@@ -238,13 +232,10 @@ collections:
         picker_utc: true
         format: "YYYY-MM-DDTHH:mm:ss[Z]"
 
-      - label: "Published date"
+      - label: "Published date — managed automatically"
         name: "publishedAt"
-        widget: "datetime"
-        required: false
-        picker_utc: true
-        format: "YYYY-MM-DDTHH:mm:ss[Z]"
-        hint: "Fill this only when the review is ready to be published."
+        widget: "hidden"
+        default: ""
 
       - label: "Author name"
         name: "author"

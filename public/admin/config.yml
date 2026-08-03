@@ -390,3 +390,225 @@ collections:
         widget: "text"
         required: false
         hint: "Private editorial notes. Not shown on the website."
+
+  # Incoming reviews submitted through /review-admin/
+  - name: "review_submissions"
+    label: "Incoming review submissions"
+    label_singular: "Incoming review submission"
+    description: "Review requests submitted by Oya. Publishing here only accepts the submission into the AJSEE internal review queue; it does not publish the review on the public website."
+    folder: "content/reviews/submissions"
+    create: false
+    publish: true
+    delete: false
+    filter:
+      field: "status"
+      value: "ready_for_adam_review"
+    format: json
+    identifier_field: "showTitle"
+    slug: "{{slug}}"
+    sortable_fields: ["submittedAt", "showTitle", "status"]
+    search_fields:
+      - "showTitle"
+      - "productionTitle"
+      - "venue"
+      - "city"
+      - "english.title"
+    editor:
+      preview: false
+
+    fields:
+      - label: "Review slug"
+        name: "slug"
+        widget: "hidden"
+        required: false
+
+      - label: "Submission status"
+        name: "status"
+        widget: "hidden"
+        default: "ready_for_adam_review"
+
+      - label: "Show title"
+        name: "showTitle"
+        widget: "string"
+        hint: "Example: Sweeney Todd"
+
+      - label: "Production / event title"
+        name: "productionTitle"
+        widget: "string"
+        required: false
+        hint: "Optional. Complete only when the production title differs from the show title."
+
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "Theatre", value: "theatre" }
+          - { label: "Concert", value: "concert" }
+          - { label: "Festival", value: "festival" }
+          - { label: "Sport", value: "sport" }
+        default: "theatre"
+
+      - label: "Venue"
+        name: "venue"
+        widget: "string"
+        required: false
+        hint: "Example: London Palladium"
+
+      - label: "City"
+        name: "city"
+        widget: "string"
+        required: false
+        hint: "Example: London"
+
+      - label: "Country"
+        name: "country"
+        widget: "string"
+        required: false
+        hint: "Example: United Kingdom"
+
+      - label: "Performance date"
+        name: "performanceDate"
+        widget: "datetime"
+        required: false
+        picker_utc: true
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+
+      - label: "Submission date"
+        name: "submittedAt"
+        widget: "datetime"
+        required: true
+        default: "{{now}}"
+        picker_utc: true
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+        hint: "Filled automatically. You normally do not need to change it."
+
+      - label: "Author name"
+        name: "author"
+        widget: "string"
+        default: "Oya Canli"
+
+      - label: "Rating"
+        name: "rating"
+        widget: "number"
+        required: false
+        value_type: "float"
+        min: 0
+        max: 5
+        step: 0.5
+        hint: "Optional. Use a value from 0 to 5."
+
+      - label: "Ticket URL"
+        name: "ticketUrl"
+        widget: "string"
+        required: false
+        hint: "Optional. Adam can add the verified AJSEE ticket link later."
+
+      - label: "Photos"
+        name: "photos"
+        widget: "object"
+        required: false
+        collapsed: true
+        summary: "Optional photographs"
+        fields:
+          - label: "Cover image"
+            name: "cover"
+            widget: "image"
+            allow_multiple: false
+            choose_url: true
+            required: false
+            hint: "Optional. The review can be submitted without a photograph."
+
+          - label: "Cover image alt text"
+            name: "coverAlt"
+            widget: "string"
+            required: false
+            hint: "Optional at submission stage. Adam can complete it later."
+
+          - label: "Gallery images"
+            name: "gallery"
+            widget: "list"
+            required: false
+            default: []
+            label_singular: "Gallery image"
+            summary: "{{fields.image}}"
+            fields:
+              - label: "Image"
+                name: "image"
+                widget: "image"
+                choose_url: true
+                required: false
+
+              - label: "Alt text"
+                name: "alt"
+                widget: "string"
+                required: false
+
+              - label: "Photo credit"
+                name: "credit"
+                widget: "string"
+                required: false
+
+      - label: "English review"
+        name: "english"
+        widget: "object"
+        fields:
+          - label: "Review title"
+            name: "title"
+            widget: "string"
+            required: true
+
+          - label: "Subtitle"
+            name: "subtitle"
+            widget: "string"
+            required: false
+
+          - label: "Short excerpt"
+            name: "excerpt"
+            widget: "text"
+            required: false
+            hint: "Optional. Adam can prepare the final card excerpt later."
+
+          - label: "Full review text"
+            name: "body"
+            widget: "markdown"
+            required: true
+            hint: "Paste the complete English review here. Paragraphs, headings and lists are supported."
+            buttons:
+              - bold
+              - italic
+              - link
+              - heading-two
+              - heading-three
+              - quote
+              - bulleted-list
+              - numbered-list
+            editor_components: []
+
+          - label: "Call-to-action text"
+            name: "ctaText"
+            widget: "string"
+            required: false
+            default: "Check tickets"
+
+      - label: "SEO"
+        name: "seo"
+        widget: "object"
+        required: false
+        collapsed: true
+        summary: "Optional — Adam can complete this section"
+        fields:
+          - label: "SEO title"
+            name: "title"
+            widget: "string"
+            required: false
+
+          - label: "SEO description"
+            name: "description"
+            widget: "text"
+            required: false
+
+      - label: "Notes for Adam"
+        name: "notesForAdam"
+        widget: "text"
+        required: false
+        hint: "Optional private notes. These are not shown on the AJSEE website."

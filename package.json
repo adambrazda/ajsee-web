@@ -35,7 +35,8 @@
     "events:modal:test": "node --test --test-concurrency=1 tests/event-modal-ticket-options-dom.test.mjs",
     "events:filters:test": "node --test --test-concurrency=1 tests/events-filter-ux.test.mjs",
     "reviews:publish": "node scripts/set-review-publication.mjs publish",
-    "reviews:unpublish": "node scripts/set-review-publication.mjs unpublish"
+    "reviews:unpublish": "node scripts/set-review-publication.mjs unpublish",
+    "reviews:promote": "node scripts/promote-review-submission.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

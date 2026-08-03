@@ -235,3 +235,145 @@ test(
     );
   }
 );
+
+test(
+  'main admin exposes Oya submissions as a safe internal inbox',
+  () => {
+    const mainConfig =
+      fs.readFileSync(
+        path.join(
+          root,
+          'public',
+          'admin',
+          'config.yml'
+        ),
+        'utf8'
+      );
+
+    const contributorConfig =
+      fs.readFileSync(
+        path.join(
+          root,
+          'public',
+          'review-admin',
+          'config.yml'
+        ),
+        'utf8'
+      );
+
+    function extractCollection(
+      config,
+      collectionName
+    ) {
+      const marker =
+        `  - name: "${collectionName}"`;
+
+      const start =
+        config.indexOf(marker);
+
+      assert.notEqual(
+        start,
+        -1,
+        `Collection ${collectionName} was not found.`
+      );
+
+      const next =
+        config.indexOf(
+          '\n  - name: "',
+          start + marker.length
+        );
+
+      return (
+        next === -1
+          ? config.slice(start)
+          : config.slice(start, next)
+      );
+    }
+
+    const mainInbox =
+      extractCollection(
+        mainConfig,
+        'review_submissions'
+      );
+
+    const contributorInbox =
+      extractCollection(
+        contributorConfig,
+        'review_submissions'
+      );
+
+    assert.equal(
+      (
+        mainConfig.match(
+          /  - name: "review_submissions"/g
+        ) || []
+      ).length,
+      1
+    );
+
+    assert.match(
+      mainInbox,
+      /label:\s*"Incoming review submissions"/
+    );
+
+    assert.match(
+      mainInbox,
+      /folder:\s*"content\/reviews\/submissions"/
+    );
+
+    assert.match(
+      mainInbox,
+      /create:\s*false/
+    );
+
+    assert.match(
+      mainInbox,
+      /publish:\s*true/
+    );
+
+    assert.match(
+      mainInbox,
+      /delete:\s*false/
+    );
+
+    assert.match(
+      mainInbox,
+      /does not publish the review on the public website/
+    );
+
+    assert.match(
+      contributorInbox,
+      /create:\s*true/
+    );
+
+    assert.match(
+      contributorInbox,
+      /publish:\s*false/
+    );
+
+    assert.match(
+      contributorInbox,
+      /delete:\s*false/
+    );
+
+    const mainFields =
+      mainInbox.slice(
+        mainInbox.indexOf(
+          '    fields:'
+        )
+      );
+
+    const contributorFields =
+      contributorInbox.slice(
+        contributorInbox.indexOf(
+          '    fields:'
+        )
+      );
+
+    assert.equal(
+      mainFields,
+      contributorFields,
+      'Adam and Oya must use the same submission data schema.'
+    );
+  }
+);

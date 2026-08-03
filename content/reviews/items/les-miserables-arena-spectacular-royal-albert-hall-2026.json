@@ -1,49 +1,5 @@
 {
-  "slug": "les-miserables-arena-spectacular-royal-albert-hall-2026",
-  "status": "approved",
-  "published": false,
-  "featured": false,
-  "category": "theatre",
-  "showTitle": "Les Misérables",
-  "productionTitle": "Les Misérables: The Arena Spectacular",
-  "venue": "Royal Albert Hall",
-  "city": "London",
-  "country": "United Kingdom",
-  "performanceDate": "2026-06-21",
-  "reviewDate": "2026-07-12T20:50:00Z",
   "publishedAt": "",
-  "author": "Oya Canli",
-  "rating": 5,
-  "ticketUrl": "https://ajsee.tixculture.com/london/shows/300-les-miserables",
-  "cover": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-curtain-call-cover.webp",
-  "coverAlt": "Cast of Les Misérables: The Arena Spectacular taking a curtain call at the Royal Albert Hall.",
-  "gallery": [
-    {
-      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-royal-albert-hall-screen.webp",
-      "alt": "Stage screen welcoming Les Misérables back to the Royal Albert Hall.",
-      "credit": "Oya Canli"
-    },
-    {
-      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-cast-curtain-call.webp",
-      "alt": "Cast of Les Misérables: The Arena Spectacular during the curtain call.",
-      "credit": "Oya Canli"
-    },
-    {
-      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-audience-ovation.webp",
-      "alt": "Audience applauding the cast of Les Misérables at the Royal Albert Hall.",
-      "credit": "Oya Canli"
-    },
-    {
-      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/royal-albert-hall-auditorium.webp",
-      "alt": "Interior of the Royal Albert Hall filled with audience members.",
-      "credit": "Oya Canli"
-    },
-    {
-      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-stage-side-view.webp",
-      "alt": "View from beside the Les Misérables stage across the Royal Albert Hall auditorium.",
-      "credit": "Oya Canli"
-    }
-  ],
   "translations": {
     "en": {
       "title": "Les Misérables: The Arena Spectacular — A Celebration of 40 Years of Musical Theatre Magic",
@@ -100,5 +56,49 @@
       "seoDescription": "Fünf-Sterne-Kritik zu Les Misérables: The Arena Spectacular in der Royal Albert Hall und Alfie Boes letztem Auftritt als Jean Valjean."
     }
   },
-  "internalNotes": "Promoted from review submission: les-miserables-concert\nOriginal submission status: ready_for_adam_review\nNotes for Adam: Correct format is here: https://docs.google.com/document/d/137w4hF8Hc_n-Cd7kVZB7eQ_FHz06yi5sHDDnPrGPTrA/edit?tab=t.0\nPromoted at: 2026-07-29T06:38:54.789Z\nPhoto selection and optimized WebP assets prepared from photographs supplied by Oya Canli.\nEnglish text structured from Oya Canli’s original document; only Adam-approved grammar, punctuation and formatting corrections applied.\nEnglish SEO metadata updated and ticket CTA linked to the current London production of Les Misérables.\nCzech translation approved by Adam, including the terms “koncepční album”, “megamuzikálu” and “jevištní točna”.\nSlovak translation approved by Adam, including “obeti”, “epickou hudbou”, “megamuzikálu” and “javisková točňa”.\nHungarian translation approved by Adam, including “koncepcióalbum”, “megamusical”, “epikus zenével” and “forgószínpad”.\nPolish translation approved by Adam, including quoted “Nędznicy”, the required comma before “Les Misérables” and “megamusicalu”.\nGerman translation approved by Adam, including “Konzeptalbum”, “Megamusicals”, “epischer Musik” and “Drehbühne”."
+  "ticketUrl": "https://ajsee.tixculture.com/london/shows/300-les-miserables",
+  "internalNotes": "Promoted from review submission: les-miserables-concert\nOriginal submission status: ready_for_adam_review\nNotes for Adam: Correct format is here: https://docs.google.com/document/d/137w4hF8Hc_n-Cd7kVZB7eQ_FHz06yi5sHDDnPrGPTrA/edit?tab=t.0\nPromoted at: 2026-07-29T06:38:54.789Z\nPhoto selection and optimized WebP assets prepared from photographs supplied by Oya Canli.\nEnglish text structured from Oya Canli’s original document; only Adam-approved grammar, punctuation and formatting corrections applied.\nEnglish SEO metadata updated and ticket CTA linked to the current London production of Les Misérables.\nCzech translation approved by Adam, including the terms “koncepční album”, “megamuzikálu” and “jevištní točna”.\nSlovak translation approved by Adam, including “obeti”, “epickou hudbou”, “megamuzikálu” and “javisková točňa”.\nHungarian translation approved by Adam, including “koncepcióalbum”, “megamusical”, “epikus zenével” and “forgószínpad”.\nPolish translation approved by Adam, including quoted “Nędznicy”, the required comma before “Les Misérables” and “megamusicalu”.\nGerman translation approved by Adam, including “Konzeptalbum”, “Megamusicals”, “epischer Musik” and “Drehbühne”.",
+  "reviewDate": "2026-07-12T20:50:00Z",
+  "city": "London",
+  "author": "Oya Canli",
+  "slug": "les-miserables-arena-spectacular-royal-albert-hall-2026",
+  "featured": false,
+  "published": true,
+  "venue": "Royal Albert Hall",
+  "coverAlt": "Cast of Les Misérables: The Arena Spectacular taking a curtain call at the Royal Albert Hall.",
+  "gallery": [
+    {
+      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-royal-albert-hall-screen.webp",
+      "alt": "Stage screen welcoming Les Misérables back to the Royal Albert Hall.",
+      "credit": "Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-cast-curtain-call.webp",
+      "alt": "Cast of Les Misérables: The Arena Spectacular during the curtain call.",
+      "credit": "Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-audience-ovation.webp",
+      "alt": "Audience applauding the cast of Les Misérables at the Royal Albert Hall.",
+      "credit": "Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/royal-albert-hall-auditorium.webp",
+      "alt": "Interior of the Royal Albert Hall filled with audience members.",
+      "credit": "Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-stage-side-view.webp",
+      "alt": "View from beside the Les Misérables stage across the Royal Albert Hall auditorium.",
+      "credit": "Oya Canli"
+    }
+  ],
+  "status": "approved",
+  "country": "United Kingdom",
+  "cover": "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-curtain-call-cover.webp",
+  "showTitle": "Les Misérables",
+  "rating": 5,
+  "category": "theatre",
+  "performanceDate": "2026-06-21",
+  "productionTitle": "Les Misérables: The Arena Spectacular"
 }

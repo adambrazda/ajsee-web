@@ -159,6 +159,11 @@ const review = {
   published: false,
   featured: false,
 
+  contentType:
+    submission.contentType === 'preview'
+      ? 'preview'
+      : 'review',
+
   category:
     submission.category ||
     'theatre',
@@ -186,6 +191,10 @@ const review = {
 
   performanceDate:
     submission.performanceDate ||
+    '',
+
+  eventDate:
+    submission.eventDate ||
     '',
 
   reviewDate:

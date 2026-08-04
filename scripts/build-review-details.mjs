@@ -1,4 +1,4 @@
-﻿import { promises as fs } from 'node:fs';
+import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
@@ -15,6 +15,32 @@ const REVIEW_BACK_LABELS = {
   hu: 'Vissza a bloghoz és az értékelésekhez'
 };
 
+const REVIEW_CONTENT_TYPE_LABELS = {
+  cs: {
+    review: 'Recenze',
+    preview: 'Divadelní preview'
+  },
+  en: {
+    review: 'Review',
+    preview: 'Theatre preview'
+  },
+  de: {
+    review: 'Rezension',
+    preview: 'Theatervorschau'
+  },
+  sk: {
+    review: 'Recenzia',
+    preview: 'Divadelné preview'
+  },
+  pl: {
+    review: 'Recenzja',
+    preview: 'Zapowiedź teatralna'
+  },
+  hu: {
+    review: 'Kritika',
+    preview: 'Színházi előzetes'
+  }
+};
 const OG_LOCALES = {
   cs: 'cs_CZ',
   en: 'en_GB',
@@ -92,6 +118,43 @@ function normalizeSlug(value = '') {
 function normalizeLang(value = '') {
   const lang = String(value || '').trim().toLowerCase().split(/[-_]/)[0];
   return SUPPORTED_LANGS.includes(lang) ? lang : DEFAULT_LANG;
+}
+
+function normalizeReviewContentType(review = {}) {
+  return String(
+    review?.contentType ||
+    review?.type ||
+    ''
+  ).trim().toLowerCase() === 'preview'
+    ? 'preview'
+    : 'review';
+}
+
+function isPreviewContent(review = {}) {
+  return normalizeReviewContentType(review) === 'preview';
+}
+function getReviewContentTypeLabel(
+  review = {},
+  lang = DEFAULT_LANG
+) {
+  const currentLang =
+    normalizeLang(lang);
+
+  const contentType =
+    normalizeReviewContentType(review);
+
+  const labels =
+    REVIEW_CONTENT_TYPE_LABELS[
+      currentLang
+    ] ||
+    REVIEW_CONTENT_TYPE_LABELS[
+      DEFAULT_LANG
+    ];
+
+  return (
+    labels[contentType] ||
+    labels.review
+  );
 }
 
 function toAbsoluteUrl(value = '') {
@@ -258,61 +321,137 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
   const slug = normalizeSlug(review.slug);
   const canonicalUrl = buildReviewCanonicalUrl(slug, lang);
   const title = translation.title || review.showTitle || slug;
-  const description = truncate(translation.seoDescription || translation.excerpt || translation.body || title);
-  const image = toAbsoluteUrl(review.cover) || `${SITE_ORIGIN}/images/logo-ajsee.png`;
+  const description = truncate(
+    translation.seoDescription ||
+    translation.excerpt ||
+    translation.body ||
+    title
+  );
+  const image =
+    toAbsoluteUrl(review.cover) ||
+    `${SITE_ORIGIN}/images/logo-ajsee.png`;
+  const contentType =
+    normalizeReviewContentType(review);
+
+  const mainEntityOfPage = {
+    '@type': 'WebPage',
+    '@id': canonicalUrl
+  };
+
+  const author = {
+    '@type': 'Person',
+    name: review.author || 'AJSEE'
+  };
+
+  const publisher = {
+    '@type': 'Organization',
+    name: 'AJSEE',
+    url: `${SITE_ORIGIN}/`,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${SITE_ORIGIN}/images/logo-ajsee.png`
+    }
+  };
+
+  const event = {
+    '@type': 'Event',
+    name:
+      review.productionTitle ||
+      review.showTitle ||
+      title,
+    location:
+      review.venue ||
+      review.city
+        ? {
+            '@type': 'Place',
+            name:
+              review.venue ||
+              undefined,
+            address:
+              [
+                review.city,
+                review.country
+              ]
+                .filter(Boolean)
+                .join(', ') ||
+              undefined
+          }
+        : undefined,
+    startDate:
+      review.eventDate ||
+      review.performanceDate ||
+      undefined
+  };
+
+  const primaryEntity =
+    contentType === 'preview'
+      ? {
+          '@type': 'Article',
+          '@id': `${canonicalUrl}#article`,
+          mainEntityOfPage,
+          headline: title,
+          name: title,
+          description,
+          image: [image],
+          datePublished:
+            review.publishedAt ||
+            review.reviewDate ||
+            undefined,
+          dateModified:
+            review.publishedAt ||
+            review.reviewDate ||
+            undefined,
+          inLanguage: lang,
+          articleBody:
+            stripHtml(
+              translation.body
+            ) ||
+            undefined,
+          author,
+          publisher,
+          about: event
+        }
+      : {
+          '@type': 'Review',
+          '@id': `${canonicalUrl}#review`,
+          mainEntityOfPage,
+          headline: title,
+          name: title,
+          description,
+          image: [image],
+          datePublished:
+            review.publishedAt ||
+            review.reviewDate ||
+            undefined,
+          dateModified:
+            review.publishedAt ||
+            review.reviewDate ||
+            undefined,
+          inLanguage: lang,
+          reviewBody:
+            stripHtml(
+              translation.body
+            ) ||
+            undefined,
+          author,
+          publisher,
+          itemReviewed: event,
+          reviewRating:
+            typeof review.rating === 'number'
+              ? {
+                  '@type': 'Rating',
+                  ratingValue:
+                    review.rating,
+                  bestRating: 5,
+                  worstRating: 0
+                }
+              : undefined
+        };
 
   const graph = {
     '@context': 'https://schema.org',
     '@graph': [
-      {
-        '@type': 'Review',
-        '@id': `${canonicalUrl}#review`,
-        mainEntityOfPage: {
-          '@type': 'WebPage',
-          '@id': canonicalUrl
-        },
-        headline: title,
-        name: title,
-        description,
-        image: [image],
-        datePublished: review.publishedAt || review.reviewDate || undefined,
-        dateModified: review.publishedAt || review.reviewDate || undefined,
-        inLanguage: lang,
-        reviewBody: stripHtml(translation.body) || undefined,
-        author: {
-          '@type': 'Person',
-          name: review.author || 'AJSEE'
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: 'AJSEE',
-          url: `${SITE_ORIGIN}/`,
-          logo: {
-            '@type': 'ImageObject',
-            url: `${SITE_ORIGIN}/images/logo-ajsee.png`
-          }
-        },
-        itemReviewed: {
-          '@type': 'Event',
-          name: review.productionTitle || review.showTitle || title,
-          location: review.venue || review.city
-            ? {
-                '@type': 'Place',
-                name: review.venue || undefined,
-                address: [review.city, review.country].filter(Boolean).join(', ') || undefined
-              }
-            : undefined,
-          startDate: review.performanceDate || undefined
-        },
-        reviewRating: typeof review.rating === 'number'
-          ? {
-              '@type': 'Rating',
-              ratingValue: review.rating,
-              bestRating: 5,
-              worstRating: 0
-            }
-          : undefined
-      },
+      primaryEntity,
       {
         '@type': 'BreadcrumbList',
         '@id': `${canonicalUrl}#breadcrumb`,
@@ -343,7 +482,9 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
     ]
   };
 
-  return JSON.parse(JSON.stringify(graph));
+  return JSON.parse(
+    JSON.stringify(graph)
+  );
 }
 
 function buildHeadSeo(review, translation, lang = DEFAULT_LANG) {
@@ -384,25 +525,106 @@ ${alternateLinks}
 
 function buildMetaRow(review, lang = DEFAULT_LANG) {
   const parts = [];
+  const preview =
+    isPreviewContent(review);
 
-  const reviewDate = formatDate(review.publishedAt || review.reviewDate, lang);
-  const performanceDate = formatDate(review.performanceDate, lang);
+  const articleDate =
+    formatDate(
+      review.publishedAt ||
+      review.reviewDate,
+      lang
+    );
 
-  if (reviewDate) parts.push(`<span>${escapeHtml(reviewDate)}</span>`);
-  if (review.author) parts.push(`<span>${escapeHtml(review.author)}</span>`);
-  if (review.rating !== null && review.rating !== undefined && review.rating !== '') {
-    parts.push(`<span aria-label="Rating ${escapeAttr(review.rating)} out of 5">&#9733; ${escapeHtml(review.rating)}/5</span>`);
-  }
-  if (review.venue || review.city) {
-    parts.push(`<span>${escapeHtml([review.venue, review.city].filter(Boolean).join(', '))}</span>`);
-  }
-  if (performanceDate) {
-    parts.push(`<span>Seen ${escapeHtml(performanceDate)}</span>`);
+  const performanceDate =
+    formatDate(
+      review.performanceDate,
+      lang
+    );
+
+  const eventDate =
+    formatDate(
+      review.eventDate,
+      lang
+    );
+
+  const premiereLabels = {
+    cs: 'Premiéra',
+    en: 'Premiere',
+    de: 'Premiere',
+    sk: 'Premiéra',
+    pl: 'Premiera',
+    hu: 'Bemutató'
+  };
+
+  if (articleDate) {
+    parts.push(
+      `<span>${escapeHtml(articleDate)}</span>`
+    );
   }
 
-  return parts.join(' <span aria-hidden="true">&middot;</span> ');
+  if (review.author) {
+    parts.push(
+      `<span>${escapeHtml(review.author)}</span>`
+    );
+  }
+
+  if (
+    !preview &&
+    review.rating !== null &&
+    review.rating !== undefined &&
+    review.rating !== ''
+  ) {
+    parts.push(
+      `<span aria-label="Rating ${escapeAttr(review.rating)} out of 5">&#9733; ${escapeHtml(review.rating)}/5</span>`
+    );
+  }
+
+  if (
+    review.venue ||
+    review.city
+  ) {
+    parts.push(
+      `<span>${escapeHtml(
+        [
+          review.venue,
+          review.city
+        ]
+          .filter(Boolean)
+          .join(', ')
+      )}</span>`
+    );
+  }
+
+  if (
+    preview &&
+    eventDate
+  ) {
+    const label =
+      premiereLabels[
+        normalizeLang(lang)
+      ] ||
+      premiereLabels[
+        DEFAULT_LANG
+      ];
+
+    parts.push(
+      `<span>${escapeHtml(label)} ${escapeHtml(eventDate)}</span>`
+    );
+  }
+
+  if (
+    !preview &&
+    performanceDate
+  ) {
+    parts.push(
+      `<span>Seen ${escapeHtml(performanceDate)}</span>`
+    );
+  }
+
+  return parts.join(
+    ' <span aria-hidden="true">&middot;</span> '
+  );
 }
-
 
 const REVIEW_GALLERY_LABELS = {
   cs: 'Fotogalerie',
@@ -468,6 +690,11 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   const cover = review.cover || '';
   const coverAlt = review.coverAlt || title;
   const coverCredit = review.coverCredit || '';
+  const contentTypeLabel =
+    getReviewContentTypeLabel(
+      review,
+      lang
+    );
   const metaRow = buildMetaRow(review, lang);
   const ctaText = translation.ctaText || 'Check tickets';
   const ticketUrl = addLanguageTracking(
@@ -479,7 +706,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
         <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}">
           <header class="review-detail-hero">
             <p class="blog-card-meta">
-              <span class="card-badge">Review</span>
+              <span class="card-badge">${escapeHtml(contentTypeLabel)}</span>
               ${metaRow ? `<span>${metaRow}</span>` : ''}
             </p>
 

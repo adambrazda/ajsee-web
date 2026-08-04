@@ -395,6 +395,15 @@ async function loadReviewCards(lang) {
     hu: 'V?lem?ny'
   };
 
+  const previewBadge = {
+    cs: 'Preview',
+    en: 'Preview',
+    de: 'Vorschau',
+    sk: 'Preview',
+    pl: 'Zapowiedź',
+    hu: 'Előzetes'
+  };
+
   const fallbackLangs = Array.from(new Set([currentLang, 'en', 'cs']));
 
   const pickTranslation = (item) => {
@@ -430,6 +439,11 @@ async function loadReviewCards(lang) {
       const localized = pickTranslation(item);
       const data = localized.data || {};
       const slug = String(item.slug || '').trim();
+      const contentType =
+        item.contentType === 'preview' ||
+        item.type === 'preview'
+          ? 'preview'
+          : 'review';
 
       const title = data.title || item.showTitle || slug;
       const lead = data.excerpt || data.subtitle || item.productionTitle || '';
@@ -443,9 +457,9 @@ async function loadReviewCards(lang) {
 
       return {
         ...item,
-        type: 'review',
-        kind: 'review',
-        contentType: 'review',
+        type: contentType,
+        kind: contentType,
+        contentType,
         category: 'review',
         dataCategory: 'review',
         slug,
@@ -466,7 +480,16 @@ async function loadReviewCards(lang) {
         url: href,
         link: href,
         path: href,
-        badge: reviewBadge[currentLang] || reviewBadge.en,
+        badge:
+          contentType === 'preview'
+            ? (
+                previewBadge[currentLang] ||
+                previewBadge.en
+              )
+            : (
+                reviewBadge[currentLang] ||
+                reviewBadge.en
+              ),
         _ts: ts,
         ts
       };

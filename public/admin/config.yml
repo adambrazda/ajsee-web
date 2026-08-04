@@ -325,6 +325,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: true }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - label: "Short excerpt"
                 name: "excerpt"
                 widget: "text"
@@ -346,6 +348,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
@@ -359,6 +363,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
@@ -372,6 +378,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
@@ -385,6 +393,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
@@ -398,6 +408,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }

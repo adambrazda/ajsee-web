@@ -930,3 +930,94 @@ test(
     );
   }
 );
+
+test(
+  'preview metadata uses localized labels and location',
+  async () => {
+    const detailSource =
+      await fs.readFile(
+        path.join(
+          ROOT,
+          'scripts',
+          'build-review-details.mjs'
+        ),
+        'utf8'
+      );
+
+    const styleSource =
+      await fs.readFile(
+        path.join(
+          ROOT,
+          'src',
+          'styles',
+          'pages',
+          'blog-detail-page.scss'
+        ),
+        'utf8'
+      );
+
+    const preview =
+      JSON.parse(
+        await fs.readFile(
+          path.join(
+            ROOT,
+            'content',
+            'reviews',
+            'items',
+            'sweeney-todd-prague-2026.json'
+          ),
+          'utf8'
+        )
+      );
+
+    assert.match(
+      detailSource,
+      /buildMetaRow\(\s*review,\s*translation,\s*lang\s*\)/
+    );
+
+    assert.match(
+      detailSource,
+      /translation\.venue\s*\|\|\s*review\.venue/
+    );
+
+    assert.match(
+      detailSource,
+      /published: 'Publikováno'/
+    );
+
+    assert.match(
+      detailSource,
+      /prepared: 'Připraveno'/
+    );
+
+    assert.match(
+      detailSource,
+      /class="review-meta-header"/
+    );
+
+    assert.match(
+      styleSource,
+      /\.review-content-type-badge\s*\{/
+    );
+
+    assert.equal(
+      preview.translations.cs.venue,
+      'Státní opera'
+    );
+
+    assert.equal(
+      preview.translations.cs.city,
+      'Praha'
+    );
+
+    assert.equal(
+      preview.translations.en.venue,
+      'State Opera'
+    );
+
+    assert.equal(
+      preview.translations.en.city,
+      'Prague'
+    );
+  }
+);

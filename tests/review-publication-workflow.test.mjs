@@ -672,3 +672,68 @@ test(
     );
   }
 );
+
+test(
+  'main CMS exposes localized venue and city fields',
+  async () => {
+    const {
+      readFile
+    } = await import(
+      'node:fs/promises'
+    );
+
+    const config =
+      await readFile(
+        new URL(
+          '../public/admin/config.yml',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const reviewsStart =
+      config.indexOf(
+        '  - name: "reviews"'
+      );
+
+    assert.notEqual(
+      reviewsStart,
+      -1,
+      'Reviews CMS collection was not found.'
+    );
+
+    const nextCollection =
+      config.indexOf(
+        '\n  - name: "',
+        reviewsStart + 1
+      );
+
+    const reviewsCollection =
+      config.slice(
+        reviewsStart,
+        nextCollection === -1
+          ? config.length
+          : nextCollection
+      );
+
+    assert.equal(
+      (
+        reviewsCollection.match(
+          /name: "venue"/g
+        ) ||
+        []
+      ).length,
+      7
+    );
+
+    assert.equal(
+      (
+        reviewsCollection.match(
+          /name: "city"/g
+        ) ||
+        []
+      ).length,
+      7
+    );
+  }
+);

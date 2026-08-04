@@ -353,6 +353,21 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
     }
   };
 
+    const eventVenue =
+    translation.venue ||
+    review.venue ||
+    '';
+
+  const eventCity =
+    translation.city ||
+    review.city ||
+    '';
+
+  const eventCountry =
+    translation.country ||
+    review.country ||
+    '';
+
   const event = {
     '@type': 'Event',
     name:
@@ -360,17 +375,17 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
       review.showTitle ||
       title,
     location:
-      review.venue ||
-      review.city
+      eventVenue ||
+      eventCity
         ? {
             '@type': 'Place',
             name:
-              review.venue ||
+              eventVenue ||
               undefined,
             address:
               [
-                review.city,
-                review.country
+                eventCity,
+                eventCountry
               ]
                 .filter(Boolean)
                 .join(', ') ||
@@ -523,10 +538,60 @@ ${alternateLinks}
 `;
 }
 
-function buildMetaRow(review, lang = DEFAULT_LANG) {
+function buildMetaRow(
+  review,
+  translation = {},
+  lang = DEFAULT_LANG
+) {
   const parts = [];
   const preview =
     isPreviewContent(review);
+
+  const currentLang =
+    normalizeLang(lang);
+
+  const labelsByLanguage = {
+    cs: {
+      published: 'Publikováno',
+      prepared: 'Připraveno',
+      premiere: 'Premiéra',
+      seen: 'Zhlédnuto'
+    },
+    en: {
+      published: 'Published',
+      prepared: 'Prepared',
+      premiere: 'Premiere',
+      seen: 'Seen'
+    },
+    de: {
+      published: 'Veröffentlicht',
+      prepared: 'Vorbereitet',
+      premiere: 'Premiere',
+      seen: 'Gesehen'
+    },
+    sk: {
+      published: 'Publikované',
+      prepared: 'Pripravené',
+      premiere: 'Premiéra',
+      seen: 'Videné'
+    },
+    pl: {
+      published: 'Opublikowano',
+      prepared: 'Przygotowano',
+      premiere: 'Premiera',
+      seen: 'Obejrzano'
+    },
+    hu: {
+      published: 'Közzétéve',
+      prepared: 'Előkészítve',
+      premiere: 'Bemutató',
+      seen: 'Megtekintve'
+    }
+  };
+
+  const labels =
+    labelsByLanguage[currentLang] ||
+    labelsByLanguage[DEFAULT_LANG];
 
   const articleDate =
     formatDate(
@@ -547,18 +612,28 @@ function buildMetaRow(review, lang = DEFAULT_LANG) {
       lang
     );
 
-  const premiereLabels = {
-    cs: 'Premiéra',
-    en: 'Premiere',
-    de: 'Premiere',
-    sk: 'Premiéra',
-    pl: 'Premiera',
-    hu: 'Bemutató'
-  };
+  const localizedVenue =
+    String(
+      translation.venue ||
+      review.venue ||
+      ''
+    ).trim();
+
+  const localizedCity =
+    String(
+      translation.city ||
+      review.city ||
+      ''
+    ).trim();
 
   if (articleDate) {
+    const dateLabel =
+      review.publishedAt
+        ? labels.published
+        : labels.prepared;
+
     parts.push(
-      `<span>${escapeHtml(articleDate)}</span>`
+      `<span>${escapeHtml(dateLabel)} ${escapeHtml(articleDate)}</span>`
     );
   }
 
@@ -580,14 +655,14 @@ function buildMetaRow(review, lang = DEFAULT_LANG) {
   }
 
   if (
-    review.venue ||
-    review.city
+    localizedVenue ||
+    localizedCity
   ) {
     parts.push(
       `<span>${escapeHtml(
         [
-          review.venue,
-          review.city
+          localizedVenue,
+          localizedCity
         ]
           .filter(Boolean)
           .join(', ')
@@ -599,16 +674,8 @@ function buildMetaRow(review, lang = DEFAULT_LANG) {
     preview &&
     eventDate
   ) {
-    const label =
-      premiereLabels[
-        normalizeLang(lang)
-      ] ||
-      premiereLabels[
-        DEFAULT_LANG
-      ];
-
     parts.push(
-      `<span>${escapeHtml(label)} ${escapeHtml(eventDate)}</span>`
+      `<span>${escapeHtml(labels.premiere)} ${escapeHtml(eventDate)}</span>`
     );
   }
 
@@ -617,7 +684,7 @@ function buildMetaRow(review, lang = DEFAULT_LANG) {
     performanceDate
   ) {
     parts.push(
-      `<span>Seen ${escapeHtml(performanceDate)}</span>`
+      `<span>${escapeHtml(labels.seen)} ${escapeHtml(performanceDate)}</span>`
     );
   }
 
@@ -695,7 +762,12 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
       review,
       lang
     );
-  const metaRow = buildMetaRow(review, lang);
+  const metaRow =
+    buildMetaRow(
+      review,
+      translation,
+      lang
+    );
   const ctaText = translation.ctaText || 'Check tickets';
   const ticketUrl = addLanguageTracking(
     translation.ticketUrl || review.ticketUrl || '',
@@ -705,10 +777,10 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   return `
         <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}">
           <header class="review-detail-hero">
-            <p class="blog-card-meta">
-              <span class="card-badge">${escapeHtml(contentTypeLabel)}</span>
-              ${metaRow ? `<span>${metaRow}</span>` : ''}
-            </p>
+            <div class="review-meta-header">
+              <span class="card-badge review-content-type-badge">${escapeHtml(contentTypeLabel)}</span>
+              ${metaRow ? `<p class="blog-card-meta review-meta-row">${metaRow}</p>` : ''}
+            </div>
 
             <h1 class="blog-title">${escapeHtml(title)}</h1>
 

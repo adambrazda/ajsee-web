@@ -145,9 +145,9 @@ collections:
 
   # ?? Reviews ??
   - name: "reviews"
-    label: "Reviews"
-    label_singular: "Review"
-    description: "Edit review content here. Publishing and unpublishing are handled only through the validated AJSEE publication commands."
+    label: "Reviews & previews"
+    label_singular: "Review or preview"
+    description: "Edit review and theatre-preview content here. Publishing and unpublishing are handled only through the validated AJSEE publication commands."
     folder: "content/reviews/items"
     create: true
     publish: false
@@ -175,6 +175,15 @@ collections:
         name: "published"
         widget: "hidden"
         default: false
+
+      - label: "Content type"
+        name: "contentType"
+        widget: "select"
+        options:
+          - { label: "Review", value: "review" }
+          - { label: "Theatre preview", value: "preview" }
+        default: "review"
+        hint: "Use Theatre preview for an article written before the production has been seen."
 
       - label: "Featured review"
         name: "featured"
@@ -225,7 +234,16 @@ collections:
         picker_utc: true
         format: "YYYY-MM-DDTHH:mm:ss[Z]"
 
-      - label: "Review date"
+      - label: "Premiere / event date"
+        name: "eventDate"
+        widget: "datetime"
+        required: false
+        date_format: "YYYY-MM-DD"
+        time_format: "HH:mm"
+        format: "YYYY-MM-DDTHH:mm:ssZ"
+        hint: "For previews, enter the premiere or relevant event date. Leave Performance date empty until the production has actually been seen."
+
+      - label: "Editorial date"
         name: "reviewDate"
         widget: "datetime"
         required: true
@@ -250,6 +268,7 @@ collections:
         min: 0
         max: 5
         step: 0.5
+        hint: "Use only for reviews. Leave empty for theatre previews."
 
       - label: "Ticket URL"
         name: "ticketUrl"
@@ -306,6 +325,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: true }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - label: "Short excerpt"
                 name: "excerpt"
                 widget: "text"
@@ -327,6 +348,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
@@ -340,6 +363,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
@@ -353,6 +378,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
@@ -366,6 +393,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }
@@ -379,6 +408,8 @@ collections:
             fields:
               - { label: "Review title", name: "title", widget: "string", required: false }
               - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+              - { label: "Localized venue", name: "venue", widget: "string", required: false }
+              - { label: "Localized city", name: "city", widget: "string", required: false }
               - { label: "Short excerpt", name: "excerpt", widget: "text", required: false }
               - { label: "Full review text", name: "body", widget: "markdown", required: false }
               - { label: "Call-to-action text", name: "ctaText", widget: "string", required: false }

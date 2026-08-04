@@ -28,6 +28,12 @@ function safeSlug(value = '') {
   return String(value).trim().toLowerCase();
 }
 
+function normalizeReviewContentType(value = '') {
+  return String(value || '').trim().toLowerCase() === 'preview'
+    ? 'preview'
+    : 'review';
+}
+
 function hasContent(block) {
   return Boolean(
     block &&
@@ -113,6 +119,9 @@ for (const file of files) {
   try {
     const review = readJson(inputPath);
     const slug = safeSlug(review.slug || file.replace(/\.json$/, ''));
+    const contentType = normalizeReviewContentType(
+      review.contentType || review.type
+    );
 
     if (!slug) {
       console.warn(`[reviews] Skipping ${file}: missing slug`);
@@ -128,6 +137,8 @@ for (const file of files) {
 
     const normalizedReview = {
       ...review,
+      type: contentType,
+      contentType,
       slug,
       availableLanguages
     };
@@ -140,7 +151,8 @@ for (const file of files) {
     items.push({
       slug,
       previewOnly: PREVIEW_MODE && !isPublicReview(review),
-      type: 'review',
+      type: contentType,
+      contentType,
       status: review.status || 'draft',
       published: Boolean(review.published),
       featured: Boolean(review.featured),
@@ -151,6 +163,7 @@ for (const file of files) {
       city: review.city || '',
       country: review.country || '',
       performanceDate: review.performanceDate || '',
+      eventDate: review.eventDate || '',
       reviewDate: review.reviewDate || '',
       publishedAt,
       sortDate,

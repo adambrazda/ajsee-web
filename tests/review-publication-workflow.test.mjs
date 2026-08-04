@@ -464,6 +464,12 @@ test(
             slug:
               'sweeney-todd',
 
+            contentType:
+              'preview',
+
+            eventDate:
+              '2026-09-24T19:00:00+02:00',
+
             status:
               'ready_for_adam_review',
 
@@ -587,6 +593,16 @@ test(
         ''
       );
 
+      assert.equal(
+        review.contentType,
+        'preview'
+      );
+
+      assert.equal(
+        review.eventDate,
+        '2026-09-24T19:00:00+02:00'
+      );
+
       assert.match(
         review.internalNotes,
         /Promoted from review submission: sweeney-todd/
@@ -601,5 +617,123 @@ test(
         }
       );
     }
+  }
+);
+
+test(
+  'main CMS distinguishes reviews from theatre previews',
+  () => {
+    const config =
+      fs.readFileSync(
+        path.join(
+          root,
+          'public',
+          'admin',
+          'config.yml'
+        ),
+        'utf8'
+      );
+
+    const reviewsStart =
+      config.indexOf(
+        '  - name: "reviews"'
+      );
+
+    const submissionsStart =
+      config.indexOf(
+        '  - name: "review_submissions"',
+        reviewsStart
+      );
+
+    assert.notEqual(
+      reviewsStart,
+      -1
+    );
+
+    const reviewsCollection =
+      config.slice(
+        reviewsStart,
+        submissionsStart
+      );
+
+    assert.match(
+      reviewsCollection,
+      /name: "contentType"[\s\S]*value: "review"[\s\S]*value: "preview"/
+    );
+
+    assert.match(
+      reviewsCollection,
+      /name: "eventDate"/
+    );
+
+    assert.match(
+      reviewsCollection,
+      /Leave empty for theatre previews/
+    );
+  }
+);
+
+test(
+  'main CMS exposes localized venue and city fields',
+  async () => {
+    const {
+      readFile
+    } = await import(
+      'node:fs/promises'
+    );
+
+    const config =
+      await readFile(
+        new URL(
+          '../public/admin/config.yml',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const reviewsStart =
+      config.indexOf(
+        '  - name: "reviews"'
+      );
+
+    assert.notEqual(
+      reviewsStart,
+      -1,
+      'Reviews CMS collection was not found.'
+    );
+
+    const nextCollection =
+      config.indexOf(
+        '\n  - name: "',
+        reviewsStart + 1
+      );
+
+    const reviewsCollection =
+      config.slice(
+        reviewsStart,
+        nextCollection === -1
+          ? config.length
+          : nextCollection
+      );
+
+    assert.equal(
+      (
+        reviewsCollection.match(
+          /name: "venue"/g
+        ) ||
+        []
+      ).length,
+      7
+    );
+
+    assert.equal(
+      (
+        reviewsCollection.match(
+          /name: "city"/g
+        ) ||
+        []
+      ).length,
+      7
+    );
   }
 );

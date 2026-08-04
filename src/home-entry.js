@@ -989,6 +989,7 @@ async function renderHomeBlog() {
 
     return (
       type === 'review' ||
+      type === 'preview' ||
       type.includes('review') ||
       href.includes('/reviews/')
     );
@@ -1145,7 +1146,14 @@ if (slug) {
           ...item,
           ...translation,
           slug,
-          type: 'review',
+          type:
+            item.contentType === 'preview'
+              ? 'preview'
+              : 'review',
+          contentType:
+            item.contentType === 'preview'
+              ? 'preview'
+              : 'review',
           href: '/reviews/' + encodeURIComponent(slug) + '/',
           url: '/reviews/' + encodeURIComponent(slug) + '/',
           title:

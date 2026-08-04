@@ -774,3 +774,250 @@ test(
     );
   }
 );
+
+test(
+  'review and theatre-preview source records stay semantically distinct',
+  async () => {
+    const entries =
+      await readReviewFiles();
+
+    for (const {
+      fileName,
+      review
+    } of entries) {
+      const contentType =
+        String(
+          review.contentType ||
+          review.type ||
+          'review'
+        ).toLowerCase();
+
+      assert.ok(
+        [
+          'review',
+          'preview'
+        ].includes(contentType),
+        `Review ${fileName} has unsupported content type "${contentType}".`
+      );
+
+      if (contentType === 'preview') {
+        assert.equal(
+          review.rating,
+          null,
+          `Preview ${fileName} must not contain a rating.`
+        );
+
+        assert.equal(
+          String(
+            review.performanceDate ||
+            ''
+          ).trim(),
+          '',
+          `Preview ${fileName} must not claim a seen performance date.`
+        );
+
+        assert.ok(
+          isValidDate(
+            review.eventDate
+          ),
+          `Preview ${fileName} must have a valid premiere or event date.`
+        );
+      }
+    }
+
+    const sweeney =
+      entries.find(
+        ({ review }) =>
+          review.slug ===
+          'sweeney-todd-prague-2026'
+      );
+
+    assert.ok(
+      sweeney,
+      'Sweeney Todd preview source record is missing.'
+    );
+
+    assert.equal(
+      sweeney.review.contentType,
+      'preview'
+    );
+
+    assert.deepEqual(
+      getPopulatedLanguages(
+        sweeney.review
+      ).sort(),
+      [...REQUIRED_LANGUAGES].sort()
+    );
+  }
+);
+
+test(
+  'preview output uses Article schema and no review rating',
+  async () => {
+    const detailSource =
+      await fs.readFile(
+        path.join(
+          ROOT,
+          'scripts',
+          'build-review-details.mjs'
+        ),
+        'utf8'
+      );
+
+    assert.match(
+      detailSource,
+      /contentType === 'preview'[\s\S]*'@type': 'Article'/
+    );
+
+    assert.match(
+      detailSource,
+      /!preview[\s\S]*review.rating/
+    );
+
+    const blogSource =
+      await fs.readFile(
+        path.join(
+          ROOT,
+          'src',
+          'blog.js'
+        ),
+        'utf8'
+      );
+
+    assert.match(
+      blogSource,
+      /const previewBadge = {/
+    );
+
+    assert.match(
+      blogSource,
+      /contentType === 'preview'/
+    );
+  }
+);
+
+test(
+  'preview detail uses a localized content-type badge',
+  async () => {
+    const detailSource =
+      await fs.readFile(
+        path.join(
+          ROOT,
+          'scripts',
+          'build-review-details.mjs'
+        ),
+        'utf8'
+      );
+
+    assert.match(
+      detailSource,
+      /const REVIEW_CONTENT_TYPE_LABELS = \{/
+    );
+
+    assert.match(
+      detailSource,
+      /getReviewContentTypeLabel/
+    );
+
+    assert.doesNotMatch(
+      detailSource,
+      /<span class="card-badge">Review<\/span>/
+    );
+
+    assert.match(
+      detailSource,
+      /\$\{escapeHtml\(contentTypeLabel\)\}/
+    );
+  }
+);
+
+test(
+  'preview metadata uses localized labels and location',
+  async () => {
+    const detailSource =
+      await fs.readFile(
+        path.join(
+          ROOT,
+          'scripts',
+          'build-review-details.mjs'
+        ),
+        'utf8'
+      );
+
+    const styleSource =
+      await fs.readFile(
+        path.join(
+          ROOT,
+          'src',
+          'styles',
+          'pages',
+          'blog-detail-page.scss'
+        ),
+        'utf8'
+      );
+
+    const preview =
+      JSON.parse(
+        await fs.readFile(
+          path.join(
+            ROOT,
+            'content',
+            'reviews',
+            'items',
+            'sweeney-todd-prague-2026.json'
+          ),
+          'utf8'
+        )
+      );
+
+    assert.match(
+      detailSource,
+      /buildMetaRow\(\s*review,\s*translation,\s*lang\s*\)/
+    );
+
+    assert.match(
+      detailSource,
+      /translation\.venue\s*\|\|\s*review\.venue/
+    );
+
+    assert.match(
+      detailSource,
+      /published: 'Publikováno'/
+    );
+
+    assert.match(
+      detailSource,
+      /prepared: 'Připraveno'/
+    );
+
+    assert.match(
+      detailSource,
+      /class="review-meta-header"/
+    );
+
+    assert.match(
+      styleSource,
+      /\.review-content-type-badge\s*\{/
+    );
+
+    assert.equal(
+      preview.translations.cs.venue,
+      'Státní opera'
+    );
+
+    assert.equal(
+      preview.translations.cs.city,
+      'Praha'
+    );
+
+    assert.equal(
+      preview.translations.en.venue,
+      'State Opera'
+    );
+
+    assert.equal(
+      preview.translations.en.city,
+      'Prague'
+    );
+  }
+);

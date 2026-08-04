@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+  <meta
+    name="robots"
+    content="noindex, follow"
+  >
+  <meta
+    name="theme-color"
+    content="#bff4f7"
+  >
+
+  <title>Stránka nenalezena | AJSEE</title>
+
+  <style>
+    :root {
+      color-scheme: light;
+
+      --page-background: #eef8ff;
+      --page-highlight: #c8f7f9;
+      --surface: rgba(255, 255, 255, 0.94);
+      --surface-border: rgba(14, 74, 112, 0.1);
+
+      --text-strong: #133f64;
+      --text-body: #344f68;
+      --text-muted: #64788b;
+
+      --accent: #00b9c4;
+      --accent-dark: #007d88;
+      --accent-soft: #e0f9fa;
+
+      --shadow:
+        0 1.5rem 4rem rgba(20, 70, 105, 0.14);
+
+      --radius-large: 2rem;
+      --radius-button: 999px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 20rem;
+      background: var(--page-background);
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      color: var(--text-body);
+      background:
+        radial-gradient(
+          circle at 12% 8%,
+          rgba(0, 200, 210, 0.22),
+          transparent 24rem
+        ),
+        radial-gradient(
+          circle at 92% 92%,
+          rgba(73, 159, 226, 0.18),
+          transparent 26rem
+        ),
+        linear-gradient(
+          145deg,
+          #f7fcff 0%,
+          var(--page-background) 52%,
+          var(--page-highlight) 130%
+        );
+      font-family:
+        Inter,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 10;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      background: #ffffff;
+      color: var(--text-strong);
+      font-weight: 700;
+      transform: translateY(-200%);
+      transition: transform 160ms ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .page-shell {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding:
+        max(1.25rem, env(safe-area-inset-top))
+        max(1.25rem, env(safe-area-inset-right))
+        max(1.25rem, env(safe-area-inset-bottom))
+        max(1.25rem, env(safe-area-inset-left));
+    }
+
+    .site-header,
+    .site-footer {
+      width: min(72rem, 100%);
+      margin-inline: auto;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 4rem;
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 0.75rem;
+    }
+
+    .brand-link:focus-visible,
+    .button:focus-visible,
+    .footer-link:focus-visible {
+      outline: 0.2rem solid #ffffff;
+      outline-offset: 0.2rem;
+      box-shadow:
+        0 0 0 0.4rem var(--accent-dark);
+    }
+
+    .brand-logo {
+      display: block;
+      width: auto;
+      height: 3.25rem;
+      object-fit: contain;
+    }
+
+    main {
+      display: grid;
+      place-items: center;
+      padding-block: clamp(2rem, 8vh, 6rem);
+    }
+
+    .error-card {
+      position: relative;
+      isolation: isolate;
+      width: min(48rem, 100%);
+      overflow: hidden;
+      padding: clamp(2rem, 6vw, 4.5rem);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-large);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .error-card::before,
+    .error-card::after {
+      position: absolute;
+      z-index: -1;
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+    }
+
+    .error-card::before {
+      top: -8rem;
+      right: -7rem;
+      width: 17rem;
+      height: 17rem;
+      background:
+        radial-gradient(
+          circle,
+          rgba(0, 185, 196, 0.2),
+          rgba(0, 185, 196, 0)
+        );
+    }
+
+    .error-card::after {
+      bottom: -7rem;
+      left: -6rem;
+      width: 15rem;
+      height: 15rem;
+      background:
+        radial-gradient(
+          circle,
+          rgba(57, 137, 207, 0.15),
+          rgba(57, 137, 207, 0)
+        );
+    }
+
+    .error-code {
+      margin: 0;
+      color: var(--accent-dark);
+      font-size: clamp(4.75rem, 17vw, 8.5rem);
+      font-weight: 900;
+      letter-spacing: -0.08em;
+      line-height: 0.9;
+      opacity: 0.14;
+      user-select: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      margin: -1rem 0 1.25rem;
+      padding: 0.4rem 0.85rem;
+      border: 1px solid rgba(0, 152, 163, 0.28);
+      border-radius: var(--radius-button);
+      background: var(--accent-soft);
+      color: var(--accent-dark);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 15ch;
+      margin: 0 auto;
+      color: var(--text-strong);
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+    }
+
+    .description {
+      max-width: 38rem;
+      margin: 1.25rem auto 0;
+      color: var(--text-body);
+      font-size: clamp(1rem, 2.4vw, 1.15rem);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.875rem;
+      margin-top: 2rem;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 3rem;
+      padding: 0.75rem 1.3rem;
+      border: 0.125rem solid transparent;
+      border-radius: var(--radius-button);
+      font-weight: 800;
+      line-height: 1.2;
+      text-decoration: none;
+      transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        background-color 160ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-0.125rem);
+    }
+
+    .button-primary {
+      background:
+        linear-gradient(
+          135deg,
+          var(--accent),
+          #138bd1
+        );
+      color: #ffffff;
+      box-shadow:
+        0 0.75rem 1.75rem rgba(0, 145, 175, 0.24);
+    }
+
+    .button-primary:hover {
+      box-shadow:
+        0 1rem 2rem rgba(0, 145, 175, 0.3);
+    }
+
+    .button-secondary {
+      border-color: rgba(0, 125, 136, 0.28);
+      background: #ffffff;
+      color: var(--accent-dark);
+    }
+
+    .button-secondary:hover {
+      background: var(--accent-soft);
+    }
+
+    .hint {
+      margin: 1.5rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .site-footer {
+      padding-top: 1rem;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+    }
+
+    .footer-link {
+      border-radius: 0.3rem;
+      color: var(--accent-dark);
+      font-weight: 700;
+      text-underline-offset: 0.2em;
+    }
+
+    @media (max-width: 36rem) {
+      .page-shell {
+        padding: 1rem;
+      }
+
+      .site-header {
+        min-height: 3.5rem;
+      }
+
+      .brand-logo {
+        height: 2.75rem;
+      }
+
+      main {
+        padding-block: 1.5rem 2.5rem;
+      }
+
+      .error-card {
+        padding: 2.25rem 1.25rem;
+        border-radius: 1.5rem;
+      }
+
+      .actions {
+        display: grid;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .button:hover {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a
+    class="skip-link"
+    href="#main-content"
+    data-i18n="skip"
+  >
+    Přeskočit na obsah
+  </a>
+
+  <div class="page-shell">
+    <header class="site-header">
+      <a
+        class="brand-link"
+        href="/"
+        aria-label="AJSEE – domovská stránka"
+        data-home-link
+        data-i18n-aria-label="brandLabel"
+      >
+        <img
+          class="brand-logo"
+          src="/images/logo-ajsee.png"
+          alt="AJSEE"
+          width="120"
+          height="72"
+        >
+      </a>
+    </header>
+
+    <main id="main-content">
+      <section
+        class="error-card"
+        aria-labelledby="error-title"
+      >
+        <p
+          class="error-code"
+          aria-hidden="true"
+        >
+          404
+        </p>
+
+        <p
+          class="eyebrow"
+          data-i18n="eyebrow"
+        >
+          Chyba 404
+        </p>
+
+        <h1
+          id="error-title"
+          data-i18n="heading"
+        >
+          Tahle stránka se ztratila cestou za zážitkem.
+        </h1>
+
+        <p
+          class="description"
+          data-i18n="description"
+        >
+          Odkaz už neplatí, nebo se stránka přesunula.
+          Vyberte si další živý zážitek na AJSEE.
+        </p>
+
+        <nav
+          class="actions"
+          aria-label="Možnosti pokračování"
+          data-i18n-aria-label="actionsLabel"
+        >
+          <a
+            class="button button-primary"
+            href="/"
+            data-home-link
+            data-i18n="home"
+          >
+            Zpět na hlavní stránku
+          </a>
+
+          <a
+            class="button button-secondary"
+            href="/events/"
+            data-events-link
+            data-i18n="events"
+          >
+            Prozkoumat události
+          </a>
+        </nav>
+
+        <p
+          class="hint"
+          data-i18n="hint"
+        >
+          Můžete také zkontrolovat adresu v prohlížeči.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>© AJSEE</span>
+      ·
+      <a
+        class="footer-link"
+        href="/contact/"
+        data-contact-link
+        data-i18n="contact"
+      >
+        Kontakt
+      </a>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const translations = {
+        cs: {
+          title: "Stránka nenalezena | AJSEE",
+          skip: "Přeskočit na obsah",
+          brandLabel: "AJSEE – domovská stránka",
+          eyebrow: "Chyba 404",
+          heading:
+            "Tahle stránka se ztratila cestou za zážitkem.",
+          description:
+            "Odkaz už neplatí, nebo se stránka přesunula. Vyberte si další živý zážitek na AJSEE.",
+          actionsLabel: "Možnosti pokračování",
+          home: "Zpět na hlavní stránku",
+          events: "Prozkoumat události",
+          hint:
+            "Můžete také zkontrolovat adresu v prohlížeči.",
+          contact: "Kontakt"
+        },
+
+        en: {
+          title: "Page not found | AJSEE",
+          skip: "Skip to content",
+          brandLabel: "AJSEE – home page",
+          eyebrow: "Error 404",
+          heading:
+            "This page got lost on the way to a live experience.",
+          description:
+            "The link may have expired or the page may have moved. Discover another live experience with AJSEE.",
+          actionsLabel: "Continue browsing",
+          home: "Back to the home page",
+          events: "Explore events",
+          hint:
+            "You can also check the address in your browser.",
+          contact: "Contact"
+        },
+
+        de: {
+          title: "Seite nicht gefunden | AJSEE",
+          skip: "Zum Inhalt springen",
+          brandLabel: "AJSEE – Startseite",
+          eyebrow: "Fehler 404",
+          heading:
+            "Diese Seite hat sich auf dem Weg zum Erlebnis verirrt.",
+          description:
+            "Der Link ist möglicherweise nicht mehr gültig oder die Seite wurde verschoben. Entdeckt ein weiteres Live-Erlebnis mit AJSEE.",
+          actionsLabel: "Weiternavigieren",
+          home: "Zurück zur Startseite",
+          events: "Events entdecken",
+          hint:
+            "Ihr könnt auch die Adresse im Browser überprüfen.",
+          contact: "Kontakt"
+        },
+
+        sk: {
+          title: "Stránka sa nenašla | AJSEE",
+          skip: "Preskočiť na obsah",
+          brandLabel: "AJSEE – domovská stránka",
+          eyebrow: "Chyba 404",
+          heading:
+            "Táto stránka sa stratila cestou za zážitkom.",
+          description:
+            "Odkaz už nemusí platiť alebo sa stránka presunula. Objavte ďalší živý zážitok s AJSEE.",
+          actionsLabel: "Možnosti pokračovania",
+          home: "Späť na hlavnú stránku",
+          events: "Preskúmať podujatia",
+          hint:
+            "Môžete tiež skontrolovať adresu v prehliadači.",
+          contact: "Kontakt"
+        },
+
+        pl: {
+          title: "Nie znaleziono strony | AJSEE",
+          skip: "Przejdź do treści",
+          brandLabel: "AJSEE – strona główna",
+          eyebrow: "Błąd 404",
+          heading:
+            "Ta strona zgubiła się w drodze po kolejne przeżycie.",
+          description:
+            "Link mógł wygasnąć albo strona została przeniesiona. Odkryj kolejne wydarzenie na żywo z AJSEE.",
+          actionsLabel: "Dalsza nawigacja",
+          home: "Wróć na stronę główną",
+          events: "Odkryj wydarzenia",
+          hint:
+            "Możesz również sprawdzić adres w przeglądarce.",
+          contact: "Kontakt"
+        },
+
+        hu: {
+          title: "Az oldal nem található | AJSEE",
+          skip: "Ugrás a tartalomhoz",
+          brandLabel: "AJSEE – kezdőlap",
+          eyebrow: "404-es hiba",
+          heading:
+            "Ez az oldal eltévedt az élmény felé vezető úton.",
+          description:
+            "A hivatkozás lejárhatott, vagy az oldal új helyre költözött. Fedezz fel egy újabb élő élményt az AJSEE oldalán.",
+          actionsLabel: "Továbblépési lehetőségek",
+          home: "Vissza a kezdőlapra",
+          events: "Események felfedezése",
+          hint:
+            "A böngészőben megadott címet is ellenőrizheted.",
+          contact: "Kapcsolat"
+        }
+      };
+
+      const supportedLanguages =
+        Object.keys(translations);
+
+      const pathLanguage =
+        window.location.pathname
+          .split("/")
+          .filter(Boolean)[0];
+
+      const language =
+        supportedLanguages.includes(pathLanguage)
+          ? pathLanguage
+          : "cs";
+
+      const translation =
+        translations[language];
+
+      const prefix =
+        language === "cs"
+          ? ""
+          : `/${language}`;
+
+      document.documentElement.lang =
+        language;
+
+      document.title =
+        translation.title;
+
+      document
+        .querySelectorAll("[data-i18n]")
+        .forEach((element) => {
+          const key =
+            element.dataset.i18n;
+
+          if (translation[key]) {
+            element.textContent =
+              translation[key];
+          }
+        });
+
+      document
+        .querySelectorAll(
+          "[data-i18n-aria-label]"
+        )
+        .forEach((element) => {
+          const key =
+            element.dataset.i18nAriaLabel;
+
+          if (translation[key]) {
+            element.setAttribute(
+              "aria-label",
+              translation[key]
+            );
+          }
+        });
+
+      document
+        .querySelectorAll(
+          "[data-home-link]"
+        )
+        .forEach((link) => {
+          link.href =
+            `${prefix}/`;
+        });
+
+      document
+        .querySelectorAll(
+          "[data-events-link]"
+        )
+        .forEach((link) => {
+          link.href =
+            `${prefix}/events/`;
+        });
+
+      document
+        .querySelectorAll(
+          "[data-contact-link]"
+        )
+        .forEach((link) => {
+          link.href =
+            `${prefix}/contact/`;
+        });
+    })();
+  </script>
+</body>
+</html>

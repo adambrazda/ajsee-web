@@ -509,7 +509,7 @@ function buildHeadSeo(review, translation, lang = DEFAULT_LANG) {
   const title = translation.seoTitle || translation.title || review.showTitle || slug;
   const description = truncate(translation.seoDescription || translation.excerpt || translation.body || title);
   const image = toAbsoluteUrl(review.cover) || `${SITE_ORIGIN}/images/logo-ajsee.png`;
-  const imageAlt = review.coverAlt || translation.title || review.showTitle || 'AJSEE review';
+  const imageAlt = translation.coverAlt || review.coverAlt || translation.title || review.showTitle || 'AJSEE review';
   const jsonLd = buildJsonLd(review, translation, lang);
   const alternateLinks = buildAlternateLinks(review, slug);
 
@@ -756,7 +756,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   const bodyHtml = markdownToHtml(translation.body || '');
   const galleryHtml = buildReviewGalleryHtml(review.gallery, lang);
   const cover = review.cover || '';
-  const coverAlt = review.coverAlt || title;
+  const coverAlt = translation.coverAlt || review.coverAlt || title;
   const coverCredit = localizeCoverCredit(review.coverCredit, lang);
   const contentTypeLabel =
     getReviewContentTypeLabel(
@@ -776,7 +776,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   );
 
   return `
-        <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}">
+        <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}" data-review-content-type="${escapeAttr(review.contentType === 'preview' ? 'preview' : 'review')}">
           <header class="review-detail-hero">
             <div class="review-meta-header">
               <span class="card-badge review-content-type-badge">${escapeHtml(contentTypeLabel)}</span>

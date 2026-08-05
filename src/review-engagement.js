@@ -6,6 +6,8 @@ const TEXT = {
   cs: {
     heading: 'Sdílet recenzi',
     description: 'Pošlete ji někomu, koho by mohla zaujmout.',
+    previewHeading: 'Sdílet článek',
+    previewDescription: 'Pošlete článek někomu, koho by mohl zaujmout.',
     share: 'Sdílet',
     copy: 'Kopírovat odkaz',
     copied: 'Odkaz byl zkopírován.',
@@ -16,6 +18,8 @@ const TEXT = {
   en: {
     heading: 'Share this review',
     description: 'Send it to someone who might enjoy it.',
+    previewHeading: 'Share this article',
+    previewDescription: 'Send it to someone who might enjoy it.',
     share: 'Share',
     copy: 'Copy link',
     copied: 'Link copied.',
@@ -26,6 +30,8 @@ const TEXT = {
   de: {
     heading: 'Rezension teilen',
     description: 'Senden Sie sie an jemanden, den sie interessieren könnte.',
+    previewHeading: 'Artikel teilen',
+    previewDescription: 'Senden Sie ihn an jemanden, den er interessieren könnte.',
     share: 'Teilen',
     copy: 'Link kopieren',
     copied: 'Link kopiert.',
@@ -36,6 +42,8 @@ const TEXT = {
   sk: {
     heading: 'Zdieľať recenziu',
     description: 'Pošlite ju niekomu, koho by mohla zaujať.',
+    previewHeading: 'Zdieľať článok',
+    previewDescription: 'Pošlite článok niekomu, koho by mohol zaujať.',
     share: 'Zdieľať',
     copy: 'Kopírovať odkaz',
     copied: 'Odkaz bol skopírovaný.',
@@ -46,6 +54,8 @@ const TEXT = {
   pl: {
     heading: 'Udostępnij recenzję',
     description: 'Wyślij ją komuś, kogo może zainteresować.',
+    previewHeading: 'Udostępnij artykuł',
+    previewDescription: 'Wyślij go komuś, kogo może zainteresować.',
     share: 'Udostępnij',
     copy: 'Kopiuj link',
     copied: 'Link został skopiowany.',
@@ -56,6 +66,8 @@ const TEXT = {
   hu: {
     heading: 'Kritika megosztása',
     description: 'Küldje el valakinek, akit érdekelhet.',
+    previewHeading: 'Cikk megosztása',
+    previewDescription: 'Küldje el a cikket valakinek, akit érdekelhet.',
     share: 'Megosztás',
     copy: 'Link másolása',
     copied: 'A link másolva.',
@@ -256,6 +268,14 @@ export function initReviewEngagement() {
   );
 
   const text = TEXT[language] || TEXT.cs;
+  const isPreview =
+    article.dataset.reviewContentType === 'preview';
+  const headingText = isPreview
+    ? text.previewHeading
+    : text.heading;
+  const descriptionText = isPreview
+    ? text.previewDescription
+    : text.description;
   const shareUrl = getCanonicalShareUrl();
   const title = getReviewTitle(article);
 
@@ -272,12 +292,12 @@ export function initReviewEngagement() {
   const heading = document.createElement('h2');
   heading.id = 'reviewEngagementTitle';
   heading.className = 'review-engagement__title';
-  heading.textContent = text.heading;
+  heading.textContent = headingText;
 
   const description = document.createElement('p');
   description.className =
     'review-engagement__description';
-  description.textContent = text.description;
+  description.textContent = descriptionText;
 
   content.append(heading, description);
 

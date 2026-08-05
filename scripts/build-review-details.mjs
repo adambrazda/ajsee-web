@@ -1,3 +1,4 @@
+import { localizeCoverCredit } from './review-cover-credit.mjs';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
@@ -756,7 +757,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   const galleryHtml = buildReviewGalleryHtml(review.gallery, lang);
   const cover = review.cover || '';
   const coverAlt = review.coverAlt || title;
-  const coverCredit = review.coverCredit || '';
+  const coverCredit = localizeCoverCredit(review.coverCredit, lang);
   const contentTypeLabel =
     getReviewContentTypeLabel(
       review,

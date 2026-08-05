@@ -776,7 +776,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   );
 
   return `
-        <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}">
+        <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}" data-review-content-type="${escapeAttr(review.contentType === 'preview' ? 'preview' : 'review')}">
           <header class="review-detail-hero">
             <div class="review-meta-header">
               <span class="card-badge review-content-type-badge">${escapeHtml(contentTypeLabel)}</span>

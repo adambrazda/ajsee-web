@@ -1,3 +1,8 @@
+import {
+  resolveEventLocation,
+  formatEventVenueLine,
+  formatEventCalendarLocation
+} from './event-location.js';
 // /src/event-modal.js
 // ---------------------------------------------------------
 // AJSEE – Event modal
@@ -1177,13 +1182,17 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
       })
     : '';
 
-  const locationObj = eventData.location || {};
-  const locationText = typeof locationObj === 'string'
-    ? locationObj
-    : [
-        locationObj?.city || '',
-        locationObj?.country || '',
-      ].filter(Boolean).join(', ');
+  const resolvedLocation =
+    resolveEventLocation(eventData);
+
+  const locationText =
+    formatEventVenueLine(eventData);
+
+  const calendarLocationText =
+    formatEventCalendarLocation(eventData);
+
+  const locationObj =
+    eventData.location || {};
 
   const image =
     eventData.image ||
@@ -1307,7 +1316,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
         text: title,
         dates: `${toCalDate(start)}/${toCalDate(end)}`,
         details: description,
-        location: locationText,
+        location: calendarLocationText,
       });
 
       googleLink.href = `https://calendar.google.com/calendar/render?${googleParams.toString()}`;
@@ -1320,7 +1329,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
         ri: '0',
         subject: title,
         body: description,
-        location: locationText,
+        location: calendarLocationText,
       });
 
       outlookLink.href = `https://outlook.office.com/calendar/0/deeplink/compose?${outlookParams.toString()}`;
@@ -1331,7 +1340,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
       const icsText = buildICS({
         title,
         description,
-        location: locationText,
+        location: calendarLocationText,
         start,
         end,
       });

@@ -34,6 +34,7 @@ import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
 import { initContactFormValidation } from './contact-validate.js';
+import { formatEventVenueLine } from './event-location.js';
 import { initEventModal, openEventModal } from './event-modal.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 
@@ -4884,6 +4885,10 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       const ticketLabel = esc(t('event-tickets', 'Vstupenky'));
       const provider = ajseeEventProviderKey(ev);
       const providerBadge = eventProviderBadgeHtml(ev, locale);
+      const venueLine = formatEventVenueLine(ev);
+      const venueLineHtml = venueLine
+        ? `<p class="event-date event-location">${esc(venueLine)}</p>`
+        : '';
       const eventCityAttr = esc(ev?.location?.city || ev?.venue?.city || ev?.place?.city || '');
       const eventTitleAttr = esc(titleRaw);
 
@@ -4893,6 +4898,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
           <div class="event-content">
             <h3 class="event-title">${title}</h3>
             <p class="event-date">${date}</p>
+            ${venueLineHtml}
             ${providerBadge}
             <div class="event-buttons-group">
               <button type="button" class="btn-event detail js-event-detail" data-event-id="${esc(modalId)}">

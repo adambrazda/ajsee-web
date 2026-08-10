@@ -26,6 +26,7 @@ import { fetchEvents as fetchSmsticketEvents } from '../adapters/smsticket.js';
 import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 import { matchesEventDiscoveryFilters } from '../taxonomy/event-filtering.js';
+import { matchesKeywordPrefix } from '../search/keyword-match.js';
 
 // DEV detekce (localhost/Vite)
 const isDev =
@@ -684,7 +685,7 @@ function seatPlanBoostScore(ev = {}, filters = {}, loc = 'en') {
 
   const q = normalizeStr(filters.keyword || filters.q || filters.search || '');
 
-  if (q && eventSearchText(ev, loc).includes(q)) return 0;
+  if (q && matchesKeywordPrefix(eventSearchText(ev, loc), q)) return 0;
 
   return 1;
 }
@@ -1012,7 +1013,7 @@ if (ENABLE_SEATPLAN) {
   if (keyword) {
     const q = normalizeStr(keyword);
 
-    all = all.filter((ev) => eventSearchText(ev, loc).includes(q));
+    all = all.filter((ev) => matchesKeywordPrefix(eventSearchText(ev, loc), q));
   }
 
   if (dateFrom || dateTo) {

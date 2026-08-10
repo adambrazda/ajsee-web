@@ -742,6 +742,40 @@ export function mapTicketmasterEvent(
   };
 }
 
+function isTicketmasterAncillaryEvent(ev = {}) {
+  const normalizeLabel = (value = '') =>
+    String(value || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/\p{M}+/gu, '');
+
+  const eventName = normalizeLabel(ev?.name);
+
+  const attractionNames =
+    Array.isArray(ev?._embedded?.attractions)
+      ? ev._embedded.attractions
+          .map((attraction) =>
+            normalizeLabel(attraction?.name)
+          )
+          .filter(Boolean)
+      : [];
+
+  const hasFastTrackAttraction =
+    attractionNames.some((name) =>
+      /^fast[\s-]*track\b/.test(name)
+    );
+
+  const eventNameMarksFastTrack =
+    /(?:^|\|)\s*fast[\s-]*track\b/.test(
+      eventName
+    );
+
+  return (
+    hasFastTrackAttraction &&
+    eventNameMarksFastTrack
+  );
+}
 function filterRawEventsByStrictCityCountry(events = [], { strictCity = '', strictCountry = '' } = {}) {
   const cc = String(strictCountry || '').trim().toUpperCase();
   const city = String(strictCity || '').trim();
@@ -1184,6 +1218,20 @@ function shouldSkipCzSkCityBroadFallback({ city = '', countryCode = '', filters 
   // Allow debug/manual override if we need to investigate coverage later.
   if (filters.forceTicketmasterBroadFallback === true) return false;
 
+  // AJSEE_TM_CZSK_CITY_KEYWORD_FALLBACK_v1
+  // Ticketmaster can store a city event under a district label such as
+  // "Praha 9". A strict city query may then miss an otherwise relevant
+  // event. A meaningful keyword already narrows the country-level fallback
+  // enough to keep it useful without restoring broad CZ/SK discovery.
+  const keyword = String(
+    filters.keyword ||
+    filters.q ||
+    filters.search ||
+    ''
+  ).trim();
+
+  if (keyword.length >= 2) return false;
+
   return true;
 }
 
@@ -1460,7 +1508,11 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
             : list;
 
           if (!strictRawList.length) continue;
-          collectedRaw.push(...strictRawList);
+          const discoverableRawList = strictRawList.filter(
+            (event) => !isTicketmasterAncillaryEvent(event)
+          );
+          if (!discoverableRawList.length) continue;
+          collectedRaw.push(...discoverableRawList);
         } catch (err) {
           if (err?.status === 429 || err?.rateLimited) {
             rateLimited = true;

@@ -688,6 +688,9 @@ export function mapTicketmasterEvent(
   const country = venue?.country?.countryCode || '';
 
   const selectedCity = String(context.selectedCity || '').trim();
+  const selectedDisplayCity = String(
+    context.selectedDisplayCity || selectedCity
+  ).trim();
   const selectedCountry = String(context.selectedCountry || '').trim().toUpperCase();
 
   const displayCity =
@@ -697,7 +700,7 @@ export function mapTicketmasterEvent(
     String(country).toUpperCase() === selectedCountry &&
     actualCity &&
     isSameCityOrMetro(actualCity, selectedCity, selectedCountry)
-      ? selectedCity
+      ? selectedDisplayCity
       : actualCity;
 
   const latRaw = venue?.location?.latitude ?? venue?.location?.lat ?? '';
@@ -1560,6 +1563,13 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
 
   return dedupedRaw.map((ev) => mapTicketmasterEvent(ev, locale, {
     selectedCity: tmCity,
+    selectedDisplayCity: String(
+      filters.cityLabel ||
+      filters.city ||
+      rawCity ||
+      tmCity ||
+      ''
+    ).trim(),
     selectedCountry: selectedCityCountry
   }));
 }

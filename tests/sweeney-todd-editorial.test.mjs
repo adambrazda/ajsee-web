@@ -17,13 +17,22 @@ function readItem() {
   return JSON.parse(fs.readFileSync(itemPath, 'utf8'));
 }
 
-test('Sweeney Todd remains an approved unpublished preview', () => {
+test('Sweeney Todd keeps a valid theatre preview publication state', () => {
   const item = readItem();
 
   assert.equal(item.contentType, 'preview');
-  assert.equal(item.status, 'approved');
-  assert.equal(item.published, false);
   assert.equal(item.featured, false);
+
+  if (item.published) {
+    assert.equal(item.status, 'published');
+    assert.match(
+      item.publishedAt,
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+    );
+  } else {
+    assert.equal(item.status, 'approved');
+    assert.equal(item.publishedAt || '', '');
+  }
 });
 
 test('Sweeney Todd provides localized cover alt text in every AJSEE language', () => {

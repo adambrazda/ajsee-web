@@ -742,6 +742,40 @@ export function mapTicketmasterEvent(
   };
 }
 
+function isTicketmasterAncillaryEvent(ev = {}) {
+  const normalizeLabel = (value = '') =>
+    String(value || '')
+      .trim()
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/\p{M}+/gu, '');
+
+  const eventName = normalizeLabel(ev?.name);
+
+  const attractionNames =
+    Array.isArray(ev?._embedded?.attractions)
+      ? ev._embedded.attractions
+          .map((attraction) =>
+            normalizeLabel(attraction?.name)
+          )
+          .filter(Boolean)
+      : [];
+
+  const hasFastTrackAttraction =
+    attractionNames.some((name) =>
+      /^fast[\s-]*track\b/.test(name)
+    );
+
+  const eventNameMarksFastTrack =
+    /(?:^|\|)\s*fast[\s-]*track\b/.test(
+      eventName
+    );
+
+  return (
+    hasFastTrackAttraction &&
+    eventNameMarksFastTrack
+  );
+}
 function filterRawEventsByStrictCityCountry(events = [], { strictCity = '', strictCountry = '' } = {}) {
   const cc = String(strictCountry || '').trim().toUpperCase();
   const city = String(strictCity || '').trim();
@@ -1474,7 +1508,11 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
             : list;
 
           if (!strictRawList.length) continue;
-          collectedRaw.push(...strictRawList);
+          const discoverableRawList = strictRawList.filter(
+            (event) => !isTicketmasterAncillaryEvent(event)
+          );
+          if (!discoverableRawList.length) continue;
+          collectedRaw.push(...discoverableRawList);
         } catch (err) {
           if (err?.status === 429 || err?.rateLimited) {
             rateLimited = true;

@@ -9,6 +9,7 @@
 // ---------------------------------------------------------
 
 import { canonForInputCity } from '../city/canonical.js';
+import { matchesKeywordPrefix } from '../search/keyword-match.js';
 
 import {
   buildSmsticketTaxonomy,
@@ -496,7 +497,7 @@ function matchesKeyword(ev, keyword = '') {
     ...(Array.isArray(ev?.types) ? ev.types : [])
   ].filter(Boolean).join(' '));
 
-  return haystack.includes(query);
+  return matchesKeywordPrefix(haystack, query);
 }
 
 function matchesNearMe(ev, filters = {}) {

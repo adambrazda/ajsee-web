@@ -1184,6 +1184,20 @@ function shouldSkipCzSkCityBroadFallback({ city = '', countryCode = '', filters 
   // Allow debug/manual override if we need to investigate coverage later.
   if (filters.forceTicketmasterBroadFallback === true) return false;
 
+  // AJSEE_TM_CZSK_CITY_KEYWORD_FALLBACK_v1
+  // Ticketmaster can store a city event under a district label such as
+  // "Praha 9". A strict city query may then miss an otherwise relevant
+  // event. A meaningful keyword already narrows the country-level fallback
+  // enough to keep it useful without restoring broad CZ/SK discovery.
+  const keyword = String(
+    filters.keyword ||
+    filters.q ||
+    filters.search ||
+    ''
+  ).trim();
+
+  if (keyword.length >= 2) return false;
+
   return true;
 }
 

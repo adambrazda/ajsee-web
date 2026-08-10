@@ -991,18 +991,139 @@ function announce(msg) {
   ensureLiveRegion().textContent = msg || '';
 }
 
-function setBusy(v) {
-  const form = qs('form.filter-dock') || qs('.events-filters');
-  const list = qs('#eventsList');
-
-  if (form) {
-    form.setAttribute('aria-busy', v ? 'true' : 'false');
-    qsa('input,select,button', form).forEach(el => {
-      el.disabled = !!v && !el.classList.contains('filters-toggle');
-    });
+function renderEventsLoadingPlaceholder(
+  list
+) {
+  if (
+    !list ||
+    list.querySelector(
+      '[data-ajsee-events-loading]'
+    )
+  ) {
+    return;
   }
 
-  if (list) list.setAttribute('aria-busy', v ? 'true' : 'false');
+  ensureEventsStateStyles();
+
+  list.insertAdjacentHTML(
+    'afterbegin',
+    `
+      <div
+        class="ajsee-events-loading"
+        data-ajsee-events-loading
+        aria-hidden="true"
+      >
+        ${Array.from(
+          {
+            length:
+              3
+          },
+          () => `
+            <article class="event-card skeleton">
+              <div class="ph-img"></div>
+              <div class="ph-line"></div>
+              <div class="ph-line short"></div>
+            </article>
+          `
+        ).join('')}
+      </div>
+    `
+  );
+}
+
+function clearEventsLoadingPlaceholder(
+  list
+) {
+  list
+    ?.querySelector(
+      '[data-ajsee-events-loading]'
+    )
+    ?.remove();
+}
+
+function setBusy(v) {
+  const form =
+    qs('form.filter-dock') ||
+    qs('.events-filters');
+
+  const list =
+    qs('#eventsList');
+
+  const section =
+    qs('#upcoming-events');
+
+  const status =
+    qs('#tm-status');
+
+  const busy =
+    !!v;
+
+  if (section) {
+    section.setAttribute(
+      'aria-busy',
+      busy
+        ? 'true'
+        : 'false'
+    );
+  }
+
+  if (form) {
+    form.setAttribute(
+      'aria-busy',
+      busy
+        ? 'true'
+        : 'false'
+    );
+
+    qsa(
+      'input,select,button',
+      form
+    ).forEach(
+      (element) => {
+        element.disabled =
+          busy &&
+          !element.classList.contains(
+            'filters-toggle'
+          );
+      }
+    );
+  }
+
+  if (status) {
+    status.textContent =
+      busy
+        ? t(
+            'events-loading-status',
+            currentLang === 'en'
+              ? 'Loading events…'
+              : 'Načítáme události…'
+          )
+        : '';
+  }
+
+  if (list) {
+    list.setAttribute(
+      'aria-busy',
+      busy
+        ? 'true'
+        : 'false'
+    );
+
+    list.classList.toggle(
+      'is-loading',
+      busy
+    );
+
+    if (busy) {
+      renderEventsLoadingPlaceholder(
+        list
+      );
+    } else {
+      clearEventsLoadingPlaceholder(
+        list
+      );
+    }
+  }
 }
 
 /* ───────── Ticketmaster rate-limit user state ───────── */
@@ -1189,6 +1310,35 @@ function getRateLimitCopy() {
 
 function ensureEventsStateStyles() {
   injectOnce('ajsee-events-state-css', String.raw`
+    .events-list{
+      position:relative;
+      min-height:260px;
+    }
+    .ajsee-events-loading{
+      grid-column:1 / -1;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:18px;
+      width:100%;
+    }
+    .events-list.is-loading > :not(.ajsee-events-loading){
+      display:none !important;
+    }
+    @media (max-width:900px){
+      .ajsee-events-loading{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+    @media (max-width:640px){
+      .ajsee-events-loading{
+        grid-template-columns:minmax(0,1fr);
+      }
+    }
+    @media (prefers-reduced-motion:reduce){
+      .ajsee-events-loading .ph-img{
+        animation:none !important;
+      }
+    }
     .ajsee-events-state{
       max-width:720px;
       margin:18px auto 0;
@@ -1489,6 +1639,173 @@ function resetEventsEmptyStateViewTracking() {
     '';
 }
 
+function focusEventsStateMessage() {
+  const state =
+    qs(
+      '#eventsList .ajsee-events-state'
+    );
+
+  if (!state) {
+    return;
+  }
+
+  state.setAttribute(
+    'tabindex',
+    '-1'
+  );
+
+  state.focus({
+    preventScroll:
+      true
+  });
+
+  state.addEventListener(
+    'blur',
+    () => {
+      state.removeAttribute(
+        'tabindex'
+      );
+    },
+    {
+      once:
+        true
+    }
+  );
+}
+
+function getEventsLoadErrorCopy() {
+  return {
+    title:
+      t(
+        'events-load-error-title',
+        currentLang === 'en'
+          ? 'We could not load the events'
+          : 'Události se nepodařilo načíst'
+      ),
+
+    body:
+      t(
+        'events-load-error',
+        currentLang === 'en'
+          ? 'We could not load the events right now. Check your connection and try again.'
+          : 'Události se teď nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.'
+      ),
+
+    retry:
+      t(
+        'events-load-retry',
+        currentLang === 'en'
+          ? 'Try again'
+          : 'Zkusit znovu'
+      )
+  };
+}
+
+function renderEventsLoadErrorState() {
+  const list =
+    qs(
+      '#eventsList'
+    );
+
+  if (!list) {
+    return;
+  }
+
+  ensureEventsStateStyles();
+  resetEventsEmptyStateViewTracking();
+
+  const copy =
+    getEventsLoadErrorCopy();
+
+  updateResultsCount(
+    t(
+      'events-results-unavailable',
+      currentLang === 'en'
+        ? 'temporarily unavailable'
+        : 'dočasně nedostupné'
+    )
+  );
+
+  list.__ajseeEventModalStore =
+    new Map();
+
+  list.innerHTML = `
+    <div
+      class="ajsee-events-state ajsee-events-state--error"
+      role="region"
+      aria-labelledby="eventsLoadErrorTitle"
+    >
+      <div
+        class="ajsee-events-state__eyebrow"
+        aria-hidden="true"
+      >⚠️</div>
+
+      <h3 id="eventsLoadErrorTitle">
+        ${esc(copy.title)}
+      </h3>
+
+      <p>
+        ${esc(copy.body)}
+      </p>
+
+      <div class="ajsee-events-state__actions">
+        <button
+          type="button"
+          data-ajsee-events-load-retry
+        >
+          ${esc(copy.retry)}
+        </button>
+      </div>
+    </div>
+  `;
+
+  const retryButton =
+    list.querySelector(
+      '[data-ajsee-events-load-retry]'
+    );
+
+  retryButton?.addEventListener(
+    'click',
+    () => {
+      retryButton.disabled =
+        true;
+
+      retryButton.setAttribute(
+        'aria-busy',
+        'true'
+      );
+
+      _lastFetchSig =
+        '';
+
+      resetEventsPager();
+
+      void renderAndSync({
+        resetPage:
+          true
+      });
+    },
+    {
+      once:
+        true
+    }
+  );
+
+  updateEventsPagerControls();
+
+  announce(
+    `${copy.title}. ${copy.body}`
+  );
+
+  if (
+    _userInteractedWithFilters
+  ) {
+    requestAnimationFrame(
+      focusEventsStateMessage
+    );
+  }
+}
+
 function renderEventsStateMessage(kind = 'rateLimit') {
   const list =
     document.getElementById(
@@ -1595,7 +1912,12 @@ function renderEventsStateMessage(kind = 'rateLimit') {
 
   updateResultsCount(
     isRateLimit
-      ? 'dočasně pozastaveno'
+      ? t(
+          'events-results-paused',
+          currentLang === 'en'
+            ? 'temporarily paused'
+            : 'dočasně pozastaveno'
+        )
       : 0
   );
 
@@ -1603,15 +1925,17 @@ function renderEventsStateMessage(kind = 'rateLimit') {
     list.innerHTML = `
       <div
         class="ajsee-events-state"
-        role="status"
-        aria-live="polite"
+        role="region"
+        aria-labelledby="eventsRateLimitStateTitle"
       >
         <div
           class="ajsee-events-state__eyebrow"
           aria-hidden="true"
         >⏳</div>
 
-        <h3>${esc(copy.title)}</h3>
+        <h3 id="eventsRateLimitStateTitle">
+          ${esc(copy.title)}
+        </h3>
         <p>${esc(copy.body)}</p>
 
         <button
@@ -1767,6 +2091,14 @@ function renderEventsStateMessage(kind = 'rateLimit') {
   announce(
     `${copy.title}. ${copy.body}`
   );
+
+  if (
+    _userInteractedWithFilters
+  ) {
+    requestAnimationFrame(
+      focusEventsStateMessage
+    );
+  }
 }
 
 function bindTicketmasterRateLimitEvents() {
@@ -4603,7 +4935,15 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     });
 
     updateEventsPagerControls();
-    announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`);
+    announce(
+      `${t('events-found', 'Nalezeno') || 'Nalezeno'} ${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`
+    );
+
+    if (
+      _userInteractedWithFilters
+    ) {
+      focusEventsResultsSummary();
+    }
   } catch (err) {
     _lastFetchSig = '';
 
@@ -4642,9 +4982,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     if (isTicketmasterRateLimitError(err) || isTicketmasterRateLimited()) {
       renderEventsStateMessage('rateLimit');
-    } else if (list) {
-      list.__ajseeEventModalStore = new Map();
-      list.innerHTML = `<p>${esc(t('events-load-error', 'Unable to load events. Try again later.'))}</p>`;
+    } else {
+      renderEventsLoadErrorState();
     }
 
     updateEventsPagerControls();

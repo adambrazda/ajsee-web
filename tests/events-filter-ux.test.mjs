@@ -990,3 +990,151 @@ test(
     );
   }
 );
+
+
+/* AJSEE_EVENTS_STATE_HARDENING_V1 */
+test(
+  'events loading state synchronizes busy semantics and renders accessible skeletons',
+  () => {
+    const html =
+      readFileSync(
+        new URL(
+          '../events.html',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const entry =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      html,
+      /id="eventsList"[^>]*aria-live/
+    );
+
+    assert.match(
+      entry,
+      /const section\s*=\s*qs\('#upcoming-events'\)/
+    );
+
+    assert.match(
+      entry,
+      /section\.setAttribute\(\s*'aria-busy'/
+    );
+
+    assert.match(
+      entry,
+      /data-ajsee-events-loading/
+    );
+
+    assert.match(
+      entry,
+      /class="event-card skeleton"/
+    );
+
+    assert.match(
+      entry,
+      /prefers-reduced-motion:reduce/
+    );
+  }
+);
+
+test(
+  'events generic error state offers retry and restores focus after user interaction',
+  () => {
+    const entry =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.match(
+      entry,
+      /function renderEventsLoadErrorState\(\)/
+    );
+
+    assert.match(
+      entry,
+      /data-ajsee-events-load-retry/
+    );
+
+    assert.match(
+      entry,
+      /renderEventsLoadErrorState\(\);/
+    );
+
+    assert.match(
+      entry,
+      /function focusEventsStateMessage\(\)/
+    );
+
+    assert.match(
+      entry,
+      /requestAnimationFrame\(\s*focusEventsStateMessage\s*\)/
+    );
+
+    assert.match(
+      entry,
+      /focusEventsResultsSummary\(\);/
+    );
+
+    assert.doesNotMatch(
+      entry,
+      /class="ajsee-events-state"\s*role="status"\s*aria-live="polite"/
+    );
+
+    for (
+      const locale of [
+        'cs',
+        'en',
+        'de',
+        'sk',
+        'pl',
+        'hu'
+      ]
+    ) {
+      const translations =
+        JSON.parse(
+          readFileSync(
+            new URL(
+              `../src/locales/${locale}.json`,
+              import.meta.url
+            ),
+            'utf8'
+          )
+        );
+
+      for (
+        const key of [
+          'events-load-error',
+          'events-load-error-title',
+          'events-load-retry',
+          'events-loading-status',
+          'events-results-paused',
+          'events-results-unavailable'
+        ]
+      ) {
+        assert.equal(
+          typeof translations[key],
+          'string',
+          `${locale}: missing ${key}`
+        );
+
+        assert.ok(
+          translations[key].trim(),
+          `${locale}: empty ${key}`
+        );
+      }
+    }
+  }
+);

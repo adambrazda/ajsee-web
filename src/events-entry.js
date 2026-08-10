@@ -132,32 +132,6 @@ const IS_LOCAL_DEV =
   location.hostname === '127.0.0.1' ||
   location.hostname === '0.0.0.0';
 
-const IS_DEPLOY_PREVIEW =
-  /^deploy-preview-\d+--ajsee-demo\.netlify\.app$/i.test(
-    location.hostname
-  );
-
-const QA_FORCE_EVENTS_ERROR =
-  (IS_LOCAL_DEV || IS_DEPLOY_PREVIEW) &&
-  new URLSearchParams(location.search).get(
-    'qaEventsError'
-  ) === '1';
-
-let _qaEventsErrorConsumed = false;
-
-function shouldForceEventsQaError() {
-  if (
-    !QA_FORCE_EVENTS_ERROR ||
-    _qaEventsErrorConsumed ||
-    !_userInteractedWithFilters
-  ) {
-    return false;
-  }
-
-  _qaEventsErrorConsumed = true;
-  return true;
-}
-
 const I18N_FETCH_CACHE_MODE = IS_LOCAL_DEV ? 'no-store' : 'default';
 const JSON_CACHE = new Map();
 const JSON_PROMISE_CACHE = new Map();
@@ -4603,14 +4577,6 @@ async function fetchNextEventsBatch(locale, api) {
   eventsPager.loading = true;
 
   try {
-    if (shouldForceEventsQaError()) {
-      const err = new Error(
-        'AJSEE QA forced events load error'
-      );
-      err.qaForced = true;
-      throw err;
-    }
-
     const requestFilters = { ...api, page: eventsPager.apiPage, size: EVENTS_API_BATCH_SIZE };
     const nextEvents = await getAllEvents({ locale, filters: requestFilters }) || [];
 

@@ -118,7 +118,48 @@ const MODAL_I18N = {
   },
 };
 
-function normalizeLang(locale = '') {
+const MODAL_TICKET_SELLER_LABELS = {
+  cs: 'Prodejce vstupenek',
+  en: 'Ticket seller',
+  de: 'Ticketanbieter',
+  sk: 'Predajca vstupeniek',
+  pl: 'Sprzedawca biletów',
+  hu: 'Jegyértékesítő'
+};
+
+function modalProviderName(eventData = {}) {
+  const raw = String(
+    eventData?.sourceName ||
+    eventData?.partner ||
+    eventData?.source ||
+    ''
+  ).trim();
+
+  const key = raw
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+
+  const known = {
+    ticketmaster: 'Ticketmaster',
+    smsticket: 'SMS Ticket',
+    todaytix: 'TodayTix',
+    seatplan: 'SeatPlan'
+  };
+
+  return known[key] || raw;
+}
+
+function formatModalTicketSeller(lang, provider) {
+  const cleanProvider = String(provider || '').trim();
+
+  if (!cleanProvider) return '';
+
+  const label =
+    MODAL_TICKET_SELLER_LABELS[lang] ||
+    MODAL_TICKET_SELLER_LABELS.cs;
+
+  return `${label}: ${cleanProvider}`;
+}function normalizeLang(locale = '') {
   const lang = String(locale || document.documentElement.lang || 'cs')
     .trim()
     .toLowerCase()
@@ -932,7 +973,97 @@ function ensureTicketOptionsStyles() {
   `);
 }
 
-function ensureEventModalShell() {
+function ensureModalConversionPolishStyles() {
+  injectOnce('ajsee-event-modal-conversion-polish-v1-css', String.raw`
+    .event-modal .modal-title{
+      font-size:clamp(28px, 3vw, 38px);
+      line-height:1.08;
+      letter-spacing:-.03em;
+    }
+
+    .event-modal .modal-description[hidden]{
+      display:none !important;
+    }
+
+    .event-modal .modal-category{
+      margin-bottom:16px;
+      color:#667085;
+      font-size:13px;
+      font-style:normal !important;
+      font-weight:700;
+    }
+
+    .event-modal .modal-seller-note{
+      margin:10px 0 20px;
+      color:#667085;
+      font-size:13px;
+      line-height:1.45;
+      font-weight:600;
+    }
+
+    .event-modal .calendar-buttons{
+      margin-top:20px;
+    }
+
+    .event-modal .calendar-label{
+      margin-bottom:8px;
+      color:#526071;
+      font-size:14px;
+      font-weight:750;
+    }
+
+    .event-modal .calendar-btns-wrap,
+    .event-modal .ajsee-modal-calendar-actions-v1{
+      display:flex !important;
+      flex-wrap:wrap !important;
+      gap:8px !important;
+      width:100% !important;
+    }
+
+    .event-modal .calendar-btn,
+    .event-modal .ajsee-modal-calendar-actions-v1 > a,
+    .event-modal .ajsee-modal-calendar-actions-v1 > button{
+      width:auto !important;
+      min-width:0 !important;
+      min-height:38px !important;
+      padding:0 12px !important;
+      border:1px solid rgba(10,61,98,.18) !important;
+      border-radius:10px !important;
+      background:#fff !important;
+      color:#0A3D62 !important;
+      box-shadow:none !important;
+      font-size:14px !important;
+      font-weight:750 !important;
+      justify-self:start !important;
+    }
+
+    .event-modal .calendar-btn:hover,
+    .event-modal .ajsee-modal-calendar-actions-v1 > a:hover,
+    .event-modal .ajsee-modal-calendar-actions-v1 > button:hover{
+      border-color:rgba(10,61,98,.32) !important;
+      background:#f5f9fd !important;
+    }
+
+    .event-modal .calendar-btn:focus-visible{
+      outline:3px solid rgba(14,136,240,.28);
+      outline-offset:3px;
+    }
+
+    @media (max-width:760px){
+      .event-modal .modal-title{
+        font-size:clamp(26px, 8vw, 30px);
+      }
+
+      .event-modal .modal-ticket-cta{
+        width:100%;
+      }
+
+      .event-modal .modal-seller-note{
+        margin-top:8px;
+      }
+    }
+  `);
+}function ensureEventModalShell() {
   ensureModalStyles();
 
   let modal = document.getElementById(MODAL_ID);
@@ -982,6 +1113,12 @@ function ensureEventModalShell() {
           <a id="modalTicketsLink" class="modal-ticket-cta" href="#" target="_blank" rel="noopener noreferrer">
             Vstupenky
           </a>
+
+          <p
+            id="modalSellerNote"
+            class="modal-seller-note"
+            hidden
+          ></p>
 
           <div class="calendar-buttons">
             <span class="calendar-label" id="modalCalendarLabel">Přidat do kalendáře:</span>
@@ -1139,6 +1276,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const lang = normalizeLang(locale);
   const intlLocale = browserLocale(locale);
   const modal = ensureEventModalShell();
+  ensureModalConversionPolishStyles();
 
   if (!window.__ajseeEventModalInitialized) {
     initEventModal();
@@ -1168,8 +1306,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
     i18n(lang, 'untitled');
 
   const description =
-    pickLocalized(eventData.description, preferredLocales) ||
-    i18n(lang, 'detailsFallback');
+    pickLocalized(eventData.description, preferredLocales).trim();
 
   const dateVal = eventData.datetime || eventData.date || '';
   const dateObj = parseEventDate(dateVal);
@@ -1220,6 +1357,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const dateEl = modal.querySelector('#modalDate');
   const locationEl = modal.querySelector('#modalLocation');
   const descEl = modal.querySelector('#modalDescription');
+  const sellerNoteEl = modal.querySelector('#modalSellerNote');
   const categoryEl = modal.querySelector('#modalCategory');
   const ticketEl = modal.querySelector('#modalTicketsLink');
   const ticketOptionsEl = modal.querySelector('#modalTicketOptions');
@@ -1233,8 +1371,19 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
 
   if (dateEl) dateEl.textContent = dateText;
   if (locationEl) locationEl.textContent = locationText;
-  if (descEl) descEl.textContent = description;
+  if (descEl) {
+    descEl.textContent = description;
+    descEl.hidden = !description;
+  }
   if (categoryEl) categoryEl.textContent = translateCategory(eventData.category, lang);
+
+  const sellerName = modalProviderName(eventData);
+
+  if (sellerNoteEl) {
+    sellerNoteEl.textContent =
+      formatModalTicketSeller(lang, sellerName);
+    sellerNoteEl.hidden = !sellerName;
+  }
 
   const renderedTicketOptions =
     ticketOptions.length > 1

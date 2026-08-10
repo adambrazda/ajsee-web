@@ -4857,6 +4857,28 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     injectProviderBadgeStyles();
 
+    /*
+     * Keep event cards at a stable product-card width.
+     * auto-fill keeps empty grid tracks reserved, unlike auto-fit,
+     * so a single result does not stretch across the full 1200px container.
+     * Non-card states still span the complete result grid.
+     */
+    injectOnce('ajsee-events-card-grid-v1-css', String.raw`
+      #eventsList.events-list{
+        grid-template-columns:
+          repeat(
+            auto-fill,
+            minmax(min(100%, 360px), 24rem)
+          );
+        justify-content:start;
+      }
+
+      #eventsList.events-list > :not(.event-card){
+        grid-column:1 / -1;
+        width:100%;
+      }
+    `);
+
 
     const modalStore = new Map();
 

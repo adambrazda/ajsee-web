@@ -86,3 +86,38 @@ test('modal uses secondary calendar styling', () => {
     /background:#fff !important/
   );
 });
+test('existing modal shell receives seller trust note at runtime', () => {
+  assert.match(
+    modalSource,
+    /function ensureModalSellerNote\(modal\)/
+  );
+
+  assert.match(
+    modalSource,
+    /const sellerNoteEl = ensureModalSellerNote\(modal\)/
+  );
+});
+
+test('desktop calendar actions use three compact columns', () => {
+  assert.match(
+    modalSource,
+    /AJSEE_MODAL_CALENDAR_3COL_V1/
+  );
+
+  assert.match(
+    modalSource,
+    /grid-template-columns:repeat\(3,\s*minmax\(0,\s*1fr\)\)/
+  );
+});
+
+test('mobile calendar actions remain one column', () => {
+  assert.match(
+    modalSource,
+    /AJSEE_MODAL_CALENDAR_MOBILE_1COL_V1/
+  );
+
+  assert.match(
+    modalSource,
+    /grid-template-columns:1fr !important/
+  );
+});

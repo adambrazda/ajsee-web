@@ -1049,6 +1049,27 @@ function ensureModalConversionPolishStyles() {
       outline-offset:3px;
     }
 
+    /* AJSEE_MODAL_CALENDAR_3COL_V1 */
+    @media (min-width:761px){
+      .event-modal .calendar-btns-wrap,
+      .event-modal .ajsee-modal-calendar-actions-v1{
+        display:grid !important;
+        grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+        gap:8px !important;
+        width:100% !important;
+      }
+
+      .event-modal .calendar-btn,
+      .event-modal .ajsee-modal-calendar-actions-v1 > a,
+      .event-modal .ajsee-modal-calendar-actions-v1 > button{
+        width:100% !important;
+        min-width:0 !important;
+        padding:0 8px !important;
+        font-size:13px !important;
+        white-space:nowrap !important;
+      }
+    }
+
     @media (max-width:760px){
       .event-modal .modal-title{
         font-size:clamp(26px, 8vw, 30px);
@@ -1060,6 +1081,20 @@ function ensureModalConversionPolishStyles() {
 
       .event-modal .modal-seller-note{
         margin-top:8px;
+      }
+
+      /* AJSEE_MODAL_CALENDAR_MOBILE_1COL_V1 */
+      .event-modal .calendar-btns-wrap,
+      .event-modal .ajsee-modal-calendar-actions-v1{
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        width:100% !important;
+      }
+
+      .event-modal .calendar-btn,
+      .event-modal .ajsee-modal-calendar-actions-v1 > a,
+      .event-modal .ajsee-modal-calendar-actions-v1 > button{
+        width:100% !important;
       }
     }
   `);
@@ -1149,6 +1184,45 @@ function ensureModalConversionPolishStyles() {
   ensureTicketOptionsStyles();
 
   return modal;
+}
+
+function ensureModalSellerNote(modal) {
+  if (!modal) return null;
+
+  let note =
+    modal.querySelector('#modalSellerNote');
+
+  if (note) return note;
+
+  note = document.createElement('p');
+  note.id = 'modalSellerNote';
+  note.className = 'modal-seller-note';
+  note.hidden = true;
+
+  const calendar =
+    modal.querySelector('.calendar-buttons');
+
+  const ticket =
+    modal.querySelector('#modalTicketsLink');
+
+  const details =
+    modal.querySelector('.modal-details');
+
+  if (calendar?.parentNode) {
+    calendar.parentNode.insertBefore(
+      note,
+      calendar
+    );
+  } else if (ticket?.parentNode) {
+    ticket.parentNode.insertBefore(
+      note,
+      ticket.nextSibling
+    );
+  } else if (details) {
+    details.appendChild(note);
+  }
+
+  return note;
 }
 
 function ensureTicketCta(modal) {
@@ -1357,7 +1431,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const dateEl = modal.querySelector('#modalDate');
   const locationEl = modal.querySelector('#modalLocation');
   const descEl = modal.querySelector('#modalDescription');
-  const sellerNoteEl = modal.querySelector('#modalSellerNote');
+  const sellerNoteEl = ensureModalSellerNote(modal);
   const categoryEl = modal.querySelector('#modalCategory');
   const ticketEl = modal.querySelector('#modalTicketsLink');
   const ticketOptionsEl = modal.querySelector('#modalTicketOptions');

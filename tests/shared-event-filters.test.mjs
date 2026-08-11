@@ -169,3 +169,23 @@ test(
     }
   }
 );
+
+test(
+  'homepage preserves shared filter controls at runtime',
+  () => {
+    assert.doesNotMatch(
+      homeSource,
+      /if\s*\(toolbar\)\s*toolbar\.remove\(\)/
+    );
+
+    assert.doesNotMatch(
+      homeSource,
+      /if\s*\(topToolbar\)\s*topToolbar\.remove\(\)/
+    );
+
+    assert.doesNotMatch(
+      homeSource,
+      /legacyNearBtn\.remove\(\)/
+    );
+  }
+);

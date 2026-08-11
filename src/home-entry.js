@@ -656,8 +656,6 @@ function forceInlineFilters(doc = document) {
   ['#filtersOpen', '#filtersClose', '#filtersOverlay', '.filters-fab', '.filters-toggle', '.filters-summary', '.filters-sheet-toggle']
     .forEach(sel => doc.querySelectorAll(sel).forEach(el => el.remove()));
 
-  const toolbar = doc.querySelector('.filters-toolbar');
-  if (toolbar) toolbar.remove();
 
   form.hidden = false;
   form.classList.remove('is-hidden', 'is-collapsed', 'is-open');
@@ -4283,11 +4281,6 @@ async function bootstrapMain() {
   safeInitLangDropdown();
 
   const formEl = qs('#events-filters-form');
-  const topToolbar = document.querySelector('.filters-toolbar');
-  if (topToolbar) topToolbar.remove();
-
-  const legacyNearBtn = document.getElementById('filter-nearme');
-  if (legacyNearBtn) legacyNearBtn.remove();
 
   upgradeSortToSegmented();
   normalizeFilterFormUI();

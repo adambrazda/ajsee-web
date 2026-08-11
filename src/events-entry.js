@@ -1,3 +1,4 @@
+import './event-filters.js';
 import {
   ensureSharedEventGridStyles,
   eventImageOrFallback,

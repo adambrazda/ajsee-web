@@ -264,7 +264,7 @@ test('events page exposes film and family filters with URL state', () => {
   const html =
     readFileSync(
       new URL(
-        '../events.html',
+        '../src/event-filters.js',
         import.meta.url
       ),
       'utf8'
@@ -290,7 +290,7 @@ test('events page exposes film and family filters with URL state', () => {
 
   assert.match(
     html,
-    /<option value="film"[^>]*data-i18n-key="category-film"/
+    /<option(?=[^>]*value="film")(?=[^>]*data-i18n-key="category-film")[^>]*>/
   );
 
   assert.match(
@@ -449,7 +449,7 @@ test('bootstrap keeps the events quick-filter toolbar in the DOM', () => {
 
 test('mobile quick filters expose all actions and bind near-me', () => {
   const html = readFileSync(
-    new URL('../events.html', import.meta.url),
+    new URL('../src/event-filters.js', import.meta.url),
     'utf8'
   );
 

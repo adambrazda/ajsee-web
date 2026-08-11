@@ -762,9 +762,11 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     ''
   ).trim();
 
+  // Use the input object here because the client-filter destructuring
+  // happens later in this function.
   const hasNearMeFilter =
-    nearMeLat != null &&
-    nearMeLon != null;
+    filters.nearMeLat != null &&
+    filters.nearMeLon != null;
 
   const hasExplicitPlaceFilter =
     Boolean(upstreamCity) ||

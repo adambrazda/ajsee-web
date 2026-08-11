@@ -102,7 +102,7 @@ test(
 
     assert.match(
       apiSource,
-      /nearMeLat != null[\s\S]*nearMeLon != null/
+      /const hasNearMeFilter =\s*filters\.nearMeLat != null &&\s*filters\.nearMeLon != null;/
     );
 
     assert.match(

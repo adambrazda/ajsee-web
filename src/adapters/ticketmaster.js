@@ -1266,6 +1266,26 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     ? String(filters.cityCountryCode || guessedCC || explicitCountry || '').toUpperCase()
     : '';
 
+  // AJSEE_TM_GLOBAL_KEYWORD_DISCOVERY_v1
+  // This must be an explicit upstream opt-in so normal no-city discovery
+  // keeps its existing default-country behaviour.
+  const globalKeyword = String(
+    filters.keyword ||
+    filters.q ||
+    filters.search ||
+    ''
+  ).trim();
+
+  const allowGlobalKeywordSearch =
+    filters.globalKeywordSearch === true &&
+    !effectiveRawCity &&
+    globalKeyword.length >= 2 &&
+    !filters.latlong &&
+    !(
+      filters.nearMeLat != null &&
+      filters.nearMeLon != null
+    );
+
   const countrySearchCode =
     cityInputCountry ||
     (!effectiveRawCity ? explicitCountry : '') ||
@@ -1424,7 +1444,11 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       });
     }
   } else {
-    const broadCountry = countrySearchCode || explicitCountry || 'CZ';
+    const broadCountry =
+      allowGlobalKeywordSearch
+        ? ''
+        : countrySearchCode || explicitCountry || 'CZ';
+
     attempts.push({
       mode: 'broad',
       countryCode: broadCountry,

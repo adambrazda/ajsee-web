@@ -751,13 +751,43 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     ? selectedCityCc
     : countryOnlyCc || explicitCountry || 'CZ';
 
+  // AJSEE_TM_GLOBAL_KEYWORD_DISCOVERY_v1
+  // A meaningful artist/event keyword without an active place filter should
+  // be discoverable across Ticketmaster markets. Keep the normal CZ/default
+  // country for local providers and for ordinary no-keyword discovery.
+  const normalizedKeyword = String(
+    filters.keyword ??
+    filters.q ??
+    filters.search ??
+    ''
+  ).trim();
+
+  const hasNearMeFilter =
+    nearMeLat != null &&
+    nearMeLon != null;
+
+  const hasExplicitPlaceFilter =
+    Boolean(upstreamCity) ||
+    Boolean(countryFromCityInput) ||
+    String(
+      filters.placeType ||
+      ''
+    )
+      .trim()
+      .toLowerCase() === 'country';
+
+  const shouldUseGlobalTicketmasterKeywordSearch =
+    normalizedKeyword.length >= 2 &&
+    !hasExplicitPlaceFilter &&
+    !hasNearMeFilter;
+
   const upstreamFilters = {
     ...filters,
     dateFrom: filters.dateFrom ?? filters.from ?? '',
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
     audience: filters.audience ?? '',
-    keyword: filters.keyword ?? filters.q ?? filters.search ?? '',
+    keyword: normalizedKeyword,
     // KlĂ­ÄŤovĂˇ zmÄ›na:
     // pokud uĹľivatel zadal "Francie", neposĂ­lĂˇme to dĂˇl jako city.
     city: upstreamCity,
@@ -771,9 +801,21 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     city: localCityInput || upstreamCity
   };
 
+  const ticketmasterFilters =
+    shouldUseGlobalTicketmasterKeywordSearch
+      ? {
+          ...upstreamFilters,
+          countryCode: '',
+          globalKeywordSearch: true
+        }
+      : upstreamFilters;
+
 // --- Ticketmaster ---
 try {
-  const tm = await fetchTicketmasterEvents({ locale: loc, filters: upstreamFilters });
+  const tm = await fetchTicketmasterEvents({
+    locale: loc,
+    filters: ticketmasterFilters
+  });
 
   if (Array.isArray(tm)) {
     all = all.concat(tm);

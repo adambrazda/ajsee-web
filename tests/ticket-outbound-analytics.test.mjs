@@ -7,6 +7,11 @@ const eventsEntrySource = fs.readFileSync(
   'utf8'
 );
 
+const sharedCardSource = fs.readFileSync(
+  new URL('../src/event-card.js', import.meta.url),
+  'utf8'
+);
+
 const eventModalSource = fs.readFileSync(
   new URL('../src/event-modal.js', import.meta.url),
   'utf8'
@@ -16,32 +21,32 @@ test(
   'event card exposes event identity and explicit analytics placement',
   () => {
     assert.match(
-      eventsEntrySource,
-      /data-event-id="\$\{esc\(modalId\)\}"/
+      sharedCardSource,
+      /data-event-id="\$\{safeModalId\}"/
     );
 
     assert.match(
-      eventsEntrySource,
+      sharedCardSource,
       /data-placement="event_card"/
     );
 
     assert.match(
-      eventsEntrySource,
-      /const eventId = cleanText\(link\.dataset\.eventId\);/
+      sharedCardSource,
+      /const eventId =\s*cleanText\(\s*link\.dataset\.eventId\s*\);/
     );
 
     assert.match(
-      eventsEntrySource,
-      /const placement = cleanText\(link\.dataset\.placement\) \|\| 'event_card';/
+      sharedCardSource,
+      /const placement =\s*cleanText\(\s*link\.dataset\.placement\s*\)\s*\|\|\s*'event_card';/
     );
 
     assert.match(
-      eventsEntrySource,
-      /event_id:\s*eventId,/
+      sharedCardSource,
+      /event_id:\s*eventId/
     );
 
     assert.match(
-      eventsEntrySource,
+      sharedCardSource,
       /\bplacement,/
     );
   }
@@ -76,23 +81,28 @@ test(
   'event card guards pointerdown plus click against duplicate tracking',
   () => {
     assert.match(
-      eventsEntrySource,
-      /let tracked = false;/
+      sharedCardSource,
+      /const partnerClickBound = new WeakSet\(\)/
     );
 
     assert.match(
-      eventsEntrySource,
-      /if \(tracked\) return;\s*tracked = true;\s*trackPartnerClickFromLink\(link\);/
+      sharedCardSource,
+      /let tracked = false/
     );
 
     assert.match(
-      eventsEntrySource,
-      /addEventListener\('pointerdown', trackOnce/
+      sharedCardSource,
+      /if \(tracked\) return;/
     );
 
     assert.match(
-      eventsEntrySource,
-      /addEventListener\('click', trackOnce\)/
+      sharedCardSource,
+      /link\.addEventListener\(\s*'pointerdown',\s*trackOnce,\s*\{\s*passive:\s*true\s*\}\s*\)/
+    );
+
+    assert.match(
+      sharedCardSource,
+      /link\.addEventListener\(\s*'click',\s*trackOnce\s*\)/
     );
   }
 );

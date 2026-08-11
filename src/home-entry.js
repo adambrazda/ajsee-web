@@ -1,3 +1,9 @@
+import {
+  ensureSharedEventGridStyles,
+  eventImageOrFallback,
+  renderSharedEventCard,
+  wireSharedEventCardAnalytics
+} from './event-card.js';
 // /src/home-entry.js
 // ---------------------------------------------------------
 // AJSEE – Homepage UI, events preview, i18n & contact
@@ -3502,6 +3508,8 @@ const modalStore = new Map();
       visible: toRender.length,
       isHomePreview: true
     });
+ensureSharedEventGridStyles();
+
 list.innerHTML = toRender.map((ev, index) => {
   const modalId = String(ev.id || `event-${index}`);
 
@@ -3516,7 +3524,7 @@ list.innerHTML = toRender.map((ev, index) => {
     ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
     : '';
 
-  const img = ev.image || '/images/fallbacks/concert0.jpg';
+  const img = eventImageOrFallback(ev);
 
   // Důležité:
   // Ticket link zůstává přes stejný bezpečný outbound flow jako doteď.
@@ -3535,35 +3543,17 @@ list.innerHTML = toRender.map((ev, index) => {
   const detailLabel = esc(t('event-details', 'Detail'));
   const ticketLabel = esc(t('event-tickets', 'Vstupenky'));
 
-  return `
-    <article class="event-card" data-event-id="${esc(modalId)}">
-      <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy"/>
-
-      <div class="event-content">
-        <h3 class="event-title">${title}</h3>
-        <p class="event-date">${date}</p>
-
-        <div class="event-buttons-group">
-          <button
-            type="button"
-            class="btn-event detail js-event-detail"
-            data-event-id="${esc(modalId)}"
-          >
-            ${detailLabel}
-          </button>
-
-          <a
-            href="${ticketsHref}"
-            class="btn-event ticket"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ${ticketLabel}
-          </a>
-        </div>
-      </div>
-    </article>
-  `;
+  return renderSharedEventCard({
+    event: ev,
+    modalId,
+    titleHtml: title,
+    titleRaw,
+    dateHtml: date,
+    imageSrc: img,
+    ticketsHref,
+    detailLabelHtml: detailLabel,
+    ticketLabelHtml: ticketLabel
+  });
 }).join('');
 
 list.__ajseeEventModalStore = modalStore;
@@ -3581,6 +3571,8 @@ qsa('.js-event-detail', list).forEach(btn => {
     void lazyOpenHomeEventModal(selectedEvent, locale, { t });
   });
 });
+
+    wireSharedEventCardAnalytics(list);
 
     announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);
   } catch {

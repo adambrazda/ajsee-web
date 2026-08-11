@@ -25,7 +25,7 @@ const ticketmasterSource = readFileSync(
 test('single event result keeps a stable shared desktop card track', () => {
   assert.match(
     sharedCardSource,
-    /repeat\(\s*auto-fill,\s*minmax\(\s*min\(100%,\s*280px\),\s*1fr\s*\)\s*\)/
+    /@media\s*\(min-width:\s*1024px\)[\s\S]*repeat\(\s*3,\s*minmax\(0,\s*1fr\)\s*\)/
   );
 
   assert.match(

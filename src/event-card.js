@@ -433,15 +433,7 @@ export function ensureSharedEventGridStyles(
       max-width: 1440px !important;
       margin-inline: auto;
 
-      grid-template-columns:
-        repeat(
-          auto-fill,
-          minmax(
-            min(100%, 280px),
-            1fr
-          )
-        ) !important;
-
+      grid-template-columns: 1fr !important;
       justify-content: start !important;
     }
 
@@ -502,6 +494,36 @@ export function ensureSharedEventGridStyles(
       object-position: center;
       border-radius: 18px;
       background: #eef5fb;
+    }
+
+    @media (min-width: 768px) {
+      #eventsList.events-list {
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0, 1fr)
+          ) !important;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      #eventsList.events-list {
+        grid-template-columns:
+          repeat(
+            3,
+            minmax(0, 1fr)
+          ) !important;
+      }
+    }
+
+    @media (min-width: 1536px) {
+      #eventsList.events-list {
+        grid-template-columns:
+          repeat(
+            4,
+            minmax(0, 1fr)
+          ) !important;
+      }
     }
 
     @media (max-width: 760px) {

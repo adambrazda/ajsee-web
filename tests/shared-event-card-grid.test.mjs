@@ -122,12 +122,12 @@ test(
 
     assert.match(
       sharedSource,
-      /auto-fill/
+      /@media\s*\(min-width:\s*1024px\)/
     );
 
     assert.match(
       sharedSource,
-      /min\(100%,\s*280px\)/
+      /@media\s*\(min-width:\s*1536px\)[\s\S]*repeat\(\s*4,\s*minmax\(0,\s*1fr\)\s*\)/
     );
 
     assert.match(

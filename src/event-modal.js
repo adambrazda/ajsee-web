@@ -693,6 +693,11 @@ function trackModalPartnerClickFromLink(link) {
   const partner =
     modalTrackingText(link.dataset.partner);
 
+  const eventId =
+    modalTrackingText(
+      link.dataset.eventId
+    );
+
   const eventName =
     modalTrackingText(
       link.dataset.eventTitle
@@ -758,6 +763,7 @@ function trackModalPartnerClickFromLink(link) {
 
     // Existing analytics contract.
     partner,
+    event_id: eventId,
     event_name: eventName,
     city,
     outbound_url: outboundUrl,
@@ -922,6 +928,12 @@ function renderModalTicketOptions(
 
     link.dataset.partner =
       option.provider || eventData?.partner || '';
+
+    link.dataset.eventId = String(
+      eventData?.id ||
+      eventData?.__ajseeModalId ||
+      ''
+    ).trim();
 
     link.dataset.eventTitle = title;
     link.dataset.eventCity = eventCity;
@@ -1482,6 +1494,12 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
     ticketEl.dataset.partner = String(
       eventData?.partner ||
       eventData?.source ||
+      ''
+    ).trim();
+
+    ticketEl.dataset.eventId = String(
+      eventData?.id ||
+      eventData?.__ajseeModalId ||
       ''
     ).trim();
 

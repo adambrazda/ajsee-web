@@ -4144,10 +4144,12 @@ function trackPartnerClickFromLink(link) {
       .toLowerCase() || 'cs';
 
   const partner = cleanText(link.dataset.partner);
+  const eventId = cleanText(link.dataset.eventId);
   const eventName = cleanText(link.dataset.eventTitle);
   const city = cleanText(link.dataset.eventCity);
   const clickedHref = cleanText(link.href || link.getAttribute('href'));
   const outboundUrl = cleanText(link.dataset.outboundUrl) || clickedHref;
+  const placement = cleanText(link.dataset.placement) || 'event_card';
 
   let routeCity = '';
   let routeCountryCode = '';
@@ -4171,10 +4173,11 @@ function trackPartnerClickFromLink(link) {
 
     // Existing fields kept for backward compatibility.
     partner,
+    event_id: eventId,
     event_name: eventName,
     city,
     outbound_url: outboundUrl,
-    placement: 'event_card',
+    placement,
     page_path: window.location.pathname + window.location.search,
     ts: new Date().toISOString(),
 
@@ -4926,7 +4929,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
               <button type="button" class="btn-event detail js-event-detail" data-event-id="${esc(modalId)}">
                 ${detailLabel}
               </button>
-              <a href="${ticketsHref}" class="btn-event ticket js-partner-click" target="_blank" rel="noopener noreferrer" data-partner="${esc(provider)}" data-event-title="${eventTitleAttr}" data-event-city="${eventCityAttr}" data-outbound-url="${ticketsHref}">
+              <a href="${ticketsHref}" class="btn-event ticket js-partner-click" target="_blank" rel="noopener noreferrer" data-partner="${esc(provider)}" data-event-id="${esc(modalId)}" data-placement="event_card" data-event-title="${eventTitleAttr}" data-event-city="${eventCityAttr}" data-outbound-url="${ticketsHref}">
                 ${ticketLabel}
               </a>
             </div>

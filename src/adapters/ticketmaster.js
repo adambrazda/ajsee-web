@@ -1308,13 +1308,20 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       ''
     );
   const debugTm = shouldDebugTicketmaster(filters);
-  const locales = makeLocaleList({
-    marketLocale,
-    locale,
-    debug: debugTm,
-    countryCode: targetCountryForLocale,
-    hasCity: Boolean(tmCity)
-  });
+  // AJSEE_TM_GLOBAL_KEYWORD_LOCALE_v1
+  // Cross-market artist discovery must not be constrained by the UI locale.
+  // Ticketmaster locale="*" exposes international results while all normal
+  // city/country/default discovery keeps the existing market locale logic.
+  const locales =
+    allowGlobalKeywordSearch
+      ? ['*']
+      : makeLocaleList({
+          marketLocale,
+          locale,
+          debug: debugTm,
+          countryCode: targetCountryForLocale,
+          hasCity: Boolean(tmCity)
+        });
 
   const putCommonParams = (qs, categoryVariant = {}) => {
     if (filters.keyword) qs.set('keyword', String(filters.keyword));

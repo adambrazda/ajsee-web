@@ -111,3 +111,22 @@ test(
     );
   }
 );
+test(
+  'global keyword discovery uses Ticketmaster wildcard locale',
+  () => {
+    assert.match(
+      tmSource,
+      /allowGlobalKeywordSearch\s*\?\s*\['\*'\]\s*:\s*makeLocaleList/
+    );
+  }
+);
+
+test(
+  'normal Ticketmaster discovery keeps the existing locale resolver',
+  () => {
+    assert.match(
+      tmSource,
+      /makeLocaleList\(\{[\s\S]*marketLocale,[\s\S]*locale,[\s\S]*countryCode:\s*targetCountryForLocale/
+    );
+  }
+);

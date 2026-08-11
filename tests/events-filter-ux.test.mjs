@@ -986,7 +986,7 @@ test(
 
     assert.match(
       entry,
-      /resetEventsEmptyStateViewTracking\(\);[\s\S]*?injectProviderBadgeStyles/
+      /resetEventsEmptyStateViewTracking\(\);[\s\S]*?ensureSharedEventGridStyles\(\)/
     );
   }
 );

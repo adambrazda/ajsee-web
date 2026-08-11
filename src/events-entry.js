@@ -1,3 +1,9 @@
+import {
+  ensureSharedEventGridStyles,
+  eventImageOrFallback,
+  renderSharedEventCard,
+  wireSharedEventCardAnalytics
+} from './event-card.js';
 // /src/events-entry.js
 // ---------------------------------------------------------
 // AJSEE – Events page UI, i18n & filters
@@ -34,7 +40,6 @@ import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
 import { initContactFormValidation } from './contact-validate.js';
-import { formatEventVenueLine } from './event-location.js';
 import { initEventModal, openEventModal } from './event-modal.js';
 import { ensureRuntimeStyles, updateHeaderOffset } from './runtime-style.js';
 
@@ -4001,228 +4006,6 @@ function initCityTypeahead(locale, { rebuild = false } = {}) {
 
 /* ───────── render events / paging ───────── */
 
-function ajseeEventProviderKey(ev = {}) {
-  const raw = String(
-    ev?.partner ||
-    ev?.source ||
-    ev?.bookingProvider ||
-    ev?.affiliate?.provider ||
-    ''
-  ).trim().toLowerCase();
-
-  if (!raw) return '';
-  if (raw.includes('smsticket')) return 'smsticket';
-  if (raw.includes('ticketmaster')) return 'ticketmaster';
-
-  return raw
-    .replace(/[^a-z0-9_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function ajseeEventProviderLabel(ev = {}, lang = getUILang()) {
-  const key = ajseeEventProviderKey(ev);
-
-  if (key === 'smsticket') return 'smsticket';
-  if (key === 'ticketmaster') return 'Ticketmaster';
-
-  return '';
-}
-
-function eventProviderBadgeHtml(ev = {}, lang = getUILang()) {
-  const key = ajseeEventProviderKey(ev);
-  const label = ajseeEventProviderLabel(ev, lang);
-
-  if (!key || !label) return '';
-
-  return '<p class="event-partner-badge" data-provider="' + esc(key) + '">' +
-    '<span>' + esc(label) + '</span>' +
-  '</p>';
-}
-
-function eventImageOrFallback(ev = {}) {
-  const raw = String(
-    ev?.image ||
-    ev?.imageUrl ||
-    ev?.imageOriginal ||
-    ev?.images?.[0]?.url ||
-    ''
-  ).trim();
-
-  if (raw) {
-    return raw.replace(/^http:\/\//i, 'https://');
-  }
-
-  return '/images/fallbacks/concert0.jpg';
-}
-
-function injectProviderBadgeStyles() {
-  injectOnce('ajsee-event-provider-badge-css', String.raw`
-    .event-card[data-event-provider]{
-      position:relative;
-    }
-
-    .event-partner-badge{
-      margin:0 0 12px;
-      line-height:1;
-    }
-
-    .event-partner-badge span{
-      display:inline-flex;
-      align-items:center;
-      min-height:24px;
-      padding:5px 10px;
-      border-radius:999px;
-      border:1px solid rgba(10,61,98,.12);
-      background:rgba(10,61,98,.045);
-      color:#0A3D62;
-      font-size:12px;
-      font-weight:800;
-      letter-spacing:.02em;
-      white-space:nowrap;
-    }
-
-    .event-card[data-event-provider="smsticket"] .event-partner-badge span{
-      background:rgba(92,70,255,.08);
-      border-color:rgba(92,70,255,.16);
-      color:#342f75;
-    }
-
-    .event-card[data-event-provider="ticketmaster"] .event-partner-badge span{
-      background:rgba(0,116,224,.08);
-      border-color:rgba(0,116,224,.16);
-      color:#064c9b;
-    }
-
-    .event-img{
-      background:#eef5fb;
-    }
-    `);
-
-  injectOnce('ajsee-event-card-image-stability-css', String.raw`
-    .event-card .event-img{
-      display:block;
-      width:100%;
-      aspect-ratio:16 / 9;
-      height:auto;
-      max-height:260px;
-      object-fit:cover;
-      object-position:center;
-      border-radius:18px;
-      background:#eef5fb;
-    }
-
-    @media (max-width: 760px){
-      .event-card .event-img{
-        max-height:220px;
-      }
-    }
-
-    @media (max-width: 420px){
-      .event-card .event-img{
-        max-height:190px;
-      }
-    }
-  `);
-}
-
-function trackPartnerClickFromLink(link) {
-  if (!link) return;
-
-  const cleanText = value => String(value || '').replace(/\s+/g, ' ').trim();
-
-  const getUrlHost = value => {
-    try {
-      return new URL(value, window.location.origin).hostname;
-    } catch {
-      return '';
-    }
-  };
-
-  const getLang = () =>
-    cleanText(document.documentElement.getAttribute('lang'))
-      .slice(0, 2)
-      .toLowerCase() || 'cs';
-
-  const partner = cleanText(link.dataset.partner);
-  const eventId = cleanText(link.dataset.eventId);
-  const eventName = cleanText(link.dataset.eventTitle);
-  const city = cleanText(link.dataset.eventCity);
-  const clickedHref = cleanText(link.href || link.getAttribute('href'));
-  const outboundUrl = cleanText(link.dataset.outboundUrl) || clickedHref;
-  const placement = cleanText(link.dataset.placement) || 'event_card';
-
-  let routeCity = '';
-  let routeCountryCode = '';
-
-  try {
-    const params = new URLSearchParams(window.location.search);
-    routeCity = cleanText(params.get('city'));
-    routeCountryCode = cleanText(
-      params.get('cityCc') ||
-      params.get('country') ||
-      params.get('countryCode')
-    ).toUpperCase();
-  } catch {
-    /* noop */
-  }
-
-  if (!partner && !outboundUrl) return;
-
-  const payload = {
-    event: 'partner_click',
-
-    // Existing fields kept for backward compatibility.
-    partner,
-    event_id: eventId,
-    event_name: eventName,
-    city,
-    outbound_url: outboundUrl,
-    placement,
-    page_path: window.location.pathname + window.location.search,
-    ts: new Date().toISOString(),
-
-    // Extended analytics fields.
-    event_title: eventName,
-    event_city: city || routeCity,
-    event_provider: partner,
-    destination_url: outboundUrl,
-    destination_host: getUrlHost(outboundUrl),
-    clicked_href: clickedHref,
-    clicked_host: getUrlHost(clickedHref),
-    route_city: routeCity,
-    route_country_code: routeCountryCode,
-    page_location: window.location.href,
-    language: getLang(),
-    link_text: cleanText(link.textContent)
-  };
-
-  try {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(payload);
-  } catch {
-    /* noop */
-  }
-
-  try {
-    window.__ajsee = window.__ajsee || {};
-    window.__ajsee.lastPartnerClick = payload;
-  } catch {
-    /* noop */
-  }
-
-  try {
-    sessionStorage.setItem('ajsee:lastPartnerClick', JSON.stringify(payload));
-  } catch {
-    /* noop */
-  }
-
-  try {
-    console.info('[AJSEE partner_click]', payload);
-  } catch {
-    /* noop */
-  }
-}
-
 function mapLangToTm(lang) {
   const map = { cs: 'cs-cz', sk: 'sk-sk', pl: 'pl-pl', de: 'de-de', hu: 'hu-hu', en: 'en-gb' };
   return map[(lang || 'en').slice(0, 2)] || 'en-gb';
@@ -4858,29 +4641,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
      */
     resetEventsEmptyStateViewTracking();
 
-    injectProviderBadgeStyles();
 
-    /*
-     * Keep event cards at a stable product-card width.
-     * auto-fill keeps empty grid tracks reserved, unlike auto-fit,
-     * so a single result does not stretch across the full 1200px container.
-     * Non-card states still span the complete result grid.
-     */
-    injectOnce('ajsee-events-card-grid-v1-css', String.raw`
-      #eventsList.events-list{
-        grid-template-columns:
-          repeat(
-            auto-fill,
-            minmax(min(100%, 360px), 24rem)
-          );
-        justify-content:start;
-      }
-
-      #eventsList.events-list > :not(.event-card){
-        grid-column:1 / -1;
-        width:100%;
-      }
-    `);
+    ensureSharedEventGridStyles();
 
 
     const modalStore = new Map();
@@ -4908,34 +4670,18 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
       const detailLabel = esc(t('event-details', 'Detail'));
       const ticketLabel = esc(t('event-tickets', 'Vstupenky'));
-      const provider = ajseeEventProviderKey(ev);
-      const providerBadge = eventProviderBadgeHtml(ev, locale);
-      const venueLine = formatEventVenueLine(ev);
-      const venueLineHtml = venueLine
-        ? `<p class="event-date event-location">${esc(venueLine)}</p>`
-        : '';
-      const eventCityAttr = esc(ev?.location?.city || ev?.venue?.city || ev?.place?.city || '');
-      const eventTitleAttr = esc(titleRaw);
 
-      return `
-        <article class="event-card" data-event-id="${esc(modalId)}" data-event-provider="${esc(provider)}">
-          <img src="${esc(img)}" alt="${title}" class="event-img" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/images/fallbacks/concert0.jpg';"/>
-          <div class="event-content">
-            <h3 class="event-title">${title}</h3>
-            <p class="event-date">${date}</p>
-            ${venueLineHtml}
-            ${providerBadge}
-            <div class="event-buttons-group">
-              <button type="button" class="btn-event detail js-event-detail" data-event-id="${esc(modalId)}">
-                ${detailLabel}
-              </button>
-              <a href="${ticketsHref}" class="btn-event ticket js-partner-click" target="_blank" rel="noopener noreferrer" data-partner="${esc(provider)}" data-event-id="${esc(modalId)}" data-placement="event_card" data-event-title="${eventTitleAttr}" data-event-city="${eventCityAttr}" data-outbound-url="${ticketsHref}">
-                ${ticketLabel}
-              </a>
-            </div>
-          </div>
-        </article>
-      `;
+      return renderSharedEventCard({
+        event: ev,
+        modalId,
+        titleHtml: title,
+        titleRaw,
+        dateHtml: date,
+        imageSrc: img,
+        ticketsHref,
+        detailLabelHtml: detailLabel,
+        ticketLabelHtml: ticketLabel
+      });
     }).join('');
 
     list.__ajseeEventModalStore = modalStore;
@@ -4952,18 +4698,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     });
 
 
-    qsa('.js-partner-click', list).forEach(link => {
-      let tracked = false;
-
-      const trackOnce = () => {
-        if (tracked) return;
-        tracked = true;
-        trackPartnerClickFromLink(link);
-      };
-
-      link.addEventListener('pointerdown', trackOnce, { passive: true });
-      link.addEventListener('click', trackOnce);
-    });
+    wireSharedEventCardAnalytics(list);
 
     updateEventsPagerControls();
     announce(

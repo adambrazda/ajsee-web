@@ -7,6 +7,11 @@ const eventsSource = readFileSync(
   'utf8'
 );
 
+const sharedCardSource = readFileSync(
+  new URL('../src/event-card.js', import.meta.url),
+  'utf8'
+);
+
 const modalSource = readFileSync(
   new URL('../src/event-modal.js', import.meta.url),
   'utf8'
@@ -17,15 +22,25 @@ const ticketmasterSource = readFileSync(
   'utf8'
 );
 
-test('single event result keeps a stable desktop card track', () => {
+test('single event result keeps a stable shared desktop card track', () => {
   assert.match(
-    eventsSource,
-    /repeat\(\s*auto-fill,\s*minmax\(\s*min\(100%,\s*360px\),\s*24rem\s*\)\s*\)/
+    sharedCardSource,
+    /@media\s*\(min-width:\s*1024px\)[\s\S]*repeat\(\s*3,\s*minmax\(0,\s*1fr\)\s*\)/
+  );
+
+  assert.match(
+    sharedCardSource,
+    /#eventsList\.events-list\s*>\s*\.event-card[\s\S]*max-width:\s*24rem/
+  );
+
+  assert.match(
+    sharedCardSource,
+    /#eventsList\.events-list\s*>\s*:not\(\.event-card\)/
   );
 
   assert.match(
     eventsSource,
-    /#eventsList\.events-list\s*>\s*:not\(\.event-card\)/
+    /ensureSharedEventGridStyles\(\)/
   );
 });
 

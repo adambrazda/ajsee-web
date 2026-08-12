@@ -1137,3 +1137,53 @@ test(
     }
   }
 );
+
+test(
+  'events filter interactions keep the viewport stable while results refresh',
+  () => {
+    const source =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const start =
+      source.indexOf(
+        'async function renderAndSync'
+      );
+
+    const end =
+      source.indexOf(
+        'function initEventsScrollGuard',
+        start
+      );
+
+    assert.notEqual(
+      start,
+      -1,
+      'renderAndSync must exist.'
+    );
+
+    assert.notEqual(
+      end,
+      -1,
+      'initEventsScrollGuard must follow renderAndSync.'
+    );
+
+    const renderBlock =
+      source.slice(start, end);
+
+    assert.doesNotMatch(
+      renderBlock,
+      /scrollIntoView\s*\(/
+    );
+
+    assert.doesNotMatch(
+      renderBlock,
+      /_hasDoneFirstRender\s*&&\s*_userInteractedWithFilters/
+    );
+  }
+);

@@ -4784,13 +4784,7 @@ async function renderAndSync({ resetPage = true } = {}) {
     updateToggleBadge();
     expandFilters();
 
-    if (!isHome()) {
-      const shouldScroll = _hasDoneFirstRender && _userInteractedWithFilters;
-      if (shouldScroll) {
-        const list = qs('#eventsList');
-        if (list) list.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
+
   } finally {
     _renderInflight = false;
     _hasDoneFirstRender = true;

@@ -1,5 +1,9 @@
 import './event-filters.js';
 import {
+  detectDatePreset,
+  getDatePresetRange
+} from './events-filter-ux.js';
+import {
   ensureSharedEventGridStyles,
   eventImageOrFallback,
   renderSharedEventCard,
@@ -247,6 +251,7 @@ if (!G.flags.mainInitialized) {
 /* ───────── state ───────── */
 let currentFilters = {
   category: 'all',
+  audience: '',
   sort: 'nearest',
   city: '',
   cityLabel: '',
@@ -2471,8 +2476,157 @@ function updateDateComboLabel() {
 if (!window.updateDateComboLabel) window.updateDateComboLabel = updateDateComboLabel;
 
 /* ───────── form sync ───────── */
+function syncQuickDateButtons() {
+  const activePreset =
+    detectDatePreset(currentFilters);
+
+  [
+    ['#chipToday', 'today'],
+    ['#chipTomorrow', 'tomorrow'],
+    ['#chipThisWeek', 'thisWeek'],
+    ['#chipWeekend', 'weekend']
+  ].forEach(([selector, preset]) => {
+    const button = qs(selector);
+    if (!button) return;
+
+    const active =
+      activePreset === preset;
+
+    button.classList.toggle(
+      'is-active',
+      active
+    );
+
+    button.setAttribute(
+      'aria-pressed',
+      active ? 'true' : 'false'
+    );
+  });
+}
+
+function syncQuickAudienceButton() {
+  const audience =
+    qs('#filter-audience-family');
+
+  if (!audience) return;
+
+  const active =
+    currentFilters.audience === 'family';
+
+  audience.setAttribute(
+    'aria-pressed',
+    active ? 'true' : 'false'
+  );
+
+  audience.classList.toggle(
+    'is-active',
+    active
+  );
+}
+
+function syncQuickNearMeButton() {
+  const button =
+    qs('#chipNearMe');
+
+  if (!button) return;
+
+  const active =
+    currentFilters.nearMeLat !== null &&
+    currentFilters.nearMeLat !== undefined &&
+    currentFilters.nearMeLon !== null &&
+    currentFilters.nearMeLon !== undefined;
+
+  button.setAttribute(
+    'aria-pressed',
+    active ? 'true' : 'false'
+  );
+
+  button.classList.toggle(
+    'is-active',
+    active
+  );
+}
+
+function syncQuickFilterButtons() {
+  syncQuickDateButtons();
+  syncQuickAudienceButton();
+  syncQuickNearMeButton();
+}
+
+async function applyQuickDatePreset(preset) {
+  const activePreset =
+    detectDatePreset(currentFilters);
+
+  if (activePreset === preset) {
+    currentFilters.dateFrom = '';
+    currentFilters.dateTo = '';
+  } else {
+    const range =
+      getDatePresetRange(preset);
+
+    currentFilters.dateFrom =
+      range.from;
+
+    currentFilters.dateTo =
+      range.to;
+  }
+
+  _userInteractedWithFilters = true;
+  _lastFetchSig = '';
+
+  setFilterInputsFromState();
+  updateToggleBadge();
+
+  await renderAndSync({
+    resetPage: true
+  });
+}
+
+async function resetAllEventFilters() {
+  const langToCountry = {
+    cs: 'CZ',
+    sk: 'SK',
+    de: 'DE',
+    pl: 'PL',
+    hu: 'HU',
+    en: 'CZ'
+  };
+
+  currentFilters.category = 'all';
+  currentFilters.audience = '';
+  currentFilters.sort = 'nearest';
+
+  currentFilters.city = '';
+  currentFilters.cityLabel = '';
+  currentFilters.cityCountryCode = '';
+
+  currentFilters.dateFrom = '';
+  currentFilters.dateTo = '';
+  currentFilters.keyword = '';
+
+  currentFilters.countryCode = (
+    getCookie('aj_country') ||
+    langToCountry[currentLang] ||
+    'CZ'
+  ).toUpperCase();
+
+  currentFilters.nearMeLat = null;
+  currentFilters.nearMeLon = null;
+  currentFilters.nearMeRadiusKm = 50;
+
+  _userInteractedWithFilters = true;
+  _lastFetchSig = '';
+
+  setFilterInputsFromState();
+  updateToggleBadge();
+
+  await renderAndSync({
+    resetPage: true
+  });
+}
 function setFilterInputsFromState() {
   const cat = qs('#filter-category') || qs('#events-category-filter');
+  const audience = qs('#filter-audience-family');
   const sort = qs('#filter-sort') || qs('#events-sort-filter');
   const city = getCityInputEl();
   const from = qs('#filter-date-from') || qs('#events-date-from');
@@ -2480,6 +2634,22 @@ function setFilterInputsFromState() {
   const kw = qs('#filter-keyword');
 
   if (cat) cat.value = currentFilters.category || 'all';
+
+  if (audience) {
+    const active =
+      currentFilters.audience === 'family';
+
+    audience.setAttribute(
+      'aria-pressed',
+      active ? 'true' : 'false'
+    );
+
+    audience.classList.toggle(
+      'is-active',
+      active
+    );
+  }
+
   if (sort) sort.value = currentFilters.sort || 'nearest';
 
   if (city) {
@@ -2497,10 +2667,12 @@ function setFilterInputsFromState() {
   if (kw) kw.value = currentFilters.keyword || '';
 
   updateDateComboLabel();
+  syncQuickFilterButtons();
 }
 
 function syncFiltersFromForm() {
   const cat = qs('#filter-category') || qs('#events-category-filter');
+  const audience = qs('#filter-audience-family');
   const sort = qs('#filter-sort') || qs('#events-sort-filter');
   const city = getCityInputEl();
   const from = qs('#filter-date-from') || qs('#events-date-from');
@@ -2508,6 +2680,20 @@ function syncFiltersFromForm() {
   const kw = qs('#filter-keyword');
 
   currentFilters.category = cat?.value || 'all';
+
+  if (audience) {
+    const active =
+      audience.getAttribute('aria-pressed') === 'true';
+
+    currentFilters.audience =
+      active ? 'family' : '';
+
+    audience.classList.toggle(
+      'is-active',
+      active
+    );
+  }
+
   currentFilters.sort = sort?.value || 'nearest';
   currentFilters.keyword = (kw?.value || '').trim();
   currentFilters.dateFrom = from?.value || currentFilters.dateFrom || '';
@@ -2548,6 +2734,11 @@ function syncURLFromFilters() {
   currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from');
   currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to');
   (currentFilters.category && currentFilters.category !== 'all') ? p.set('segment', currentFilters.category) : p.delete('segment');
+
+  currentFilters.audience === 'family'
+    ? p.set('audience', 'family')
+    : p.delete('audience');
+
   currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q');
   (currentFilters.sort && currentFilters.sort !== 'nearest') ? p.set('sort', currentFilters.sort) : p.delete('sort');
 
@@ -2993,6 +3184,57 @@ async function activateNearMeViaGeo(input) {
   expandFilters();
 }
 
+function bindQuickNearMeButton() {
+  const quickNearBtn =
+    document.getElementById(
+      'chipNearMe'
+    );
+
+  if (!quickNearBtn) return;
+
+  wireOnce(
+    quickNearBtn,
+    'click',
+    async () => {
+      if (
+        quickNearBtn.getAttribute(
+          'aria-busy'
+        ) === 'true'
+      ) {
+        return;
+      }
+
+      const cityInput =
+        getCityInputEl();
+
+      _userInteractedWithFilters = true;
+
+      quickNearBtn.disabled = true;
+
+      quickNearBtn.setAttribute(
+        'aria-busy',
+        'true'
+      );
+
+      try {
+        await activateNearMeViaGeo(
+          cityInput
+        );
+
+        syncQuickNearMeButton();
+        setFilterInputsFromState();
+        updateToggleBadge();
+      } finally {
+        quickNearBtn.disabled = false;
+
+        quickNearBtn.removeAttribute(
+          'aria-busy'
+        );
+      }
+    },
+    'quick-near-me-click'
+  );
+}
 function ensureNearMeInlineButton(input) {
   if (!input) return;
 
@@ -3417,6 +3659,7 @@ function makeFetchSig(locale, api, page, perPage) {
     page,
     perPage,
     category: api.category || 'all',
+    audience: api.audience || '',
     sort: api.sort || 'nearest',
     city: api.city || '',
     cityCountryCode: api.cityCountryCode || '',
@@ -3482,9 +3725,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     if (!window.translations) window.translations = await loadTranslations(locale);
 
     let out = [...events];
-    if (filters.category && filters.category !== 'all') {
-      out = out.filter(e => e.category === filters.category);
-    }
 
     if (filters.sort === 'nearest') {
       out.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
@@ -4144,6 +4384,10 @@ function initFiltersFromURL() {
   if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
   if (sp.get('to')) currentFilters.dateTo = sp.get('to') || '';
   if (sp.get('segment')) currentFilters.category = sp.get('segment') || 'all';
+
+  if (sp.get('audience') === 'family') {
+    currentFilters.audience = 'family';
+  }
   if (sp.get('q')) currentFilters.keyword = sp.get('q') || '';
   if (sp.get('sort')) currentFilters.sort = sp.get('sort') || 'nearest';
 
@@ -4162,25 +4406,123 @@ function initFiltersFromURL() {
 function bindFilterFormInteractions(formEl) {
   if (!formEl) return;
 
-  const category = qs('#filter-category') || qs('#events-category-filter');
+  const category =
+    qs('#filter-category') ||
+    qs('#events-category-filter');
+
   if (category) {
-    wireOnce(category, 'change', async () => {
-      syncFiltersFromForm();
-      await renderAndSync({ resetPage: true });
-    }, 'category-change');
+    wireOnce(
+      category,
+      'change',
+      async () => {
+        _userInteractedWithFilters = true;
+
+        syncFiltersFromForm();
+
+        await renderAndSync({
+          resetPage: true
+        });
+      },
+      'category-change'
+    );
   }
+
+  const audience =
+    qs('#filter-audience-family');
+
+  if (audience) {
+    wireOnce(
+      audience,
+      'click',
+      async () => {
+        _userInteractedWithFilters = true;
+
+        const nextActive =
+          audience.getAttribute(
+            'aria-pressed'
+          ) !== 'true';
+
+        audience.setAttribute(
+          'aria-pressed',
+          String(nextActive)
+        );
+
+        audience.classList.toggle(
+          'is-active',
+          nextActive
+        );
+
+        syncFiltersFromForm();
+
+        await renderAndSync({
+          resetPage: true
+        });
+      },
+      'family-audience-click'
+    );
+  }
+
+  [
+    ['#chipToday', 'today'],
+    ['#chipTomorrow', 'tomorrow'],
+    ['#chipThisWeek', 'thisWeek'],
+    ['#chipWeekend', 'weekend']
+  ].forEach(([selector, preset]) => {
+    const button = qs(selector);
+    if (!button) return;
+
+    wireOnce(
+      button,
+      'click',
+      async () => {
+        await applyQuickDatePreset(
+          preset
+        );
+      },
+      `quick-date-${preset}`
+    );
+  });
+
+  const clearQuickFilters =
+    qs('#chipClear');
+
+  if (clearQuickFilters) {
+    wireOnce(
+      clearQuickFilters,
+      'click',
+      async () => {
+        await resetAllEventFilters();
+      },
+      'quick-clear-all'
+    );
+  }
+
+  syncQuickFilterButtons();
 
   wireOnce(formEl, 'submit', async e => {
     e.preventDefault();
+    _userInteractedWithFilters = true;
+
     syncFiltersFromForm();
 
     const city = getCityInputEl();
-    if (city && !city.hasAttribute('readonly') && isNearMeTyped(city) && !(currentFilters.nearMeLat && currentFilters.nearMeLon)) {
+
+    if (
+      city &&
+      !city.hasAttribute('readonly') &&
+      isNearMeTyped(city) &&
+      !(
+        currentFilters.nearMeLat &&
+        currentFilters.nearMeLon
+      )
+    ) {
       await activateNearMeViaGeo(city);
       syncFiltersFromForm();
     }
 
-    await renderAndSync({ resetPage: true });
+    await renderAndSync({
+      resetPage: true
+    });
   }, 'submit');
 }
 
@@ -4286,6 +4628,7 @@ async function bootstrapMain() {
   normalizeFilterFormUI();
   installCitySheetObserver();
   bindFilterFormInteractions(formEl);
+  bindQuickNearMeButton();
 
   installDatePopoverScrollBridges();
   bindDatePopoverGlue();
@@ -4776,9 +5119,20 @@ if (!G.flags.mainDomReadyBound) {
         setIfMissing('segment', filters.category);
       }
 
-      setIfMissing('dateFrom', filters.dateFrom || readInputValue('#filter-date-from') || readInputValue('input[name="date_from"]'));
-      setIfMissing('dateTo', filters.dateTo || readInputValue('#filter-date-to') || readInputValue('input[name="date_to"]'));
-      setIfMissing('keyword', filters.keyword || readInputValue('#filter-keyword') || readInputValue('input[name="keyword"]'));
+      setIfMissing('from', filters.dateFrom || readInputValue('#filter-date-from') || readInputValue('input[name="date_from"]'));
+      setIfMissing('to', filters.dateTo || readInputValue('#filter-date-to') || readInputValue('input[name="date_to"]'));
+      setIfMissing('q', filters.keyword || readInputValue('#filter-keyword') || readInputValue('input[name="keyword"]'));
+
+      if (filters.audience === 'family') {
+        setIfMissing('audience', 'family');
+      } else {
+        params.delete('audience');
+      }
+
+      params.delete('dateFrom');
+      params.delete('dateTo');
+      params.delete('keyword');
+      params.delete('search');
     } catch {
       // If filters are not available for any reason, keep URL-only behaviour.
     }

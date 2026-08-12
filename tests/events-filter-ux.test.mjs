@@ -1187,3 +1187,59 @@ test(
     );
   }
 );
+
+test(
+  'events filtering does not move focus to the results summary',
+  () => {
+    const source =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const renderStart =
+      source.indexOf(
+        'async function renderEvents'
+      );
+
+    const renderEnd =
+      source.indexOf(
+        'async function renderAndSync',
+        renderStart
+      );
+
+    assert.notEqual(
+      renderStart,
+      -1
+    );
+
+    assert.notEqual(
+      renderEnd,
+      -1
+    );
+
+    const renderBlock =
+      source.slice(
+        renderStart,
+        renderEnd
+      );
+
+    assert.doesNotMatch(
+      renderBlock,
+      /_userInteractedWithFilters[\s\S]{0,120}?focusEventsResultsSummary\s*\(/
+    );
+
+    assert.match(
+      source,
+      /count\.focus\(\s*\{[\s\S]*?preventScroll:\s*true[\s\S]*?\}\s*\)/
+    );
+
+    assert.doesNotMatch(
+      source,
+      /preventScroll:\s*false/
+    );
+  }
+);

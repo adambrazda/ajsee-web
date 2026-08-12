@@ -1467,7 +1467,7 @@ function focusEventsResultsSummary() {
 
   count.focus({
     preventScroll:
-      false
+      true
   });
 
   count.addEventListener(
@@ -4706,11 +4706,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       `${t('events-found', 'Nalezeno') || 'Nalezeno'} ${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`
     );
 
-    if (
-      _userInteractedWithFilters
-    ) {
-      focusEventsResultsSummary();
-    }
+
   } catch (err) {
     _lastFetchSig = '';
 

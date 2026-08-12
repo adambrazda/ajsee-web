@@ -331,3 +331,32 @@ test(
     );
   }
 );
+
+test(
+  'shared mobile filter width is independent of parent container padding',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.match(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock\s*\{[\s\S]*?--events-filter-max:\s*1100px/
+    );
+
+    assert.match(
+      styles,
+      /@media\s*\(max-width:\s*720px\)[\s\S]*?body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock\s*\{[\s\S]*?width:\s*min\(calc\(100vw\s*-\s*32px\),\s*var\(--events-filter-max\)\)/
+    );
+
+    assert.doesNotMatch(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock\s*\{[\s\S]{0,220}?width:\s*min\(calc\(100%\s*-\s*32px\),/
+    );
+  }
+);

@@ -112,6 +112,12 @@ html body[data-page="events"] main#main section#upcoming-events.events-upcoming-
 ========================================================= */
 
 html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock {
+  --events-filter-max: 1100px;
+  --events-filter-side: 32px;
+  --events-filter-gap: 14px;
+  --events-filter-radius: clamp(22px, 2vw, 28px);
+  --events-filter-control-h: 76px;
+
   position: relative;
   inset: auto;
   transform: none;
@@ -440,7 +446,10 @@ html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.
   }
 
   html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock {
-    width: min(calc(100% - 32px), var(--events-filter-max));
+    --events-filter-side: 16px;
+    --events-filter-control-h: 72px;
+
+    width: min(calc(100vw - 32px), var(--events-filter-max));
     padding: 16px;
     border-radius: 24px;
   }

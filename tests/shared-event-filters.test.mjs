@@ -279,3 +279,27 @@ test(
     );
   }
 );
+
+test(
+  'shared mobile filter CSS has no events-only form selectors',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      styles,
+      /html\s+body\[data-page="events"\]\s+main#main\s+section#upcoming-events\.events-upcoming-section\s+form#events-filters-form\.events-filters\.filter-dock/
+    );
+
+    assert.match(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)[\s\S]*?\.filters-toolbar[\s\S]*?\.chips[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/
+    );
+  }
+);

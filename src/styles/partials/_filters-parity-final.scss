@@ -680,10 +680,7 @@ body[data-page="events"] .events-filter-chip__remove {
 }
 /* AJSEE_EVENTS_MOBILE_QUICK_FILTER_LAYOUT_V2 */
 @media (max-width: 720px) {
-  html body[data-page="events"]
-  main#main
-  section#upcoming-events.events-upcoming-section
-  form#events-filters-form.events-filters.filter-dock
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock
   .filters-toolbar {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -693,10 +690,7 @@ body[data-page="events"] .events-filter-chip__remove {
     padding: 0;
   }
 
-  html body[data-page="events"]
-  main#main
-  section#upcoming-events.events-upcoming-section
-  form#events-filters-form.events-filters.filter-dock
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock
   .filters-toolbar
   .chips {
     display: grid;
@@ -707,10 +701,7 @@ body[data-page="events"] .events-filter-chip__remove {
     padding: 0;
   }
 
-  html body[data-page="events"]
-  main#main
-  section#upcoming-events.events-upcoming-section
-  form#events-filters-form.events-filters.filter-dock
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock
   .filters-toolbar
   .chips
   .chip {
@@ -723,19 +714,13 @@ body[data-page="events"] .events-filter-chip__remove {
     text-align: center;
   }
 
-  html body[data-page="events"]
-  main#main
-  section#upcoming-events.events-upcoming-section
-  form#events-filters-form.events-filters.filter-dock
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock
   .filters-toolbar
   #chipClear {
     grid-column: 1 / -1;
   }
 
-  html body[data-page="events"]
-  main#main
-  section#upcoming-events.events-upcoming-section
-  form#events-filters-form.events-filters.filter-dock
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock
   .filters-toolbar
   #chipNearMe {
     display: inline-flex !important;

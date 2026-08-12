@@ -111,7 +111,7 @@ html body[data-page="events"] main#main section#upcoming-events.events-upcoming-
    EVENTS PAGE – FILTER PANEL SAME AS HOMEPAGE
 ========================================================= */
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock {
   position: relative;
   inset: auto;
   transform: none;
@@ -136,14 +136,14 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock::before {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock::before {
   background:
     radial-gradient(120% 120% at 0% 0%, rgba(20, 194, 197, 0.08) 0%, rgba(20, 194, 197, 0) 38%),
     radial-gradient(100% 90% at 100% 0%, rgba(14, 136, 240, 0.08) 0%, rgba(14, 136, 240, 0) 42%);
 }
 
 /* AJSEE_EVENTS_QUICK_FILTERS_VISIBLE_V1 */
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -156,48 +156,48 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
   -webkit-overflow-scrolling: touch;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
   display: flex;
   align-items: center;
   gap: 8px;
   flex: 0 0 auto;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chip {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar .chip {
   flex: 0 0 auto;
   min-height: 44px;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.native-date,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.is-hidden,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-sort) {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group.native-date,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group.is-hidden,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-sort) {
   display: none;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions #filter-nearme,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions [type="reset"],
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions .btn-ghost {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions #filter-nearme,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions [type="reset"],
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions .btn-ghost {
   display: none;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions {
   min-width: 0;
   margin: 0;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group {
   position: relative;
   display: block;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .field,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .date-combo {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .field,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .date-combo {
   position: relative;
   min-width: 0;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group > label {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group > label {
   position: absolute;
   top: 14px;
   left: 18px;
@@ -218,24 +218,24 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
   opacity: 0.98;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group > label::before {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group > label::before {
   display: none;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) > label::before,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#date-combo-button) > label::before,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-keyword) > label::before {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) > label::before,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#date-combo-button) > label::before,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-keyword) > label::before {
   display: inline-block;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .field .leading,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .with-icon .icon {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .field .leading,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .with-icon .icon {
   display: none;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock input.styled-input,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock select.styled-select,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .date-combo .combo-button {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock input.styled-input,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock select.styled-select,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .date-combo .combo-button {
   min-height: var(--events-filter-control-h);
   height: var(--events-filter-control-h);
   width: 100%;
@@ -258,13 +258,13 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock input.styled-input::placeholder {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock input.styled-input::placeholder {
   font-weight: 600;
   color: #7e93ac;
   opacity: 1;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock #filter-category {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock #filter-category {
   padding-left: 18px;
   padding-right: 46px;
   padding-top: 30px;
@@ -274,23 +274,23 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
   line-height: 1.15;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) .styled-input,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-keyword) .styled-input {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) .styled-input,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-keyword) .styled-input {
   padding-left: 18px;
   padding-right: 18px;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .date-combo {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .date-combo {
   gap: 0;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .date-combo .combo-button {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .date-combo .combo-button {
   justify-content: flex-start;
   padding-left: 18px;
   padding-right: 48px;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .date-combo .combo-text {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .date-combo .combo-text {
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
@@ -298,14 +298,14 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
   text-align: left;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions {
   display: flex;
   align-items: stretch;
   justify-content: stretch;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions .btn.btn-primary,
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions [type="submit"].btn {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions .btn.btn-primary,
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions [type="submit"].btn {
   min-height: var(--events-filter-control-h);
   height: var(--events-filter-control-h);
   width: 100%;
@@ -329,7 +329,7 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
 ========================================================= */
 
 @media (min-width: 1181px) {
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-fieldset {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-fieldset {
     display: grid;
     grid-template-columns:
       minmax(138px, 0.78fr)
@@ -342,23 +342,23 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
     align-items: stretch;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-category) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-category) {
     grid-area: category;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) {
     grid-area: city;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.date-combo:has(#date-combo-button) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group.date-combo:has(#date-combo-button) {
     grid-area: date;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.filter-keyword:has(#filter-keyword) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group.filter-keyword:has(#filter-keyword) {
     grid-area: keyword;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions {
     grid-area: actions;
   }
 }
@@ -369,13 +369,13 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
 ========================================================= */
 
 @media (min-width: 721px) and (max-width: 1180px) {
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock {
     width: min(calc(100% - 48px), 900px);
     max-width: 900px;
     padding: 1.15rem;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-fieldset {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-fieldset {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
@@ -386,31 +386,31 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
     align-items: stretch;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-category) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-category) {
     grid-area: category;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) {
     grid-area: city;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.date-combo:has(#date-combo-button) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group.date-combo:has(#date-combo-button) {
     grid-area: date;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.filter-keyword:has(#filter-keyword) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group.filter-keyword:has(#filter-keyword) {
     grid-area: keyword;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions {
     grid-area: actions;
     justify-content: center;
     align-items: center;
     margin-top: 0.25rem;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions .btn.btn-primary,
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions [type="submit"].btn {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions .btn.btn-primary,
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions [type="submit"].btn {
     width: min(100%, 280px);
     min-width: 0;
     flex: 0 1 280px;
@@ -439,13 +439,13 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
     margin-top: 0.75rem;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock {
     width: min(calc(100% - 32px), var(--events-filter-max));
     padding: 16px;
     border-radius: 24px;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-fieldset {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-fieldset {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -457,32 +457,32 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
     gap: 14px;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-category) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-category) {
     grid-area: category;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-city) {
     grid-area: city;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.date-combo:has(#date-combo-button) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group.date-combo:has(#date-combo-button) {
     grid-area: date;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-group.filter-keyword:has(#filter-keyword) {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-group.filter-keyword:has(#filter-keyword) {
     grid-area: keyword;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions {
     grid-area: actions;
     justify-content: stretch;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock input.styled-input,
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock select.styled-select,
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .date-combo .combo-button,
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions .btn.btn-primary,
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions [type="submit"].btn {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock input.styled-input,
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock select.styled-select,
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .date-combo .combo-button,
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions .btn.btn-primary,
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions [type="submit"].btn {
     min-height: var(--events-filter-control-h);
     height: var(--events-filter-control-h);
     border-radius: 20px;
@@ -490,8 +490,8 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
     padding-bottom: 12px;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions .btn.btn-primary,
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filter-actions [type="submit"].btn {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions .btn.btn-primary,
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filter-actions [type="submit"].btn {
     width: 100%;
     min-width: 0;
     flex-basis: auto;
@@ -526,7 +526,7 @@ body[data-page="events"] #demoBadge.event-demo-badge {
 }
 
 /* AJSEE_EVENTS_FILTER_UX_V1 */
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -534,14 +534,14 @@ html body:is([data-page="home"], [data-page="events"]) main#main section#upcomin
   margin-bottom: 14px;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
 }
 
-html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chip {
+html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar .chip {
   min-height: 40px;
   padding: 0.58rem 0.9rem;
   font-size: 0.88rem;
@@ -634,12 +634,12 @@ body[data-page="events"] .events-filter-chip__remove {
 }
 
 @media (max-width: 720px) {
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar {
     align-items: stretch;
     overflow: hidden;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar .chips {
     flex-wrap: nowrap;
     overflow-x: auto;
     padding: 2px 2px 8px;
@@ -647,7 +647,7 @@ body[data-page="events"] .events-filter-chip__remove {
     -webkit-overflow-scrolling: touch;
   }
 
-  html body:is([data-page="home"], [data-page="events"]) main#main section#upcoming-events.events-upcoming-section form#events-filters-form.events-filters.filter-dock .filters-toolbar #chipNearMe {
+  html body:is([data-page="home"], [data-page="events"]) main#main form#events-filters-form.events-filters.filter-dock .filters-toolbar #chipNearMe {
     display: none;
   }
 

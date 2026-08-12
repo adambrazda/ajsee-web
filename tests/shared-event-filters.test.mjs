@@ -223,7 +223,7 @@ test(
 
     const sharedPrefix =
       'html body:is([data-page="home"], [data-page="events"]) ' +
-      'main#main section#upcoming-events.events-upcoming-section ' +
+      'main#main ' +
       'form#events-filters-form.events-filters.filter-dock';
 
     assert.match(
@@ -252,6 +252,30 @@ test(
     assert.match(
       styles,
       /#chipNearMe[\s\S]*?width:\s*100%/
+    );
+  }
+);
+
+test(
+  'shared filter CSS does not depend on the events page section wrapper',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)[^{]*section#upcoming-events\.events-upcoming-section[^{]*form#events-filters-form/
+    );
+
+    assert.match(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\) main#main form#events-filters-form\.events-filters\.filter-dock/
     );
   }
 );

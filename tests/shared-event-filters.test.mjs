@@ -1,0 +1,502 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+import {
+  getSharedEventFiltersMarkup,
+  scrollToSharedEventResults
+} from '../src/event-filters.js';
+
+const markup =
+  getSharedEventFiltersMarkup();
+
+const homeSource =
+  fs.readFileSync(
+    new URL(
+      '../src/home-entry.js',
+      import.meta.url
+    ),
+    'utf8'
+  );
+
+const eventsSource =
+  fs.readFileSync(
+    new URL(
+      '../src/events-entry.js',
+      import.meta.url
+    ),
+    'utf8'
+  );
+
+test(
+  'shared filters expose canonical quick actions',
+  () => {
+    for (
+      const id of [
+        'chipToday',
+        'chipTomorrow',
+        'chipThisWeek',
+        'chipWeekend',
+        'filter-audience-family',
+        'chipClear',
+        'chipNearMe'
+      ]
+    ) {
+      assert.match(
+        markup,
+        new RegExp(
+          `id="${id}"`
+        )
+      );
+    }
+  }
+);
+
+test(
+  'stateful quick filters expose pressed state',
+  () => {
+    for (
+      const id of [
+        'chipToday',
+        'chipTomorrow',
+        'chipThisWeek',
+        'chipWeekend',
+        'filter-audience-family',
+        'chipNearMe'
+      ]
+    ) {
+      assert.match(
+        markup,
+        new RegExp(
+          `id="${id}"[\\s\\S]*?aria-pressed="false"`
+        )
+      );
+    }
+  }
+);
+
+test(
+  'shared category taxonomy includes film',
+  () => {
+    assert.match(
+      markup,
+      /value="film"[\s\S]*?category-film/
+    );
+  }
+);
+
+test(
+  'shared form controls keep semantic names',
+  () => {
+    assert.match(
+      markup,
+      /id="filter-category"[\s\S]*?name="category"/
+    );
+
+    assert.match(
+      markup,
+      /id="filter-sort"[\s\S]*?name="sort"/
+    );
+
+    assert.match(
+      markup,
+      /id="filter-city"[\s\S]*?name="city"/
+    );
+
+    assert.match(
+      markup,
+      /id="filter-keyword"[\s\S]*?name="keyword"/
+    );
+
+    assert.match(
+      markup,
+      /id="filter-date-from"[\s\S]*?name="date_from"/
+    );
+
+    assert.match(
+      markup,
+      /id="filter-date-to"[\s\S]*?name="date_to"/
+    );
+  }
+);
+
+test(
+  'homepage and events import shared filter markup',
+  () => {
+    for (
+      const source of [
+        homeSource,
+        eventsSource
+      ]
+    ) {
+      assert.match(
+        source,
+        /(?:import\s+['"]\.\/event-filters\.js['"];|from\s+['"]\.\/event-filters\.js['"];)/
+      );
+    }
+  }
+);
+
+test(
+  'page shells do not duplicate shared filter controls',
+  () => {
+    for (const page of ['../index.html', '../events.html']) {
+      const source = fs.readFileSync(
+        new URL(page, import.meta.url),
+        'utf8'
+      );
+
+      assert.match(
+        source,
+        /<form id="events-filters-form" class="events-filters filter-dock" novalidate role="search">/
+      );
+
+      for (const id of [
+        'chipToday',
+        'chipTomorrow',
+        'chipThisWeek',
+        'chipWeekend',
+        'filter-audience-family',
+        'chipNearMe',
+        'filter-category',
+        'filter-city',
+        'filter-keyword'
+      ]) {
+        assert.doesNotMatch(
+          source,
+          new RegExp(`id="${id}"`)
+        );
+      }
+    }
+  }
+);
+
+test(
+  'homepage preserves shared filter controls at runtime',
+  () => {
+    assert.doesNotMatch(
+      homeSource,
+      /if\s*\(toolbar\)\s*toolbar\.remove\(\)/
+    );
+
+    assert.doesNotMatch(
+      homeSource,
+      /if\s*\(topToolbar\)\s*topToolbar\.remove\(\)/
+    );
+
+    assert.doesNotMatch(
+      homeSource,
+      /legacyNearBtn\.remove\(\)/
+    );
+  }
+);
+
+test(
+  'homepage CSS does not hide shared quick filters',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/filters-premium.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      styles,
+      /body\[data-page="home"\]\s+#events-filters-form\.filter-dock\s+\.filters-toolbar\s*\{[\s\S]*?display:\s*none\s*;[\s\S]*?\}/
+    );
+  }
+);
+
+test(
+  'homepage and events share canonical filter layout CSS',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const sharedPrefix =
+      'html body:is([data-page="home"], [data-page="events"]) ' +
+      'form#events-filters-form.events-filters.filter-dock';
+
+    assert.match(
+      styles,
+      new RegExp(
+        sharedPrefix
+          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      )
+    );
+
+    assert.doesNotMatch(
+      styles,
+      /html body\[data-page="events"\] main#main section#upcoming-events\.events-upcoming-section form#events-filters-form\.events-filters\.filter-dock/
+    );
+
+    assert.match(
+      styles,
+      /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/
+    );
+
+    assert.match(
+      styles,
+      /#chipClear[\s\S]*?grid-column:\s*1\s*\/\s*-1/
+    );
+
+    assert.match(
+      styles,
+      /#chipNearMe[\s\S]*?width:\s*100%/
+    );
+  }
+);
+
+test(
+  'shared filter CSS does not depend on the events page section wrapper',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)[^{]*section#upcoming-events\.events-upcoming-section[^{]*form#events-filters-form/
+    );
+
+    assert.match(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\) form#events-filters-form\.events-filters\.filter-dock/
+    );
+  }
+);
+
+test(
+  'shared mobile filter CSS has no events-only form selectors',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      styles,
+      /html\s+body\[data-page="events"\]\s+main#main\s+section#upcoming-events\.events-upcoming-section\s+form#events-filters-form\.events-filters\.filter-dock/
+    );
+
+    assert.match(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)[\s\S]*?\.filters-toolbar[\s\S]*?\.chips[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/
+    );
+  }
+);
+
+test(
+  'shared filter CSS does not depend on page-specific main or section wrappers',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+main#main\s+form#events-filters-form/
+    );
+
+    assert.doesNotMatch(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)[^{]*section#upcoming-events[^{]*form#events-filters-form/
+    );
+
+    assert.match(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock/
+    );
+  }
+);
+
+test(
+  'shared mobile filter width is independent of parent container padding',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.match(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock\s*\{[\s\S]*?--events-filter-max:\s*1100px/
+    );
+
+    assert.match(
+      styles,
+      /@media\s*\(max-width:\s*720px\)[\s\S]*?body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock\s*\{[\s\S]*?width:\s*min\(calc\(100vw\s*-\s*32px\),\s*var\(--events-filter-max\)\)/
+    );
+
+    assert.doesNotMatch(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock\s*\{[\s\S]{0,220}?width:\s*min\(calc\(100%\s*-\s*32px\),/
+    );
+  }
+);
+
+test(
+  'shared explicit result scroll accounts for the sticky header',
+  () => {
+    let scrollOptions = null;
+
+    const target = {
+      style: {},
+
+      scrollIntoView(options) {
+        scrollOptions = options;
+      }
+    };
+
+    const header = {
+      getBoundingClientRect() {
+        return {
+          height: 64
+        };
+      }
+    };
+
+    const documentMock = {
+      getElementById(id) {
+        return id === 'eventsList'
+          ? target
+          : null;
+      },
+
+      querySelector(selector) {
+        return selector === '.site-header'
+          ? header
+          : null;
+      }
+    };
+
+    const windowMock = {
+      matchMedia() {
+        return {
+          matches: false
+        };
+      }
+    };
+
+    assert.equal(
+      scrollToSharedEventResults(
+        documentMock,
+        windowMock
+      ),
+      true
+    );
+
+    assert.equal(
+      target.style.scrollMarginTop,
+      '80px'
+    );
+
+    assert.deepEqual(
+      scrollOptions,
+      {
+        behavior: 'smooth',
+        block: 'start'
+      }
+    );
+
+    windowMock.matchMedia = () => ({
+      matches: true
+    });
+
+    scrollToSharedEventResults(
+      documentMock,
+      windowMock
+    );
+
+    assert.deepEqual(
+      scrollOptions,
+      {
+        behavior: 'auto',
+        block: 'start'
+      }
+    );
+  }
+);
+test(
+  'homepage and events scroll to results only from explicit filter submit',
+  () => {
+    for (
+      const [name, source] of [
+        ['homepage', homeSource],
+        ['events', eventsSource]
+      ]
+    ) {
+      const submitStart =
+        source.indexOf(
+          "wireOnce(formEl, 'submit'"
+        );
+
+      assert.notEqual(
+        submitStart,
+        -1,
+        `${name} submit handler must exist`
+      );
+
+      const submitEnd =
+        source.indexOf(
+          "}, 'submit');",
+          submitStart
+        );
+
+      assert.notEqual(
+        submitEnd,
+        -1,
+        `${name} submit handler must close`
+      );
+
+      const submitBlock =
+        source.slice(
+          submitStart,
+          submitEnd + 13
+        );
+
+      assert.match(
+        submitBlock,
+        /await renderAndSync\([\s\S]*?scrollToSharedEventResults\(\)/
+      );
+
+      const calls =
+        source.match(
+          /scrollToSharedEventResults\(\);/g
+        ) || [];
+
+      assert.equal(
+        calls.length,
+        1,
+        `${name} must scroll exactly once and only on submit`
+      );
+    }
+  }
+);

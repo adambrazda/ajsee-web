@@ -1142,9 +1142,6 @@ body[data-page="home"] #events-filters-form.filter-dock::before {
     radial-gradient(100% 90% at 100% 0%, rgba(14, 136, 240, 0.08) 0%, rgba(14, 136, 240, 0) 42%);
 }
 
-body[data-page="home"] #events-filters-form.filter-dock .filters-toolbar {
-  display: none;
-}
 
 body[data-page="home"] #events-filters-form.filter-dock .filters-fieldset {
   display: grid;

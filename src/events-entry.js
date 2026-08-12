@@ -1,3 +1,4 @@
+import { scrollToSharedEventResults } from './event-filters.js';
 import {
   ensureSharedEventGridStyles,
   eventImageOrFallback,
@@ -1466,7 +1467,7 @@ function focusEventsResultsSummary() {
 
   count.focus({
     preventScroll:
-      false
+      true
   });
 
   count.addEventListener(
@@ -3261,6 +3262,8 @@ function bindFilterFormInteractions(formEl) {
 
     resetEventsPager();
     await renderAndSync({ resetPage: true });
+
+    scrollToSharedEventResults();
   }, 'submit');
 }
 
@@ -4705,11 +4708,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       `${t('events-found', 'Nalezeno') || 'Nalezeno'} ${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`
     );
 
-    if (
-      _userInteractedWithFilters
-    ) {
-      focusEventsResultsSummary();
-    }
+
   } catch (err) {
     _lastFetchSig = '';
 
@@ -4783,13 +4782,7 @@ async function renderAndSync({ resetPage = true } = {}) {
     updateToggleBadge();
     expandFilters();
 
-    if (!isHome()) {
-      const shouldScroll = _hasDoneFirstRender && _userInteractedWithFilters;
-      if (shouldScroll) {
-        const list = qs('#eventsList');
-        if (list) list.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
+
   } finally {
     _renderInflight = false;
     _hasDoneFirstRender = true;

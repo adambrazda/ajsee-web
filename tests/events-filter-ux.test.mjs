@@ -264,7 +264,7 @@ test('events page exposes film and family filters with URL state', () => {
   const html =
     readFileSync(
       new URL(
-        '../events.html',
+        '../src/event-filters.js',
         import.meta.url
       ),
       'utf8'
@@ -290,7 +290,7 @@ test('events page exposes film and family filters with URL state', () => {
 
   assert.match(
     html,
-    /<option value="film"[^>]*data-i18n-key="category-film"/
+    /<option(?=[^>]*value="film")(?=[^>]*data-i18n-key="category-film")[^>]*>/
   );
 
   assert.match(
@@ -393,8 +393,7 @@ test('events page exposes the quick-filter toolbar in final CSS', () => {
   );
 
   const selector =
-    'html body[data-page="events"] main#main ' +
-    'section#upcoming-events.events-upcoming-section ' +
+    'html body:is([data-page="home"], [data-page="events"]) ' +
     'form#events-filters-form.events-filters.filter-dock ' +
     '.filters-toolbar';
 
@@ -449,7 +448,7 @@ test('bootstrap keeps the events quick-filter toolbar in the DOM', () => {
 
 test('mobile quick filters expose all actions and bind near-me', () => {
   const html = readFileSync(
-    new URL('../events.html', import.meta.url),
+    new URL('../src/event-filters.js', import.meta.url),
     'utf8'
   );
 
@@ -1136,5 +1135,111 @@ test(
         );
       }
     }
+  }
+);
+
+test(
+  'events filter interactions keep the viewport stable while results refresh',
+  () => {
+    const source =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const start =
+      source.indexOf(
+        'async function renderAndSync'
+      );
+
+    const end =
+      source.indexOf(
+        'function initEventsScrollGuard',
+        start
+      );
+
+    assert.notEqual(
+      start,
+      -1,
+      'renderAndSync must exist.'
+    );
+
+    assert.notEqual(
+      end,
+      -1,
+      'initEventsScrollGuard must follow renderAndSync.'
+    );
+
+    const renderBlock =
+      source.slice(start, end);
+
+    assert.doesNotMatch(
+      renderBlock,
+      /scrollIntoView\s*\(/
+    );
+
+    assert.doesNotMatch(
+      renderBlock,
+      /_hasDoneFirstRender\s*&&\s*_userInteractedWithFilters/
+    );
+  }
+);
+
+test(
+  'events filtering does not move focus to the results summary',
+  () => {
+    const source =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const renderStart =
+      source.indexOf(
+        'async function renderEvents'
+      );
+
+    const renderEnd =
+      source.indexOf(
+        'async function renderAndSync',
+        renderStart
+      );
+
+    assert.notEqual(
+      renderStart,
+      -1
+    );
+
+    assert.notEqual(
+      renderEnd,
+      -1
+    );
+
+    const renderBlock =
+      source.slice(
+        renderStart,
+        renderEnd
+      );
+
+    assert.doesNotMatch(
+      renderBlock,
+      /_userInteractedWithFilters[\s\S]{0,120}?focusEventsResultsSummary\s*\(/
+    );
+
+    assert.match(
+      source,
+      /count\.focus\(\s*\{[\s\S]*?preventScroll:\s*true[\s\S]*?\}\s*\)/
+    );
+
+    assert.doesNotMatch(
+      source,
+      /preventScroll:\s*false/
+    );
   }
 );

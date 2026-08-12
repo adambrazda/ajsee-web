@@ -189,3 +189,22 @@ test(
     );
   }
 );
+
+test(
+  'homepage CSS does not hide shared quick filters',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/filters-premium.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      styles,
+      /body\[data-page="home"\]\s+#events-filters-form\.filter-dock\s+\.filters-toolbar\s*\{[\s\S]*?display:\s*none\s*;[\s\S]*?\}/
+    );
+  }
+);

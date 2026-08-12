@@ -223,7 +223,6 @@ test(
 
     const sharedPrefix =
       'html body:is([data-page="home"], [data-page="events"]) ' +
-      'main#main ' +
       'form#events-filters-form.events-filters.filter-dock';
 
     assert.match(
@@ -275,7 +274,7 @@ test(
 
     assert.match(
       styles,
-      /body:is\(\[data-page="home"\], \[data-page="events"\]\) main#main form#events-filters-form\.events-filters\.filter-dock/
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\) form#events-filters-form\.events-filters\.filter-dock/
     );
   }
 );
@@ -300,6 +299,35 @@ test(
     assert.match(
       styles,
       /body:is\(\[data-page="home"\], \[data-page="events"\]\)[\s\S]*?\.filters-toolbar[\s\S]*?\.chips[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/
+    );
+  }
+);
+
+test(
+  'shared filter CSS does not depend on page-specific main or section wrappers',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.doesNotMatch(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+main#main\s+form#events-filters-form/
+    );
+
+    assert.doesNotMatch(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)[^{]*section#upcoming-events[^{]*form#events-filters-form/
+    );
+
+    assert.match(
+      styles,
+      /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock/
     );
   }
 );

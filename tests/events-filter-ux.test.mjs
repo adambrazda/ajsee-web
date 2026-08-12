@@ -393,7 +393,7 @@ test('events page exposes the quick-filter toolbar in final CSS', () => {
   );
 
   const selector =
-    'html body:is([data-page="home"], [data-page="events"]) main#main ' +
+    'html body:is([data-page="home"], [data-page="events"]) ' +
     'form#events-filters-form.events-filters.filter-dock ' +
     '.filters-toolbar';
 

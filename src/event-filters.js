@@ -321,7 +321,7 @@ export function scrollToSharedEventResults(
 
   if (
     !target ||
-    typeof win?.scrollTo !== 'function'
+    typeof target.scrollIntoView !== 'function'
   ) {
     return false;
   }
@@ -332,46 +332,39 @@ export function scrollToSharedEventResults(
     );
 
   const headerHeight =
-    header
-      ?.getBoundingClientRect?.()
-      .height || 0;
-
-  const scrollY =
     Number(
-      win.scrollY ??
-      win.pageYOffset ??
-      0
+      header
+        ?.getBoundingClientRect?.()
+        .height
     ) || 0;
 
-  const targetTop =
-    target
-      .getBoundingClientRect()
-      .top +
-    scrollY;
-
-  const top =
+  const scrollMarginTop =
     Math.max(
       0,
-      targetTop -
-        headerHeight -
-        16
+      Math.ceil(headerHeight) + 16
     );
 
+  if (target.style) {
+    target.style.scrollMarginTop =
+      `${scrollMarginTop}px`;
+  }
+
   const reduceMotion =
-    win.matchMedia?.(
+    win?.matchMedia?.(
       '(prefers-reduced-motion: reduce)'
     )?.matches === true;
 
-  win.scrollTo({
-    top,
+  target.scrollIntoView({
     behavior:
       reduceMotion
         ? 'auto'
-        : 'smooth'
+        : 'smooth',
+    block: 'start'
   });
 
   return true;
 }
+
 if (
   typeof document !==
   'undefined'

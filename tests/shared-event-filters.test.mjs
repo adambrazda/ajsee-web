@@ -368,10 +368,10 @@ test(
     let scrollOptions = null;
 
     const target = {
-      getBoundingClientRect() {
-        return {
-          top: 500
-        };
+      style: {},
+
+      scrollIntoView(options) {
+        scrollOptions = options;
       }
     };
 
@@ -398,16 +398,10 @@ test(
     };
 
     const windowMock = {
-      scrollY: 120,
-
       matchMedia() {
         return {
           matches: false
         };
-      },
-
-      scrollTo(options) {
-        scrollOptions = options;
       }
     };
 
@@ -419,11 +413,16 @@ test(
       true
     );
 
+    assert.equal(
+      target.style.scrollMarginTop,
+      '80px'
+    );
+
     assert.deepEqual(
       scrollOptions,
       {
-        top: 540,
-        behavior: 'smooth'
+        behavior: 'smooth',
+        block: 'start'
       }
     );
 
@@ -436,13 +435,15 @@ test(
       windowMock
     );
 
-    assert.equal(
-      scrollOptions.behavior,
-      'auto'
+    assert.deepEqual(
+      scrollOptions,
+      {
+        behavior: 'auto',
+        block: 'start'
+      }
     );
   }
 );
-
 test(
   'homepage and events scroll to results only from explicit filter submit',
   () => {

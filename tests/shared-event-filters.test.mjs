@@ -208,3 +208,50 @@ test(
     );
   }
 );
+
+test(
+  'homepage and events share canonical filter layout CSS',
+  () => {
+    const styles =
+      fs.readFileSync(
+        new URL(
+          '../src/styles/partials/_filters-parity-final.scss',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const sharedPrefix =
+      'html body:is([data-page="home"], [data-page="events"]) ' +
+      'main#main section#upcoming-events.events-upcoming-section ' +
+      'form#events-filters-form.events-filters.filter-dock';
+
+    assert.match(
+      styles,
+      new RegExp(
+        sharedPrefix
+          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      )
+    );
+
+    assert.doesNotMatch(
+      styles,
+      /html body\[data-page="events"\] main#main section#upcoming-events\.events-upcoming-section form#events-filters-form\.events-filters\.filter-dock/
+    );
+
+    assert.match(
+      styles,
+      /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/
+    );
+
+    assert.match(
+      styles,
+      /#chipClear[\s\S]*?grid-column:\s*1\s*\/\s*-1/
+    );
+
+    assert.match(
+      styles,
+      /#chipNearMe[\s\S]*?width:\s*100%/
+    );
+  }
+);

@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 import {
-  getSharedEventFiltersMarkup
+  getSharedEventFiltersMarkup,
+  scrollToSharedEventResults
 } from '../src/event-filters.js';
 
 const markup =
@@ -130,7 +131,7 @@ test(
     ) {
       assert.match(
         source,
-        /import '\.\/event-filters\.js';/
+        /(?:import\s+['"]\.\/event-filters\.js['"];|from\s+['"]\.\/event-filters\.js['"];)/
       );
     }
   }
@@ -358,5 +359,143 @@ test(
       styles,
       /body:is\(\[data-page="home"\], \[data-page="events"\]\)\s+form#events-filters-form\.events-filters\.filter-dock\s*\{[\s\S]{0,220}?width:\s*min\(calc\(100%\s*-\s*32px\),/
     );
+  }
+);
+
+test(
+  'shared explicit result scroll accounts for the sticky header',
+  () => {
+    let scrollOptions = null;
+
+    const target = {
+      getBoundingClientRect() {
+        return {
+          top: 500
+        };
+      }
+    };
+
+    const header = {
+      getBoundingClientRect() {
+        return {
+          height: 64
+        };
+      }
+    };
+
+    const documentMock = {
+      getElementById(id) {
+        return id === 'eventsList'
+          ? target
+          : null;
+      },
+
+      querySelector(selector) {
+        return selector === '.site-header'
+          ? header
+          : null;
+      }
+    };
+
+    const windowMock = {
+      scrollY: 120,
+
+      matchMedia() {
+        return {
+          matches: false
+        };
+      },
+
+      scrollTo(options) {
+        scrollOptions = options;
+      }
+    };
+
+    assert.equal(
+      scrollToSharedEventResults(
+        documentMock,
+        windowMock
+      ),
+      true
+    );
+
+    assert.deepEqual(
+      scrollOptions,
+      {
+        top: 540,
+        behavior: 'smooth'
+      }
+    );
+
+    windowMock.matchMedia = () => ({
+      matches: true
+    });
+
+    scrollToSharedEventResults(
+      documentMock,
+      windowMock
+    );
+
+    assert.equal(
+      scrollOptions.behavior,
+      'auto'
+    );
+  }
+);
+
+test(
+  'homepage and events scroll to results only from explicit filter submit',
+  () => {
+    for (
+      const [name, source] of [
+        ['homepage', homeSource],
+        ['events', eventsSource]
+      ]
+    ) {
+      const submitStart =
+        source.indexOf(
+          "wireOnce(formEl, 'submit'"
+        );
+
+      assert.notEqual(
+        submitStart,
+        -1,
+        `${name} submit handler must exist`
+      );
+
+      const submitEnd =
+        source.indexOf(
+          "}, 'submit');",
+          submitStart
+        );
+
+      assert.notEqual(
+        submitEnd,
+        -1,
+        `${name} submit handler must close`
+      );
+
+      const submitBlock =
+        source.slice(
+          submitStart,
+          submitEnd + 13
+        );
+
+      assert.match(
+        submitBlock,
+        /await renderAndSync\([\s\S]*?scrollToSharedEventResults\(\)/
+      );
+
+      const calls =
+        source.match(
+          /scrollToSharedEventResults\(\);/g
+        ) || [];
+
+      assert.equal(
+        calls.length,
+        1,
+        `${name} must scroll exactly once and only on submit`
+      );
+    }
   }
 );

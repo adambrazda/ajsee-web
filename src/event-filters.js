@@ -310,6 +310,68 @@ export function ensureSharedEventFiltersMarkup(
   return form;
 }
 
+export function scrollToSharedEventResults(
+  doc = globalThis.document,
+  win = globalThis.window
+) {
+  const target =
+    doc?.getElementById?.(
+      'eventsList'
+    );
+
+  if (
+    !target ||
+    typeof win?.scrollTo !== 'function'
+  ) {
+    return false;
+  }
+
+  const header =
+    doc.querySelector?.(
+      '.site-header'
+    );
+
+  const headerHeight =
+    header
+      ?.getBoundingClientRect?.()
+      .height || 0;
+
+  const scrollY =
+    Number(
+      win.scrollY ??
+      win.pageYOffset ??
+      0
+    ) || 0;
+
+  const targetTop =
+    target
+      .getBoundingClientRect()
+      .top +
+    scrollY;
+
+  const top =
+    Math.max(
+      0,
+      targetTop -
+        headerHeight -
+        16
+    );
+
+  const reduceMotion =
+    win.matchMedia?.(
+      '(prefers-reduced-motion: reduce)'
+    )?.matches === true;
+
+  win.scrollTo({
+    top,
+    behavior:
+      reduceMotion
+        ? 'auto'
+        : 'smooth'
+  });
+
+  return true;
+}
 if (
   typeof document !==
   'undefined'

@@ -1,4 +1,4 @@
-import './event-filters.js';
+import { scrollToSharedEventResults } from './event-filters.js';
 import {
   ensureSharedEventGridStyles,
   eventImageOrFallback,
@@ -3262,6 +3262,8 @@ function bindFilterFormInteractions(formEl) {
 
     resetEventsPager();
     await renderAndSync({ resetPage: true });
+
+    scrollToSharedEventResults();
   }, 'submit');
 }
 

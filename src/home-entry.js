@@ -1,4 +1,4 @@
-import './event-filters.js';
+import { scrollToSharedEventResults } from './event-filters.js';
 import {
   detectDatePreset,
   getDatePresetRange
@@ -4523,6 +4523,8 @@ function bindFilterFormInteractions(formEl) {
     await renderAndSync({
       resetPage: true
     });
+
+    scrollToSharedEventResults();
   }, 'submit');
 }
 

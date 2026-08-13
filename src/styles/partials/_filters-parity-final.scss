@@ -687,6 +687,30 @@ body[data-page="events"] .events-filter-chip__remove {
     transition: none;
   }
 }
+/* AJSEE_HOME_MOBILE_FILTER_ALIGNMENT_V1
+   Homepage keeps its content gutter, while the shared filter aligns
+   to the same viewport width as on /events. */
+@media (max-width: 720px) {
+  html body[data-page="home"]
+  main
+  .section-events
+  > .container
+  > form#events-filters-form.events-filters.filter-dock {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+}
+
+@media (max-width: 600px) {
+  html body[data-page="home"]
+  main
+  .section-events
+  > .container
+  > form#events-filters-form.events-filters.filter-dock {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+}
 /* AJSEE_EVENTS_MOBILE_QUICK_FILTER_LAYOUT_V2 */
 @media (max-width: 720px) {
   html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock

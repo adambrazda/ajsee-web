@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -93,16 +93,55 @@ function parseJsonLd(html) {
 
 test(
   "review detail renders safe inline Markdown and clean structured data",
-  async () => {
+  async (t) => {
+    const previewDir = path.join(
+      ROOT,
+      "review-preview"
+    );
+
+    /*
+     * Never allow stale local preview output to make
+     * this integration test pass accidentally.
+     */
+    await rm(
+      previewDir,
+      {
+        recursive: true,
+        force: true
+      }
+    );
+
+    t.after(async () => {
+      await rm(
+        previewDir,
+        {
+          recursive: true,
+          force: true
+        }
+      );
+    });
+
+    /*
+     * Netlify deploy previews set CONTEXT=deploy-preview.
+     * For this test we deliberately exercise the builder's
+     * local preview-output mode so the output path is stable
+     * and independent of inherited CI environment variables.
+     */
+    const buildEnv = {
+      ...process.env,
+      REVIEW_PREVIEW: "1",
+      REVIEW_LOCALIZE: "0",
+      CONTEXT: ""
+    };
+
+    delete buildEnv.REVIEW_ID;
+
     const build = spawnSync(
       process.execPath,
       ["scripts/build-review-details.mjs"],
       {
         cwd: ROOT,
-        env: {
-          ...process.env,
-          REVIEW_PREVIEW: "1"
-        },
+        env: buildEnv,
         encoding: "utf8"
       }
     );

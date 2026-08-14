@@ -218,34 +218,81 @@ function pickTranslation(review, lang = DEFAULT_LANG) {
   };
 }
 
+function inlineMarkdownToHtml(value = '') {
+  return escapeHtml(value)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+}
+
+function markdownToPlainText(value = '') {
+  return String(value || '')
+    .replace(/\r\n/g, '\n')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[-*]\s+/gm, '')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1')
+    .replace(/\n+/g, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 function markdownToHtml(markdown = '') {
-  const text = String(markdown || '').replace(/\r\n/g, '\n').trim();
+  const text = String(markdown || '')
+    .replace(/\r\n/g, '\n')
+    .trim();
 
   if (!text) return '';
 
-  const blocks = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
+  const blocks = text
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
 
-  return blocks.map((block) => {
-    if (/^###\s+/.test(block)) {
-      return `<h3>${escapeHtml(block.replace(/^###\s+/, ''))}</h3>`;
-    }
+  return blocks
+    .map((block) => {
+      if (/^###\s+/.test(block)) {
+        return `<h3>${inlineMarkdownToHtml(
+          block.replace(/^###\s+/, '')
+        )}</h3>`;
+      }
 
-    if (/^##\s+/.test(block)) {
-      return `<h2>${escapeHtml(block.replace(/^##\s+/, ''))}</h2>`;
-    }
+      if (/^##\s+/.test(block)) {
+        return `<h2>${inlineMarkdownToHtml(
+          block.replace(/^##\s+/, '')
+        )}</h2>`;
+      }
 
-    if (/^#\s+/.test(block)) {
-      return `<h2>${escapeHtml(block.replace(/^#\s+/, ''))}</h2>`;
-    }
+      if (/^#\s+/.test(block)) {
+        return `<h2>${inlineMarkdownToHtml(
+          block.replace(/^#\s+/, '')
+        )}</h2>`;
+      }
 
-    const lines = block.split('\n').map((line) => line.trim()).filter(Boolean);
+      const lines = block
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean);
 
-    if (lines.every((line) => /^[-*]\s+/.test(line))) {
-      return `<ul>${lines.map((line) => `<li>${escapeHtml(line.replace(/^[-*]\s+/, ''))}</li>`).join('')}</ul>`;
-    }
+      if (
+        lines.every((line) =>
+          /^[-*]\s+/.test(line)
+        )
+      ) {
+        return `<ul>${lines
+          .map(
+            (line) =>
+              `<li>${inlineMarkdownToHtml(
+                line.replace(/^[-*]\s+/, '')
+              )}</li>`
+          )
+          .join('')}</ul>`;
+      }
 
-    return `<p>${lines.map(escapeHtml).join('<br>')}</p>`;
-  }).join('\n');
+      return `<p>${lines
+        .map(inlineMarkdownToHtml)
+        .join('<br>')}</p>`;
+    })
+    .join('\n');
 }
 
 function removeExistingSeo(html) {
@@ -419,7 +466,7 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
             undefined,
           inLanguage: lang,
           articleBody:
-            stripHtml(
+            markdownToPlainText(
               translation.body
             ) ||
             undefined,
@@ -445,7 +492,7 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
             undefined,
           inLanguage: lang,
           reviewBody:
-            stripHtml(
+            markdownToPlainText(
               translation.body
             ) ||
             undefined,

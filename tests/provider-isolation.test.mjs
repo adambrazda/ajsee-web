@@ -270,3 +270,41 @@ test(
     );
   }
 );
+
+test(
+  'events page does not bypass provider aggregation with a global Ticketmaster rate-limit listener',
+  () => {
+    const source =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    assert.equal(
+      source.includes(
+        'bindTicketmasterRateLimitEvents'
+      ),
+      false,
+      'events page must not bind a global Ticketmaster rate-limit handler'
+    );
+
+    assert.equal(
+      source.includes(
+        'ajsee:ticketmaster-rate-limit'
+      ),
+      false,
+      'legacy Ticketmaster rate-limit event listener must stay removed'
+    );
+
+    assert.equal(
+      source.includes(
+        'AJSEE:ticketmaster-rate-limit'
+      ),
+      false,
+      'legacy Ticketmaster rate-limit event listener must stay removed'
+    );
+  }
+);

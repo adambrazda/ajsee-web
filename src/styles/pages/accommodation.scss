@@ -11,6 +11,7 @@
 */
 
 @use '../globals' as *;
+@use '../utils/theme';
 @use '../utils/reset';
 
 @use '../partials/layout';

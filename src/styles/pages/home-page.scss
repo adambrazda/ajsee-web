@@ -3,6 +3,7 @@
 // ------------------------------------------------------
 
 @use '../globals' as *;
+@use '../utils/theme';
 @use '../utils/reset';
 
 @use '../partials/layout';
@@ -15,6 +16,7 @@
 @use '../partials/waitlist-banner';
 @use '../partials/tablet-responsive-fix';
 @use '../partials/filters-parity-final';
+@use '../partials/theme-event-shell';
 @use '../partials/cookie-consent';
 
 // Page-level globals previously provided by main.scss
@@ -121,9 +123,7 @@ body[data-page="home"] .hp-banner--london-musicals {
   position: relative;
   overflow: hidden;
   border-color: rgba(20, 194, 197, 0.34);
-  background:
-    radial-gradient(circle at 12% 24%, rgba(20, 194, 197, 0.18), transparent 16rem),
-    linear-gradient(135deg, rgba(234, 252, 255, 0.96), rgba(247, 252, 255, 0.92));
+  background: var(--aj-home-promo-bg);
   box-shadow: 0 22px 60px rgba(10, 54, 82, 0.12);
 }
 
@@ -137,7 +137,7 @@ body[data-page="home"] .hp-banner--london-musicals::after {
 }
 
 body[data-page="home"] .hp-banner--london-musicals .hp-banner__icon {
-  background: linear-gradient(135deg, #eafcff, #d6f7fb);
+  background: var(--aj-home-promo-icon-bg);
   border-color: rgba(20, 194, 197, 0.3);
 }
 
@@ -145,11 +145,11 @@ body[data-page="home"] .hp-banner--london-musicals .hp-banner__title {
   font-size: clamp(1.35rem, 2.1vw, 1.85rem);
   line-height: 1.12;
   letter-spacing: -0.035em;
-  color: #06192b;
+  color: var(--aj-home-promo-title);
 }
 
 body[data-page="home"] .hp-banner--london-musicals .hp-banner__body {
-  color: rgba(16, 32, 51, 0.72);
+  color: var(--aj-home-promo-body);
 }
 
 body[data-page="home"] .hp-banner--london-musicals .hp-banner__cta {
@@ -163,8 +163,8 @@ body[data-page="home"] .hp-banner--london-musicals .hp-banner__cta {
 
 /* Keep other homepage banners calmer so the London musicals card is visually first. */
 body[data-page="home"] .event-demo-badge.hp-banner:not(.hp-banner--london-musicals) {
-  background: rgba(255, 255, 255, 0.68);
-  border-color: rgba(14, 107, 168, 0.16);
+  background: var(--aj-home-muted-banner-bg);
+  border-color: var(--aj-home-muted-banner-border);
 }
 
 @media (max-width: 720px) {

@@ -1,0 +1,373 @@
+/* =========================================================
+   AJSEE Partners theme adapter
+   - Dark Mode only
+   - Scoped exclusively to /partners
+   - Loaded after contact.scss intentionally
+========================================================= */
+
+@media (prefers-color-scheme: dark) {
+
+  body[data-page="partners"] {
+    background: var(--aj-page-bg);
+    color: var(--aj-text);
+  }
+
+  body[data-page="partners"] main {
+    background: var(--aj-page-bg);
+  }
+
+
+  /* -------------------------------------------------------
+     Hero
+     Dark Mode keeps the premium blue identity, but uses
+     substantially darker surfaces for visual continuity.
+  ------------------------------------------------------- */
+
+  body[data-page="partners"] .partners-hero {
+    background:
+      radial-gradient(
+        720px 380px at 70% 14%,
+        rgba(73, 191, 255, 0.10) 0%,
+        rgba(73, 191, 255, 0) 64%
+      ),
+      radial-gradient(
+        860px 520px at 92% 82%,
+        rgba(20, 194, 197, 0.08) 0%,
+        rgba(20, 194, 197, 0) 72%
+      ),
+      radial-gradient(
+        820px 520px at 8% 16%,
+        rgba(0, 0, 0, 0.24) 0%,
+        rgba(0, 0, 0, 0) 66%
+      ),
+      linear-gradient(
+        110deg,
+        #071a2b 0%,
+        #0a2b43 44%,
+        #0d3a52 72%,
+        #102f3c 100%
+      );
+  }
+
+  body[data-page="partners"]
+  .partners-hero
+  .partners-hero-content {
+    color: #f3f7fb;
+  }
+
+  body[data-page="partners"]
+  .partners-hero
+  .partner-benefits
+  li {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.11) 0%,
+        rgba(255, 255, 255, 0.055) 100%
+      );
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow:
+      0 14px 28px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+
+  /* -------------------------------------------------------
+     Main content sections
+  ------------------------------------------------------- */
+
+  body[data-page="partners"]
+  :is(
+    .partners-focus-section,
+    .partners-collaboration-section,
+    .partners-process-section,
+    .partners-value-section
+  ) {
+    background: var(--aj-page-bg);
+  }
+
+  body[data-page="partners"]
+  :is(
+    .partners-focus-shell,
+    .partners-collaboration-shell,
+    .partners-process-shell,
+    .partners-value-shell
+  ) {
+    background: var(--aj-surface);
+    border-color: var(--aj-border);
+    box-shadow:
+      0 24px 54px rgba(0, 0, 0, 0.24),
+      0 8px 20px rgba(0, 0, 0, 0.16);
+  }
+
+  body[data-page="partners"]
+  :is(
+    .partners-focus-title,
+    .partners-collaboration-title,
+    .partners-process-title,
+    .partners-value-title
+  ) {
+    color: var(--aj-accent-text);
+  }
+
+  body[data-page="partners"]
+  :is(
+    .partners-focus-head,
+    .partners-collaboration-head,
+    .partners-process-head,
+    .partners-value-head
+  )
+  > p {
+    color: var(--aj-text-secondary);
+  }
+
+
+  /* -------------------------------------------------------
+     Content cards
+  ------------------------------------------------------- */
+
+  body[data-page="partners"]
+  :is(
+    .partners-focus-card,
+    .partners-collaboration-card,
+    .partners-process-card,
+    .partners-value-card
+  ) {
+    background: var(--aj-surface-soft);
+    border-color: var(--aj-border);
+    box-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.18),
+      0 3px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  body[data-page="partners"]
+  :is(
+    .partners-focus-card,
+    .partners-collaboration-card,
+    .partners-process-card,
+    .partners-value-card
+  ):is(:hover, :focus-within) {
+    background: var(--aj-surface-elevated);
+    border-color: rgba(114, 197, 255, 0.28);
+    box-shadow:
+      0 16px 30px rgba(0, 0, 0, 0.26),
+      0 6px 14px rgba(0, 0, 0, 0.18);
+  }
+
+  body[data-page="partners"]
+  :is(
+    .partners-focus-card,
+    .partners-collaboration-card,
+    .partners-process-card,
+    .partners-value-card
+  )
+  h3 {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="partners"]
+  :is(
+    .partners-focus-card,
+    .partners-collaboration-card,
+    .partners-process-card,
+    .partners-value-card
+  )
+  p {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="partners"] .partners-process-note {
+    background: var(--aj-soft-control-bg);
+    border-color: var(--aj-border);
+    color: var(--aj-text-secondary);
+  }
+
+
+  /* -------------------------------------------------------
+     Contact section
+     Blue left-hand partner panel remains branded.
+  ------------------------------------------------------- */
+
+  body[data-page="partners"] .partner-contact-section {
+    background: var(--aj-page-bg);
+  }
+
+  body[data-page="partners"] .partner-contact-shell {
+    background: var(--aj-surface);
+    border-color: var(--aj-border);
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.28),
+      0 8px 22px rgba(0, 0, 0, 0.18);
+  }
+
+  body[data-page="partners"] .partner-contact-copy {
+    background:
+      radial-gradient(
+        circle at 90% 8%,
+        rgba(85, 185, 255, 0.16) 0%,
+        rgba(85, 185, 255, 0) 44%
+      ),
+      linear-gradient(
+        145deg,
+        #0a3d62 0%,
+        #0b5278 54%,
+        #116785 100%
+      );
+    color: #f3f7fb;
+    box-shadow:
+      0 18px 38px rgba(0, 0, 0, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  body[data-page="partners"] .partner-contact-form-card {
+    background: var(--aj-surface-elevated);
+    border-color: var(--aj-border);
+    box-shadow:
+      0 14px 34px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  body[data-page="partners"] .partner-contact-form-card h3 {
+    color: var(--aj-accent-text);
+  }
+
+
+  /* -------------------------------------------------------
+     Partner form
+     These selectors intentionally beat contact.scss,
+     which is loaded before this adapter.
+  ------------------------------------------------------- */
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form {
+    background: var(--aj-form-panel-bg);
+    border-color: var(--aj-border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group
+  label {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group
+  :is(input, textarea) {
+    background: var(--aj-form-control-bg);
+    color: var(--aj-form-control-text);
+    border-color: var(--aj-form-border);
+  }
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group
+  :is(input, textarea)::placeholder {
+    color: var(--aj-form-placeholder);
+  }
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group
+  :is(input, textarea):hover {
+    background: var(--aj-form-control-hover);
+    border-color: var(--aj-form-border-hover);
+  }
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group
+  :is(input, textarea):is(:focus, :focus-visible) {
+    background: var(--aj-form-control-focus);
+    border-color: var(--aj-focus);
+    box-shadow:
+      0 0 0 4px rgba(85, 185, 255, 0.16),
+      0 8px 18px rgba(0, 0, 0, 0.18);
+  }
+
+
+  /* Invalid controls - contact.scss has high-specificity rules. */
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group.is-invalid
+  :is(input, textarea),
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group
+  input[aria-invalid="true"],
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group
+  textarea[aria-invalid="true"] {
+    background: var(--aj-form-error-bg);
+    border-color: var(--aj-form-error-border);
+    color: var(--aj-form-control-text);
+    box-shadow: 0 0 0 4px rgba(255, 107, 120, 0.12);
+  }
+
+
+  /* Valid controls - kept for compatibility with shared contact UX. */
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-group.is-valid
+  :is(input, textarea) {
+    background: var(--aj-form-success-bg);
+    border-color: var(--aj-form-success-border);
+    color: var(--aj-form-control-text);
+  }
+
+
+  /* Inline field errors */
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-form
+  .form-error,
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .form-error {
+    color: var(--aj-form-error-text);
+    background: var(--aj-form-error-bg);
+    border-color: var(--aj-form-error-border);
+  }
+
+
+  /* Submit-level error */
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-error {
+    color: var(--aj-form-error-text);
+    background: var(--aj-form-error-bg);
+    border-color: var(--aj-form-error-border);
+  }
+
+
+  /* Successful submit */
+
+  body[data-page="partners"]
+  .partner-contact-section
+  .contact-success {
+    color: var(--aj-form-success-text);
+    background: var(--aj-form-success-bg);
+    border-color: var(--aj-form-success-border);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  }
+}

@@ -437,12 +437,15 @@
    ------------------------ */
 
 .event-demo-badge:not(.hp-banner){
-  --ib-bg: radial-gradient(120% 120% at 0% 0%, #f5fbff 0%, #eef7ff 40%, #ffffff 100%);
-  --ib-border: rgba(7, 38, 77, .09);
-  --ib-shadow: 0 10px 30px rgba(8, 60, 130, .08);
-  --ib-text: #0d2235;
-  --ib-accent: #0b74e5;
-  --ib-accent-hover: #085ab5;
+  --ib-bg: var(
+    --aj-events-info-banner-bg,
+    radial-gradient(120% 120% at 0% 0%, #f5fbff 0%, #eef7ff 40%, #ffffff 100%)
+  );
+  --ib-border: var(--aj-events-info-banner-border, rgba(7, 38, 77, .09));
+  --ib-shadow: var(--aj-events-info-banner-shadow, 0 10px 30px rgba(8, 60, 130, .08));
+  --ib-text: var(--aj-events-info-banner-text, #0d2235);
+  --ib-accent: var(--aj-events-info-banner-accent, #0b74e5);
+  --ib-accent-hover: var(--aj-events-info-banner-accent-hover, #085ab5);
 
   display: grid;
   grid-template-columns: minmax(36px,auto) 1fr auto;

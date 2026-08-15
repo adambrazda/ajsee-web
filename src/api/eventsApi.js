@@ -824,12 +824,25 @@ try {
   }
 } catch (e) {
   if (isRateLimitError(e)) {
-    e.code = e.code || 'TICKETMASTER_RATE_LIMITED';
-    e.partner = e.partner || 'ticketmaster';
-    throw e;
+    /*
+     * AJSEE_PROVIDER_ISOLATION_v1
+     *
+     * Ticketmaster rate limiting must not abort the whole aggregation.
+     * The Ticketmaster adapter already exposes its cooldown state, so the UI
+     * can still show a rate-limit message when no other provider has results.
+     *
+     * Continue here so SMS Ticket and any other independent providers can
+     * still return usable events.
+     */
+    if (isDev) {
+      console.warn(
+        '[eventsApi] Ticketmaster is rate limited; continuing with other providers.',
+        e
+      );
+    }
+  } else {
+    console.warn('[eventsApi] Ticketmaster fetch failed:', e);
   }
-
-  console.warn('[eventsApi] Ticketmaster fetch failed:', e);
 }
 
 

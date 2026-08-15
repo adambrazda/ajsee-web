@@ -468,10 +468,10 @@ function ensureModalStyles() {
       overflow: visible !important;
       display: grid;
       grid-template-columns: minmax(260px, 42%) 1fr;
-      background: rgba(255, 255, 255, 0.98);
-      border: 1px solid rgba(217, 225, 239, 0.95);
+      background: var(--aj-modal-bg, rgba(255, 255, 255, 0.98));
+      border: 1px solid var(--aj-modal-border, rgba(217, 225, 239, 0.95));
       border-radius: 28px;
-      box-shadow: 0 28px 80px rgba(9, 30, 66, 0.28);
+      box-shadow: var(--aj-modal-shadow, 0 28px 80px rgba(9, 30, 66, 0.28));
       margin: auto 0;
     }
 
@@ -484,8 +484,8 @@ function ensureModalStyles() {
       height: 42px;
       border: 0;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.92);
-      color: #14213d;
+      background: var(--aj-modal-close-bg, rgba(255, 255, 255, 0.92));
+      color: var(--aj-modal-close-text, #14213d);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -498,7 +498,7 @@ function ensureModalStyles() {
       height: 100%;
       min-height: 420px;
       object-fit: cover;
-      background: #eef5ff;
+      background: var(--aj-modal-image-bg, #eef5ff);
       border-radius: 28px 0 0 28px;
     }
 
@@ -512,26 +512,26 @@ function ensureModalStyles() {
       font-size: clamp(28px, 4vw, 44px);
       line-height: 1.05;
       letter-spacing: -0.04em;
-      color: #102033;
+      color: var(--aj-modal-title, #102033);
     }
 
     .modal-meta {
       margin: 0 0 18px;
-      color: #526071;
+      color: var(--aj-modal-meta, #526071);
       font-weight: 650;
       line-height: 1.5;
     }
 
     .modal-description {
       margin: 0 0 18px;
-      color: #344054;
+      color: var(--aj-modal-description, #344054);
       line-height: 1.65;
       font-size: 16px;
     }
 
     .modal-category {
       margin: 0 0 22px;
-      color: #667085;
+      color: var(--aj-modal-category, #667085);
       font-size: 14px;
       font-weight: 700;
     }
@@ -558,7 +558,7 @@ function ensureModalStyles() {
     .calendar-label {
       display: block;
       margin-bottom: 10px;
-      color: #0A3D62;
+      color: var(--aj-modal-control-text, #0A3D62);
       font-size: 18px;
       font-weight: 800;
     }
@@ -576,9 +576,9 @@ function ensureModalStyles() {
       min-height: 40px;
       padding: 0 14px;
       border-radius: 999px;
-      border: 1px solid #d9e1ef;
-      background: #fff;
-      color: #14213d;
+      border: 1px solid var(--aj-modal-control-border, #d9e1ef);
+      background: var(--aj-modal-control-bg, #fff);
+      color: var(--aj-modal-control-text, #14213d);
       text-decoration: none;
       font-size: 14px;
       font-weight: 700;
@@ -999,7 +999,7 @@ function ensureModalConversionPolishStyles() {
 
     .event-modal .modal-category{
       margin-bottom:16px;
-      color:#667085;
+      color:var(--aj-modal-category, #667085);
       font-size:13px;
       font-style:normal !important;
       font-weight:700;
@@ -1007,7 +1007,7 @@ function ensureModalConversionPolishStyles() {
 
     .event-modal .modal-seller-note{
       margin:10px 0 20px;
-      color:#667085;
+      color:var(--aj-modal-secondary, #667085);
       font-size:13px;
       line-height:1.45;
       font-weight:600;
@@ -1019,7 +1019,7 @@ function ensureModalConversionPolishStyles() {
 
     .event-modal .calendar-label{
       margin-bottom:8px;
-      color:#526071;
+      color:var(--aj-modal-meta, #526071);
       font-size:14px;
       font-weight:750;
     }
@@ -1039,10 +1039,10 @@ function ensureModalConversionPolishStyles() {
       min-width:0 !important;
       min-height:38px !important;
       padding:0 12px !important;
-      border:1px solid rgba(10,61,98,.18) !important;
+      border:1px solid var(--aj-modal-control-border, rgba(10,61,98,.18)) !important;
       border-radius:10px !important;
-      background:#fff !important;
-      color:#0A3D62 !important;
+      background:var(--aj-modal-control-bg, #fff) !important;
+      color:var(--aj-modal-control-text, #0A3D62) !important;
       box-shadow:none !important;
       font-size:14px !important;
       font-weight:750 !important;
@@ -1052,8 +1052,8 @@ function ensureModalConversionPolishStyles() {
     .event-modal .calendar-btn:hover,
     .event-modal .ajsee-modal-calendar-actions-v1 > a:hover,
     .event-modal .ajsee-modal-calendar-actions-v1 > button:hover{
-      border-color:rgba(10,61,98,.32) !important;
-      background:#f5f9fd !important;
+      border-color:var(--aj-modal-control-border-hover, rgba(10,61,98,.32)) !important;
+      background:var(--aj-modal-control-hover, #f5f9fd) !important;
     }
 
     .event-modal .calendar-btn:focus-visible{

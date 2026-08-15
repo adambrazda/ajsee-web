@@ -1,10 +1,11 @@
-﻿// ------------------------------------------------------
+// ------------------------------------------------------
 // AJSEE – Partners page SCSS entry point
 // ------------------------------------------------------
 // Cíl: netahat na Partners stránku celý globální main.scss bundle.
 // Obsahuje pouze společné UI + styly potřebné pro partners.html.
 
 @use '../globals' as *;
+@use '../utils/theme';
 @use '../utils/reset';
 
 @use '../partials/layout';
@@ -13,6 +14,7 @@
 
 @use '../partials/partners';
 @use '../partials/contact';
+@use '../partials/theme-partners';
 
 @use '../partials/cookie-consent';
 

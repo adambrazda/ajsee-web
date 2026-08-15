@@ -780,3 +780,269 @@
 body.article-image-lightbox-open {
   overflow: hidden;
 }
+/* AJSEE CONTENT FAMILY DARK V1 */
+@media (prefers-color-scheme: dark) {
+
+  body[data-page="blog"],
+  body[data-page="blog-detail"],
+  body[data-page="review-detail"] {
+    background: var(--aj-page-bg);
+    color: var(--aj-text);
+  }
+
+  body[data-page="blog"] main,
+  body[data-page="blog-detail"] main,
+  body[data-page="review-detail"] main {
+    background: var(--aj-page-bg);
+  }
+
+
+  /* -------------------------------------------------------
+     Blog listing
+  ------------------------------------------------------- */
+
+  body[data-page="blog"] .blog-hero {
+    background:
+      linear-gradient(
+        120deg,
+        #0b1724 0%,
+        #123044 100%
+      );
+  }
+
+  body[data-page="blog"] .blog-hero h1 {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="blog"] .blog-hero .blog-lead {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="blog"] .blog-filters,
+  body[data-page="blog"] .blog-list {
+    background: var(--aj-page-bg);
+  }
+
+  body[data-page="blog"]
+  .blog-filters
+  .filter-categories
+  button {
+    background: var(--aj-surface);
+    color: #59dfe2;
+    border-color: #14c2c5;
+  }
+
+  body[data-page="blog"]
+  .blog-filters
+  .filter-categories
+  button:hover,
+  body[data-page="blog"]
+  .blog-filters
+  .filter-categories
+  button.active {
+    background: #0f9aa0;
+    color: #ffffff;
+    border-color: #0f9aa0;
+  }
+
+  body[data-page="blog"] .blog-list .blog-card {
+    background: var(--aj-surface);
+    border: 1px solid var(--aj-border);
+    box-shadow: var(--aj-card-shadow);
+  }
+
+  body[data-page="blog"]
+  .blog-list
+  .blog-card:hover,
+  body[data-page="blog"]
+  .blog-list
+  .blog-card:focus-within {
+    box-shadow: var(--aj-card-shadow-hover);
+  }
+
+  body[data-page="blog"]
+  .blog-list
+  .blog-card
+  .blog-card-title {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="blog"]
+  .blog-list
+  .blog-card
+  .blog-card-lead {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="blog"]
+  .blog-list
+  .blog-card.is-microguide
+  .card-media {
+    background: var(--aj-media-placeholder);
+  }
+
+  body[data-page="blog"] .blog-empty {
+    color: #ffb4bd;
+  }
+
+
+  /* -------------------------------------------------------
+     Blog article + generated review detail
+  ------------------------------------------------------- */
+
+  body[data-page="blog-detail"] .blog-detail,
+  body[data-page="review-detail"] .blog-detail {
+    background: var(--aj-page-bg);
+  }
+
+  body[data-page="blog-detail"]
+  .blog-detail
+  .container,
+  body[data-page="review-detail"]
+  .blog-detail
+  .container {
+    background: var(--aj-surface);
+    border: 1px solid var(--aj-border);
+    box-shadow: var(--aj-card-shadow);
+  }
+
+  body[data-page="blog-detail"]
+  .blog-detail
+  .blog-title,
+  body[data-page="review-detail"]
+  .blog-detail
+  .blog-title {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="blog-detail"]
+  .blog-detail
+  .blog-lead,
+  body[data-page="review-detail"]
+  .blog-detail
+  .blog-lead {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="blog-detail"]
+  .blog-detail
+  .blog-content,
+  body[data-page="review-detail"]
+  .blog-detail
+  .blog-content {
+    color: var(--aj-text);
+  }
+
+  body[data-page="blog-detail"]
+  .blog-detail
+  .back-link,
+  body[data-page="review-detail"]
+  .blog-detail
+  .back-link,
+  body[data-page="blog-detail"]
+  .blog-detail
+  .blog-meta,
+  body[data-page="review-detail"]
+  .blog-detail
+  .blog-meta {
+    color: #59dfe2;
+  }
+
+
+  /* Review details */
+
+  body[data-page="review-detail"] .review-cover-credit,
+  body[data-page="review-detail"] .review-gallery-item figcaption {
+    color: var(--aj-text-muted);
+  }
+
+  body[data-page="review-detail"] .review-gallery-title {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="review-detail"] .review-gallery-item {
+    border-color: var(--aj-border);
+  }
+
+
+  /* -------------------------------------------------------
+     Review engagement
+  ------------------------------------------------------- */
+
+  body[data-page="review-detail"] .review-engagement {
+    border-color: var(--aj-border);
+    background:
+      linear-gradient(
+        135deg,
+        rgba(20, 194, 197, 0.08),
+        rgba(85, 185, 255, 0.055)
+      ),
+      var(--aj-surface-soft);
+    box-shadow: var(--aj-card-shadow);
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__title {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__description {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__button {
+    border-color: var(--aj-border-strong);
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__button--share {
+    background: #1a3044;
+    color: var(--aj-text-strong);
+    border-color: var(--aj-border-strong);
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__button--copy,
+  body[data-page="review-detail"]
+  .review-engagement__button--like {
+    background: var(--aj-surface-elevated);
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__read-metric {
+    background: var(--aj-surface-elevated);
+    border-color: var(--aj-border);
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__like-count {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__read-count.is-loading::after,
+  body[data-page="review-detail"]
+  .review-engagement__like-count.is-loading::after {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.13),
+        rgba(255, 255, 255, 0.05)
+      );
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__status {
+    color: #9ee7c6;
+  }
+
+  body[data-page="review-detail"]
+  .review-engagement__status.is-error {
+    color: #ffb4bd;
+  }
+}

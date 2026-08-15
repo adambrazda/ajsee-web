@@ -5,6 +5,7 @@
 // Obsahuje pouze společné UI + styly potřebné pro FAQ.
 
 @use '../globals' as *;
+@use '../utils/theme';
 @use '../utils/reset';
 
 @use '../partials/layout';

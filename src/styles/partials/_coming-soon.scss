@@ -101,3 +101,64 @@
     }
   }
 }
+
+/* AJSEE_UTILITY_DARK_COMING_SOON_V1 */
+@media (prefers-color-scheme: dark) {
+  .comingsoon-page {
+    --bg: #09131f;
+    --card: #101c2a;
+    --ink: #f3f7fb;
+    --muted: #b3c2d2;
+    --accent: #0b74e5;
+    --accent2: #2788ee;
+    --ring: rgba(85, 185, 255, 0.34);
+
+    .brand img {
+      background: #bff4f7;
+      border-radius: 8px;
+    }
+
+    .card {
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
+    }
+
+    form {
+      input[type="email"] {
+        background: #0c1825;
+        border-color: rgba(255, 255, 255, 0.16);
+        color: var(--ink);
+
+        &::placeholder {
+          color: #8295a8;
+          opacity: 1;
+        }
+
+        &:hover {
+          border-color: rgba(114, 197, 255, 0.42);
+        }
+
+        &:focus {
+          border-color: #72c5ff;
+        }
+      }
+
+      input[type="checkbox"] {
+        accent-color: var(--accent);
+      }
+    }
+
+    .btn-back {
+      background: #101c2a;
+      border-color: rgba(255, 255, 255, 0.14);
+      color: #8fd4ff;
+
+      &:hover,
+      &:focus-visible {
+        background: #162638;
+        border-color: rgba(114, 197, 255, 0.5);
+        color: #c5eaff;
+      }
+    }
+  }
+}

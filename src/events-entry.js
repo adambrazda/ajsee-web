@@ -4438,11 +4438,11 @@ function updateEventsPagerControls() {
 
   injectOnce('ajsee-events-pager-css', String.raw`
     .events-pager{ display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap; margin:28px auto 0; text-align:center; }
-    .events-pager__status{ flex:0 0 100%; font-size:14px; color:#667085; margin-bottom:2px; }
-    .events-pager__btn{ border:1px solid rgba(10,61,98,.16); background:#fff; color:#0A3D62; border-radius:999px; padding:11px 18px; min-height:44px; font-weight:800; cursor:pointer; box-shadow:0 8px 20px rgba(9,30,66,.06); transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease; }
-    .events-pager__btn:hover:not(:disabled){ transform:translateY(-1px); box-shadow:0 12px 28px rgba(9,30,66,.10); }
+    .events-pager__status{ flex:0 0 100%; font-size:14px; color:var(--aj-pager-status, #667085); margin-bottom:2px; }
+    .events-pager__btn{ border:1px solid var(--aj-pager-button-border, rgba(10,61,98,.16)); background:var(--aj-pager-button-bg, #fff); color:var(--aj-pager-button-text, #0A3D62); border-radius:999px; padding:11px 18px; min-height:44px; font-weight:800; cursor:pointer; box-shadow:var(--aj-pager-button-shadow, 0 8px 20px rgba(9,30,66,.06)); transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease; }
+    .events-pager__btn:hover:not(:disabled){ transform:translateY(-1px); box-shadow:var(--aj-pager-button-shadow-hover, 0 12px 28px rgba(9,30,66,.10)); }
     .events-pager__btn:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
-    .events-pager__btn--primary{ background:#0A3D62; color:#fff; border-color:#0A3D62; }
+    .events-pager__btn--primary{ background:var(--aj-pager-primary-bg, #0A3D62); color:var(--aj-pager-primary-text, #fff); border-color:var(--aj-pager-primary-border, #0A3D62); }
   `);
 
   const host = ensureEventsPagerHost();
@@ -4570,11 +4570,13 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       _lastFetchSig = '';
     }
 
-    if (eventsPager.buffer.length === 0 && isTicketmasterRateLimited()) {
-      renderEventsStateMessage('rateLimit');
-      return;
-    }
-
+    /*
+     * AJSEE_PROVIDER_ISOLATION_v1
+     *
+     * Do not short-circuit the whole event aggregation just because
+     * Ticketmaster is currently rate limited. getAllEvents() can still
+     * return results from independent providers such as SMS Ticket.
+     */
     await ensureEventsPageLoaded(locale, api, pagination.page);
 
     if (eventsPager.buffer.length === 0 && isTicketmasterRateLimited()) {
@@ -5151,9 +5153,9 @@ if (!G.flags.mainDomReadyBound) {
         min-height:24px;
         padding:5px 10px;
         border-radius:999px;
-        border:1px solid rgba(10,61,98,.12);
-        background:rgba(10,61,98,.045);
-        color:#0A3D62;
+        border:1px solid var(--aj-provider-badge-border, rgba(10,61,98,.12));
+        background:var(--aj-provider-badge-bg, rgba(10,61,98,.045));
+        color:var(--aj-provider-badge-text, #0A3D62);
         font-size:12px;
         font-weight:800;
         letter-spacing:.02em;
@@ -5162,16 +5164,16 @@ if (!G.flags.mainDomReadyBound) {
 
       #eventsList .event-card[data-event-provider="smsticket"] .event-partner-badge span,
       .events-list .event-card[data-event-provider="smsticket"] .event-partner-badge span{
-        background:rgba(92,70,255,.08);
-        border-color:rgba(92,70,255,.16);
-        color:#342f75;
+        background:var(--aj-provider-smsticket-bg, rgba(92,70,255,.08));
+        border-color:var(--aj-provider-smsticket-border, rgba(92,70,255,.16));
+        color:var(--aj-provider-smsticket-text, #342f75);
       }
 
       #eventsList .event-card[data-event-provider="ticketmaster"] .event-partner-badge span,
       .events-list .event-card[data-event-provider="ticketmaster"] .event-partner-badge span{
-        background:rgba(0,116,224,.08);
-        border-color:rgba(0,116,224,.16);
-        color:#064c9b;
+        background:var(--aj-provider-ticketmaster-bg, rgba(0,116,224,.08));
+        border-color:var(--aj-provider-ticketmaster-border, rgba(0,116,224,.16));
+        color:var(--aj-provider-ticketmaster-text, #064c9b);
       }
     `;
 

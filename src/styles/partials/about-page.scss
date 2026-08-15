@@ -109,7 +109,7 @@
 
     .about-hero-text {
       font-size: 1.18rem;
-      color: #224;
+      color: var(--aj-about-text-neutral, #224);
       line-height: 1.65;
       margin-bottom: 0;
 
@@ -678,11 +678,11 @@
 
     .about-future-text{
       font-size: 1.18rem;
-      color: #184469;
+      color: var(--aj-about-text, #184469);
       line-height: 1.7;
 
       p{ margin-bottom: 0.1rem; }
-      strong{ color:#000; font-weight:700; }
+      strong{ color:var(--aj-about-strong, #000); font-weight:700; }
     }
   }
 
@@ -798,4 +798,93 @@
     .about-cta-text { font-size: 1.01rem; margin-bottom: 1.2rem; }
     .about-cta-actions .btn-primary { font-size: 0.97rem; padding: 0.7em 1.3em; }
   }
+}
+
+/* =========================================================
+   AJSEE ABOUT THEME MAPPING V1
+   Light fallbacks preserve the existing About appearance.
+========================================================= */
+
+body[data-page="about"] {
+  background: var(--aj-page-bg, #f9f9f9);
+  color: var(--aj-text, #22223b);
+}
+
+body[data-page="about"] .about-hero,
+body[data-page="about"] .about-cta {
+  background: var(
+    --aj-about-hero-bg,
+    linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%)
+  );
+}
+
+body[data-page="about"] .about-story {
+  background: var(--aj-about-story-bg, #ffffff);
+}
+
+body[data-page="about"] .about-future {
+  background: var(
+    --aj-about-future-bg,
+    linear-gradient(120deg, #f8fcff 0%, #e9f3ff 100%)
+  );
+}
+
+body[data-page="about"] .about-team {
+  background: var(
+    --aj-about-team-bg,
+    linear-gradient(120deg, #f8fcff 0%, #e1f5fb 100%)
+  );
+}
+
+body[data-page="about"] .about-hero-textblock h1,
+body[data-page="about"] .about-story h2,
+body[data-page="about"] .about-future h2,
+body[data-page="about"] .about-team h2,
+body[data-page="about"] .about-cta h2 {
+  color: var(--aj-about-heading, #0077cc);
+}
+
+body[data-page="about"] .about-hero-text,
+body[data-page="about"] .about-cta-text {
+  color: var(--aj-about-text-neutral, #222244);
+}
+
+body[data-page="about"] .about-story-text,
+body[data-page="about"] .about-future-text,
+body[data-page="about"] .team-name {
+  color: var(--aj-about-text, #184469);
+}
+
+body[data-page="about"] .about-story-text strong,
+body[data-page="about"] .about-future-text strong {
+  color: var(--aj-about-strong, #000000);
+}
+
+body[data-page="about"] .about-hero-text strong {
+  color: var(--aj-about-accent, #0f9aa0);
+}
+
+body[data-page="about"] .team-member {
+  background: var(--aj-about-card-bg, #ffffff);
+}
+
+body[data-page="about"] .team-name {
+  color: var(--aj-about-card-text, #184469);
+}
+
+body[data-page="about"] .team-role {
+  color: var(--aj-about-accent, #14c2c5);
+}
+
+body[data-page="about"] .team-claim {
+  color: var(--aj-about-card-secondary, #334b69);
+}
+
+body[data-page="about"] .team-photo {
+  border-color: var(--aj-about-photo-border, #ffffff);
+  background: var(--aj-about-photo-bg, #e1f5fb);
+}
+
+body[data-page="about"] .team-linkedin img {
+  background: var(--aj-about-icon-bg, #eaf5fc);
 }

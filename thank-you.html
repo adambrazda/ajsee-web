@@ -32,8 +32,18 @@
   </noscript>
 
   <style>
+    :root {
+      --thankyou-bg: #f7f7f9;
+      --thankyou-card: #ffffff;
+      --thankyou-text-strong: #192646;
+      --thankyou-text: #232c3d;
+      --thankyou-accent: #0077cc;
+      --thankyou-shadow: 0 8px 36px #002c4d1a;
+      --thankyou-focus: rgba(0, 119, 204, 0.35);
+    }
+
     body {
-      background: #f7f7f9;
+      background: var(--thankyou-bg);
       min-height: 100vh;
       margin: 0;
       display: flex;
@@ -46,9 +56,9 @@
       max-width: 430px;
       margin: 32px auto;
       padding: 2.6rem 2.3rem 2.2rem;
-      background: #fff;
+      background: var(--thankyou-card);
       border-radius: 2rem;
-      box-shadow: 0 8px 36px #002c4d1a;
+      box-shadow: var(--thankyou-shadow);
       text-align: center;
       position: relative;
       transition: box-shadow 0.2s;
@@ -72,27 +82,27 @@
       font-weight: 700;
       font-size: 1.14rem;
       letter-spacing: 0.08em;
-      color: #192646;
+      color: var(--thankyou-text-strong);
       margin-bottom: 0.2rem;
     }
 
     .thankyou-logo .motto {
       font-size: 0.95rem;
-      color: #0077cc;
+      color: var(--thankyou-accent);
       letter-spacing: 0.03em;
     }
 
     .thankyou-headline {
       font-size: 2.4rem;
       font-weight: 800;
-      color: #192646;
+      color: var(--thankyou-text-strong);
       margin: 0 0 1rem 0;
       letter-spacing: -0.02em;
     }
 
     .thankyou-message {
       font-size: 1.17rem;
-      color: #232c3d;
+      color: var(--thankyou-text);
       margin-bottom: 2.1em;
       line-height: 1.6;
       letter-spacing: -0.01em;
@@ -125,8 +135,25 @@
     }
 
     .btn-main:focus-visible {
-      outline: 3px solid rgba(0, 119, 204, 0.35);
+      outline: 3px solid var(--thankyou-focus);
       outline-offset: 4px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --thankyou-bg: #09131f;
+        --thankyou-card: #101c2a;
+        --thankyou-text-strong: #f3f7fb;
+        --thankyou-text: #b3c2d2;
+        --thankyou-accent: #72c5ff;
+        --thankyou-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+        --thankyou-focus: rgba(85, 185, 255, 0.46);
+      }
+
+      .thankyou-logo img {
+        background: #bff4f7;
+        border-radius: 12px;
+      }
     }
 
     @media (max-width: 520px) {

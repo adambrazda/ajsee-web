@@ -7,9 +7,9 @@
   text-align: center;
   padding: 2rem 1rem;
   font-size: 0.93rem;
-  color: #666;
-  background: #fafafa;
-  border-top: 1px solid $brand-grey;
+  color: var(--aj-footer-text, #666);
+  background: var(--aj-footer-bg, #fafafa);
+  border-top: 1px solid var(--aj-footer-border, #{$brand-grey});
   margin-top: 0;
 }
 
@@ -62,7 +62,7 @@
 
 .footer-copy {
   font-weight: 500;
-  color: #4a4a4a;
+  color: var(--aj-footer-copy, #4a4a4a);
 }
 
 .footer-legal {
@@ -75,7 +75,7 @@
 }
 
 .footer-legal-link {
-  color: $brand-blue;
+  color: var(--aj-footer-link, #{$brand-blue});
   text-decoration: none;
   transition: color 0.2s ease, opacity 0.2s ease;
 
@@ -92,20 +92,20 @@
 }
 
 .footer-legal-separator {
-  color: #999;
+  color: var(--aj-footer-separator, #999);
   user-select: none;
 }
 
 .footer-company {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--aj-footer-text, #666);
 }
 
 .footer-contact {
   font-size: 0.9rem;
 
   a {
-    color: $brand-blue;
+    color: var(--aj-footer-link, #{$brand-blue});
     text-decoration: none;
 
     &:hover,
@@ -184,7 +184,7 @@
 
 .footer-legal-link,
 .footer-legal-button {
-  color: $brand-blue;
+  color: var(--aj-footer-link, #{$brand-blue});
   font: inherit;
   line-height: 1.6;
   text-decoration: none;
@@ -212,5 +212,5 @@
 }
 
 .footer-legal-separator {
-  color: #9aa6b2;
+  color: var(--aj-footer-separator, #9aa6b2);
 }

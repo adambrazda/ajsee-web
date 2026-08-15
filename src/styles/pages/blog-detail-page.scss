@@ -5,6 +5,7 @@
 // Obsahuje pouze společné UI + styly potřebné pro blog detail a komentáře.
 
 @use '../globals' as *;
+@use '../utils/theme';
 @use '../utils/reset';
 
 @use '../partials/layout';
@@ -52,6 +53,14 @@ body {
   line-height: 1;
   letter-spacing: 0.02em;
   white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  body[data-page="review-detail"] .review-content-type-badge {
+    border-color: rgba(89, 223, 226, 0.34);
+    background: rgba(20, 194, 197, 0.13);
+    color: #7ce7e9;
+  }
 }
 
 .review-meta-row {

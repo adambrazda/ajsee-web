@@ -6,6 +6,8 @@
   --comments-primary: #0077cc;
   --comments-primary-hover: #005fa3;
   --comments-navy: #22223b;
+  --comments-control: #ffffff;
+  --comments-item: #ffffff;
 
   margin-top: clamp(2.5rem, 6vw, 4.5rem);
   padding-top: clamp(2rem, 5vw, 3.5rem);
@@ -69,7 +71,7 @@
     padding: 0.8rem 0.9rem;
     border: 1px solid var(--comments-border-strong);
     border-radius: 0.65rem;
-    background: #ffffff;
+    background: var(--comments-control);
     color: var(--comments-navy);
     font: inherit;
     line-height: 1.5;
@@ -163,7 +165,7 @@
     padding: 1.15rem 1.25rem;
     border: 1px solid var(--comments-border);
     border-radius: 0.85rem;
-    background: #ffffff;
+    background: var(--comments-item);
   }
 
   &__item-header {
@@ -210,7 +212,7 @@
     padding: 0.55rem 0.85rem;
     border: 1px solid var(--comments-primary);
     border-radius: 0.55rem;
-    background: #ffffff;
+    background: var(--comments-control);
     color: var(--comments-primary);
     font: inherit;
     font-weight: 700;
@@ -253,5 +255,40 @@
     &__submit:hover:not(:disabled) {
       transform: none;
     }
+  }
+}
+/* AJSEE COMMENTS DARK V1 */
+@media (prefers-color-scheme: dark) {
+  .article-comments {
+    --comments-border: rgba(255, 255, 255, 0.12);
+    --comments-border-strong: rgba(255, 255, 255, 0.18);
+    --comments-muted: #9eafc1;
+    --comments-surface: #132131;
+    --comments-primary: #55b9ff;
+    --comments-primary-hover: #72c5ff;
+    --comments-navy: #f3f7fb;
+    --comments-control: #172535;
+    --comments-item: #101c2a;
+  }
+
+  .article-comments__field input:hover,
+  .article-comments__field textarea:hover {
+    border-color: rgba(85, 185, 255, 0.52);
+  }
+
+  .article-comments__field input:focus,
+  .article-comments__field textarea:focus {
+    box-shadow: 0 0 0 3px rgba(85, 185, 255, 0.16);
+  }
+
+  .article-comments__field input:focus-visible,
+  .article-comments__field textarea:focus-visible,
+  .article-comments__submit:focus-visible,
+  .article-comments__error button:focus-visible {
+    outline-color: rgba(85, 185, 255, 0.46);
+  }
+
+  .article-comments__error button:hover {
+    background: rgba(85, 185, 255, 0.09);
   }
 }

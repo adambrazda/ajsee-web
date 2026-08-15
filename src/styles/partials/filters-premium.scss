@@ -18,31 +18,31 @@
 
 /* ─── Design tokens ─── */
 :root {
-  --flt-bg: rgba(255, 255, 255, 0.62);
+  --flt-bg: var(--aj-filter-legacy-bg);
   --flt-blur: 14px;
-  --flt-brd: rgba(255, 255, 255, 0.5);
-  --flt-brd-2: rgba(13, 30, 60, 0.08);
-  --flt-shadow: 0 24px 48px rgba(12, 36, 80, 0.12), 0 2px 6px rgba(12, 36, 80, 0.06);
+  --flt-brd: var(--aj-filter-legacy-border);
+  --flt-brd-2: var(--aj-filter-legacy-border-2);
+  --flt-shadow: var(--aj-filter-legacy-shadow);
   --flt-radius: 20px;
 
-  --ink-1: #071a2b;
-  --ink-2: #173a62;
-  --ink-3: #6a86a8;
+  --ink-1: var(--aj-filter-ink-1);
+  --ink-2: var(--aj-filter-ink-2);
+  --ink-3: var(--aj-filter-ink-3);
 
-  --chip-bg: #f4f8ff;
-  --chip-text: #0b2640;
-  --chip-shadow: 0 8px 18px rgba(12, 36, 80, 0.1);
+  --chip-bg: var(--aj-filter-chip-bg);
+  --chip-text: var(--aj-filter-chip-text);
+  --chip-shadow: var(--aj-filter-chip-shadow);
 
   --cta-1: #0e88f0;
   --cta-2: #0b5ed7;
 
-  --seg-bg: #eef3fb;
+  --seg-bg: var(--aj-filter-segment-bg);
   --seg-shadow: 0 12px 22px rgba(12, 36, 80, 0.12);
 
   --near-1: #006fbe;
   --near-2: #00c0d9;
 
-  --focus: #69b3ff;
+  --focus: var(--aj-focus);
 
   --font-sans: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 
@@ -58,32 +58,14 @@
   --ajsee-popover-top: 16px;
   --ajsee-popover-height: 560px;
 
-  --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.72));
-  --glass-brd: linear-gradient(135deg, #e7f0ff, #f6f9ff);
-  --glass-shadow: 0 10px 24px rgba(12, 36, 80, 0.15), 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  --glass-bg: var(--aj-filter-glass-bg);
+  --glass-brd: var(--aj-filter-glass-border);
+  --glass-shadow: var(--aj-filter-glass-shadow);
 
   --active-pill-bg: linear-gradient(120deg, #0e88f0, #14c2c5);
   --active-pill-shadow: 0 18px 34px rgba(14, 136, 240, 0.3);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --flt-bg: rgba(17, 21, 32, 0.58);
-    --flt-brd: rgba(255, 255, 255, 0.08);
-    --flt-brd-2: rgba(255, 255, 255, 0.1);
-    --chip-bg: rgba(255, 255, 255, 0.08);
-    --chip-text: #e8f0ff;
-    --seg-bg: rgba(255, 255, 255, 0.08);
-
-    --ink-1: #eaf0ff;
-    --ink-2: #d6e6ff;
-    --ink-3: #a6b7d7;
-
-    --glass-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
-    --glass-brd: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1));
-    --glass-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
-  }
-}
 
 /* ─── Panel filtrů ─── */
 :where(.events-filters.filter-dock),
@@ -351,18 +333,16 @@
     input[type="date"],
     input[type="search"],
     input[type="text"] {
-      background:
-        linear-gradient(rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.96)) padding-box,
-        linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.1)) border-box;
-      color: #f2f6ff;
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
+      background: var(--aj-filter-control-surface);
+      color: var(--aj-filter-control-text);
+      box-shadow: var(--aj-filter-control-shadow);
     }
 
     input.styled-input::placeholder,
     input[type="date"]::placeholder,
     input[type="search"]::placeholder,
     input[type="text"]::placeholder {
-      color: #cfe0ff;
+      color: var(--aj-filter-control-muted);
       opacity: 0.92;
     }
   }
@@ -666,16 +646,8 @@
 
 :where(.events-filters.filter-dock, form.filter-dock)
   :is(select.styled-select, #filter-category, #events-category-filter) option {
-  background: #ffffff;
-  color: var(--ink-1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :where(.events-filters.filter-dock, form.filter-dock)
-    :is(select.styled-select, #filter-category, #events-category-filter) option {
-    background: #0b1220;
-    color: #e6f0ff;
-  }
+  background: var(--aj-filter-option-bg);
+  color: var(--aj-filter-option-text);
 }
 
 :where(.events-filters.filter-dock, form.filter-dock) input[type="date"]::-webkit-calendar-picker-indicator {
@@ -814,8 +786,8 @@
     .tomselect .ts-dropdown,
     .nice-select .list
   ) {
-    border-color: rgba(255, 255, 255, 0.1);
-    outline-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--aj-filter-vendor-border);
+    outline-color: var(--aj-filter-vendor-outline);
   }
 }
 
@@ -954,17 +926,15 @@ html body .suggestions.suggestions [aria-selected="true"] {
   html body .typeahead-list.typeahead-list,
   html body .autocomplete-list.autocomplete-list,
   html body .suggestions.suggestions {
-    border-color: rgba(255, 255, 255, 0.1);
-    background:
-      radial-gradient(60% 80% at 30% 0%, rgba(255, 255, 255, 0.08), transparent 60%),
-      rgba(15, 23, 42, 0.72);
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    border-color: var(--aj-filter-typeahead-border);
+    background: var(--aj-filter-typeahead-bg);
+    box-shadow: var(--aj-filter-typeahead-shadow);
   }
 
   html body .tt-menu.tt-menu .tt-suggestion:hover,
   html body .tt-menu.tt-menu .tt-cursor,
   html body .tt-menu.tt-menu [aria-selected="true"] {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--aj-filter-typeahead-hover);
   }
 }
 

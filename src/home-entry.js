@@ -4774,9 +4774,9 @@ if (!G.flags.mainDomReadyBound) {
         min-height:24px;
         padding:5px 10px;
         border-radius:999px;
-        border:1px solid rgba(92,70,255,.16);
-        background:rgba(92,70,255,.08);
-        color:#342f75;
+        border:1px solid var(--aj-provider-smsticket-border, rgba(92,70,255,.16));
+        background:var(--aj-provider-smsticket-bg, rgba(92,70,255,.08));
+        color:var(--aj-provider-smsticket-text, #342f75);
         font-size:12px;
         font-weight:800;
         letter-spacing:.02em;

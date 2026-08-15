@@ -117,3 +117,36 @@
   from { opacity: 0; transform: translateY(-10px);}
   to { opacity: 1; transform: translateY(0);}
 }
+/* AJSEE FAQ DARK V1 */
+@media (prefers-color-scheme: dark) {
+  .faq-section {
+    background: var(--aj-page-bg, #09131f);
+
+    h1 {
+      color: var(--aj-text-strong, #f3f7fb);
+    }
+
+    .faq-item {
+      background: var(--aj-surface, #101c2a);
+      border-color: var(--aj-border, rgba(255, 255, 255, 0.12));
+      box-shadow: var(--aj-card-shadow, 0 8px 24px rgba(0, 0, 0, 0.24));
+
+      &:hover {
+        border-color: $color-primary;
+        box-shadow: var(--aj-card-shadow-hover, 0 14px 36px rgba(0, 0, 0, 0.34));
+      }
+
+      .faq-question {
+        color: var(--aj-text-strong, #f3f7fb);
+
+        &:focus-visible {
+          outline-color: var(--aj-focus, #55b9ff);
+        }
+      }
+
+      .faq-answer {
+        color: var(--aj-text-secondary, #b3c2d2);
+      }
+    }
+  }
+}

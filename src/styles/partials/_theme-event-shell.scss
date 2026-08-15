@@ -1,0 +1,371 @@
+// =========================================================
+// AJSEE THEME SYSTEM V1
+// Dark compatibility adapter for the event experience.
+// Light mode remains owned by the existing component CSS.
+// Scoped to homepage and events.
+// =========================================================
+
+
+@media (prefers-color-scheme: dark) {
+  html body:is([data-page="home"], [data-page="events"]) {
+    background: var(--aj-page-bg);
+    color: var(--aj-text);
+  }
+
+  /* =======================================================
+     HOMEPAGE — EVENT EXPERIENCE
+  ======================================================= */
+
+  body[data-page="home"] .section-events {
+    background: var(--aj-page-bg);
+  }
+
+  body[data-page="home"] .section-events .events-title {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="home"] .section-events .events-subtitle {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="home"] .hp-banner--london-musicals {
+    background: var(--aj-home-promo-bg);
+    border-color: rgba(20, 194, 197, 0.34);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+  }
+
+  body[data-page="home"]
+  .hp-banner--london-musicals
+  .hp-banner__icon {
+    background: var(--aj-home-promo-icon-bg);
+    border-color: rgba(91, 218, 221, 0.24);
+  }
+
+  body[data-page="home"]
+  .hp-banner--london-musicals
+  .hp-banner__title {
+    color: var(--aj-home-promo-title);
+  }
+
+  body[data-page="home"]
+  .hp-banner--london-musicals
+  .hp-banner__body {
+    color: var(--aj-home-promo-body);
+  }
+
+  body[data-page="home"]
+  .event-demo-badge.hp-banner:not(.hp-banner--london-musicals) {
+    background: rgba(18, 34, 49, 0.88);
+    border-color: var(--aj-border);
+  }
+
+
+  /* =======================================================
+     EVENTS PAGE
+  ======================================================= */
+
+  body[data-page="events"] main#main {
+    background: var(--aj-page-bg);
+  }
+
+  body[data-page="events"] .events-hero {
+    background: var(--aj-events-hero-bg);
+  }
+
+  body[data-page="events"] .events-hero .events-hero-title {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="events"] .events-hero .events-hero-desc {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="events"] .events-upcoming-section {
+    background: var(--aj-page-bg);
+  }
+
+  html body[data-page="events"]
+  main#main
+  #upcoming-events.events-upcoming-section,
+  html body[data-page="events"]
+  main#main
+  #upcoming-events.events-upcoming-section > .container {
+    background: var(--aj-page-bg);
+  }
+
+  body[data-page="events"]
+  #events-filters-form
+  #chipClear {
+    background: var(--aj-soft-control-bg);
+    border-color: var(--aj-border);
+    color: var(--aj-text-muted);
+  }
+
+  body[data-page="events"]
+  #events-filters-form
+  #chipClear:hover:not(:disabled) {
+    background: var(--aj-soft-control-hover);
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="events"]
+  #events-filters-form
+  #chipClear:focus-visible {
+    outline: 3px solid var(--aj-focus);
+    outline-offset: 3px;
+  }
+
+  body[data-page="events"] .events-upcoming-title {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="events"] .events-categories {
+    background: var(--aj-surface);
+  }
+
+  body[data-page="events"] .events-categories h3,
+  body[data-page="events"] .events-benefits h3 {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="events"] .events-categories .category-card {
+    background: var(--aj-surface-elevated);
+    box-shadow: var(--aj-card-shadow);
+  }
+
+  body[data-page="events"] .events-categories .category-card:hover,
+  body[data-page="events"] .events-categories .category-card:focus,
+  body[data-page="events"]
+  .events-categories
+  .category-card[aria-pressed="true"] {
+    background: var(--aj-surface-hover);
+    box-shadow: var(--aj-card-shadow-hover);
+  }
+
+  body[data-page="events"] .events-categories .category-card span {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="events"] .events-benefits {
+    background: var(--aj-surface-soft);
+  }
+
+  body[data-page="events"] .events-benefits .benefit {
+    background: var(--aj-surface-elevated);
+    color: var(--aj-text-strong);
+    box-shadow: var(--aj-card-shadow);
+  }
+
+
+  /* =======================================================
+     SHARED EVENT CARDS
+  ======================================================= */
+
+  body:is([data-page="home"], [data-page="events"]) .event-card {
+    background: var(--aj-surface-elevated);
+    box-shadow: var(--aj-card-shadow);
+  }
+
+  body:is([data-page="home"], [data-page="events"]) .event-card:hover {
+    box-shadow: var(--aj-card-shadow-hover);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .event-card
+  .event-title {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="home"] .event-card .event-date {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="events"] .event-card .event-date {
+    color: #72c5ff;
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .event-card
+  .event-description {
+    color: var(--aj-text-secondary);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .event-card
+  .event-img {
+    background: var(--aj-media-placeholder);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .btn-event.demo {
+    background: var(--aj-soft-control-bg);
+    color: var(--aj-text-secondary);
+    border-color: var(--aj-border-strong);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .btn-event.demo:hover {
+    background: var(--aj-soft-control-hover);
+  }
+
+
+  /* =======================================================
+     HOMEPAGE FILTER RESULT STATES
+  ======================================================= */
+
+  body[data-page="home"]
+  #events-filters-form
+  #chipClear {
+    background: var(--aj-soft-control-bg);
+    border-color: var(--aj-border);
+    color: var(--aj-text-muted);
+  }
+
+  body[data-page="home"]
+  #events-filters-form
+  #chipClear:hover:not(:disabled) {
+    background: var(--aj-soft-control-hover);
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="home"] .events-results-count {
+    color: var(--aj-text-secondary);
+  }
+
+  html body[data-page="home"]
+  .events-results-count.is-home-preview
+  .events-results-count__text {
+    color: var(--aj-text-secondary);
+  }
+
+  html body[data-page="home"]
+  .events-results-count.is-home-preview
+  .events-results-count__cta.btn-primary {
+    background: var(--aj-soft-control-bg);
+    color: var(--aj-text-strong);
+    border: 1px solid var(--aj-border);
+    box-shadow: var(--aj-card-shadow);
+  }
+
+  html body[data-page="home"]
+  .events-results-count.is-home-preview
+  .events-results-count__cta.btn-primary:hover {
+    background: var(--aj-soft-control-hover);
+    color: var(--aj-text-strong);
+    text-decoration: none;
+  }
+
+  html body[data-page="home"]
+  .events-results-count.is-home-preview
+  .events-results-count__cta.btn-primary:focus-visible {
+    outline: 3px solid var(--aj-focus);
+    outline-offset: 3px;
+  }
+
+  body[data-page="home"]
+  .event-demo-badge.hp-banner:not(.hp-banner--london-musicals)
+  :is(.hp-banner__title, .ib-text) {
+    color: var(--aj-text-strong);
+  }
+
+  body[data-page="home"]
+  .event-demo-badge.hp-banner:not(.hp-banner--london-musicals)
+  .hp-banner__body {
+    color: var(--aj-text-secondary);
+  }
+
+  body[data-page="home"]
+  .event-demo-badge.hp-banner:not(.hp-banner--london-musicals)
+  :is(.hp-banner__icon, .ib-icon) {
+    background: var(--aj-soft-control-bg);
+    border-color: var(--aj-border);
+  }
+
+  body[data-page="home"]
+  .event-demo-badge.hp-banner:not(.hp-banner--london-musicals)
+  :is(.hp-banner__cta, .ib-cta) {
+    background: var(--aj-soft-control-bg);
+    border-color: var(--aj-border);
+    color: #72c5ff;
+    box-shadow: var(--aj-card-shadow);
+  }
+
+
+  /* =======================================================
+     LOAD MORE / SKELETON
+  ======================================================= */
+
+  body:is([data-page="home"], [data-page="events"])
+  .events-load-more-wrap
+  .btn.btn-secondary {
+    background: var(--aj-soft-control-bg);
+    color: var(--aj-text-strong);
+    box-shadow: var(--aj-card-shadow);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .events-load-more-wrap
+  .btn.btn-secondary:hover {
+    background: var(--aj-soft-control-hover);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .event-card.skeleton
+  .ph-img,
+  body:is([data-page="home"], [data-page="events"])
+  .event-card.skeleton
+  .ph-line {
+    background:
+      linear-gradient(
+        90deg,
+        var(--aj-skeleton-base),
+        var(--aj-skeleton-highlight),
+        var(--aj-skeleton-base)
+      );
+    background-size: 200% 100%;
+  }
+
+
+  /* =======================================================
+     EVENT MODAL
+  ======================================================= */
+
+  body:is([data-page="home"], [data-page="events"])
+  .event-modal-content {
+    background: var(--aj-surface-elevated);
+    color: var(--aj-text);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.48);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .event-modal-close {
+    background: var(--aj-soft-control-bg);
+    color: var(--aj-text-strong);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .event-modal-close:hover,
+  body:is([data-page="home"], [data-page="events"])
+  .event-modal-close:focus {
+    background: var(--aj-soft-control-hover);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .modal-date-location,
+  body:is([data-page="home"], [data-page="events"])
+  .modal-description {
+    color: var(--aj-text-secondary);
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .modal-category {
+    color: #72c5ff;
+  }
+
+  body:is([data-page="home"], [data-page="events"])
+  .modal-demo-note {
+    background: rgba(85, 185, 255, 0.1);
+    color: #bfe2ff;
+    border-left-color: #55b9ff;
+  }
+}

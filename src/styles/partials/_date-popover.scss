@@ -8,19 +8,16 @@
   --ajsee-date-panel-z: calc(var(--ajsee-popover-z, 10040) + 1);
   --ajsee-date-panel-backdrop-z: var(--ajsee-popover-overlay-z, 10030);
 
-  --ajsee-date-panel-bg: rgba(255, 255, 255, 0.98);
-  --ajsee-date-panel-brd: rgba(207, 220, 235, 0.95);
-  --ajsee-date-panel-shadow:
-    0 24px 48px rgba(12, 36, 80, 0.16),
-    0 4px 14px rgba(12, 36, 80, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  --ajsee-date-panel-bg: var(--aj-date-panel-bg);
+  --ajsee-date-panel-brd: var(--aj-date-panel-border);
+  --ajsee-date-panel-shadow: var(--aj-date-panel-shadow);
 
   --ajsee-date-panel-radius: 24px;
-  --ajsee-date-ink: #102840;
-  --ajsee-date-ink-soft: #6b7f97;
+  --ajsee-date-ink: var(--aj-date-text);
+  --ajsee-date-ink-soft: var(--aj-date-text-soft);
   --ajsee-date-accent: #0e88f0;
   --ajsee-date-accent-strong: #2b63db;
-  --ajsee-date-border-soft: rgba(226, 235, 245, 0.96);
+  --ajsee-date-border-soft: var(--aj-date-border-soft);
 
   --ajsee-date-desktop-width: 640px;
   --ajsee-date-desktop-cell: 40px;
@@ -30,18 +27,6 @@
   --ajsee-date-mobile-gap: 8px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ajsee-date-panel-bg: rgba(14, 22, 35, 0.96);
-    --ajsee-date-panel-brd: rgba(255, 255, 255, 0.12);
-    --ajsee-date-panel-shadow:
-      0 30px 60px rgba(0, 0, 0, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --ajsee-date-ink: #eef4ff;
-    --ajsee-date-ink-soft: #aebed3;
-    --ajsee-date-border-soft: rgba(255, 255, 255, 0.1);
-  }
-}
 
 body.ajsee-date-sheet-open {
   position: fixed;
@@ -85,7 +70,7 @@ body.ajsee-date-sheet-open {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 24%);
+  background: var(--aj-date-sheen);
   pointer-events: none;
   z-index: 0;
 }

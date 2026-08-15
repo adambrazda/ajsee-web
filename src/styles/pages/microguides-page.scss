@@ -5,6 +5,7 @@
 // Obsahuje pouze společné UI + styly potřebné pro microguides detail/listing.
 
 @use '../globals' as *;
+@use '../utils/theme';
 @use '../utils/reset';
 
 @use '../partials/layout';

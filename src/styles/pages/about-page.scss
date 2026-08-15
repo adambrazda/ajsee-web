@@ -1,10 +1,11 @@
-﻿// ------------------------------------------------------
+// ------------------------------------------------------
 // AJSEE – About page SCSS entry point
 // ------------------------------------------------------
 // Cíl: netahat na About stránku celý globální main.scss bundle.
 // Obsahuje pouze společné UI + styly potřebné pro about.html.
 
 @use '../globals' as *;
+@use '../utils/theme';
 @use '../utils/reset';
 
 @use '../partials/layout';

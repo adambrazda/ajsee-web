@@ -13,7 +13,7 @@
   h2 {
     text-align: center;
     font-size: 2.1rem;
-    color: #184469;
+    color: var(--aj-home-blog-title, #184469);
     margin-bottom: 2.2rem;
     font-weight: 800;
     letter-spacing: -0.7px;
@@ -91,14 +91,14 @@
       h3 {
         font-size: 1.17rem;
         font-weight: 800;
-        color: #184469;
+        color: var(--aj-home-blog-title, #184469);
         margin-bottom: 0.5rem;
         letter-spacing: -0.3px;
         line-height: 1.24;
       }
 
       p {
-        color: #334b69;
+        color: var(--aj-home-blog-text, #334b69);
         font-size: 1.04rem;
         margin-bottom: 0.8rem;
         flex: 1 1 0;
@@ -137,7 +137,7 @@
     .blog-card-title {
       font-size: 1.17rem;
       font-weight: 800;
-      color: #184469;
+      color: var(--aj-home-blog-title, #184469);
       margin-bottom: 0.5rem;
       letter-spacing: -0.3px;
       line-height: 1.24;

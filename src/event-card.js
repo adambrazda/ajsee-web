@@ -463,9 +463,9 @@ export function ensureSharedEventGridStyles(
       min-height: 24px;
       padding: 5px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(10, 61, 98, 0.12);
-      background: rgba(10, 61, 98, 0.045);
-      color: #0a3d62;
+      border: 1px solid var(--aj-provider-badge-border, rgba(10, 61, 98, 0.12));
+      background: var(--aj-provider-badge-bg, rgba(10, 61, 98, 0.045));
+      color: var(--aj-provider-badge-text, #0a3d62);
       font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.02em;
@@ -473,15 +473,15 @@ export function ensureSharedEventGridStyles(
     }
 
     .event-card[data-event-provider="smsticket"] .event-partner-badge span {
-      background: rgba(92, 70, 255, 0.08);
-      border-color: rgba(92, 70, 255, 0.16);
-      color: #342f75;
+      background: var(--aj-provider-smsticket-bg, rgba(92, 70, 255, 0.08));
+      border-color: var(--aj-provider-smsticket-border, rgba(92, 70, 255, 0.16));
+      color: var(--aj-provider-smsticket-text, #342f75);
     }
 
     .event-card[data-event-provider="ticketmaster"] .event-partner-badge span {
-      background: rgba(0, 116, 224, 0.08);
-      border-color: rgba(0, 116, 224, 0.16);
-      color: #064c9b;
+      background: var(--aj-provider-ticketmaster-bg, rgba(0, 116, 224, 0.08));
+      border-color: var(--aj-provider-ticketmaster-border, rgba(0, 116, 224, 0.16));
+      color: var(--aj-provider-ticketmaster-text, #064c9b);
     }
 
     .event-card .event-img {

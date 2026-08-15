@@ -3,6 +3,7 @@
 // ------------------------------------------------------
 
 @use '../globals' as *;
+@use '../utils/theme';
 @use '../utils/reset';
 
 @use '../partials/layout';
@@ -17,6 +18,7 @@
 @use '../partials/cookie-consent';
 @use '../partials/tablet-responsive-fix';
 @use '../partials/filters-parity-final';
+@use '../partials/theme-event-shell';
 
 // Page-level globals previously provided by main.scss
 html,

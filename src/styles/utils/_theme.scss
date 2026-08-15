@@ -1,0 +1,580 @@
+/* =========================================================
+   AJSEE THEME SYSTEM V1
+   Semantic color tokens for theme-aware components.
+========================================================= */
+
+:root {
+  --aj-theme: light;
+
+  /* Core */
+  --aj-page-bg: #f9f9f9;
+  --aj-surface: #ffffff;
+  --aj-surface-soft: #f5f9fc;
+  --aj-surface-elevated: #ffffff;
+
+  --aj-text: #22223b;
+  --aj-text-strong: #10283f;
+  --aj-text-secondary: #647b91;
+  --aj-text-muted: #7e93ac;
+
+  --aj-border: rgba(224, 235, 245, 0.92);
+  --aj-border-strong: #ccddee;
+  --aj-focus: #0077cc;
+
+  /* Shared page surfaces */
+  --aj-surface-hover: #eef7ff;
+  --aj-media-placeholder: #eaf6fb;
+
+  --aj-card-shadow: 0 2px 12px rgba(0, 119, 204, 0.09);
+  --aj-card-shadow-hover: 0 8px 30px rgba(0, 119, 204, 0.14);
+
+  --aj-soft-control-bg: #eef4fb;
+  --aj-soft-control-hover: #e2edf9;
+
+  --aj-skeleton-base: #eef3f8;
+  --aj-skeleton-highlight: #f6f9fc;
+
+  --aj-events-hero-bg:
+    linear-gradient(120deg, #e9f3ff 0%, #eaf8fa 100%);
+
+  --aj-home-promo-bg:
+    radial-gradient(
+      circle at 12% 24%,
+      rgba(20, 194, 197, 0.18),
+      transparent 16rem
+    ),
+    linear-gradient(
+      135deg,
+      rgba(234, 252, 255, 0.96),
+      rgba(247, 252, 255, 0.92)
+    );
+
+  --aj-home-promo-icon-bg:
+    linear-gradient(135deg, #eafcff, #d6f7fb);
+
+  --aj-home-promo-title: #06192b;
+  --aj-home-promo-body: rgba(16, 32, 51, 0.72);
+
+  --aj-home-muted-banner-bg: rgba(255, 255, 255, 0.68);
+  --aj-home-muted-banner-border: rgba(14, 107, 168, 0.16);
+
+  /* Shared content + forms */
+  --aj-accent-text: #0077cc;
+
+  --aj-form-panel-bg: #ffffff;
+  --aj-form-control-bg: #f8fbff;
+  --aj-form-control-hover: #fbfdff;
+  --aj-form-control-focus: #ffffff;
+  --aj-form-control-text: #22223b;
+  --aj-form-placeholder: #7f8b99;
+  --aj-form-border: rgba(0, 119, 204, 0.16);
+  --aj-form-border-hover: rgba(0, 119, 204, 0.28);
+
+  --aj-form-error-bg: #fff7f7;
+  --aj-form-error-text: #9b1c1c;
+  --aj-form-error-border: rgba(228, 90, 90, 0.24);
+
+  --aj-form-success-bg: #edfdf7;
+  --aj-form-success-text: #0f6149;
+  --aj-form-success-border: #bdebd9;
+
+  /* About page */
+  --aj-about-hero-bg:
+    linear-gradient(120deg, #f2f8fd 0%, #d3e6f8 100%);
+  --aj-about-story-bg: #ffffff;
+  --aj-about-future-bg:
+    linear-gradient(120deg, #f8fcff 0%, #e9f3ff 100%);
+  --aj-about-team-bg:
+    linear-gradient(120deg, #f8fcff 0%, #e1f5fb 100%);
+
+  --aj-about-heading: #0077cc;
+  --aj-about-text: #184469;
+  --aj-about-text-neutral: #222244;
+  --aj-about-strong: #000000;
+  --aj-about-accent: #0f9aa0;
+
+  --aj-about-card-bg: #ffffff;
+  --aj-about-card-text: #184469;
+  --aj-about-card-secondary: #334b69;
+
+  --aj-about-photo-border: #ffffff;
+  --aj-about-photo-bg: #e1f5fb;
+  --aj-about-icon-bg: #eaf5fc;
+
+  --aj-about-route-bg-start: #ffffff;
+  --aj-about-route-bg-1: #eaf6ff;
+  --aj-about-route-bg-2: #dff1ff;
+
+  /* Event provider badges */
+  --aj-provider-badge-bg: rgba(10, 61, 98, 0.045);
+  --aj-provider-badge-border: rgba(10, 61, 98, 0.12);
+  --aj-provider-badge-text: #0a3d62;
+
+  --aj-provider-smsticket-bg: rgba(92, 70, 255, 0.08);
+  --aj-provider-smsticket-border: rgba(92, 70, 255, 0.16);
+  --aj-provider-smsticket-text: #342f75;
+
+  --aj-provider-ticketmaster-bg: rgba(0, 116, 224, 0.08);
+  --aj-provider-ticketmaster-border: rgba(0, 116, 224, 0.16);
+  --aj-provider-ticketmaster-text: #064c9b;
+
+  /* Event detail modal */
+  --aj-modal-bg: rgba(255, 255, 255, 0.98);
+  --aj-modal-border: rgba(217, 225, 239, 0.95);
+  --aj-modal-shadow: 0 28px 80px rgba(9, 30, 66, 0.28);
+
+  --aj-modal-title: #102033;
+  --aj-modal-meta: #526071;
+  --aj-modal-description: #344054;
+  --aj-modal-secondary: #667085;
+  --aj-modal-category: #667085;
+
+  --aj-modal-close-bg: rgba(255, 255, 255, 0.92);
+  --aj-modal-close-text: #14213d;
+  --aj-modal-image-bg: #eef5ff;
+
+  --aj-modal-control-bg: #ffffff;
+  --aj-modal-control-hover: #f5f9fd;
+  --aj-modal-control-border: rgba(10, 61, 98, 0.18);
+  --aj-modal-control-border-hover: rgba(10, 61, 98, 0.32);
+  --aj-modal-control-text: #0a3d62;
+
+  /* Events announcement / TrustedStays */
+  --aj-events-info-banner-bg:
+    radial-gradient(120% 120% at 0% 0%, #f5fbff 0%, #eef7ff 40%, #ffffff 100%);
+  --aj-events-info-banner-border: rgba(7, 38, 77, 0.09);
+  --aj-events-info-banner-shadow: 0 10px 30px rgba(8, 60, 130, 0.08);
+  --aj-events-info-banner-text: #0d2235;
+  --aj-events-info-banner-accent: #0b74e5;
+  --aj-events-info-banner-accent-hover: #085ab5;
+
+  /* Events pagination */
+  --aj-pager-status: #667085;
+  --aj-pager-button-bg: #ffffff;
+  --aj-pager-button-text: #0a3d62;
+  --aj-pager-button-border: rgba(10, 61, 98, 0.16);
+  --aj-pager-button-shadow: 0 8px 20px rgba(9, 30, 66, 0.06);
+  --aj-pager-button-shadow-hover: 0 12px 28px rgba(9, 30, 66, 0.10);
+  --aj-pager-primary-bg: #0a3d62;
+  --aj-pager-primary-text: #ffffff;
+  --aj-pager-primary-border: #0a3d62;
+
+  /*
+     Legacy filter compatibility.
+     These values intentionally preserve the existing LIGHT appearance
+     while the old filter layer is migrated to semantic tokens.
+  */
+  --aj-filter-legacy-bg: rgba(255, 255, 255, 0.62);
+  --aj-filter-legacy-border: rgba(255, 255, 255, 0.5);
+  --aj-filter-legacy-border-2: rgba(13, 30, 60, 0.08);
+  --aj-filter-legacy-shadow:
+    0 24px 48px rgba(12, 36, 80, 0.12),
+    0 2px 6px rgba(12, 36, 80, 0.06);
+
+  --aj-filter-ink-1: #071a2b;
+  --aj-filter-ink-2: #173a62;
+  --aj-filter-ink-3: #6a86a8;
+
+  --aj-filter-option-bg: #ffffff;
+  --aj-filter-option-text: #071a2b;
+
+  --aj-filter-vendor-border: rgba(13, 30, 60, 0.1);
+  --aj-filter-vendor-outline: rgba(13, 30, 60, 0.08);
+
+  --aj-filter-typeahead-border: rgba(13, 30, 60, 0.1);
+  --aj-filter-typeahead-bg:
+    radial-gradient(
+      60% 80% at 30% 0%,
+      rgba(255, 255, 255, 0.55),
+      transparent 60%
+    ),
+    rgba(255, 255, 255, 0.92);
+  --aj-filter-typeahead-shadow:
+    0 24px 48px rgba(12, 36, 80, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --aj-filter-typeahead-hover:
+    color-mix(in oklab, #0b5ed7 10%, #fff 90%);
+
+  /* Event filter shell */
+  --aj-filter-panel-bg:
+    linear-gradient(
+      180deg,
+      rgba(248, 252, 255, 0.98) 0%,
+      rgba(242, 248, 253, 0.96) 100%
+    );
+  --aj-filter-panel-border: rgba(224, 235, 245, 0.92);
+  --aj-filter-panel-shadow:
+    0 20px 44px rgba(12, 36, 80, 0.08),
+    0 2px 10px rgba(12, 36, 80, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  --aj-filter-label-text: #456a8f;
+
+  /* Filter controls */
+  --aj-filter-control-surface:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(250, 253, 255, 0.98)
+    ) padding-box,
+    linear-gradient(
+      135deg,
+      #dfeaf7,
+      #edf4fb
+    ) border-box;
+
+  --aj-filter-control-text: #173a62;
+  --aj-filter-control-muted: #7e93ac;
+  --aj-filter-control-shadow:
+    0 12px 24px rgba(12, 36, 80, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  /* Quick filters */
+  --aj-filter-chip-bg: #f4f8ff;
+  --aj-filter-chip-text: #0b2640;
+  --aj-filter-chip-shadow: 0 8px 18px rgba(12, 36, 80, 0.1);
+
+  --aj-filter-segment-bg: #eef3fb;
+
+  /* Legacy glass tokens mapped through the theme */
+  --aj-filter-glass-bg:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.85),
+      rgba(255, 255, 255, 0.72)
+    );
+  --aj-filter-glass-border:
+    linear-gradient(
+      135deg,
+      #e7f0ff,
+      #f6f9ff
+    );
+  --aj-filter-glass-shadow:
+    0 10px 24px rgba(12, 36, 80, 0.15),
+    0 1px 0 rgba(255, 255, 255, 0.7) inset;
+
+  /* Events filter summary */
+  --aj-filter-summary-text: #173a62;
+  --aj-filter-summary-clear: #0b5ed7;
+  --aj-filter-summary-clear-hover: rgba(14, 136, 240, 0.08);
+
+  --aj-filter-summary-chip-bg:
+    linear-gradient(180deg, #ffffff, #f4f9ff);
+  --aj-filter-summary-chip-border: rgba(14, 136, 240, 0.2);
+  --aj-filter-summary-chip-border-hover: rgba(14, 136, 240, 0.38);
+  --aj-filter-summary-chip-hover: #eef7ff;
+  --aj-filter-summary-chip-text: #173a62;
+  --aj-filter-summary-chip-remove-bg: rgba(14, 136, 240, 0.1);
+
+  --aj-filter-focus-outline: rgba(14, 136, 240, 0.28);
+
+  /* Date popover */
+  --aj-date-panel-bg: rgba(255, 255, 255, 0.98);
+  --aj-date-panel-border: rgba(207, 220, 235, 0.95);
+  --aj-date-panel-shadow:
+    0 24px 48px rgba(12, 36, 80, 0.16),
+    0 4px 14px rgba(12, 36, 80, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
+  --aj-date-text: #102840;
+  --aj-date-text-soft: #6b7f97;
+  --aj-date-border-soft: rgba(226, 235, 245, 0.96);
+
+  --aj-date-sheen:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0) 24%
+    );
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --aj-theme: dark;
+
+    /* Core */
+    --aj-page-bg: #09131f;
+    --aj-surface: #101c2a;
+    --aj-surface-soft: #132131;
+    --aj-surface-elevated: #172535;
+
+    --aj-text: #f3f7fb;
+    --aj-text-strong: #f3f7fb;
+    --aj-text-secondary: #b3c2d2;
+    --aj-text-muted: #9eafc1;
+
+    --aj-border: rgba(255, 255, 255, 0.12);
+    --aj-border-strong: rgba(255, 255, 255, 0.18);
+    --aj-focus: #55b9ff;
+
+    /* Shared page surfaces */
+    --aj-surface-hover: #1a3044;
+    --aj-media-placeholder: #192b3d;
+
+    --aj-card-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+    --aj-card-shadow-hover: 0 14px 36px rgba(0, 0, 0, 0.34);
+
+    --aj-soft-control-bg: #1a2c3e;
+    --aj-soft-control-hover: #22394f;
+
+    --aj-skeleton-base: #172638;
+    --aj-skeleton-highlight: #213349;
+
+    --aj-events-hero-bg:
+      linear-gradient(120deg, #091725 0%, #10313a 100%);
+
+    --aj-home-promo-bg:
+      radial-gradient(
+        circle at 12% 24%,
+        rgba(20, 194, 197, 0.14),
+        transparent 16rem
+      ),
+      linear-gradient(
+        135deg,
+        rgba(15, 37, 52, 0.98),
+        rgba(13, 29, 43, 0.98)
+      );
+
+    --aj-home-promo-icon-bg:
+      linear-gradient(135deg, #153442, #174755);
+
+    --aj-home-promo-title: #f3f8fc;
+    --aj-home-promo-body: #bfd0dc;
+
+    --aj-home-muted-banner-bg: rgba(18, 34, 49, 0.9);
+    --aj-home-muted-banner-border: rgba(255, 255, 255, 0.12);
+
+    /* Shared content + forms */
+    --aj-accent-text: #72c5ff;
+
+    --aj-form-panel-bg: #172535;
+    --aj-form-control-bg: #132131;
+    --aj-form-control-hover: #1a3044;
+    --aj-form-control-focus: #1a2c3e;
+    --aj-form-control-text: #f3f7fb;
+    --aj-form-placeholder: #9eafc1;
+    --aj-form-border: rgba(255, 255, 255, 0.14);
+    --aj-form-border-hover: rgba(114, 197, 255, 0.34);
+
+    --aj-form-error-bg: #351c24;
+    --aj-form-error-text: #ffb4bd;
+    --aj-form-error-border: rgba(255, 107, 120, 0.35);
+
+    --aj-form-success-bg: #123126;
+    --aj-form-success-text: #9ee7c6;
+    --aj-form-success-border: rgba(95, 211, 160, 0.34);
+
+    /* About page */
+    --aj-about-hero-bg:
+      linear-gradient(120deg, #0b1724 0%, #123044 100%);
+    --aj-about-story-bg: var(--aj-page-bg);
+    --aj-about-future-bg:
+      linear-gradient(120deg, #0c1926 0%, #13283a 100%);
+    --aj-about-team-bg:
+      linear-gradient(120deg, #0d1c2a 0%, #12323a 100%);
+
+    --aj-about-heading: #72c5ff;
+    --aj-about-text: #c6d5e1;
+    --aj-about-text-neutral: #d7e2ec;
+    --aj-about-strong: #f3f7fb;
+    --aj-about-accent: #59dfe2;
+
+    --aj-about-card-bg: var(--aj-surface);
+    --aj-about-card-text: #d7e2ec;
+    --aj-about-card-secondary: var(--aj-text-secondary);
+
+    --aj-about-photo-border: #24384c;
+    --aj-about-photo-bg: var(--aj-media-placeholder);
+    --aj-about-icon-bg: var(--aj-soft-control-bg);
+
+    --aj-about-route-bg-start: #172f42;
+    --aj-about-route-bg-1: #102638;
+    --aj-about-route-bg-2: #16354a;
+
+    /* Event provider badges */
+    --aj-provider-badge-bg: rgba(114, 197, 255, 0.1);
+    --aj-provider-badge-border: rgba(114, 197, 255, 0.24);
+    --aj-provider-badge-text: #bfe2ff;
+
+    --aj-provider-smsticket-bg: rgba(124, 107, 255, 0.18);
+    --aj-provider-smsticket-border: rgba(154, 143, 255, 0.38);
+    --aj-provider-smsticket-text: #d5d0ff;
+
+    --aj-provider-ticketmaster-bg: rgba(0, 116, 224, 0.2);
+    --aj-provider-ticketmaster-border: rgba(80, 170, 255, 0.4);
+    --aj-provider-ticketmaster-text: #a8d7ff;
+
+    /* Event detail modal */
+    --aj-modal-bg: #172535;
+    --aj-modal-border: rgba(255, 255, 255, 0.14);
+    --aj-modal-shadow: 0 28px 80px rgba(0, 0, 0, 0.5);
+
+    --aj-modal-title: #f3f7fb;
+    --aj-modal-meta: #b3c2d2;
+    --aj-modal-description: #c6d2df;
+    --aj-modal-secondary: #aebdcb;
+    --aj-modal-category: #72c5ff;
+
+    --aj-modal-close-bg: #1a2c3e;
+    --aj-modal-close-text: #f3f7fb;
+    --aj-modal-image-bg: #192b3d;
+
+    --aj-modal-control-bg: #1a2c3e;
+    --aj-modal-control-hover: #22394f;
+    --aj-modal-control-border: rgba(255, 255, 255, 0.16);
+    --aj-modal-control-border-hover: rgba(114, 197, 255, 0.42);
+    --aj-modal-control-text: #eaf4ff;
+
+    /* Events announcement / TrustedStays */
+    --aj-events-info-banner-bg:
+      linear-gradient(135deg, #142536 0%, #172a3d 100%);
+    --aj-events-info-banner-border: rgba(255, 255, 255, 0.12);
+    --aj-events-info-banner-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
+    --aj-events-info-banner-text: #e8f0f7;
+    --aj-events-info-banner-accent: #0077cc;
+    --aj-events-info-banner-accent-hover: #005fad;
+
+    /* Events pagination */
+    --aj-pager-status: #9eafc1;
+    --aj-pager-button-bg: #1a2c3e;
+    --aj-pager-button-text: #f3f7fb;
+    --aj-pager-button-border: rgba(255, 255, 255, 0.14);
+    --aj-pager-button-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    --aj-pager-button-shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.28);
+    --aj-pager-primary-bg: #0b4f78;
+    --aj-pager-primary-text: #ffffff;
+    --aj-pager-primary-border: #176a98;
+
+    /* Homepage deferred */
+    --aj-home-blog-title: var(--aj-text-strong);
+    --aj-home-blog-text: var(--aj-text-secondary);
+
+    /* Shared footer */
+    --aj-footer-bg: var(--aj-surface);
+    --aj-footer-text: var(--aj-text-secondary);
+    --aj-footer-copy: var(--aj-text-secondary);
+    --aj-footer-link: #72c5ff;
+    --aj-footer-separator: var(--aj-text-muted);
+    --aj-footer-border: var(--aj-border);
+
+    /* Legacy filter compatibility */
+    --aj-filter-legacy-bg: rgba(17, 21, 32, 0.58);
+    --aj-filter-legacy-border: rgba(255, 255, 255, 0.08);
+    --aj-filter-legacy-border-2: rgba(255, 255, 255, 0.1);
+    --aj-filter-legacy-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.34),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+
+    --aj-filter-ink-1: #eaf0ff;
+    --aj-filter-ink-2: #d6e6ff;
+    --aj-filter-ink-3: #a6b7d7;
+
+    --aj-filter-option-bg: #0b1220;
+    --aj-filter-option-text: #e6f0ff;
+
+    --aj-filter-vendor-border: rgba(255, 255, 255, 0.1);
+    --aj-filter-vendor-outline: rgba(255, 255, 255, 0.08);
+
+    --aj-filter-typeahead-border: rgba(255, 255, 255, 0.1);
+    --aj-filter-typeahead-bg:
+      radial-gradient(
+        60% 80% at 30% 0%,
+        rgba(255, 255, 255, 0.08),
+        transparent 60%
+      ),
+      rgba(15, 23, 42, 0.72);
+    --aj-filter-typeahead-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --aj-filter-typeahead-hover: rgba(255, 255, 255, 0.08);
+
+    /* Event filter shell */
+    --aj-filter-panel-bg:
+      linear-gradient(
+        180deg,
+        rgba(17, 29, 43, 0.98) 0%,
+        rgba(12, 23, 36, 0.98) 100%
+      );
+    --aj-filter-panel-border: rgba(255, 255, 255, 0.12);
+    --aj-filter-panel-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.34),
+      0 2px 10px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+    --aj-filter-label-text: #aebed0;
+
+    /* Filter controls */
+    --aj-filter-control-surface:
+      linear-gradient(
+        rgba(22, 37, 54, 0.98),
+        rgba(18, 31, 47, 0.98)
+      ) padding-box,
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18),
+        rgba(255, 255, 255, 0.08)
+      ) border-box;
+
+    --aj-filter-control-text: #f3f7fb;
+    --aj-filter-control-muted: #aebed0;
+    --aj-filter-control-shadow:
+      0 14px 28px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+    /* Quick filters */
+    --aj-filter-chip-bg: #17283a;
+    --aj-filter-chip-text: #eef6ff;
+    --aj-filter-chip-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+
+    --aj-filter-segment-bg: #162536;
+
+    --aj-filter-glass-bg:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.06)
+      );
+    --aj-filter-glass-border:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18),
+        rgba(255, 255, 255, 0.1)
+      );
+    --aj-filter-glass-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.4),
+      0 1px 0 rgba(255, 255, 255, 0.06) inset;
+
+    /* Events filter summary */
+    --aj-filter-summary-text: #eef6ff;
+    --aj-filter-summary-clear: #72c5ff;
+    --aj-filter-summary-clear-hover: rgba(85, 185, 255, 0.12);
+
+    --aj-filter-summary-chip-bg:
+      linear-gradient(180deg, #17283a, #132335);
+    --aj-filter-summary-chip-border: rgba(85, 185, 255, 0.24);
+    --aj-filter-summary-chip-border-hover: rgba(85, 185, 255, 0.46);
+    --aj-filter-summary-chip-hover: #1b3045;
+    --aj-filter-summary-chip-text: #eef6ff;
+    --aj-filter-summary-chip-remove-bg: rgba(85, 185, 255, 0.14);
+
+    --aj-filter-focus-outline: rgba(85, 185, 255, 0.38);
+
+    /* Date popover */
+    --aj-date-panel-bg: rgba(14, 22, 35, 0.98);
+    --aj-date-panel-border: rgba(255, 255, 255, 0.12);
+    --aj-date-panel-shadow:
+      0 30px 60px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+    --aj-date-text: #eef4ff;
+    --aj-date-text-soft: #aebed3;
+    --aj-date-border-soft: rgba(255, 255, 255, 0.1);
+
+    --aj-date-sheen:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.07),
+        rgba(255, 255, 255, 0) 24%
+      );
+  }
+}

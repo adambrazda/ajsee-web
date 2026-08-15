@@ -19,7 +19,7 @@
 
   <style>
     :root {
-      color-scheme: light;
+      color-scheme: light dark;
 
       --page-background: #eef8ff;
       --page-highlight: #c8f7f9;
@@ -325,6 +325,73 @@
       color: var(--accent-dark);
       font-weight: 700;
       text-underline-offset: 0.2em;
+    }
+
+    /* AJSEE_UTILITY_DARK_404_V1 */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --page-background: #09131f;
+        --page-highlight: #12313b;
+
+        --surface: rgba(16, 28, 42, 0.96);
+        --surface-border: rgba(255, 255, 255, 0.12);
+
+        --text-strong: #f3f7fb;
+        --text-body: #c3d0dc;
+        --text-muted: #9eafc1;
+
+        --accent: #20c8cf;
+        --accent-dark: #72d7dc;
+        --accent-soft: rgba(20, 194, 197, 0.14);
+
+        --shadow:
+          0 1.5rem 4rem rgba(0, 0, 0, 0.36);
+      }
+
+      body {
+        background:
+          radial-gradient(
+            circle at 12% 8%,
+            rgba(20, 194, 197, 0.13),
+            transparent 24rem
+          ),
+          radial-gradient(
+            circle at 92% 92%,
+            rgba(73, 159, 226, 0.12),
+            transparent 26rem
+          ),
+          linear-gradient(
+            145deg,
+            #0c1825 0%,
+            var(--page-background) 52%,
+            var(--page-highlight) 130%
+          );
+      }
+
+      .brand-logo {
+        padding: 0.15rem;
+        border-radius: 0.5rem;
+        background: #bff4f7;
+      }
+
+      .skip-link {
+        background: #172535;
+        color: var(--text-strong);
+      }
+
+      .eyebrow {
+        border-color: rgba(114, 215, 220, 0.28);
+      }
+
+      .button-secondary {
+        border-color: rgba(114, 215, 220, 0.3);
+        background: #101c2a;
+        color: #b8f4f5;
+      }
+
+      .button-secondary:hover {
+        background: var(--accent-soft);
+      }
     }
 
     @media (max-width: 36rem) {

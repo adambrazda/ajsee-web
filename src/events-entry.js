@@ -2108,21 +2108,6 @@ function renderEventsStateMessage(kind = 'rateLimit') {
   }
 }
 
-function bindTicketmasterRateLimitEvents() {
-  const handler = () => {
-    if (!isEventsPage() && !qs('#eventsList')) return;
-    _lastFetchSig = '';
-    resetEventsPager(eventsPager.filterSig);
-    renderEventsStateMessage('rateLimit');
-  };
-
-  [
-    'ajsee:ticketmaster-rate-limit',
-    'ajsee:ticketmaster-rate-limited',
-    'AJSEE:ticketmaster-rate-limit',
-    'AJSEE:ticketmaster-rate-limited'
-  ].forEach(type => wireOnce(window, type, handler, `tm-rate-event-${type}`));
-}
 
 /* ───────── i18n ───────── */
 function deepMerge(a = {}, b = {}) {
@@ -5027,7 +5012,6 @@ async function bootstrapMain() {
   forceInlineFilters();
   initEventsScrollGuard();
   fixHomeBlog();
-  bindTicketmasterRateLimitEvents();
 
   currentLang = getUILang();
   setLangCookie(currentLang);

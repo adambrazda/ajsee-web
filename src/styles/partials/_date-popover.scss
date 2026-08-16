@@ -1099,3 +1099,155 @@ body.ajsee-date-sheet-open {
     min-width: 66px;
   }
 }
+
+/* AJSEE_DARK_DATE_POPOVER_V1 */
+@media (prefers-color-scheme: dark) {
+  .ajsee-date-popover__backdrop {
+    background: rgba(2, 8, 16, 0.68);
+  }
+
+  .ajsee-date-popover__surface {
+    color: var(--ajsee-date-ink);
+    background:
+      radial-gradient(
+        circle at top left,
+        rgba(20, 194, 197, 0.08),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at top right,
+        rgba(14, 136, 240, 0.12),
+        transparent 32%
+      ),
+      var(--ajsee-date-panel-bg);
+
+    border-color: var(--ajsee-date-panel-brd);
+    box-shadow: var(--ajsee-date-panel-shadow);
+  }
+
+  .ajsee-date-popover__surface::before {
+    background: var(--aj-date-sheen);
+  }
+
+  .ajsee-date-popover__grab {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .ajsee-date-popover__close,
+  .ajsee-date-popover__nav,
+  .ajsee-date-popover__btn--ghost {
+    color: var(--ajsee-date-ink);
+    background: var(--aj-surface-soft);
+    border-color: var(--ajsee-date-border-soft);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .ajsee-date-popover__close:hover,
+  .ajsee-date-popover__close:focus-visible,
+  .ajsee-date-popover__nav:hover,
+  .ajsee-date-popover__nav:focus-visible,
+  .ajsee-date-popover__btn--ghost:hover,
+  .ajsee-date-popover__btn--ghost:focus-visible {
+    color: var(--ajsee-date-ink);
+    background: var(--aj-surface-hover);
+  }
+
+  .ajsee-date-popover__close:focus-visible,
+  .ajsee-date-popover__nav:focus-visible,
+  .ajsee-date-popover__btn:focus-visible {
+    outline: 2px solid var(--aj-focus);
+    outline-offset: 2px;
+  }
+
+  .ajsee-date-popover__field input {
+    color-scheme: dark;
+    color: var(--ajsee-date-ink);
+    background: var(--aj-surface-soft);
+    border-color: var(--ajsee-date-border-soft);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .ajsee-date-popover__field input:focus {
+    background: var(--aj-surface-elevated);
+    border-color: var(--aj-focus);
+    outline: none;
+    box-shadow:
+      0 0 0 4px rgba(85, 185, 255, 0.16);
+  }
+
+  .ajsee-date-popover__day {
+    color: var(--ajsee-date-ink);
+    background: rgba(255, 255, 255, 0.045);
+    border-color: var(--ajsee-date-border-soft);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  }
+
+  .ajsee-date-popover__day:hover {
+    color: var(--ajsee-date-ink);
+    background: var(--aj-surface-hover);
+    border-color: rgba(85, 185, 255, 0.24);
+    box-shadow: none;
+  }
+
+  .ajsee-date-popover__day:focus-visible {
+    outline: 2px solid var(--aj-focus);
+    outline-offset: 2px;
+  }
+
+  .ajsee-date-popover__day.is-disabled {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .ajsee-date-popover__day.is-in-range {
+    color: var(--ajsee-date-ink);
+    background: rgba(85, 185, 255, 0.16);
+    border-color: rgba(85, 185, 255, 0.28);
+  }
+
+  .ajsee-date-popover__day.is-start,
+  .ajsee-date-popover__day.is-end {
+    color: #fff;
+    background:
+      linear-gradient(
+        180deg,
+        var(--ajsee-date-accent),
+        var(--ajsee-date-accent-strong)
+      );
+
+    border-color: transparent;
+    box-shadow:
+      0 12px 22px rgba(14, 136, 240, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .ajsee-date-popover__actions {
+    color: var(--ajsee-date-ink);
+    background:
+      color-mix(
+        in oklab,
+        var(--ajsee-date-panel-bg) 92%,
+        transparent
+      );
+
+    border-top-color: var(--ajsee-date-border-soft);
+  }
+
+  .ajsee-date-popover__btn {
+    color: var(--ajsee-date-ink);
+  }
+
+  .ajsee-date-popover__btn--primary {
+    color: #fff;
+    border-color: transparent;
+    background:
+      linear-gradient(
+        180deg,
+        var(--ajsee-date-accent),
+        var(--ajsee-date-accent-strong)
+      );
+  }
+}

@@ -1644,3 +1644,23 @@ body[data-page="events"] #events-city-filter[data-autofromnearme="1"] {
     font-size: 13px;
   }
 }
+
+/* AJSEE_DARK_FILTER_CONTROLS_V2 */
+@media (prefers-color-scheme: dark) {
+  :where(.events-filters.filter-dock, form.filter-dock) input[type="date"] {
+    color-scheme: dark;
+  }
+
+  :where(.events-filters.filter-dock, form.filter-dock) input.styled-input:focus,
+  :where(.events-filters.filter-dock, form.filter-dock) select.styled-select:focus,
+  :where(.events-filters.filter-dock, form.filter-dock) input[type="date"]:focus,
+  :where(.events-filters.filter-dock, form.filter-dock) input[type="search"]:focus,
+  :where(.events-filters.filter-dock, form.filter-dock) input[type="text"]:focus {
+    color: var(--aj-filter-control-text);
+    background: var(--aj-filter-control-surface);
+    border-color: transparent;
+    box-shadow:
+      0 0 0 6px var(--aj-filter-focus-outline),
+      var(--aj-filter-control-shadow);
+  }
+}

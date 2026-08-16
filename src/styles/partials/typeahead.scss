@@ -688,3 +688,159 @@ body.city-picker-open {
     color: var(--aj-text-secondary);
   }
 }
+
+/* AJSEE_MOBILE_CITY_PICKER_UX_V1 */
+@media (max-width: 720px) {
+  html body .city-sheet {
+    gap: 0.7rem;
+    padding:
+      0.65rem
+      1rem
+      calc(1rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  html body .city-sheet__grab {
+    width: 44px;
+    height: 4px;
+    margin: 0.1rem auto 0.25rem;
+  }
+
+  html body .city-sheet__header {
+    gap: 0.75rem;
+    padding: 0;
+    margin: 0;
+    align-items: center;
+  }
+
+  html body .city-sheet__title {
+    font-size: 1.35rem;
+    line-height: 1.12;
+  }
+
+  /*
+   * The search placeholder already explains the interaction.
+   * Removing the mobile subtitle gives the primary choices
+   * substantially more room above the fold.
+   */
+  html body .city-sheet__subtitle {
+    display: none;
+  }
+
+  html body .city-sheet__close {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+  }
+
+  html body .city-sheet__search-wrap {
+    margin: 0;
+    padding: 0;
+  }
+
+  html body .city-sheet__search {
+    height: 54px;
+    min-height: 54px;
+    padding: 0 0.9rem;
+    border-radius: 16px;
+    font-size: 1rem;
+  }
+
+  html body .city-sheet__content {
+    min-height: 0;
+    gap: 0.65rem;
+    padding:
+      0
+      0
+      calc(0.25rem + env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
+  }
+
+  html body .city-sheet__nearme {
+    min-height: 58px;
+    padding: 0.7rem 0.85rem;
+    margin: 0;
+    gap: 0.12rem;
+    border-radius: 16px;
+    box-shadow: none;
+  }
+
+  html body .city-sheet__nearme-title {
+    font-size: 0.98rem;
+  }
+
+  html body .city-sheet__nearme-sub {
+    font-size: 0.8rem;
+  }
+
+  html body .city-sheet__section-title {
+    margin: 0.15rem 0 0;
+    padding: 0 0.1rem;
+    font-size: 0.75rem;
+  }
+
+  /*
+   * Browsing state:
+   * popular/favourite cities are fast choices, so use a dense
+   * two-column grid instead of a long one-card-per-row feed.
+   */
+  html body
+    .city-sheet__content:not(.is-searching)
+    .city-sheet__results {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(60px, auto);
+    gap: 0.5rem;
+    align-content: start;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 0 0.25rem;
+  }
+
+  html body
+    .city-sheet__content:not(.is-searching)
+    .city-sheet__option {
+    width: 100%;
+    min-width: 0;
+    min-height: 60px;
+    justify-content: center;
+    padding: 0.65rem 0.75rem;
+    gap: 0.08rem;
+    border-radius: 14px;
+  }
+
+  html body
+    .city-sheet__content:not(.is-searching)
+    .city-sheet__option-city {
+    font-size: 0.98rem;
+    line-height: 1.2;
+  }
+
+  html body
+    .city-sheet__content:not(.is-searching)
+    .city-sheet__option-meta {
+    font-size: 0.74rem;
+    line-height: 1.2;
+  }
+
+  /*
+   * Search state:
+   * suggestions need more room for names and metadata,
+   * so switch back to the conventional one-column list.
+   */
+  html body
+    .city-sheet__content.is-searching
+    .city-sheet__results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  html body
+    .city-sheet__content.is-searching
+    .city-sheet__option {
+    min-height: 54px;
+    padding: 0.65rem 0.35rem;
+  }
+}

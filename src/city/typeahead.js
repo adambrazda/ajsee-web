@@ -1086,7 +1086,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     backdrop.hidden = true;
 
     backdrop.innerHTML = `
-      <div class="city-sheet" role="dialog" aria-modal="true" aria-labelledby="city-sheet-title-${uid}">
+      <div class="city-sheet" role="dialog" aria-modal="true" aria-labelledby="city-sheet-title-${uid}" tabindex="-1">
         <div class="city-sheet__grab" aria-hidden="true"></div>
 
         <div class="city-sheet__header">
@@ -1335,11 +1335,12 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     loading = false;
     renderMobile();
 
+    // AJSEE_MOBILE_CITY_PICKER_NO_AUTO_KEYBOARD_V1
+    // Keep focus inside the modal without opening the software keyboard.
+    // The search field receives focus only after an explicit user interaction.
     setTimeout(() => {
       try {
-        sheetSearch.focus({ preventScroll: true });
-        const len = sheetSearch.value.length;
-        sheetSearch.setSelectionRange(len, len);
+        sheet.focus({ preventScroll: true });
       } catch {}
     }, 40);
   }

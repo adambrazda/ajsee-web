@@ -3839,23 +3839,18 @@ function syncCitySheetUsability(root = document) {
   const search = root.querySelector('.city-sheet__search');
   if (search) {
     const placeholder = getCitySearchPlaceholder();
-    if (search.getAttribute('placeholder') !== placeholder) search.setAttribute('placeholder', placeholder);
+
+    if (search.getAttribute('placeholder') !== placeholder) {
+      search.setAttribute('placeholder', placeholder);
+    }
   }
 
-  const content = root.querySelector('.city-sheet__content');
-  if (content) {
-    content.style.overflowY = 'auto';
-    content.style.overflowX = 'hidden';
-    content.style.webkitOverflowScrolling = 'touch';
-    content.style.overscrollBehavior = 'contain';
-    content.style.touchAction = 'pan-y';
-  }
-
-  const results = root.querySelector('.city-sheet__results');
-  if (results) {
-    results.style.minHeight = '1px';
-    results.style.paddingBottom = 'max(16px, env(safe-area-inset-bottom, 0px))';
-  }
+  /*
+   * AJSEE_EVENTS_CITY_SHEET_SHARED_LAYOUT_V1
+   * Layout, scrolling and safe-area behaviour belong to the shared
+   * city picker component. Do not override them with inline styles
+   * from the Events page.
+   */
 }
 
 function installCitySheetObserver() {
@@ -3868,7 +3863,7 @@ function installCitySheetObserver() {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['class', 'hidden', 'style']
+    attributeFilter: ['class', 'hidden']
   });
 
   G.state._citySheetMO = mo;

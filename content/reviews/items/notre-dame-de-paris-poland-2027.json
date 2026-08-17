@@ -1,7 +1,7 @@
 {
   "slug": "notre-dame-de-paris-poland-2027",
-  "status": "approved",
-  "published": false,
+  "status": "published",
+  "published": true,
   "featured": false,
   "contentType": "preview",
   "category": "theatre",
@@ -13,7 +13,7 @@
   "performanceDate": "",
   "eventDate": "2027-02-19T20:00:00+01:00",
   "reviewDate": "2026-08-03T13:03:00Z",
-  "publishedAt": "",
+  "publishedAt": "2026-08-17T07:25:35.119Z",
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://concert-eurasia.com/ndp/?utm_source=ajsee&utm_medium=referral&utm_campaign=notre_dame_de_paris_poland_2027&utm_content=en",

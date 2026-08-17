@@ -7,8 +7,55 @@
     <title>AJSEE – Admin</title>
     <!-- Netlify Identity (přihlášení) -->
     <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+      body {
+        margin: 0;
+      }
+
+      .ajsee-admin-bar {
+        position: relative;
+        z-index: 1000;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        min-height: 48px;
+        padding: 8px 16px;
+        box-sizing: border-box;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .ajsee-admin-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 40px;
+        padding: 0 14px;
+        border-radius: 8px;
+        color: #111827;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .ajsee-admin-link:hover {
+        background: #f3f4f6;
+      }
+
+      .ajsee-admin-link:focus-visible {
+        outline: 3px solid currentColor;
+        outline-offset: 2px;
+      }
+    </style>
   </head>
   <body>
+    <nav class="ajsee-admin-bar" aria-label="AJSEE admin">
+      <a class="ajsee-admin-link" href="/admin/publication/">
+        Publikace recenz&#237;
+      </a>
+    </nav>
+
+    <div id="nc-root"></div>
     <!-- Decap CMS (dříve Netlify CMS) -->
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   </body>

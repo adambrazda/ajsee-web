@@ -159,6 +159,12 @@
   to = "/.netlify/functions/article-comments-admin"
   status = 200
 
+# Review publication admin API:
+[[redirects]]
+  from = "/api/review-publication-admin"
+  to = "/.netlify/functions/review-publication-admin"
+  status = 200
+
 # Shortlink manager:
 # /go/:slug → Netlify function go.js
 [[redirects]]

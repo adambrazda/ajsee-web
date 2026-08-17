@@ -7,6 +7,9 @@ import {
 } from './event-place-runtime.js';
 import { scrollToSharedEventResults } from './event-filters.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
+import { mapIntentToFilters } from './ai-search/intent-to-filters.js';
+import { resolveIntentRequirements } from './ai-search/requirement-resolver.js';
+import { materializeSearchPlan } from './ai-search/search-plan-materializer.js';
 import {
   ensureSharedEventGridStyles,
   eventImageOrFallback,
@@ -3382,6 +3385,84 @@ function initFiltersFromURL() {
   syncLocalizedCityLabelFromCurrentState();
 }
 
+async function applyAiEventSearchIntent(intent) {
+  const mapped =
+    mapIntentToFilters(
+      intent,
+      {
+        now:
+          new Date()
+      }
+    );
+
+  const resolved =
+    await resolveIntentRequirements(
+      mapped
+    );
+
+  const materialized =
+    materializeSearchPlan(
+      resolved
+    );
+
+  if (
+    !materialized.ok ||
+    !materialized.readyToApply
+  ) {
+    const error =
+      new Error(
+        'AI search plan is not ready to apply.'
+      );
+
+    error.code =
+      materialized.reason ||
+      'AI_SEARCH_NOT_READY';
+
+    error.unresolvedRequirements =
+      Array.isArray(
+        resolved.unresolvedRequirements
+      )
+        ? resolved.unresolvedRequirements
+        : [];
+
+    throw error;
+  }
+
+  currentFilters = {
+    ...materialized.filters
+  };
+
+  _userInteractedWithFilters =
+    true;
+
+  _lastFetchSig = '';
+
+  setFilterInputsFromState();
+
+  syncQuickDateButtons();
+
+  resetEventsPager();
+
+  await renderAndSync({
+    resetPage:
+      true
+  });
+
+  scrollToSharedEventResults();
+
+  return {
+    readyToApply:
+      true,
+
+    unsupportedPreferences:
+      Array.isArray(
+        materialized.unsupportedPreferences
+      )
+        ? materialized.unsupportedPreferences
+        : []
+  };
+}
+
 function bindFilterFormInteractions(formEl) {
   if (!formEl) return;
 
@@ -5294,7 +5375,8 @@ async function bootstrapMain() {
 
   initAiEventSearch({
     form: formEl,
-    getLocale: () => currentLang
+    getLocale: () => currentLang,
+    onIntent: applyAiEventSearchIntent
   });
 
   /* AJSEE_KEEP_EVENTS_QUICK_FILTERS_BOOTSTRAP_V1

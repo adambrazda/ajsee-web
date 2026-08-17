@@ -127,3 +127,65 @@ test(
     }
   }
 );
+
+test(
+  'AI search materializes intent into existing event filter runtime',
+  () => {
+    for (
+      const source of [
+        homeEntry,
+        eventsEntry
+      ]
+    ) {
+      assert.match(
+        source,
+        /from '\.\/ai-search\/intent-to-filters\.js'/
+      );
+
+      assert.match(
+        source,
+        /from '\.\/ai-search\/requirement-resolver\.js'/
+      );
+
+      assert.match(
+        source,
+        /from '\.\/ai-search\/search-plan-materializer\.js'/
+      );
+
+      assert.match(
+        source,
+        /async function applyAiEventSearchIntent\(intent\)/
+      );
+
+      assert.match(
+        source,
+        /currentFilters\s*=\s*\{\s*\.\.\.materialized\.filters\s*\}/s
+      );
+
+      assert.match(
+        source,
+        /await renderAndSync\(\{\s*resetPage:\s*true\s*\}\)/s
+      );
+
+      assert.match(
+        source,
+        /onIntent:\s*applyAiEventSearchIntent/
+      );
+    }
+
+    assert.match(
+      controller,
+      /const APPLY_COPY\s*=/
+    );
+
+    assert.match(
+      controller,
+      /let applicationResult\s*=/
+    );
+
+    assert.match(
+      controller,
+      /unsupportedPreferences\.length > 0/
+    );
+  }
+);

@@ -165,6 +165,50 @@ const COPY = {
   }
 };
 
+const APPLY_COPY = {
+  cs: {
+    success:
+      'Hotovo — upravil jsem filtry podle vašeho zadání.',
+    partial:
+      'Filtry jsem upravil, ale část požadavku zatím AJSEE neumí použít.'
+  },
+
+  en: {
+    success:
+      'Done — I updated the filters based on your request.',
+    partial:
+      'I updated the filters, but AJSEE cannot apply part of your request yet.'
+  },
+
+  de: {
+    success:
+      'Fertig — ich habe die Filter entsprechend Ihrer Anfrage angepasst.',
+    partial:
+      'Die Filter wurden angepasst, aber einen Teil Ihrer Anfrage kann AJSEE noch nicht anwenden.'
+  },
+
+  sk: {
+    success:
+      'Hotovo — filtre som upravil podľa vašej požiadavky.',
+    partial:
+      'Filtre som upravil, ale časť požiadavky zatiaľ AJSEE nevie použiť.'
+  },
+
+  pl: {
+    success:
+      'Gotowe — filtry zostały dostosowane do Twojego zapytania.',
+    partial:
+      'Filtry zostały dostosowane, ale AJSEE nie może jeszcze zastosować części zapytania.'
+  },
+
+  hu: {
+    success:
+      'Kész — a szűrőket a kérésed alapján módosítottam.',
+    partial:
+      'A szűrőket módosítottam, de a kérés egy részét az AJSEE még nem tudja alkalmazni.'
+  }
+};
+
 let turnstileScriptPromise =
   null;
 
@@ -918,18 +962,35 @@ export function initAiEventSearch({
           return;
         }
 
+        let applicationResult =
+          null;
+
         if (
           typeof onIntent ===
           'function'
         ) {
-          await onIntent(
-            data.intent,
-            {
-              query,
-              locale
-            }
-          );
+          applicationResult =
+            await onIntent(
+              data.intent,
+              {
+                query,
+                locale
+              }
+            );
         }
+
+        const unsupportedPreferences =
+          Array.isArray(
+            applicationResult
+              ?.unsupportedPreferences
+          )
+            ? applicationResult
+                .unsupportedPreferences
+            : [];
+
+        const applyCopy =
+          APPLY_COPY[locale] ||
+          APPLY_COPY.cs;
 
         setState(
           root,
@@ -938,7 +999,9 @@ export function initAiEventSearch({
               'success',
 
             message:
-              copy.success
+                unsupportedPreferences.length > 0
+                  ? applyCopy.partial
+                  : applyCopy.success
           }
         );
       } catch (error) {

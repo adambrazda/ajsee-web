@@ -1348,3 +1348,24 @@ const handler =
   createAiEventSearchHandler();
 
 export default handler;
+
+export const config = {
+  path:
+    '/.netlify/functions/ai-event-search',
+
+  rateLimit: {
+    action:
+      'rate_limit',
+
+    windowLimit:
+      6,
+
+    windowSize:
+      60,
+
+    aggregateBy: [
+      'ip',
+      'domain'
+    ]
+  }
+};

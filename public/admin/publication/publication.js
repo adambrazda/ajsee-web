@@ -17,6 +17,8 @@
 
   let user = null;
   let requestId = 0;
+  let approvedSlug = null;
+  let preparationInFlight = false;
 
   function setStatus(message) {
     statusElement.textContent =
@@ -61,6 +63,12 @@
 
   async function loadPublicationStatus() {
     prepareButton.disabled = true;
+
+    if (preparationInFlight) {
+      return;
+    }
+
+    approvedSlug = null;
 
     const slug =
       normalizeSlug(
@@ -173,8 +181,14 @@
         state === "approved" &&
         data?.canPrepare === true
       ) {
+        approvedSlug =
+          slug;
+
+        prepareButton.disabled =
+          false;
+
         setStatus(
-          "Obsah je schválený a připravený k bezpečné přípravě publikace. Akce zatím není v této verzi povolena."
+          "Obsah je schválený a připravený. Tlačítkem níže vytvoříte bezpečnou publikační změnu; obsah se tím ještě nezveřejní."
         );
         return;
       }
@@ -205,7 +219,190 @@
       );
     }
     finally {
-      prepareButton.disabled = true;
+      if (
+        currentRequestId === requestId
+      ) {
+        prepareButton.disabled =
+          approvedSlug !== slug ||
+          preparationInFlight;
+      }
+    }
+  }
+
+  async function preparePublication() {
+    if (preparationInFlight) {
+      return;
+    }
+
+    const slug =
+      normalizeSlug(
+        slugInput.value
+      );
+
+    prepareButton.disabled =
+      true;
+
+    if (!user) {
+      approvedSlug = null;
+
+      setStatus(
+        "Pro přípravu publikace se nejprve přihlaste do AJSEE Admin."
+      );
+      return;
+    }
+
+    if (!isValidSlug(slug)) {
+      approvedSlug = null;
+
+      setStatus(
+        "Slug není ve správném formátu."
+      );
+      return;
+    }
+
+    if (approvedSlug !== slug) {
+      setStatus(
+        "Nejprve je nutné znovu ověřit aktuální stav obsahu."
+      );
+
+      void loadPublicationStatus();
+      return;
+    }
+
+    preparationInFlight =
+      true;
+
+    slugInput.disabled =
+      true;
+
+    const currentPreparationId =
+      ++requestId;
+
+    setStatus(
+      "Připravuji bezpečnou publikační změnu…"
+    );
+
+    try {
+      const token =
+        await getJwt();
+
+      const response =
+        await fetch(
+          API_URL,
+          {
+            method:
+              "POST",
+
+            headers: {
+              Accept:
+                "application/json",
+
+              "Content-Type":
+                "application/json",
+
+              Authorization:
+                `Bearer ${token}`
+            },
+
+            body:
+              JSON.stringify({
+                action:
+                  "prepare",
+
+                slug
+              }),
+
+            cache:
+              "no-store"
+          }
+        );
+
+      const data =
+        await response.json()
+          .catch(() => null);
+
+      if (
+        currentPreparationId !== requestId ||
+        normalizeSlug(
+          slugInput.value
+        ) !== slug
+      ) {
+        return;
+      }
+
+      if (!response.ok) {
+        const code =
+          typeof data?.error ===
+            "string"
+            ? data.error
+            : "unknown-error";
+
+        approvedSlug = null;
+
+        setStatus(
+          `Publikační změnu se nepodařilo připravit (${code}). Před dalším pokusem znovu ověřte stav obsahu.`
+        );
+        return;
+      }
+
+      const pullRequest =
+        data?.pullRequest;
+
+      if (
+        data?.state !== "preparing" ||
+        !Number.isInteger(
+          pullRequest?.number
+        ) ||
+        typeof pullRequest?.url !==
+          "string" ||
+        !pullRequest.url
+      ) {
+        approvedSlug = null;
+
+        setStatus(
+          "Server vrátil neplatnou odpověď. Publikaci neopakujte bez nové kontroly stavu."
+        );
+        return;
+      }
+
+      approvedSlug = null;
+
+      if (data?.existing === true) {
+        setStatus(
+          `Publikační změna už je připravená v PR #${pullRequest.number}: ${pullRequest.url}. Obsah zatím není zveřejněný.`
+        );
+        return;
+      }
+
+      setStatus(
+        `Publikační změna byla připravena v PR #${pullRequest.number}: ${pullRequest.url}. Obsah zatím není zveřejněný.`
+      );
+    }
+    catch {
+      if (
+        currentPreparationId !== requestId ||
+        normalizeSlug(
+          slugInput.value
+        ) !== slug
+      ) {
+        return;
+      }
+
+      approvedSlug = null;
+
+      setStatus(
+        "Publikační změnu se nepodařilo připravit. Před dalším pokusem znovu ověřte stav obsahu."
+      );
+    }
+    finally {
+      preparationInFlight =
+        false;
+
+      slugInput.disabled =
+        false;
+
+      prepareButton.disabled =
+        approvedSlug !== slug;
     }
   }
 
@@ -215,6 +412,8 @@
     user =
       nextUser || null;
 
+    approvedSlug = null;
+    ++requestId;
     prepareButton.disabled = true;
 
     if (user) {
@@ -285,9 +484,25 @@
   }
 
   slugInput.addEventListener(
+    "input",
+    () => {
+      approvedSlug = null;
+      ++requestId;
+      prepareButton.disabled = true;
+    }
+  );
+
+  slugInput.addEventListener(
     "change",
     () => {
       void loadPublicationStatus();
+    }
+  );
+
+  prepareButton.addEventListener(
+    "click",
+    () => {
+      void preparePublication();
     }
   );
 

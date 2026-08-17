@@ -77,16 +77,81 @@ test(
 );
 
 test(
-  'publication preparation remains fail-closed before POST wiring',
+  'publication preparation uses an authenticated POST and prevents duplicate submission',
   () => {
+    assert.match(
+      script,
+      /method\s*:\s*["']POST["']/
+    );
+
+    assert.match(
+      script,
+      /["']Content-Type["']\s*:\s*["']application\/json["']/
+    );
+
+    assert.match(
+      script,
+      /Authorization\s*:\s*`Bearer \$\{token\}`/
+    );
+
+    assert.match(
+      script,
+      /JSON\.stringify\s*\(\s*\{[\s\S]*?action\s*:\s*["']prepare["'][\s\S]*?slug[\s\S]*?\}\s*\)/
+    );
+
+    assert.match(
+      script,
+      /prepareButton\.addEventListener\s*\(\s*["']click["']/
+    );
+
     assert.match(
       script,
       /prepareButton\.disabled\s*=\s*true/
     );
 
-    assert.doesNotMatch(
+    assert.match(
       script,
-      /method\s*:\s*["']POST["']/
+      /prepareButton\.disabled\s*=\s*false/
+    );
+
+    assert.match(
+      script,
+      /if\s*\(\s*preparationInFlight\s*\)\s*\{\s*return;/
+    );
+
+    assert.match(
+      script,
+      /if\s*\(\s*approvedSlug\s*!==\s*slug\s*\)/
+    );
+
+    assert.match(
+      script,
+      /currentPreparationId\s*!==\s*requestId/
+    );
+
+    assert.match(
+      script,
+      /slugInput\.disabled\s*=\s*true/
+    );
+
+    assert.match(
+      script,
+      /slugInput\.disabled\s*=\s*false/
+    );
+
+    assert.match(
+      script,
+      /slugInput\.addEventListener\s*\(\s*["']input["'][\s\S]*?approvedSlug\s*=\s*null;[\s\S]*?\+\+requestId/
+    );
+
+    assert.match(
+      script,
+      /existing/
+    );
+
+    assert.match(
+      script,
+      /pullRequest/
     );
   }
 );

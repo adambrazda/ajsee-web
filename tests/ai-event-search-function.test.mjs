@@ -34,7 +34,7 @@ function makeRequest(
   }
 
   return new Request(
-    'https://ajsee.example/.netlify/functions/ai-event-search',
+    'https://ajsee.example/api/ai-event-search',
     options
   );
 }

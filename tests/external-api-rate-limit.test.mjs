@@ -59,7 +59,7 @@ test(
       aiConfig,
       {
         path:
-          '/.netlify/functions/ai-event-search',
+          '/api/ai-event-search',
 
         limit:
           6

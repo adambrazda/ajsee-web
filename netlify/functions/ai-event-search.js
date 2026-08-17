@@ -1351,7 +1351,7 @@ export default handler;
 
 export const config = {
   path:
-    '/.netlify/functions/ai-event-search',
+    '/api/ai-event-search',
 
   rateLimit: {
     action:

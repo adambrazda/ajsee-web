@@ -1,3 +1,10 @@
+import {
+  applyGeoRadiusToApiFilters,
+  isNearMePlace,
+  readGeoPlaceFromSearchParams,
+  shouldPreserveCityRadiusInput,
+  syncPlaceSearchParams
+} from './event-place-runtime.js';
 import { scrollToSharedEventResults } from './event-filters.js';
 import {
   ensureSharedEventGridStyles,
@@ -699,21 +706,54 @@ function setCityPlace(label = '', code = '') {
 }
 
 function syncLocalizedCityLabelFromCurrentState() {
-  if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-    currentFilters.placeType = 'nearMe';
-    currentFilters.cityLabel = nearMeLabel();
+  if (
+    isNearMePlace(
+      currentFilters
+    )
+  ) {
+    currentFilters.placeType =
+      'nearMe';
+
+    currentFilters.cityLabel =
+      nearMeLabel();
+
     return;
   }
 
-  if (currentFilters.placeType === 'country' && currentFilters.countryCode) {
-    currentFilters.city = '';
-    currentFilters.cityCountryCode = '';
-    currentFilters.cityLabel = countryLabelForCode(currentFilters.countryCode, currentLang);
+  if (
+    currentFilters.placeType ===
+      'country' &&
+    currentFilters.countryCode
+  ) {
+    currentFilters.city =
+      '';
+
+    currentFilters.cityCountryCode =
+      '';
+
+    currentFilters.cityLabel =
+      countryLabelForCode(
+        currentFilters.countryCode,
+        currentLang
+      );
+
     return;
   }
 
-  const slug = findSlugByAnyLabel(currentFilters.cityLabel || currentFilters.city || '');
-  if (slug) currentFilters.cityLabel = localizedCityLabel(slug, currentLang);
+  const slug =
+    findSlugByAnyLabel(
+      currentFilters.cityLabel ||
+      currentFilters.city ||
+      ''
+    );
+
+  if (slug) {
+    currentFilters.cityLabel =
+      localizedCityLabel(
+        slug,
+        currentLang
+      );
+  }
 }
 
 function getCityInputEl() {
@@ -2946,12 +2986,32 @@ function setFilterInputsFromState() {
   }
 
   if (city) {
-    if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-      city.value = nearMeLabel();
-      city.setAttribute('data-autofromnearme', '1');
+    if (
+      isNearMePlace(
+        currentFilters
+      )
+    ) {
+      city.value =
+        nearMeLabel();
+
+      city.setAttribute(
+        'data-autofromnearme',
+        '1'
+      );
     } else {
-      city.value = currentFilters.cityLabel || currentFilters.city || '';
-      city.removeAttribute('data-autofromnearme');
+      /*
+       * cityRadius deliberately keeps the editable city
+       * input as "Praha". The summary chip communicates
+       * the radius as "Praha + 50 km".
+       */
+      city.value =
+        currentFilters.cityLabel ||
+        currentFilters.city ||
+        '';
+
+      city.removeAttribute(
+        'data-autofromnearme'
+      );
     }
   }
 
@@ -3024,10 +3084,32 @@ function syncFiltersFromForm() {
       currentFilters.nearMeLat = null;
       currentFilters.nearMeLon = null;
       city.removeAttribute('data-autofromnearme');
+    } else if (
+      shouldPreserveCityRadiusInput(
+        currentFilters,
+        rawPlace
+      )
+    ) {
+      /*
+       * Submitting an unchanged city-radius city must
+       * preserve its resolved center coordinates.
+       */
     } else {
-      const countryCc = countryCodeFromInput(rawPlace);
-      if (countryCc) setCountryPlace(rawPlace, countryCc);
-      else setCityPlace(rawPlace);
+      const countryCc =
+        countryCodeFromInput(
+          rawPlace
+        );
+
+      if (countryCc) {
+        setCountryPlace(
+          rawPlace,
+          countryCc
+        );
+      } else {
+        setCityPlace(
+          rawPlace
+        );
+      }
     }
   }
 
@@ -3036,85 +3118,211 @@ function syncFiltersFromForm() {
 }
 
 function syncURLFromFilters() {
-  const u = new URL(location.href);
-  const p = u.searchParams;
+  const u =
+    new URL(
+      location.href
+    );
 
-  const isCountryPlace =
-    currentFilters.placeType === 'country' ||
-    (!currentFilters.city && currentFilters.cityLabel && countryCodeFromInput(currentFilters.cityLabel));
+  const p =
+    u.searchParams;
 
-  if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-    p.delete('city');
-    p.delete('cityCc');
-    p.delete('country');
-    p.delete('countryCode');
-    p.set('lat', String(currentFilters.nearMeLat));
-    p.set('lon', String(currentFilters.nearMeLon));
-    p.set('radius', String(currentFilters.nearMeRadiusKm || 50));
-  } else {
-    p.delete('lat');
-    p.delete('lon');
-    p.delete('radius');
+  syncPlaceSearchParams(
+    p,
+    currentFilters
+  );
 
-    if (isCountryPlace) {
-      const cc = currentFilters.countryCode || countryCodeFromInput(currentFilters.cityLabel);
-      p.delete('city');
-      p.delete('cityCc');
-      p.delete('countryCode');
-      cc ? p.set('country', cc) : p.delete('country');
-    } else {
-      currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city');
-      currentFilters.cityCountryCode ? p.set('cityCc', currentFilters.cityCountryCode) : p.delete('cityCc');
-      p.delete('country');
-      p.delete('countryCode');
-    }
-  }
+  currentFilters.dateFrom
+    ? p.set(
+        'from',
+        currentFilters.dateFrom
+      )
+    : p.delete('from');
 
-  currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from');
-  currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to');
-  (currentFilters.category && currentFilters.category !== 'all') ? p.set('segment', currentFilters.category) : p.delete('segment');
+  currentFilters.dateTo
+    ? p.set(
+        'to',
+        currentFilters.dateTo
+      )
+    : p.delete('to');
 
-  currentFilters.audience === 'family'
-    ? p.set('audience', 'family')
-    : p.delete('audience');
+  (
+    currentFilters.category &&
+    currentFilters.category !==
+      'all'
+  )
+    ? p.set(
+        'segment',
+        currentFilters.category
+      )
+    : p.delete('segment');
+
+  currentFilters.audience ===
+    'family'
+      ? p.set('audience', 'family')
+      : p.delete('audience');
 
   p.delete('keyword');
   p.delete('search');
-  currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q');
-  (currentFilters.sort && currentFilters.sort !== 'nearest') ? p.set('sort', currentFilters.sort) : p.delete('sort');
 
-  history.replaceState(null, '', u.toString());
+  currentFilters.keyword
+    ? p.set(
+        'q',
+        currentFilters.keyword
+      )
+    : p.delete('q');
+
+  (
+    currentFilters.sort &&
+    currentFilters.sort !==
+      'nearest'
+  )
+    ? p.set(
+        'sort',
+        currentFilters.sort
+      )
+    : p.delete('sort');
+
+  history.replaceState(
+    null,
+    '',
+    u.toString()
+  );
 }
 
 function initFiltersFromURL() {
-  const sp = new URLSearchParams(location.search);
-  const urlCountryRaw = sp.get('country') || sp.get('countryCode') || '';
-  const urlCountryCc = firstCountryCodeFromInput(urlCountryRaw);
+  const sp =
+    new URLSearchParams(
+      location.search
+    );
 
-  if (sp.get('city')) {
-    const raw = sp.get('city') || '';
-    const cityAsCountry = countryCodeFromInput(raw);
+  const geoPlace =
+    readGeoPlaceFromSearchParams(
+      sp
+    );
+
+  const urlCountryRaw =
+    sp.get('country') ||
+    sp.get('countryCode') ||
+    '';
+
+  const urlCountryCc =
+    firstCountryCodeFromInput(
+      urlCountryRaw
+    );
+
+  if (
+    geoPlace?.mode ===
+    'cityRadius'
+  ) {
+    const raw =
+      geoPlace.city;
+
+    const cc =
+      cityCountryCodeFromLabel(
+        raw,
+        geoPlace.cityCc ||
+        ''
+      );
+
+    currentFilters.placeType =
+      'cityRadius';
+
+    currentFilters.city =
+      canonPreferredCity(raw) ||
+      raw;
+
+    currentFilters.cityLabel =
+      raw;
+
+    currentFilters.cityCountryCode =
+      cc;
+
+    if (cc) {
+      currentFilters.countryCode =
+        cc;
+    }
+
+    currentFilters.nearMeLat =
+      geoPlace.lat;
+
+    currentFilters.nearMeLon =
+      geoPlace.lon;
+
+    currentFilters.nearMeRadiusKm =
+      geoPlace.radiusKm;
+  } else if (sp.get('city')) {
+    const raw =
+      sp.get('city') ||
+      '';
+
+    const cityAsCountry =
+      countryCodeFromInput(
+        raw
+      );
 
     if (cityAsCountry) {
-      setCountryPlace(raw, cityAsCountry);
+      setCountryPlace(
+        raw,
+        cityAsCountry
+      );
     } else {
-      const cc = cityCountryCodeFromLabel(raw, sp.get('cityCc') || '');
-      currentFilters.placeType = 'city';
-      currentFilters.city = canonPreferredCity(raw) || raw;
-      currentFilters.cityLabel = raw;
-      currentFilters.cityCountryCode = cc;
-      if (cc) currentFilters.countryCode = cc;
+      const cc =
+        cityCountryCodeFromLabel(
+          raw,
+          sp.get('cityCc') ||
+          ''
+        );
+
+      currentFilters.placeType =
+        'city';
+
+      currentFilters.city =
+        canonPreferredCity(raw) ||
+        raw;
+
+      currentFilters.cityLabel =
+        raw;
+
+      currentFilters.cityCountryCode =
+        cc;
+
+      if (cc) {
+        currentFilters.countryCode =
+          cc;
+      }
     }
   } else if (urlCountryCc) {
-    currentFilters.placeType = 'country';
-    currentFilters.city = '';
-    currentFilters.cityLabel = countryLabelForCode(urlCountryCc, currentLang);
-    currentFilters.cityCountryCode = '';
-    currentFilters.countryCode = urlCountryCc;
+    currentFilters.placeType =
+      'country';
+
+    currentFilters.city =
+      '';
+
+    currentFilters.cityLabel =
+      countryLabelForCode(
+        urlCountryCc,
+        currentLang
+      );
+
+    currentFilters.cityCountryCode =
+      '';
+
+    currentFilters.countryCode =
+      urlCountryCc;
   }
 
-  if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
-  if (sp.get('to')) currentFilters.dateTo = sp.get('to') || '';
+  if (sp.get('from')) {
+    currentFilters.dateFrom =
+      sp.get('from') ||
+      '';
+  }
+
+  if (sp.get('to')) {
+    currentFilters.dateTo =
+      sp.get('to') ||
+      '';
+  }
+
   if (sp.get('segment')) {
     currentFilters.category =
       sp.get('segment') ||
@@ -3127,18 +3335,47 @@ function initFiltersFromURL() {
       ? 'family'
       : '';
 
-  const urlKeyword = sp.get('q') || sp.get('keyword') || sp.get('search') || '';
-  if (urlKeyword) currentFilters.keyword = urlKeyword.trim();
-  if (sp.get('sort')) currentFilters.sort = sp.get('sort') || 'nearest';
+  const urlKeyword =
+    sp.get('q') ||
+    sp.get('keyword') ||
+    sp.get('search') ||
+    '';
 
-  if (sp.get('lat') && sp.get('lon')) {
-    currentFilters.placeType = 'nearMe';
-    currentFilters.nearMeLat = +sp.get('lat');
-    currentFilters.nearMeLon = +sp.get('lon');
-    currentFilters.nearMeRadiusKm = clamp(+(sp.get('radius') || 50), 10, 300);
-    currentFilters.cityLabel = nearMeLabel();
-    currentFilters.city = '';
-    currentFilters.cityCountryCode = '';
+  if (urlKeyword) {
+    currentFilters.keyword =
+      urlKeyword.trim();
+  }
+
+  if (sp.get('sort')) {
+    currentFilters.sort =
+      sp.get('sort') ||
+      'nearest';
+  }
+
+  if (
+    geoPlace?.mode ===
+    'nearMe'
+  ) {
+    currentFilters.placeType =
+      'nearMe';
+
+    currentFilters.nearMeLat =
+      geoPlace.lat;
+
+    currentFilters.nearMeLon =
+      geoPlace.lon;
+
+    currentFilters.nearMeRadiusKm =
+      geoPlace.radiusKm;
+
+    currentFilters.cityLabel =
+      nearMeLabel();
+
+    currentFilters.city =
+      '';
+
+    currentFilters.cityCountryCode =
+      '';
   }
 
   syncLocalizedCityLabelFromCurrentState();
@@ -3347,10 +3584,9 @@ function bindQuickNearMeButton() {
       await activateNearMeViaGeo(cityInput);
 
       const isActive =
-        currentFilters.nearMeLat !== null &&
-        currentFilters.nearMeLat !== undefined &&
-        currentFilters.nearMeLon !== null &&
-        currentFilters.nearMeLon !== undefined;
+        isNearMePlace(
+          currentFilters
+        );
 
       quickNearBtn.setAttribute(
         'aria-pressed',
@@ -4480,57 +4716,79 @@ function updateEventsPagerControls() {
 }
 
 function buildApiFilters(filters) {
-  const countryFromPlace = countryCodeFromInput(filters.cityLabel) || countryCodeFromInput(filters.city);
-  const isCountryPlace =
-    filters.placeType === 'country' ||
-    (!filters.city && filters.cityLabel && countryFromPlace) ||
-    (filters.city && countryFromPlace);
+  const countryFromPlace =
+    countryCodeFromInput(
+      filters.cityLabel
+    ) ||
+    countryCodeFromInput(
+      filters.city
+    );
 
-  const normalizedCity = (!isCountryPlace && filters.city)
-    ? (canonPreferredCity(filters.city) || filters.city)
-    : '';
+  const isCountryPlace =
+    filters.placeType ===
+      'country' ||
+    (
+      !filters.city &&
+      filters.cityLabel &&
+      countryFromPlace
+    ) ||
+    (
+      filters.city &&
+      countryFromPlace
+    );
+
+  const normalizedCity =
+    (
+      !isCountryPlace &&
+      filters.city
+    )
+      ? (
+          canonPreferredCity(
+            filters.city
+          ) ||
+          filters.city
+        )
+      : '';
 
   const api = {
     ...filters,
-    placeType: isCountryPlace ? 'country' : (filters.placeType || ''),
-    city: normalizedCity,
-    cityCountryCode: isCountryPlace ? '' : (filters.cityCountryCode || ''),
-    countryCode: isCountryPlace
-      ? String(filters.countryCode || countryFromPlace || '').toUpperCase()
-      : (filters.cityCountryCode || filters.countryCode || '')
+
+    placeType:
+      isCountryPlace
+        ? 'country'
+        : (
+            filters.placeType ||
+            ''
+          ),
+
+    city:
+      normalizedCity,
+
+    cityCountryCode:
+      isCountryPlace
+        ? ''
+        : (
+            filters.cityCountryCode ||
+            ''
+          ),
+
+    countryCode:
+      isCountryPlace
+        ? String(
+            filters.countryCode ||
+            countryFromPlace ||
+            ''
+          ).toUpperCase()
+        : (
+            filters.cityCountryCode ||
+            filters.countryCode ||
+            ''
+          )
   };
 
-  const latOk = typeof api.nearMeLat === 'number' && isFinite(api.nearMeLat);
-  const lonOk = typeof api.nearMeLon === 'number' && isFinite(api.nearMeLon);
-  const nonZero = (Math.abs(api.nearMeLat || 0) > 0.001) || (Math.abs(api.nearMeLon || 0) > 0.001);
-
-  if (latOk && lonOk && nonZero) {
-    const lat = +api.nearMeLat;
-    const lon = +api.nearMeLon;
-    const radius = clamp(+api.nearMeRadiusKm || 50, 10, 300);
-
-    Object.assign(api, {
-      placeType: 'nearMe',
-      city: '',
-      cityCountryCode: '',
-      nearMe: 1,
-      lat,
-      lon,
-      latitude: lat,
-      longitude: lon,
-      latlon: `${lat},${lon}`,
-      latlong: `${lat},${lon}`,
-      geoPoint: `${lat},${lon}`,
-      radiusKm: radius,
-      radius,
-      unit: 'km'
-    });
-  } else {
-    delete api.nearMeLat;
-    delete api.nearMeLon;
-  }
-
-  return api;
+  return applyGeoRadiusToApiFilters(
+    api
+  );
 }
 
 async function renderEvents(locale = 'cs', filters = currentFilters) {

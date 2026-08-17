@@ -1,3 +1,11 @@
+import {
+  applyGeoRadiusToApiFilters,
+  isCityRadiusPlace,
+  isNearMePlace,
+  readGeoPlaceFromSearchParams,
+  shouldPreserveCityRadiusInput,
+  syncPlaceSearchParams
+} from './event-place-runtime.js';
 import { scrollToSharedEventResults } from './event-filters.js';
 import {
   detectDatePreset,
@@ -253,6 +261,7 @@ let currentFilters = {
   category: 'all',
   audience: '',
   sort: 'nearest',
+  placeType: '',
   city: '',
   cityLabel: '',
   cityCountryCode: '',
@@ -638,13 +647,34 @@ function cityCountryCodeFromLabel(label, fallback = '') {
 }
 
 function syncLocalizedCityLabelFromCurrentState() {
-  if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-    currentFilters.cityLabel = nearMeLabel();
+  if (
+    isNearMePlace(
+      currentFilters
+    )
+  ) {
+    currentFilters.placeType =
+      'nearMe';
+
+    currentFilters.cityLabel =
+      nearMeLabel();
+
     return;
   }
 
-  const slug = findSlugByAnyLabel(currentFilters.cityLabel || currentFilters.city || '');
-  if (slug) currentFilters.cityLabel = localizedCityLabel(slug, currentLang);
+  const slug =
+    findSlugByAnyLabel(
+      currentFilters.cityLabel ||
+      currentFilters.city ||
+      ''
+    );
+
+  if (slug) {
+    currentFilters.cityLabel =
+      localizedCityLabel(
+        slug,
+        currentLang
+      );
+  }
 }
 
 function getCityInputEl() {
@@ -2198,13 +2228,50 @@ function expandFilters() {
 }
 
 function computeActiveFiltersCount(filters = currentFilters) {
-  let count = 0;
-  if (filters.category && filters.category !== 'all') count++;
-  if (filters.city || filters.cityLabel) count++;
-  if (filters.keyword) count++;
-  if (filters.sort && filters.sort !== 'nearest') count++;
-  if (filters.dateFrom || filters.dateTo) count++;
-  if (filters.nearMeLat && filters.nearMeLon) count++;
+  let count =
+    0;
+
+  if (
+    filters.category &&
+    filters.category !==
+      'all'
+  ) {
+    count++;
+  }
+
+  const hasPlace =
+    Boolean(
+      filters.city ||
+      filters.cityLabel ||
+      filters.placeType ===
+        'country' ||
+      isNearMePlace(filters) ||
+      isCityRadiusPlace(filters)
+    );
+
+  if (hasPlace) {
+    count++;
+  }
+
+  if (filters.keyword) {
+    count++;
+  }
+
+  if (
+    filters.sort &&
+    filters.sort !==
+      'nearest'
+  ) {
+    count++;
+  }
+
+  if (
+    filters.dateFrom ||
+    filters.dateTo
+  ) {
+    count++;
+  }
+
   return count;
 }
 
@@ -2526,19 +2593,24 @@ function syncQuickAudienceButton() {
 
 function syncQuickNearMeButton() {
   const button =
-    qs('#chipNearMe');
+    qs(
+      '#chipNearMe'
+    );
 
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
   const active =
-    currentFilters.nearMeLat !== null &&
-    currentFilters.nearMeLat !== undefined &&
-    currentFilters.nearMeLon !== null &&
-    currentFilters.nearMeLon !== undefined;
+    isNearMePlace(
+      currentFilters
+    );
 
   button.setAttribute(
     'aria-pressed',
-    active ? 'true' : 'false'
+    active
+      ? 'true'
+      : 'false'
   );
 
   button.classList.toggle(
@@ -2603,6 +2675,7 @@ async function resetAllEventFilters() {
   currentFilters.dateFrom = '';
   currentFilters.dateTo = '';
   currentFilters.keyword = '';
+  currentFilters.placeType = '';
 
   currentFilters.countryCode = (
     getCookie('aj_country') ||
@@ -2653,12 +2726,27 @@ function setFilterInputsFromState() {
   if (sort) sort.value = currentFilters.sort || 'nearest';
 
   if (city) {
-    if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-      city.value = nearMeLabel();
-      city.setAttribute('data-autofromnearme', '1');
+    if (
+      isNearMePlace(
+        currentFilters
+      )
+    ) {
+      city.value =
+        nearMeLabel();
+
+      city.setAttribute(
+        'data-autofromnearme',
+        '1'
+      );
     } else {
-      city.value = currentFilters.cityLabel || currentFilters.city || '';
-      city.removeAttribute('data-autofromnearme');
+      city.value =
+        currentFilters.cityLabel ||
+        currentFilters.city ||
+        '';
+
+      city.removeAttribute(
+        'data-autofromnearme'
+      );
     }
   }
 
@@ -2699,19 +2787,66 @@ function syncFiltersFromForm() {
   currentFilters.dateFrom = from?.value || currentFilters.dateFrom || '';
   currentFilters.dateTo = to?.value || currentFilters.dateTo || '';
 
-  if (city && !city.matches('[data-autofromnearme="1"]')) {
-    const rawCity = (city.value || '').trim();
-    currentFilters.cityLabel = rawCity;
-    currentFilters.city = rawCity ? canonPreferredCity(rawCity) : '';
-    currentFilters.cityCountryCode = rawCity
-      ? cityCountryCodeFromLabel(rawCity, currentFilters.cityCountryCode)
-      : '';
+  if (
+    city &&
+    !city.matches(
+      '[data-autofromnearme="1"]'
+    )
+  ) {
+    const rawCity =
+      (
+        city.value ||
+        ''
+      ).trim();
 
-    if (!rawCity) {
-      currentFilters.nearMeLat = null;
-      currentFilters.nearMeLon = null;
-      currentFilters.cityCountryCode = '';
-      city.removeAttribute('data-autofromnearme');
+    if (
+      shouldPreserveCityRadiusInput(
+        currentFilters,
+        rawCity
+      )
+    ) {
+      /*
+       * Keep the resolved city-radius center on
+       * an unchanged form submission.
+       */
+    } else {
+      currentFilters.placeType =
+        rawCity
+          ? 'city'
+          : '';
+
+      currentFilters.cityLabel =
+        rawCity;
+
+      currentFilters.city =
+        rawCity
+          ? canonPreferredCity(
+              rawCity
+            )
+          : '';
+
+      currentFilters.cityCountryCode =
+        rawCity
+          ? cityCountryCodeFromLabel(
+              rawCity,
+              currentFilters.cityCountryCode
+            )
+          : '';
+
+      currentFilters.nearMeLat =
+        null;
+
+      currentFilters.nearMeLon =
+        null;
+
+      if (!rawCity) {
+        currentFilters.cityCountryCode =
+          '';
+
+        city.removeAttribute(
+          'data-autofromnearme'
+        );
+      }
     }
   }
 
@@ -2720,39 +2855,77 @@ function syncFiltersFromForm() {
 }
 
 function syncURLFromFilters() {
-  const u = new URL(location.href);
-  const p = u.searchParams;
+  const u =
+    new URL(
+      location.href
+    );
 
-  currentFilters.city ? p.set('city', currentFilters.city) : p.delete('city');
+  const p =
+    u.searchParams;
 
-  if (currentFilters.city && currentFilters.cityCountryCode) {
-    p.set('cityCc', currentFilters.cityCountryCode);
-  } else {
-    p.delete('cityCc');
-  }
+  syncPlaceSearchParams(
+    p,
+    currentFilters
+  );
 
-  currentFilters.dateFrom ? p.set('from', currentFilters.dateFrom) : p.delete('from');
-  currentFilters.dateTo ? p.set('to', currentFilters.dateTo) : p.delete('to');
-  (currentFilters.category && currentFilters.category !== 'all') ? p.set('segment', currentFilters.category) : p.delete('segment');
+  currentFilters.dateFrom
+    ? p.set(
+        'from',
+        currentFilters.dateFrom
+      )
+    : p.delete('from');
 
-  currentFilters.audience === 'family'
-    ? p.set('audience', 'family')
-    : p.delete('audience');
+  currentFilters.dateTo
+    ? p.set(
+        'to',
+        currentFilters.dateTo
+      )
+    : p.delete('to');
 
-  currentFilters.keyword ? p.set('q', currentFilters.keyword) : p.delete('q');
-  (currentFilters.sort && currentFilters.sort !== 'nearest') ? p.set('sort', currentFilters.sort) : p.delete('sort');
+  (
+    currentFilters.category &&
+    currentFilters.category !==
+      'all'
+  )
+    ? p.set(
+        'segment',
+        currentFilters.category
+      )
+    : p.delete('segment');
 
-  if (currentFilters.nearMeLat && currentFilters.nearMeLon) {
-    p.set('lat', String(currentFilters.nearMeLat));
-    p.set('lon', String(currentFilters.nearMeLon));
-    p.set('radius', String(currentFilters.nearMeRadiusKm || 50));
-  } else {
-    p.delete('lat');
-    p.delete('lon');
-    p.delete('radius');
-  }
+  currentFilters.audience ===
+    'family'
+      ? p.set(
+          'audience',
+          'family'
+        )
+      : p.delete(
+          'audience'
+        );
 
-  history.replaceState(null, '', u.toString());
+  currentFilters.keyword
+    ? p.set(
+        'q',
+        currentFilters.keyword
+      )
+    : p.delete('q');
+
+  (
+    currentFilters.sort &&
+    currentFilters.sort !==
+      'nearest'
+  )
+    ? p.set(
+        'sort',
+        currentFilters.sort
+      )
+    : p.delete('sort');
+
+  history.replaceState(
+    null,
+    '',
+    u.toString()
+  );
 }
 
 /* ───────── sort segmented ───────── */
@@ -3154,6 +3327,7 @@ function isNearMeTyped(input) {
 
 async function activateNearMeViaGeo(input) {
   const setState = ({ lat, lon }) => {
+    currentFilters.placeType = 'nearMe';
     currentFilters.city = '';
     currentFilters.cityLabel = nearMeLabel();
     currentFilters.cityCountryCode = '';
@@ -3524,6 +3698,7 @@ function buildCityTypeaheadOptions(input, locale) {
       const label = item?.city || item?.label || item?.name || '';
       const pickedCc = String(item?.countryCode || item?.country || '').trim().toUpperCase();
 
+      currentFilters.placeType = 'city';
       currentFilters.city = canonPreferredCity(label);
       currentFilters.cityLabel = label;
       currentFilters.cityCountryCode = pickedCc || cityCountryCodeFromLabel(label, currentFilters.cityCountryCode);
@@ -3542,6 +3717,7 @@ function buildCityTypeaheadOptions(input, locale) {
         isFinite(lon) &&
         ((Math.abs(lat) + Math.abs(lon)) > 0)
       ) {
+        currentFilters.placeType = 'nearMe';
         currentFilters.city = '';
         currentFilters.cityLabel = nearMeLabel();
         currentFilters.cityCountryCode = '';
@@ -3661,6 +3837,7 @@ function makeFetchSig(locale, api, page, perPage) {
     category: api.category || 'all',
     audience: api.audience || '',
     sort: api.sort || 'nearest',
+    placeType: api.placeType || '',
     city: api.city || '',
     cityCountryCode: api.cityCountryCode || '',
     dateFrom: api.dateFrom || '',
@@ -3681,40 +3858,40 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   setBusy(true);
 
   try {
-    const api = { ...filters, city: filters.city ? canonPreferredCity(filters.city) : '' };
+    let api = {
+      ...filters,
+      city:
+        filters.city
+          ? canonPreferredCity(
+              filters.city
+            )
+          : ''
+    };
 
-    if (api.city && !api.cityCountryCode) {
-      api.cityCountryCode = cityCountryCodeFromLabel(api.city, '');
+    if (
+      api.city &&
+      !api.cityCountryCode
+    ) {
+      api.cityCountryCode =
+        cityCountryCodeFromLabel(
+          api.city,
+          ''
+        );
     }
 
-    const latOk = typeof api.nearMeLat === 'number' && isFinite(api.nearMeLat);
-    const lonOk = typeof api.nearMeLon === 'number' && isFinite(api.nearMeLon);
-    const nonZero = (Math.abs(api.nearMeLat || 0) > 0.001) || (Math.abs(api.nearMeLon || 0) > 0.001);
-
-    if (latOk && lonOk && nonZero) {
-      const lat = +api.nearMeLat;
-      const lon = +api.nearMeLon;
-      const radius = clamp(+api.nearMeRadiusKm || 50, 10, 300);
-
-      Object.assign(api, {
-        city: '',
-        cityCountryCode: '',
-        nearMe: 1,
-        lat,
-        lon,
-        latitude: lat,
-        longitude: lon,
-        latlon: `${lat},${lon}`,
-        latlong: `${lat},${lon}`,
-        geoPoint: `${lat},${lon}`,
-        radiusKm: radius,
-        radius,
-        unit: 'km'
-      });
-    } else {
-      delete api.nearMeLat;
-      delete api.nearMeLon;
+    if (
+      api.placeType ===
+        'cityRadius' &&
+      api.cityCountryCode
+    ) {
+      api.countryCode =
+        api.cityCountryCode;
     }
+
+    api =
+      applyGeoRadiusToApiFilters(
+        api
+      );
 
     const sig = makeFetchSig(locale, api, pagination.page, pagination.perPage);
     if (sig === _lastFetchSig) return;
@@ -4372,32 +4549,147 @@ function initLanguageSwitchers() {
 
 /* ───────── initialization helpers ───────── */
 function initFiltersFromURL() {
-  const sp = new URLSearchParams(location.search);
+  const sp =
+    new URLSearchParams(
+      location.search
+    );
 
-  if (sp.get('city')) {
-    const raw = sp.get('city') || '';
-    currentFilters.city = canonPreferredCity(raw);
-    currentFilters.cityLabel = raw;
-    currentFilters.cityCountryCode = cityCountryCodeFromLabel(raw, sp.get('cityCc') || '');
+  const geoPlace =
+    readGeoPlaceFromSearchParams(
+      sp
+    );
+
+  if (
+    geoPlace?.mode ===
+    'cityRadius'
+  ) {
+    const raw =
+      geoPlace.city;
+
+    const cc =
+      cityCountryCodeFromLabel(
+        raw,
+        geoPlace.cityCc ||
+        ''
+      );
+
+    currentFilters.placeType =
+      'cityRadius';
+
+    currentFilters.city =
+      canonPreferredCity(raw) ||
+      raw;
+
+    currentFilters.cityLabel =
+      raw;
+
+    currentFilters.cityCountryCode =
+      cc;
+
+    if (cc) {
+      currentFilters.countryCode =
+        cc;
+    }
+
+    currentFilters.nearMeLat =
+      geoPlace.lat;
+
+    currentFilters.nearMeLon =
+      geoPlace.lon;
+
+    currentFilters.nearMeRadiusKm =
+      geoPlace.radiusKm;
+  } else if (sp.get('city')) {
+    const raw =
+      sp.get('city') ||
+      '';
+
+    currentFilters.placeType =
+      'city';
+
+    currentFilters.city =
+      canonPreferredCity(raw);
+
+    currentFilters.cityLabel =
+      raw;
+
+    currentFilters.cityCountryCode =
+      cityCountryCodeFromLabel(
+        raw,
+        sp.get('cityCc') ||
+        ''
+      );
+
+    if (
+      currentFilters.cityCountryCode
+    ) {
+      currentFilters.countryCode =
+        currentFilters.cityCountryCode;
+    }
   }
 
-  if (sp.get('from')) currentFilters.dateFrom = sp.get('from') || '';
-  if (sp.get('to')) currentFilters.dateTo = sp.get('to') || '';
-  if (sp.get('segment')) currentFilters.category = sp.get('segment') || 'all';
-
-  if (sp.get('audience') === 'family') {
-    currentFilters.audience = 'family';
+  if (sp.get('from')) {
+    currentFilters.dateFrom =
+      sp.get('from') ||
+      '';
   }
-  if (sp.get('q')) currentFilters.keyword = sp.get('q') || '';
-  if (sp.get('sort')) currentFilters.sort = sp.get('sort') || 'nearest';
 
-  if (sp.get('lat') && sp.get('lon')) {
-    currentFilters.nearMeLat = +sp.get('lat');
-    currentFilters.nearMeLon = +sp.get('lon');
-    currentFilters.nearMeRadiusKm = clamp(+(sp.get('radius') || 50), 10, 300);
-    currentFilters.cityLabel = nearMeLabel();
-    currentFilters.city = '';
-    currentFilters.cityCountryCode = '';
+  if (sp.get('to')) {
+    currentFilters.dateTo =
+      sp.get('to') ||
+      '';
+  }
+
+  if (sp.get('segment')) {
+    currentFilters.category =
+      sp.get('segment') ||
+      'all';
+  }
+
+  if (
+    sp.get('audience') ===
+    'family'
+  ) {
+    currentFilters.audience =
+      'family';
+  }
+
+  if (sp.get('q')) {
+    currentFilters.keyword =
+      sp.get('q') ||
+      '';
+  }
+
+  if (sp.get('sort')) {
+    currentFilters.sort =
+      sp.get('sort') ||
+      'nearest';
+  }
+
+  if (
+    geoPlace?.mode ===
+    'nearMe'
+  ) {
+    currentFilters.placeType =
+      'nearMe';
+
+    currentFilters.nearMeLat =
+      geoPlace.lat;
+
+    currentFilters.nearMeLon =
+      geoPlace.lon;
+
+    currentFilters.nearMeRadiusKm =
+      geoPlace.radiusKm;
+
+    currentFilters.cityLabel =
+      nearMeLabel();
+
+    currentFilters.city =
+      '';
+
+    currentFilters.cityCountryCode =
+      '';
   }
 
   syncLocalizedCityLabelFromCurrentState();

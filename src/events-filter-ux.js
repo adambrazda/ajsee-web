@@ -1,3 +1,8 @@
+import {
+  formatCityRadiusLabel,
+  isCityRadiusPlace,
+  isNearMePlace
+} from './event-place-runtime.js';
 // /src/events-filter-ux.js
 // AJSEE – reusable UX helpers for the events filter summary and date presets.
 
@@ -163,16 +168,37 @@ export function getActiveFilterDescriptors(
     });
   }
 
-  const nearMe = hasCoordinates(filters);
-  const placeLabel = nearMe
-    ? String(labels.nearMe || filters.cityLabel || 'Near me').trim()
-    : String(
-      filters.cityLabel ||
-      filters.city ||
-      (filters.placeType === 'country'
-        ? labels.countries?.[filters.countryCode] || filters.countryCode || ''
-        : '')
-    ).trim();
+  const nearMe =
+    isNearMePlace(filters);
+
+  const cityRadius =
+    isCityRadiusPlace(filters);
+
+  const placeLabel =
+    nearMe
+      ? String(
+          labels.nearMe ||
+          filters.cityLabel ||
+          'Near me'
+        ).trim()
+      : cityRadius
+        ? formatCityRadiusLabel(
+            filters
+          )
+        : String(
+            filters.cityLabel ||
+            filters.city ||
+            (
+              filters.placeType ===
+              'country'
+                ? labels.countries?.[
+                    filters.countryCode
+                  ] ||
+                  filters.countryCode ||
+                  ''
+                : ''
+            )
+          ).trim();
 
   if (placeLabel) {
     descriptors.push({

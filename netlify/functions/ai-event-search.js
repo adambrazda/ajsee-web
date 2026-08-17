@@ -1062,6 +1062,22 @@ export function createAiEventSearchHandler({
         ? body.turnstileToken
         : '';
 
+    const useCloudflareDummyContext =
+      env.TURNSTILE_TEST_MODE ===
+        'cloudflare-dummy';
+
+    const expectedTurnstileAction =
+      useCloudflareDummyContext
+        ? 'test'
+        : TURNSTILE_ACTION;
+
+    const expectedTurnstileHostname =
+      useCloudflareDummyContext
+        ? 'localhost'
+        : new URL(
+            request.url
+          ).hostname;
+
     let turnstileResult =
       null;
 
@@ -1075,12 +1091,10 @@ export function createAiEventSearchHandler({
             env.TURNSTILE_SECRET_KEY,
 
           expectedAction:
-            TURNSTILE_ACTION,
+            expectedTurnstileAction,
 
           expectedHostname:
-            new URL(
-              request.url
-            ).hostname,
+            expectedTurnstileHostname,
 
           fetchImpl,
 

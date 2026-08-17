@@ -503,3 +503,113 @@ test(
     );
   }
 );
+test(
+  'production Turnstile context remains strict by default',
+  async () => {
+    let captured =
+      null;
+
+    const handler =
+      createAiEventSearchHandler({
+        env: {
+          TURNSTILE_SECRET_KEY:
+            'test-secret'
+        },
+
+        verifyTurnstileImpl:
+          async options => {
+            captured =
+              options;
+
+            return {
+              ok:
+                true
+            };
+          },
+
+        fetchImpl:
+          async () => {
+            throw new Error(
+              'OpenAI must not run'
+            );
+          }
+      });
+
+    const response =
+      await handler(
+        makeRequest()
+      );
+
+    assert.equal(
+      response.status,
+      503
+    );
+
+    assert.equal(
+      captured.expectedAction,
+      'ai_event_search'
+    );
+
+    assert.equal(
+      captured.expectedHostname,
+      'ajsee.example'
+    );
+  }
+);
+
+test(
+  'explicit Cloudflare dummy mode uses documented test context',
+  async () => {
+    let captured =
+      null;
+
+    const handler =
+      createAiEventSearchHandler({
+        env: {
+          TURNSTILE_SECRET_KEY:
+            'test-secret',
+
+          TURNSTILE_TEST_MODE:
+            'cloudflare-dummy'
+        },
+
+        verifyTurnstileImpl:
+          async options => {
+            captured =
+              options;
+
+            return {
+              ok:
+                true
+            };
+          },
+
+        fetchImpl:
+          async () => {
+            throw new Error(
+              'OpenAI must not run'
+            );
+          }
+      });
+
+    const response =
+      await handler(
+        makeRequest()
+      );
+
+    assert.equal(
+      response.status,
+      503
+    );
+
+    assert.equal(
+      captured.expectedAction,
+      'test'
+    );
+
+    assert.equal(
+      captured.expectedHostname,
+      'localhost'
+    );
+  }
+);

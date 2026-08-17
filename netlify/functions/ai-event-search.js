@@ -12,8 +12,15 @@ import {
   validateFilterIntent
 } from '../../src/ai-search/intent-schema.js';
 
+import {
+  verifyTurnstileToken
+} from './_shared/turnstile.js';
+
 const OPENAI_RESPONSES_URL =
   'https://api.openai.com/v1/responses';
+
+const TURNSTILE_ACTION =
+  'ai_event_search';
 
 const DEFAULT_MODEL =
   'gpt-5.6-luna';
@@ -680,6 +687,75 @@ export function extractResponseOutput(
   };
 }
 
+function turnstileFailureResponse(
+  result = {}
+) {
+  if (
+    result.code ===
+    'not-configured'
+  ) {
+    return jsonResponse(
+      {
+        ok:
+          false,
+
+        code:
+          'security-not-configured',
+
+        retryable:
+          false
+      },
+      {
+        status:
+          503
+      }
+    );
+  }
+
+  if (
+    [
+      'invalid-token',
+      'rejected',
+      'context-mismatch'
+    ].includes(
+      result.code
+    )
+  ) {
+    return jsonResponse(
+      {
+        ok:
+          false,
+
+        code:
+          'human-verification-failed',
+
+        retryable:
+          false
+      },
+      {
+        status:
+          403
+      }
+    );
+  }
+
+  return jsonResponse(
+    {
+      ok:
+        false,
+
+      code:
+        'human-verification-unavailable',
+
+      retryable:
+        true
+    },
+    {
+      status:
+        503
+    }
+  );
+}
 function upstreamErrorResponse(
   status
 ) {
@@ -746,7 +822,9 @@ function upstreamErrorResponse(
 export function createAiEventSearchHandler({
   fetchImpl = globalThis.fetch,
   env = process.env,
-  nowProvider = () => new Date()
+  nowProvider = () => new Date(),
+  verifyTurnstileImpl =
+    verifyTurnstileToken
 } = {}) {
   return async function aiEventSearchHandler(
     request
@@ -978,6 +1056,57 @@ export function createAiEventSearchHandler({
       );
     }
 
+    const turnstileToken =
+      typeof body.turnstileToken ===
+        'string'
+        ? body.turnstileToken
+        : '';
+
+    let turnstileResult =
+      null;
+
+    try {
+      turnstileResult =
+        await verifyTurnstileImpl({
+          token:
+            turnstileToken,
+
+          secretKey:
+            env.TURNSTILE_SECRET_KEY,
+
+          expectedAction:
+            TURNSTILE_ACTION,
+
+          expectedHostname:
+            new URL(
+              request.url
+            ).hostname,
+
+          fetchImpl,
+
+          timeoutMs:
+            env.TURNSTILE_TIMEOUT_MS
+        });
+    } catch {
+      turnstileResult = {
+        ok:
+          false,
+
+        code:
+          'unexpected-error',
+
+        retryable:
+          true
+      };
+    }
+
+    if (
+      !turnstileResult?.ok
+    ) {
+      return turnstileFailureResponse(
+        turnstileResult
+      );
+    }
     const apiKey =
       String(
         env.OPENAI_API_KEY ||

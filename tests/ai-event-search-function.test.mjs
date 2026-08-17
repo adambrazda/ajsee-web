@@ -3,9 +3,26 @@ import assert from 'node:assert/strict';
 
 import {
   buildFilterIntentJsonSchema,
-  createAiEventSearchHandler,
+  createAiEventSearchHandler as createProductionAiEventSearchHandler,
   extractResponseOutput
 } from '../netlify/functions/ai-event-search.js';
+
+const allowTurnstile =
+  async () => ({
+    ok:
+      true
+  });
+
+function createAiEventSearchHandler(
+  options = {}
+) {
+  return createProductionAiEventSearchHandler({
+    verifyTurnstileImpl:
+      allowTurnstile,
+
+    ...options
+  });
+}
 
 function makeRequest(
   body,

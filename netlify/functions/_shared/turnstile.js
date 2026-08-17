@@ -59,6 +59,7 @@ export async function verifyTurnstileToken({
   secretKey,
   expectedAction = '',
   expectedHostname = '',
+  requireTestingKeyResponse = false,
   fetchImpl = globalThis.fetch,
   timeoutMs =
     DEFAULT_TIMEOUT_MS
@@ -226,6 +227,17 @@ export async function verifyTurnstileToken({
   ) {
     return failure(
       'rejected'
+    );
+  }
+
+  if (
+    requireTestingKeyResponse ===
+      true &&
+    data.metadata?.result_with_testing_key !==
+      true
+  ) {
+    return failure(
+      'context-mismatch'
     );
   }
 

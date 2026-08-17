@@ -1068,12 +1068,12 @@ export function createAiEventSearchHandler({
 
     const expectedTurnstileAction =
       useCloudflareDummyContext
-        ? 'test'
+        ? ''
         : TURNSTILE_ACTION;
 
     const expectedTurnstileHostname =
       useCloudflareDummyContext
-        ? 'localhost'
+        ? ''
         : new URL(
             request.url
           ).hostname;
@@ -1095,6 +1095,9 @@ export function createAiEventSearchHandler({
 
           expectedHostname:
             expectedTurnstileHostname,
+
+          requireTestingKeyResponse:
+            useCloudflareDummyContext,
 
           fetchImpl,
 

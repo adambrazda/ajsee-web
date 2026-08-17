@@ -604,12 +604,17 @@ test(
 
     assert.equal(
       captured.expectedAction,
-      'test'
+      ''
     );
 
     assert.equal(
       captured.expectedHostname,
-      'localhost'
+      ''
+    );
+
+    assert.equal(
+      captured.requireTestingKeyResponse,
+      true
     );
   }
 );

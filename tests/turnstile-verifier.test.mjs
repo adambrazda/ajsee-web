@@ -8,13 +8,21 @@ import {
 function siteverifyResponse({
   success = true,
   action = 'ai_event_search',
-  hostname = 'ajsee.cz'
+  hostname = 'ajsee.cz',
+  metadata
 } = {}) {
   return new Response(
     JSON.stringify({
       success,
       action,
       hostname,
+
+      ...(metadata === undefined
+        ? {}
+        : {
+            metadata
+          }),
+
       'error-codes':
         success
           ? []
@@ -449,6 +457,76 @@ test(
         retryable:
           true
       }
+    );
+  }
+);
+test(
+  'accepts an explicit Cloudflare testing-key response when required',
+  async () => {
+    const result =
+      await verifyTurnstileToken({
+        token:
+          'XXXX.DUMMY.TOKEN.XXXX',
+
+        secretKey:
+          'test-secret',
+
+        requireTestingKeyResponse:
+          true,
+
+        fetchImpl:
+          async () =>
+            siteverifyResponse({
+              action:
+                '',
+
+              hostname:
+                'example.com',
+
+              metadata: {
+                result_with_testing_key:
+                  true
+              }
+            })
+      });
+
+    assert.deepEqual(
+      result,
+      {
+        ok:
+          true
+      }
+    );
+  }
+);
+
+test(
+  'rejects an ordinary success response in testing-key mode',
+  async () => {
+    const result =
+      await verifyTurnstileToken({
+        token:
+          'valid-token',
+
+        secretKey:
+          'test-secret',
+
+        requireTestingKeyResponse:
+          true,
+
+        fetchImpl:
+          async () =>
+            siteverifyResponse()
+      });
+
+    assert.equal(
+      result.ok,
+      false
+    );
+
+    assert.equal(
+      result.code,
+      'context-mismatch'
     );
   }
 );

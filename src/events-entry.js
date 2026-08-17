@@ -6,6 +6,7 @@ import {
   syncPlaceSearchParams
 } from './event-place-runtime.js';
 import { scrollToSharedEventResults } from './event-filters.js';
+import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   ensureSharedEventGridStyles,
   eventImageOrFallback,
@@ -5290,6 +5291,11 @@ async function bootstrapMain() {
   safeInitLangDropdown();
 
   const formEl = qs('#events-filters-form');
+
+  initAiEventSearch({
+    form: formEl,
+    getLocale: () => currentLang
+  });
 
   /* AJSEE_KEEP_EVENTS_QUICK_FILTERS_BOOTSTRAP_V1
      Quick filters are permanent product UI and must remain

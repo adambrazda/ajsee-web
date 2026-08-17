@@ -7,6 +7,7 @@ import {
   syncPlaceSearchParams
 } from './event-place-runtime.js';
 import { scrollToSharedEventResults } from './event-filters.js';
+import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   detectDatePreset,
   getDatePresetRange
@@ -4917,6 +4918,11 @@ async function bootstrapMain() {
   safeInitLangDropdown();
 
   const formEl = qs('#events-filters-form');
+
+  initAiEventSearch({
+    form: formEl,
+    getLocale: () => currentLang
+  });
 
   upgradeSortToSegmented();
   normalizeFilterFormUI();

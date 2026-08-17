@@ -69,7 +69,7 @@
 
     if (!user) {
       setStatus(
-        "Pro kontrolu stavu se nejprve p?ihlaste do AJSEE Admin."
+        "Pro kontrolu stavu se nejprve přihlaste do AJSEE Admin."
       );
       return;
     }
@@ -83,7 +83,7 @@
 
     if (!isValidSlug(slug)) {
       setStatus(
-        "Slug nen? ve spr?vn?m form?tu."
+        "Slug není ve správném formátu."
       );
       return;
     }
@@ -92,7 +92,7 @@
       ++requestId;
 
     setStatus(
-      "Ov??uji stav obsahu?"
+      "Ověřuji stav obsahu…"
     );
 
     try {
@@ -149,7 +149,7 @@
             : "unknown-error";
 
         setStatus(
-          `Stav se nepoda?ilo na??st (${code}).`
+          `Stav se nepodařilo načíst (${code}).`
         );
         return;
       }
@@ -164,7 +164,7 @@
         data?.published === true
       ) {
         setStatus(
-          "Obsah je ji? zve?ejn?n?."
+          "Obsah je již zveřejněný."
         );
         return;
       }
@@ -174,7 +174,7 @@
         data?.canPrepare === true
       ) {
         setStatus(
-          "Obsah je schv?len? a p?ipraven? k bezpe?n? p??prav? publikace. Akce zat?m nen? v t?to verzi povolena."
+          "Obsah je schválený a připravený k bezpečné přípravě publikace. Akce zatím není v této verzi povolena."
         );
         return;
       }
@@ -183,13 +183,13 @@
         state === "draft"
       ) {
         setStatus(
-          "Obsah je st?le ve stavu draft a nelze jej p?ipravit k publikaci."
+          "Obsah je stále ve stavu draft a nelze jej připravit k publikaci."
         );
         return;
       }
 
       setStatus(
-        `Aktu?ln? stav obsahu: ${state}. Publika?n? akce nen? dostupn?.`
+        `Aktuální stav obsahu: ${state}. Publikační akce není dostupná.`
       );
     }
     catch {
@@ -201,7 +201,7 @@
       }
 
       setStatus(
-        "Stav se nepoda?ilo ov??it. Zkuste str?nku obnovit nebo se znovu p?ihl?sit."
+        "Stav se nepodařilo ověřit. Zkuste stránku obnovit nebo se znovu přihlásit."
       );
     }
     finally {
@@ -219,7 +219,7 @@
 
     if (user) {
       setStatus(
-        "P?ihl??en? ov??eno. Zadejte slug recenze nebo preview."
+        "Přihlášení ověřeno. Zadejte slug recenze nebo preview."
       );
 
       if (
@@ -234,7 +234,7 @@
     }
 
     setStatus(
-      "Pro kontrolu stavu se nejprve p?ihlaste do AJSEE Admin."
+      "Pro kontrolu stavu se nejprve přihlaste do AJSEE Admin."
     );
   }
 
@@ -244,7 +244,7 @@
 
     if (!identity) {
       setStatus(
-        "Netlify Identity se nepoda?ilo na??st."
+        "Netlify Identity se nepodařilo načíst."
       );
       prepareButton.disabled = true;
       return;

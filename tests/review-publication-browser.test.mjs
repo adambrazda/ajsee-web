@@ -90,3 +90,34 @@ test(
     );
   }
 );
+
+
+test(
+  'publication admin preserves Czech UTF-8 status text',
+  () => {
+    assert.match(
+      script,
+      /P\u0159ihl\u00e1\u0161en\u00ed ov\u011b\u0159eno\./
+    );
+
+    assert.match(
+      script,
+      /Obsah je ji\u017e zve\u0159ejn\u011bn\u00fd\./
+    );
+
+    assert.match(
+      script,
+      /Obsah je schv\u00e1len\u00fd a p\u0159ipraven\u00fd/
+    );
+
+    assert.match(
+      script,
+      /Netlify Identity se nepoda\u0159ilo na\u010d\u00edst\./
+    );
+
+    assert.doesNotMatch(
+      script,
+      /p\?ihl|ov\?\?|zve\?ejn|nepoda\?ilo|na\?\?st/i
+    );
+  }
+);

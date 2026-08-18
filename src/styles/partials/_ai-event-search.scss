@@ -285,3 +285,79 @@ body[data-theme="dark"]
     transition: none;
   }
 }
+/* =========================================================
+   AJSEE_AI_SEARCH_COMPACT_V2
+   Further vertical reduction after real-device review.
+========================================================= */
+
+.ai-event-search {
+  margin-bottom: 8px;
+  padding-bottom: 9px;
+}
+
+.ai-event-search__heading {
+  gap: 7px;
+  margin-bottom: 1px;
+}
+
+.ai-event-search__label {
+  font-size: clamp(0.92rem, 1.2vw, 1rem);
+}
+
+.ai-event-search__badge {
+  min-height: 19px;
+  padding-inline: 6px;
+}
+
+.ai-event-search__helper {
+  margin-bottom: 6px;
+  font-size: 0.79rem;
+  line-height: 1.35;
+}
+
+.ai-event-search__controls {
+  gap: 7px;
+}
+
+.ai-event-search__input,
+.ai-event-search__submit {
+  min-height: 44px;
+}
+
+.ai-event-search__input {
+  padding-inline: 13px;
+}
+
+.ai-event-search__submit {
+  min-width: 146px;
+  padding-inline: 15px;
+}
+
+.ai-event-search__status {
+  margin-top: 5px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 420px) {
+  .ai-event-search {
+    margin-bottom: 7px;
+    padding-bottom: 8px;
+  }
+
+  .ai-event-search__heading {
+    margin-bottom: 1px;
+  }
+
+  .ai-event-search__helper {
+    margin-bottom: 6px;
+  }
+
+  .ai-event-search__controls {
+    gap: 6px;
+  }
+
+  .ai-event-search__input,
+  .ai-event-search__submit {
+    min-height: 44px;
+  }
+}

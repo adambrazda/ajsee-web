@@ -11,6 +11,8 @@ import { initAiEventSearch } from './ai-search/ui-controller.js';
 import { mapIntentToFilters } from './ai-search/intent-to-filters.js';
 import { resolveIntentRequirements } from './ai-search/requirement-resolver.js';
 import { materializeSearchPlan } from './ai-search/search-plan-materializer.js';
+import { createSuggestCitiesResolver } from './ai-search/city-resolver-adapter.js';
+import { materializedPlanToRuntimeFilters } from './ai-search/runtime-filter-state.js';
 import {
   detectDatePreset,
   getDatePresetRange
@@ -4699,6 +4701,34 @@ function initFiltersFromURL() {
   syncLocalizedCityLabelFromCurrentState();
 }
 
+async function getAiSearchGeolocation() {
+  try {
+    return await acquireGeolocation({
+      timeout:
+        15000,
+
+      highAccuracy:
+        false
+    });
+  } catch (browserError) {
+    try {
+      return await fallbackGeoFromEdge();
+    } catch {
+      const error =
+        new Error(
+          geoErrorMessage(
+            browserError
+          )
+        );
+
+      error.code =
+        'GEOLOCATION_UNAVAILABLE';
+
+      throw error;
+    }
+  }
+}
+
 async function applyAiEventSearchIntent(intent) {
   const mapped =
     mapIntentToFilters(
@@ -4709,9 +4739,21 @@ async function applyAiEventSearchIntent(intent) {
       }
     );
 
+  const resolveCity =
+    createSuggestCitiesResolver({
+      locale:
+        currentLang
+    });
+
   const resolved =
     await resolveIntentRequirements(
-      mapped
+      mapped,
+      {
+        resolveCity,
+
+        getGeolocation:
+          getAiSearchGeolocation
+      }
     );
 
   const materialized =
@@ -4742,9 +4784,14 @@ async function applyAiEventSearchIntent(intent) {
     throw error;
   }
 
-  currentFilters = {
-    ...materialized.filters
-  };
+  currentFilters =
+    materializedPlanToRuntimeFilters(
+      materialized,
+      {
+        nearMeLabel:
+          nearMeLabel()
+      }
+    );
 
   _userInteractedWithFilters =
     true;
@@ -4753,7 +4800,7 @@ async function applyAiEventSearchIntent(intent) {
 
   setFilterInputsFromState();
 
-  syncQuickDateButtons();
+  syncQuickFilterButtons();
 
   await renderAndSync({
     resetPage:

@@ -159,7 +159,7 @@ test(
 
       assert.match(
         source,
-        /currentFilters\s*=\s*\{\s*\.\.\.materialized\.filters\s*\}/s
+        /currentFilters\s*=\s*materializedPlanToRuntimeFilters\(/s
       );
 
       assert.match(
@@ -186,6 +186,58 @@ test(
     assert.match(
       controller,
       /unsupportedPreferences\.length > 0/
+    );
+  }
+);
+
+test(
+  'AI search resolves city radius and Near Me requirements in both page runtimes',
+  () => {
+    for (
+      const source of [
+        homeEntry,
+        eventsEntry
+      ]
+    ) {
+      assert.match(
+        source,
+        /from '\.\/ai-search\/city-resolver-adapter\.js'/
+      );
+
+      assert.match(
+        source,
+        /from '\.\/ai-search\/runtime-filter-state\.js'/
+      );
+
+      assert.match(
+        source,
+        /createSuggestCitiesResolver\(\{[\s\S]*?locale:\s*currentLang/
+      );
+
+      assert.match(
+        source,
+        /getGeolocation:\s*getAiSearchGeolocation/
+      );
+
+      assert.match(
+        source,
+        /materializedPlanToRuntimeFilters\(/
+      );
+    }
+
+    assert.match(
+      homeEntry,
+      /syncQuickFilterButtons\(\);/
+    );
+
+    assert.match(
+      eventsEntry,
+      /function syncQuickNearMeButton\(\)[\s\S]*?isNearMePlace\([\s\S]*?currentFilters/
+    );
+
+    assert.match(
+      eventsEntry,
+      /async function renderAndSync\([\s\S]*?normalizeDates\(\);[\s\S]*?syncQuickNearMeButton\(\);[\s\S]*?syncURLFromFilters\(\);/
     );
   }
 );

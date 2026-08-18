@@ -43,33 +43,63 @@ const SHARED_EVENT_FILTERS_MARKUP = `
 
       <button
         type="button"
+        class="chip chip-near"
+        id="chipNearMe"
+        aria-pressed="false"
+        aria-label="V mém okolí"
+        data-i18n-aria="filters.nearMe"
+        title="V mém okolí"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"></path>
+        </svg>
+
+        <span data-i18n-key="filters.nearMe">
+          V mém okolí
+        </span>
+      </button>
+
+      <button
+        type="button"
         class="chip ghost"
         id="chipClear"
         data-i18n-key="filters.reset"
       >Vymazat</button>
     </div>
-
-    <button
-      type="button"
-      class="chip chip-near"
-      id="chipNearMe"
-      aria-pressed="false"
-      aria-label="V mém okolí"
-      data-i18n-aria="filters.nearMe"
-      title="V mém okolí"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="3"></circle>
-        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1"></path>
-      </svg>
-
-      <span data-i18n-key="filters.nearMe">
-        V mém okolí
-      </span>
-    </button>
   </div>
 
-  <fieldset class="filters-fieldset">
+  <button
+    type="button"
+    class="filters-details-toggle"
+    id="filters-details-toggle"
+    aria-expanded="false"
+    aria-controls="events-filters-details"
+  >
+    <span data-filter-details-label>
+      Upřesnit filtry
+    </span>
+
+    <svg
+      viewBox="0 0 20 20"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M5.5 7.5 10 12l4.5-4.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></path>
+    </svg>
+  </button>
+
+  <fieldset
+    class="filters-fieldset"
+    id="events-filters-details"
+  >
     <legend class="sr-only">Filtry</legend>
 
     <div class="filter-group native-date from is-hidden">
@@ -277,6 +307,319 @@ const SHARED_EVENT_FILTERS_MARKUP = `
   </fieldset>
 `;
 
+const FILTER_DETAILS_COPY = {
+  cs: {
+    expand: 'Upřesnit filtry',
+    collapse: 'Skrýt filtry'
+  },
+
+  en: {
+    expand: 'Refine filters',
+    collapse: 'Hide filters'
+  },
+
+  de: {
+    expand: 'Filter verfeinern',
+    collapse: 'Filter ausblenden'
+  },
+
+  sk: {
+    expand: 'Spresniť filtre',
+    collapse: 'Skryť filtre'
+  },
+
+  pl: {
+    expand: 'Doprecyzuj filtry',
+    collapse: 'Ukryj filtry'
+  },
+
+  hu: {
+    expand: 'Szűrők pontosítása',
+    collapse: 'Szűrők elrejtése'
+  }
+};
+
+
+function sharedFilterDisclosureLocale(
+  doc
+) {
+  const raw =
+    String(
+      doc?.documentElement?.lang ||
+      'cs'
+    )
+      .trim()
+      .toLowerCase();
+
+  const locale =
+    raw.split('-')[0];
+
+  return FILTER_DETAILS_COPY[locale]
+    ? locale
+    : 'cs';
+}
+
+
+function sharedFilterForm(
+  doc
+) {
+  return doc
+    ?.getElementById?.(
+      'events-filters-form'
+    ) ||
+    null;
+}
+
+
+function hasDetailedFilterUrlState(
+  win
+) {
+  const search =
+    String(
+      win?.location?.search ||
+      ''
+    );
+
+  if (!search) {
+    return false;
+  }
+
+  const params =
+    new URLSearchParams(
+      search
+    );
+
+  return [
+    'segment',
+    'city',
+    'cityCC',
+    'keyword',
+    'q',
+    'from',
+    'to',
+    'placeType',
+    'lat',
+    'lon',
+    'radius'
+  ].some(
+    key =>
+      params.has(key)
+  );
+}
+
+
+export function syncSharedEventFilterDisclosureCopy(
+  doc = globalThis.document
+) {
+  const form =
+    sharedFilterForm(
+      doc
+    );
+
+  const button =
+    form?.querySelector?.(
+      '#filters-details-toggle'
+    );
+
+  const label =
+    button?.querySelector?.(
+      '[data-filter-details-label]'
+    );
+
+  if (
+    !form ||
+    !button ||
+    !label
+  ) {
+    return false;
+  }
+
+  const locale =
+    sharedFilterDisclosureLocale(
+      doc
+    );
+
+  const expanded =
+    form.dataset
+      .ajseeFilterDetailsExpanded ===
+    'true';
+
+  const copy =
+    FILTER_DETAILS_COPY[
+      locale
+    ];
+
+  const text =
+    expanded
+      ? copy.collapse
+      : copy.expand;
+
+  label.textContent =
+    text;
+
+  button.setAttribute(
+    'aria-label',
+    text
+  );
+
+  return true;
+}
+
+
+export function setSharedEventFilterDetailsExpanded(
+  expanded,
+  doc = globalThis.document
+) {
+  const form =
+    sharedFilterForm(
+      doc
+    );
+
+  const button =
+    form?.querySelector?.(
+      '#filters-details-toggle'
+    );
+
+  if (
+    !form ||
+    !button
+  ) {
+    return false;
+  }
+
+  const value =
+    expanded === true;
+
+  form.dataset
+    .ajseeFilterDetailsExpanded =
+      value
+        ? 'true'
+        : 'false';
+
+  button.setAttribute(
+    'aria-expanded',
+    String(value)
+  );
+
+  syncSharedEventFilterDisclosureCopy(
+    doc
+  );
+
+  return true;
+}
+
+
+export function initSharedEventFilterDisclosure(
+  form,
+  doc = globalThis.document,
+  win = doc?.defaultView ||
+    globalThis.window
+) {
+  const button =
+    form?.querySelector?.(
+      '#filters-details-toggle'
+    );
+
+  if (
+    !form ||
+    !button
+  ) {
+    return false;
+  }
+
+  if (
+    !form.dataset
+      .ajseeFilterDetailsExpanded
+  ) {
+    setSharedEventFilterDetailsExpanded(
+      hasDetailedFilterUrlState(
+        win
+      ),
+      doc
+    );
+  } else {
+    setSharedEventFilterDetailsExpanded(
+      form.dataset
+        .ajseeFilterDetailsExpanded ===
+        'true',
+      doc
+    );
+  }
+
+  if (
+    button.dataset
+      .ajseeFilterDetailsBound !==
+    '1'
+  ) {
+    button.addEventListener(
+      'click',
+      () => {
+        const expanded =
+          form.dataset
+            .ajseeFilterDetailsExpanded ===
+          'true';
+
+        setSharedEventFilterDetailsExpanded(
+          !expanded,
+          doc
+        );
+      }
+    );
+
+    button.dataset
+      .ajseeFilterDetailsBound =
+        '1';
+  }
+
+  const Observer =
+    win?.MutationObserver;
+
+  if (
+    typeof Observer ===
+      'function' &&
+    doc?.documentElement &&
+    !form
+      ._ajseeFilterDisclosureObserver
+  ) {
+    const observer =
+      new Observer(
+        mutations => {
+          if (
+            mutations.some(
+              mutation =>
+                mutation.type ===
+                  'attributes' &&
+                mutation.attributeName ===
+                  'lang'
+            )
+          ) {
+            syncSharedEventFilterDisclosureCopy(
+              doc
+            );
+          }
+        }
+      );
+
+    observer.observe(
+      doc.documentElement,
+      {
+        attributes:
+          true,
+
+        attributeFilter: [
+          'lang'
+        ]
+      }
+    );
+
+    form
+      ._ajseeFilterDisclosureObserver =
+        observer;
+  }
+
+  return true;
+}
+
 export function getSharedEventFiltersMarkup() {
   return SHARED_EVENT_FILTERS_MARKUP;
 }
@@ -298,6 +641,13 @@ export function ensureSharedEventFiltersMarkup(
       .ajseeSharedEventFilters ===
     'v1'
   ) {
+    initSharedEventFilterDisclosure(
+      form,
+      doc,
+      doc?.defaultView ||
+        globalThis.window
+    );
+
     return form;
   }
 
@@ -306,6 +656,13 @@ export function ensureSharedEventFiltersMarkup(
 
   form.dataset.ajseeSharedEventFilters =
     'v1';
+
+  initSharedEventFilterDisclosure(
+    form,
+    doc,
+    doc?.defaultView ||
+      globalThis.window
+  );
 
   return form;
 }

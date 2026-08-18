@@ -5,7 +5,10 @@ import {
   shouldPreserveCityRadiusInput,
   syncPlaceSearchParams
 } from './event-place-runtime.js';
-import { scrollToSharedEventResults } from './event-filters.js';
+import {
+  scrollToSharedEventResults,
+  setSharedEventFilterDetailsExpanded
+} from './event-filters.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import { mapIntentToFilters } from './ai-search/intent-to-filters.js';
 import { resolveIntentRequirements } from './ai-search/requirement-resolver.js';
@@ -3485,6 +3488,10 @@ async function applyAiEventSearchIntent(intent) {
   _lastFetchSig = '';
 
   setFilterInputsFromState();
+
+  setSharedEventFilterDetailsExpanded(
+    true
+  );
 
   syncQuickDateButtons();
 

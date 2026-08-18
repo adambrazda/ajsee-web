@@ -756,3 +756,321 @@ body[data-page="events"] .events-filter-chip__remove {
     justify-content: center;
   }
 }
+/* =========================================================
+   AJSEE_AI_FILTER_COMPACT_V1
+   Compact visual pass after AI search integration.
+   Visual only: no filter behaviour or DOM contract changes.
+========================================================= */
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock {
+  --events-filter-gap: 10px;
+  --events-filter-control-h: 62px;
+
+  margin-bottom: clamp(1.1rem, 1.6vw, 1.45rem);
+  padding: 14px 16px;
+
+  border-radius: clamp(20px, 1.6vw, 24px);
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filters-toolbar {
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 0 2px 2px;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filters-toolbar
+.chips {
+  gap: 6px;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filters-toolbar
+.chip {
+  min-height: 40px;
+  padding: 0.48rem 0.78rem;
+
+  font-size: 0.84rem;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-group
+> label {
+  top: 10px;
+  left: 15px;
+
+  font-size: 11px;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+input.styled-input,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+select.styled-select,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.date-combo
+.combo-button {
+  min-height: var(--events-filter-control-h);
+  height: var(--events-filter-control-h);
+
+  border-radius: 18px;
+  padding: 24px 15px 8px;
+
+  font-size: clamp(0.94rem, 0.9vw, 1rem);
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+#filter-category {
+  padding:
+    24px
+    42px
+    8px
+    15px;
+
+  background-position: right 15px center;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-group:has(#filter-city)
+.styled-input,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-group:has(#filter-keyword)
+.styled-input {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.date-combo
+.combo-button {
+  padding-left: 15px;
+  padding-right: 42px;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-actions
+.btn.btn-primary,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-actions
+[type="submit"].btn {
+  min-height: var(--events-filter-control-h);
+  height: var(--events-filter-control-h);
+
+  border-radius: 18px;
+  padding-inline: clamp(18px, 1.5vw, 24px);
+
+  font-size: clamp(0.96rem, 0.9vw, 1.02rem);
+
+  box-shadow:
+    0 16px 28px rgba(14, 136, 240, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+@media (min-width: 1181px) {
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset {
+    gap: 10px;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1180px) {
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock {
+    padding: 14px;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset {
+    gap: 12px;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock {
+    --events-filter-control-h: 58px;
+
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 0;
+
+    overflow: visible;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  .chips {
+    display: flex;
+    flex-wrap: nowrap;
+
+    width: 100%;
+    min-width: 0;
+
+    gap: 6px;
+    padding: 0 2px 3px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  .chips
+  .chip {
+    flex: 0 0 auto;
+
+    width: auto;
+    min-width: max-content;
+    min-height: 44px;
+
+    padding-inline: 0.75rem;
+
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  #chipClear {
+    grid-column: auto;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar
+  #chipNearMe {
+    width: auto;
+    min-width: max-content;
+    min-height: 44px;
+
+    padding: 0 0.8rem;
+
+    white-space: nowrap;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset {
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    grid-template-areas:
+      "category date"
+      "city city"
+      "keyword keyword"
+      "actions actions";
+
+    gap: 10px;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-group
+  > label {
+    top: 9px;
+    left: 14px;
+
+    font-size: 10.5px;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  input.styled-input,
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  select.styled-select,
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .date-combo
+  .combo-button {
+    min-height: var(--events-filter-control-h);
+    height: var(--events-filter-control-h);
+
+    border-radius: 16px;
+    padding: 23px 14px 7px;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  #filter-category {
+    padding:
+      23px
+      40px
+      7px
+      14px;
+
+    background-position: right 14px center;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .date-combo
+  .combo-button {
+    padding-left: 14px;
+    padding-right: 40px;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions
+  .btn.btn-primary,
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions
+  [type="submit"].btn {
+    min-height: var(--events-filter-control-h);
+    height: var(--events-filter-control-h);
+
+    border-radius: 16px;
+    padding: 0 16px;
+  }
+}

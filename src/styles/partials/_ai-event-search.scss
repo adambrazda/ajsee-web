@@ -226,21 +226,7 @@ body[data-theme="dark"] .ai-event-search__input {
 html[data-theme="dark"]
   .ai-event-search__input::placeholder,
 body[data-theme="dark"]
-  /*
- * Keep the AI text field aligned with its CTA.
- * The shared event-filter form contains legacy input sizing rules
- * with higher specificity, so the component owns its final size here.
- */
-html body:is([data-page="home"], [data-page="events"])
-form#events-filters-form
-.ai-event-search
-.ai-event-search__input {
-  height: 44px;
-  min-height: 44px;
-  padding-block: 0;
-}
-
-.ai-event-search__input::placeholder {
+  .ai-event-search__input::placeholder {
   color: #aab5c0;
 }
 

@@ -536,7 +536,7 @@ export function buildFilterIntentJsonSchema(
   };
 }
 
-function buildParserInstructions({
+export function buildParserInstructions({
   locale,
   now
 }) {
@@ -603,6 +603,9 @@ function buildParserInstructions({
     '- Use null for dimension confidence when that dimension was not requested.',
     '- If an ambiguity could materially change results, set clarification.required=true.',
     `- clarification.question must be written for the user in locale ${locale}.`,
+    '- Clarification questions must be natural, idiomatic, concise, and grammatically correct in the requested locale.',
+    '- Do not mechanically copy punctuation or awkward syntax from the user query into clarification.question.',
+    '- For Czech (cs), simple alternatives joined by "nebo" in one clause normally have no comma before "nebo"; for example: "Máte zájem o koncerty v Praze nebo v Brně?"',
     '- If no clarification is needed, use question="" and fields=[].',
     '',
     'Return only the schema-compliant structured output.'

@@ -1021,6 +1021,8 @@ form#events-filters-form.events-filters.filter-dock
   form#events-filters-form.events-filters.filter-dock
   .filters-toolbar
   #chipClear {
+    display: inline-flex;
+
     grid-column: span 2;
 
     width: 100%;

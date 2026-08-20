@@ -27,3 +27,74 @@ body {
   top: 0;
   z-index: 9999;
 }
+
+// ------------------------------------------------------
+// Print
+// ------------------------------------------------------
+
+@media print {
+  html {
+    background: #fff;
+  }
+
+  body[data-page="microguides"] {
+    background: #fff;
+    color: #000;
+    font-size: 12pt;
+    line-height: 1.35;
+    text-shadow: none;
+  }
+
+  body[data-page="microguides"] .site-header,
+  body[data-page="microguides"] .site-footer,
+  body[data-page="microguides"] .mg .mg-progress,
+  body[data-page="microguides"] .mg .mg-mobile-nav,
+  body[data-page="microguides"] #mg-share,
+  body[data-page="microguides"] .mg .mg-actions {
+    display: none;
+  }
+
+  /*
+   * The body-scoped reset covers simple component shadows, including
+   * later-loaded page UI. Higher-specificity microguide shadows are
+   * repeated explicitly below.
+   */
+  body[data-page="microguides"] * {
+    box-shadow: none;
+    text-shadow: none;
+  }
+
+  body[data-page="microguides"] .mg .mg-hero .btn-share,
+  body[data-page="microguides"] .mg .mg-hero-media,
+  body[data-page="microguides"] .mg .mg-progress,
+  body[data-page="microguides"] .mg .mg-progress ol a[aria-current="true"],
+  body[data-page="microguides"] .mg .mg-section .mg-media-frame,
+  body[data-page="microguides"] .mg .mg-callout,
+  body[data-page="microguides"] .mg-index .mg-card,
+  body[data-page="microguides"] .mg-related .mg-card {
+    box-shadow: none;
+  }
+
+  body[data-page="microguides"] img,
+  body[data-page="microguides"] svg {
+    max-width: 100%;
+    height: auto;
+    page-break-inside: avoid;
+  }
+
+  body[data-page="microguides"] .mg .mg-hero .mg-hero-media img,
+  body[data-page="microguides"] .mg-index .mg-card .mg-card__media img,
+  body[data-page="microguides"] .mg-related .mg-card .mg-card__media img {
+    height: auto;
+  }
+
+  body[data-page="microguides"] .mg-hero-media,
+  body[data-page="microguides"] .mg-figure,
+  body[data-page="microguides"] .mg-media-frame {
+    break-inside: avoid;
+  }
+
+  body[data-page="microguides"] .mg .mg-section {
+    margin-block: 12pt 16pt;
+  }
+}

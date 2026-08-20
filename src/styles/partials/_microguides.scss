@@ -984,19 +984,3 @@
     border-color: #55b9ff;
   }
 }
-@media print {
-  .site-header, .site-footer,
-  .mg-progress, .mg-mobile-nav,
-  #mg-share, .mg-actions { display: none !important; }
-
-  * { box-shadow: none !important; text-shadow: none !important; }
-  html, body { background: #fff !important; color: #000 !important; }
-  .mg-hero, .mg-section, .mg-related, .mg-footer-cta { position: static !important; }
-
-  body { font-size: 12pt; line-height: 1.35; }
-  img, svg { max-width: 100% !important; height: auto !important; page-break-inside: avoid; }
-  .mg-hero-media, .mg-figure, .mg-media-frame { break-inside: avoid; }
-
-  .mg .mg-section { margin-block: 12pt 16pt; }
-  /* a[href^="http"]:after { content: " (" attr(href) ")"; font-size: 9pt; } */
-}

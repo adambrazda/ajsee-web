@@ -429,8 +429,12 @@
       *,
       *::before,
       *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
+        scroll-behavior: auto;
+      }
+
+      .skip-link,
+      .button {
+        transition-duration: 0.01ms;
       }
 
       .button:hover {

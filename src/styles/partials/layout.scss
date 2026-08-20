@@ -73,7 +73,11 @@
   }
 
   @include respond(sm) {
-    grid-template-columns: 1fr !important;
+    &.two,
+    &.three,
+    &.auto {
+      grid-template-columns: 1fr;
+    }
   }
 }
 body {

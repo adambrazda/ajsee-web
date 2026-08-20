@@ -428,22 +428,22 @@ export function ensureSharedEventGridStyles(
     'ajsee-shared-event-card-grid-v1-css';
 
   style.textContent = `
-    #eventsList.events-list {
-      width: 100% !important;
-      max-width: 1440px !important;
+    body:is([data-page="home"], [data-page="events"]) #eventsList.events-list {
+      width: 100%;
+      max-width: 1440px;
       margin-inline: auto;
 
-      grid-template-columns: 1fr !important;
-      justify-content: start !important;
+      grid-template-columns: 1fr;
+      justify-content: start;
     }
 
-    #eventsList.events-list > .event-card {
-      width: 100% !important;
-      max-width: 24rem !important;
+    body:is([data-page="home"], [data-page="events"]) #eventsList.events-list > .event-card {
+      width: 100%;
+      max-width: 24rem;
       justify-self: start;
     }
 
-    #eventsList.events-list > :not(.event-card) {
+    body:is([data-page="home"], [data-page="events"]) #eventsList.events-list > :not(.event-card) {
       grid-column: 1 / -1;
       width: 100%;
     }
@@ -497,32 +497,32 @@ export function ensureSharedEventGridStyles(
     }
 
     @media (min-width: 768px) {
-      #eventsList.events-list {
+      body:is([data-page="home"], [data-page="events"]) #eventsList.events-list {
         grid-template-columns:
           repeat(
             2,
             minmax(0, 1fr)
-          ) !important;
+          );
       }
     }
 
     @media (min-width: 1024px) {
-      #eventsList.events-list {
+      body:is([data-page="home"], [data-page="events"]) #eventsList.events-list {
         grid-template-columns:
           repeat(
             3,
             minmax(0, 1fr)
-          ) !important;
+          );
       }
     }
 
     @media (min-width: 1536px) {
-      #eventsList.events-list {
+      body:is([data-page="home"], [data-page="events"]) #eventsList.events-list {
         grid-template-columns:
           repeat(
             4,
             minmax(0, 1fr)
-          ) !important;
+          );
       }
     }
 
@@ -533,12 +533,12 @@ export function ensureSharedEventGridStyles(
     }
 
     @media (max-width: 700px) {
-      #eventsList.events-list {
-        grid-template-columns: 1fr !important;
+      body:is([data-page="home"], [data-page="events"]) #eventsList.events-list {
+        grid-template-columns: 1fr;
       }
 
-      #eventsList.events-list > .event-card {
-        max-width: none !important;
+      body:is([data-page="home"], [data-page="events"]) #eventsList.events-list > .event-card {
+        max-width: none;
       }
     }
 

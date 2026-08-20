@@ -32,7 +32,7 @@ const COPY = {
     helper:
       'Popište zážitek vlastními slovy. AI převede váš požadavek na filtry AJSEE.',
     placeholder:
-      'Např. rodinný koncert v Praze tento víkend',
+      'Např. koncert v Praze tento víkend',
     submit:
       'Najít pomocí AI',
     loading:
@@ -55,7 +55,7 @@ const COPY = {
     helper:
       'Describe it in your own words. AI will translate your request into AJSEE filters.',
     placeholder:
-      'E.g. a family concert in Prague this weekend',
+      'E.g. concert in Prague this weekend',
     submit:
       'Find with AI',
     loading:
@@ -78,7 +78,7 @@ const COPY = {
     helper:
       'Beschreiben Sie Ihren Wunsch mit eigenen Worten. Die KI überträgt ihn in AJSEE-Filter.',
     placeholder:
-      'Z. B. ein Familienkonzert in Prag dieses Wochenende',
+      'Z. B. Konzert in Prag am Wochenende',
     submit:
       'Mit KI suchen',
     loading:
@@ -101,7 +101,7 @@ const COPY = {
     helper:
       'Opíšte zážitok vlastnými slovami. AI prevedie vašu požiadavku na filtre AJSEE.',
     placeholder:
-      'Napr. rodinný koncert v Prahe tento víkend',
+      'Napr. koncert v Prahe tento víkend',
     submit:
       'Nájsť pomocou AI',
     loading:
@@ -124,7 +124,7 @@ const COPY = {
     helper:
       'Opisz to własnymi słowami. AI przełoży Twoją prośbę na filtry AJSEE.',
     placeholder:
-      'Np. rodzinny koncert w Pradze w ten weekend',
+      'Np. koncert w Pradze w ten weekend',
     submit:
       'Znajdź z AI',
     loading:
@@ -147,7 +147,7 @@ const COPY = {
     helper:
       'Írd le saját szavaiddal. Az AI AJSEE-szűrőkké alakítja a kérésedet.',
     placeholder:
-      'Pl. családi koncert Prágában ezen a hétvégén',
+      'Pl. koncert Prágában hétvégén',
     submit:
       'Keresés AI-val',
     loading:

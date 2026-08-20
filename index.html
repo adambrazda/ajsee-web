@@ -487,7 +487,7 @@ const getInitialLang = () => {
             @keyframes spin { to { transform: rotate(360deg); } }
             @keyframes pulse { 0%{ r:3; opacity:1 } 70%{ r:12; opacity:0 } 100%{ r:12; opacity:0 } }
             @keyframes twinkle { 0%{ opacity:.25 } 100%{ opacity:.9 } }
-            @media (prefers-reduced-motion: reduce){ .spin-slow, .spin-rev, .pulse, .twinkle { animation: none !important; } }
+            @media (prefers-reduced-motion: reduce){ .spin-slow, .spin-rev, .pulse, .twinkle { animation: none; } }
           </style>
 
           <circle cx="110" cy="110" r="105" fill="url(#homeAboutBgGrad)" stroke="url(#homeAboutRingGrad)" stroke-width="3"/>

@@ -98,7 +98,7 @@ test('modal uses secondary calendar styling', () => {
 
   assert.match(
     modalSource,
-    /background:#fff !important/
+    /background:var\(--aj-modal-control-bg,\s*#fff\)/
   );
 });
 test('existing modal shell receives seller trust note at runtime', () => {
@@ -133,6 +133,6 @@ test('mobile calendar actions remain one column', () => {
 
   assert.match(
     modalSource,
-    /grid-template-columns:1fr !important/
+    /grid-template-columns:1fr/
   );
 });

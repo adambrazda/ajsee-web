@@ -436,8 +436,8 @@ function injectOnce(id, css) {
 
 function ensureModalStyles() {
   injectOnce('ajsee-event-modal-css', `
-    .event-modal.hidden {
-      display: none !important;
+    body .event-modal.hidden {
+      display: none;
     }
 
     .event-modal {
@@ -463,9 +463,9 @@ function ensureModalStyles() {
     .event-modal-content {
       position: relative;
       width: min(960px, 100%);
-      max-height: none !important;
+      max-height: none;
       min-height: auto;
-      overflow: visible !important;
+      overflow: visible;
       display: grid;
       grid-template-columns: minmax(260px, 42%) 1fr;
       background: var(--aj-modal-bg, rgba(255, 255, 255, 0.98));
@@ -504,7 +504,7 @@ function ensureModalStyles() {
 
     .modal-details {
       padding: 42px 38px 34px;
-      overflow: visible !important;
+      overflow: visible;
     }
 
     .modal-title {
@@ -970,7 +970,7 @@ function ensureTicketOptionsStyles() {
     }
 
     .modal-ticket-options[hidden] {
-      display: none !important;
+      display: none;
     }
 
     .modal-ticket-options .modal-ticket-cta {
@@ -994,14 +994,14 @@ function ensureModalConversionPolishStyles() {
     }
 
     .event-modal .modal-description[hidden]{
-      display:none !important;
+      display:none;
     }
 
     .event-modal .modal-category{
       margin-bottom:16px;
       color:var(--aj-modal-category, #667085);
       font-size:13px;
-      font-style:normal !important;
+      font-style:normal;
       font-weight:700;
     }
 
@@ -1026,34 +1026,34 @@ function ensureModalConversionPolishStyles() {
 
     .event-modal .calendar-btns-wrap,
     .event-modal .ajsee-modal-calendar-actions-v1{
-      display:flex !important;
-      flex-wrap:wrap !important;
-      gap:8px !important;
-      width:100% !important;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      width:100%;
     }
 
     .event-modal .calendar-btn,
     .event-modal .ajsee-modal-calendar-actions-v1 > a,
     .event-modal .ajsee-modal-calendar-actions-v1 > button{
-      width:auto !important;
-      min-width:0 !important;
-      min-height:38px !important;
-      padding:0 12px !important;
-      border:1px solid var(--aj-modal-control-border, rgba(10,61,98,.18)) !important;
-      border-radius:10px !important;
-      background:var(--aj-modal-control-bg, #fff) !important;
-      color:var(--aj-modal-control-text, #0A3D62) !important;
-      box-shadow:none !important;
-      font-size:14px !important;
-      font-weight:750 !important;
-      justify-self:start !important;
+      width:auto;
+      min-width:0;
+      min-height:38px;
+      padding:0 12px;
+      border:1px solid var(--aj-modal-control-border, rgba(10,61,98,.18));
+      border-radius:10px;
+      background:var(--aj-modal-control-bg, #fff);
+      color:var(--aj-modal-control-text, #0A3D62);
+      box-shadow:none;
+      font-size:14px;
+      font-weight:750;
+      justify-self:start;
     }
 
     .event-modal .calendar-btn:hover,
     .event-modal .ajsee-modal-calendar-actions-v1 > a:hover,
     .event-modal .ajsee-modal-calendar-actions-v1 > button:hover{
-      border-color:var(--aj-modal-control-border-hover, rgba(10,61,98,.32)) !important;
-      background:var(--aj-modal-control-hover, #f5f9fd) !important;
+      border-color:var(--aj-modal-control-border-hover, rgba(10,61,98,.32));
+      background:var(--aj-modal-control-hover, #f5f9fd);
     }
 
     .event-modal .calendar-btn:focus-visible{
@@ -1065,20 +1065,20 @@ function ensureModalConversionPolishStyles() {
     @media (min-width:761px){
       .event-modal .calendar-btns-wrap,
       .event-modal .ajsee-modal-calendar-actions-v1{
-        display:grid !important;
-        grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
-        gap:8px !important;
-        width:100% !important;
+        display:grid;
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        gap:8px;
+        width:100%;
       }
 
       .event-modal .calendar-btn,
       .event-modal .ajsee-modal-calendar-actions-v1 > a,
       .event-modal .ajsee-modal-calendar-actions-v1 > button{
-        width:100% !important;
-        min-width:0 !important;
-        padding:0 8px !important;
-        font-size:13px !important;
-        white-space:nowrap !important;
+        width:100%;
+        min-width:0;
+        padding:0 8px;
+        font-size:13px;
+        white-space:nowrap;
       }
     }
 
@@ -1098,15 +1098,15 @@ function ensureModalConversionPolishStyles() {
       /* AJSEE_MODAL_CALENDAR_MOBILE_1COL_V1 */
       .event-modal .calendar-btns-wrap,
       .event-modal .ajsee-modal-calendar-actions-v1{
-        display:grid !important;
-        grid-template-columns:1fr !important;
-        width:100% !important;
+        display:grid;
+        grid-template-columns:1fr;
+        width:100%;
       }
 
       .event-modal .calendar-btn,
       .event-modal .ajsee-modal-calendar-actions-v1 > a,
       .event-modal .ajsee-modal-calendar-actions-v1 > button{
-        width:100% !important;
+        width:100%;
       }
     }
   `);

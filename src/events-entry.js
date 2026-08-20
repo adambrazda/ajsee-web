@@ -812,8 +812,12 @@ function patchFilterVisuals() {
     :where(.events-filters.filter-dock, form.filter-dock) .styled-input,
     :where(.events-filters.filter-dock, form.filter-dock) .styled-select{
       height:var(--ajsee-ctrl-h); line-height:1.25; border-radius:var(--ajsee-ctrl-radius);
-      padding:26px 16px 10px 16px !important;
+      padding:26px 16px 10px 16px;
       display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;
+    }
+    html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock input.styled-input,
+    html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock select.styled-select{
+      padding:26px 16px 10px 16px;
     }
     :where(.events-filters.filter-dock, form.filter-dock) .field{ position:relative; }
     :where(.events-filters.filter-dock, form.filter-dock) .field .styled-input{ width:100%; }
@@ -837,10 +841,10 @@ function patchFilterVisuals() {
   `);
 
   injectOnce('ajsee-popover-glue-css', String.raw`
-    :where(.events-filters.filter-dock, form.filter-dock) .filter-group.date-combo.is-open #date-combo-button{
-      border-bottom-left-radius:0 !important;
-      border-bottom-right-radius:0 !important;
-      border-bottom-color:transparent !important;
+    html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock .filter-group.date-combo.is-open #date-combo-button{
+      border-bottom-left-radius:0;
+      border-bottom-right-radius:0;
+      border-bottom-color:transparent;
     }
     .ajsee-date-fallback,
     .ajsee-date-popover,
@@ -848,15 +852,15 @@ function patchFilterVisuals() {
     [data-ajsee-date-popover],
     [data-ajsee="date-popover"]{
       border:1px solid #d9e1ef;
-      border-top-left-radius:0 !important;
-      border-top-right-radius:0 !important;
+      border-top-left-radius:0;
+      border-top-right-radius:0;
       margin-top:-1px;
-      z-index:var(--ajsee-popover-z, 10020) !important;
+      z-index:var(--ajsee-popover-z, 10020);
     }
   `);
 
   injectOnce('ajsee-city-typeahead-compat-css', String.raw`
-    .typeahead-panel[hidden], .city-sheet-backdrop[hidden]{ display:none !important; }
+    .typeahead-panel[hidden], .city-sheet-backdrop[hidden]{ display:none; }
     .typeahead-panel{
       position:absolute; left:0; right:0; top:calc(100% + 10px);
       z-index:var(--ajsee-popover-z, 10020);
@@ -1378,7 +1382,7 @@ function ensureEventsStateStyles() {
       width:100%;
     }
     .events-list.is-loading > :not(.ajsee-events-loading){
-      display:none !important;
+      display:none;
     }
     @media (max-width:900px){
       .ajsee-events-loading{
@@ -1391,8 +1395,8 @@ function ensureEventsStateStyles() {
       }
     }
     @media (prefers-reduced-motion:reduce){
-      .ajsee-events-loading .ph-img{
-        animation:none !important;
+      body[data-page="events"] .ajsee-events-loading .ph-img{
+        animation:none;
       }
     }
     .ajsee-events-state{
@@ -1447,10 +1451,10 @@ function ensureEventsStateStyles() {
       gap:10px;
       margin-top:18px;
     }
-    .ajsee-events-state__secondary{
-      background:#fff !important;
-      color:#0A3D62 !important;
-      box-shadow:none !important;
+    body[data-page="events"] .ajsee-events-state .ajsee-events-state__secondary{
+      background:#fff;
+      color:#0A3D62;
+      box-shadow:none;
     }
     .ajsee-events-state button:hover{
       transform:translateY(-1px);
@@ -5239,9 +5243,9 @@ function patchLangDropdownStyles() {
   injectOnce('ajsee-lang-dropdown-compat-css', String.raw`
     details.lang-dropdown > summary::-webkit-details-marker{ display:none; }
     details.lang-dropdown > summary{ list-style:none; }
-    details.lang-dropdown[open] > .lang-menu{ display:flex !important; }
+    details.lang-dropdown[open] > .lang-menu{ display:flex; }
     @media (max-width: 950px){
-      .main-nav .language-switcher.mobile-switcher details.lang-dropdown{ display:block !important; }
+      .main-nav .language-switcher.mobile-switcher details.lang-dropdown{ display:block; }
     }
   `);
 }

@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------
    AJSEE – FINAL FILTER PARITY OVERRIDE
    Must be imported as the LAST partial in page SCSS files.
-   No !important.
+   No priority overrides.
 --------------------------------------------------------- */
 
 
@@ -503,7 +503,7 @@ html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.
    EVENTS.HTML – banner width aligned with events hero
    - desktop banner matches hero content width
    - tablet keeps comfortable homepage-like spacing
-   - no !important
+   - no priority overrides
 --------------------------------------------------------- */
 
 body[data-page="events"] #demoBadge.event-demo-badge {

@@ -255,7 +255,7 @@
    EVENTS.HTML – event cards/results width aligned with hero
    - keeps event list inside the same visual shell as hero/banner
    - prevents cards/results area from stretching wider than hero
-   - no !important
+   - no priority overrides
 --------------------------------------------------------- */
 
 body[data-page="events"] #eventsList.events-list,

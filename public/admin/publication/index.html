@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Publikace recenzí – AJSEE Admin</title>
+
+    <script
+      defer
+      src="https://identity.netlify.com/v1/netlify-identity-widget.js"
+    ></script>
+
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        background: #f7f8fa;
+        color: #111827;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page {
+        width: min(100% - 32px, 720px);
+        margin: 0 auto;
+        padding: 24px 0 48px;
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      .back-link:focus-visible,
+      .field-input:focus-visible,
+      .primary-button:focus-visible {
+        outline: 3px solid currentColor;
+        outline-offset: 3px;
+      }
+
+      .header {
+        margin-bottom: 24px;
+      }
+
+      .eyebrow {
+        margin: 0 0 6px;
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 7vw, 40px);
+        line-height: 1.1;
+      }
+
+      .intro {
+        max-width: 60ch;
+        margin: 12px 0 0;
+        color: #4b5563;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .card {
+        padding: 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field-label {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .field-help {
+        margin: 0;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .field-input {
+        width: 100%;
+        min-height: 48px;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #111827;
+        font: inherit;
+      }
+
+      .status {
+        margin-top: 20px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #f3f4f6;
+        color: #374151;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .actions {
+        margin-top: 20px;
+      }
+
+      .primary-button {
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 18px;
+        border: 0;
+        border-radius: 10px;
+        background: #111827;
+        color: #ffffff;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .primary-button:disabled {
+        background: #d1d5db;
+        color: #6b7280;
+        cursor: not-allowed;
+      }
+
+      .safety-note {
+        margin: 16px 0 0;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      @media (min-width: 640px) {
+        .page {
+          padding-top: 40px;
+        }
+
+        .card {
+          padding: 28px;
+        }
+
+        .primary-button {
+          width: auto;
+          min-width: 210px;
+        }
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <main class="page">
+      <a class="back-link" href="/admin/">
+        ← Zpět do CMS
+      </a>
+
+      <header class="header">
+        <p class="eyebrow">AJSEE Admin</p>
+        <h1>Publikace recenzí</h1>
+        <p class="intro">
+          Bezpečná příprava recenze nebo preview k publikaci.
+          Tento krok vytvoří oddělenou publikační změnu;
+          sám o sobě obsah nezveřejní.
+        </p>
+      </header>
+
+      <section class="card" aria-labelledby="publication-heading">
+        <h2 id="publication-heading">Vybrat obsah</h2>
+
+        <div class="field">
+          <label class="field-label" for="review-slug">
+            Slug recenze nebo preview
+          </label>
+
+          <input
+            class="field-input"
+            id="review-slug"
+            name="review-slug"
+            type="text"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="napr. notre-dame-de-paris-poland-2027"
+            aria-describedby="review-slug-help"
+          />
+
+          <p class="field-help" id="review-slug-help">
+            Zadejte slug přesně podle položky v AJSEE CMS.
+          </p>
+        </div>
+
+        <div
+          class="status"
+          id="publication-status"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          Nejprve bude ověřeno přihlášení a stav obsahu.
+        </div>
+
+        <div class="actions">
+          <button
+            class="primary-button"
+            id="prepare-publication"
+            type="button"
+            disabled
+          >
+            Připravit publikaci
+          </button>
+        </div>
+
+        <p class="safety-note">
+          Publikace je oddělena od standardního tlačítka Publish
+          v CMS. Finální zveřejnění bude samostatný krok.
+        </p>
+      </section>
+    </main>
+
+    <script src="./publication.js"></script>
+  </body>
+</html>

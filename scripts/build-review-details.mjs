@@ -243,9 +243,45 @@ function markdownToHtml(markdown = '') {
 
   if (!text) return '';
 
+  /*
+   * ATX headings are block elements even when the source does
+   * not contain an empty line after them. Split heading lines
+   * into standalone blocks before rendering paragraphs/lists.
+   */
   const blocks = text
     .split(/\n{2,}/)
-    .map((block) => block.trim())
+    .flatMap((block) => {
+      const parts = [];
+      let pending = [];
+
+      const flushPending = () => {
+        const value = pending
+          .join('\n')
+          .trim();
+
+        if (value) {
+          parts.push(value);
+        }
+
+        pending = [];
+      };
+
+      for (const rawLine of block.split('\n')) {
+        const line = rawLine.trim();
+
+        if (/^#{1,3}\s+/.test(line)) {
+          flushPending();
+          parts.push(line);
+          continue;
+        }
+
+        pending.push(rawLine);
+      }
+
+      flushPending();
+
+      return parts;
+    })
     .filter(Boolean);
 
   return blocks

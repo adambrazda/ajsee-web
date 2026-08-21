@@ -22,27 +22,52 @@
   "gallery": [
     {
       "image": "/images/london-musicals/posters/les-miserables.webp",
-      "alt": "Official poster for Les Misérables in London's West End.",
+      "alt": "Promotional poster for Les Misérables in London's West End.",
       "credit": "Visual source: TodayTix"
     },
     {
       "image": "/images/london-musicals/posters/phantom-of-the-opera.webp",
-      "alt": "Official poster for The Phantom of the Opera in London's West End.",
+      "alt": "Promotional poster for The Phantom of the Opera in London's West End.",
+      "credit": "Visual source: TodayTix"
+    },
+    {
+      "image": "/images/london-musicals/posters/moulin-rouge.webp",
+      "alt": "Promotional poster for Moulin Rouge! The Musical at Piccadilly Theatre in London.",
       "credit": "Visual source: TodayTix"
     },
     {
       "image": "/images/london-musicals/posters/the-lion-king.webp",
-      "alt": "Official poster for The Lion King in London's West End.",
+      "alt": "Promotional poster for The Lion King at the Lyceum Theatre in London.",
+      "credit": "Visual source: TodayTix"
+    },
+    {
+      "image": "/images/london-musicals/posters/hadestown.webp",
+      "alt": "Promotional poster for Hadestown in London's West End.",
       "credit": "Visual source: TodayTix"
     },
     {
       "image": "/images/london-musicals/posters/hamilton.webp",
-      "alt": "Official poster for Hamilton in London's West End.",
+      "alt": "Promotional poster for Hamilton in London's West End.",
+      "credit": "Visual source: TodayTix"
+    },
+    {
+      "image": "/images/london-musicals/posters/wicked.webp",
+      "alt": "Promotional poster for Wicked at the Apollo Victoria Theatre in London.",
       "credit": "Visual source: TodayTix"
     },
     {
       "image": "/images/london-musicals/posters/mamma-mia.webp",
-      "alt": "Official poster for MAMMA MIA! in London's West End.",
+      "alt": "Promotional poster for MAMMA MIA! at the Novello Theatre in London.",
+      "credit": "Visual source: TodayTix"
+    },
+    {
+      "image": "/images/london-musicals/posters/the-devil-wears-prada.webp",
+      "alt": "Promotional poster for The Devil Wears Prada at the Dominion Theatre in London.",
+      "credit": "Visual source: TodayTix"
+    },
+    {
+      "image": "/images/london-musicals/posters/matilda-the-musical.webp",
+      "alt": "Promotional poster for Matilda The Musical at the Cambridge Theatre in London.",
       "credit": "Visual source: TodayTix"
     }
   ],

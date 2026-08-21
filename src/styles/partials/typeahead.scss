@@ -479,8 +479,8 @@ body.city-picker-open {
 
 /* desktop zachovej bez sheetu */
 @media (min-width: 721px) {
-  .city-sheet-backdrop {
-    display: none !important;
+  html body .city-sheet-backdrop {
+    display: none;
   }
 }
 

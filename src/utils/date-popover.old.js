@@ -1,6 +1,6 @@
 /**
  * date-popover.js
- * Bezpečné ukotvení kalendářového popoveru do viewportu bez !important.
+ * Bezpečné ukotvení kalendářového popoveru do viewportu bez vynucené priority.
  * Používá CSS proměnné na .ajsee-date-popover (viz SCSS).
  */
 

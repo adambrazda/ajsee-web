@@ -16,9 +16,11 @@
     "title": "10 West End Musicals Worth Travelling to London For | AJSEE",
     "description": "Discover 10 West End musicals worth travelling to London for, from Les Misérables and The Phantom of the Opera to Hamilton, Hadestown and more."
   },
-  "status": "ready_for_adam_review",
+  "status": "promoted",
   "country": "United Kingdom",
   "notesForAdam": "You can find the original article here: https://docs.google.com/document/d/137w4hF8Hc_n-Cd7kVZB7eQ_FHz06yi5sHDDnPrGPTrA/edit?tab=t.cvdfqoa36etj",
   "showTitle": "10 West End Musicals Worth Travelling to London For",
-  "category": "theatre"
+  "category": "theatre",
+  "promotedAt": "2026-08-21T08:27:58.071Z",
+  "promotedReviewSlug": "10-west-end-musicals-worth-travelling-to-london-for"
 }

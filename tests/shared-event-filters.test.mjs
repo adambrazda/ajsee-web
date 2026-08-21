@@ -239,18 +239,34 @@ test(
       /html body\[data-page="events"\] main#main section#upcoming-events\.events-upcoming-section form#events-filters-form\.events-filters\.filter-dock/
     );
 
+    const finalArchitectureStart =
+      styles.indexOf(
+        'AJSEE_FILTER_ARCHITECTURE_FINAL'
+      );
+
+    assert.notEqual(
+      finalArchitectureStart,
+      -1,
+      'final shared filter architecture must exist'
+    );
+
+    const finalStyles =
+      styles.slice(
+        finalArchitectureStart
+      );
+
     assert.match(
-      styles,
-      /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/
+      finalStyles,
+      /grid-template-columns:\s*repeat\(6,\s*minmax\(0,\s*1fr\)\)/
     );
 
     assert.match(
-      styles,
-      /#chipClear[\s\S]*?grid-column:\s*1\s*\/\s*-1/
+      finalStyles,
+      /#chipClear[\s\S]*?grid-column:\s*span\s+2/
     );
 
     assert.match(
-      styles,
+      finalStyles,
       /#chipNearMe[\s\S]*?width:\s*100%/
     );
   }
@@ -445,7 +461,7 @@ test(
   }
 );
 test(
-  'homepage and events scroll to results only from explicit filter submit',
+  'homepage and events scroll after explicit submit and AI intent application',
   () => {
     for (
       const [name, source] of [
@@ -453,6 +469,51 @@ test(
         ['events', eventsSource]
       ]
     ) {
+      const aiStart =
+        source.search(
+          /async\s+function\s+applyAiEventSearchIntent\s*\(/
+        );
+
+      assert.notEqual(
+        aiStart,
+        -1,
+        `${name} AI intent handler must exist`
+      );
+
+      const aiEnd =
+        source.indexOf(
+          'function bindFilterFormInteractions',
+          aiStart
+        );
+
+      assert.notEqual(
+        aiEnd,
+        -1,
+        `${name} AI intent handler must close before filter bindings`
+      );
+
+      const aiBlock =
+        source.slice(
+          aiStart,
+          aiEnd
+        );
+
+      assert.match(
+        aiBlock,
+        /await renderAndSync\([\s\S]*?scrollToSharedEventResults\(\)/
+      );
+
+      const aiCalls =
+        aiBlock.match(
+          /scrollToSharedEventResults\(\);/g
+        ) || [];
+
+      assert.equal(
+        aiCalls.length,
+        1,
+        `${name} AI intent application must scroll exactly once`
+      );
+
       const submitStart =
         source.indexOf(
           "wireOnce(formEl, 'submit'"
@@ -487,15 +548,26 @@ test(
         /await renderAndSync\([\s\S]*?scrollToSharedEventResults\(\)/
       );
 
-      const calls =
+      const submitCalls =
+        submitBlock.match(
+          /scrollToSharedEventResults\(\);/g
+        ) || [];
+
+      assert.equal(
+        submitCalls.length,
+        1,
+        `${name} explicit submit must scroll exactly once`
+      );
+
+      const allCalls =
         source.match(
           /scrollToSharedEventResults\(\);/g
         ) || [];
 
       assert.equal(
-        calls.length,
-        1,
-        `${name} must scroll exactly once and only on submit`
+        allCalls.length,
+        2,
+        `${name} must scroll only from AI intent application and explicit submit`
       );
     }
   }

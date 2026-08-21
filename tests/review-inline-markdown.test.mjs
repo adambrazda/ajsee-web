@@ -270,5 +270,48 @@ test(
       lesMisContent,
       /\*\*Les Misérables: The Arena Spectacular\*\*/
     );
+
+    /*
+     * Block-renderer regression:
+     * ATX headings must remain standalone block elements even
+     * when the following paragraph starts on the next line.
+     */
+    const westEndPath = path.join(
+      ROOT,
+      "review-preview",
+      "10-west-end-musicals-worth-travelling-to-london-for",
+      "index.html"
+    );
+
+    const westEndHtml =
+      await readFile(
+        westEndPath,
+        "utf8"
+      );
+
+    const westEndContent =
+      visibleReviewContent(
+        westEndHtml
+      );
+
+    assert.match(
+      westEndContent,
+      /<h3>1\. Les Misérables<\/h3>\s*<p>Pokud existuje jeden muzikál/
+    );
+
+    assert.doesNotMatch(
+      westEndContent,
+      /<h3>1\. Les Misérables\s+Pokud existuje jeden muzikál/
+    );
+
+    assert.match(
+      westEndContent,
+      /<h2>Proč právě Londýn\?<\/h2>\s*<p>Lidé se často ptají/
+    );
+
+    assert.match(
+      westEndContent,
+      /<h2>Závěrečná opona<\/h2>\s*<p>Pokaždé, když navštívím/
+    );
   }
 );

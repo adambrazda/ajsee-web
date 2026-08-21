@@ -1,3 +1,6 @@
+import {
+  isCityRadiusPlace
+} from '../event-place-runtime.js';
 // /src/api/eventsApi.js
 // ---------------------------------------------------------
 // Agreguje udĂˇlosti z adapterĹŻ a aplikuje jednotnĂ© FE filtry.
@@ -696,7 +699,22 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
 
   let all = [];
 
-  const rawCityInput = String(filters.city || '').trim();
+  const cityRadiusSearch =
+    isCityRadiusPlace(
+      filters
+    );
+
+  /*
+   * cityRadius is a geographic circle around a city,
+   * not an exact-city filter.
+   */
+  const rawCityInput =
+    cityRadiusSearch
+      ? ''
+      : String(
+          filters.city ||
+          ''
+        ).trim();
 
   // Novinka:
   // Jestli uĹľivatel zadal do pole mÄ›sta zemi, napĹ™. "Francie",
@@ -768,15 +786,21 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     filters.nearMeLat != null &&
     filters.nearMeLon != null;
 
-  const hasExplicitPlaceFilter =
-    Boolean(upstreamCity) ||
-    Boolean(countryFromCityInput) ||
+  const normalizedPlaceType =
     String(
       filters.placeType ||
       ''
     )
       .trim()
-      .toLowerCase() === 'country';
+      .toLowerCase();
+
+  const hasExplicitPlaceFilter =
+    Boolean(upstreamCity) ||
+    Boolean(countryFromCityInput) ||
+    normalizedPlaceType ===
+      'country' ||
+    normalizedPlaceType ===
+      'cityradius';
 
   const shouldUseGlobalTicketmasterKeywordSearch =
     normalizedKeyword.length >= 2 &&

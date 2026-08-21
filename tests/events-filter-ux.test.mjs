@@ -446,7 +446,7 @@ test('bootstrap keeps the events quick-filter toolbar in the DOM', () => {
   );
 });
 
-test('mobile quick filters expose all actions and bind near-me', () => {
+test('mobile quick filters expose all actions without horizontal scrolling and bind near-me', () => {
   const html = readFileSync(
     new URL('../src/event-filters.js', import.meta.url),
     'utf8'
@@ -486,18 +486,43 @@ test('mobile quick filters expose all actions and bind near-me', () => {
   );
 
   assert.match(
+    html,
+    /class="chips"[\s\S]*?id="filter-audience-family"[\s\S]*?id="chipNearMe"[\s\S]*?id="chipClear"[\s\S]*?<\/div>/
+  );
+
+  assert.doesNotMatch(
     styles,
     /AJSEE_EVENTS_MOBILE_QUICK_FILTER_LAYOUT_V2/
   );
 
+  const finalArchitectureIndex =
+    styles.indexOf(
+      'AJSEE_FILTER_ARCHITECTURE_FINAL'
+    );
+
+  assert.notEqual(
+    finalArchitectureIndex,
+    -1
+  );
+
+  const finalStyles =
+    styles.slice(
+      finalArchitectureIndex
+    );
+
   assert.match(
-    styles,
-    /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/
+    finalStyles,
+    /grid-template-columns:\s*repeat\(6,\s*minmax\(0,\s*1fr\)\)/
   );
 
   assert.match(
-    styles,
-    /#chipNearMe\s*\{[\s\S]*?display:\s*inline-flex\s*!important;/
+    finalStyles,
+    /#chipNearMe,[\s\S]*?#chipClear\s*\{[\s\S]*?display:\s*inline-flex;/
+  );
+
+  assert.doesNotMatch(
+    finalStyles,
+    /overflow-x:\s*auto/
   );
 });
 

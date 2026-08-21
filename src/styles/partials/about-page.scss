@@ -243,7 +243,7 @@
       grid-template-columns: 1fr;
       grid-template-areas: "text";
     }
-    .about-story-visual { display: none !important; }
+    .about-story-visual { display: none; }
     h2 { max-width: none; }
   }
 }
@@ -709,7 +709,7 @@
       grid-template-columns: 1fr;
       grid-template-areas: "text";
     }
-    .about-future-visual{ display: none !important; }
+    .about-future-visual{ display: none; }
   }
 }
 

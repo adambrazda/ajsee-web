@@ -676,7 +676,7 @@ function normalizeSuggestionItem(it = {}) {
 
 function mergeSuggestionLists(primary = [], secondary = [], knownRule = null, countryCodes = CITY_SUGGEST_SCOPE) {
   const out = [];
-  const seen = new Set();
+  const indexByKey = new Map();
 
   for (const rawItem of [...primary, ...secondary]) {
     const normalized = normalizeSuggestionItem(rawItem);
@@ -694,8 +694,58 @@ function mergeSuggestionLists(primary = [], secondary = [], knownRule = null, co
 
     const key = `${typeKey}|${labelKey}|${normalized.countryCode || ''}`;
 
-    if (seen.has(key)) continue;
-    seen.add(key);
+    if (indexByKey.has(key)) {
+      const existing =
+        out[
+          indexByKey.get(key)
+        ];
+
+      /*
+       * Local fallback intentionally wins for the display label,
+       * but a later remote result can enrich the same city with
+       * coordinates required by AI city-radius searches.
+       */
+      if (
+        !Number.isFinite(existing.lat) &&
+        Number.isFinite(normalized.lat)
+      ) {
+        existing.lat =
+          normalized.lat;
+      }
+
+      if (
+        !Number.isFinite(existing.lon) &&
+        Number.isFinite(normalized.lon)
+      ) {
+        existing.lon =
+          normalized.lon;
+      }
+
+      if (
+        !existing.state &&
+        normalized.state
+      ) {
+        existing.state =
+          normalized.state;
+      }
+
+      if (
+        Number.isFinite(normalized.score)
+      ) {
+        existing.score =
+          Math.max(
+            Number(existing.score) || 0,
+            normalized.score
+          );
+      }
+
+      continue;
+    }
+
+    indexByKey.set(
+      key,
+      out.length
+    );
 
     out.push(normalized);
   }

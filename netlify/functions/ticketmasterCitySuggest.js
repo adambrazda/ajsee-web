@@ -1,3 +1,5 @@
+import { withLambda } from '@netlify/aws-lambda-compat';
+
 // netlify/functions/ticketmasterCitySuggest.js
 // ---------------------------------------------------------
 // City / country suggest for AJSEE.
@@ -1010,5 +1012,30 @@ export const handler = async (event) => {
   } catch (err) {
     console.error('ticketmasterCitySuggest crashed:', err);
     return json(200, { items: [] });
+  }
+};
+
+export default withLambda(
+  handler
+);
+
+export const config = {
+  path:
+    '/.netlify/functions/ticketmasterCitySuggest',
+
+  rateLimit: {
+    action:
+      'rate_limit',
+
+    windowLimit:
+      30,
+
+    windowSize:
+      60,
+
+    aggregateBy: [
+      'ip',
+      'domain'
+    ]
   }
 };

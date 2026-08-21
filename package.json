@@ -17,11 +17,12 @@
     "dev:netlify": "netlify dev",
     "dev:ntl": "netlify dev",
     "start": "npm run dev",
-    "prebuild": "npm run reviews:test && npm run smsticket:sync && cpy src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run reviews:build && npm run review-details:build && npm run blog:build",
+    "prebuild": "npm run styles:guard && npm run reviews:test && npm run smsticket:sync && cpy src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run reviews:build && npm run review-details:build && npm run blog:build",
     "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build && node scripts/build-localized-pages.cjs && npm run review-details:localize && node scripts/generate-sitemap.cjs",
     "preview": "vite preview",
     "webpack:dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack serve --mode development",
     "webpack:build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack --mode production",
+    "styles:guard": "node --test tests/no-important.test.mjs",
     "check:locales": "node scripts/check-locales.js",
     "blog:build": "node scripts/build-blog.mjs",
     "seo:smoke": "node scripts/seo-smoke.mjs",
@@ -60,6 +61,7 @@
     "webpack-dev-server": "^5.2.2"
   },
   "dependencies": {
+    "@netlify/aws-lambda-compat": "^1.0.2",
     "@netlify/blobs": "^10.7.9",
     "@netlify/identity": "1.2.0",
     "node-fetch": "^2.6.9"

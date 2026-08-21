@@ -36,7 +36,7 @@ body {
    Events page flow fix
    - keeps filters, banner and title in normal flow
    - does not control internal filter grid
-   - no !important
+   - no priority overrides
 --------------------------------------------------------- */
 
 body[data-page="events"] {

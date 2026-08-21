@@ -1,3 +1,5 @@
+import { withLambda } from '@netlify/aws-lambda-compat';
+
 // /netlify/functions/ticketmasterEvents.js
 // ---------------------------------------------------------
 // Netlify proxy pro Ticketmaster Discovery API (ESM, single handler)
@@ -821,5 +823,30 @@ return responseFromBody(200, text, {
       isAbort ? 504 : 500,
       { error: isAbort ? 'Upstream timeout' : (err?.message || String(err)) }
     );
+  }
+};
+
+export default withLambda(
+  handler
+);
+
+export const config = {
+  path:
+    '/.netlify/functions/ticketmasterEvents',
+
+  rateLimit: {
+    action:
+      'rate_limit',
+
+    windowLimit:
+      60,
+
+    windowSize:
+      60,
+
+    aggregateBy: [
+      'ip',
+      'domain'
+    ]
   }
 };

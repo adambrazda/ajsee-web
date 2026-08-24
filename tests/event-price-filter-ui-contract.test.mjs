@@ -142,26 +142,11 @@ test(
 );
 
 test(
-  'mobile layout gives price its own row',
+  'canonical expanded mobile grid includes price before actions',
   () => {
     assert.match(
       styles,
-      /"price price"\s*"actions actions"/
-    );
-  }
-);
-
-test(
-  'mobile detailed filters stretch across their grid areas',
-  () => {
-    assert.match(
-      styles,
-      /AJSEE_PRICE_FILTER_MOBILE_STRETCH_V1[\s\S]*?> \.filter-group[\s\S]*?width:\s*100%[\s\S]*?justify-self:\s*stretch/
-    );
-
-    assert.match(
-      styles,
-      /AJSEE_PRICE_FILTER_MOBILE_STRETCH_V1[\s\S]*?\.filter-actions[\s\S]*?\.btn\.btn-primary[\s\S]*?width:\s*100%/
+      /data-ajsee-filter-details-expanded="true"[\s\S]*?grid-template-areas:[\s\S]*?"category date"[\s\S]*?"city city"[\s\S]*?"keyword keyword"[\s\S]*?"price price"[\s\S]*?"actions actions"/
     );
   }
 );

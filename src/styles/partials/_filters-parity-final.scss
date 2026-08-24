@@ -1124,6 +1124,7 @@ form#events-filters-form.events-filters.filter-dock
       "category date"
       "city city"
       "keyword keyword"
+      "price price"
       "actions actions";
 
     gap: 8px;
@@ -1482,75 +1483,8 @@ form#events-filters-form.events-filters.filter-dock
   }
 }
 
-/* Mobile: extend the existing compact architecture instead of replacing it. */
+/* Mobile: layout stays in the canonical expanded filter grid above. */
 @media (max-width: 720px) {
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filters-fieldset {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
-
-    grid-template-areas:
-      "category date"
-      "city city"
-      "keyword keyword"
-      "price price"
-      "actions actions";
-
-    gap: 8px;
-  }
-
-  /* AJSEE_PRICE_FILTER_MOBILE_STRETCH_V1 */
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filters-fieldset
-  > .filter-group,
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filters-fieldset
-  > .filter-actions {
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-
-    justify-self: stretch;
-    align-self: stretch;
-
-    box-sizing: border-box;
-  }
-
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filter-group
-  > .field,
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filter-group.date-combo,
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filter-actions {
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-
-    box-sizing: border-box;
-  }
-
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filter-actions
-  .btn.btn-primary,
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filter-actions
-  [type="submit"].btn {
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-
-    flex: 1 1 auto;
-  }
-
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
   .filter-price

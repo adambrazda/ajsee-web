@@ -1303,3 +1303,131 @@ form#events-filters-form.events-filters.filter-dock
     transition: none;
   }
 }
+
+
+/* =========================================================
+   AJSEE_PRICE_FILTER_UI_V1
+   Shared max starting-price control
+========================================================= */
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-group.filter-price {
+  grid-area: price;
+  min-width: 0;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.price-control {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(84px, 0.42fr);
+  gap: 8px;
+  min-width: 0;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.styled-input,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.styled-select {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Desktop: keep the compact single-row filter dock. */
+@media (min-width: 1181px) {
+  html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filters-fieldset {
+    grid-template-columns:
+      minmax(110px, 0.62fr)
+      minmax(155px, 0.9fr)
+      minmax(150px, 0.82fr)
+      minmax(170px, 1fr)
+      minmax(170px, 0.88fr)
+      minmax(140px, 0.72fr);
+
+    grid-template-areas:
+      "category city date keyword price actions";
+  }
+}
+
+/* Tablet: price gets enough horizontal space for amount + currency. */
+@media (min-width: 721px) and (max-width: 1180px) {
+  html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filters-fieldset {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    grid-template-areas:
+      "category city"
+      "date keyword"
+      "price price"
+      "actions actions";
+  }
+}
+
+/* Mobile: one clear control per row. */
+@media (max-width: 720px) {
+  html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filters-fieldset {
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    grid-template-areas:
+      "category"
+      "city"
+      "date"
+      "keyword"
+      "price"
+      "actions";
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-price
+  .price-control {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(96px, 0.42fr);
+  }
+}
+
+
+/* AJSEE_PRICE_FILTER_VALIDATION_V1 */
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-max[aria-invalid="true"] {
+  border-color: #b42318;
+  box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.12);
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.filter-error {
+  display: block;
+  width: 100%;
+  margin: 8px 0 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #b42318;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.filter-error[hidden] {
+  display: none;
+}

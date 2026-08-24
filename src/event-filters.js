@@ -281,6 +281,70 @@ const SHARED_EVENT_FILTERS_MARKUP = `
       </div>
     </div>
 
+
+    <div class="filter-group filter-price">
+      <label
+        for="filter-price-max"
+        data-i18n-key="filters.priceMax"
+      >Cena od – max.</label>
+
+      <div class="price-control">
+        <input
+          id="filter-price-max"
+          name="max_price"
+          type="number"
+          class="styled-input"
+          min="0"
+          step="any"
+          inputmode="decimal"
+          placeholder="1000"
+          data-i18n-placeholder="filters.priceMaxPlaceholder"
+          aria-describedby="filter-price-help"
+          aria-errormessage="filter-price-error"
+        />
+
+        <label
+          class="sr-only"
+          for="filter-price-currency"
+          data-i18n-key="filters.priceCurrency"
+        >Měna</label>
+
+        <select
+          id="filter-price-currency"
+          name="price_currency"
+          class="styled-select"
+          aria-label="Měna"
+          data-i18n-aria="filters.priceCurrency"
+        >
+          <option
+            value=""
+            data-i18n-key="filters.priceCurrency"
+          >Měna</option>
+
+          <option value="CZK">CZK</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="USD">USD</option>
+          <option value="PLN">PLN</option>
+          <option value="HUF">HUF</option>
+        </select>
+      </div>
+
+      <span
+        id="filter-price-help"
+        class="sr-only"
+        data-i18n-key="filters.priceHelp"
+      >Filtruje podle nejnižší známé ceny od partnera.</span>
+
+      <span
+        id="filter-price-error"
+        class="filter-error"
+        role="alert"
+        hidden
+        data-i18n-key="filters.priceInvalid"
+      >Zadejte nezápornou maximální cenu.</span>
+    </div>
+
     <div class="filter-actions">
       <button
         type="button"
@@ -397,6 +461,8 @@ function hasDetailedFilterUrlState(
     'q',
     'from',
     'to',
+    'priceMax',
+    'priceCurrency',
     'placeType',
     'lat',
     'lon',

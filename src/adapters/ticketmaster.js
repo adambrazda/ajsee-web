@@ -710,9 +710,44 @@ export function mapTicketmasterEvent(
 
   const desc = [ev?.info, ev?.pleaseNote].filter(Boolean).join(' — ');
 
-  const price = Array.isArray(ev?.priceRanges) && ev.priceRanges.length
-    ? (ev.priceRanges[0]?.min ?? null)
-    : null;
+  const priceRange =
+    Array.isArray(ev?.priceRanges) &&
+    ev.priceRanges.length
+      ? ev.priceRanges[0]
+      : null;
+
+  const price =
+    priceRange?.min ??
+    null;
+
+  const priceCurrency =
+    String(
+      priceRange?.currency ||
+      ''
+    )
+      .trim()
+      .toUpperCase();
+
+  const numericPrice =
+    price === null ||
+    price === ''
+      ? null
+      : Number(price);
+
+  const priceOptions =
+    Number.isFinite(numericPrice) &&
+    numericPrice >= 0 &&
+    priceCurrency
+      ? [
+          {
+            amount:
+              numericPrice,
+
+            currency:
+              priceCurrency
+          }
+        ]
+      : [];
 
   const tmRawUrl = ev.url || '';
   const outboundUrl = buildTicketmasterOutboundUrl(tmRawUrl, ev.id || '', country);
@@ -741,6 +776,20 @@ export function mapTicketmasterEvent(
     url: outboundUrl,
     tickets: outboundUrl,
     priceFrom: price,
+
+    ...(priceCurrency
+      ? {
+          currency:
+            priceCurrency
+        }
+      : {}),
+
+    ...(priceOptions.length
+      ? {
+          priceOptions
+        }
+      : {}),
+
     promo: null
   };
 }

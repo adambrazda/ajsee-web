@@ -1306,8 +1306,8 @@ form#events-filters-form.events-filters.filter-dock
 
 
 /* =========================================================
-   AJSEE_PRICE_FILTER_UI_V1
-   Shared max starting-price control
+   AJSEE_PRICE_FILTER_UI_V2
+   Shared compound max starting-price control
 ========================================================= */
 
 html body:is([data-page="home"], [data-page="events"])
@@ -1325,33 +1325,110 @@ form#events-filters-form.events-filters.filter-dock
   grid-template-columns:
     minmax(0, 1fr)
     minmax(84px, 0.42fr);
-  gap: 8px;
+
+  gap: 0;
+
   min-width: 0;
+  min-height: var(--events-filter-control-h);
+  height: var(--events-filter-control-h);
+
+  overflow: hidden;
+
+  border: 1.25px solid transparent;
+  border-radius: 16px;
+
+  background: var(--aj-filter-control-surface);
+  box-shadow: var(--aj-filter-control-shadow);
 }
 
 html body:is([data-page="home"], [data-page="events"])
 form#events-filters-form.events-filters.filter-dock
 .filter-price
-.styled-input,
+.price-control:has(
+  #filter-price-max:focus-visible,
+  #filter-price-currency:focus-visible
+) {
+  box-shadow:
+    0 0 0 3px var(--aj-filter-focus-outline),
+    var(--aj-filter-control-shadow);
+}
+
 html body:is([data-page="home"], [data-page="events"])
 form#events-filters-form.events-filters.filter-dock
 .filter-price
-.styled-select {
+#filter-price-max,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-currency {
   width: 100%;
   min-width: 0;
+  min-height: 100%;
+  height: 100%;
+
+  margin: 0;
+
+  border: 0;
+  border-radius: 0;
+
+  background-color: transparent;
+  box-shadow: none;
+
+  color: var(--aj-filter-control-text);
 }
 
-/* Desktop: keep the compact single-row filter dock. */
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-max {
+  padding:
+    21px
+    12px
+    6px
+    13px;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-currency {
+  padding:
+    21px
+    32px
+    6px
+    12px;
+
+  border-left:
+    1px solid rgba(12, 36, 80, 0.1);
+
+  background-position:
+    right 11px center;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-max:focus,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-currency:focus {
+  outline: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* Desktop: six compact columns, price remains one compound control. */
 @media (min-width: 1181px) {
   html body:is([data-page="home"], [data-page="events"])
-form#events-filters-form.events-filters.filter-dock
-.filters-fieldset {
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset {
     grid-template-columns:
       minmax(110px, 0.62fr)
       minmax(155px, 0.9fr)
       minmax(150px, 0.82fr)
       minmax(170px, 1fr)
-      minmax(170px, 0.88fr)
+      minmax(178px, 0.9fr)
       minmax(140px, 0.72fr);
 
     grid-template-areas:
@@ -1359,11 +1436,11 @@ form#events-filters-form.events-filters.filter-dock
   }
 }
 
-/* Tablet: price gets enough horizontal space for amount + currency. */
+/* Tablet: preserve the canonical two-column hierarchy. */
 @media (min-width: 721px) and (max-width: 1180px) {
   html body:is([data-page="home"], [data-page="events"])
-form#events-filters-form.events-filters.filter-dock
-.filters-fieldset {
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset {
     grid-template-columns:
       repeat(2, minmax(0, 1fr));
 
@@ -1373,23 +1450,33 @@ form#events-filters-form.events-filters.filter-dock
       "price price"
       "actions actions";
   }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-price
+  .price-control {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(112px, 0.34fr);
+  }
 }
 
-/* Mobile: one clear control per row. */
+/* Mobile: extend the existing compact architecture instead of replacing it. */
 @media (max-width: 720px) {
   html body:is([data-page="home"], [data-page="events"])
-form#events-filters-form.events-filters.filter-dock
-.filters-fieldset {
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset {
     grid-template-columns:
-      minmax(0, 1fr);
+      repeat(2, minmax(0, 1fr));
 
     grid-template-areas:
-      "category"
-      "city"
-      "date"
-      "keyword"
-      "price"
-      "actions";
+      "category date"
+      "city city"
+      "keyword keyword"
+      "price price"
+      "actions actions";
+
+    gap: 8px;
   }
 
   html body:is([data-page="home"], [data-page="events"])
@@ -1398,7 +1485,7 @@ form#events-filters-form.events-filters.filter-dock
   .price-control {
     grid-template-columns:
       minmax(0, 1fr)
-      minmax(96px, 0.42fr);
+      minmax(96px, 0.34fr);
   }
 }
 
@@ -1407,9 +1494,11 @@ form#events-filters-form.events-filters.filter-dock
 html body:is([data-page="home"], [data-page="events"])
 form#events-filters-form.events-filters.filter-dock
 .filter-price
-#filter-price-max[aria-invalid="true"] {
+.price-control:has(#filter-price-max[aria-invalid="true"]) {
   border-color: #b42318;
-  box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.12);
+  box-shadow:
+    0 0 0 3px rgba(180, 35, 24, 0.12),
+    var(--aj-filter-control-shadow);
 }
 
 html body:is([data-page="home"], [data-page="events"])

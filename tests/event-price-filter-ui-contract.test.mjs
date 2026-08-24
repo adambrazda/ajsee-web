@@ -146,7 +146,7 @@ test(
   () => {
     assert.match(
       styles,
-      /"price"\s*"actions"/
+      /"price price"\s*"actions actions"/
     );
   }
 );

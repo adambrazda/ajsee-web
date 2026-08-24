@@ -152,6 +152,37 @@ test(
 );
 
 test(
+  'mobile detailed filters stretch across their grid areas',
+  () => {
+    assert.match(
+      styles,
+      /AJSEE_PRICE_FILTER_MOBILE_STRETCH_V1[\s\S]*?> \.filter-group[\s\S]*?width:\s*100%[\s\S]*?justify-self:\s*stretch/
+    );
+
+    assert.match(
+      styles,
+      /AJSEE_PRICE_FILTER_MOBILE_STRETCH_V1[\s\S]*?\.filter-actions[\s\S]*?\.btn\.btn-primary[\s\S]*?width:\s*100%/
+    );
+  }
+);
+
+test(
+  'price divider starts below the shared label',
+  () => {
+    assert.match(
+      styles,
+      /\.price-control::after[\s\S]*?top:\s*27px[\s\S]*?right:\s*var\(--price-currency-width\)/
+    );
+
+    assert.match(
+      styles,
+      /#filter-price-currency[\s\S]*?border-left:\s*0/
+    );
+  }
+);
+
+
+test(
   'price UI keeps amount and currency together',
   () => {
     assert.match(

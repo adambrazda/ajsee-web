@@ -1321,10 +1321,14 @@ html body:is([data-page="home"], [data-page="events"])
 form#events-filters-form.events-filters.filter-dock
 .filter-price
 .price-control {
+  --price-currency-width: 84px;
+
+  position: relative;
+
   display: grid;
   grid-template-columns:
     minmax(0, 1fr)
-    minmax(84px, 0.42fr);
+    var(--price-currency-width);
 
   gap: 0;
 
@@ -1398,12 +1402,31 @@ form#events-filters-form.events-filters.filter-dock
     6px
     12px;
 
-  border-left:
-    1px solid rgba(12, 36, 80, 0.1);
+  border-left: 0;
 
   background-position:
     right 11px center;
 }
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.price-control::after {
+  content: "";
+
+  position: absolute;
+  top: 27px;
+  right: var(--price-currency-width);
+  bottom: 8px;
+
+  width: 1px;
+
+  background:
+    rgba(12, 36, 80, 0.12);
+
+  pointer-events: none;
+}
+
 
 html body:is([data-page="home"], [data-page="events"])
 form#events-filters-form.events-filters.filter-dock
@@ -1455,9 +1478,7 @@ form#events-filters-form.events-filters.filter-dock
   form#events-filters-form.events-filters.filter-dock
   .filter-price
   .price-control {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(112px, 0.34fr);
+    --price-currency-width: 112px;
   }
 }
 
@@ -1479,13 +1500,62 @@ form#events-filters-form.events-filters.filter-dock
     gap: 8px;
   }
 
+  /* AJSEE_PRICE_FILTER_MOBILE_STRETCH_V1 */
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset
+  > .filter-group,
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset
+  > .filter-actions {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+
+    justify-self: stretch;
+    align-self: stretch;
+
+    box-sizing: border-box;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-group
+  > .field,
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-group.date-combo,
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+
+    box-sizing: border-box;
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions
+  .btn.btn-primary,
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions
+  [type="submit"].btn {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+
+    flex: 1 1 auto;
+  }
+
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
   .filter-price
   .price-control {
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(96px, 0.34fr);
+    --price-currency-width: 96px;
   }
 }
 

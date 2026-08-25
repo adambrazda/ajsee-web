@@ -96,11 +96,39 @@ const SHARED_EVENT_FILTERS_MARKUP = `
     </svg>
   </button>
 
+  <div
+    class="filters-sheet-backdrop"
+    data-filter-sheet-backdrop
+    aria-hidden="true"
+  ></div>
+
   <fieldset
     class="filters-fieldset"
     id="events-filters-details"
+    aria-labelledby="filters-sheet-title"
+    tabindex="-1"
   >
     <legend class="sr-only">Filtry</legend>
+
+    <div
+      class="filters-sheet-header"
+      data-filter-sheet-header
+    >
+      <h2
+        class="filters-sheet-title"
+        id="filters-sheet-title"
+        data-filter-sheet-title
+      >Upřesnit filtry</h2>
+
+      <button
+        type="button"
+        class="filters-sheet-close"
+        data-filter-sheet-close
+        aria-label="Zavřít filtry"
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
 
     <div class="filter-group native-date from is-hidden">
       <label
@@ -435,6 +463,150 @@ function sharedFilterForm(
 }
 
 
+const FILTER_SHEET_MEDIA_QUERY =
+  '(max-width: 720px)';
+
+
+function sharedFilterUsesMobileSheet(
+  win
+) {
+  try {
+    return Boolean(
+      win
+        ?.matchMedia?.(
+          FILTER_SHEET_MEDIA_QUERY
+        )
+        ?.matches
+    );
+  } catch {
+    return false;
+  }
+}
+
+
+function syncSharedEventFilterSheetState(
+  doc = globalThis.document
+) {
+  const form =
+    sharedFilterForm(doc);
+
+  if (!form) {
+    return false;
+  }
+
+  const win =
+    doc?.defaultView ||
+    globalThis.window;
+
+  const details =
+    form.querySelector?.(
+      '#events-filters-details'
+    );
+
+  const backdrop =
+    form.querySelector?.(
+      '[data-filter-sheet-backdrop]'
+    );
+
+  const expanded =
+    form.dataset
+      .ajseeFilterDetailsExpanded ===
+    'true';
+
+  const open =
+    expanded &&
+    sharedFilterUsesMobileSheet(win);
+
+  doc
+    ?.documentElement
+    ?.classList
+    ?.toggle(
+      'ajsee-filter-sheet-open',
+      open
+    );
+
+  doc
+    ?.body
+    ?.classList
+    ?.toggle(
+      'ajsee-filter-sheet-open',
+      open
+    );
+
+  if (details) {
+    if (open) {
+      details.setAttribute(
+        'role',
+        'dialog'
+      );
+
+      details.setAttribute(
+        'aria-modal',
+        'true'
+      );
+    } else {
+      details.removeAttribute(
+        'role'
+      );
+
+      details.removeAttribute(
+        'aria-modal'
+      );
+    }
+  }
+
+  backdrop?.setAttribute?.(
+    'aria-hidden',
+    open
+      ? 'false'
+      : 'true'
+  );
+
+  return open;
+}
+
+
+function focusSharedEventFilterSheet(
+  form,
+  win
+) {
+  const target =
+    form?.querySelector?.(
+      '[data-filter-sheet-close]'
+    ) ||
+    form?.querySelector?.(
+      '#events-filters-details'
+    );
+
+  if (!target) {
+    return;
+  }
+
+  const focus =
+    () => {
+      try {
+        target.focus({
+          preventScroll: true
+        });
+      } catch {
+        target.focus?.();
+      }
+    };
+
+  if (
+    typeof win
+      ?.requestAnimationFrame ===
+    'function'
+  ) {
+    win.requestAnimationFrame(
+      focus
+    );
+  } else {
+    focus();
+  }
+}
+
+
 function hasDetailedFilterUrlState(
   win
 ) {
@@ -528,6 +700,26 @@ export function syncSharedEventFilterDisclosureCopy(
     text
   );
 
+  const sheetTitle =
+    form.querySelector?.(
+      '[data-filter-sheet-title]'
+    );
+
+  if (sheetTitle) {
+    sheetTitle.textContent =
+      copy.expand;
+  }
+
+  const closeButton =
+    form.querySelector?.(
+      '[data-filter-sheet-close]'
+    );
+
+  closeButton?.setAttribute?.(
+    'aria-label',
+    copy.collapse
+  );
+
   return true;
 }
 
@@ -571,6 +763,10 @@ export function setSharedEventFilterDetailsExpanded(
     doc
   );
 
+  syncSharedEventFilterSheetState(
+    doc
+  );
+
   return true;
 }
 
@@ -586,6 +782,21 @@ export function initSharedEventFilterDisclosure(
       '#filters-details-toggle'
     );
 
+  const details =
+    form?.querySelector?.(
+      '#events-filters-details'
+    );
+
+  const closeButton =
+    form?.querySelector?.(
+      '[data-filter-sheet-close]'
+    );
+
+  const backdrop =
+    form?.querySelector?.(
+      '[data-filter-sheet-backdrop]'
+    );
+
   if (
     !form ||
     !button
@@ -598,9 +809,13 @@ export function initSharedEventFilterDisclosure(
       .ajseeFilterDetailsExpanded
   ) {
     setSharedEventFilterDetailsExpanded(
-      hasDetailedFilterUrlState(
+      sharedFilterUsesMobileSheet(
         win
-      ),
+      )
+        ? false
+        : hasDetailedFilterUrlState(
+            win
+          ),
       doc
     );
   } else {
@@ -629,6 +844,18 @@ export function initSharedEventFilterDisclosure(
           !expanded,
           doc
         );
+
+        if (
+          !expanded &&
+          sharedFilterUsesMobileSheet(
+            win
+          )
+        ) {
+          focusSharedEventFilterSheet(
+            form,
+            win
+          );
+        }
       }
     );
 
@@ -636,6 +863,236 @@ export function initSharedEventFilterDisclosure(
       .ajseeFilterDetailsBound =
         '1';
   }
+
+  const closeMobileSheet =
+    ({
+      restoreFocus = true
+    } = {}) => {
+      setSharedEventFilterDetailsExpanded(
+        false,
+        doc
+      );
+
+      if (
+        restoreFocus &&
+        sharedFilterUsesMobileSheet(
+          win
+        )
+      ) {
+        try {
+          button.focus({
+            preventScroll: true
+          });
+        } catch {
+          button.focus?.();
+        }
+      }
+    };
+
+
+  if (
+    closeButton &&
+    closeButton.dataset
+      .ajseeFilterSheetBound !==
+      '1'
+  ) {
+    closeButton.addEventListener(
+      'click',
+      () => {
+        closeMobileSheet();
+      }
+    );
+
+    closeButton.dataset
+      .ajseeFilterSheetBound =
+      '1';
+  }
+
+
+  if (
+    backdrop &&
+    backdrop.dataset
+      .ajseeFilterSheetBound !==
+      '1'
+  ) {
+    backdrop.addEventListener(
+      'click',
+      () => {
+        closeMobileSheet();
+      }
+    );
+
+    backdrop.dataset
+      .ajseeFilterSheetBound =
+      '1';
+  }
+
+
+  if (
+    doc &&
+    form.dataset
+      .ajseeFilterSheetKeyboardBound !==
+      '1'
+  ) {
+    doc.addEventListener(
+      'keydown',
+      event => {
+        if (
+          !sharedFilterUsesMobileSheet(
+            win
+          ) ||
+          form.dataset
+            .ajseeFilterDetailsExpanded !==
+            'true'
+        ) {
+          return;
+        }
+
+        if (
+          event.defaultPrevented
+        ) {
+          return;
+        }
+
+        if (
+          event.key ===
+          'Escape'
+        ) {
+          event.preventDefault();
+          closeMobileSheet();
+          return;
+        }
+
+        if (
+          event.key !==
+            'Tab' ||
+          !details
+        ) {
+          return;
+        }
+
+        /*
+         * Date popover can temporarily move focus
+         * outside the fieldset. Do not fight it.
+         */
+        if (
+          !details.contains(
+            doc.activeElement
+          )
+        ) {
+          return;
+        }
+
+        const focusable =
+          Array.from(
+            details.querySelectorAll(
+              'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )
+          ).filter(
+            element =>
+              !element.hasAttribute(
+                'hidden'
+              ) &&
+              element.getAttribute(
+                'aria-hidden'
+              ) !==
+                'true' &&
+              element
+                .getClientRects()
+                .length >
+                0
+          );
+
+        if (!focusable.length) {
+          return;
+        }
+
+        const first =
+          focusable[0];
+
+        const last =
+          focusable[
+            focusable.length - 1
+          ];
+
+        const active =
+          doc.activeElement;
+
+        if (
+          event.shiftKey &&
+          active === first
+        ) {
+          event.preventDefault();
+          last.focus();
+          return;
+        }
+
+        if (
+          !event.shiftKey &&
+          active === last
+        ) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    );
+
+    form.dataset
+      .ajseeFilterSheetKeyboardBound =
+      '1';
+  }
+
+
+  const sheetMediaQuery =
+    win?.matchMedia?.(
+      FILTER_SHEET_MEDIA_QUERY
+    );
+
+  if (
+    sheetMediaQuery &&
+    !form
+      ._ajseeFilterSheetMediaQuery
+  ) {
+    const onSheetMediaChange =
+      event => {
+        if (event.matches) {
+          setSharedEventFilterDetailsExpanded(
+            false,
+            doc
+          );
+
+          return;
+        }
+
+        syncSharedEventFilterSheetState(
+          doc
+        );
+      };
+
+    if (
+      typeof sheetMediaQuery
+        .addEventListener ===
+      'function'
+    ) {
+      sheetMediaQuery.addEventListener(
+        'change',
+        onSheetMediaChange
+      );
+    } else if (
+      typeof sheetMediaQuery
+        .addListener ===
+      'function'
+    ) {
+      sheetMediaQuery.addListener(
+        onSheetMediaChange
+      );
+    }
+
+    form
+      ._ajseeFilterSheetMediaQuery =
+      sheetMediaQuery;
+  }
+
 
   const Observer =
     win?.MutationObserver;

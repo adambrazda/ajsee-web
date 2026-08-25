@@ -5523,6 +5523,10 @@ function bindFilterFormInteractions(formEl) {
       resetPage: true
     });
 
+    setSharedEventFilterDetailsExpanded(
+      false
+    );
+
     scrollToSharedEventResults();
   }, 'submit');
 }

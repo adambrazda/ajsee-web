@@ -142,11 +142,16 @@ test(
 );
 
 test(
-  'canonical expanded mobile grid includes price before actions',
+  'mobile price control remains available inside the bottom sheet',
   () => {
     assert.match(
       styles,
-      /data-ajsee-filter-details-expanded="true"[\s\S]*?grid-template-areas:[\s\S]*?"category date"[\s\S]*?"city city"[\s\S]*?"keyword keyword"[\s\S]*?"price price"[\s\S]*?"actions actions"/
+      /data-ajsee-filter-details-expanded="true"[\s\S]*?\.filters-fieldset[\s\S]*?display:\s*flex/
+    );
+
+    assert.match(
+      styles,
+      /@media \(max-width: 720px\)[\s\S]*?\.filter-price[\s\S]*?\.price-control[\s\S]*?--price-currency-width:\s*96px/
     );
   }
 );

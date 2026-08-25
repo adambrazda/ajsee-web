@@ -3969,6 +3969,10 @@ function bindFilterFormInteractions(formEl) {
     resetEventsPager();
     await renderAndSync({ resetPage: true });
 
+    setSharedEventFilterDetailsExpanded(
+      false
+    );
+
     scrollToSharedEventResults();
   }, 'submit');
 }

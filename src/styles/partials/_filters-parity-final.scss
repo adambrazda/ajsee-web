@@ -711,7 +711,7 @@ body[data-page="events"] .events-filter-chip__remove {
    Final shared event-filter layout:
    - Near Me lives inside the quick-filter group.
    - Clear remains a secondary utility action.
-   - Mobile quick filters are fully visible without scrolling.
+   - Mobile quick filters use one horizontal scroll row.
    - Detailed manual filters use progressive disclosure.
    - AI application automatically expands manual details.
 ========================================================= */
@@ -963,6 +963,20 @@ body.ajsee-filter-sheet-open {
 
 
   /*
+   * A backdrop-filtered ancestor becomes the containing
+   * block for fixed descendants in Chromium. The modal
+   * sheet must instead be anchored to the viewport.
+   */
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock[
+    data-ajsee-filter-details-expanded="true"
+  ] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+
+  /*
    * Quick actions remain immediately available,
    * but no longer consume multiple vertical rows.
    */
@@ -1169,7 +1183,7 @@ body.ajsee-filter-sheet-open {
 
     position: fixed;
     inset: 0;
-    z-index: 1200;
+    z-index: 10000;
 
     background:
       rgba(4, 18, 32, 0.5);
@@ -1199,7 +1213,7 @@ body.ajsee-filter-sheet-open {
     right: 0;
     bottom: 0;
 
-    z-index: 1210;
+    z-index: 10010;
 
     width: min(100%, 560px);
     min-width: 0;
@@ -1244,6 +1258,12 @@ body.ajsee-filter-sheet-open {
     box-shadow:
       0 -22px 60px
       rgba(4, 28, 48, 0.24);
+  }
+
+
+  html.ajsee-filter-sheet-open
+  .ajsee-date-popover {
+    z-index: 10020;
   }
 
 

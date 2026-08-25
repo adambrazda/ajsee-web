@@ -83,3 +83,29 @@ test(
     );
   }
 );
+
+
+test(
+  'mobile sheet is viewport-anchored and layered above site chrome',
+  () => {
+    assert.match(
+      styles,
+      /data-ajsee-filter-details-expanded="true"[\s\S]*?backdrop-filter:\s*none[\s\S]*?-webkit-backdrop-filter:\s*none/
+    );
+
+    assert.match(
+      styles,
+      /\.filters-sheet-backdrop[\s\S]*?z-index:\s*10000/
+    );
+
+    assert.match(
+      styles,
+      /data-ajsee-filter-details-expanded="true"[\s\S]*?\.filters-fieldset[\s\S]*?z-index:\s*10010/
+    );
+
+    assert.match(
+      styles,
+      /html\.ajsee-filter-sheet-open[\s\S]*?\.ajsee-date-popover[\s\S]*?z-index:\s*10020/
+    );
+  }
+);

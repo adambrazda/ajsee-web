@@ -1487,7 +1487,7 @@ export function initAiEventSearch({
 
       if (
         target.closest(
-          '[data-quick-filter="clear"]'
+          '#chipClear'
         )
       ) {
         resetClarificationFlow();

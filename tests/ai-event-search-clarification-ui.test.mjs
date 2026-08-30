@@ -135,7 +135,7 @@ test(
 
     assert.match(
       controller,
-      /data-quick-filter="clear"/
+      /chipClear/
     );
 
     assert.match(
@@ -209,7 +209,7 @@ test(
 
     assert.match(
       controller,
-      /handleGlobalClear[\s\S]*?\[data-quick-filter="clear"\][\s\S]*?resetClarificationFlow\(\)/
+      /handleGlobalClear[\s\S]*?#chipClear[\s\S]*?resetClarificationFlow\(\)/
     );
 
     assert.match(

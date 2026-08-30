@@ -176,3 +176,76 @@ test(
     }
   }
 );
+
+
+test(
+  'AI intent closes mobile filter details before scrolling to results',
+  () => {
+    for (
+      const relativePath of
+      [
+        '../src/home-entry.js',
+        '../src/events-entry.js'
+      ]
+    ) {
+      const pageSource =
+        fs.readFileSync(
+          new URL(
+            relativePath,
+            import.meta.url
+          ),
+          'utf8'
+        );
+
+      const aiStart =
+        pageSource.indexOf(
+          'async function applyAiEventSearchIntent(intent) {'
+        );
+
+      const aiEnd =
+        pageSource.indexOf(
+          'function bindFilterFormInteractions',
+          aiStart
+        );
+
+      assert.notEqual(
+        aiStart,
+        -1,
+        `AI handler missing in ${relativePath}`
+      );
+
+      assert.notEqual(
+        aiEnd,
+        -1,
+        `AI handler end missing in ${relativePath}`
+      );
+
+      const aiBlock =
+        pageSource.slice(
+          aiStart,
+          aiEnd
+        );
+
+      assert.doesNotMatch(
+        aiBlock,
+        /setSharedEventFilterDetailsExpanded\(\s*true\s*\)/
+      );
+
+      assert.match(
+        aiBlock,
+        /await renderAndSync\(\{[\s\S]*?resetPage:\s*true[\s\S]*?\}\);[\s\S]*?setSharedEventFilterDetailsExpanded\(\s*false\s*\);[\s\S]*?scrollToSharedEventResults\(\);/
+      );
+
+      const closeCalls =
+        aiBlock.match(
+          /setSharedEventFilterDetailsExpanded\(\s*false\s*\);/g
+        ) || [];
+
+      assert.equal(
+        closeCalls.length,
+        1,
+        `AI intent must close filter details exactly once in ${relativePath}`
+      );
+    }
+  }
+);

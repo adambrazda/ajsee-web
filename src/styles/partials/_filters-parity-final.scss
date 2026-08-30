@@ -713,7 +713,7 @@ body[data-page="events"] .events-filter-chip__remove {
    - Clear remains a secondary utility action.
    - Mobile quick filters use one horizontal scroll row.
    - Detailed manual filters use progressive disclosure.
-   - AI application automatically expands manual details.
+   - AI application returns users to results with manual details closed.
 ========================================================= */
 
 html body:is([data-page="home"], [data-page="events"])

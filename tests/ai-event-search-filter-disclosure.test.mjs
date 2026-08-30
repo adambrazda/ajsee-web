@@ -166,7 +166,7 @@ test(
 
 
 test(
-  'successful AI application expands manual filter details on both pages',
+  'successful AI application keeps manual filter details closed on both pages',
   () => {
     for (
       const source of [
@@ -174,14 +174,41 @@ test(
         eventsEntry
       ]
     ) {
-      assert.match(
-        source,
-        /setSharedEventFilterDetailsExpanded/
+      const aiStart =
+        source.indexOf(
+          'async function applyAiEventSearchIntent(intent) {'
+        );
+
+      const aiEnd =
+        source.indexOf(
+          'function bindFilterFormInteractions',
+          aiStart
+        );
+
+      assert.notEqual(
+        aiStart,
+        -1
+      );
+
+      assert.notEqual(
+        aiEnd,
+        -1
+      );
+
+      const aiBlock =
+        source.slice(
+          aiStart,
+          aiEnd
+        );
+
+      assert.doesNotMatch(
+        aiBlock,
+        /setSharedEventFilterDetailsExpanded\(\s*true\s*\)/
       );
 
       assert.match(
-        source,
-        /setFilterInputsFromState\(\);[\s\S]{0,160}?setSharedEventFilterDetailsExpanded\(\s*true\s*\);/
+        aiBlock,
+        /await renderAndSync\([\s\S]*?setSharedEventFilterDetailsExpanded\(\s*false\s*\)[\s\S]*?scrollToSharedEventResults\(\)/
       );
     }
   }

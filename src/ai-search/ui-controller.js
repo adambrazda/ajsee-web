@@ -1,3 +1,7 @@
+import {
+  MAX_CLARIFICATION_ROUNDS
+} from './clarification-context.js';
+
 import '../styles/partials/_ai-event-search.scss';
 
 const AI_SEARCH_ENDPOINT =
@@ -164,6 +168,111 @@ const COPY = {
       'A kérést nem sikerült feldolgozni. Próbáld másképp megfogalmazni.'
   }
 };
+
+const CLARIFICATION_COPY = {
+  cs: {
+    placeholder:
+      'Odpovězte nebo upřesněte požadavek…',
+    submit:
+      'Odeslat odpověď',
+    yes:
+      'Ano',
+    edit:
+      'Ne, upravím',
+    actionsLabel:
+      'Možnosti odpovědi',
+    limit:
+      'Potřebuji přesnější zadání. Napište prosím požadavek znovu celou větou.',
+    affirmativeReply:
+      'ano'
+  },
+
+  en: {
+    placeholder:
+      'Reply or clarify your request…',
+    submit:
+      'Send reply',
+    yes:
+      'Yes',
+    edit:
+      'No, I’ll clarify',
+    actionsLabel:
+      'Reply options',
+    limit:
+      'I need a more precise request. Please write your request again as a complete sentence.',
+    affirmativeReply:
+      'yes'
+  },
+
+  de: {
+    placeholder:
+      'Antworten oder Wunsch präzisieren…',
+    submit:
+      'Antwort senden',
+    yes:
+      'Ja',
+    edit:
+      'Nein, ich präzisiere',
+    actionsLabel:
+      'Antwortoptionen',
+    limit:
+      'Ich brauche eine genauere Anfrage. Bitte formulieren Sie Ihren Wunsch noch einmal als vollständigen Satz.',
+    affirmativeReply:
+      'ja'
+  },
+
+  sk: {
+    placeholder:
+      'Odpovedzte alebo spresnite požiadavku…',
+    submit:
+      'Odoslať odpoveď',
+    yes:
+      'Áno',
+    edit:
+      'Nie, upravím',
+    actionsLabel:
+      'Možnosti odpovede',
+    limit:
+      'Potrebujem presnejšie zadanie. Napíšte prosím svoju požiadavku znova celou vetou.',
+    affirmativeReply:
+      'áno'
+  },
+
+  pl: {
+    placeholder:
+      'Odpowiedz lub doprecyzuj prośbę…',
+    submit:
+      'Wyślij odpowiedź',
+    yes:
+      'Tak',
+    edit:
+      'Nie, doprecyzuję',
+    actionsLabel:
+      'Opcje odpowiedzi',
+    limit:
+      'Potrzebuję dokładniejszego opisu. Napisz proszę swoją prośbę ponownie pełnym zdaniem.',
+    affirmativeReply:
+      'tak'
+  },
+
+  hu: {
+    placeholder:
+      'Válaszolj vagy pontosítsd a kérést…',
+    submit:
+      'Válasz küldése',
+    yes:
+      'Igen',
+    edit:
+      'Nem, pontosítom',
+    actionsLabel:
+      'Válaszlehetőségek',
+    limit:
+      'Pontosabb kérésre van szükségem. Kérlek, írd le újra a kérésedet egy teljes mondatban.',
+    affirmativeReply:
+      'igen'
+  }
+};
+
 
 const APPLY_COPY = {
   cs: {
@@ -705,6 +814,25 @@ export function initAiEventSearch({
     </div>
 
     <div
+      class="ai-event-search__clarification-actions"
+      data-ai-search-clarification-actions
+      role="group"
+      hidden
+    >
+      <button
+        class="ai-event-search__clarification-action ai-event-search__clarification-action--yes"
+        type="button"
+        data-ai-search-clarification-yes
+      ></button>
+
+      <button
+        class="ai-event-search__clarification-action ai-event-search__clarification-action--edit"
+        type="button"
+        data-ai-search-clarification-edit
+      ></button>
+    </div>
+
+    <div
       id="ajsee-ai-turnstile"
       class="ai-event-search__turnstile"
       data-ai-search-turnstile
@@ -754,6 +882,49 @@ export function initAiEventSearch({
       '[data-ai-search-turnstile]'
     );
 
+  const clarificationActions =
+    root.querySelector(
+      '[data-ai-search-clarification-actions]'
+    );
+
+  const clarificationYes =
+    root.querySelector(
+      '[data-ai-search-clarification-yes]'
+    );
+
+  const clarificationEdit =
+    root.querySelector(
+      '[data-ai-search-clarification-edit]'
+    );
+
+  let pendingClarification =
+    null;
+
+  const getClarificationCopy =
+    locale =>
+      CLARIFICATION_COPY[locale] ||
+      CLARIFICATION_COPY.cs;
+
+  const hideClarificationActions =
+    () => {
+      if (clarificationActions) {
+        clarificationActions.hidden =
+          true;
+      }
+    };
+
+  const clearPendingClarification =
+    () => {
+      pendingClarification =
+        null;
+
+      root.removeAttribute(
+        'data-clarification-round'
+      );
+
+      hideClarificationActions();
+    };
+
   const getCopy = () => {
     const locale =
       normalizeLocale(
@@ -770,9 +941,15 @@ export function initAiEventSearch({
 
   const refreshCopy = () => {
     const {
+      locale,
       copy
     } =
       getCopy();
+
+    const clarificationCopy =
+      getClarificationCopy(
+        locale
+      );
 
     label.textContent =
       copy.label;
@@ -784,14 +961,38 @@ export function initAiEventSearch({
       copy.badge;
 
     input.placeholder =
-      copy.placeholder;
+      pendingClarification
+        ? clarificationCopy
+            .placeholder
+        : copy.placeholder;
+
+    if (clarificationYes) {
+      clarificationYes.textContent =
+        clarificationCopy.yes;
+    }
+
+    if (clarificationEdit) {
+      clarificationEdit.textContent =
+        clarificationCopy.edit;
+    }
+
+    if (clarificationActions) {
+      clarificationActions.setAttribute(
+        'aria-label',
+        clarificationCopy
+          .actionsLabel
+      );
+    }
 
     if (
       root.dataset.state !==
       'loading'
     ) {
       submit.textContent =
-        copy.submit;
+        pendingClarification
+          ? clarificationCopy
+              .submit
+          : copy.submit;
     }
   };
 
@@ -803,7 +1004,10 @@ export function initAiEventSearch({
     );
 
   const runSearch =
-    async () => {
+    async (
+      queryOverride =
+        null
+    ) => {
       if (
         root.dataset.state ===
         'loading'
@@ -813,7 +1017,8 @@ export function initAiEventSearch({
 
       const query =
         String(
-          input.value ||
+          queryOverride ??
+          input.value ??
           ''
         )
           .replace(
@@ -827,6 +1032,27 @@ export function initAiEventSearch({
         copy
       } =
         getCopy();
+
+      const requestClarificationContext =
+        pendingClarification
+          ? {
+              originalQuery:
+                pendingClarification
+                  .originalQuery,
+
+              question:
+                pendingClarification
+                  .question,
+
+              round:
+                pendingClarification
+                  .round,
+
+              previousIntent:
+                pendingClarification
+                  .previousIntent
+            }
+          : null;
 
       if (
         query.length < 2
@@ -898,7 +1124,17 @@ export function initAiEventSearch({
                   now:
                     new Date()
                       .toISOString(),
-                  turnstileToken
+
+                  turnstileToken,
+
+                  ...(
+                    requestClarificationContext
+                      ? {
+                          clarificationContext:
+                            requestClarificationContext
+                        }
+                      : {}
+                  )
                 })
             }
           );
@@ -945,6 +1181,82 @@ export function initAiEventSearch({
               ''
             ).trim();
 
+          const clarificationCopy =
+            getClarificationCopy(
+              locale
+            );
+
+          if (
+            requestClarificationContext &&
+            requestClarificationContext
+              .round >=
+                MAX_CLARIFICATION_ROUNDS
+          ) {
+            clearPendingClarification();
+
+            input.value =
+              '';
+
+            refreshCopy();
+
+            setState(
+              root,
+              {
+                state:
+                  'clarification',
+
+                message:
+                  clarificationCopy
+                    .limit
+              }
+            );
+
+            input.focus();
+
+            return;
+          }
+
+          const nextRound =
+            requestClarificationContext
+              ? requestClarificationContext
+                  .round +
+                1
+              : 1;
+
+          pendingClarification = {
+            originalQuery:
+              requestClarificationContext
+                ?.originalQuery ||
+              query,
+
+            question:
+              question ||
+              copy.clarification,
+
+            round:
+              nextRound,
+
+            previousIntent:
+              data.intent
+          };
+
+          root.setAttribute(
+            'data-clarification-round',
+            String(
+              nextRound
+            )
+          );
+
+          if (clarificationActions) {
+            clarificationActions.hidden =
+              false;
+          }
+
+          input.value =
+            '';
+
+          refreshCopy();
+
           setState(
             root,
             {
@@ -952,8 +1264,8 @@ export function initAiEventSearch({
                 'clarification',
 
               message:
-                question ||
-                copy.clarification
+                pendingClarification
+                  .question
             }
           );
 
@@ -961,6 +1273,10 @@ export function initAiEventSearch({
 
           return;
         }
+
+        clearPendingClarification();
+
+        refreshCopy();
 
         let applicationResult =
           null;
@@ -1039,8 +1355,21 @@ export function initAiEventSearch({
         submit.disabled =
           false;
 
+        const latestLocale =
+          normalizeLocale(
+            getLocale?.()
+          );
+
+        const latestClarificationCopy =
+          getClarificationCopy(
+            latestLocale
+          );
+
         submit.textContent =
-          latestCopy.submit;
+          pendingClarification
+            ? latestClarificationCopy
+                .submit
+            : latestCopy.submit;
       }
     };
 
@@ -1050,6 +1379,52 @@ export function initAiEventSearch({
       void runSearch();
     }
   );
+
+  clarificationYes
+    ?.addEventListener(
+      'click',
+      () => {
+        if (
+          !pendingClarification
+        ) {
+          return;
+        }
+
+        const {
+          locale
+        } =
+          getCopy();
+
+        const reply =
+          getClarificationCopy(
+            locale
+          ).affirmativeReply;
+
+        input.value =
+          reply;
+
+        void runSearch(
+          reply
+        );
+      }
+    );
+
+  clarificationEdit
+    ?.addEventListener(
+      'click',
+      () => {
+        if (
+          !pendingClarification
+        ) {
+          return;
+        }
+
+        input.value =
+          '';
+
+        input.focus();
+      }
+    );
 
   input.addEventListener(
     'keydown',
@@ -1067,9 +1442,59 @@ export function initAiEventSearch({
     }
   );
 
+  const resetClarificationFlow =
+    () => {
+      clearPendingClarification();
+
+      input.value =
+        '';
+
+      setState(
+        root,
+        {
+          state:
+            'idle',
+
+          message:
+            ''
+        }
+      );
+
+      refreshCopy();
+    };
+
+  form.addEventListener(
+    'reset',
+    resetClarificationFlow
+  );
+
+  form.addEventListener(
+    'click',
+    event => {
+      const target =
+        event.target;
+
+      if (
+        !target ||
+        typeof target.closest !==
+          'function'
+      ) {
+        return;
+      }
+
+      if (
+        target.closest(
+          '[type="reset"], [data-quick-filter="clear"]'
+        )
+      ) {
+        resetClarificationFlow();
+      }
+    }
+  );
+
   const handleLanguageChange =
     () => {
-      refreshCopy();
+      resetClarificationFlow();
     };
 
   globalThis.addEventListener(

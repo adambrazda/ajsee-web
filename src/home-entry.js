@@ -5336,17 +5336,16 @@ async function applyAiEventSearchIntent(intent) {
   _lastFetchSig = '';
 
   setFilterInputsFromState();
-
-  setSharedEventFilterDetailsExpanded(
-    true
-  );
-
   syncQuickFilterButtons();
 
   await renderAndSync({
     resetPage:
       true
   });
+
+  setSharedEventFilterDetailsExpanded(
+    false
+  );
 
   scrollToSharedEventResults();
 

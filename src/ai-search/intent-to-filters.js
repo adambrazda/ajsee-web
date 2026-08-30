@@ -7,6 +7,10 @@ import {
   getDatePresetRange
 } from '../events-filter-ux.js';
 
+import {
+  normalizePriceFilterState
+} from '../event-price.js';
+
 const DEFAULT_COUNTRY_BY_LOCALE =
   Object.freeze({
     cs: 'CZ',
@@ -58,6 +62,12 @@ export function createDefaultEventFilters(
       '',
 
     keyword:
+      '',
+
+    maxPrice:
+      null,
+
+    priceCurrency:
       '',
 
     countryCode:
@@ -149,6 +159,54 @@ export function mapIntentToFilters(
       intent.keyword ||
       ''
     ).trim();
+
+  const unsupportedPreferences =
+    [];
+
+  for (
+    const preference of
+    intent.unsupportedPreferences
+  ) {
+    if (
+      preference.type !==
+        'max_price' ||
+      filters.maxPrice !==
+        null
+    ) {
+      unsupportedPreferences.push(
+        preference
+      );
+
+      continue;
+    }
+
+    const normalizedPrice =
+      normalizePriceFilterState({
+        maxPrice:
+          preference.value,
+
+        priceCurrency:
+          preference.currency
+      });
+
+    if (
+      normalizedPrice.maxPrice ===
+        null ||
+      !normalizedPrice.priceCurrency
+    ) {
+      unsupportedPreferences.push(
+        preference
+      );
+
+      continue;
+    }
+
+    filters.maxPrice =
+      normalizedPrice.maxPrice;
+
+    filters.priceCurrency =
+      normalizedPrice.priceCurrency;
+  }
 
   if (
     intent.place.type === 'country'
@@ -283,8 +341,7 @@ export function mapIntentToFilters(
 
     requirements,
 
-    unsupportedPreferences:
-      intent.unsupportedPreferences,
+    unsupportedPreferences,
 
     needsClarification,
 

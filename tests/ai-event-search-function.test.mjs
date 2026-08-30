@@ -1114,3 +1114,247 @@ test(
     );
   }
 );
+
+test(
+  'server forces missing max-price currency into clarification',
+  async () => {
+    const intent =
+      validIntent();
+
+    intent.unsupportedPreferences = [
+      {
+        type:
+          'max_price',
+
+        value:
+          100,
+
+        currency:
+          '',
+
+        unit:
+          ''
+      }
+    ];
+
+    intent.clarification = {
+      required:
+        false,
+
+      question:
+        '',
+
+      fields:
+        []
+    };
+
+    intent.confidence.overall =
+      0.88;
+
+    const handler =
+      createAiEventSearchHandler({
+        env: {
+          OPENAI_API_KEY:
+            'test-key'
+        },
+
+        fetchImpl:
+          async () =>
+            modelResponse(
+              intent
+            )
+      });
+
+    const response =
+      await handler(
+        makeRequest({
+          query:
+            'Najdi mi akce do 100',
+
+          locale:
+            'cs',
+
+          turnstileToken:
+            'test-token'
+        })
+      );
+
+    assert.equal(
+      response.status,
+      200
+    );
+
+    const body =
+      await bodyJson(
+        response
+      );
+
+    assert.equal(
+      body.ok,
+      true
+    );
+
+    assert.equal(
+      body.needsClarification,
+      true
+    );
+
+    assert.equal(
+      body.intent
+        .clarification
+        .required,
+      true
+    );
+
+    assert.equal(
+      body.intent
+        .clarification
+        .question,
+      'Myslíte maximální cenu 100 CZK?'
+    );
+
+    assert.deepEqual(
+      body.intent
+        .clarification
+        .fields,
+      [
+        'unsupportedPreferences'
+      ]
+    );
+
+    assert.equal(
+      body.intent
+        .unsupportedPreferences[0]
+        .currency,
+      ''
+    );
+  }
+);
+
+
+test(
+  'affirmative price clarification confirms locale currency deterministically',
+  async () => {
+    const modelIntent =
+      validIntent();
+
+    modelIntent.unsupportedPreferences = [
+      {
+        type:
+          'max_price',
+
+        value:
+          100,
+
+        currency:
+          '',
+
+        unit:
+          ''
+      }
+    ];
+
+    modelIntent.clarification = {
+      required:
+        false,
+
+      question:
+        '',
+
+      fields:
+        []
+    };
+
+    const previousIntent =
+      structuredClone(
+        modelIntent
+      );
+
+    previousIntent.clarification = {
+      required:
+        true,
+
+      question:
+        'Myslíte maximální cenu 100 CZK?',
+
+      fields: [
+        'unsupportedPreferences'
+      ]
+    };
+
+    const handler =
+      createAiEventSearchHandler({
+        env: {
+          OPENAI_API_KEY:
+            'test-key'
+        },
+
+        fetchImpl:
+          async () =>
+            modelResponse(
+              modelIntent
+            )
+      });
+
+    const response =
+      await handler(
+        makeRequest({
+          query:
+            'ano',
+
+          locale:
+            'cs',
+
+          turnstileToken:
+            'test-token',
+
+          clarificationContext: {
+            originalQuery:
+              'Najdi mi akce do 100',
+
+            question:
+              'Myslíte maximální cenu 100 CZK?',
+
+            round:
+              1,
+
+            previousIntent
+          }
+        })
+      );
+
+    assert.equal(
+      response.status,
+      200
+    );
+
+    const body =
+      await bodyJson(
+        response
+      );
+
+    assert.equal(
+      body.ok,
+      true
+    );
+
+    assert.equal(
+      body.needsClarification,
+      false
+    );
+
+    assert.equal(
+      body.intent
+        .clarification
+        .required,
+      false
+    );
+
+    assert.equal(
+      body.intent
+        .unsupportedPreferences[0]
+        .currency,
+      'CZK'
+    );
+  }
+);

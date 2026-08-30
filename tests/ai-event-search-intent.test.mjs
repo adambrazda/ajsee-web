@@ -9,6 +9,18 @@ import {
   mapIntentToFilters
 } from '../src/ai-search/intent-to-filters.js';
 
+import {
+  materializeSearchPlan
+} from '../src/ai-search/search-plan-materializer.js';
+
+import {
+  materializedPlanToRuntimeFilters
+} from '../src/ai-search/runtime-filter-state.js';
+
+import {
+  syncPriceFilterSearchParams
+} from '../src/event-price.js';
+
 const FIXED_NOW =
   new Date(
     '2026-08-17T12:00:00'
@@ -407,7 +419,7 @@ test(
 );
 
 test(
-  'preserves unsupported max-price preference without applying it',
+  'maps max-price preference into the canonical price filter',
   () => {
     const result =
       mapIntentToFilters(
@@ -440,28 +452,223 @@ test(
     );
 
     assert.equal(
-      result.unsupportedPreferences.length,
-      1
+      result.filters.maxPrice,
+      500
+    );
+
+    assert.equal(
+      result.filters.priceCurrency,
+      'CZK'
     );
 
     assert.deepEqual(
-      result.unsupportedPreferences[0],
-      {
-        type:
-          'max_price',
-
-        value:
-          500,
-
-        currency:
-          'CZK',
-
-        unit:
-          ''
-      }
+      result.unsupportedPreferences,
+      []
     );
   }
 );
+
+
+test(
+  'keeps invalid max-price preference unsupported',
+  () => {
+    const result =
+      mapIntentToFilters(
+        baseIntent({
+          unsupportedPreferences: [
+            {
+              type:
+                'max_price',
+
+              value:
+                -1,
+
+              currency:
+                'CZK'
+            }
+          ]
+        }),
+        {
+          now:
+            FIXED_NOW
+        }
+      );
+
+    assert.equal(
+      result.filters.maxPrice,
+      null
+    );
+
+    assert.equal(
+      result.filters.priceCurrency,
+      ''
+    );
+
+    assert.deepEqual(
+      result.unsupportedPreferences,
+      [
+        {
+          type:
+            'max_price',
+
+          value:
+            -1,
+
+          currency:
+            'CZK',
+
+          unit:
+            ''
+        }
+      ]
+    );
+  }
+);
+
+
+test(
+  'maps max-price while preserving other unsupported preferences',
+  () => {
+    const result =
+      mapIntentToFilters(
+        baseIntent({
+          unsupportedPreferences: [
+            {
+              type:
+                'max_price',
+
+              value:
+                1000,
+
+              currency:
+                'CZK'
+            },
+            {
+              type:
+                'seat_preference',
+
+              value:
+                'front'
+            }
+          ]
+        }),
+        {
+          now:
+            FIXED_NOW
+        }
+      );
+
+    assert.equal(
+      result.filters.maxPrice,
+      1000
+    );
+
+    assert.equal(
+      result.filters.priceCurrency,
+      'CZK'
+    );
+
+    assert.deepEqual(
+      result.unsupportedPreferences,
+      [
+        {
+          type:
+            'seat_preference',
+
+          value:
+            'front',
+
+          currency:
+            '',
+
+          unit:
+            ''
+        }
+      ]
+    );
+  }
+);
+
+test(
+  'AI max-price survives the complete canonical filter pipeline',
+  () => {
+    const mapped =
+      mapIntentToFilters(
+        baseIntent({
+          unsupportedPreferences: [
+            {
+              type:
+                'max_price',
+
+              value:
+                1000,
+
+              currency:
+                'CZK'
+            }
+          ]
+        }),
+        {
+          now:
+            FIXED_NOW
+        }
+      );
+
+    const materialized =
+      materializeSearchPlan(
+        mapped
+      );
+
+    assert.equal(
+      materialized.ok,
+      true
+    );
+
+    assert.equal(
+      materialized.readyToApply,
+      true
+    );
+
+    const runtimeFilters =
+      materializedPlanToRuntimeFilters(
+        materialized
+      );
+
+    assert.equal(
+      runtimeFilters.maxPrice,
+      1000
+    );
+
+    assert.equal(
+      runtimeFilters.priceCurrency,
+      'CZK'
+    );
+
+    const params =
+      new URLSearchParams();
+
+    syncPriceFilterSearchParams(
+      params,
+      runtimeFilters
+    );
+
+    assert.equal(
+      params.get('priceMax'),
+      '1000'
+    );
+
+    assert.equal(
+      params.get('priceCurrency'),
+      'CZK'
+    );
+
+    assert.deepEqual(
+      materialized.unsupportedPreferences,
+      []
+    );
+  }
+);
+
 
 test(
   'rejects unsupported categories instead of silently guessing',

@@ -3797,11 +3797,6 @@ async function applyAiEventSearchIntent(intent) {
   _lastFetchSig = '';
 
   setFilterInputsFromState();
-
-  setSharedEventFilterDetailsExpanded(
-    true
-  );
-
   syncQuickDateButtons();
 
   resetEventsPager();
@@ -3810,6 +3805,10 @@ async function applyAiEventSearchIntent(intent) {
     resetPage:
       true
   });
+
+  setSharedEventFilterDetailsExpanded(
+    false
+  );
 
   scrollToSharedEventResults();
 

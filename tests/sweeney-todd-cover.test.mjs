@@ -15,11 +15,17 @@ const expectedCover =
   "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-prague-2026-cover.webp";
 
 test(
-  "Sweeney Todd remains an unpublished theatre preview",
+  "Sweeney Todd remains a published theatre preview",
   () => {
     assert.equal(item.contentType, "preview");
-    assert.equal(item.status, "approved");
-    assert.equal(item.published, false);
+    assert.equal(item.status, "published");
+    assert.equal(item.published, true);
+
+    assert.match(
+      item.publishedAt,
+      /^\d{4}-\d{2}-\d{2}T/
+    );
+
     assert.equal(item.featured, false);
     assert.equal(item.rating, null);
   }

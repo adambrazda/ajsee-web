@@ -3,6 +3,10 @@ import {
   isCityRadiusPlace,
   isNearMePlace
 } from './event-place-runtime.js';
+
+import {
+  formatPriceFilterLabel
+} from './event-price.js';
 // /src/events-filter-ux.js
 // AJSEE – reusable UX helpers for the events filter summary and date presets.
 
@@ -244,6 +248,22 @@ export function getActiveFilterDescriptors(
     });
   }
 
+  const priceLabel =
+    formatPriceFilterLabel(
+      filters,
+      locale
+    );
+
+  if (priceLabel) {
+    descriptors.push({
+      key:
+        'price',
+
+      label:
+        priceLabel
+    });
+  }
+
   const sort = String(filters.sort || 'nearest');
 
   if (sort !== 'nearest') {
@@ -265,6 +285,7 @@ export function getActiveFilterDescriptors(
  */
 const EMPTY_STATE_FILTER_PRIORITY =
   Object.freeze([
+    'price',
     'keyword',
     'date',
     'audience',

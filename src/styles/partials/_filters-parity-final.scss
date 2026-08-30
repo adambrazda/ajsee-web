@@ -711,7 +711,7 @@ body[data-page="events"] .events-filter-chip__remove {
    Final shared event-filter layout:
    - Near Me lives inside the quick-filter group.
    - Clear remains a secondary utility action.
-   - Mobile quick filters are fully visible without scrolling.
+   - Mobile quick filters use one horizontal scroll row.
    - Detailed manual filters use progressive disclosure.
    - AI application automatically expands manual details.
 ========================================================= */
@@ -921,6 +921,27 @@ form#events-filters-form.events-filters.filter-dock
 }
 
 
+/*
+ * Bottom-sheet shell is inert outside the mobile
+ * enhanced state. Mobile behavior is defined separately.
+ */
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filters-sheet-backdrop,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filters-sheet-header {
+  display: none;
+}
+
+
+html.ajsee-filter-sheet-open,
+body.ajsee-filter-sheet-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+
 /* ---------------------------------------------------------
    MOBILE
 --------------------------------------------------------- */
@@ -942,13 +963,22 @@ form#events-filters-form.events-filters.filter-dock
 
 
   /*
-   * All quick actions remain visible.
-   *
-   * Row 1:
-   * Dnes | Zítra | Tento týden | Tento víkend
-   *
-   * Row 2:
-   * Pro rodiny | V mém okolí | Vymazat
+   * A backdrop-filtered ancestor becomes the containing
+   * block for fixed descendants in Chromium. The modal
+   * sheet must instead be anchored to the viewport.
+   */
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock[
+    data-ajsee-filter-details-expanded="true"
+  ] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+
+  /*
+   * Quick actions remain immediately available,
+   * but no longer consume multiple vertical rows.
    */
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
@@ -957,61 +987,68 @@ form#events-filters-form.events-filters.filter-dock
 
     width: 100%;
 
-    margin-bottom: 7px;
-    padding: 0;
+    margin: 0 0 8px;
+    padding: 0 0 3px;
 
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
+
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
   .filters-toolbar
   .chips {
-    display: grid;
-
-    grid-template-columns:
-      repeat(6, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
 
     gap: 6px;
 
-    width: 100%;
-
-    overflow: visible;
+    width: max-content;
+    min-width: 100%;
   }
+
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
   .filters-toolbar
   .chips
   .chip {
-    grid-column: span 2;
+    flex: 0 0 auto;
 
-    width: 100%;
-    min-width: 0;
-    min-height: 44px;
+    width: auto;
+    min-width: max-content;
+    min-height: 42px;
 
     justify-content: center;
 
-    padding-inline: 0.42rem;
+    padding-inline: 0.72rem;
 
-    overflow: hidden;
+    overflow: visible;
 
     white-space: nowrap;
-    text-overflow: ellipsis;
+    text-overflow: clip;
 
-    font-size: clamp(0.72rem, 3.15vw, 0.8rem);
+    font-size:
+      clamp(
+        0.72rem,
+        3.15vw,
+        0.8rem
+      );
   }
 
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filters-toolbar
-  #chipToday,
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filters-toolbar
-  #chipTomorrow {
-    grid-column: span 1;
-  }
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
@@ -1023,11 +1060,11 @@ form#events-filters-form.events-filters.filter-dock
   #chipClear {
     display: inline-flex;
 
-    grid-column: span 2;
+    flex: 0 0 auto;
 
-    width: 100%;
-    min-width: 0;
-    min-height: 44px;
+    width: auto;
+    min-width: max-content;
+    min-height: 42px;
 
     margin: 0;
 
@@ -1036,9 +1073,8 @@ form#events-filters-form.events-filters.filter-dock
 
 
   /*
-   * Manual controls are collapsed by default on mobile.
-   * Without JS/data attribute they remain visible as a safe
-   * progressive-enhancement fallback.
+   * The page only exposes the entry point.
+   * Detailed filters open in the modal sheet.
    */
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
@@ -1055,11 +1091,17 @@ form#events-filters-form.events-filters.filter-dock
     margin: 0;
     padding: 0 12px;
 
-    border: 1px solid rgba(11, 128, 145, 0.15);
+    border:
+      1px solid
+      rgba(11, 128, 145, 0.15);
+
     border-radius: 14px;
 
-    background: rgba(255, 255, 255, 0.56);
-    color: var(--aj-filter-control-text);
+    background:
+      rgba(255, 255, 255, 0.56);
+
+    color:
+      var(--aj-filter-control-text);
 
     font: inherit;
     font-size: 0.84rem;
@@ -1068,19 +1110,28 @@ form#events-filters-form.events-filters.filter-dock
     cursor: pointer;
   }
 
+
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
   .filters-details-toggle:hover {
-    border-color: rgba(11, 128, 145, 0.28);
-    background: rgba(255, 255, 255, 0.76);
+    border-color:
+      rgba(11, 128, 145, 0.28);
+
+    background:
+      rgba(255, 255, 255, 0.76);
   }
+
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
   .filters-details-toggle:focus-visible {
-    outline: 3px solid var(--aj-filter-focus-outline);
+    outline:
+      3px solid
+      var(--aj-filter-focus-outline);
+
     outline-offset: 3px;
   }
+
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
@@ -1093,9 +1144,12 @@ form#events-filters-form.events-filters.filter-dock
       transform 160ms ease;
   }
 
+
   html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filters-details-toggle[aria-expanded="true"]
+  form#events-filters-form.events-filters.filter-dock[
+    data-ajsee-filter-details-expanded="true"
+  ]
+  .filters-details-toggle
   svg {
     transform: rotate(180deg);
   }
@@ -1110,56 +1164,220 @@ form#events-filters-form.events-filters.filter-dock
   }
 
 
+  /*
+   * Modal backdrop.
+   */
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-sheet-backdrop {
+    display: none;
+  }
+
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock[
+    data-ajsee-filter-details-expanded="true"
+  ]
+  .filters-sheet-backdrop {
+    display: block;
+
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+
+    background:
+      rgba(4, 18, 32, 0.5);
+
+    backdrop-filter:
+      blur(3px);
+  }
+
+
+  /*
+   * The existing fieldset itself becomes the sheet.
+   * There is still exactly one set of form controls.
+   */
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock[
     data-ajsee-filter-details-expanded="true"
   ]
   .filters-fieldset {
-    display: grid;
+    display: flex;
+    flex-direction: column;
 
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    gap: 12px;
 
-    grid-template-areas:
-      "category date"
-      "city city"
-      "keyword keyword"
-      "actions actions";
+    position: fixed;
 
-    gap: 8px;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
-    margin-top: 8px;
+    z-index: 10010;
+
+    width: min(100%, 560px);
+    min-width: 0;
+
+    max-height:
+      min(
+        92dvh,
+        760px
+      );
+
+    margin: 0 auto;
+
+    padding:
+      0
+      16px
+      calc(
+        14px +
+        env(safe-area-inset-bottom)
+      );
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    overscroll-behavior:
+      contain;
+
+    border:
+      1px solid
+      var(--aj-filter-panel-border);
+
+    border-bottom: 0;
+
+    border-radius:
+      24px
+      24px
+      0
+      0;
+
+    background:
+      var(--aj-filter-panel-bg);
+
+    box-shadow:
+      0 -22px 60px
+      rgba(4, 28, 48, 0.24);
+  }
+
+
+  html.ajsee-filter-sheet-open
+  .ajsee-date-popover {
+    z-index: 10020;
+  }
+
+
+  /*
+   * Sheet header.
+   */
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock[
+    data-ajsee-filter-details-expanded="true"
+  ]
+  .filters-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 4;
+
+    margin:
+      0
+      -16px;
+
+    padding:
+      14px
+      16px
+      12px;
+
+    border-bottom:
+      1px solid
+      var(--aj-filter-panel-border);
+
+    background:
+      var(--aj-filter-panel-bg);
   }
 
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
-  .filter-group:has(#filter-category) {
-    grid-area: category;
+  .filters-sheet-title {
+    margin: 0;
+
+    color:
+      var(--aj-filter-control-text);
+
+    font-size: 1.12rem;
+    font-weight: 900;
+    line-height: 1.2;
+
+    letter-spacing: -0.015em;
   }
+
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
-  .filter-group:has(#filter-city) {
-    grid-area: city;
+  .filters-sheet-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 44px;
+
+    width: 44px;
+    height: 44px;
+
+    margin: 0;
+    padding: 0;
+
+    border:
+      1px solid
+      var(--aj-filter-panel-border);
+
+    border-radius: 999px;
+
+    background:
+      var(--aj-filter-control-surface);
+
+    color:
+      var(--aj-filter-control-text);
+
+    font: inherit;
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1;
+
+    cursor: pointer;
   }
+
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
-  .filter-group.date-combo:has(#date-combo-button) {
-    grid-area: date;
+  .filters-sheet-close:focus-visible {
+    outline:
+      3px solid
+      var(--aj-filter-focus-outline);
+
+    outline-offset: 2px;
   }
 
-  html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock
-  .filter-group.filter-keyword:has(#filter-keyword) {
-    grid-area: keyword;
-  }
 
+  /*
+   * One control per row inside the sheet.
+   */
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
-  .filter-actions {
-    grid-area: actions;
+  .filters-fieldset
+  > .filter-group {
+    flex: 0 0 auto;
+
+    width: 100%;
+    min-width: 0;
 
     margin: 0;
   }
@@ -1167,14 +1385,27 @@ form#events-filters-form.events-filters.filter-dock
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset
+  .field,
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset
+  .date-combo {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
   .filter-group
   > label {
-    top: 8px;
-    left: 12px;
+    top: 9px;
+    left: 14px;
 
-    gap: 0.35rem;
+    gap: 0.4rem;
 
-    font-size: 9.75px;
+    font-size: 10px;
     letter-spacing: 0.035em;
   }
 
@@ -1189,31 +1420,27 @@ form#events-filters-form.events-filters.filter-dock
   form#events-filters-form.events-filters.filter-dock
   .date-combo
   .combo-button {
-    min-height: var(--events-filter-control-h);
-    height: var(--events-filter-control-h);
+    min-height: 58px;
+    height: 58px;
 
-    border-radius: 14px;
+    border-radius: 16px;
 
     padding:
-      20px
-      12px
-      5px;
+      23px
+      14px
+      7px;
 
-    font-size: clamp(0.84rem, 3.7vw, 0.94rem);
+    font-size: 0.95rem;
   }
 
 
   html body:is([data-page="home"], [data-page="events"])
   form#events-filters-form.events-filters.filter-dock
   #filter-category {
-    padding:
-      20px
-      34px
-      5px
-      12px;
+    padding-right: 38px;
 
     background-position:
-      right 11px center;
+      right 13px center;
   }
 
 
@@ -1225,8 +1452,8 @@ form#events-filters-form.events-filters.filter-dock
   form#events-filters-form.events-filters.filter-dock
   .filter-group:has(#filter-keyword)
   .styled-input {
-    padding-left: 12px;
-    padding-right: 34px;
+    padding-left: 14px;
+    padding-right: 40px;
   }
 
 
@@ -1234,8 +1461,82 @@ form#events-filters-form.events-filters.filter-dock
   form#events-filters-form.events-filters.filter-dock
   .date-combo
   .combo-button {
-    padding-left: 12px;
-    padding-right: 32px;
+    padding-left: 14px;
+    padding-right: 38px;
+  }
+
+
+  /*
+   * Near-me is already present in the quick row.
+   * The sheet footer therefore only needs Reset + Apply.
+   */
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions
+  #filter-nearme {
+    display: none;
+  }
+
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions {
+    display: grid;
+
+    grid-template-columns:
+      minmax(104px, 0.42fr)
+      minmax(0, 1fr);
+
+    gap: 8px;
+
+    position: sticky;
+    bottom: 0;
+
+    z-index: 4;
+
+    width: auto;
+    min-width: 0;
+
+    margin:
+      4px
+      -16px
+      calc(
+        -14px -
+        env(safe-area-inset-bottom)
+      );
+
+    padding:
+      12px
+      16px
+      calc(
+        12px +
+        env(safe-area-inset-bottom)
+      );
+
+    border-top:
+      1px solid
+      var(--aj-filter-panel-border);
+
+    background:
+      var(--aj-filter-panel-bg);
+  }
+
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-actions
+  [type="reset"].btn {
+    grid-column: 1;
+    grid-row: 1;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    height: 52px;
+
+    margin: 0;
+
+    border-radius: 16px;
   }
 
 
@@ -1247,14 +1548,24 @@ form#events-filters-form.events-filters.filter-dock
   form#events-filters-form.events-filters.filter-dock
   .filter-actions
   [type="submit"].btn {
-    min-height: 48px;
-    height: 48px;
+    grid-column: 2;
+    grid-row: 1;
 
-    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    padding: 0 14px;
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    height: 52px;
 
-    font-size: 0.94rem;
+    margin: 0;
+    padding: 0 18px;
+
+    border-radius: 16px;
+
+    font-size: 0.96rem;
   }
 
 
@@ -1265,8 +1576,11 @@ form#events-filters-form.events-filters.filter-dock
   body[data-theme="dark"]
   form#events-filters-form.events-filters.filter-dock
   .filters-details-toggle {
-    border-color: rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.04);
+    border-color:
+      rgba(255, 255, 255, 0.14);
+
+    background:
+      rgba(255, 255, 255, 0.04);
   }
 }
 
@@ -1302,4 +1616,224 @@ form#events-filters-form.events-filters.filter-dock
   svg {
     transition: none;
   }
+}
+
+
+/* =========================================================
+   AJSEE_PRICE_FILTER_UI_V2
+   Shared compound max starting-price control
+========================================================= */
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-group.filter-price {
+  grid-area: price;
+  min-width: 0;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.price-control {
+  --price-currency-width: 84px;
+
+  position: relative;
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    var(--price-currency-width);
+
+  gap: 0;
+
+  min-width: 0;
+  min-height: var(--events-filter-control-h);
+  height: var(--events-filter-control-h);
+
+  overflow: hidden;
+
+  border: 1.25px solid transparent;
+  border-radius: 16px;
+
+  background: var(--aj-filter-control-surface);
+  box-shadow: var(--aj-filter-control-shadow);
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.price-control:has(
+  #filter-price-max:focus-visible,
+  #filter-price-currency:focus-visible
+) {
+  box-shadow:
+    0 0 0 3px var(--aj-filter-focus-outline),
+    var(--aj-filter-control-shadow);
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-max,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-currency {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  height: 100%;
+
+  margin: 0;
+
+  border: 0;
+  border-radius: 0;
+
+  background-color: transparent;
+  box-shadow: none;
+
+  color: var(--aj-filter-control-text);
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-max {
+  padding:
+    21px
+    12px
+    6px
+    13px;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-currency {
+  padding:
+    21px
+    32px
+    6px
+    12px;
+
+  border-left: 0;
+
+  background-position:
+    right 11px center;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.price-control::after {
+  content: "";
+
+  position: absolute;
+  top: 27px;
+  right: var(--price-currency-width);
+  bottom: 8px;
+
+  width: 1px;
+
+  background:
+    rgba(12, 36, 80, 0.12);
+
+  pointer-events: none;
+}
+
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-max:focus,
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+#filter-price-currency:focus {
+  outline: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* Desktop: six compact columns, price remains one compound control. */
+@media (min-width: 1181px) {
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset {
+    grid-template-columns:
+      minmax(110px, 0.62fr)
+      minmax(155px, 0.9fr)
+      minmax(150px, 0.82fr)
+      minmax(170px, 1fr)
+      minmax(178px, 0.9fr)
+      minmax(140px, 0.72fr);
+
+    grid-template-areas:
+      "category city date keyword price actions";
+  }
+}
+
+/* Tablet: preserve the canonical two-column hierarchy. */
+@media (min-width: 721px) and (max-width: 1180px) {
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filters-fieldset {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    grid-template-areas:
+      "category city"
+      "date keyword"
+      "price price"
+      "actions actions";
+  }
+
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-price
+  .price-control {
+    --price-currency-width: 112px;
+  }
+}
+
+/* Mobile: layout stays in the canonical expanded filter grid above. */
+@media (max-width: 720px) {
+  html body:is([data-page="home"], [data-page="events"])
+  form#events-filters-form.events-filters.filter-dock
+  .filter-price
+  .price-control {
+    --price-currency-width: 96px;
+  }
+}
+
+
+/* AJSEE_PRICE_FILTER_VALIDATION_V1 */
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.price-control:has(#filter-price-max[aria-invalid="true"]) {
+  border-color: #b42318;
+  box-shadow:
+    0 0 0 3px rgba(180, 35, 24, 0.12),
+    var(--aj-filter-control-shadow);
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.filter-error {
+  display: block;
+  width: 100%;
+  margin: 8px 0 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #b42318;
+}
+
+html body:is([data-page="home"], [data-page="events"])
+form#events-filters-form.events-filters.filter-dock
+.filter-price
+.filter-error[hidden] {
+  display: none;
 }

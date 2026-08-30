@@ -446,7 +446,7 @@ test('bootstrap keeps the events quick-filter toolbar in the DOM', () => {
   );
 });
 
-test('mobile quick filters expose all actions without horizontal scrolling and bind near-me', () => {
+test('mobile quick filters expose all actions in a horizontal scroll row and bind near-me', () => {
   const html = readFileSync(
     new URL('../src/event-filters.js', import.meta.url),
     'utf8'
@@ -512,17 +512,12 @@ test('mobile quick filters expose all actions without horizontal scrolling and b
 
   assert.match(
     finalStyles,
-    /grid-template-columns:\s*repeat\(6,\s*minmax\(0,\s*1fr\)\)/
+    /\.filters-toolbar[\s\S]*?overflow-x:\s*auto[\s\S]*?\.chips[\s\S]*?flex-wrap:\s*nowrap/
   );
 
   assert.match(
     finalStyles,
     /#chipNearMe,[\s\S]*?#chipClear\s*\{[\s\S]*?display:\s*inline-flex;/
-  );
-
-  assert.doesNotMatch(
-    finalStyles,
-    /overflow-x:\s*auto/
   );
 });
 

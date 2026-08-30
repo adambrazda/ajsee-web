@@ -257,17 +257,17 @@ test(
 
     assert.match(
       finalStyles,
-      /grid-template-columns:\s*repeat\(6,\s*minmax\(0,\s*1fr\)\)/
+      /\.filters-toolbar[\s\S]*?overflow-x:\s*auto[\s\S]*?\.chips[\s\S]*?flex-wrap:\s*nowrap/
     );
 
     assert.match(
       finalStyles,
-      /#chipClear[\s\S]*?grid-column:\s*span\s+2/
+      /#chipClear[\s\S]*?display:\s*inline-flex[\s\S]*?flex:\s*0 0 auto[\s\S]*?width:\s*auto/
     );
 
     assert.match(
       finalStyles,
-      /#chipNearMe[\s\S]*?width:\s*100%/
+      /#chipNearMe,[\s\S]*?#chipClear\s*\{/
     );
   }
 );

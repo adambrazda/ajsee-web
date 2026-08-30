@@ -5,6 +5,22 @@ import {
   shouldPreserveCityRadiusInput,
   syncPlaceSearchParams
 } from './event-place-runtime.js';
+
+import {
+  defaultPriceCurrencyForLocale,
+  hasActivePriceFilter,
+  normalizePriceFilterState,
+  readPriceFilterFromSearchParams,
+  syncPriceFilterSearchParams
+} from './event-price.js';
+
+import {
+  filterEventPriceBatch
+} from './event-price-filtering.js';
+
+import {
+  getRatesForPriceFilter
+} from './event-price-rates.js';
 import {
   scrollToSharedEventResults,
   setSharedEventFilterDetailsExpanded
@@ -105,6 +121,7 @@ if (!G.flags.mainInitialized) {
 /* ───────── constants / state ───────── */
 const EVENTS_UI_PAGE_SIZE = 20;
 const EVENTS_API_BATCH_SIZE = 50;
+const EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER = 5;
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const SUPPORTED_COUNTRY_CODES = new Set([
   'CZ', 'SK', 'PL', 'HU',
@@ -126,6 +143,8 @@ let currentFilters = {
   dateFrom: '',
   dateTo: '',
   keyword: '',
+  maxPrice: null,
+  priceCurrency: '',
   countryCode: 'CZ',
   nearMeLat: null,
   nearMeLon: null,
@@ -2488,6 +2507,96 @@ function updateFilterLocaleTexts() {
   }
 
   updateDateComboLabel();
+
+  const priceMax =
+    qs('#filter-price-max');
+
+  if (priceMax) {
+    priceMax.placeholder =
+      t(
+        'filters.priceMaxPlaceholder',
+        '1000'
+      );
+  }
+
+  const priceLabel =
+    qs(
+      'label[for="filter-price-max"]'
+    );
+
+  if (priceLabel) {
+    priceLabel.textContent =
+      t(
+        'filters.priceMax',
+        'Cena od \u2013 max.'
+      );
+  }
+
+  const priceCurrency =
+    qs('#filter-price-currency');
+
+  if (priceCurrency) {
+    const currencyLabel =
+      t(
+        'filters.priceCurrency',
+        'M\u011bna'
+      );
+
+    priceCurrency.setAttribute(
+      'aria-label',
+      currencyLabel
+    );
+
+    priceCurrency.setAttribute(
+      'title',
+      currencyLabel
+    );
+
+    const emptyOption =
+      priceCurrency.querySelector(
+        'option[value=""]'
+      );
+
+    if (emptyOption) {
+      emptyOption.textContent =
+        currencyLabel;
+    }
+
+    if (
+      !hasActivePriceFilter(
+        currentFilters
+      )
+    ) {
+      priceCurrency.value =
+        defaultPriceCurrencyForLocale(
+          currentLang
+        );
+    }
+  }
+
+  const priceHelp =
+    qs('#filter-price-help');
+
+  if (priceHelp) {
+    priceHelp.textContent =
+      t(
+        'filters.priceHelp',
+        'Filtruje podle nejni\u017e\u0161\u00ed zn\u00e1m\u00e9 ceny od partnera.'
+      );
+  }
+
+
+  const priceErrorElement =
+    qs('#filter-price-error');
+
+  if (priceErrorElement) {
+    priceErrorElement.textContent =
+      t(
+        'filters.priceInvalid',
+        'Zadejte nezápornou maximální cenu.'
+      );
+  }
+
 }
 
 function expandFilters() {
@@ -2666,6 +2775,11 @@ async function clearSingleEventFilter(key) {
       currentFilters.keyword = '';
       break;
 
+    case 'price':
+      currentFilters.maxPrice = null;
+      currentFilters.priceCurrency = '';
+      break;
+
     case 'sort':
       currentFilters.sort = 'nearest';
       break;
@@ -2694,6 +2808,8 @@ async function resetAllEventFilters() {
   currentFilters.dateFrom = '';
   currentFilters.dateTo = '';
   currentFilters.keyword = '';
+  currentFilters.maxPrice = null;
+  currentFilters.priceCurrency = '';
   currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
   currentFilters.nearMeLat = null;
   currentFilters.nearMeLon = null;
@@ -2970,6 +3086,12 @@ function setFilterInputsFromState() {
   const to = qs('#filter-date-to') || qs('#events-date-to');
   const kw = qs('#filter-keyword');
 
+  const priceMax =
+    qs('#filter-price-max');
+
+  const priceCurrency =
+    qs('#filter-price-currency');
+
   if (cat) {
     cat.value =
       currentFilters.category ||
@@ -3034,7 +3156,128 @@ function setFilterInputsFromState() {
   if (to) to.value = currentFilters.dateTo || '';
   if (kw) kw.value = currentFilters.keyword || '';
 
+  if (priceMax) {
+    priceMax.value =
+      currentFilters.maxPrice ===
+        null ||
+      currentFilters.maxPrice ===
+        undefined
+        ? ''
+        : String(
+            currentFilters.maxPrice
+          );
+
+    priceMax.setAttribute(
+      'aria-invalid',
+      'false'
+    );
+  }
+
+  if (priceCurrency) {
+    priceCurrency.value =
+      currentFilters.priceCurrency ||
+      defaultPriceCurrencyForLocale(
+        currentLang
+      );
+  }
+
   updateDateComboLabel();
+
+  setPriceFilterValidationState(
+    false
+  );
+
+}
+
+function setPriceFilterValidationState(
+  invalid
+) {
+  const priceMax =
+    qs('#filter-price-max');
+
+  const priceError =
+    qs('#filter-price-error');
+
+  if (priceMax) {
+    priceMax.setAttribute(
+      'aria-invalid',
+      invalid
+        ? 'true'
+        : 'false'
+    );
+  }
+
+  if (priceError) {
+    priceError.hidden =
+      !invalid;
+  }
+}
+
+function validatePriceFilterInput({
+  focus = false
+} = {}) {
+  const priceMax =
+    qs('#filter-price-max');
+
+  if (!priceMax) {
+    return true;
+  }
+
+  const priceCurrency =
+    qs('#filter-price-currency');
+
+  const rawPriceMax =
+    String(
+      priceMax.value ||
+      ''
+    ).trim();
+
+  const normalizedPrice =
+    normalizePriceFilterState({
+      maxPrice:
+        rawPriceMax,
+
+      priceCurrency:
+        priceCurrency?.value ||
+        defaultPriceCurrencyForLocale(
+          currentLang
+        )
+    });
+
+  const nativeInvalid =
+    priceMax.validity?.valid ===
+      false;
+
+  const normalizedInvalid =
+    Boolean(
+      rawPriceMax
+    ) &&
+    normalizedPrice.maxPrice ===
+      null;
+
+  const invalid =
+    nativeInvalid ||
+    normalizedInvalid;
+
+  setPriceFilterValidationState(
+    invalid
+  );
+
+  if (
+    invalid &&
+    focus
+  ) {
+    try {
+      priceMax.focus({
+        preventScroll:
+          true
+      });
+    } catch {
+      priceMax.focus?.();
+    }
+  }
+
+  return !invalid;
 }
 
 function syncFiltersFromForm() {
@@ -3056,6 +3299,12 @@ function syncFiltersFromForm() {
   const from = qs('#filter-date-from') || qs('#events-date-from');
   const to = qs('#filter-date-to') || qs('#events-date-to');
   const kw = qs('#filter-keyword');
+
+  const priceMax =
+    qs('#filter-price-max');
+
+  const priceCurrency =
+    qs('#filter-price-currency');
 
   currentFilters.category =
     cat?.value ||
@@ -3084,6 +3333,46 @@ function syncFiltersFromForm() {
   currentFilters.keyword = (kw?.value || '').trim();
   currentFilters.dateFrom = from?.value || currentFilters.dateFrom || '';
   currentFilters.dateTo = to?.value || currentFilters.dateTo || '';
+
+  const rawPriceMax =
+    String(
+      priceMax?.value ||
+      ''
+    ).trim();
+
+  const normalizedPrice =
+    normalizePriceFilterState({
+      maxPrice:
+        rawPriceMax,
+
+      priceCurrency:
+        priceCurrency?.value ||
+        defaultPriceCurrencyForLocale(
+          currentLang
+        )
+    });
+
+  currentFilters.maxPrice =
+    normalizedPrice.maxPrice;
+
+  currentFilters.priceCurrency =
+    normalizedPrice.priceCurrency;
+
+  if (priceMax) {
+    const invalid =
+      Boolean(
+        rawPriceMax
+      ) &&
+      normalizedPrice.maxPrice ===
+        null;
+
+    priceMax.setAttribute(
+      'aria-invalid',
+      invalid
+        ? 'true'
+        : 'false'
+    );
+  }
 
   if (city && !city.matches('[data-autofromnearme="1"]')) {
     const rawPlace = (city.value || '').trim();
@@ -3140,6 +3429,11 @@ function syncURLFromFilters() {
     u.searchParams;
 
   syncPlaceSearchParams(
+    p,
+    currentFilters
+  );
+
+  syncPriceFilterSearchParams(
     p,
     currentFilters
   );
@@ -3391,6 +3685,17 @@ function initFiltersFromURL() {
       '';
   }
 
+  const priceFilter =
+    readPriceFilterFromSearchParams(
+      sp
+    );
+
+  currentFilters.maxPrice =
+    priceFilter.maxPrice;
+
+  currentFilters.priceCurrency =
+    priceFilter.priceCurrency;
+
   syncLocalizedCityLabelFromCurrentState();
 }
 
@@ -3524,6 +3829,36 @@ async function applyAiEventSearchIntent(intent) {
 function bindFilterFormInteractions(formEl) {
   if (!formEl) return;
 
+  const priceValidationInput =
+    qs('#filter-price-max');
+
+  if (priceValidationInput) {
+    wireOnce(
+      priceValidationInput,
+      'blur',
+      () => {
+        validatePriceFilterInput();
+      },
+      'price-validation-blur'
+    );
+
+    wireOnce(
+      priceValidationInput,
+      'input',
+      () => {
+        if (
+          priceValidationInput.getAttribute(
+            'aria-invalid'
+          ) === 'true'
+        ) {
+          validatePriceFilterInput();
+        }
+      },
+      'price-validation-input'
+    );
+  }
+
+
   const category =
     qs('#filter-category') ||
     qs('#events-category-filter');
@@ -3614,6 +3949,15 @@ function bindFilterFormInteractions(formEl) {
   wireOnce(formEl, 'submit', async e => {
     e.preventDefault();
     _userInteractedWithFilters = true;
+    if (
+      !validatePriceFilterInput({
+        focus:
+          true
+      })
+    ) {
+      return;
+    }
+
     syncFiltersFromForm();
 
     const city = getCityInputEl();
@@ -3624,6 +3968,10 @@ function bindFilterFormInteractions(formEl) {
 
     resetEventsPager();
     await renderAndSync({ resetPage: true });
+
+    setSharedEventFilterDetailsExpanded(
+      false
+    );
 
     scrollToSharedEventResults();
   }, 'submit');
@@ -4460,6 +4808,8 @@ function makeFetchSig(locale, api, page, perPage) {
     dateFrom: api.dateFrom || '',
     dateTo: api.dateTo || '',
     keyword: api.keyword || '',
+    maxPrice: api.maxPrice ?? null,
+    priceCurrency: api.priceCurrency || '',
     countryCode: api.countryCode || 'CZ',
     nearMeLat: api.nearMeLat != null ? +Number(api.nearMeLat).toFixed(5) : null,
     nearMeLon: api.nearMeLon != null ? +Number(api.nearMeLon).toFixed(5) : null,
@@ -4741,51 +5091,238 @@ function sortBufferedEvents(sort = 'nearest') {
   });
 }
 
-async function fetchNextEventsBatch(locale, api) {
-  if (eventsPager.loading || !eventsPager.hasMore) return;
+async function fetchNextEventsBatch(
+  locale,
+  api,
+  {
+    priceRates =
+      null
+  } = {}
+) {
+  if (
+    eventsPager.loading ||
+    !eventsPager.hasMore
+  ) {
+    return {
+      rawCount:
+        0,
 
-  eventsPager.loading = true;
+      acceptedCount:
+        0
+    };
+  }
+
+  eventsPager.loading =
+    true;
 
   try {
-    const requestFilters = { ...api, page: eventsPager.apiPage, size: EVENTS_API_BATCH_SIZE };
-    const nextEvents = await getAllEvents({ locale, filters: requestFilters }) || [];
+    const requestFilters = {
+      ...api,
 
-    if (isTicketmasterRateLimited() && (!Array.isArray(nextEvents) || nextEvents.length === 0)) {
-      const err = new Error('Ticketmaster rate limited');
-      err.status = 429;
-      err.rateLimited = true;
+      page:
+        eventsPager.apiPage,
+
+      size:
+        EVENTS_API_BATCH_SIZE
+    };
+
+    const rawNextEvents =
+      await getAllEvents({
+        locale,
+
+        filters:
+          requestFilters
+      }) || [];
+
+    if (
+      isTicketmasterRateLimited() &&
+      (
+        !Array.isArray(
+          rawNextEvents
+        ) ||
+        rawNextEvents.length ===
+          0
+      )
+    ) {
+      const err =
+        new Error(
+          'Ticketmaster rate limited'
+        );
+
+      err.status =
+        429;
+
+      err.rateLimited =
+        true;
+
       throw err;
     }
 
-    eventsPager.apiPage += 1;
+    eventsPager.apiPage +=
+      1;
 
-    if (!Array.isArray(nextEvents) || nextEvents.length === 0) {
-      eventsPager.hasMore = false;
-      return;
+    if (
+      !Array.isArray(
+        rawNextEvents
+      ) ||
+      rawNextEvents.length ===
+        0
+    ) {
+      eventsPager.hasMore =
+        false;
+
+      return {
+        rawCount:
+          0,
+
+        acceptedCount:
+          0
+      };
     }
 
-    mergeEventsIntoBuffer(nextEvents);
+    const nextEvents =
+      filterEventPriceBatch(
+        rawNextEvents,
+        requestFilters,
+        priceRates || {}
+      );
 
-    if (!shouldPreserveSeatPlanApiOrder(requestFilters, eventsPager.buffer)) {
-      sortBufferedEvents(api.sort || 'nearest');
+    mergeEventsIntoBuffer(
+      nextEvents
+    );
+
+    if (
+      !shouldPreserveSeatPlanApiOrder(
+        requestFilters,
+        eventsPager.buffer
+      )
+    ) {
+      sortBufferedEvents(
+        api.sort ||
+        'nearest'
+      );
     }
 
-    if (nextEvents.length < EVENTS_API_BATCH_SIZE) eventsPager.hasMore = false;
+    /*
+     * Important:
+     * hasMore is based on the provider/aggregation batch BEFORE
+     * the local price filter. A batch with 50 expensive events
+     * must not make AJSEE conclude that later affordable events
+     * do not exist.
+     */
+    if (
+      rawNextEvents.length <
+      EVENTS_API_BATCH_SIZE
+    ) {
+      eventsPager.hasMore =
+        false;
+    }
+
+    return {
+      rawCount:
+        rawNextEvents.length,
+
+      acceptedCount:
+        nextEvents.length
+    };
   } catch (err) {
-    if (isTicketmasterRateLimitError(err) || isTicketmasterRateLimited()) {
-      eventsPager.hasMore = true;
+    if (
+      isTicketmasterRateLimitError(
+        err
+      ) ||
+      isTicketmasterRateLimited()
+    ) {
+      eventsPager.hasMore =
+        true;
+
       throw err;
     }
+
     throw err;
   } finally {
-    eventsPager.loading = false;
+    eventsPager.loading =
+      false;
   }
 }
 
-async function ensureEventsPageLoaded(locale, api, uiPage = 1) {
-  const needed = Math.max(1, uiPage) * pagination.perPage;
-  if (eventsPager.buffer.length >= needed) return;
-  if (eventsPager.hasMore) await fetchNextEventsBatch(locale, api);
+async function ensureEventsPageLoaded(
+  locale,
+  api,
+  uiPage = 1
+) {
+  const needed =
+    Math.max(
+      1,
+      uiPage
+    ) *
+    pagination.perPage;
+
+  if (
+    eventsPager.buffer.length >=
+    needed
+  ) {
+    return;
+  }
+
+  const priceFilterActive =
+    hasActivePriceFilter(
+      api
+    );
+
+  let priceRates =
+    null;
+
+  if (
+    priceFilterActive
+  ) {
+    try {
+      priceRates =
+        await getRatesForPriceFilter(
+          api
+        );
+    } catch (err) {
+      /*
+       * Safe degraded mode:
+       * same-currency comparisons still work.
+       * Cross-currency events are not claimed to fit
+       * without a reliable conversion rate.
+       */
+      priceRates =
+        {};
+
+      console.warn(
+        '[AJSEE price filter] FX rates unavailable; using same-currency comparisons only.',
+        err
+      );
+    }
+  }
+
+  const maxBatches =
+    priceFilterActive
+      ? EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER
+      : 1;
+
+  let batchesLoaded =
+    0;
+
+  while (
+    eventsPager.buffer.length <
+      needed &&
+    eventsPager.hasMore &&
+    batchesLoaded <
+      maxBatches
+  ) {
+    await fetchNextEventsBatch(
+      locale,
+      api,
+      {
+        priceRates
+      }
+    );
+
+    batchesLoaded +=
+      1;
+  }
 }
 
 function eventsPagerLabel() {

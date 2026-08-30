@@ -176,3 +176,45 @@ test(
     );
   }
 );
+
+
+test(
+  'completed clarification clears transient reply text',
+  () => {
+    assert.match(
+      controller,
+      /requestClarificationContext[\s\S]*?clearPendingClarification\(\);[\s\S]*?if\s*\(\s*requestClarificationContext\s*\)[\s\S]*?input\.value\s*=\s*''/
+    );
+
+    assert.doesNotMatch(
+      controller,
+      /input\.value\s*=\s*reply;[\s\S]{0,120}?void runSearch\(\s*reply\s*\)/
+    );
+  }
+);
+
+
+test(
+  'global quick-filter clear resets clarification outside the AI form',
+  () => {
+    assert.match(
+      controller,
+      /const handleGlobalClear/
+    );
+
+    assert.match(
+      controller,
+      /globalThis\.addEventListener\(\s*'click',\s*handleGlobalClear\s*\)/
+    );
+
+    assert.match(
+      controller,
+      /handleGlobalClear[\s\S]*?\[data-quick-filter="clear"\][\s\S]*?resetClarificationFlow\(\)/
+    );
+
+    assert.match(
+      controller,
+      /resetClarificationFlow[\s\S]*?input\.value\s*=\s*''/
+    );
+  }
+);

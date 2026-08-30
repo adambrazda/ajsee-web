@@ -96,9 +96,24 @@ function maxPriceWithoutCurrency(
         return false;
       }
 
+      const rawValue =
+        preference.value;
+
+      if (
+        rawValue === null ||
+        rawValue === undefined ||
+        (
+          typeof rawValue ===
+            'string' &&
+          !rawValue.trim()
+        )
+      ) {
+        return false;
+      }
+
       const value =
         Number(
-          preference.value
+          rawValue
         );
 
       const currency =

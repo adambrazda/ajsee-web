@@ -1276,6 +1276,13 @@ export function initAiEventSearch({
 
         clearPendingClarification();
 
+        if (
+          requestClarificationContext
+        ) {
+          input.value =
+            '';
+        }
+
         refreshCopy();
 
         let applicationResult =
@@ -1400,9 +1407,6 @@ export function initAiEventSearch({
             locale
           ).affirmativeReply;
 
-        input.value =
-          reply;
-
         void runSearch(
           reply
         );
@@ -1468,8 +1472,7 @@ export function initAiEventSearch({
     resetClarificationFlow
   );
 
-  form.addEventListener(
-    'click',
+  const handleGlobalClear =
     event => {
       const target =
         event.target;
@@ -1484,12 +1487,16 @@ export function initAiEventSearch({
 
       if (
         target.closest(
-          '[type="reset"], [data-quick-filter="clear"]'
+          '[data-quick-filter="clear"]'
         )
       ) {
         resetClarificationFlow();
       }
-    }
+    };
+
+  globalThis.addEventListener(
+    'click',
+    handleGlobalClear
   );
 
   const handleLanguageChange =

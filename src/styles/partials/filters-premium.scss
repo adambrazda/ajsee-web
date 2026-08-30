@@ -181,7 +181,6 @@
     box-shadow: 0 10px 20px rgba(14, 136, 240, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   }
 
-  #chipNearMe,
   #filter-nearme {
     border: 0;
     color: #fff;
@@ -202,9 +201,25 @@
     min-height: var(--control-h);
   }
 
-  #chipNearMe:hover,
   #filter-nearme:hover {
     transform: translateY(-1px);
+    filter: brightness(1.06);
+    box-shadow:
+      0 24px 52px rgba(0, 160, 200, 0.3),
+      0 5px 14px rgba(0, 160, 200, 0.24);
+  }
+
+  #chipNearMe[aria-pressed="true"] {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--near-1), var(--near-2));
+    color: #fff;
+    box-shadow:
+      0 20px 42px rgba(0, 160, 200, 0.22),
+      0 3px 8px rgba(0, 160, 200, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+
+  #chipNearMe[aria-pressed="true"]:hover {
     filter: brightness(1.06);
     box-shadow:
       0 24px 52px rgba(0, 160, 200, 0.3),

@@ -921,15 +921,12 @@
   display: flex;
   align-items: center;
   gap: .5rem;
-  background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent));
-  color: #fff;
-  border-color: transparent;
 }
 
 .chip-near svg{
   width: 18px;
   height: 18px;
-  stroke: #fff;
+  stroke: currentColor;
   fill: none;
   stroke-width: 1.8;
 }
@@ -1140,16 +1137,7 @@
   border-color: rgba(13,34,53,.10);
 }
 
-.chip-near{
-  background: linear-gradient(90deg,#0077cc,#14c2c5);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 8px 20px rgba(0,119,204,.25);
-}
 
-.chip-near svg{
-  stroke: #fff;
-}
 
 /* Segmented – minimalistický fallback (prémiový v filters-premium.scss) */
 .segmented{

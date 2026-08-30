@@ -86,7 +86,7 @@ test(
   () => {
     assert.match(
       home,
-      /p\.set\('audience',\s*'family'\)/
+      /p\.set\(\s*'audience'\s*,\s*'family'\s*\)/
     );
 
     assert.match(

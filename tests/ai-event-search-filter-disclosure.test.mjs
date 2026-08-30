@@ -218,7 +218,7 @@ test(
 
     assert.match(
       filterScss,
-      /"category date"[\s\S]*?"city city"[\s\S]*?"keyword keyword"/
+      /"category city"[\s\S]*?"date keyword"[\s\S]*?"price price"[\s\S]*?"actions actions"/
     );
 
     assert.match(

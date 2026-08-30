@@ -16,6 +16,9 @@ import {
   buildClarificationInput,
   normalizeClarificationContext
 } from '../../src/ai-search/clarification-context.js';
+import {
+  applyPriceCurrencyClarification
+} from '../../src/ai-search/price-clarification.js';
 
 import {
   verifyTurnstileToken
@@ -611,6 +614,13 @@ export function buildParserInstructions({
     '- Clarification questions must be natural, idiomatic, concise, and grammatically correct in the requested locale.',
     '- Do not mechanically copy punctuation or awkward syntax from the user query into clarification.question.',
     '- For Czech (cs), simple alternatives joined by "nebo" in one clause normally have no comma before "nebo"; for example: "Máte zájem o koncerty v Praze nebo v Brně?"',
+    'PRICE FILTER CURRENCY POLICY:',
+    '- max_price inside unsupportedPreferences is the schema transport for AJSEE\'s supported maximum starting-price filter; do not treat max_price as an unusable preference merely because it is stored in unsupportedPreferences.',
+    '- If the user gives a maximum price with an explicit currency, preserve both amount and currency. Do not request clarification solely for that price.',
+    '- If the user gives a maximum price amount but no currency, do not silently invent a currency. Keep max_price.currency="" and set clarification.required=true.',
+    '- For a missing max-price currency, clarification.fields must contain "unsupportedPreferences" and clarification.question must ask whether the amount means the default UI currency for the request locale.',
+    '- If the user affirmatively confirms that currency clarification, return max_price with the proposed currency and resolve that price ambiguity.',
+    '',
     '- If no clarification is needed, use question="" and fields=[].',
     '',
     'CLARIFICATION REPLY MODE:',
@@ -1527,16 +1537,34 @@ export function createAiEventSearchHandler({
       );
     }
 
+    const priceClarification =
+      applyPriceCurrencyClarification(
+        validation.intent,
+        {
+          locale,
+
+          reply:
+            query,
+
+          clarificationContext,
+
+          needsClarification:
+            validation
+              .needsClarification
+        }
+      );
+
     return jsonResponse(
       {
         ok:
           true,
 
         intent:
-          validation.intent,
+          priceClarification.intent,
 
         needsClarification:
-          validation.needsClarification
+          priceClarification
+            .needsClarification
       }
     );
   };

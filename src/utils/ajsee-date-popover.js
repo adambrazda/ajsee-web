@@ -367,7 +367,11 @@
               <div class="ajsee-date-popover__month-head">
                 <button type="button" class="ajsee-date-popover__nav" data-nav="prev" aria-label="Předchozí měsíc">‹</button>
                 <div class="ajsee-date-popover__title" data-role="title-0"></div>
-                <span class="ajsee-date-popover__nav-spacer"></span>
+                <button
+                  type="button"
+                  class="ajsee-date-popover__nav ajsee-date-popover__nav--mobile-next"
+                  data-nav="next"
+                  aria-label="Další měsíc">&#8250;</button>
               </div>
               <div class="ajsee-date-popover__dow" data-role="dow-0"></div>
               <div class="ajsee-date-popover__grid" data-role="grid-0"></div>
@@ -448,14 +452,16 @@
       schedulePosition();
     });
 
-    popover.querySelector('[data-nav="next"]').addEventListener('click', () => {
-      const now = parseISO(todayISO());
-      const base = viewMonthIdx == null
-        ? monthIndex(new Date(now.getFullYear(), now.getMonth(), 1, 12, 0, 0, 0))
-        : viewMonthIdx;
-      viewMonthIdx = base + 1;
-      renderUI();
-      schedulePosition();
+    popover.querySelectorAll('[data-nav="next"]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const now = parseISO(todayISO());
+        const base = viewMonthIdx == null
+          ? monthIndex(new Date(now.getFullYear(), now.getMonth(), 1, 12, 0, 0, 0))
+          : viewMonthIdx;
+        viewMonthIdx = base + 1;
+        renderUI();
+        schedulePosition();
+      });
     });
 
     popover.addEventListener('click', (e) => {

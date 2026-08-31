@@ -37,7 +37,8 @@
     "events:filters:test": "node --test --test-concurrency=1 tests/events-filter-ux.test.mjs",
     "reviews:publish": "node scripts/set-review-publication.mjs publish",
     "reviews:unpublish": "node scripts/set-review-publication.mjs unpublish",
-    "reviews:promote": "node scripts/promote-review-submission.mjs"
+    "reviews:promote": "node scripts/promote-review-submission.mjs",
+    "colosseumticket:sync": "node scripts/sync-colosseumticket-events.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

@@ -342,7 +342,7 @@ test(
 
     assert.match(
       modalSource,
-      /\\u00b7/
+      /(?:\\u00b7|·)/
     );
 
     assert.doesNotMatch(

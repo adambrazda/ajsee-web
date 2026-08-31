@@ -67,6 +67,7 @@ test(
 
     let ticketmasterRequests = 0;
     let smsticketRequests = 0;
+    let colosseumRequests = 0;
 
     globalThis.fetch =
       async (input) => {
@@ -164,6 +165,133 @@ test(
           };
         }
 
+        if (
+          url.includes(
+            '/data/colosseumticket-events'
+          )
+        ) {
+          colosseumRequests += 1;
+
+          return {
+            ok: true,
+
+            async json() {
+              return {
+                events: [
+                  {
+                    id:
+                      'colosseumticket-provider-isolation-test',
+
+                    sourceId:
+                      'provider-isolation-parent:provider-isolation-term',
+
+                    providerEventId:
+                      'provider-isolation-parent',
+
+                    providerOccurrenceId:
+                      'provider-isolation-term',
+
+                    partner:
+                      'colosseumticket',
+
+                    source:
+                      'colosseumticket',
+
+                    sourceName:
+                      'ColosseumTicket',
+
+                    title: {
+                      cs:
+                        'Colosseum provider isolation test'
+                    },
+
+                    description: {
+                      cs:
+                        'Colosseum test event'
+                    },
+
+                    datetime:
+                      '2099-01-02T20:00:00',
+
+                    location: {
+                      city:
+                        'Praha',
+
+                      country:
+                        'CZ'
+                    },
+
+                    venue: {
+                      name:
+                        'Colosseum test venue',
+
+                      city:
+                        'Praha',
+
+                      country:
+                        'CZ'
+                    },
+
+                    categories: [
+                      'Hudba'
+                    ],
+
+                    types: [
+                      'Hudba'
+                    ],
+
+                    sourceMeta: {
+                      rawType:
+                        'Hudba',
+
+                      rawCategories: [
+                        'Hudba'
+                      ],
+
+                      rawCategoryIds: [
+                        '5417326'
+                      ]
+                    },
+
+                    priceFrom:
+                      '500 Kč',
+
+                    currency:
+                      'CZK',
+
+                    price: {
+                      min:
+                        500,
+
+                      max:
+                        500,
+
+                      currency:
+                        'CZK'
+                    },
+
+                    priceOptions: [
+                      {
+                        amount:
+                          500,
+
+                        currency:
+                          'CZK'
+                      }
+                    ],
+
+                    tickets:
+                      'https://colosseumticket.cz/cs/akce/provider-isolation-test',
+
+                    url:
+                      'https://colosseumticket.cz/cs/akce/provider-isolation-test'
+                  }
+                ]
+              };
+            }
+          };
+        }
+
         throw new Error(
           `Unexpected fetch in provider isolation test: ${url}`
         );
@@ -204,6 +332,12 @@ test(
         'SMS Ticket must still be loaded'
       );
 
+      assert.equal(
+        colosseumRequests,
+        1,
+        'ColosseumTicket must still be loaded independently'
+      );
+
       assert.ok(
         events.length > 0,
         'Aggregation must return events from another provider'
@@ -213,6 +347,16 @@ test(
         events[0].partner,
         'smsticket'
       );
+      assert.equal(
+        events.some(
+          (event) =>
+            event.partner ===
+            'colosseumticket'
+        ),
+        true,
+        'Aggregation must include ColosseumTicket results'
+      );
+
     } finally {
       delete globalThis.fetch;
       delete globalThis.CustomEvent;

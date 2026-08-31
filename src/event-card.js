@@ -25,6 +25,7 @@ function eventProviderKey(event = {}) {
     .toLowerCase();
 
   if (raw.includes('smsticket')) return 'smsticket';
+  if (raw.includes('colosseum')) return 'colosseumticket';
 
   if (
     raw.includes('ticketmaster') ||
@@ -39,6 +40,7 @@ function eventProviderKey(event = {}) {
 function eventProviderLabel(provider = '') {
   if (provider === 'smsticket') return 'smsticket';
   if (provider === 'ticketmaster') return 'Ticketmaster';
+  if (provider === 'colosseumticket') return 'ColosseumTicket';
 
   return '';
 }

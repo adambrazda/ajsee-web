@@ -26,10 +26,12 @@ import {
 
 import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster.js';
 import { fetchEvents as fetchSmsticketEvents } from '../adapters/smsticket.js';
+import { fetchEvents as fetchColosseumTicketEvents } from '../adapters/colosseumticket.js';
 import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 import { matchesEventDiscoveryFilters } from '../taxonomy/event-filtering.js';
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
+import { mergeExactCrossProviderOccurrences } from '../event-cross-provider-merge.js';
 
 // DEV detekce (localhost/Vite)
 const isDev =
@@ -914,6 +916,39 @@ if (!ajseeSkipSmsTicket) {
   }
 }
 
+// --- ColosseumTicket ---
+// AJSEE_COLOSSEUM_PROVIDER_ISOLATION_v1
+//
+// ColosseumTicket is an independent static-feed provider currently scoped by AJSEE to CZ.
+// Always pass localProviderFilters:
+// - Ticketmaster global keyword search must remain Ticketmaster-only.
+// - explicit non-CZ and Near Me queries are rejected by the adapter
+//   before any Colosseum static feed is loaded.
+// - provider failure must never abort the other providers.
+try {
+  const colosseumticket =
+    await fetchColosseumTicketEvents({
+      locale: loc,
+      filters: localProviderFilters
+    });
+
+  if (
+    Array.isArray(
+      colosseumticket
+    )
+  ) {
+    all =
+      all.concat(
+        colosseumticket
+      );
+  }
+} catch (e) {
+  console.warn(
+    '[eventsApi] ColosseumTicket fetch failed:',
+    e
+  );
+}
+
 // --- SeatPlan ---
 // Disabled: London theatre/musical ticket sales are now handled through
 // the AJSEE partner purchase page powered by TodayTix/Encore.
@@ -981,6 +1016,14 @@ if (ENABLE_SEATPLAN) {
     nearMeLon = null,
     nearMeRadiusKm = 50
   } = normalizedClientFilters;
+
+  // AJSEE_CROSS_PROVIDER_EXACT_MERGE_v1
+  // Merge only deterministic SMS Ticket <-> ColosseumTicket
+  // duplicates before the existing provider-ID dedupe.
+  all =
+    mergeExactCrossProviderOccurrences(
+      all
+    );
 
   // Dedup podle id nebo fallback hashe.
   const seen = new Set();

@@ -6257,3 +6257,262 @@ if (!G.flags.mainDomReadyBound) {
   scheduleApply();
 })();
 
+
+
+/* AJSEE_HOME_ENTRY_COLOSSEUM_BADGE_DIRECT_v1
+   ---------------------------------------------------------
+   Compatibility fallback for homepage event render paths
+   which infer the seller from the card CTA URL.
+
+   Never overwrites another provider. A merged SMS Ticket +
+   ColosseumTicket event must remain an SMS Ticket primary card.
+   --------------------------------------------------------- */
+(function installAjseeHomeEntryColosseumBadge() {
+  if (
+    typeof window === 'undefined' ||
+    typeof document === 'undefined'
+  ) {
+    return;
+  }
+
+  if (
+    window.__ajseeHomeEntryColosseumBadgeInstalled
+  ) {
+    return;
+  }
+
+  window.__ajseeHomeEntryColosseumBadgeInstalled =
+    true;
+
+  const STYLE_ID =
+    'ajsee-home-entry-colosseum-badge-css';
+
+  function ensureStyles() {
+    if (
+      document.getElementById(
+        STYLE_ID
+      )
+    ) {
+      return;
+    }
+
+    const style =
+      document.createElement(
+        'style'
+      );
+
+    style.id =
+      STYLE_ID;
+
+    style.textContent = `
+      article[data-event-provider="colosseumticket"] .event-partner-badge,
+      .event-card[data-event-provider="colosseumticket"] .event-partner-badge {
+        display: block;
+        margin: 0 0 12px;
+        line-height: 1;
+      }
+
+      article[data-event-provider="colosseumticket"] .event-partner-badge span,
+      .event-card[data-event-provider="colosseumticket"] .event-partner-badge span {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 5px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--aj-provider-badge-border, rgba(10, 61, 98, 0.12));
+        background: var(--aj-provider-badge-bg, rgba(10, 61, 98, 0.045));
+        color: var(--aj-provider-badge-text, #0a3d62);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+    `;
+
+    document.head.appendChild(
+      style
+    );
+  }
+
+  function isInsideModal(el) {
+    return !!el.closest(
+      '[role="dialog"], ' +
+      '[aria-modal="true"], ' +
+      '.modal, ' +
+      '.ajsee-modal, ' +
+      '.event-modal, ' +
+      '[class*="modal"], ' +
+      '[class*="dialog"]'
+    );
+  }
+
+  function addBadgeForLink(link) {
+    if (
+      !link ||
+      isInsideModal(
+        link
+      )
+    ) {
+      return;
+    }
+
+    const card =
+      link.closest(
+        'article.event-card, .event-card'
+      );
+
+    if (!card) {
+      return;
+    }
+
+    const currentProvider =
+      String(
+        card.dataset.eventProvider ||
+        ''
+      )
+        .trim()
+        .toLowerCase();
+
+    if (
+      currentProvider &&
+      currentProvider !==
+        'colosseumticket'
+    ) {
+      return;
+    }
+
+    card.dataset.eventProvider =
+      'colosseumticket';
+
+    if (
+      card.querySelector(
+        '.event-partner-badge'
+      )
+    ) {
+      return;
+    }
+
+    const badge =
+      document.createElement(
+        'p'
+      );
+
+    badge.className =
+      'event-partner-badge';
+
+    badge.dataset.provider =
+      'colosseumticket';
+
+    const label =
+      document.createElement(
+        'span'
+      );
+
+    label.textContent =
+      'ColosseumTicket';
+
+    badge.appendChild(
+      label
+    );
+
+    const content =
+      card.querySelector(
+        '.event-content'
+      ) ||
+      card;
+
+    const buttons =
+      content.querySelector(
+        '.event-buttons-group'
+      );
+
+    if (buttons) {
+      content.insertBefore(
+        badge,
+        buttons
+      );
+    } else {
+      content.appendChild(
+        badge
+      );
+    }
+  }
+
+  let scheduled =
+    false;
+
+  function scan() {
+    scheduled =
+      false;
+
+    ensureStyles();
+
+    const links =
+      Array.from(
+        document.querySelectorAll(
+          'a[href*="colosseumticket.cz"]'
+        )
+      )
+        .filter(
+          (link) =>
+            !isInsideModal(
+              link
+            )
+        );
+
+    links.forEach(
+      addBadgeForLink
+    );
+  }
+
+  function scheduleScan() {
+    if (scheduled) {
+      return;
+    }
+
+    scheduled =
+      true;
+
+    window.requestAnimationFrame(
+      scan
+    );
+  }
+
+  ensureStyles();
+
+  document.addEventListener(
+    'DOMContentLoaded',
+    scheduleScan,
+    {
+      once: true
+    }
+  );
+
+  window.addEventListener(
+    'load',
+    scheduleScan,
+    {
+      once: true
+    }
+  );
+
+  if (
+    typeof MutationObserver !==
+    'undefined'
+  ) {
+    const observer =
+      new MutationObserver(
+        scheduleScan
+      );
+
+    observer.observe(
+      document.documentElement,
+      {
+        childList: true,
+        subtree: true
+      }
+    );
+  }
+
+  scheduleScan();
+})();

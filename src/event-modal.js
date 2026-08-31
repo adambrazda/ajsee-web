@@ -127,6 +127,16 @@ const MODAL_TICKET_SELLER_LABELS = {
   hu: 'Jegyértékesítő'
 };
 
+const MODAL_TICKET_SELLERS_LABELS = {
+  cs: 'Prodejci vstupenek',
+  en: 'Ticket sellers',
+  de: 'Ticketanbieter',
+  sk: 'Predajcovia vstupeniek',
+  pl: 'Sprzedawcy biletów',
+  hu: 'Jegyértékesítők'
+};
+
+
 function modalProviderName(eventData = {}) {
   const raw = String(
     eventData?.sourceName ||
@@ -142,6 +152,7 @@ function modalProviderName(eventData = {}) {
   const known = {
     ticketmaster: 'Ticketmaster',
     smsticket: 'SMS Ticket',
+    colosseumticket: 'ColosseumTicket',
     todaytix: 'TodayTix',
     seatplan: 'SeatPlan'
   };
@@ -651,25 +662,78 @@ function modalTicketOptionLabel(
   lang
 ) {
   const base = i18n(lang, 'tickets');
-  const price = String(option?.priceFrom || '').trim();
+  const price =
+    String(
+      option?.priceFrom ||
+      ''
+    ).trim();
+
+  const providerNames = [
+    ...new Set(
+      options
+        .map(
+          (candidate) =>
+            modalProviderName({
+              partner:
+                candidate?.provider
+            })
+        )
+        .filter(Boolean)
+    )
+  ];
+
+  const providerName =
+    modalProviderName({
+      partner:
+        option?.provider
+    });
+
+  /*
+   * For different sellers, seller identity is more useful
+   * than artificial option numbering.
+   *
+   * Same-provider options retain the established numbering.
+   */
+  if (
+    providerNames.length > 1 &&
+    providerName
+  ) {
+    return [
+      base,
+      providerName,
+      price
+    ]
+      .filter(Boolean)
+      .join(' · ');
+  }
 
   const samePriceCount = price
     ? options.filter(
-        (candidate) => String(candidate?.priceFrom || '').trim() === price
+        (candidate) =>
+          String(
+            candidate?.priceFrom ||
+            ''
+          ).trim() ===
+          price
       ).length
     : options.length;
 
-  const numberedBase = samePriceCount > 1
-    ? base + ' ' + String(index + 1)
-    : base;
+  const numberedBase =
+    samePriceCount > 1
+      ? base +
+        ' ' +
+        String(
+          index + 1
+        )
+      : base;
 
   return price
-    ? numberedBase + ' \u00b7 ' + price
+    ? numberedBase +
+      ' · ' +
+      price
     : numberedBase;
 }
 
-
-// AJSEE_EVENT_MODAL_PARTNER_TRACKING_v1
 function modalTrackingText(value) {
   return String(value || '')
     .replace(/\s+/g, ' ')
@@ -1465,10 +1529,46 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
 
   const sellerName = modalProviderName(eventData);
 
+  const optionSellerNames = [
+    ...new Set(
+      ticketOptions
+        .map(
+          (option) =>
+            modalProviderName({
+              partner:
+                option?.provider
+            })
+        )
+        .filter(Boolean)
+    )
+  ];
+
   if (sellerNoteEl) {
-    sellerNoteEl.textContent =
-      formatModalTicketSeller(lang, sellerName);
-    sellerNoteEl.hidden = !sellerName;
+    if (
+      ticketOptions.length > 1 &&
+      optionSellerNames.length > 1
+    ) {
+      const sellersLabel =
+        MODAL_TICKET_SELLERS_LABELS[lang] ||
+        MODAL_TICKET_SELLERS_LABELS.cs;
+
+      sellerNoteEl.textContent =
+        sellersLabel +
+        ': ' +
+        optionSellerNames.join(' · ');
+
+      sellerNoteEl.hidden =
+        false;
+    } else {
+      sellerNoteEl.textContent =
+        formatModalTicketSeller(
+          lang,
+          sellerName
+        );
+
+      sellerNoteEl.hidden =
+        !sellerName;
+    }
   }
 
   const renderedTicketOptions =

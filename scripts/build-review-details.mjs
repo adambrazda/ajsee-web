@@ -835,7 +835,6 @@ function buildReviewGalleryHtml(gallery, lang = DEFAULT_LANG) {
 function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   const title = translation.title || review.showTitle || review.slug;
   const subtitle = translation.subtitle || '';
-  const excerpt = translation.excerpt || '';
   const bodyHtml = markdownToHtml(translation.body || '');
   const galleryHtml = buildReviewGalleryHtml(review.gallery, lang);
   const cover = review.cover || '';
@@ -869,7 +868,6 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
             <h1 class="blog-title">${escapeHtml(title)}</h1>
 
             ${subtitle ? `<p class="blog-lead">${escapeHtml(subtitle)}</p>` : ''}
-            ${excerpt ? `<p class="review-excerpt">${escapeHtml(excerpt)}</p>` : ''}
 
             ${
               cover

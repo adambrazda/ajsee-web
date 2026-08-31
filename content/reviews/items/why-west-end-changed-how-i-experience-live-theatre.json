@@ -1,7 +1,7 @@
 {
   "slug": "why-west-end-changed-how-i-experience-live-theatre",
-  "status": "approved",
-  "published": false,
+  "status": "published",
+  "published": true,
   "featured": false,
   "contentType": "review",
   "category": "theatre",
@@ -13,7 +13,7 @@
   "performanceDate": "",
   "eventDate": "",
   "reviewDate": "2026-08-06T13:01:00Z",
-  "publishedAt": "",
+  "publishedAt": "2026-08-31T12:14:36.204Z",
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.tixculture.com/?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals&utm_content=en",
@@ -101,5 +101,5 @@
     }
   },
   "internalNotes": "Promoted from review submission: why-seeing-a-musical-in-londons-west-end-changed-the-way-i-experience-live-theatre\nOriginal submission status: ready_for_adam_review\nNotes for Adam: Original link with the photo: https://docs.google.com/document/d/137w4hF8Hc_n-Cd7kVZB7eQ_FHz06yi5sHDDnPrGPTrA/edit?tab=t.wrjniz9d834f\nPromoted at: 2026-08-26T12:49:54.518Z\nContent classified as a personal West End theatre feature within AJSEE Reviews; it is not a review of a single production.\nFinal English master approved by Adam Brázda on behalf of AJSEE on 26 August 2026.\nCzech translation approved by Adam Brázda on behalf of AJSEE on 26 August 2026.\nSlovak translation approved by Adam Brázda on behalf of AJSEE on 26 August 2026.\nGerman translation approved by Adam Brázda on behalf of AJSEE on 26 August 2026.\nPolish translation approved by Adam Brázda on behalf of AJSEE on 26 August 2026.\nHungarian translation approved by Adam Brázda on behalf of AJSEE on 26 August 2026.\nCover photograph supplied by Oya Canli.\nPrepared for publication on 31 August 2026; publication state intentionally remains approved and unpublished until the AJSEE publication workflow is run.",
-  "coverCredit": "Photo supplied by Oya Canli"
+  "coverCredit": "Photo: Oya Canli"
 }

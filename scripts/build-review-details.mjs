@@ -781,9 +781,9 @@ const REVIEW_GALLERY_LABELS = {
   cs: 'Fotogalerie',
   en: 'Photo gallery',
   de: 'Fotogalerie',
-  sk: 'Fotogal?ria',
-  pl: 'Galeria zdj??',
-  hu: 'Fot?gal?ria'
+  sk: 'Fotogaléria',
+  pl: 'Galeria zdjęć',
+  hu: 'Fotógaléria'
 };
 
 function buildReviewGalleryHtml(gallery, lang = DEFAULT_LANG) {
@@ -803,7 +803,7 @@ function buildReviewGalleryHtml(gallery, lang = DEFAULT_LANG) {
     .map((item) => {
       const image = String(item.image || '').trim();
       const alt = String(item.alt || '').trim();
-      const credit = String(item.credit || '').trim();
+      const credit = localizeCoverCredit(item.credit, lang);
 
       return `
               <figure class="review-gallery-item">

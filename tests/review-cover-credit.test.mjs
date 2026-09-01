@@ -140,3 +140,28 @@ test(
     );
   }
 );
+
+test(
+  "review detail builder localizes gallery credits and labels",
+  () => {
+    assert.match(
+      builderSource,
+      /localizeCoverCredit\(item\.credit,\s*lang\)/
+    );
+
+    assert.match(
+      builderSource,
+      /sk:\s*['"]Fotogaléria['"]/
+    );
+
+    assert.match(
+      builderSource,
+      /pl:\s*['"]Galeria zdjęć['"]/
+    );
+
+    assert.match(
+      builderSource,
+      /hu:\s*['"]Fotógaléria['"]/
+    );
+  }
+);

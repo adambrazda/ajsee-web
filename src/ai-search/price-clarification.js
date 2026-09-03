@@ -133,6 +133,61 @@ function maxPriceWithoutCurrency(
 }
 
 
+function negativeMaxPrice(
+  intent
+) {
+  const preferences =
+    Array.isArray(
+      intent
+        ?.unsupportedPreferences
+    )
+      ? intent
+          .unsupportedPreferences
+      : [];
+
+  return preferences.find(
+    preference => {
+      if (
+        preference?.type !==
+          'max_price'
+      ) {
+        return false;
+      }
+
+      const value =
+        Number(
+          preference.value
+        );
+
+      return (
+        Number.isFinite(value) &&
+        value < 0
+      );
+    }
+  ) ||
+    null;
+}
+
+
+function confirmationWasForNegativePrice(
+  clarificationContext
+) {
+  if (
+    clarificationContext
+      ?.previousIntent
+      ?.clarification
+      ?.required !== true
+  ) {
+    return null;
+  }
+
+  return negativeMaxPrice(
+    clarificationContext
+      .previousIntent
+  );
+}
+
+
 function confirmationWasForMissingPriceCurrency(
   clarificationContext
 ) {
@@ -230,6 +285,151 @@ export function applyPriceCurrencyClarification(
     cloneIntent(
       intent
     );
+
+  const previousNegativePrice =
+    confirmationWasForNegativePrice(
+      clarificationContext
+    );
+
+  let currentPrice =
+    result
+      .unsupportedPreferences
+      ?.find(
+        preference =>
+          preference?.type ===
+            'max_price'
+      );
+
+  const rawCurrentPriceValue =
+    currentPrice?.value;
+
+  const currentPriceValue =
+    Number(
+      rawCurrentPriceValue
+    );
+
+  const hasValidCurrentPrice =
+    rawCurrentPriceValue !== null &&
+    rawCurrentPriceValue !== undefined &&
+    !(
+      typeof rawCurrentPriceValue ===
+        'string' &&
+      !rawCurrentPriceValue.trim()
+    ) &&
+    Number.isFinite(
+      currentPriceValue
+    ) &&
+    currentPriceValue >= 0;
+
+  if (
+    previousNegativePrice &&
+    affirmativeReply(
+      reply,
+      locale
+    ) &&
+    !hasValidCurrentPrice
+  ) {
+
+    const amount =
+      Math.abs(
+        Number(
+          previousNegativePrice
+            .value
+        )
+      );
+
+    const currency =
+      String(
+        previousNegativePrice
+          .currency ||
+        ''
+      ).trim() ||
+      defaultPriceCurrencyForLocale(
+        locale
+      );
+
+    if (!currentPrice) {
+      if (
+        !Array.isArray(
+          result.unsupportedPreferences
+        )
+      ) {
+        result.unsupportedPreferences =
+          [];
+      }
+
+      currentPrice = {
+        ...structuredClone(
+          previousNegativePrice
+        )
+      };
+
+      result.unsupportedPreferences.push(
+        currentPrice
+      );
+    }
+
+    currentPrice.value =
+      amount;
+
+    currentPrice.currency =
+      currency;
+
+    return {
+      intent:
+        result,
+
+      needsClarification:
+        Boolean(
+          needsClarification
+        )
+    };
+  }
+
+  const negativePrice =
+    negativeMaxPrice(
+      result
+    );
+
+  if (negativePrice) {
+    result.clarification = {
+      required:
+        true,
+
+      question:
+        questionForPrice({
+          locale,
+
+          amount:
+            Math.abs(
+              Number(
+                negativePrice.value
+              )
+            ),
+
+          currency:
+            String(
+              negativePrice.currency ||
+              ''
+            ).trim() ||
+            defaultPriceCurrencyForLocale(
+              locale
+            )
+        }),
+
+      fields: [
+        'unsupportedPreferences'
+      ]
+    };
+
+    return {
+      intent:
+        result,
+
+      needsClarification:
+        true
+    };
+  }
 
   const missingPrice =
     maxPriceWithoutCurrency(

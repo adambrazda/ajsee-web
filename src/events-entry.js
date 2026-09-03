@@ -5402,6 +5402,7 @@ function updateEventsPagerControls() {
       _userInteractedWithFilters = true;
       pagination.page -= 1;
       await renderAndSync({ resetPage: false });
+      scrollToSharedEventResults();
     }, { once: true });
   }
 
@@ -5411,6 +5412,7 @@ function updateEventsPagerControls() {
       _userInteractedWithFilters = true;
       pagination.page += 1;
       await renderAndSync({ resetPage: false });
+      scrollToSharedEventResults();
     }, { once: true });
   }
 }

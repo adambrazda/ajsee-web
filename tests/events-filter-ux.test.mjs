@@ -1263,3 +1263,112 @@ test(
     );
   }
 );
+
+test(
+  'events pagination scrolls to the new results after previous and next page render',
+  () => {
+    const source =
+      readFileSync(
+        new URL(
+          '../src/events-entry.js',
+          import.meta.url
+        ),
+        'utf8'
+      );
+
+    const pagerStart =
+      source.indexOf(
+        'function updateEventsPagerControls'
+      );
+
+    const pagerEnd =
+      source.indexOf(
+        'function buildApiFilters',
+        pagerStart
+      );
+
+    assert.ok(
+      pagerStart >= 0 &&
+      pagerEnd > pagerStart,
+      'Pager implementation must exist.'
+    );
+
+    const pagerBlock =
+      source.slice(
+        pagerStart,
+        pagerEnd
+      );
+
+    const cases = [
+      {
+        label: 'Previous',
+        start: 'if (prev)',
+        end: 'if (next)',
+        pageChange: 'pagination.page -= 1;'
+      },
+      {
+        label: 'Next',
+        start: 'if (next)',
+        end: null,
+        pageChange: 'pagination.page += 1;'
+      }
+    ];
+
+    for (const item of cases) {
+      const start =
+        pagerBlock.indexOf(
+          item.start
+        );
+
+      const end =
+        item.end
+          ? pagerBlock.indexOf(
+              item.end,
+              start
+            )
+          : pagerBlock.length;
+
+      assert.ok(
+        start >= 0 &&
+        end > start,
+        `${item.label} handler must exist.`
+      );
+
+      const handler =
+        pagerBlock.slice(
+          start,
+          end
+        );
+
+      const pageChange =
+        handler.indexOf(
+          item.pageChange
+        );
+
+      const render =
+        handler.indexOf(
+          'await renderAndSync({ resetPage: false });'
+        );
+
+      const scroll =
+        handler.indexOf(
+          'scrollToSharedEventResults();'
+        );
+
+      assert.ok(
+        pageChange >= 0,
+        `${item.label} must change the page.`
+      );
+
+      assert.ok(
+        render > pageChange,
+        `${item.label} must render after changing the page.`
+      );
+
+      assert.ok(
+        scroll > render,
+        `${item.label} must scroll only after rendering.`
+      );
+    }
+  }
+);

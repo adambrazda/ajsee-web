@@ -813,6 +813,15 @@ export function initAiEventSearch({
       ></button>
     </div>
 
+    <p
+      class="ai-event-search__status"
+      id="ai-event-search-status"
+      data-ai-search-status
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></p>
+
     <div
       class="ai-event-search__clarification-actions"
       data-ai-search-clarification-actions
@@ -837,15 +846,6 @@ export function initAiEventSearch({
       class="ai-event-search__turnstile"
       data-ai-search-turnstile
     ></div>
-
-    <p
-      class="ai-event-search__status"
-      id="ai-event-search-status"
-      data-ai-search-status
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    ></p>
   `;
 
   form.prepend(

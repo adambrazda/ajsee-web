@@ -564,11 +564,53 @@ test(
           /scrollToSharedEventResults\(\);/g
         ) || [];
 
-      assert.equal(
-        allCalls.length,
-        2,
-        `${name} must scroll only from AI intent application and explicit submit`
-      );
+      if (name === 'events') {
+        const pagerStart =
+          source.indexOf(
+            'function updateEventsPagerControls'
+          );
+
+        const pagerEnd =
+          source.indexOf(
+            'function buildApiFilters',
+            pagerStart
+          );
+
+        assert.ok(
+          pagerStart >= 0 &&
+          pagerEnd > pagerStart,
+          'events pager implementation must exist'
+        );
+
+        const pagerBlock =
+          source.slice(
+            pagerStart,
+            pagerEnd
+          );
+
+        const pagerCalls =
+          pagerBlock.match(
+            /scrollToSharedEventResults\(\);/g
+          ) || [];
+
+        assert.equal(
+          pagerCalls.length,
+          2,
+          'events pager must scroll exactly once for previous and once for next'
+        );
+
+        assert.equal(
+          allCalls.length,
+          4,
+          'events must scroll only from AI intent, explicit submit, previous page and next page'
+        );
+      } else {
+        assert.equal(
+          allCalls.length,
+          2,
+          `${name} must scroll only from AI intent application and explicit submit`
+        );
+      }
     }
   }
 );

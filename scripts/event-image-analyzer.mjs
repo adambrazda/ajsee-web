@@ -309,13 +309,16 @@ export function selectSmsticketAnalysisTargets(
         ''
       ).trim();
 
-    const sourceImage =
-      imageOriginal ||
-      image;
-
+    /*
+     * Framing metadata is geometry-specific.
+     * The cache key and vision source must therefore represent
+     * the same asset that AJSEE renders in the browser.
+     *
+     * imageOriginal remains provider metadata only.
+     */
     const cacheKey =
       eventImageAnalysisCacheKey(
-        sourceImage
+        image
       );
 
     if (
@@ -683,65 +686,18 @@ export async function resolveEventImageAnalysisSource(
     );
   }
 
-  const rawCandidates = [
-    {
-      kind:
-        'original',
+  /*
+   * Geometry analysis must use exactly the asset rendered by AJSEE.
+   * imageOriginal is intentionally not a fallback.
+   */
+  const displayImage =
+    String(
+      target?.image ||
+      target?.sourceImage ||
+      ''
+    ).trim();
 
-      url:
-        String(
-          target?.imageOriginal ||
-          ''
-        ).trim()
-    },
-
-    {
-      kind:
-        'normalized',
-
-      url:
-        String(
-          target?.image ||
-          ''
-        ).trim()
-    },
-
-    {
-      kind:
-        'source',
-
-      url:
-        String(
-          target?.sourceImage ||
-          ''
-        ).trim()
-    }
-  ];
-
-  const seen =
-    new Set();
-
-  const candidates =
-    rawCandidates.filter(
-      (candidate) => {
-        if (
-          !candidate.url ||
-          seen.has(
-            candidate.url
-          )
-        ) {
-          return false;
-        }
-
-        seen.add(
-          candidate.url
-        );
-
-        return true;
-      }
-    );
-
-  if (!candidates.length) {
+  if (!displayImage) {
     return {
       ok:
         false,
@@ -753,116 +709,114 @@ export async function resolveEventImageAnalysisSource(
         '',
 
       reason:
-        'missing-image',
+        'missing-display-image',
 
       probes:
         []
     };
   }
 
+  const controller =
+    new AbortController();
+
+  const timeout =
+    setTimeout(
+      () =>
+        controller.abort(),
+      timeoutMs
+    );
+
   const probes = [];
 
-  for (const candidate of candidates) {
-    const controller =
-      new AbortController();
+  try {
+    const response =
+      await fetchImpl(
+        displayImage,
+        {
+          method:
+            'GET',
 
-    const timeout =
-      setTimeout(
-        () =>
-          controller.abort(),
-        timeoutMs
+          redirect:
+            'follow',
+
+          headers: {
+            Range:
+              'bytes=0-0'
+          },
+
+          signal:
+            controller.signal
+        }
       );
 
-    try {
-      const response =
-        await fetchImpl(
-          candidate.url,
-          {
-            method:
-              'GET',
+    const status =
+      Number(
+        response?.status
+      );
 
-            redirect:
-              'follow',
+    const ok =
+      Number.isFinite(
+        status
+      ) &&
+      status >= 200 &&
+      status < 400;
 
-            headers: {
-              Range:
-                'bytes=0-0'
-            },
+    probes.push({
+      kind:
+        'display',
 
-            signal:
-              controller.signal
-          }
-        );
+      url:
+        displayImage,
 
-      const status =
-        Number(
-          response?.status
-        );
-
-      const ok =
+      status:
         Number.isFinite(
           status
-        ) &&
-        status >= 200 &&
-        status < 400;
+        )
+          ? status
+          : 'invalid-response'
+    });
 
-      probes.push({
-        kind:
-          candidate.kind,
-
-        url:
-          candidate.url,
-
-        status:
-          Number.isFinite(
-            status
-          )
-            ? status
-            : 'invalid-response'
-      });
-
-      try {
-        await response?.body?.cancel?.();
-      } catch {
-        // Probe body cancellation is best-effort only.
-      }
-
-      if (ok) {
-        return {
-          ok:
-            true,
-
-          sourceImage:
-            candidate.url,
-
-          sourceKind:
-            candidate.kind,
-
-          reason:
-            '',
-
-          probes
-        };
-      }
-    } catch (error) {
-      probes.push({
-        kind:
-          candidate.kind,
-
-        url:
-          candidate.url,
-
-        status:
-          error?.name ===
-            'AbortError'
-            ? 'timeout'
-            : 'network-error'
-      });
-    } finally {
-      clearTimeout(
-        timeout
-      );
+    try {
+      await response?.body?.cancel?.();
+    } catch {
+      // Probe body cancellation is best-effort only.
     }
+
+    if (ok) {
+      return {
+        ok:
+          true,
+
+        sourceImage:
+          displayImage,
+
+        sourceKind:
+          'display',
+
+        reason:
+          '',
+
+        probes
+      };
+    }
+  } catch (error) {
+    probes.push({
+      kind:
+        'display',
+
+      url:
+        displayImage,
+
+      status:
+        error?.name ===
+          'AbortError'
+          ? 'timeout'
+          : 'network-error'
+    });
+  } finally {
+    clearTimeout(
+      timeout
+    );
   }
 
   return {
@@ -876,7 +830,7 @@ export async function resolveEventImageAnalysisSource(
       '',
 
     reason:
-      'image-unavailable',
+      'display-image-unavailable',
 
     probes
   };

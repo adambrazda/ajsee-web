@@ -45,10 +45,10 @@ test(
 );
 
 test(
-  'target selection matches titles and deduplicates source images',
+  'target selection keys and deduplicates by the displayed runtime image',
   () => {
-    const source =
-      'https://www.smsticket.cz/cdn/events/person.jpg';
+    const displayImage =
+      'https://www.smsticket.cz/normalized-shared.jpg';
 
     const payload = {
       events: [
@@ -65,10 +65,10 @@ test(
           },
 
           image:
-            'https://www.smsticket.cz/normalized-1.jpg',
+            displayImage,
 
           imageOriginal:
-            source
+            'https://www.smsticket.cz/original-1.jpg'
         },
 
         {
@@ -84,10 +84,10 @@ test(
           },
 
           image:
-            'https://www.smsticket.cz/normalized-2.jpg',
+            displayImage,
 
           imageOriginal:
-            source
+            'https://www.smsticket.cz/original-2.jpg'
         }
       ]
     };
@@ -97,7 +97,8 @@ test(
         payload,
         {
           match:
-            'romanem paulusem',
+            'Romanem Paulusem',
+
           limit:
             20
         }
@@ -109,11 +110,65 @@ test(
     );
 
     assert.equal(
+      targets[0].image,
+      displayImage
+    );
+
+    assert.equal(
+      targets[0].sourceImage,
+      displayImage
+    );
+
+    assert.equal(
       targets[0].cacheKey,
-      source
+      displayImage
+    );
+
+    assert.equal(
+      targets[0].imageOriginal,
+      'https://www.smsticket.cz/original-1.jpg'
     );
   }
 );
+
+test(
+  'target selection skips an original-only asset because AJSEE cannot frame an undisplayed image',
+  () => {
+    const targets =
+      selectSmsticketAnalysisTargets(
+        {
+          events: [
+            {
+              id:
+                'smsticket-1',
+
+              sourceId:
+                '1',
+
+              title: {
+                cs:
+                  'Original only'
+              },
+
+              imageOriginal:
+                'https://www.smsticket.cz/original-only.jpg'
+            }
+          ]
+        },
+        {
+          ids: [
+            '1'
+          ]
+        }
+      );
+
+    assert.deepEqual(
+      targets,
+      []
+    );
+  }
+);
+
 
 test(
   'Responses request uses source image original detail and strict structured output',
@@ -395,7 +450,7 @@ test(
               'original.jpg',
 
             cacheKey:
-              'https://www.smsticket.cz/original.jpg'
+              'https://www.smsticket.cz/normalized.jpg'
           }
         ],
 
@@ -448,7 +503,7 @@ test(
 
     assert.equal(
       preview.assets[
-        'https://www.smsticket.cz/original.jpg'
+        'https://www.smsticket.cz/normalized.jpg'
       ].source,
       'vision'
     );
@@ -569,18 +624,21 @@ test(
 
 
 test(
-  'image source resolver prefers a live provider original',
+  'image source resolver probes only the displayed runtime asset',
   async () => {
     const calls = [];
+
+    const displayImage =
+      'https://example.com/display.jpg';
 
     const result =
       await resolveEventImageAnalysisSource(
         {
-          imageOriginal:
-            'https://example.com/original.jpg',
-
           image:
-            'https://example.com/normalized.jpg'
+            displayImage,
+
+          imageOriginal:
+            'https://example.com/original.jpg'
         },
         {
           fetchImpl:
@@ -610,36 +668,52 @@ test(
 
     assert.equal(
       result.sourceKind,
-      'original'
+      'display'
     );
 
     assert.equal(
       result.sourceImage,
-      'https://example.com/original.jpg'
+      displayImage
     );
 
     assert.deepEqual(
       calls,
       [
-        'https://example.com/original.jpg'
+        displayImage
+      ]
+    );
+
+    assert.deepEqual(
+      result.probes.map(
+        (probe) =>
+          probe.kind
+      ),
+      [
+        'display'
       ]
     );
   }
 );
 
 test(
-  'image source resolver falls back from dead original to normalized artwork',
+  'image source resolver never falls back to original when the displayed asset is dead',
   async () => {
     const calls = [];
+
+    const displayImage =
+      'https://example.com/display.jpg';
+
+    const originalImage =
+      'https://example.com/original.jpg';
 
     const result =
       await resolveEventImageAnalysisSource(
         {
-          imageOriginal:
-            'https://example.com/original.jpg',
-
           image:
-            'https://example.com/normalized.jpg'
+            displayImage,
+
+          imageOriginal:
+            originalImage
         },
         {
           fetchImpl:
@@ -652,9 +726,8 @@ test(
 
               return {
                 status:
-                  url.includes(
-                    'original'
-                  )
+                  url ===
+                    displayImage
                     ? 404
                     : 206,
 
@@ -668,51 +741,59 @@ test(
 
     assert.equal(
       result.ok,
-      true
+      false
     );
 
     assert.equal(
-      result.sourceKind,
-      'normalized'
-    );
-
-    assert.equal(
-      result.sourceImage,
-      'https://example.com/normalized.jpg'
+      result.reason,
+      'display-image-unavailable'
     );
 
     assert.deepEqual(
       calls,
       [
-        'https://example.com/original.jpg',
-        'https://example.com/normalized.jpg'
+        displayImage
       ]
+    );
+
+    assert.equal(
+      calls.includes(
+        originalImage
+      ),
+      false
     );
   }
 );
 
 test(
-  'image source resolver reports unavailable when every source is dead',
+  'image source resolver reports a missing display asset even when provider original exists',
   async () => {
+    const calls = [];
+
     const result =
       await resolveEventImageAnalysisSource(
         {
           imageOriginal:
-            'https://example.com/original.jpg',
-
-          image:
-            'https://example.com/normalized.jpg'
+            'https://example.com/original.jpg'
         },
         {
           fetchImpl:
-            async () => ({
-              status:
-                404,
+            async (
+              url
+            ) => {
+              calls.push(
+                url
+              );
 
-              body: {
-                async cancel() {}
-              }
-            })
+              return {
+                status:
+                  206,
+
+                body: {
+                  async cancel() {}
+                }
+              };
+            }
         }
       );
 
@@ -723,12 +804,12 @@ test(
 
     assert.equal(
       result.reason,
-      'image-unavailable'
+      'missing-display-image'
     );
 
-    assert.equal(
-      result.probes.length,
-      2
+    assert.deepEqual(
+      calls,
+      []
     );
   }
 );

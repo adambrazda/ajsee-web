@@ -341,14 +341,9 @@ async function main() {
         sourceResolution.sourceImage
     };
 
-    if (
-      sourceResolution.sourceKind ===
-        'normalized'
-    ) {
-      console.log(
-        '  source    : normalized fallback'
-      );
-    }
+    console.log(
+      '  source    : display image'
+    );
 
     let result;
 

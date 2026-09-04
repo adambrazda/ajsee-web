@@ -459,6 +459,16 @@ test(
 
     assert.match(
       source,
+      /resolveEventImageAnalysis\(\s*imageAnalysisCache,\s*image\s*\)/
+    );
+
+    assert.doesNotMatch(
+      source,
+      /resolveEventImageAnalysis\(\s*imageAnalysisCache,\s*imageOriginal/
+    );
+
+    assert.doesNotMatch(
+      source,
       /imageOriginal \|\| image/
     );
 

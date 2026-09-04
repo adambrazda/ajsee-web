@@ -272,10 +272,15 @@ function normalizeEvent(
   const image = pickPhoto(event, 'normalized');
   const imageOriginal = pickPhoto(event, 'original');
 
+  /*
+   * Presentation metadata is asset-specific.
+   * Resolve it against the same normalized image URL that
+   * event cards render; imageOriginal is provider metadata only.
+   */
   const imagePresentation =
     resolveEventImageAnalysis(
       imageAnalysisCache,
-      imageOriginal || image
+      image
     );
 
   return {

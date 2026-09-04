@@ -1,5 +1,33 @@
 {
   "version": 1,
   "provider": "smsticket",
-  "assets": {}
+  "assets": {
+    "https://www.smsticket.cz/cdn/events/2026/67034/320-ca27038c2187458b81336913247b1104.jpg": {
+      "version": 1,
+      "source": "vision",
+      "contentType": "photo",
+      "confidence": 0.96,
+      "cropSafe": true,
+      "x": 52,
+      "y": 57
+    },
+    "https://www.smsticket.cz/cdn/events/2026/68881/320-1b14474d566c4396933efca0038af14e.jpg": {
+      "version": 1,
+      "source": "vision",
+      "contentType": "photo",
+      "confidence": 0.96,
+      "cropSafe": false,
+      "x": 50,
+      "y": 67
+    },
+    "https://www.smsticket.cz/cdn/events/2026/70466/320-82fe1e558d354ce98ad92b3a9c470bec.jpg": {
+      "version": 1,
+      "source": "vision",
+      "contentType": "person",
+      "confidence": 0.95,
+      "cropSafe": true,
+      "x": 51,
+      "y": 53
+    }
+  }
 }

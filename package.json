@@ -28,6 +28,7 @@
     "seo:smoke": "node scripts/seo-smoke.mjs",
     "sitemap:build": "node scripts/generate-sitemap.cjs",
     "smsticket:sync": "node scripts/sync-smsticket-events.mjs",
+    "event-images:analyze": "node scripts/analyze-event-images.mjs",
     "fetch:seatplan": "node scripts/fetch-seatplan.mjs",
     "reviews:build": "node scripts/build-reviews.mjs",
     "review-details:build": "node scripts/build-review-details.mjs",

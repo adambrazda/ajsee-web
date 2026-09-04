@@ -506,3 +506,61 @@ test(
     );
   }
 );
+
+
+test(
+  'image analyzer disables reasoning for deterministic classification',
+  () => {
+    const request =
+      buildEventImageAnalysisRequest(
+        {
+          sourceImage:
+            'https://www.smsticket.cz/cdn/events/test.jpg'
+        }
+      );
+
+    assert.deepEqual(
+      request.reasoning,
+      {
+        effort:
+          'none'
+      }
+    );
+
+    assert.equal(
+      request.max_output_tokens,
+      600
+    );
+  }
+);
+
+test(
+  'incomplete image responses expose the API reason instead of appearing empty',
+  () => {
+    assert.throws(
+      () =>
+        extractResponsesOutputText({
+          status:
+            'incomplete',
+
+          incomplete_details: {
+            reason:
+              'max_output_tokens'
+          },
+
+          usage: {
+            output_tokens:
+              300,
+
+            output_tokens_details: {
+              reasoning_tokens:
+                300
+            }
+          },
+
+          output: []
+        }),
+      /max_output_tokens/
+    );
+  }
+);

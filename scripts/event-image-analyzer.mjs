@@ -143,17 +143,50 @@ function eventTitleText(
     title &&
     typeof title === 'object'
   ) {
-    return Object.values(
-      title
-    )
-      .filter(Boolean)
-      .join(' ');
+    const preferredKeys = [
+      'cs',
+      'sk',
+      'en',
+      'de',
+      'pl',
+      'hu'
+    ];
+
+    for (
+      const key
+      of preferredKeys
+    ) {
+      const value =
+        String(
+          title?.[key] ||
+          ''
+        ).trim();
+
+      if (value) {
+        return value;
+      }
+    }
+
+    return (
+      Object.values(
+        title
+      )
+        .map(
+          (value) =>
+            String(
+              value ||
+              ''
+            ).trim()
+        )
+        .find(Boolean) ||
+      ''
+    );
   }
 
   return String(
     title ||
     ''
-  );
+  ).trim();
 }
 
 function normalizeId(
@@ -382,8 +415,13 @@ export function buildEventImageAnalysisRequest(
     store:
       false,
 
+    reasoning: {
+      effort:
+        'none'
+    },
+
     max_output_tokens:
-      300,
+      600,
 
     input: [
       {
@@ -433,6 +471,46 @@ export function buildEventImageAnalysisRequest(
 export function extractResponsesOutputText(
   response = {}
 ) {
+  if (
+    response?.status ===
+      'incomplete'
+  ) {
+    const reason =
+      String(
+        response?.incomplete_details?.reason ||
+        'unknown'
+      );
+
+    const outputTokens =
+      Number(
+        response?.usage?.output_tokens
+      );
+
+    const reasoningTokens =
+      Number(
+        response?.usage
+          ?.output_tokens_details
+          ?.reasoning_tokens
+      );
+
+    const tokenSummary =
+      Number.isFinite(
+        outputTokens
+      )
+        ? ` outputTokens=${outputTokens}, reasoningTokens=${
+            Number.isFinite(
+              reasoningTokens
+            )
+              ? reasoningTokens
+              : 'unknown'
+          }`
+        : '';
+
+    throw new Error(
+      `Image analysis response incomplete: ${reason}.${tokenSummary}`
+    );
+  }
+
   for (
     const item
     of Array.isArray(

@@ -21,6 +21,12 @@ import {
   deriveLegacyCategory
 } from '../taxonomy/event-taxonomy.js';
 
+import {
+  normalizeEventImageAsset,
+  resolveEventImageAsset,
+  resolveProviderImagePresentation
+} from '../event-image-resolver.js';
+
 const AJSEE_TM_PATCH_MARKER = 'AJSEE_TM_RATE_LIMIT_GUARD_20260507C';
 
 const REQUEST_CACHE_TTL_MS = 60_000;
@@ -574,189 +580,9 @@ function pickDate(ev) {
   return '';
 }
 
-const TICKETMASTER_CARD_TARGET_RATIO =
-  4 / 3;
-
-const TICKETMASTER_CARD_TARGET_WIDTH =
-  640;
-
-const TICKETMASTER_CARD_MIN_WIDTH =
-  480;
-
-const TICKETMASTER_CARD_MAX_PREFERRED_WIDTH =
-  1200;
-
-const TICKETMASTER_RATIO_BY_LABEL =
-  new Map([
-    ['4_3', 4 / 3],
-    ['3_2', 3 / 2],
-    ['16_9', 16 / 9]
-  ]);
-
-function normalizeTicketmasterImageAsset(
-  raw = {}
+function ticketmasterImageAssets(
+  ev
 ) {
-  const url =
-    String(
-      raw?.url ||
-      ''
-    ).trim();
-
-  if (!url) {
-    return null;
-  }
-
-  const width =
-    Number(
-      raw?.width ||
-      0
-    );
-
-  const height =
-    Number(
-      raw?.height ||
-      0
-    );
-
-  return {
-    url,
-
-    width:
-      Number.isFinite(width) &&
-      width > 0
-        ? width
-        : 0,
-
-    height:
-      Number.isFinite(height) &&
-      height > 0
-        ? height
-        : 0,
-
-    ratio:
-      String(
-        raw?.ratio ||
-        ''
-      )
-        .trim()
-        .toLowerCase(),
-
-    fallback:
-      raw?.fallback === true,
-
-    attribution:
-      String(
-        raw?.attribution ||
-        ''
-      ).trim()
-  };
-}
-
-function ticketmasterImageRatio(
-  asset = {}
-) {
-  if (
-    asset.width > 0 &&
-    asset.height > 0
-  ) {
-    return (
-      asset.width /
-      asset.height
-    );
-  }
-
-  return (
-    TICKETMASTER_RATIO_BY_LABEL.get(
-      asset.ratio
-    ) ??
-    null
-  );
-}
-
-function ticketmasterImageRatioDistance(
-  asset = {}
-) {
-  const ratio =
-    ticketmasterImageRatio(
-      asset
-    );
-
-  if (
-    !Number.isFinite(ratio)
-  ) {
-    return 100;
-  }
-
-  return Math.abs(
-    ratio -
-    TICKETMASTER_CARD_TARGET_RATIO
-  );
-}
-
-function ticketmasterImageWidthDistance(
-  asset = {}
-) {
-  if (!(asset.width > 0)) {
-    return 1000000;
-  }
-
-  return Math.abs(
-    asset.width -
-    TICKETMASTER_CARD_TARGET_WIDTH
-  );
-}
-
-function ticketmasterImageCandidatePool(
-  assets = []
-) {
-  const nonSource =
-    assets.filter(
-      (asset) =>
-        !/_SOURCE(?:[?#]|$)/i.test(
-          asset.url
-        )
-    );
-
-  const pool =
-    nonSource.length
-      ? nonSource
-      : assets;
-
-  const preferred =
-    pool.filter(
-      (asset) =>
-        asset.width >=
-          TICKETMASTER_CARD_MIN_WIDTH &&
-        asset.width <=
-          TICKETMASTER_CARD_MAX_PREFERRED_WIDTH
-    );
-
-  const adequate =
-    preferred.length
-      ? preferred
-      : pool.filter(
-          (asset) =>
-            asset.width >=
-            TICKETMASTER_CARD_MIN_WIDTH
-        );
-
-  const qualityPool =
-    adequate.length
-      ? adequate
-      : pool;
-
-  const eventSpecific =
-    qualityPool.filter(
-      (asset) =>
-        asset.fallback !== true
-    );
-
-  return eventSpecific.length
-    ? eventSpecific
-    : qualityPool;
-}
-
-function pickImageAsset(ev) {
   const rawImages =
     Array.isArray(
       ev?.images
@@ -767,102 +593,35 @@ function pickImageAsset(ev) {
   const assets =
     rawImages
       .map(
-        normalizeTicketmasterImageAsset
+        normalizeEventImageAsset
       )
       .filter(Boolean);
 
   if (!assets.length) {
-    return null;
+    return [];
   }
 
-  const candidates =
-    ticketmasterImageCandidatePool(
-      assets
+  const nonSource =
+    assets.filter(
+      (asset) =>
+        !/_SOURCE(?:[?#]|$)/i.test(
+          asset.url
+        )
     );
 
-  return (
-    [...candidates]
-      .sort(
-        (a, b) => {
-          const ratioDifference =
-            ticketmasterImageRatioDistance(
-              a
-            ) -
-            ticketmasterImageRatioDistance(
-              b
-            );
-
-          if (
-            Math.abs(
-              ratioDifference
-            ) > 0.0001
-          ) {
-            return ratioDifference;
-          }
-
-          const widthDifference =
-            ticketmasterImageWidthDistance(
-              a
-            ) -
-            ticketmasterImageWidthDistance(
-              b
-            );
-
-          if (
-            widthDifference !== 0
-          ) {
-            return widthDifference;
-          }
-
-          return (
-            Number(
-              b.width ||
-              0
-            ) -
-            Number(
-              a.width ||
-              0
-            )
-          );
-        }
-      )[0] ||
-    null
-  );
+  return nonSource.length
+    ? nonSource
+    : assets;
 }
 
-function ticketmasterProviderImagePresentation(
-  asset
+function pickImageAsset(
+  ev
 ) {
-  if (!asset) {
-    return null;
-  }
-
-  const ratio =
-    ticketmasterImageRatio(
-      asset
-    );
-
-  const isFourThree =
-    asset.ratio === '4_3' ||
-    (
-      Number.isFinite(ratio) &&
-      Math.abs(
-        ratio -
-        TICKETMASTER_CARD_TARGET_RATIO
-      ) <= 0.03
-    );
-
-  if (!isFourThree) {
-    return null;
-  }
-
-  return {
-    fit: 'cover',
-    x: 50,
-    y: 50,
-    source: 'provider',
-    version: 2
-  };
+  return resolveEventImageAsset(
+    ticketmasterImageAssets(
+      ev
+    )
+  );
 }
 
 function extractPreferredTicketmasterUrl(rawUrl = '') {
@@ -927,7 +686,7 @@ export function mapTicketmasterEvent(
     '';
 
   const imagePresentation =
-    ticketmasterProviderImagePresentation(
+    resolveProviderImagePresentation(
       imageAsset
     );
 

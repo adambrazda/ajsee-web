@@ -664,6 +664,239 @@ export function normalizeAnalyzerOutput(
   };
 }
 
+export async function resolveEventImageAnalysisSource(
+  target = {},
+  {
+    fetchImpl =
+      globalThis.fetch,
+
+    timeoutMs =
+      15000
+  } = {}
+) {
+  if (
+    typeof fetchImpl !==
+      'function'
+  ) {
+    throw new Error(
+      'No fetch implementation available for image source probe.'
+    );
+  }
+
+  const rawCandidates = [
+    {
+      kind:
+        'original',
+
+      url:
+        String(
+          target?.imageOriginal ||
+          ''
+        ).trim()
+    },
+
+    {
+      kind:
+        'normalized',
+
+      url:
+        String(
+          target?.image ||
+          ''
+        ).trim()
+    },
+
+    {
+      kind:
+        'source',
+
+      url:
+        String(
+          target?.sourceImage ||
+          ''
+        ).trim()
+    }
+  ];
+
+  const seen =
+    new Set();
+
+  const candidates =
+    rawCandidates.filter(
+      (candidate) => {
+        if (
+          !candidate.url ||
+          seen.has(
+            candidate.url
+          )
+        ) {
+          return false;
+        }
+
+        seen.add(
+          candidate.url
+        );
+
+        return true;
+      }
+    );
+
+  if (!candidates.length) {
+    return {
+      ok:
+        false,
+
+      sourceImage:
+        '',
+
+      sourceKind:
+        '',
+
+      reason:
+        'missing-image',
+
+      probes:
+        []
+    };
+  }
+
+  const probes = [];
+
+  for (const candidate of candidates) {
+    const controller =
+      new AbortController();
+
+    const timeout =
+      setTimeout(
+        () =>
+          controller.abort(),
+        timeoutMs
+      );
+
+    try {
+      const response =
+        await fetchImpl(
+          candidate.url,
+          {
+            method:
+              'GET',
+
+            redirect:
+              'follow',
+
+            headers: {
+              Range:
+                'bytes=0-0'
+            },
+
+            signal:
+              controller.signal
+          }
+        );
+
+      const status =
+        Number(
+          response?.status
+        );
+
+      const ok =
+        Number.isFinite(
+          status
+        ) &&
+        status >= 200 &&
+        status < 400;
+
+      probes.push({
+        kind:
+          candidate.kind,
+
+        url:
+          candidate.url,
+
+        status:
+          Number.isFinite(
+            status
+          )
+            ? status
+            : 'invalid-response'
+      });
+
+      try {
+        await response?.body?.cancel?.();
+      } catch {
+        // Probe body cancellation is best-effort only.
+      }
+
+      if (ok) {
+        return {
+          ok:
+            true,
+
+          sourceImage:
+            candidate.url,
+
+          sourceKind:
+            candidate.kind,
+
+          reason:
+            '',
+
+          probes
+        };
+      }
+    } catch (error) {
+      probes.push({
+        kind:
+          candidate.kind,
+
+        url:
+          candidate.url,
+
+        status:
+          error?.name ===
+            'AbortError'
+            ? 'timeout'
+            : 'network-error'
+      });
+    } finally {
+      clearTimeout(
+        timeout
+      );
+    }
+  }
+
+  return {
+    ok:
+      false,
+
+    sourceImage:
+      '',
+
+    sourceKind:
+      '',
+
+    reason:
+      'image-unavailable',
+
+    probes
+  };
+}
+
+export function isRecoverableEventImageAssetError(
+  error
+) {
+  const message =
+    String(
+      error?.message ||
+      ''
+    );
+
+  return /Error while downloading file\. Upstream status code:\s*(?:404|410)\b/i
+    .test(
+      message
+    );
+}
+
 export async function analyzeEventImageTarget(
   target,
   {

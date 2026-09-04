@@ -9,7 +9,9 @@ import {
   buildEventImageAnalysisRequest,
   buildImageAnalysisPreview,
   extractResponsesOutputText,
+  isRecoverableEventImageAssetError,
   normalizeAnalyzerOutput,
+  resolveEventImageAnalysisSource,
   selectSmsticketAnalysisTargets
 } from '../scripts/event-image-analyzer.mjs';
 
@@ -561,6 +563,249 @@ test(
           output: []
         }),
       /max_output_tokens/
+    );
+  }
+);
+
+
+test(
+  'image source resolver prefers a live provider original',
+  async () => {
+    const calls = [];
+
+    const result =
+      await resolveEventImageAnalysisSource(
+        {
+          imageOriginal:
+            'https://example.com/original.jpg',
+
+          image:
+            'https://example.com/normalized.jpg'
+        },
+        {
+          fetchImpl:
+            async (
+              url
+            ) => {
+              calls.push(
+                url
+              );
+
+              return {
+                status:
+                  206,
+
+                body: {
+                  async cancel() {}
+                }
+              };
+            }
+        }
+      );
+
+    assert.equal(
+      result.ok,
+      true
+    );
+
+    assert.equal(
+      result.sourceKind,
+      'original'
+    );
+
+    assert.equal(
+      result.sourceImage,
+      'https://example.com/original.jpg'
+    );
+
+    assert.deepEqual(
+      calls,
+      [
+        'https://example.com/original.jpg'
+      ]
+    );
+  }
+);
+
+test(
+  'image source resolver falls back from dead original to normalized artwork',
+  async () => {
+    const calls = [];
+
+    const result =
+      await resolveEventImageAnalysisSource(
+        {
+          imageOriginal:
+            'https://example.com/original.jpg',
+
+          image:
+            'https://example.com/normalized.jpg'
+        },
+        {
+          fetchImpl:
+            async (
+              url
+            ) => {
+              calls.push(
+                url
+              );
+
+              return {
+                status:
+                  url.includes(
+                    'original'
+                  )
+                    ? 404
+                    : 206,
+
+                body: {
+                  async cancel() {}
+                }
+              };
+            }
+        }
+      );
+
+    assert.equal(
+      result.ok,
+      true
+    );
+
+    assert.equal(
+      result.sourceKind,
+      'normalized'
+    );
+
+    assert.equal(
+      result.sourceImage,
+      'https://example.com/normalized.jpg'
+    );
+
+    assert.deepEqual(
+      calls,
+      [
+        'https://example.com/original.jpg',
+        'https://example.com/normalized.jpg'
+      ]
+    );
+  }
+);
+
+test(
+  'image source resolver reports unavailable when every source is dead',
+  async () => {
+    const result =
+      await resolveEventImageAnalysisSource(
+        {
+          imageOriginal:
+            'https://example.com/original.jpg',
+
+          image:
+            'https://example.com/normalized.jpg'
+        },
+        {
+          fetchImpl:
+            async () => ({
+              status:
+                404,
+
+              body: {
+                async cancel() {}
+              }
+            })
+        }
+      );
+
+    assert.equal(
+      result.ok,
+      false
+    );
+
+    assert.equal(
+      result.reason,
+      'image-unavailable'
+    );
+
+    assert.equal(
+      result.probes.length,
+      2
+    );
+  }
+);
+
+test(
+  'only upstream image 404 and 410 failures are recoverable per target',
+  () => {
+    assert.equal(
+      isRecoverableEventImageAssetError(
+        new Error(
+          'OpenAI image analysis failed: Error while downloading file. Upstream status code: 404.'
+        )
+      ),
+      true
+    );
+
+    assert.equal(
+      isRecoverableEventImageAssetError(
+        new Error(
+          'OpenAI image analysis failed: Error while downloading file. Upstream status code: 410.'
+        )
+      ),
+      true
+    );
+
+    assert.equal(
+      isRecoverableEventImageAssetError(
+        new Error(
+          'OpenAI image analysis failed: HTTP 429'
+        )
+      ),
+      false
+    );
+
+    assert.equal(
+      isRecoverableEventImageAssetError(
+        new Error(
+          'OpenAI image analysis failed: Incorrect API key.'
+        )
+      ),
+      false
+    );
+  }
+);
+
+test(
+  'preview CLI records skipped assets without changing cache keys',
+  () => {
+    const source =
+      fs.readFileSync(
+        'scripts/analyze-event-images.mjs',
+        'utf8'
+      );
+
+    assert.match(
+      source,
+      /resolveEventImageAnalysisSource/
+    );
+
+    assert.match(
+      source,
+      /skipped\.push/
+    );
+
+    assert.match(
+      source,
+      /requestedTargets/
+    );
+
+    assert.match(
+      source,
+      /analysisTarget[\s\S]*sourceImage:[\s\S]*sourceResolution\.sourceImage/
+    );
+
+    assert.match(
+      source,
+      /cacheKey:[\s\S]*target\.cacheKey/
     );
   }
 );

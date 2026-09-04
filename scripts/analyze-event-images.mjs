@@ -11,6 +11,8 @@ import {
   EVENT_IMAGE_ANALYSIS_MODEL,
   analyzeEventImageTarget,
   assertPreviewOutputPath,
+  isRecoverableEventImageAssetError,
+  resolveEventImageAnalysisSource,
   buildImageAnalysisPreview,
   selectSmsticketAnalysisTargets
 } from './event-image-analyzer.mjs';
@@ -268,7 +270,9 @@ async function main() {
 
   console.log('');
 
+  const analyzedTargets = [];
   const results = [];
+  const skipped = [];
 
   for (
     let index = 0;
@@ -282,20 +286,136 @@ async function main() {
       `[${index + 1}/${targets.length}] ${target.id} — ${target.title}`
     );
 
-    const result =
-      await analyzeEventImageTarget(
-        target,
-        {
-          apiKey,
-          model:
-            options.model,
-          detail:
-            options.detail
-        }
+    const sourceResolution =
+      await resolveEventImageAnalysisSource(
+        target
       );
 
+    if (
+      !sourceResolution.ok
+    ) {
+      skipped.push({
+        id:
+          target.id,
+
+        sourceId:
+          target.sourceId,
+
+        title:
+          target.title,
+
+        cacheKey:
+          target.cacheKey,
+
+        reason:
+          sourceResolution.reason,
+
+        probes:
+          sourceResolution.probes
+      });
+
+      console.log(
+        '  skipped   :',
+        sourceResolution.reason
+      );
+
+      console.log(
+        '  probes    :',
+        sourceResolution.probes
+          .map(
+            (probe) =>
+              `${probe.kind}=${probe.status}`
+          )
+          .join(', ')
+      );
+
+      console.log('');
+
+      continue;
+    }
+
+    const analysisTarget = {
+      ...target,
+
+      sourceImage:
+        sourceResolution.sourceImage
+    };
+
+    if (
+      sourceResolution.sourceKind ===
+        'normalized'
+    ) {
+      console.log(
+        '  source    : normalized fallback'
+      );
+    }
+
+    let result;
+
+    try {
+      result =
+        await analyzeEventImageTarget(
+          analysisTarget,
+          {
+            apiKey,
+            model:
+              options.model,
+            detail:
+              options.detail
+          }
+        );
+    } catch (error) {
+      if (
+        !isRecoverableEventImageAssetError(
+          error
+        )
+      ) {
+        throw error;
+      }
+
+      skipped.push({
+        id:
+          target.id,
+
+        sourceId:
+          target.sourceId,
+
+        title:
+          target.title,
+
+        cacheKey:
+          target.cacheKey,
+
+        reason:
+          'upstream-image-unavailable',
+
+        probes:
+          sourceResolution.probes
+      });
+
+      console.log(
+        '  skipped   : upstream-image-unavailable'
+      );
+
+      console.log('');
+
+      continue;
+    }
+
+    analyzedTargets.push(
+      analysisTarget
+    );
+
     results.push(
-      result
+      {
+        ...result,
+
+        analysisSourceImage:
+          sourceResolution.sourceImage,
+
+        analysisSourceKind:
+          sourceResolution.sourceKind
+      }
     );
 
     const focal =
@@ -336,9 +456,9 @@ async function main() {
     console.log('');
   }
 
-  const preview =
-    buildImageAnalysisPreview(
-      targets,
+  const preview = {
+    ...buildImageAnalysisPreview(
+      analyzedTargets,
       results,
       {
         provider:
@@ -348,7 +468,13 @@ async function main() {
         detail:
           options.detail
       }
-    );
+    ),
+
+    requestedTargets:
+      targets.length,
+
+    skipped
+  };
 
   if (
     options.output
@@ -390,6 +516,17 @@ async function main() {
       )
     );
   }
+
+  console.log('');
+  console.log(
+    'Analyzed:',
+    results.length
+  );
+
+  console.log(
+    'Skipped :',
+    skipped.length
+  );
 
   console.log('');
   console.log(

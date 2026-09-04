@@ -88,6 +88,23 @@ function normalizeEventImageFit(value) {
       : 'auto';
 }
 
+function normalizeEventImageSurface(
+  value
+) {
+  const surface =
+    String(
+      value ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+  return surface ===
+    'adaptive-matte'
+      ? surface
+      : 'neutral';
+}
+
 function normalizeEventImageFocalPoint(
   value,
   fallback = 50
@@ -155,8 +172,51 @@ function eventImagePresentation(
     y:
       normalizeEventImageFocalPoint(
         raw.y
+      ),
+
+    surface:
+      normalizeEventImageSurface(
+        raw.surface
       )
   };
+}
+
+export function sharedEventImageMatteUrl(
+  rawSource = ''
+) {
+  const source =
+    String(
+      rawSource ||
+      ''
+    ).trim();
+
+  if (
+    !source ||
+    /^(?:data|blob):/i.test(
+      source
+    )
+  ) {
+    return '';
+  }
+
+  const params =
+    new URLSearchParams({
+      url:
+        source,
+      w:
+        '1',
+      h:
+        '1',
+      fit:
+        'fill',
+      fm:
+        'webp'
+    });
+
+  return (
+    '/.netlify/images?' +
+    params.toString()
+  );
 }
 
 function syncSharedEventImageFrame(
@@ -171,6 +231,70 @@ function syncSharedEventImageFrame(
       'data-ajsee-image-fit',
       fit
     );
+}
+
+function syncSharedEventImageSurface(
+  image,
+  fit
+) {
+  const frame =
+    image?.closest?.(
+      '.event-image-frame'
+    );
+
+  if (!frame) {
+    return;
+  }
+
+  const surface =
+    normalizeEventImageSurface(
+      frame.getAttribute?.(
+        'data-ajsee-image-surface'
+      )
+    );
+
+  if (
+    fit !== 'contain' ||
+    surface !== 'adaptive-matte'
+  ) {
+    frame.removeAttribute?.(
+      'data-ajsee-image-matte'
+    );
+
+    frame.style?.removeProperty?.(
+      '--aj-event-image-matte'
+    );
+
+    return;
+  }
+
+  const source =
+    String(
+      image.currentSrc ||
+      image.getAttribute?.(
+        'src'
+      ) ||
+      ''
+    ).trim();
+
+  const matteUrl =
+    sharedEventImageMatteUrl(
+      source
+    );
+
+  if (!matteUrl) {
+    return;
+  }
+
+  frame.style?.setProperty?.(
+    '--aj-event-image-matte',
+    `url("${matteUrl}")`
+  );
+
+  frame.setAttribute?.(
+    'data-ajsee-image-matte',
+    'ready'
+  );
 }
 
 export function wireSharedEventImageFraming(
@@ -216,6 +340,11 @@ export function wireSharedEventImageFraming(
       );
 
       syncSharedEventImageFrame(
+        image,
+        fit
+      );
+
+      syncSharedEventImageSurface(
         image,
         fit
       );
@@ -332,6 +461,11 @@ export function renderSharedEventCard({
       imagePresentation.fit
     );
 
+  const safeImageSurface =
+    escapeHtml(
+      imagePresentation.surface
+    );
+
   const safeImagePosition =
     `${imagePresentation.x}% ${imagePresentation.y}%`;
 
@@ -359,6 +493,7 @@ export function renderSharedEventCard({
       <div
         class="event-image-frame"
         data-ajsee-image-fit="${safeImageFit}"
+        data-ajsee-image-surface="${safeImageSurface}"
       >
         <img
           src="${safeImage}"
@@ -693,6 +828,8 @@ export function ensureSharedEventGridStyles(
     }
 
     .event-card .event-image-frame {
+      position: relative;
+      isolation: isolate;
       width: 100%;
       aspect-ratio: 4 / 3;
       overflow: hidden;
@@ -700,7 +837,39 @@ export function ensureSharedEventGridStyles(
       background: #eef5fb;
     }
 
+    .event-card .event-image-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: #eef5fb;
+      opacity: 0;
+    }
+
+    .event-card .event-image-frame[
+      data-ajsee-image-fit="contain"
+    ][
+      data-ajsee-image-surface="adaptive-matte"
+    ][
+      data-ajsee-image-matte="ready"
+    ]::before {
+      background-image:
+        var(
+          --aj-event-image-matte
+        );
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      filter:
+        saturate(0.42)
+        brightness(1.08);
+      opacity: 0.52;
+    }
+
     .event-card .event-image-frame > .event-img {
+      position: relative;
+      z-index: 1;
       display: block;
       width: 100%;
       height: 100%;

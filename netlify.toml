@@ -8,6 +8,9 @@
 [build.environment]
   NODE_VERSION = "20"
 
+[images]
+  remote_images = ['https://www\.smsticket\.cz/cdn/events/.*']
+
 [context.deploy-preview.environment]
   REVIEW_PREVIEW = "1"
 

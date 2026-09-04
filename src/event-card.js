@@ -700,10 +700,12 @@ export function ensureSharedEventGridStyles(
       background: #eef5fb;
     }
 
-    .event-card .event-img {
+    .event-card .event-image-frame > .event-img {
       display: block;
       width: 100%;
       height: 100%;
+      max-height: none;
+      margin-bottom: 0;
       object-fit: cover;
       object-position: center;
       border-radius: inherit;
@@ -749,12 +751,6 @@ export function ensureSharedEventGridStyles(
       }
     }
 
-    @media (max-width: 760px) {
-      .event-card .event-img {
-        max-height: 220px;
-      }
-    }
-
     @media (max-width: 700px) {
       body:is([data-page="home"], [data-page="events"]) #eventsList.events-list {
         grid-template-columns: 1fr;
@@ -765,11 +761,6 @@ export function ensureSharedEventGridStyles(
       }
     }
 
-    @media (max-width: 420px) {
-      .event-card .event-img {
-        max-height: 190px;
-      }
-    }
   `;
 
   doc.head.appendChild(style);

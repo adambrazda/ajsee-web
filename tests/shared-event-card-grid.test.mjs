@@ -368,6 +368,27 @@ test(
   }
 );
 
+
+test(
+  'canonical event image fills the complete shared frame at every viewport size',
+  () => {
+    assert.match(
+      sharedSource,
+      /\.event-card \.event-image-frame > \.event-img \{[\s\S]*?height: 100%;[\s\S]*?max-height: none;[\s\S]*?margin-bottom: 0;/
+    );
+
+    assert.doesNotMatch(
+      sharedSource,
+      /@media \(max-width: 760px\) \{[\s\S]*?\.event-card \.event-img \{[\s\S]*?max-height:/
+    );
+
+    assert.doesNotMatch(
+      sharedSource,
+      /@media \(max-width: 420px\) \{[\s\S]*?\.event-card \.event-img \{[\s\S]*?max-height:/
+    );
+  }
+);
+
 test(
   'shared event image framing mirrors resolved fit mode onto the frame',
   () => {

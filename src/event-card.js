@@ -73,7 +73,7 @@ export function eventImageOrFallback(event = {}) {
     : FALLBACK_IMAGE;
 }
 
-const EVENT_IMAGE_CONTAIN_MAX_RATIO = 1.45;
+const EVENT_IMAGE_CONTAIN_MAX_RATIO = 1.3;
 const eventImageFramingBound = new WeakSet();
 
 function normalizeEventImageFit(value) {
@@ -760,7 +760,7 @@ export function ensureSharedEventGridStyles(
 
     .event-card .event-img {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       display: block;
       width: 100%;
       aspect-ratio: 16 / 9;
@@ -781,12 +781,21 @@ export function ensureSharedEventGridStyles(
       height: 100%;
       object-fit: cover;
       pointer-events: none;
-      transform: scale(1.12);
+      transform: scale(1.14);
       filter:
         blur(18px)
-        brightness(0.76)
-        saturate(0.9);
-      opacity: 0.72;
+        brightness(1.08)
+        saturate(0.74);
+      opacity: 0.46;
+    }
+
+    .event-card .event-image-frame[data-ajsee-image-fit="contain"]::after {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: rgba(238, 245, 251, 0.42);
+      pointer-events: none;
     }
 
     .event-card .event-img[data-ajsee-image-fit="contain"] {

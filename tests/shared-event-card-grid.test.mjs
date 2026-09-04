@@ -176,6 +176,24 @@ test(
     assert.equal(
       sharedEventImageFitForDimensions(
         1200,
+        900
+      ),
+      'cover',
+      'normal 4:3 photography should stay covered'
+    );
+
+    assert.equal(
+      sharedEventImageFitForDimensions(
+        1000,
+        800
+      ),
+      'contain',
+      'near-square artwork should preserve the complete image'
+    );
+
+    assert.equal(
+      sharedEventImageFitForDimensions(
+        1200,
         1000
       ),
       'contain'

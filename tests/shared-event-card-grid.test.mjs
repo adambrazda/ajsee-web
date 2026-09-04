@@ -299,3 +299,237 @@ test(
     );
   }
 );
+
+
+test(
+  'shared event card wraps images in the canonical image frame',
+  () => {
+    const html =
+      renderSharedEventCard({
+        event: {},
+        modalId:
+          'image-frame-test',
+        titleHtml:
+          'Image frame test',
+        titleRaw:
+          'Image frame test',
+        imageSrc:
+          'https://example.com/image.jpg'
+      });
+
+    assert.match(
+      html,
+      /class="event-image-frame"/
+    );
+
+    assert.match(
+      html,
+      /class="event-img"/
+    );
+  }
+);
+
+test(
+  'shared contain image framing adds a decorative blurred backdrop',
+  () => {
+    let insertedBackdrop =
+      null;
+
+    const frameAttributes =
+      new Map();
+
+    const frame = {
+      setAttribute(
+        name,
+        value
+      ) {
+        frameAttributes.set(
+          name,
+          value
+        );
+      },
+
+      querySelector() {
+        return null;
+      },
+
+      insertBefore(
+        node
+      ) {
+        insertedBackdrop =
+          node;
+      }
+    };
+
+    const imageAttributes =
+      new Map([
+        [
+          'data-ajsee-image-fit',
+          'auto'
+        ]
+      ]);
+
+    const backdropAttributes =
+      new Map();
+
+    const backdrop = {
+      setAttribute(
+        name,
+        value
+      ) {
+        backdropAttributes.set(
+          name,
+          value
+        );
+      },
+
+      removeAttribute(
+        name
+      ) {
+        backdropAttributes.delete(
+          name
+        );
+      }
+    };
+
+    const image = {
+      complete: true,
+      naturalWidth: 800,
+      naturalHeight: 1200,
+
+      getAttribute(
+        name
+      ) {
+        return imageAttributes.get(
+          name
+        );
+      },
+
+      setAttribute(
+        name,
+        value
+      ) {
+        imageAttributes.set(
+          name,
+          value
+        );
+      },
+
+      closest() {
+        return frame;
+      },
+
+      cloneNode() {
+        return backdrop;
+      }
+    };
+
+    const root = {
+      querySelectorAll() {
+        return [
+          image
+        ];
+      }
+    };
+
+    wireSharedEventImageFraming(
+      root
+    );
+
+    assert.equal(
+      imageAttributes.get(
+        'data-ajsee-image-fit'
+      ),
+      'contain'
+    );
+
+    assert.equal(
+      frameAttributes.get(
+        'data-ajsee-image-fit'
+      ),
+      'contain'
+    );
+
+    assert.equal(
+      insertedBackdrop,
+      backdrop
+    );
+
+    assert.equal(
+      backdropAttributes.get(
+        'class'
+      ),
+      'event-img-backdrop'
+    );
+
+    assert.equal(
+      backdropAttributes.get(
+        'alt'
+      ),
+      ''
+    );
+
+    assert.equal(
+      backdropAttributes.get(
+        'aria-hidden'
+      ),
+      'true'
+    );
+  }
+);
+
+test(
+  'landscape shared event images do not create decorative backdrops',
+  () => {
+    let inserted =
+      false;
+
+    const frame = {
+      setAttribute() {},
+
+      querySelector() {
+        return null;
+      },
+
+      insertBefore() {
+        inserted =
+          true;
+      }
+    };
+
+    const image = {
+      complete: true,
+      naturalWidth: 1600,
+      naturalHeight: 900,
+
+      getAttribute() {
+        return 'auto';
+      },
+
+      setAttribute() {},
+
+      closest() {
+        return frame;
+      },
+
+      cloneNode() {
+        throw new Error(
+          'Landscape image must not clone a backdrop.'
+        );
+      }
+    };
+
+    wireSharedEventImageFraming({
+      querySelectorAll() {
+        return [
+          image
+        ];
+      }
+    });
+
+    assert.equal(
+      inserted,
+      false
+    );
+  }
+);

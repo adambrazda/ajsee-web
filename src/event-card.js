@@ -159,12 +159,84 @@ function eventImagePresentation(
   };
 }
 
+function syncSharedEventImageFrame(
+  image,
+  fit
+) {
+  const frame =
+    image?.closest?.(
+      '.event-image-frame'
+    );
+
+  if (!frame) {
+    return;
+  }
+
+  frame.setAttribute?.(
+    'data-ajsee-image-fit',
+    fit
+  );
+
+  const existingBackdrop =
+    frame.querySelector?.(
+      '.event-img-backdrop'
+    );
+
+  if (fit !== 'contain') {
+    existingBackdrop?.remove?.();
+    return;
+  }
+
+  if (
+    existingBackdrop ||
+    typeof image.cloneNode !==
+      'function'
+  ) {
+    return;
+  }
+
+  const backdrop =
+    image.cloneNode(false);
+
+  backdrop.setAttribute?.(
+    'class',
+    'event-img-backdrop'
+  );
+
+  backdrop.setAttribute?.(
+    'alt',
+    ''
+  );
+
+  backdrop.setAttribute?.(
+    'aria-hidden',
+    'true'
+  );
+
+  backdrop.removeAttribute?.(
+    'data-ajsee-image-fit'
+  );
+
+  backdrop.removeAttribute?.(
+    'style'
+  );
+
+  backdrop.removeAttribute?.(
+    'onerror'
+  );
+
+  frame.insertBefore?.(
+    backdrop,
+    image
+  );
+}
+
 export function wireSharedEventImageFraming(
   root = globalThis.document
 ) {
   const images =
     root?.querySelectorAll?.(
-      '.event-img[data-ajsee-image-fit="auto"]'
+      '.event-img'
     ) || [];
 
   for (const image of images) {
@@ -180,18 +252,57 @@ export function wireSharedEventImageFraming(
       image
     );
 
+    const requestedFit =
+      normalizeEventImageFit(
+        image.getAttribute?.(
+          'data-ajsee-image-fit'
+        )
+      );
+
     const applyFit = () => {
       const fit =
-        sharedEventImageFitForDimensions(
-          image.naturalWidth,
-          image.naturalHeight
-        );
+        requestedFit === 'auto'
+          ? sharedEventImageFitForDimensions(
+              image.naturalWidth,
+              image.naturalHeight
+            )
+          : requestedFit;
 
       image.setAttribute?.(
         'data-ajsee-image-fit',
         fit
       );
+
+      syncSharedEventImageFrame(
+        image,
+        fit
+      );
     };
+
+    if (
+      requestedFit === 'cover'
+    ) {
+      applyFit();
+      continue;
+    }
+
+    if (
+      requestedFit === 'contain'
+    ) {
+      image.setAttribute?.(
+        'data-ajsee-image-fit',
+        'contain'
+      );
+
+      image
+        .closest?.(
+          '.event-image-frame'
+        )
+        ?.setAttribute?.(
+          'data-ajsee-image-fit',
+          'contain'
+        );
+    }
 
     if (
       image.complete &&
@@ -303,16 +414,21 @@ export function renderSharedEventCard({
       data-event-id="${safeModalId}"
       data-event-provider="${safeProvider}"
     >
-      <img
-        src="${safeImage}"
-        alt="${titleHtml}"
-        class="event-img"
+      <div
+        class="event-image-frame"
         data-ajsee-image-fit="${safeImageFit}"
-        style="object-position: ${safeImagePosition};"
-        loading="lazy"
-        decoding="async"
-        onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
-      />
+      >
+        <img
+          src="${safeImage}"
+          alt="${titleHtml}"
+          class="event-img"
+          data-ajsee-image-fit="${safeImageFit}"
+          style="object-position: ${safeImagePosition};"
+          loading="lazy"
+          decoding="async"
+          onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
+        />
+      </div>
 
       <div class="event-content">
         <h3 class="event-title">${titleHtml}</h3>
@@ -634,7 +750,17 @@ export function ensureSharedEventGridStyles(
       color: var(--aj-provider-ticketmaster-text, #064c9b);
     }
 
+    .event-card .event-image-frame {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #eef5fb;
+    }
+
     .event-card .event-img {
+      position: relative;
+      z-index: 1;
       display: block;
       width: 100%;
       aspect-ratio: 16 / 9;
@@ -642,8 +768,25 @@ export function ensureSharedEventGridStyles(
       max-height: 260px;
       object-fit: cover;
       object-position: center;
-      border-radius: 18px;
-      background: #eef5fb;
+      border-radius: inherit;
+      background: transparent;
+    }
+
+    .event-card .event-img-backdrop {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      transform: scale(1.12);
+      filter:
+        blur(18px)
+        brightness(0.76)
+        saturate(0.9);
+      opacity: 0.72;
     }
 
     .event-card .event-img[data-ajsee-image-fit="contain"] {

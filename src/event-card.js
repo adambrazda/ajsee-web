@@ -163,72 +163,14 @@ function syncSharedEventImageFrame(
   image,
   fit
 ) {
-  const frame =
-    image?.closest?.(
+  image
+    ?.closest?.(
       '.event-image-frame'
+    )
+    ?.setAttribute?.(
+      'data-ajsee-image-fit',
+      fit
     );
-
-  if (!frame) {
-    return;
-  }
-
-  frame.setAttribute?.(
-    'data-ajsee-image-fit',
-    fit
-  );
-
-  const existingBackdrop =
-    frame.querySelector?.(
-      '.event-img-backdrop'
-    );
-
-  if (fit !== 'contain') {
-    existingBackdrop?.remove?.();
-    return;
-  }
-
-  if (
-    existingBackdrop ||
-    typeof image.cloneNode !==
-      'function'
-  ) {
-    return;
-  }
-
-  const backdrop =
-    image.cloneNode(false);
-
-  backdrop.setAttribute?.(
-    'class',
-    'event-img-backdrop'
-  );
-
-  backdrop.setAttribute?.(
-    'alt',
-    ''
-  );
-
-  backdrop.setAttribute?.(
-    'aria-hidden',
-    'true'
-  );
-
-  backdrop.removeAttribute?.(
-    'data-ajsee-image-fit'
-  );
-
-  backdrop.removeAttribute?.(
-    'style'
-  );
-
-  backdrop.removeAttribute?.(
-    'onerror'
-  );
-
-  frame.insertBefore?.(
-    backdrop,
-    image
-  );
 }
 
 export function wireSharedEventImageFraming(
@@ -751,51 +693,21 @@ export function ensureSharedEventGridStyles(
     }
 
     .event-card .event-image-frame {
-      position: relative;
       width: 100%;
+      aspect-ratio: 4 / 3;
       overflow: hidden;
       border-radius: 18px;
       background: #eef5fb;
     }
 
     .event-card .event-img {
-      position: relative;
-      z-index: 2;
-      display: block;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      height: auto;
-      max-height: 260px;
-      object-fit: cover;
-      object-position: center;
-      border-radius: inherit;
-      background: transparent;
-    }
-
-    .event-card .event-img-backdrop {
-      position: absolute;
-      z-index: 0;
-      inset: 0;
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      pointer-events: none;
-      transform: scale(1.14);
-      filter:
-        blur(18px)
-        brightness(1.08)
-        saturate(0.74);
-      opacity: 0.46;
-    }
-
-    .event-card .event-image-frame[data-ajsee-image-fit="contain"]::after {
-      content: '';
-      position: absolute;
-      z-index: 1;
-      inset: 0;
-      background: rgba(238, 245, 251, 0.42);
-      pointer-events: none;
+      object-position: center;
+      border-radius: inherit;
+      background: transparent;
     }
 
     .event-card .event-img[data-ajsee-image-fit="contain"] {

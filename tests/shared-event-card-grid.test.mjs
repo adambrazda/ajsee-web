@@ -347,11 +347,37 @@ test(
   }
 );
 
+
 test(
-  'shared contain image framing adds a decorative blurred backdrop',
+  'shared event image frame uses a stable 4:3 presentation without decorative backdrops',
   () => {
-    let insertedBackdrop =
-      null;
+    assert.match(
+      sharedSource,
+      /\.event-card \.event-image-frame \{[\s\S]*?aspect-ratio: 4 \/ 3;/
+    );
+
+    assert.doesNotMatch(
+      sharedSource,
+      /event-img-backdrop/
+    );
+
+    assert.doesNotMatch(
+      sharedSource,
+      /blur\(/
+    );
+  }
+);
+
+test(
+  'shared event image framing mirrors resolved fit mode onto the frame',
+  () => {
+    const imageAttributes =
+      new Map([
+        [
+          'data-ajsee-image-fit',
+          'auto'
+        ]
+      ]);
 
     const frameAttributes =
       new Map();
@@ -364,48 +390,6 @@ test(
         frameAttributes.set(
           name,
           value
-        );
-      },
-
-      querySelector() {
-        return null;
-      },
-
-      insertBefore(
-        node
-      ) {
-        insertedBackdrop =
-          node;
-      }
-    };
-
-    const imageAttributes =
-      new Map([
-        [
-          'data-ajsee-image-fit',
-          'auto'
-        ]
-      ]);
-
-    const backdropAttributes =
-      new Map();
-
-    const backdrop = {
-      setAttribute(
-        name,
-        value
-      ) {
-        backdropAttributes.set(
-          name,
-          value
-        );
-      },
-
-      removeAttribute(
-        name
-      ) {
-        backdropAttributes.delete(
-          name
         );
       }
     };
@@ -435,24 +419,16 @@ test(
 
       closest() {
         return frame;
-      },
-
-      cloneNode() {
-        return backdrop;
       }
     };
 
-    const root = {
+    wireSharedEventImageFraming({
       querySelectorAll() {
         return [
           image
         ];
       }
-    };
-
-    wireSharedEventImageFraming(
-      root
-    );
+    });
 
     assert.equal(
       imageAttributes.get(
@@ -466,88 +442,6 @@ test(
         'data-ajsee-image-fit'
       ),
       'contain'
-    );
-
-    assert.equal(
-      insertedBackdrop,
-      backdrop
-    );
-
-    assert.equal(
-      backdropAttributes.get(
-        'class'
-      ),
-      'event-img-backdrop'
-    );
-
-    assert.equal(
-      backdropAttributes.get(
-        'alt'
-      ),
-      ''
-    );
-
-    assert.equal(
-      backdropAttributes.get(
-        'aria-hidden'
-      ),
-      'true'
-    );
-  }
-);
-
-test(
-  'landscape shared event images do not create decorative backdrops',
-  () => {
-    let inserted =
-      false;
-
-    const frame = {
-      setAttribute() {},
-
-      querySelector() {
-        return null;
-      },
-
-      insertBefore() {
-        inserted =
-          true;
-      }
-    };
-
-    const image = {
-      complete: true,
-      naturalWidth: 1600,
-      naturalHeight: 900,
-
-      getAttribute() {
-        return 'auto';
-      },
-
-      setAttribute() {},
-
-      closest() {
-        return frame;
-      },
-
-      cloneNode() {
-        throw new Error(
-          'Landscape image must not clone a backdrop.'
-        );
-      }
-    };
-
-    wireSharedEventImageFraming({
-      querySelectorAll() {
-        return [
-          image
-        ];
-      }
-    });
-
-    assert.equal(
-      inserted,
-      false
     );
   }
 );

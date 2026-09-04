@@ -35,7 +35,8 @@ import {
   ensureSharedEventGridStyles,
   eventImageOrFallback,
   renderSharedEventCard,
-  wireSharedEventCardAnalytics
+  wireSharedEventCardAnalytics,
+  wireSharedEventImageFraming
 } from './event-card.js';
 // /src/events-entry.js
 // ---------------------------------------------------------
@@ -5643,6 +5644,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     });
 
 
+    wireSharedEventImageFraming(list);
     wireSharedEventCardAnalytics(list);
 
     updateEventsPagerControls();

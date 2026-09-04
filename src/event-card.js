@@ -73,6 +73,143 @@ export function eventImageOrFallback(event = {}) {
     : FALLBACK_IMAGE;
 }
 
+const EVENT_IMAGE_CONTAIN_MAX_RATIO = 1.45;
+const eventImageFramingBound = new WeakSet();
+
+function normalizeEventImageFit(value) {
+  const fit =
+    String(value || '')
+      .trim()
+      .toLowerCase();
+
+  return fit === 'cover' ||
+    fit === 'contain'
+      ? fit
+      : 'auto';
+}
+
+function normalizeEventImageFocalPoint(
+  value,
+  fallback = 50
+) {
+  const numeric =
+    Number(value);
+
+  if (!Number.isFinite(numeric)) {
+    return fallback;
+  }
+
+  return Math.min(
+    100,
+    Math.max(
+      0,
+      numeric
+    )
+  );
+}
+
+export function sharedEventImageFitForDimensions(
+  width,
+  height
+) {
+  const safeWidth =
+    Number(width);
+
+  const safeHeight =
+    Number(height);
+
+  if (
+    !(safeWidth > 0) ||
+    !(safeHeight > 0)
+  ) {
+    return 'cover';
+  }
+
+  return (
+    safeWidth / safeHeight
+  ) < EVENT_IMAGE_CONTAIN_MAX_RATIO
+    ? 'contain'
+    : 'cover';
+}
+
+function eventImagePresentation(
+  event = {}
+) {
+  const raw =
+    event?.imagePresentation &&
+    typeof event.imagePresentation === 'object'
+      ? event.imagePresentation
+      : {};
+
+  return {
+    fit:
+      normalizeEventImageFit(
+        raw.fit
+      ),
+
+    x:
+      normalizeEventImageFocalPoint(
+        raw.x
+      ),
+
+    y:
+      normalizeEventImageFocalPoint(
+        raw.y
+      )
+  };
+}
+
+export function wireSharedEventImageFraming(
+  root = globalThis.document
+) {
+  const images =
+    root?.querySelectorAll?.(
+      '.event-img[data-ajsee-image-fit="auto"]'
+    ) || [];
+
+  for (const image of images) {
+    if (
+      eventImageFramingBound.has(
+        image
+      )
+    ) {
+      continue;
+    }
+
+    eventImageFramingBound.add(
+      image
+    );
+
+    const applyFit = () => {
+      const fit =
+        sharedEventImageFitForDimensions(
+          image.naturalWidth,
+          image.naturalHeight
+        );
+
+      image.setAttribute?.(
+        'data-ajsee-image-fit',
+        fit
+      );
+    };
+
+    if (
+      image.complete &&
+      Number(image.naturalWidth) > 0 &&
+      Number(image.naturalHeight) > 0
+    ) {
+      applyFit();
+      continue;
+    }
+
+    image.addEventListener?.(
+      'load',
+      applyFit,
+      { once: true }
+    );
+  }
+}
+
 /*
  * Canonical AJSEE event-card markup.
  *
@@ -134,6 +271,17 @@ export function renderSharedEventCard({
     imageSrc ||
     eventImageOrFallback(event);
 
+  const imagePresentation =
+    eventImagePresentation(event);
+
+  const safeImageFit =
+    escapeHtml(
+      imagePresentation.fit
+    );
+
+  const safeImagePosition =
+    `${imagePresentation.x}% ${imagePresentation.y}%`;
+
   const safeModalId =
     escapeHtml(modalId);
 
@@ -159,6 +307,8 @@ export function renderSharedEventCard({
         src="${safeImage}"
         alt="${titleHtml}"
         class="event-img"
+        data-ajsee-image-fit="${safeImageFit}"
+        style="object-position: ${safeImagePosition};"
         loading="lazy"
         decoding="async"
         onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
@@ -494,6 +644,15 @@ export function ensureSharedEventGridStyles(
       object-position: center;
       border-radius: 18px;
       background: #eef5fb;
+    }
+
+    .event-card .event-img[data-ajsee-image-fit="contain"] {
+      object-fit: contain;
+    }
+
+    .event-card .event-img[data-ajsee-image-fit="cover"],
+    .event-card .event-img[data-ajsee-image-fit="auto"] {
+      object-fit: cover;
     }
 
     @media (min-width: 768px) {

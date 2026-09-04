@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 import {
-  renderSharedEventCard
+  renderSharedEventCard,
+  sharedEventImageFitForDimensions,
+  wireSharedEventImageFraming
 } from '../src/event-card.js';
 
 const sharedSource = fs.readFileSync(
@@ -148,6 +150,152 @@ test(
     assert.doesNotMatch(
       homeSource,
       /<article class="event-card" data-event-id=/
+    );
+  }
+);
+
+test(
+  'shared event image framing keeps landscape photos covered and preserves poster-like images',
+  () => {
+    assert.equal(
+      sharedEventImageFitForDimensions(
+        1600,
+        900
+      ),
+      'cover'
+    );
+
+    assert.equal(
+      sharedEventImageFitForDimensions(
+        1200,
+        800
+      ),
+      'cover'
+    );
+
+    assert.equal(
+      sharedEventImageFitForDimensions(
+        1200,
+        1000
+      ),
+      'contain'
+    );
+
+    assert.equal(
+      sharedEventImageFitForDimensions(
+        1000,
+        1000
+      ),
+      'contain'
+    );
+
+    assert.equal(
+      sharedEventImageFitForDimensions(
+        800,
+        1200
+      ),
+      'contain'
+    );
+  }
+);
+
+test(
+  'shared event card supports explicit image fit and focal point',
+  () => {
+    const html =
+      renderSharedEventCard({
+        event: {
+          imagePresentation: {
+            fit: 'cover',
+            x: 50,
+            y: 20
+          }
+        },
+
+        modalId:
+          'focal-test',
+
+        titleHtml:
+          'Focal test',
+
+        titleRaw:
+          'Focal test',
+
+        imageSrc:
+          'https://example.com/focal.jpg'
+      });
+
+    assert.match(
+      html,
+      /data-ajsee-image-fit="cover"/
+    );
+
+    assert.match(
+      html,
+      /object-position: 50% 20%;/
+    );
+  }
+);
+
+test(
+  'shared event image framing resolves auto mode from intrinsic dimensions',
+  () => {
+    const attributes =
+      new Map([
+        [
+          'data-ajsee-image-fit',
+          'auto'
+        ]
+      ]);
+
+    const image = {
+      complete: true,
+      naturalWidth: 800,
+      naturalHeight: 1200,
+
+      setAttribute(
+        name,
+        value
+      ) {
+        attributes.set(
+          name,
+          value
+        );
+      }
+    };
+
+    const root = {
+      querySelectorAll() {
+        return [
+          image
+        ];
+      }
+    };
+
+    wireSharedEventImageFraming(
+      root
+    );
+
+    assert.equal(
+      attributes.get(
+        'data-ajsee-image-fit'
+      ),
+      'contain'
+    );
+  }
+);
+
+test(
+  'homepage and events wire shared event image framing after rendering cards',
+  () => {
+    assert.match(
+      homeSource,
+      /wireSharedEventImageFraming\(list\)/
+    );
+
+    assert.match(
+      eventsSource,
+      /wireSharedEventImageFraming\(list\)/
     );
   }
 );

@@ -40,7 +40,8 @@ import {
   ensureSharedEventGridStyles,
   eventImageOrFallback,
   renderSharedEventCard,
-  wireSharedEventCardAnalytics
+  wireSharedEventCardAnalytics,
+  wireSharedEventImageFraming
 } from './event-card.js';
 // /src/home-entry.js
 // ---------------------------------------------------------
@@ -4520,6 +4521,7 @@ qsa('.js-event-detail', list).forEach(btn => {
   });
 });
 
+    wireSharedEventImageFraming(list);
     wireSharedEventCardAnalytics(list);
 
     announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);

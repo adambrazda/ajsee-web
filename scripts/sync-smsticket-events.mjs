@@ -10,8 +10,17 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
+import {
+  resolveEventImageAnalysis
+} from '../src/event-image-analysis.js';
+
 const SMSTICKET_API_URL = 'https://www.smsticket.cz/api/public/v1.1/events';
 const OUT_FILE = path.resolve('public/data/smsticket-events.json');
+
+const IMAGE_ANALYSIS_FILE =
+  path.resolve(
+    'data/event-image-analysis/smsticket.json'
+  );
 const OUT_DIR = path.dirname(OUT_FILE);
 const AFFILIATE_PARAM = 'a_box=d4n78jv6';
 
@@ -174,7 +183,65 @@ function isFutureOrActive(event) {
   return Number.isFinite(eventDate.getTime()) && eventDate >= today;
 }
 
-function normalizeEvent(event) {
+async function readSmsticketImageAnalysisCache() {
+  const emptyCache = {
+    version: 1,
+    provider: 'smsticket',
+    assets: {}
+  };
+
+  if (
+    !existsSync(
+      IMAGE_ANALYSIS_FILE
+    )
+  ) {
+    return emptyCache;
+  }
+
+  try {
+    const raw =
+      await readFile(
+        IMAGE_ANALYSIS_FILE,
+        'utf8'
+      );
+
+    const parsed =
+      JSON.parse(
+        raw
+      );
+
+    if (
+      Number(
+        parsed?.version
+      ) !== 1 ||
+      !parsed?.assets ||
+      typeof parsed.assets !== 'object'
+    ) {
+      console.warn(
+        '[smsticket] invalid image analysis cache; using safe fallback'
+      );
+
+      return emptyCache;
+    }
+
+    return parsed;
+  } catch (error) {
+    console.warn(
+      '[smsticket] image analysis cache unavailable; using safe fallback: ' +
+      (
+        error?.message ||
+        error
+      )
+    );
+
+    return emptyCache;
+  }
+}
+
+function normalizeEvent(
+  event,
+  imageAnalysisCache = {}
+) {
   const sourceId = text(event?.id);
   const title = text(event?.name);
   const rawDescription = decodeHtmlEntities(String(event?.description || '').trim());
@@ -204,6 +271,12 @@ function normalizeEvent(event) {
 
   const image = pickPhoto(event, 'normalized');
   const imageOriginal = pickPhoto(event, 'original');
+
+  const imagePresentation =
+    resolveEventImageAnalysis(
+      imageAnalysisCache,
+      imageOriginal || image
+    );
 
   return {
     id: `smsticket-${sourceId}`,
@@ -236,6 +309,12 @@ function normalizeEvent(event) {
 
     image,
     imageOriginal,
+
+    ...(imagePresentation
+      ? {
+          imagePresentation
+        }
+      : {}),
 
     url: bookingUrl,
     tickets: bookingUrl,
@@ -430,10 +509,19 @@ async function main() {
     const parsed = parser.parse(xml);
     const rawEvents = toArray(parsed?.events?.event);
 
+    const imageAnalysisCache =
+      await readSmsticketImageAnalysisCache();
+
     const events = rawEvents
       .filter((event) => !isTestEvent(event))
       .filter(isFutureOrActive)
-      .map(normalizeEvent)
+      .map(
+        (event) =>
+          normalizeEvent(
+            event,
+            imageAnalysisCache
+          )
+      )
       .filter((event) => event.sourceId && event.title?.cs && event.url && event.datetime)
       .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
 

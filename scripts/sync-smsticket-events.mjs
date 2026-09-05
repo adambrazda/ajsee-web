@@ -14,6 +14,11 @@ import {
   resolveEventImageAnalysis
 } from '../src/event-image-analysis.js';
 
+import {
+  fetchSmsticketXml,
+  refreshSmsticketFallbackPayload
+} from '../src/smsticket-sync-resilience.js';
+
 const SMSTICKET_API_URL = 'https://www.smsticket.cz/api/public/v1.1/events';
 const OUT_FILE = path.resolve('public/data/smsticket-events.json');
 
@@ -443,12 +448,24 @@ function createSubsetPayload(payload, definition, events) {
   };
 }
 
-async function writeSmsticketPayloads(payload) {
+async function writeSmsticketPayloads(
+  payload,
+  {
+    logLabel = 'synced'
+  } = {}
+) {
   await mkdir(OUT_DIR, { recursive: true });
 
   await writeFile(OUT_FILE, JSON.stringify(payload, null, 2), 'utf8');
 
-  console.log('[smsticket] synced ' + payload.events.length + ' events -> ' + OUT_FILE);
+  console.log(
+    '[smsticket] ' +
+    logLabel +
+    ' ' +
+    payload.events.length +
+    ' events -> ' +
+    OUT_FILE
+  );
 
   for (const definition of CITY_SUBSETS) {
     const subsetEvents = payload.events.filter((event) => matchesSubsetCity(event, definition));
@@ -482,24 +499,30 @@ async function main() {
   const startedAt = new Date().toISOString();
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
-
-    const response = await fetch(SMSTICKET_API_URL, {
-      signal: controller.signal,
-      headers: {
-        accept: 'application/xml,text/xml;q=0.9,*/*;q=0.8',
-        'user-agent': 'AJSEE smsticket sync'
-      }
-    });
-
-    clearTimeout(timeout);
-
-    if (!response.ok) {
-      throw new Error(`smsticket API returned ${response.status}`);
-    }
-
-    const xml = await response.text();
+    const xml =
+      await fetchSmsticketXml(
+        SMSTICKET_API_URL,
+        {
+          onRetry({
+            attempt,
+            maxAttempts,
+            error
+          }) {
+            console.warn(
+              '[smsticket] request attempt ' +
+              attempt +
+              '/' +
+              maxAttempts +
+              ' failed: ' +
+              (
+                error?.message ||
+                error
+              ) +
+              '; retrying'
+            );
+          }
+        }
+      );
 
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -545,7 +568,28 @@ async function main() {
     const existing = await readExistingFallback();
 
     if (existing) {
-      console.warn('[smsticket] keeping existing cached data');
+      const imageAnalysisCache =
+        await readSmsticketImageAnalysisCache();
+
+      const refreshedFallback =
+        refreshSmsticketFallbackPayload(
+          existing,
+          imageAnalysisCache,
+          startedAt
+        );
+
+      await writeSmsticketPayloads(
+        refreshedFallback,
+        {
+          logLabel:
+            'refreshed cached'
+        }
+      );
+
+      console.warn(
+        '[smsticket] keeping existing cached event data with current build-time enrichments'
+      );
+
       return;
     }
 

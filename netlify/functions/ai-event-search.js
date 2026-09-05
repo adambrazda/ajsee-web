@@ -19,6 +19,10 @@ import {
 import {
   applyPriceCurrencyClarification
 } from '../../src/ai-search/price-clarification.js';
+import {
+  isAiSearchServerEnabled,
+  isDeployPreviewHostname
+} from '../../src/ai-search/runtime-config.js';
 
 import {
   verifyTurnstileToken
@@ -43,7 +47,7 @@ const MAX_TIMEOUT_MS =
   30_000;
 
 const MAX_BODY_BYTES =
-  4_096;
+  32_768;
 
 const MIN_QUERY_CHARS =
   2;
@@ -890,6 +894,38 @@ export function createAiEventSearchHandler({
       );
     }
 
+    const requestHostname =
+      new URL(
+        request.url
+      ).hostname;
+
+    if (
+      !isAiSearchServerEnabled({
+        hostname:
+          requestHostname,
+
+        enabled:
+          env.AI_SEARCH_ENABLED
+      })
+    ) {
+      return jsonResponse(
+        {
+          ok:
+            false,
+
+          code:
+            'ai-disabled',
+
+          retryable:
+            false
+        },
+        {
+          status:
+            503
+        }
+      );
+    }
+
     const contentType =
       String(
         request.headers.get(
@@ -1122,7 +1158,10 @@ export function createAiEventSearchHandler({
 
     const useCloudflareDummyContext =
       env.TURNSTILE_TEST_MODE ===
-        'cloudflare-dummy';
+        'cloudflare-dummy' &&
+      isDeployPreviewHostname(
+        requestHostname
+      );
 
     const expectedTurnstileAction =
       useCloudflareDummyContext
@@ -1132,9 +1171,7 @@ export function createAiEventSearchHandler({
     const expectedTurnstileHostname =
       useCloudflareDummyContext
         ? ''
-        : new URL(
-            request.url
-          ).hostname;
+        : requestHostname;
 
     let turnstileResult =
       null;

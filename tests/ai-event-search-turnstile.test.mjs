@@ -8,11 +8,14 @@ import {
 function makeRequest(
   {
     turnstileToken =
-      'turnstile-test-token'
+      'turnstile-test-token',
+
+    url =
+      'https://deploy-preview-175--ajsee-demo.netlify.app/api/ai-event-search'
   } = {}
 ) {
   return new Request(
-    'https://ajsee.example/api/ai-event-search',
+    url,
     {
       method:
         'POST',
@@ -436,7 +439,7 @@ test(
 
     assert.equal(
       captured.expectedHostname,
-      'ajsee.example'
+      'deploy-preview-175--ajsee-demo.netlify.app'
     );
   }
 );
@@ -512,6 +515,9 @@ test(
     const handler =
       createAiEventSearchHandler({
         env: {
+          AI_SEARCH_ENABLED:
+            'true',
+
           TURNSTILE_SECRET_KEY:
             'test-secret'
         },
@@ -537,7 +543,10 @@ test(
 
     const response =
       await handler(
-        makeRequest()
+        makeRequest({
+          url:
+            'https://ajsee.cz/api/ai-event-search'
+        })
       );
 
     assert.equal(
@@ -552,7 +561,7 @@ test(
 
     assert.equal(
       captured.expectedHostname,
-      'ajsee.example'
+      'ajsee.cz'
     );
   }
 );
@@ -594,7 +603,10 @@ test(
 
     const response =
       await handler(
-        makeRequest()
+        makeRequest({
+          url:
+            'https://deploy-preview-175--ajsee-demo.netlify.app/api/ai-event-search'
+        })
       );
 
     assert.equal(
@@ -615,6 +627,74 @@ test(
     assert.equal(
       captured.requireTestingKeyResponse,
       true
+    );
+  }
+);
+
+test(
+  'Cloudflare dummy mode cannot weaken production hostname validation',
+  async () => {
+    let captured =
+      null;
+
+    const handler =
+      createAiEventSearchHandler({
+        env: {
+          AI_SEARCH_ENABLED:
+            'true',
+
+          TURNSTILE_SECRET_KEY:
+            'test-secret',
+
+          TURNSTILE_TEST_MODE:
+            'cloudflare-dummy'
+        },
+
+        verifyTurnstileImpl:
+          async options => {
+            captured =
+              options;
+
+            return {
+              ok:
+                true
+            };
+          },
+
+        fetchImpl:
+          async () => {
+            throw new Error(
+              'OpenAI must not run'
+            );
+          }
+      });
+
+    const response =
+      await handler(
+        makeRequest({
+          url:
+            'https://ajsee.cz/api/ai-event-search'
+        })
+      );
+
+    assert.equal(
+      response.status,
+      503
+    );
+
+    assert.equal(
+      captured.expectedAction,
+      'ai_event_search'
+    );
+
+    assert.equal(
+      captured.expectedHostname,
+      'ajsee.cz'
+    );
+
+    assert.equal(
+      captured.requireTestingKeyResponse,
+      false
     );
   }
 );

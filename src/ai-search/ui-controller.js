@@ -1,6 +1,10 @@
 import {
   MAX_CLARIFICATION_ROUNDS
 } from './clarification-context.js';
+import {
+  formatLocalIsoWithOffset,
+  resolveAiSearchClientConfig
+} from './runtime-config.js';
 
 import '../styles/partials/_ai-event-search.scss';
 
@@ -10,14 +14,8 @@ const AI_SEARCH_ENDPOINT =
 const TURNSTILE_SCRIPT_URL =
   'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
-const TURNSTILE_TEST_SITEKEY =
-  '1x00000000000000000000AA';
-
 const TURNSTILE_ACTION =
   'ai_event_search';
-
-const DEPLOY_PREVIEW_HOST_RE =
-  /^deploy-preview-\d+--ajsee-demo\.netlify\.app$/i;
 
 const SUPPORTED_LOCALES =
   new Set([
@@ -341,15 +339,6 @@ function normalizeLocale(value) {
     : 'cs';
 }
 
-function isDeployPreviewHost() {
-  return DEPLOY_PREVIEW_HOST_RE.test(
-    String(
-      globalThis.location?.hostname ||
-      ''
-    )
-  );
-}
-
 function loadTurnstile() {
   if (
     globalThis.turnstile &&
@@ -517,7 +506,8 @@ function loadTurnstile() {
 }
 
 function createTokenProvider(
-  container
+  container,
+  sitekey
 ) {
   let widgetId =
     null;
@@ -600,8 +590,7 @@ function createTokenProvider(
               turnstile.render(
                 container,
                 {
-                  sitekey:
-                    TURNSTILE_TEST_SITEKEY,
+                  sitekey,
 
                   action:
                     TURNSTILE_ACTION,
@@ -731,15 +720,24 @@ export function initAiEventSearch({
   onIntent =
     null
 } = {}) {
-  /*
-   * V1 rollout is deliberately fail-closed:
-   * the UI exists only on Netlify Deploy Previews.
-   * Production gets no AI control until a real
-   * Turnstile sitekey is configured.
-   */
+  const clientConfig =
+    resolveAiSearchClientConfig({
+      hostname:
+        globalThis.location?.hostname ||
+        '',
+
+      enabled:
+        import.meta.env
+          ?.VITE_AI_SEARCH_ENABLED,
+
+      sitekey:
+        import.meta.env
+          ?.VITE_TURNSTILE_SITE_KEY
+    });
+
   if (
     !form ||
-    !isDeployPreviewHost()
+    !clientConfig.enabled
   ) {
     return false;
   }
@@ -1000,7 +998,8 @@ export function initAiEventSearch({
 
   const getTurnstileToken =
     createTokenProvider(
-      turnstileContainer
+      turnstileContainer,
+      clientConfig.sitekey
     );
 
   const runSearch =
@@ -1122,8 +1121,9 @@ export function initAiEventSearch({
                   query,
                   locale,
                   now:
-                    new Date()
-                      .toISOString(),
+                    formatLocalIsoWithOffset(
+                      new Date()
+                    ),
 
                   turnstileToken,
 

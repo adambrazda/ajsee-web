@@ -10,8 +10,22 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
+import {
+  resolveEventImageAnalysis
+} from '../src/event-image-analysis.js';
+
+import {
+  fetchSmsticketXml,
+  refreshSmsticketFallbackPayload
+} from '../src/smsticket-sync-resilience.js';
+
 const SMSTICKET_API_URL = 'https://www.smsticket.cz/api/public/v1.1/events';
 const OUT_FILE = path.resolve('public/data/smsticket-events.json');
+
+const IMAGE_ANALYSIS_FILE =
+  path.resolve(
+    'data/event-image-analysis/smsticket.json'
+  );
 const OUT_DIR = path.dirname(OUT_FILE);
 const AFFILIATE_PARAM = 'a_box=d4n78jv6';
 
@@ -174,7 +188,65 @@ function isFutureOrActive(event) {
   return Number.isFinite(eventDate.getTime()) && eventDate >= today;
 }
 
-function normalizeEvent(event) {
+async function readSmsticketImageAnalysisCache() {
+  const emptyCache = {
+    version: 1,
+    provider: 'smsticket',
+    assets: {}
+  };
+
+  if (
+    !existsSync(
+      IMAGE_ANALYSIS_FILE
+    )
+  ) {
+    return emptyCache;
+  }
+
+  try {
+    const raw =
+      await readFile(
+        IMAGE_ANALYSIS_FILE,
+        'utf8'
+      );
+
+    const parsed =
+      JSON.parse(
+        raw
+      );
+
+    if (
+      Number(
+        parsed?.version
+      ) !== 1 ||
+      !parsed?.assets ||
+      typeof parsed.assets !== 'object'
+    ) {
+      console.warn(
+        '[smsticket] invalid image analysis cache; using safe fallback'
+      );
+
+      return emptyCache;
+    }
+
+    return parsed;
+  } catch (error) {
+    console.warn(
+      '[smsticket] image analysis cache unavailable; using safe fallback: ' +
+      (
+        error?.message ||
+        error
+      )
+    );
+
+    return emptyCache;
+  }
+}
+
+function normalizeEvent(
+  event,
+  imageAnalysisCache = {}
+) {
   const sourceId = text(event?.id);
   const title = text(event?.name);
   const rawDescription = decodeHtmlEntities(String(event?.description || '').trim());
@@ -204,6 +276,17 @@ function normalizeEvent(event) {
 
   const image = pickPhoto(event, 'normalized');
   const imageOriginal = pickPhoto(event, 'original');
+
+  /*
+   * Presentation metadata is asset-specific.
+   * Resolve it against the same normalized image URL that
+   * event cards render; imageOriginal is provider metadata only.
+   */
+  const imagePresentation =
+    resolveEventImageAnalysis(
+      imageAnalysisCache,
+      image
+    );
 
   return {
     id: `smsticket-${sourceId}`,
@@ -236,6 +319,12 @@ function normalizeEvent(event) {
 
     image,
     imageOriginal,
+
+    ...(imagePresentation
+      ? {
+          imagePresentation
+        }
+      : {}),
 
     url: bookingUrl,
     tickets: bookingUrl,
@@ -359,12 +448,24 @@ function createSubsetPayload(payload, definition, events) {
   };
 }
 
-async function writeSmsticketPayloads(payload) {
+async function writeSmsticketPayloads(
+  payload,
+  {
+    logLabel = 'synced'
+  } = {}
+) {
   await mkdir(OUT_DIR, { recursive: true });
 
   await writeFile(OUT_FILE, JSON.stringify(payload, null, 2), 'utf8');
 
-  console.log('[smsticket] synced ' + payload.events.length + ' events -> ' + OUT_FILE);
+  console.log(
+    '[smsticket] ' +
+    logLabel +
+    ' ' +
+    payload.events.length +
+    ' events -> ' +
+    OUT_FILE
+  );
 
   for (const definition of CITY_SUBSETS) {
     const subsetEvents = payload.events.filter((event) => matchesSubsetCity(event, definition));
@@ -398,24 +499,30 @@ async function main() {
   const startedAt = new Date().toISOString();
 
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 20000);
-
-    const response = await fetch(SMSTICKET_API_URL, {
-      signal: controller.signal,
-      headers: {
-        accept: 'application/xml,text/xml;q=0.9,*/*;q=0.8',
-        'user-agent': 'AJSEE smsticket sync'
-      }
-    });
-
-    clearTimeout(timeout);
-
-    if (!response.ok) {
-      throw new Error(`smsticket API returned ${response.status}`);
-    }
-
-    const xml = await response.text();
+    const xml =
+      await fetchSmsticketXml(
+        SMSTICKET_API_URL,
+        {
+          onRetry({
+            attempt,
+            maxAttempts,
+            error
+          }) {
+            console.warn(
+              '[smsticket] request attempt ' +
+              attempt +
+              '/' +
+              maxAttempts +
+              ' failed: ' +
+              (
+                error?.message ||
+                error
+              ) +
+              '; retrying'
+            );
+          }
+        }
+      );
 
     const parser = new XMLParser({
       ignoreAttributes: false,
@@ -430,10 +537,19 @@ async function main() {
     const parsed = parser.parse(xml);
     const rawEvents = toArray(parsed?.events?.event);
 
+    const imageAnalysisCache =
+      await readSmsticketImageAnalysisCache();
+
     const events = rawEvents
       .filter((event) => !isTestEvent(event))
       .filter(isFutureOrActive)
-      .map(normalizeEvent)
+      .map(
+        (event) =>
+          normalizeEvent(
+            event,
+            imageAnalysisCache
+          )
+      )
       .filter((event) => event.sourceId && event.title?.cs && event.url && event.datetime)
       .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
 
@@ -452,7 +568,28 @@ async function main() {
     const existing = await readExistingFallback();
 
     if (existing) {
-      console.warn('[smsticket] keeping existing cached data');
+      const imageAnalysisCache =
+        await readSmsticketImageAnalysisCache();
+
+      const refreshedFallback =
+        refreshSmsticketFallbackPayload(
+          existing,
+          imageAnalysisCache,
+          startedAt
+        );
+
+      await writeSmsticketPayloads(
+        refreshedFallback,
+        {
+          logLabel:
+            'refreshed cached'
+        }
+      );
+
+      console.warn(
+        '[smsticket] keeping existing cached event data with current build-time enrichments'
+      );
+
       return;
     }
 

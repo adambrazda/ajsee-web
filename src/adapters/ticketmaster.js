@@ -21,6 +21,12 @@ import {
   deriveLegacyCategory
 } from '../taxonomy/event-taxonomy.js';
 
+import {
+  normalizeEventImageAsset,
+  resolveEventImageAsset,
+  resolveProviderImagePresentation
+} from '../event-image-resolver.js';
+
 const AJSEE_TM_PATCH_MARKER = 'AJSEE_TM_RATE_LIMIT_GUARD_20260507C';
 
 const REQUEST_CACHE_TTL_MS = 60_000;
@@ -574,58 +580,48 @@ function pickDate(ev) {
   return '';
 }
 
-function pickImage(ev) {
-  const images = Array.isArray(ev?.images) ? ev.images : [];
+function ticketmasterImageAssets(
+  ev
+) {
+  const rawImages =
+    Array.isArray(
+      ev?.images
+    )
+      ? ev.images
+      : [];
 
-  if (!images.length) return '';
+  const assets =
+    rawImages
+      .map(
+        normalizeEventImageAsset
+      )
+      .filter(Boolean);
 
-  const normalized = images
-    .map((image) => ({
-      url: String(image?.url || '').trim(),
-      width: Number(image?.width || 0),
-      height: Number(image?.height || 0),
-      ratio: String(image?.ratio || '').trim()
-    }))
-    .filter((image) => image.url);
+  if (!assets.length) {
+    return [];
+  }
 
-  if (!normalized.length) return '';
+  const nonSource =
+    assets.filter(
+      (asset) =>
+        !/_SOURCE(?:[?#]|$)/i.test(
+          asset.url
+        )
+    );
 
-  // Ticketmaster často vrací obří *_SOURCE soubory.
-  // Ty jsou nevhodné pro event card a extrémně zvedají LCP / total payload.
-  const nonSource = normalized.filter((image) => !/_SOURCE(?:[?#]|$)/i.test(image.url));
+  return nonSource.length
+    ? nonSource
+    : assets;
+}
 
-  // Pro karty chceme cca 480–640 px, ideálně 16:9.
-  const pool = nonSource.length ? nonSource : normalized;
-
-  const scored = pool
-    .map((image) => {
-      const width = image.width || 0;
-      const height = image.height || 0;
-
-      let score = 0;
-
-      // Ideál pro mobilní i desktop kartu.
-      score += width ? Math.abs(width - 480) : 900;
-
-      // Příliš malé obrázky budou rozmazané.
-      if (width && width < 280) score += 2500;
-
-      // Příliš velké obrázky zbytečně nafukují payload.
-      if (width > 800) score += 5000;
-      if (width > 1200) score += 10000;
-
-      // Preferuj 16:9, protože event card je vizuálně horizontální.
-      if (image.ratio === '16_9') score -= 250;
-      if (image.ratio && image.ratio !== '16_9') score += 250;
-
-      // Když width chybí, ale height je extrémní, penalizuj.
-      if (!width && height > 600) score += 3000;
-
-      return { image, score };
-    })
-    .sort((a, b) => a.score - b.score);
-
-  return scored[0]?.image?.url || '';
+function pickImageAsset(
+  ev
+) {
+  return resolveEventImageAsset(
+    ticketmasterImageAssets(
+      ev
+    )
+  );
 }
 
 function extractPreferredTicketmasterUrl(rawUrl = '') {
@@ -681,7 +677,18 @@ export function mapTicketmasterEvent(
     );
 
   const dt = pickDate(ev);
-  const img = pickImage(ev);
+
+  const imageAsset =
+    pickImageAsset(ev);
+
+  const img =
+    imageAsset?.url ||
+    '';
+
+  const imagePresentation =
+    resolveProviderImagePresentation(
+      imageAsset
+    );
 
   const venue = ev?._embedded?.venues?.[0] || {};
   const actualCity = venue?.city?.name || '';
@@ -771,6 +778,19 @@ export function mapTicketmasterEvent(
       name: venue?.name || ''
     },
     image: img,
+
+    ...(imageAsset
+      ? {
+          imageAsset
+        }
+      : {}),
+
+    ...(imagePresentation
+      ? {
+          imagePresentation
+        }
+      : {}),
+
     partner: 'ticketmaster',
     sourceName: 'Ticketmaster',
     url: outboundUrl,
@@ -1655,5 +1675,3 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
 }
 
 export default { fetchEvents };
-
-

@@ -1,7 +1,7 @@
 {
   "slug": "grease-the-immersive-movie-musical-london-2026",
-  "status": "approved",
-  "published": false,
+  "status": "published",
+  "published": true,
   "featured": false,
   "contentType": "review",
   "category": "theatre",
@@ -13,7 +13,7 @@
   "performanceDate": "",
   "eventDate": "",
   "reviewDate": "2026-08-31T13:05:16.610Z",
-  "publishedAt": "",
+  "publishedAt": "2026-09-07T06:37:57.936Z",
   "author": "Oya Canli",
   "rating": 4,
   "ticketUrl": "https://ajsee.tixculture.com/?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals",

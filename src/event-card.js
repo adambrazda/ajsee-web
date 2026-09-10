@@ -75,6 +75,325 @@ export function eventImageOrFallback(event = {}) {
     : FALLBACK_IMAGE;
 }
 
+const EVENT_IMAGE_CONTAIN_MAX_RATIO = 1.3;
+const eventImageFramingBound = new WeakSet();
+
+function normalizeEventImageFit(value) {
+  const fit =
+    String(value || '')
+      .trim()
+      .toLowerCase();
+
+  return fit === 'cover' ||
+    fit === 'contain'
+      ? fit
+      : 'auto';
+}
+
+function normalizeEventImageSurface(
+  value
+) {
+  const surface =
+    String(
+      value ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
+
+  return surface ===
+    'adaptive-matte'
+      ? surface
+      : 'neutral';
+}
+
+function normalizeEventImageFocalPoint(
+  value,
+  fallback = 50
+) {
+  const numeric =
+    Number(value);
+
+  if (!Number.isFinite(numeric)) {
+    return fallback;
+  }
+
+  return Math.min(
+    100,
+    Math.max(
+      0,
+      numeric
+    )
+  );
+}
+
+export function sharedEventImageFitForDimensions(
+  width,
+  height
+) {
+  const safeWidth =
+    Number(width);
+
+  const safeHeight =
+    Number(height);
+
+  if (
+    !(safeWidth > 0) ||
+    !(safeHeight > 0)
+  ) {
+    return 'cover';
+  }
+
+  return (
+    safeWidth / safeHeight
+  ) < EVENT_IMAGE_CONTAIN_MAX_RATIO
+    ? 'contain'
+    : 'cover';
+}
+
+function eventImagePresentation(
+  event = {}
+) {
+  const raw =
+    event?.imagePresentation &&
+    typeof event.imagePresentation === 'object'
+      ? event.imagePresentation
+      : {};
+
+  return {
+    fit:
+      normalizeEventImageFit(
+        raw.fit
+      ),
+
+    x:
+      normalizeEventImageFocalPoint(
+        raw.x
+      ),
+
+    y:
+      normalizeEventImageFocalPoint(
+        raw.y
+      ),
+
+    surface:
+      normalizeEventImageSurface(
+        raw.surface
+      )
+  };
+}
+
+export function sharedEventImageMatteUrl(
+  rawSource = ''
+) {
+  const source =
+    String(
+      rawSource ||
+      ''
+    ).trim();
+
+  if (
+    !source ||
+    /^(?:data|blob):/i.test(
+      source
+    )
+  ) {
+    return '';
+  }
+
+  const params =
+    new URLSearchParams({
+      url:
+        source,
+      w:
+        '1',
+      h:
+        '1',
+      fit:
+        'fill',
+      fm:
+        'webp'
+    });
+
+  return (
+    '/.netlify/images?' +
+    params.toString()
+  );
+}
+
+function syncSharedEventImageFrame(
+  image,
+  fit
+) {
+  image
+    ?.closest?.(
+      '.event-image-frame'
+    )
+    ?.setAttribute?.(
+      'data-ajsee-image-fit',
+      fit
+    );
+}
+
+function syncSharedEventImageSurface(
+  image,
+  fit
+) {
+  const frame =
+    image?.closest?.(
+      '.event-image-frame'
+    );
+
+  if (!frame) {
+    return;
+  }
+
+  const surface =
+    normalizeEventImageSurface(
+      frame.getAttribute?.(
+        'data-ajsee-image-surface'
+      )
+    );
+
+  if (
+    fit !== 'contain' ||
+    surface !== 'adaptive-matte'
+  ) {
+    frame.removeAttribute?.(
+      'data-ajsee-image-matte'
+    );
+
+    frame.style?.removeProperty?.(
+      '--aj-event-image-matte'
+    );
+
+    return;
+  }
+
+  const source =
+    String(
+      image.currentSrc ||
+      image.getAttribute?.(
+        'src'
+      ) ||
+      ''
+    ).trim();
+
+  const matteUrl =
+    sharedEventImageMatteUrl(
+      source
+    );
+
+  if (!matteUrl) {
+    return;
+  }
+
+  frame.style?.setProperty?.(
+    '--aj-event-image-matte',
+    `url("${matteUrl}")`
+  );
+
+  frame.setAttribute?.(
+    'data-ajsee-image-matte',
+    'ready'
+  );
+}
+
+export function wireSharedEventImageFraming(
+  root = globalThis.document
+) {
+  const images =
+    root?.querySelectorAll?.(
+      '.event-img'
+    ) || [];
+
+  for (const image of images) {
+    if (
+      eventImageFramingBound.has(
+        image
+      )
+    ) {
+      continue;
+    }
+
+    eventImageFramingBound.add(
+      image
+    );
+
+    const requestedFit =
+      normalizeEventImageFit(
+        image.getAttribute?.(
+          'data-ajsee-image-fit'
+        )
+      );
+
+    const applyFit = () => {
+      const fit =
+        requestedFit === 'auto'
+          ? sharedEventImageFitForDimensions(
+              image.naturalWidth,
+              image.naturalHeight
+            )
+          : requestedFit;
+
+      image.setAttribute?.(
+        'data-ajsee-image-fit',
+        fit
+      );
+
+      syncSharedEventImageFrame(
+        image,
+        fit
+      );
+
+      syncSharedEventImageSurface(
+        image,
+        fit
+      );
+    };
+
+    if (
+      requestedFit === 'cover'
+    ) {
+      applyFit();
+      continue;
+    }
+
+    if (
+      requestedFit === 'contain'
+    ) {
+      image.setAttribute?.(
+        'data-ajsee-image-fit',
+        'contain'
+      );
+
+      image
+        .closest?.(
+          '.event-image-frame'
+        )
+        ?.setAttribute?.(
+          'data-ajsee-image-fit',
+          'contain'
+        );
+    }
+
+    if (
+      image.complete &&
+      Number(image.naturalWidth) > 0 &&
+      Number(image.naturalHeight) > 0
+    ) {
+      applyFit();
+      continue;
+    }
+
+    image.addEventListener?.(
+      'load',
+      applyFit,
+      { once: true }
+    );
+  }
+}
+
 /*
  * Canonical AJSEE event-card markup.
  *
@@ -136,6 +455,22 @@ export function renderSharedEventCard({
     imageSrc ||
     eventImageOrFallback(event);
 
+  const imagePresentation =
+    eventImagePresentation(event);
+
+  const safeImageFit =
+    escapeHtml(
+      imagePresentation.fit
+    );
+
+  const safeImageSurface =
+    escapeHtml(
+      imagePresentation.surface
+    );
+
+  const safeImagePosition =
+    `${imagePresentation.x}% ${imagePresentation.y}%`;
+
   const safeModalId =
     escapeHtml(modalId);
 
@@ -157,14 +492,22 @@ export function renderSharedEventCard({
       data-event-id="${safeModalId}"
       data-event-provider="${safeProvider}"
     >
-      <img
-        src="${safeImage}"
-        alt="${titleHtml}"
-        class="event-img"
-        loading="lazy"
-        decoding="async"
-        onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
-      />
+      <div
+        class="event-image-frame"
+        data-ajsee-image-fit="${safeImageFit}"
+        data-ajsee-image-surface="${safeImageSurface}"
+      >
+        <img
+          src="${safeImage}"
+          alt="${titleHtml}"
+          class="event-img"
+          data-ajsee-image-fit="${safeImageFit}"
+          style="object-position: ${safeImagePosition};"
+          loading="lazy"
+          decoding="async"
+          onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
+        />
+      </div>
 
       <div class="event-content">
         <h3 class="event-title">${titleHtml}</h3>
@@ -486,16 +829,67 @@ export function ensureSharedEventGridStyles(
       color: var(--aj-provider-ticketmaster-text, #064c9b);
     }
 
-    .event-card .event-img {
-      display: block;
+    .event-card .event-image-frame {
+      position: relative;
+      isolation: isolate;
       width: 100%;
-      aspect-ratio: 16 / 9;
-      height: auto;
-      max-height: 260px;
-      object-fit: cover;
-      object-position: center;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
       border-radius: 18px;
       background: #eef5fb;
+    }
+
+    .event-card .event-image-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: #eef5fb;
+      opacity: 0;
+    }
+
+    .event-card .event-image-frame[
+      data-ajsee-image-fit="contain"
+    ][
+      data-ajsee-image-surface="adaptive-matte"
+    ][
+      data-ajsee-image-matte="ready"
+    ]::before {
+      background-image:
+        var(
+          --aj-event-image-matte
+        );
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      filter:
+        saturate(0.42)
+        brightness(1.08);
+      opacity: 0.52;
+    }
+
+    .event-card .event-image-frame > .event-img {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      margin-bottom: 0;
+      object-fit: cover;
+      object-position: center;
+      border-radius: inherit;
+      background: transparent;
+    }
+
+    .event-card .event-img[data-ajsee-image-fit="contain"] {
+      object-fit: contain;
+    }
+
+    .event-card .event-img[data-ajsee-image-fit="cover"],
+    .event-card .event-img[data-ajsee-image-fit="auto"] {
+      object-fit: cover;
     }
 
     @media (min-width: 768px) {
@@ -528,12 +922,6 @@ export function ensureSharedEventGridStyles(
       }
     }
 
-    @media (max-width: 760px) {
-      .event-card .event-img {
-        max-height: 220px;
-      }
-    }
-
     @media (max-width: 700px) {
       body:is([data-page="home"], [data-page="events"]) #eventsList.events-list {
         grid-template-columns: 1fr;
@@ -544,11 +932,6 @@ export function ensureSharedEventGridStyles(
       }
     }
 
-    @media (max-width: 420px) {
-      .event-card .event-img {
-        max-height: 190px;
-      }
-    }
   `;
 
   doc.head.appendChild(style);

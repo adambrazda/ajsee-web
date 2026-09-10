@@ -831,6 +831,43 @@ export function mergeExactSmsticketOccurrences(
   });
 }
 
+export function withSmsticketImagePresentation(
+  event = {}
+) {
+  const existingPresentation =
+    event?.imagePresentation;
+
+  if (
+    existingPresentation &&
+    typeof existingPresentation === 'object'
+  ) {
+    return event;
+  }
+
+  const image =
+    String(
+      event?.image ||
+      ''
+    ).trim();
+
+  if (!image) {
+    return event;
+  }
+
+  return {
+    ...event,
+
+    imagePresentation: {
+      fit: 'auto',
+      x: 50,
+      y: 50,
+      surface: 'adaptive-matte',
+      source: 'rules',
+      version: 2
+    }
+  };
+}
+
 function sortEvents(events, sort = 'nearest') {
   return [...events].sort((a, b) => {
     const da = getDateMs(a?.datetime || a?.date);
@@ -894,7 +931,11 @@ export async function fetchEvents({ filters = {} } = {}) {
     }
 
     const normalizedEvent =
-      withSmsticketTaxonomy(ev);
+      withSmsticketImagePresentation(
+        withSmsticketTaxonomy(
+          ev
+        )
+      );
 
     if (
       !matchesDiscoveryFilters(

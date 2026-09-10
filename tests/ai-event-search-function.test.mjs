@@ -28,7 +28,9 @@ function makeRequest(
   body,
   {
     method = 'POST',
-    contentType = 'application/json'
+    contentType = 'application/json',
+    url =
+      'https://deploy-preview-175--ajsee-demo.netlify.app/api/ai-event-search'
   } = {}
 ) {
   const options = {
@@ -51,7 +53,7 @@ function makeRequest(
   }
 
   return new Request(
-    'https://ajsee.example/api/ai-event-search',
+    url,
     options
   );
 }
@@ -314,6 +316,140 @@ test(
 );
 
 test(
+  'production host fails closed until server activation is explicit',
+  async () => {
+    let called =
+      false;
+
+    const handler =
+      createAiEventSearchHandler({
+        env: {
+          OPENAI_API_KEY:
+            'test-key'
+        },
+
+        fetchImpl:
+          async () => {
+            called =
+              true;
+
+            return modelResponse(
+              validIntent()
+            );
+          }
+      });
+
+    const response =
+      await handler(
+        makeRequest(
+          {
+            query:
+              'koncert',
+
+            locale:
+              'cs'
+          },
+          {
+            url:
+              'https://ajsee.cz/api/ai-event-search'
+          }
+        )
+      );
+
+    const body =
+      await bodyJson(
+        response
+      );
+
+    assert.equal(
+      response.status,
+      503
+    );
+
+    assert.equal(
+      body.code,
+      'ai-disabled'
+    );
+
+    assert.equal(
+      body.retryable,
+      false
+    );
+
+    assert.equal(
+      called,
+      false
+    );
+  }
+);
+
+test(
+  'unknown hosts stay disabled even when the production flag is enabled',
+  async () => {
+    let called =
+      false;
+
+    const handler =
+      createAiEventSearchHandler({
+        env: {
+          AI_SEARCH_ENABLED:
+            'true',
+
+          OPENAI_API_KEY:
+            'test-key'
+        },
+
+        fetchImpl:
+          async () => {
+            called =
+              true;
+
+            return modelResponse(
+              validIntent()
+            );
+          }
+      });
+
+    const response =
+      await handler(
+        makeRequest(
+          {
+            query:
+              'koncert',
+
+            locale:
+              'cs'
+          },
+          {
+            url:
+              'https://ajsee-demo.netlify.app/api/ai-event-search'
+          }
+        )
+      );
+
+    const body =
+      await bodyJson(
+        response
+      );
+
+    assert.equal(
+      response.status,
+      503
+    );
+
+    assert.equal(
+      body.code,
+      'ai-disabled'
+    );
+
+    assert.equal(
+      called,
+      false
+    );
+  }
+);
+
+test(
   'requires application/json',
   async () => {
     const handler =
@@ -366,7 +502,7 @@ test(
         makeRequest({
           query:
             'x'.repeat(
-              5_000
+              40_000
             ),
 
           locale:
@@ -382,6 +518,121 @@ test(
     assert.equal(
       called,
       false
+    );
+  }
+);
+
+test(
+  'accepts a bounded clarification request larger than the former 4 KB limit',
+  async () => {
+    const previousIntent =
+      validIntent();
+
+    previousIntent.clarification = {
+      required:
+        true,
+
+      fields: [
+        'place'
+      ],
+
+      question:
+        'Clarify place?'
+    };
+
+    previousIntent.auditPadding =
+      'x'.repeat(
+        11_480
+      );
+
+    const requestBody = {
+      query:
+        '漢'.repeat(
+          800
+        ),
+
+      locale:
+        'cs',
+
+      now:
+        '2026-09-05T11:41:00+02:00',
+
+      turnstileToken:
+        't'.repeat(
+          2_048
+        ),
+
+      clarificationContext: {
+        originalQuery:
+          '漢'.repeat(
+            800
+          ),
+
+        question:
+          '漢'.repeat(
+            500
+          ),
+
+        round:
+          1,
+
+        previousIntent
+      }
+    };
+
+    const requestBytes =
+      new TextEncoder()
+        .encode(
+          JSON.stringify(
+            requestBody
+          )
+        )
+        .byteLength;
+
+    assert.ok(
+      requestBytes >
+        20_480
+    );
+
+    assert.ok(
+      requestBytes <
+        32_768
+    );
+
+    const handler =
+      createAiEventSearchHandler({
+        env: {
+          OPENAI_API_KEY:
+            'test-key'
+        },
+
+        fetchImpl:
+          async () =>
+            modelResponse(
+              validIntent()
+            )
+      });
+
+    const response =
+      await handler(
+        makeRequest(
+          requestBody
+        )
+      );
+
+    const body =
+      await bodyJson(
+        response
+      );
+
+    assert.equal(
+      response.status,
+      200
+    );
+
+    assert.equal(
+      body.ok,
+      true
     );
   }
 );

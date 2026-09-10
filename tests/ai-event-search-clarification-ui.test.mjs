@@ -218,3 +218,33 @@ test(
     );
   }
 );
+
+
+
+test(
+  'clarification question is rendered before its quick actions',
+  () => {
+    const statusIndex =
+      controller.indexOf(
+        'class="ai-event-search__status"'
+      );
+
+    const actionsIndex =
+      controller.indexOf(
+        'class="ai-event-search__clarification-actions"'
+      );
+
+    assert.ok(
+      statusIndex >= 0
+    );
+
+    assert.ok(
+      actionsIndex >= 0
+    );
+
+    assert.ok(
+      statusIndex <
+        actionsIndex
+    );
+  }
+);

@@ -13,6 +13,15 @@ const controller =
     'utf8'
   );
 
+const runtimeConfig =
+  await readFile(
+    new URL(
+      '../src/ai-search/runtime-config.js',
+      import.meta.url
+    ),
+    'utf8'
+  );
+
 const homeEntry =
   await readFile(
     new URL(
@@ -32,16 +41,26 @@ const eventsEntry =
   );
 
 test(
-  'AI search UI is fail-closed to AJSEE deploy previews',
+  'AI search UI is fail-closed unless preview or explicit production config enables it',
   () => {
     assert.match(
-      controller,
-      /deploy-preview-\\d\+--ajsee-demo\\\.netlify\\\.app/
+      runtimeConfig,
+      /deploy-preview-\\d\+--ajsee-demo\\.netlify\\.app/
+    );
+
+    assert.match(
+      runtimeConfig,
+      /1x00000000000000000000AA/
     );
 
     assert.match(
       controller,
-      /1x00000000000000000000AA/
+      /VITE_AI_SEARCH_ENABLED/
+    );
+
+    assert.match(
+      controller,
+      /VITE_TURNSTILE_SITE_KEY/
     );
 
     assert.doesNotMatch(

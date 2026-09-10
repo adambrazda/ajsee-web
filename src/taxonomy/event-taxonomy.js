@@ -886,6 +886,227 @@ export function buildTicketmasterTaxonomy(
   };
 }
 
+const COLOSSEUM_TYPE_PATTERN =
+  /(Prohlídky|Pro děti|Muzikál|Festival|Divadlo|Hudba|Ostatní|Kino)/g;
+
+export function tokenizeColosseumTicketType(
+  value = ''
+) {
+  const raw =
+    text(value);
+
+  if (!raw) {
+    return [];
+  }
+
+  return unique(
+    raw.match(
+      COLOSSEUM_TYPE_PATTERN
+    ) || []
+  );
+}
+
+export function buildColosseumTicketTaxonomy(
+  event = {}
+) {
+  const sourceRawCategories =
+    rawValues(
+      event?.sourceMeta?.rawCategories
+    );
+
+  /*
+   * New normalized feed stores each provider category
+   * independently. Older/generated fixtures may still expose
+   * categories/types as concatenated strings, therefore those
+   * values are tokenized only as a compatibility fallback.
+   */
+  const fallbackCategoryValues =
+    rawValues(
+      event?.categories ??
+      event?.types
+    );
+
+  const fallbackCategories =
+    unique(
+      fallbackCategoryValues
+        .flatMap(
+          (value) =>
+            tokenizeColosseumTicketType(
+              value
+            )
+        )
+    );
+
+  const rawType =
+    text(
+      event?.sourceMeta?.rawType ||
+      (
+        sourceRawCategories.length
+          ? sourceRawCategories.join('')
+          : ''
+      ) ||
+      (
+        Array.isArray(
+          event?.types
+        )
+          ? event.types.join('')
+          : event?.type
+      ) ||
+      event?.category
+    );
+
+  const rawCategories =
+    sourceRawCategories.length
+      ? sourceRawCategories
+      : fallbackCategories.length
+        ? fallbackCategories
+        : tokenizeColosseumTicketType(
+            rawType
+          );
+
+  const eventTypes = [];
+  const genres = [];
+  const audiences = [];
+  const domains = [];
+
+  if (
+    rawCategories.includes(
+      'Festival'
+    )
+  ) {
+    eventTypes.push(
+      'festival'
+    );
+  }
+
+  if (
+    rawCategories.includes(
+      'Divadlo'
+    ) ||
+    rawCategories.includes(
+      'Muzikál'
+    )
+  ) {
+    eventTypes.push(
+      'theatre'
+    );
+
+    domains.push(
+      'stage'
+    );
+  }
+
+  if (
+    rawCategories.includes(
+      'Hudba'
+    )
+  ) {
+    eventTypes.push(
+      'concert'
+    );
+
+    domains.push(
+      'music'
+    );
+  }
+
+  if (
+    rawCategories.includes(
+      'Prohlídky'
+    )
+  ) {
+    eventTypes.push(
+      'tour'
+    );
+
+    domains.push(
+      'experience'
+    );
+  }
+
+  if (
+    rawCategories.includes(
+      'Kino'
+    )
+  ) {
+    eventTypes.push(
+      'cinema'
+    );
+
+    domains.push(
+      'film'
+    );
+  }
+
+  if (
+    rawCategories.includes(
+      'Muzikál'
+    )
+  ) {
+    genres.push(
+      'musical'
+    );
+  }
+
+  if (
+    rawCategories.includes(
+      'Pro děti'
+    )
+  ) {
+    genres.push(
+      'children'
+    );
+
+    audiences.push(
+      'family'
+    );
+  }
+
+  return {
+    version:
+      EVENT_TAXONOMY_VERSION,
+
+    domains:
+      unique(
+        domains.length
+          ? domains
+          : ['other']
+      ),
+
+    eventTypes:
+      unique(
+        eventTypes
+      ),
+
+    genres:
+      unique(
+        genres
+      ),
+
+    audiences:
+      unique(
+        audiences
+      ),
+
+    source: {
+      provider:
+        'colosseumticket',
+
+      rawCategory:
+        rawType,
+
+      rawCategories,
+
+      rawGenres: [],
+
+      rawTypes:
+        rawType
+          ? [rawType]
+          : []
+    }
+  };
+}
+
 export function buildEventTaxonomy(
   event = {},
   provider = ''
@@ -913,6 +1134,16 @@ export function buildEventTaxonomy(
     )
   ) {
     return buildTicketmasterTaxonomy(
+      event
+    );
+  }
+
+  if (
+    normalizedProvider.includes(
+      'colosseum'
+    )
+  ) {
+    return buildColosseumTicketTaxonomy(
       event
     );
   }

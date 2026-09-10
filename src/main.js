@@ -3478,6 +3478,7 @@ function ajseeEventProviderKey(ev = {}) {
   if (!raw) return '';
   if (raw.includes('smsticket')) return 'smsticket';
   if (raw.includes('ticketmaster')) return 'ticketmaster';
+  if (raw.includes('colosseum')) return 'colosseumticket';
 
   return raw
     .replace(/[^a-z0-9_-]+/g, '-')
@@ -3489,6 +3490,7 @@ function ajseeEventProviderLabel(ev = {}, lang = getUILang()) {
 
   if (key === 'smsticket') return 'smsticket';
   if (key === 'ticketmaster') return 'Ticketmaster';
+  if (key === 'colosseumticket') return 'ColosseumTicket';
 
   return '';
 }
@@ -4698,12 +4700,13 @@ if (!G.flags.mainDomReadyBound) {
     const fromCard = String(card?.dataset?.eventProvider || '').trim().toLowerCase();
     if (fromCard) return fromCard;
 
-    const link = card?.querySelector?.('.js-partner-click, a[href*="smsticket.cz"], a[href*="ticketmaster"]');
+    const link = card?.querySelector?.('.js-partner-click, a[href*="smsticket.cz"], a[href*="ticketmaster"], a[href*="colosseumticket.cz"]');
     const fromLink = String(link?.dataset?.partner || '').trim().toLowerCase();
     const href = String(link?.getAttribute?.('href') || '').toLowerCase();
 
     if (fromLink.includes('smsticket') || href.includes('smsticket.cz')) return 'smsticket';
     if (fromLink.includes('ticketmaster') || href.includes('ticketmaster')) return 'ticketmaster';
+    if (fromLink.includes('colosseum') || href.includes('colosseumticket.cz')) return 'colosseumticket';
 
     return '';
   }
@@ -4711,6 +4714,7 @@ if (!G.flags.mainDomReadyBound) {
   function labelForPartner(partner) {
     if (partner === 'smsticket') return 'smsticket';
     if (partner === 'ticketmaster') return 'Ticketmaster';
+    if (partner === 'colosseumticket') return 'ColosseumTicket';
     return '';
   }
 

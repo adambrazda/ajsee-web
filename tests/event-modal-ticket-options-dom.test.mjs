@@ -952,3 +952,122 @@ test(
     );
   }
 );
+
+test(
+  'tracks ColosseumTicket as the selected seller in a mixed-provider modal',
+  async () => {
+    window.dataLayer = [];
+
+    await openEventModal(
+      createEvent({
+        ticketOptions: [
+          {
+            url:
+              'https://www.smsticket.cz/vstupenky/69190-test',
+
+            priceFrom:
+              '799 Kč',
+
+            currency:
+              'CZK',
+
+            provider:
+              'smsticket',
+          },
+
+          {
+            url:
+              'https://colosseumticket.cz/cs/akce/test',
+
+            priceFrom:
+              '799 Kč',
+
+            currency:
+              'CZK',
+
+            provider:
+              'colosseumticket',
+          },
+        ],
+      }),
+      'cs'
+    );
+
+    const links =
+      getRenderedOptionLinks();
+
+    assert.equal(
+      links.length,
+      2
+    );
+
+    assert.match(
+      links[0].textContent,
+      /SMS Ticket/
+    );
+
+    assert.match(
+      links[1].textContent,
+      /ColosseumTicket/
+    );
+
+    assert.equal(
+      links[0].dataset.partner,
+      'smsticket'
+    );
+
+    assert.equal(
+      links[1].dataset.partner,
+      'colosseumticket'
+    );
+
+    assert.equal(
+      links[1].dataset.ticketOptionIndex,
+      '2'
+    );
+
+    clickWithoutNavigation(
+      links[1]
+    );
+
+    const payload =
+      window.dataLayer.at(
+        -1
+      );
+
+    assert.ok(
+      payload,
+      'partner_click payload must be emitted'
+    );
+
+    assert.equal(
+      payload.event,
+      'partner_click'
+    );
+
+    assert.equal(
+      payload.partner,
+      'colosseumticket'
+    );
+
+    assert.equal(
+      payload.event_provider,
+      'colosseumticket'
+    );
+
+    assert.equal(
+      payload.ticket_option_index,
+      '2'
+    );
+
+    assert.equal(
+      payload.ticket_price_from,
+      '799 Kč'
+    );
+
+    assert.equal(
+      payload.ticket_currency,
+      'CZK'
+    );
+  }
+);

@@ -33,3 +33,6 @@ _local-debug-archive/
 # Generated SMS Ticket city subset feeds
 public/data/smsticket-events-*.json
 review-preview/
+
+# Generated ColosseumTicket feeds
+public/data/colosseumticket-events*.json

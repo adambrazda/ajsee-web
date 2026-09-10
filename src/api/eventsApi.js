@@ -46,6 +46,12 @@ const isDev =
 // do not render SeatPlan cards, and do not run SeatPlan-specific boosting.
 const ENABLE_SEATPLAN = false;
 
+// AJSEE_COLOSSEUM_DISABLED_PENDING_PROVIDER_CONFIRMATION_v1
+// Keep the complete provider integration available, but do not
+// expose ColosseumTicket inventory until the remaining feed,
+// deep-link and content-use rules are explicitly confirmed.
+const ENABLE_COLOSSEUMTICKET = false;
+
 // ------- Utils -------
 
 /** RobustnĂ­ pĹ™evod na timestamp (ms); vracĂ­ NaN, pokud nelze pĹ™evĂ©st. */
@@ -925,28 +931,30 @@ if (!ajseeSkipSmsTicket) {
 // - explicit non-CZ and Near Me queries are rejected by the adapter
 //   before any Colosseum static feed is loaded.
 // - provider failure must never abort the other providers.
-try {
-  const colosseumticket =
-    await fetchColosseumTicketEvents({
-      locale: loc,
-      filters: localProviderFilters
-    });
+if (ENABLE_COLOSSEUMTICKET) {
+  try {
+    const colosseumticket =
+      await fetchColosseumTicketEvents({
+        locale: loc,
+        filters: localProviderFilters
+      });
 
-  if (
-    Array.isArray(
-      colosseumticket
-    )
-  ) {
-    all =
-      all.concat(
+    if (
+      Array.isArray(
         colosseumticket
-      );
+      )
+    ) {
+      all =
+        all.concat(
+          colosseumticket
+        );
+    }
+  } catch (e) {
+    console.warn(
+      '[eventsApi] ColosseumTicket fetch failed:',
+      e
+    );
   }
-} catch (e) {
-  console.warn(
-    '[eventsApi] ColosseumTicket fetch failed:',
-    e
-  );
 }
 
 // --- SeatPlan ---

@@ -125,3 +125,41 @@ test(
     );
   }
 );
+
+
+test(
+  'Colosseum runtime remains disabled until explicit activation',
+  () => {
+    assert.match(
+      eventsApiSource,
+      /const ENABLE_COLOSSEUMTICKET\s*=\s*false;/
+    );
+
+    const providerStart =
+      eventsApiSource.indexOf(
+        '// --- ColosseumTicket ---'
+      );
+
+    const providerEnd =
+      eventsApiSource.indexOf(
+        '// --- SeatPlan ---',
+        providerStart
+      );
+
+    assert.ok(
+      providerStart >= 0 &&
+      providerEnd > providerStart
+    );
+
+    const providerBlock =
+      eventsApiSource.slice(
+        providerStart,
+        providerEnd
+      );
+
+    assert.match(
+      providerBlock,
+      /if\s*\(\s*ENABLE_COLOSSEUMTICKET\s*\)/
+    );
+  }
+);

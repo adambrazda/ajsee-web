@@ -206,7 +206,7 @@ test(
         imageurl:
           'https://example.com/image.jpg',
         url:
-          `https://example.com/${id}`,
+          `https://colosseumticket.cz/cs/akce/${id}`,
 
         'TERMÍNY': {
           'TERMÍN': {
@@ -242,7 +242,7 @@ test(
               note:
                 '',
               url_objednavka:
-                `https://example.com/${id}`
+                `https://colosseumticket.cz/cs/akce/${id}`
             }
           }
         }
@@ -394,7 +394,7 @@ test(
             'https://example.com/image.jpg',
 
           url:
-            'https://example.com/event',
+            'https://colosseumticket.cz/cs/akce/event',
 
           'TERMÍNY': {
             'TERMÍN': {
@@ -437,7 +437,7 @@ test(
                   '',
 
                 url_objednavka:
-                  'https://example.com/event'
+                  'https://colosseumticket.cz/cs/akce/event'
               }
             }
           }

@@ -704,6 +704,192 @@ function normalizeSeatsStatus(value) {
   );
 }
 
+
+const COLOSSEUMTICKET_PURCHASE_HOSTS =
+  new Set([
+    'colosseumticket.cz',
+    'www.colosseumticket.cz'
+  ]);
+
+
+export function normalizeColosseumPurchaseUrl(
+  value
+) {
+  const raw =
+    text(
+      value
+    );
+
+  if (!raw) {
+    return {
+      url:
+        '',
+
+      rejectionReason:
+        'missingPurchaseUrl'
+    };
+  }
+
+  let parsed;
+
+  try {
+    parsed =
+      new URL(
+        raw
+      );
+  } catch {
+    return {
+      url:
+        '',
+
+      rejectionReason:
+        'malformedPurchaseUrl'
+    };
+  }
+
+  if (
+    parsed.protocol !==
+    'https:'
+  ) {
+    return {
+      url:
+        '',
+
+      rejectionReason:
+        'insecurePurchaseUrl'
+    };
+  }
+
+  if (
+    parsed.username ||
+    parsed.password
+  ) {
+    return {
+      url:
+        '',
+
+      rejectionReason:
+        'credentialedPurchaseUrl'
+    };
+  }
+
+  if (
+    parsed.port &&
+    parsed.port !==
+      '443'
+  ) {
+    return {
+      url:
+        '',
+
+      rejectionReason:
+        'unexpectedPurchasePort'
+    };
+  }
+
+  const hostname =
+    text(
+      parsed.hostname
+    )
+      .toLowerCase()
+      .replace(
+        /\.$/,
+        ''
+      );
+
+  if (
+    !COLOSSEUMTICKET_PURCHASE_HOSTS.has(
+      hostname
+    )
+  ) {
+    return {
+      url:
+        '',
+
+      rejectionReason:
+        'untrustedPurchaseHost'
+    };
+  }
+
+  /*
+   * Preserve the provider-supplied deep link exactly.
+   *
+   * Affiliate parameters are deliberately NOT added here
+   * until ColosseumTicket confirms their deep-link contract.
+   */
+  return {
+    url:
+      raw,
+
+    rejectionReason:
+      ''
+  };
+}
+
+
+export function classifyColosseumPrice(
+  value
+) {
+  const raw =
+    text(
+      value
+    );
+
+  const parsed =
+    parseColosseumPrice(
+      raw
+    );
+
+  if (!raw) {
+    return {
+      state:
+        'missing',
+
+      parsed
+    };
+  }
+
+  if (
+    parsed.min === null ||
+    !parsed.currency ||
+    (
+      parsed.max !== null &&
+      parsed.max <
+        parsed.min
+    )
+  ) {
+    return {
+      state:
+        'unparseable',
+
+      parsed
+    };
+  }
+
+  /*
+   * 0 Kč is not treated as free until provider semantics
+   * are explicitly confirmed.
+   */
+  if (
+    parsed.min <= 0
+  ) {
+    return {
+      state:
+        'zero',
+
+      parsed
+    };
+  }
+
+  return {
+    state:
+      'known',
+
+    parsed
+  };
+}
+
+
 function normalizeOccurrence(
   parent,
   term
@@ -730,14 +916,14 @@ function normalizeOccurrence(
 
   const rawCategories =
     providerCategories.map(
-      (category) =>
+      category =>
         category.label
     );
 
   const rawCategoryIds =
     providerCategories
       .map(
-        (category) =>
+        category =>
           category.id
       )
       .filter(Boolean);
@@ -767,9 +953,14 @@ function normalizeOccurrence(
       parent
     );
 
+  const rawDate =
+    text(
+      term?.eventdate?.datefrom
+    );
+
   const date =
     parseDate(
-      term?.eventdate?.datefrom
+      rawDate
     );
 
   const time =
@@ -802,15 +993,18 @@ function normalizeOccurrence(
       term?.ADDRESS
     );
 
-  const url =
-    text(
+  const purchase =
+    normalizeColosseumPurchaseUrl(
       term?.eventdate?.url_objednavka
     );
 
-  const price =
-    parseColosseumPrice(
+  const priceResult =
+    classifyColosseumPrice(
       term?.CENA
     );
+
+  const price =
+    priceResult.parsed;
 
   const parentPrice =
     parseColosseumPrice(
@@ -830,23 +1024,71 @@ function normalizeOccurrence(
       seatsSource
     );
 
-  if (
-    !providerEventId ||
-    !providerOccurrenceId ||
-    !title ||
-    !datetime ||
-    !venueName ||
-    !url ||
-    price.min === null ||
-    !price.currency
+  let rejectionReason =
+    '';
+
+  if (!providerEventId) {
+    rejectionReason =
+      'missingProviderEventId';
+  } else if (!providerOccurrenceId) {
+    rejectionReason =
+      'missingProviderOccurrenceId';
+  } else if (!title) {
+    rejectionReason =
+      'missingTitle';
+  } else if (
+    !rawDate ||
+    !datetime
   ) {
-    return null;
+    rejectionReason =
+      'missingOrInvalidDate';
+  } else if (!venueName) {
+    rejectionReason =
+      'missingVenue';
+  } else if (
+    purchase.rejectionReason
+  ) {
+    rejectionReason =
+      purchase.rejectionReason;
   }
+
+  if (rejectionReason) {
+    return {
+      event:
+        null,
+
+      rejectionReason,
+
+      priceState:
+        priceResult.state
+    };
+  }
+
+  const hasKnownPrice =
+    priceResult.state ===
+      'known';
+
+  const publicPrice =
+    hasKnownPrice
+      ? price
+      : {
+          raw:
+            '',
+
+          min:
+            null,
+
+          max:
+            null,
+
+          currency:
+            ''
+        };
 
   const sourceId =
     `${providerEventId}:${providerOccurrenceId}`;
 
-  return {
+  const event = {
     id:
       `colosseumticket-${providerEventId}-${providerOccurrenceId}`,
 
@@ -865,13 +1107,15 @@ function normalizeOccurrence(
     providerOccurrenceId,
 
     title: {
-      cs: title
+      cs:
+        title
     },
 
     description:
       description
         ? {
-            cs: description
+            cs:
+              description
           }
         : {},
 
@@ -882,17 +1126,19 @@ function normalizeOccurrence(
     time,
 
     /*
-     * The provider feed does not expose a country field.
-     * Do not manufacture canonical geography metadata here.
-     * Provider market scope is enforced by the adapter.
+     * Provider XML does not expose a country field.
+     * Do not manufacture canonical geography metadata.
      */
     location: {
       city
     },
 
     venue: {
-      name: venueName,
+      name:
+        venueName,
+
       city,
+
       address: {
         street
       }
@@ -901,42 +1147,60 @@ function normalizeOccurrence(
     address,
 
     image,
+
     gallery,
 
-    url,
-    tickets: url,
-    rawUrl: url,
+    url:
+      purchase.url,
 
+    tickets:
+      purchase.url,
+
+    rawUrl:
+      purchase.url,
+
+    /*
+     * Zero, missing and unparseable prices remain unknown
+     * publicly rather than being interpreted as free.
+     */
     priceFrom:
-      price.raw,
+      publicPrice.raw,
 
     currency:
-      price.currency,
+      publicPrice.currency,
 
     price: {
-      min: price.min,
-      max: price.max,
+      min:
+        publicPrice.min,
+
+      max:
+        publicPrice.max,
+
       currency:
-        price.currency
+        publicPrice.currency
     },
 
-    priceOptions: [
-      {
-        amount:
-          price.min,
-        currency:
-          price.currency
-      }
-    ],
+    priceOptions:
+      hasKnownPrice
+        ? [
+            {
+              amount:
+                publicPrice.min,
+
+              currency:
+                publicPrice.currency
+            }
+          ]
+        : [],
 
     seats,
 
     /*
-     * The provider has not yet confirmed whether seats=0
-     * means sold out. Preserve the value only; do not derive
-     * availability from it.
+     * seats=0 semantics are not confirmed.
+     * Preserve source data without deriving availability.
      */
-    availability: null,
+    availability:
+      null,
 
     categories:
       rawCategories,
@@ -951,26 +1215,58 @@ function normalizeOccurrence(
 
     sourceMeta: {
       rawType,
+
       rawCategories,
+
       rawCategoryIds,
+
       seatsStatus,
+
+      termPriceRaw:
+        price.raw,
+
+      termPriceMin:
+        price.min,
+
+      termPriceMax:
+        price.max,
+
+      priceState:
+        priceResult.state,
+
       parentPrice:
         parentPrice.raw,
+
       parentPriceMin:
         parentPrice.min,
+
       parentPriceMax:
         parentPrice.max,
+
       parentUrl:
         text(
           parent?.url
         ),
+
       note:
         text(
           term?.eventdate?.note
         )
     }
   };
+
+  return {
+    event,
+
+    rejectionReason:
+      '',
+
+    priceState:
+      priceResult.state
+  };
 }
+
+
 
 export function normalizeColosseumFeed(
   rawEvents
@@ -984,9 +1280,63 @@ export function normalizeColosseumFeed(
   let missingCityOccurrences = 0;
   let missingCategoryParents = 0;
 
+  const rejectionReasons = {
+    missingProviderEventId:
+      0,
+
+    missingProviderOccurrenceId:
+      0,
+
+    missingTitle:
+      0,
+
+    missingOrInvalidDate:
+      0,
+
+    missingVenue:
+      0,
+
+    missingPurchaseUrl:
+      0,
+
+    malformedPurchaseUrl:
+      0,
+
+    insecurePurchaseUrl:
+      0,
+
+    credentialedPurchaseUrl:
+      0,
+
+    unexpectedPurchasePort:
+      0,
+
+    untrustedPurchaseHost:
+      0
+  };
+
+  const priceDiagnostics = {
+    known:
+      0,
+
+    zero:
+      0,
+
+    missing:
+      0,
+
+    unparseable:
+      0,
+
+    unknown:
+      0
+  };
+
   for (
     const parent of
-    toArray(rawEvents)
+    toArray(
+      rawEvents
+    )
   ) {
     const parentCategories =
       normalizeProviderCategories(
@@ -996,7 +1346,8 @@ export function normalizeColosseumFeed(
     if (
       !parentCategories.length
     ) {
-      missingCategoryParents += 1;
+      missingCategoryParents +=
+        1;
     }
 
     const terms =
@@ -1005,11 +1356,16 @@ export function normalizeColosseumFeed(
       );
 
     if (!terms.length) {
-      zeroTermParents += 1;
+      zeroTermParents +=
+        1;
+
       continue;
     }
 
-    for (const term of terms) {
+    for (
+      const term of
+      terms
+    ) {
       const rawTermId =
         text(
           term?.ID_TERMIN
@@ -1028,16 +1384,63 @@ export function normalizeColosseumFeed(
         );
       }
 
-      const event =
+      const normalized =
         normalizeOccurrence(
           parent,
           term
         );
 
-      if (!event) {
-        rejectedOccurrences += 1;
+      const priceState =
+        normalized.priceState;
+
+      if (
+        priceState &&
+        priceState !==
+          'unknown' &&
+        Object.hasOwn(
+          priceDiagnostics,
+          priceState
+        )
+      ) {
+        priceDiagnostics[
+          priceState
+        ] +=
+          1;
+      }
+
+      if (
+        priceState &&
+        priceState !==
+          'known'
+      ) {
+        priceDiagnostics.unknown +=
+          1;
+      }
+
+      if (
+        !normalized.event
+      ) {
+        rejectedOccurrences +=
+          1;
+
+        if (
+          normalized.rejectionReason &&
+          Object.hasOwn(
+            rejectionReasons,
+            normalized.rejectionReason
+          )
+        ) {
+          rejectionReasons[
+            normalized.rejectionReason
+          ] +=
+            1;
+        }
+
         continue;
       }
+
+      const event =
+        normalized.event;
 
       if (
         ids.has(
@@ -1056,7 +1459,8 @@ export function normalizeColosseumFeed(
       if (
         !event.location.city
       ) {
-        missingCityOccurrences += 1;
+        missingCityOccurrences +=
+          1;
       }
 
       events.push(
@@ -1091,7 +1495,10 @@ export function normalizeColosseumFeed(
           )
         );
 
-      if (dateDifference !== 0) {
+      if (
+        dateDifference !==
+          0
+      ) {
         return dateDifference;
       }
 
@@ -1121,14 +1528,19 @@ export function normalizeColosseumFeed(
 
       rejectedOccurrences,
 
+      rejectionReasons,
+
       missingCityOccurrences,
 
       missingCategoryParents,
+
+      priceDiagnostics,
 
       duplicateRawTermIds
     }
   };
 }
+
 
 function matchesSubsetCity(
   event,

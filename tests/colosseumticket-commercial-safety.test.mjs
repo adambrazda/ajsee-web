@@ -4,7 +4,8 @@ import test from 'node:test';
 
 import {
   normalizeColosseumFeed,
-  normalizeColosseumPurchaseUrl
+  normalizeColosseumPurchaseUrl,
+  requireColosseumAffiliateBox
 } from '../scripts/sync-colosseumticket-events.mjs';
 
 
@@ -346,7 +347,7 @@ test(
 
 
 test(
-  'approved ColosseumTicket HTTPS hosts are preserved without affiliate rewriting',
+  'approved ColosseumTicket HTTPS hosts remain unchanged when affiliate mode is omitted',
   () => {
     for (
       const raw of
@@ -368,5 +369,161 @@ test(
         }
       );
     }
+  }
+);
+
+
+test(
+  'affiliate a_box is appended or replaced without losing provider parameters',
+  () => {
+    const result =
+      normalizeColosseumPurchaseUrl(
+        'https://colosseumticket.cz/cs/akce/test?foo=bar&a_box=old-value',
+        {
+          affiliateBox:
+            'ajsee-test-affiliate'
+        }
+      );
+
+    assert.equal(
+      result.rejectionReason,
+      ''
+    );
+
+    const url =
+      new URL(
+        result.url
+      );
+
+    assert.equal(
+      url.protocol,
+      'https:'
+    );
+
+    assert.equal(
+      url.hostname,
+      'colosseumticket.cz'
+    );
+
+    assert.equal(
+      url.searchParams.get(
+        'foo'
+      ),
+      'bar'
+    );
+
+    assert.equal(
+      url.searchParams.get(
+        'a_box'
+      ),
+      'ajsee-test-affiliate'
+    );
+
+    assert.equal(
+      url.searchParams.getAll(
+        'a_box'
+      ).length,
+      1
+    );
+  }
+);
+
+
+test(
+  'production affiliate configuration rejects missing or unsafe values',
+  () => {
+    assert.throws(
+      () =>
+        requireColosseumAffiliateBox(
+          ''
+        ),
+      /COLOSSEUMTICKET_A_BOX/
+    );
+
+    assert.throws(
+      () =>
+        requireColosseumAffiliateBox(
+          'bad value'
+        ),
+      /invalid/
+    );
+
+    assert.equal(
+      requireColosseumAffiliateBox(
+        'valid_test-value'
+      ),
+      'valid_test-value'
+    );
+  }
+);
+
+
+test(
+  'feed normalization applies affiliate URLs and suppresses provider images',
+  () => {
+    const parent =
+      rawParent({
+        id:
+          'affiliate-image-safety'
+      });
+
+    parent.imageurl =
+      'https://example.invalid/provider-image.jpg';
+
+    parent.GALLERY =
+      [
+        'https://example.invalid/gallery-image.jpg'
+      ];
+
+    const result =
+      normalizeColosseumFeed(
+        [
+          parent
+        ],
+        {
+          affiliateBox:
+            'ajsee-test-affiliate'
+        }
+      );
+
+    assert.equal(
+      result.events.length,
+      1
+    );
+
+    const event =
+      result.events[0];
+
+    const purchaseUrl =
+      new URL(
+        event.url
+      );
+
+    assert.equal(
+      purchaseUrl.searchParams.get(
+        'a_box'
+      ),
+      'ajsee-test-affiliate'
+    );
+
+    assert.equal(
+      event.tickets,
+      event.url
+    );
+
+    assert.equal(
+      event.rawUrl,
+      event.url
+    );
+
+    assert.equal(
+      event.image,
+      ''
+    );
+
+    assert.deepEqual(
+      event.gallery,
+      []
+    );
   }
 );

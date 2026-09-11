@@ -712,8 +712,61 @@ const COLOSSEUMTICKET_PURCHASE_HOSTS =
   ]);
 
 
-export function normalizeColosseumPurchaseUrl(
+export function normalizeColosseumAffiliateBox(
   value
+) {
+  const raw =
+    text(
+      value
+    );
+
+  if (!raw) {
+    return '';
+  }
+
+  /*
+   * Do not assume a provider-specific identifier shape.
+   * URLSearchParams performs escaping for us.
+   * Only reject control/whitespace data and unreasonable size.
+   */
+  if (
+    raw.length > 256 ||
+    /[\u0000-\u001f\u007f\s]/.test(
+      raw
+    )
+  ) {
+    throw new Error(
+      'ColosseumTicket affiliate a_box value is invalid.'
+    );
+  }
+
+  return raw;
+}
+
+
+export function requireColosseumAffiliateBox(
+  value
+) {
+  const normalized =
+    normalizeColosseumAffiliateBox(
+      value
+    );
+
+  if (!normalized) {
+    throw new Error(
+      'COLOSSEUMTICKET_A_BOX is required for ColosseumTicket production sync.'
+    );
+  }
+
+  return normalized;
+}
+
+
+export function normalizeColosseumPurchaseUrl(
+  value,
+  {
+    affiliateBox = ''
+  } = {}
 ) {
   const raw =
     text(
@@ -811,15 +864,37 @@ export function normalizeColosseumPurchaseUrl(
     };
   }
 
+  const normalizedAffiliateBox =
+    normalizeColosseumAffiliateBox(
+      affiliateBox
+    );
+
+  if (!normalizedAffiliateBox) {
+    /*
+     * Pure normalization/tests may intentionally omit
+     * affiliate configuration.
+     */
+    return {
+      url:
+        raw,
+
+      rejectionReason:
+        ''
+    };
+  }
+
   /*
-   * Preserve the provider-supplied deep link exactly.
-   *
-   * Affiliate parameters are deliberately NOT added here
-   * until ColosseumTicket confirms their deep-link contract.
+   * URLSearchParams.set guarantees exactly one a_box value
+   * and preserves all unrelated provider query parameters.
    */
+  parsed.searchParams.set(
+    'a_box',
+    normalizedAffiliateBox
+  );
+
   return {
     url:
-      raw,
+      parsed.href,
 
     rejectionReason:
       ''
@@ -892,7 +967,8 @@ export function classifyColosseumPrice(
 
 function normalizeOccurrence(
   parent,
-  term
+  term,
+  options = {}
 ) {
   const providerEventId =
     text(
@@ -995,7 +1071,8 @@ function normalizeOccurrence(
 
   const purchase =
     normalizeColosseumPurchaseUrl(
-      term?.eventdate?.url_objednavka
+      term?.eventdate?.url_objednavka,
+      options
     );
 
   const priceResult =
@@ -1146,9 +1223,11 @@ function normalizeOccurrence(
 
     address,
 
-    image,
+    image:
+      '',
 
-    gallery,
+    gallery:
+      [],
 
     url:
       purchase.url,
@@ -1269,7 +1348,8 @@ function normalizeOccurrence(
 
 
 export function normalizeColosseumFeed(
-  rawEvents
+  rawEvents,
+  options = {}
 ) {
   const events = [];
   const ids = new Set();
@@ -1387,7 +1467,8 @@ export function normalizeColosseumFeed(
       const normalized =
         normalizeOccurrence(
           parent,
-          term
+          term,
+          options
         );
 
       const priceState =
@@ -2041,9 +2122,18 @@ export async function runColosseumSync() {
         source.xml
       );
 
+    const affiliateBoxForSync =
+      requireColosseumAffiliateBox(
+        process.env.COLOSSEUMTICKET_A_BOX
+      );
+
     const normalized =
       normalizeColosseumFeed(
-        rawEvents
+        rawEvents,
+        {
+          affiliateBox:
+            affiliateBoxForSync
+        }
       );
 
     if (

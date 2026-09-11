@@ -46,11 +46,11 @@ const isDev =
 // do not render SeatPlan cards, and do not run SeatPlan-specific boosting.
 const ENABLE_SEATPLAN = false;
 
-// AJSEE_COLOSSEUM_DISABLED_PENDING_PROVIDER_CONFIRMATION_v1
-// Keep the complete provider integration available, but do not
-// expose ColosseumTicket inventory until the remaining feed,
-// deep-link and content-use rules are explicitly confirmed.
-const ENABLE_COLOSSEUMTICKET = false;
+// AJSEE_COLOSSEUM_PRODUCTION_ACTIVATION_v1
+// Czech ColosseumTicket inventory is active.
+// Commercial URLs are generated during the build with a_box.
+// Provider images remain disabled until content-use rights are confirmed.
+const ENABLE_COLOSSEUMTICKET = true;
 
 // ------- Utils -------
 

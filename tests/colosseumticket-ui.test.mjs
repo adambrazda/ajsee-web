@@ -189,3 +189,24 @@ test(
     );
   }
 );
+
+
+test(
+  'modal fallback keeps AJSEE artwork contained',
+  () => {
+    assert.match(
+      eventModal,
+      /\.modal-image\.modal-image--fallback\s*\{[\s\S]*?object-fit:\s*contain;/
+    );
+
+    assert.match(
+      eventModal,
+      /imageEl\.classList\.toggle\([\s\S]*?'modal-image--fallback'[\s\S]*?image === imageFallback/
+    );
+
+    assert.match(
+      eventModal,
+      /imageEl\.classList\.add\([\s\S]*?'modal-image--fallback'/
+    );
+  }
+);

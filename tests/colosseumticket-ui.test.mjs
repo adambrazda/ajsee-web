@@ -210,3 +210,28 @@ test(
     );
   }
 );
+
+test(
+  'ColosseumTicket modal keeps provider artwork uncropped',
+  () => {
+    assert.match(
+      eventModal,
+      /\.modal-image\.modal-image--contain\s*\{[\s\S]*?object-fit:\s*contain;/
+    );
+
+    assert.match(
+      eventModal,
+      /const containProviderImage\s*=\s*[\s\S]*?modalProviderName\(eventData\) === 'ColosseumTicket'[\s\S]*?image !== imageFallback/
+    );
+
+    assert.match(
+      eventModal,
+      /imageEl\.classList\.toggle\([\s\S]*?'modal-image--contain'[\s\S]*?containProviderImage/
+    );
+
+    assert.match(
+      eventModal,
+      /imageEl\.classList\.remove\([\s\S]*?'modal-image--contain'/
+    );
+  }
+);

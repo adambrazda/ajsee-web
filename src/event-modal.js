@@ -513,6 +513,10 @@ function ensureModalStyles() {
       border-radius: 28px 0 0 28px;
     }
 
+    .modal-image.modal-image--contain {
+      object-fit: contain;
+    }
+
     .modal-image.modal-image--fallback {
       object-fit: contain;
       box-sizing: border-box;
@@ -1500,6 +1504,10 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
     eventData.image ||
     imageFallback;
 
+  const containProviderImage =
+    modalProviderName(eventData) === 'ColosseumTicket' &&
+    image !== imageFallback;
+
   // Důležité:
   // Preferujeme ticket link spočítaný při renderu karty,
   // ale pro modal přepíšeme tmOutbound placement na event_modal.
@@ -1535,8 +1543,17 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
       image === imageFallback
     );
 
+    imageEl.classList.toggle(
+      'modal-image--contain',
+      containProviderImage
+    );
+
     imageEl.onerror = () => {
       imageEl.onerror = null;
+
+      imageEl.classList.remove(
+        'modal-image--contain'
+      );
 
       imageEl.classList.add(
         'modal-image--fallback'

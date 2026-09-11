@@ -564,12 +564,139 @@ export function parseColosseumXml(
   return events;
 }
 
+const COLOSSEUMTICKET_IMAGE_HOSTS =
+  new Set([
+    'www.datocms-assets.com'
+  ]);
+
+
+export function normalizeColosseumImageUrl(
+  value
+) {
+  const raw =
+    text(
+      value
+    );
+
+  if (!raw) {
+    return '';
+  }
+
+  let parsed;
+
+  try {
+    parsed =
+      new URL(
+        raw
+      );
+  } catch {
+    return '';
+  }
+
+  if (
+    parsed.protocol !==
+      'https:' ||
+    parsed.username ||
+    parsed.password ||
+    (
+      parsed.port &&
+      parsed.port !==
+        '443'
+    )
+  ) {
+    return '';
+  }
+
+  const hostname =
+    text(
+      parsed.hostname
+    )
+      .toLowerCase()
+      .replace(
+        /\.$/,
+        ''
+      );
+
+  if (
+    !COLOSSEUMTICKET_IMAGE_HOSTS.has(
+      hostname
+    )
+  ) {
+    return '';
+  }
+
+  return parsed.href;
+}
+
+
+function collectColosseumImageCandidates(
+  value,
+  output = []
+) {
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number'
+  ) {
+    const normalized =
+      normalizeColosseumImageUrl(
+        value
+      );
+
+    if (normalized) {
+      output.push(
+        normalized
+      );
+    }
+
+    return output;
+  }
+
+  if (
+    Array.isArray(
+      value
+    )
+  ) {
+    for (
+      const item of value
+    ) {
+      collectColosseumImageCandidates(
+        item,
+        output
+      );
+    }
+
+    return output;
+  }
+
+  if (
+    value &&
+    typeof value === 'object'
+  ) {
+    for (
+      const item of
+      Object.values(
+        value
+      )
+    ) {
+      collectColosseumImageCandidates(
+        item,
+        output
+      );
+    }
+  }
+
+  return output;
+}
+
+
 function normalizeGallery(event) {
-  return toArray(
-    event?.GALLERY
-  )
-    .map(text)
-    .filter(Boolean);
+  return [
+    ...new Set(
+      collectColosseumImageCandidates(
+        event?.GALLERY
+      )
+    )
+  ];
 }
 
 function normalizeProviderCategory(
@@ -1019,15 +1146,23 @@ function normalizeOccurrence(
       parent?.DESCRIPTION
     );
 
-  const image =
-    text(
-      parent?.imageurl
-    );
-
   const gallery =
     normalizeGallery(
       parent
     );
+
+  /*
+   * Provider media is published only from the image host
+   * observed and approved during the live feed audit.
+   * If imageurl is missing or unsafe, prefer the first
+   * validated gallery asset.
+   */
+  const image =
+    normalizeColosseumImageUrl(
+      parent?.imageurl
+    ) ||
+    gallery[0] ||
+    '';
 
   const rawDate =
     text(
@@ -1223,11 +1358,9 @@ function normalizeOccurrence(
 
     address,
 
-    image:
-      '',
+    image,
 
-    gallery:
-      [],
+    gallery,
 
     url:
       purchase.url,

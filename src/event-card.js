@@ -1,6 +1,7 @@
 import { formatEventVenueLine } from './event-location.js';
 
 const FALLBACK_IMAGE = '/images/fallbacks/concert0.jpg';
+const COLOSSEUMTICKET_FALLBACK_IMAGE = '/images/logo-ajsee.png';
 
 function escapeHtml(value = '') {
   return String(value)
@@ -61,6 +62,12 @@ function eventProviderBadgeHtml(event = {}) {
   `;
 }
 
+export function eventFallbackImage(event = {}) {
+  return eventProviderKey(event) === 'colosseumticket'
+    ? COLOSSEUMTICKET_FALLBACK_IMAGE
+    : FALLBACK_IMAGE;
+}
+
 export function eventImageOrFallback(event = {}) {
   const raw = String(
     event?.image ||
@@ -72,7 +79,7 @@ export function eventImageOrFallback(event = {}) {
 
   return raw
     ? raw.replace(/^http:\/\//i, 'https://')
-    : FALLBACK_IMAGE;
+    : eventFallbackImage(event);
 }
 
 const EVENT_IMAGE_CONTAIN_MAX_RATIO = 1.3;
@@ -455,6 +462,9 @@ export function renderSharedEventCard({
     imageSrc ||
     eventImageOrFallback(event);
 
+  const resolvedFallbackImage =
+    eventFallbackImage(event);
+
   const imagePresentation =
     eventImagePresentation(event);
 
@@ -476,6 +486,11 @@ export function renderSharedEventCard({
 
   const safeImage =
     escapeHtml(resolvedImage);
+
+  const safeFallbackImage =
+    escapeHtml(
+      resolvedFallbackImage
+    );
 
   const safeHref =
     escapeHtml(ticketsHref);
@@ -505,7 +520,7 @@ export function renderSharedEventCard({
           style="object-position: ${safeImagePosition};"
           loading="lazy"
           decoding="async"
-          onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
+          onerror="this.onerror=null;this.src='${safeFallbackImage}';"
         />
       </div>
 

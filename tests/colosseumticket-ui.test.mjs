@@ -141,3 +141,51 @@ test(
     );
   }
 );
+
+
+test(
+  'ColosseumTicket uses AJSEE-owned fallback media',
+  () => {
+    assert.equal(
+      eventCard.includes(
+        "const COLOSSEUMTICKET_FALLBACK_IMAGE = '/images/logo-ajsee.png';"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventCard.includes(
+        "eventProviderKey(event) === 'colosseumticket'"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventCard.includes(
+        "this.src='${safeFallbackImage}';"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventModal.includes(
+        "modalProviderName(eventData) === 'ColosseumTicket'"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventModal.includes(
+        "? '/images/logo-ajsee.png'"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventModal.includes(
+        'imageEl.src = imageFallback;'
+      ),
+      true
+    );
+  }
+);

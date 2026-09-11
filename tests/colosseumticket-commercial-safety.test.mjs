@@ -459,7 +459,7 @@ test(
 
 
 test(
-  'feed normalization applies affiliate URLs and suppresses provider images',
+  'feed normalization applies affiliate URLs and publishes approved provider images',
   () => {
     const parent =
       rawParent({
@@ -468,11 +468,11 @@ test(
       });
 
     parent.imageurl =
-      'https://example.invalid/provider-image.jpg';
+      'https://www.datocms-assets.com/123/provider-image.jpg';
 
     parent.GALLERY =
       [
-        'https://example.invalid/gallery-image.jpg'
+        'https://www.datocms-assets.com/123/gallery-image.jpg'
       ];
 
     const result =
@@ -518,12 +518,69 @@ test(
 
     assert.equal(
       event.image,
-      ''
+      'https://www.datocms-assets.com/123/provider-image.jpg'
     );
 
     assert.deepEqual(
       event.gallery,
-      []
+      [
+        'https://www.datocms-assets.com/123/gallery-image.jpg'
+      ]
+    );
+  }
+);
+
+
+
+test(
+  'provider media rejects unsafe hosts and falls back to an approved gallery image',
+  () => {
+    const parent =
+      rawParent({
+        id:
+          'provider-image-host-safety'
+      });
+
+    parent.imageurl =
+      'https://example.invalid/untrusted-main.jpg';
+
+    parent.GALLERY = {
+      images: [
+        'https://www.datocms-assets.com/456/safe-gallery.jpg',
+        'http://www.datocms-assets.com/456/insecure-gallery.jpg',
+        'https://example.invalid/untrusted-gallery.jpg'
+      ]
+    };
+
+    const result =
+      normalizeColosseumFeed(
+        [
+          parent
+        ],
+        {
+          affiliateBox:
+            'ajsee-test-affiliate'
+        }
+      );
+
+    assert.equal(
+      result.events.length,
+      1
+    );
+
+    const event =
+      result.events[0];
+
+    assert.equal(
+      event.image,
+      'https://www.datocms-assets.com/456/safe-gallery.jpg'
+    );
+
+    assert.deepEqual(
+      event.gallery,
+      [
+        'https://www.datocms-assets.com/456/safe-gallery.jpg'
+      ]
     );
   }
 );

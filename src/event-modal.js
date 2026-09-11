@@ -1481,9 +1481,14 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const locationObj =
     eventData.location || {};
 
+  const imageFallback =
+    modalProviderName(eventData) === 'ColosseumTicket'
+      ? '/images/logo-ajsee.png'
+      : '/images/fallbacks/concert0.jpg';
+
   const image =
     eventData.image ||
-    '/images/fallbacks/concert0.jpg';
+    imageFallback;
 
   // Důležité:
   // Preferujeme ticket link spočítaný při renderu karty,
@@ -1515,6 +1520,11 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   if (titleEl) titleEl.textContent = title;
 
   if (imageEl) {
+    imageEl.onerror = () => {
+      imageEl.onerror = null;
+      imageEl.src = imageFallback;
+    };
+
     imageEl.src = image;
     imageEl.alt = title;
   }

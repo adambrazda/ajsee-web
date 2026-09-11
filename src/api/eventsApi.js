@@ -49,7 +49,7 @@ const ENABLE_SEATPLAN = false;
 // AJSEE_COLOSSEUM_PRODUCTION_ACTIVATION_v1
 // Czech ColosseumTicket inventory is active.
 // Commercial URLs are generated during the build with a_box.
-// Provider images remain disabled until content-use rights are confirmed.
+// Provider images are accepted only from the audited ColosseumTicket feed image host.
 const ENABLE_COLOSSEUMTICKET = true;
 
 // ------- Utils -------

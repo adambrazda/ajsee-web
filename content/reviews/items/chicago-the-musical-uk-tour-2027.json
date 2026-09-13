@@ -1,7 +1,7 @@
 {
   "slug": "chicago-the-musical-uk-tour-2027",
-  "status": "approved",
-  "published": false,
+  "status": "published",
+  "published": true,
   "featured": false,
   "contentType": "preview",
   "category": "theatre",
@@ -13,7 +13,7 @@
   "performanceDate": "",
   "eventDate": "2027-02-05",
   "reviewDate": "2026-09-10",
-  "publishedAt": "",
+  "publishedAt": "2026-09-13T13:35:15.600Z",
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.cz/en/",

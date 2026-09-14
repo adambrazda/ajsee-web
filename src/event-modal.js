@@ -513,6 +513,16 @@ function ensureModalStyles() {
       border-radius: 28px 0 0 28px;
     }
 
+    .modal-image.modal-image--contain {
+      object-fit: contain;
+    }
+
+    .modal-image.modal-image--fallback {
+      object-fit: contain;
+      box-sizing: border-box;
+      padding: 28px;
+    }
+
     .modal-details {
       padding: 42px 38px 34px;
       overflow: visible;
@@ -611,6 +621,10 @@ function ensureModalStyles() {
         min-height: 230px;
         max-height: 280px;
         border-radius: 26px 26px 0 0;
+      }
+
+      .modal-image.modal-image--fallback {
+        padding: 18px;
       }
 
       .modal-details {
@@ -1481,9 +1495,18 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const locationObj =
     eventData.location || {};
 
+  const imageFallback =
+    modalProviderName(eventData) === 'ColosseumTicket'
+      ? '/images/logo-ajsee.png'
+      : '/images/fallbacks/concert0.jpg';
+
   const image =
     eventData.image ||
-    '/images/fallbacks/concert0.jpg';
+    imageFallback;
+
+  const containProviderImage =
+    modalProviderName(eventData) === 'ColosseumTicket' &&
+    image !== imageFallback;
 
   // Důležité:
   // Preferujeme ticket link spočítaný při renderu karty,
@@ -1515,6 +1538,30 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   if (titleEl) titleEl.textContent = title;
 
   if (imageEl) {
+    imageEl.classList.toggle(
+      'modal-image--fallback',
+      image === imageFallback
+    );
+
+    imageEl.classList.toggle(
+      'modal-image--contain',
+      containProviderImage
+    );
+
+    imageEl.onerror = () => {
+      imageEl.onerror = null;
+
+      imageEl.classList.remove(
+        'modal-image--contain'
+      );
+
+      imageEl.classList.add(
+        'modal-image--fallback'
+      );
+
+      imageEl.src = imageFallback;
+    };
+
     imageEl.src = image;
     imageEl.alt = title;
   }

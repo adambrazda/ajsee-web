@@ -414,6 +414,96 @@ function matchesSubsetCity(event, definition) {
 // City subset feeds are listing payloads. Keep the full smsticket-events.json
 // unchanged as the canonical fallback, but strip fields that are not needed for
 // event cards, city/category/date/keyword filtering, provider badges or links.
+const CITY_SUBSET_DESCRIPTION_MAX_CHARS = 240;
+
+function compactCitySubsetText(
+  value,
+  maximum = CITY_SUBSET_DESCRIPTION_MAX_CHARS
+) {
+  const clean =
+    String(value || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  if (
+    !clean ||
+    clean.length <= maximum
+  ) {
+    return clean;
+  }
+
+  const candidate =
+    clean.slice(
+      0,
+      maximum + 1
+    );
+
+  const boundary =
+    candidate.lastIndexOf(' ');
+
+  const cutAt =
+    boundary >=
+      Math.floor(
+        maximum * 0.7
+      )
+      ? boundary
+      : maximum;
+
+  return (
+    candidate
+      .slice(
+        0,
+        cutAt
+      )
+      .trim() +
+    '?'
+  );
+}
+
+function compactCitySubsetDescription(
+  description
+) {
+  if (
+    typeof description === 'string'
+  ) {
+    const compact =
+      compactCitySubsetText(
+        description
+      );
+
+    return compact || undefined;
+  }
+
+  if (
+    !description ||
+    typeof description !== 'object' ||
+    Array.isArray(description)
+  ) {
+    return undefined;
+  }
+
+  const output = {};
+
+  for (
+    const [locale, value] of
+    Object.entries(description)
+  ) {
+    const compact =
+      compactCitySubsetText(
+        value
+      );
+
+    if (compact) {
+      output[locale] =
+        compact;
+    }
+  }
+
+  return Object.keys(output).length
+    ? output
+    : undefined;
+}
+
 function createLightCitySubsetEvent(event = {}) {
   const {
     description,
@@ -423,7 +513,21 @@ function createLightCitySubsetEvent(event = {}) {
     ...lightEvent
   } = event;
 
-  return lightEvent;
+  const compactDescription =
+    compactCitySubsetDescription(
+      description
+    );
+
+  return {
+    ...lightEvent,
+
+    ...(compactDescription
+      ? {
+          description:
+            compactDescription
+        }
+      : {})
+  };
 }
 
 function createSubsetPayload(payload, definition, events) {
@@ -436,8 +540,8 @@ function createSubsetPayload(payload, definition, events) {
       slug: definition.slug,
       aliases: definition.aliases,
       payload: 'listing-light',
+      descriptionPayload: 'excerpt-240',
       removedFields: [
-        'description',
         'imageOriginal',
         'rawUrl',
         'bookingEndsAt'

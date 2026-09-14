@@ -141,3 +141,97 @@ test(
     );
   }
 );
+
+
+test(
+  'ColosseumTicket uses AJSEE-owned fallback media',
+  () => {
+    assert.equal(
+      eventCard.includes(
+        "const COLOSSEUMTICKET_FALLBACK_IMAGE = '/images/logo-ajsee.png';"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventCard.includes(
+        "eventProviderKey(event) === 'colosseumticket'"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventCard.includes(
+        "this.src='${safeFallbackImage}';"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventModal.includes(
+        "modalProviderName(eventData) === 'ColosseumTicket'"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventModal.includes(
+        "? '/images/logo-ajsee.png'"
+      ),
+      true
+    );
+
+    assert.equal(
+      eventModal.includes(
+        'imageEl.src = imageFallback;'
+      ),
+      true
+    );
+  }
+);
+
+
+test(
+  'modal fallback keeps AJSEE artwork contained',
+  () => {
+    assert.match(
+      eventModal,
+      /\.modal-image\.modal-image--fallback\s*\{[\s\S]*?object-fit:\s*contain;/
+    );
+
+    assert.match(
+      eventModal,
+      /imageEl\.classList\.toggle\([\s\S]*?'modal-image--fallback'[\s\S]*?image === imageFallback/
+    );
+
+    assert.match(
+      eventModal,
+      /imageEl\.classList\.add\([\s\S]*?'modal-image--fallback'/
+    );
+  }
+);
+
+test(
+  'ColosseumTicket modal keeps provider artwork uncropped',
+  () => {
+    assert.match(
+      eventModal,
+      /\.modal-image\.modal-image--contain\s*\{[\s\S]*?object-fit:\s*contain;/
+    );
+
+    assert.match(
+      eventModal,
+      /const containProviderImage\s*=\s*[\s\S]*?modalProviderName\(eventData\) === 'ColosseumTicket'[\s\S]*?image !== imageFallback/
+    );
+
+    assert.match(
+      eventModal,
+      /imageEl\.classList\.toggle\([\s\S]*?'modal-image--contain'[\s\S]*?containProviderImage/
+    );
+
+    assert.match(
+      eventModal,
+      /imageEl\.classList\.remove\([\s\S]*?'modal-image--contain'/
+    );
+  }
+);

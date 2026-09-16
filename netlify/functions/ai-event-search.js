@@ -63,16 +63,7 @@ const RESPONSE_HEADERS = {
     'no-store',
 
   'X-Content-Type-Options':
-    'nosniff',
-
-  'Access-Control-Allow-Origin':
-    '*',
-
-  'Access-Control-Allow-Methods':
-    'POST, OPTIONS',
-
-  'Access-Control-Allow-Headers':
-    'Content-Type, Accept'
+    'nosniff'
 };
 
 function jsonResponse(
@@ -110,6 +101,37 @@ function emptyResponse(
       }
     }
   );
+}
+
+function isSameOriginRequest(
+  request
+) {
+  const origin =
+    String(
+      request.headers.get(
+        'origin'
+      ) ||
+      ''
+    ).trim();
+
+  /*
+   * Requests without Origin remain valid
+   * for non-browser callers and internal
+   * smoke tests. Browser cross-origin
+   * POSTs include Origin and are rejected.
+   */
+  if (!origin) {
+    return true;
+  }
+
+  try {
+    return (
+      new URL(origin).origin ===
+      new URL(request.url).origin
+    );
+  } catch {
+    return false;
+  }
 }
 
 function normalizeLocale(
@@ -861,6 +883,29 @@ export function createAiEventSearchHandler({
   return async function aiEventSearchHandler(
     request
   ) {
+    if (
+      !isSameOriginRequest(
+        request
+      )
+    ) {
+      return jsonResponse(
+        {
+          ok:
+            false,
+
+          code:
+            'origin-not-allowed',
+
+          retryable:
+            false
+        },
+        {
+          status:
+            403
+        }
+      );
+    }
+
     if (
       request.method ===
       'OPTIONS'

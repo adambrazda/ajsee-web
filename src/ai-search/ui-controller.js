@@ -5,6 +5,13 @@ import {
   formatLocalIsoWithOffset,
   resolveAiSearchClientConfig
 } from './runtime-config.js';
+import {
+  trackAiSearchOutcome
+} from './analytics.js';
+
+import {
+  hasAnalyticsConsent
+} from '../utils/consent.js';
 
 import '../styles/partials/_ai-event-search.scss';
 
@@ -16,6 +23,9 @@ const TURNSTILE_SCRIPT_URL =
 
 const TURNSTILE_ACTION =
   'ai_event_search';
+
+const AI_SEARCH_CLIENT_TIMEOUT_MS =
+  20_000;
 
 const SUPPORTED_LOCALES =
   new Set([
@@ -1072,6 +1082,23 @@ export function initAiEventSearch({
         return;
       }
 
+      const startedAt =
+        Date.now();
+
+      let telemetryOutcome =
+        '';
+
+      let telemetryStatus =
+        0;
+
+      let telemetryErrorCode =
+        '';
+
+      let telemetryRound =
+        requestClarificationContext
+          ?.round ||
+        0;
+
       submit.disabled =
         true;
 
@@ -1101,43 +1128,69 @@ export function initAiEventSearch({
           );
         }
 
-        const response =
-          await fetch(
-            AI_SEARCH_ENDPOINT,
-            {
-              method:
-                'POST',
+        const requestController =
+          new AbortController();
 
-              headers: {
-                'Content-Type':
-                  'application/json',
-
-                Accept:
-                  'application/json'
-              },
-
-              body:
-                JSON.stringify({
-                  query,
-                  locale,
-                  now:
-                    formatLocalIsoWithOffset(
-                      new Date()
-                    ),
-
-                  turnstileToken,
-
-                  ...(
-                    requestClarificationContext
-                      ? {
-                          clarificationContext:
-                            requestClarificationContext
-                        }
-                      : {}
-                  )
-                })
-            }
+        const requestTimeout =
+          globalThis.setTimeout(
+            () => {
+              requestController.abort();
+            },
+            AI_SEARCH_CLIENT_TIMEOUT_MS
           );
+
+        let response =
+          null;
+
+        try {
+          response =
+            await fetch(
+              AI_SEARCH_ENDPOINT,
+              {
+                method:
+                  'POST',
+
+                signal:
+                  requestController.signal,
+
+                headers: {
+                  'Content-Type':
+                    'application/json',
+
+                  Accept:
+                    'application/json'
+                },
+
+                body:
+                  JSON.stringify({
+                    query,
+                    locale,
+                    now:
+                      formatLocalIsoWithOffset(
+                        new Date()
+                      ),
+
+                    turnstileToken,
+
+                    ...(
+                      requestClarificationContext
+                        ? {
+                            clarificationContext:
+                              requestClarificationContext
+                          }
+                        : {}
+                    )
+                  })
+              }
+            );
+        } finally {
+          globalThis.clearTimeout(
+            requestTimeout
+          );
+        }
+
+        telemetryStatus =
+          response.status;
 
         let data =
           null;
@@ -1192,6 +1245,12 @@ export function initAiEventSearch({
               .round >=
                 MAX_CLARIFICATION_ROUNDS
           ) {
+            telemetryOutcome =
+              'error';
+
+            telemetryErrorCode =
+              'clarification-limit';
+
             clearPendingClarification();
 
             input.value =
@@ -1222,6 +1281,12 @@ export function initAiEventSearch({
                   .round +
                 1
               : 1;
+
+          telemetryOutcome =
+            'clarification';
+
+          telemetryRound =
+            nextRound;
 
           pendingClarification = {
             originalQuery:
@@ -1315,6 +1380,11 @@ export function initAiEventSearch({
           APPLY_COPY[locale] ||
           APPLY_COPY.cs;
 
+        telemetryOutcome =
+          unsupportedPreferences.length > 0
+            ? 'partial'
+            : 'success';
+
         setState(
           root,
           {
@@ -1334,6 +1404,39 @@ export function initAiEventSearch({
         } =
           getCopy();
 
+        const clientTimedOut =
+          error?.name ===
+          'AbortError';
+
+        telemetryOutcome =
+          'error';
+
+        const errorStatus =
+          Number(
+            error?.status
+          );
+
+        if (
+          Number.isFinite(
+            errorStatus
+          )
+        ) {
+          telemetryStatus =
+            errorStatus;
+        }
+
+        telemetryErrorCode =
+          clientTimedOut
+            ? 'client-timeout'
+            : (
+                Number.isFinite(
+                  errorStatus
+                ) &&
+                errorStatus >= 100
+                  ? 'api-error'
+                  : 'client-error'
+              );
+
         setState(
           root,
           {
@@ -1341,9 +1444,10 @@ export function initAiEventSearch({
               'error',
 
             message:
-              temporaryFailure(
-                Number(
-                  error?.status
+              (
+                clientTimedOut ||
+                temporaryFailure(
+                  errorStatus
                 )
               )
                 ? latestCopy
@@ -1353,6 +1457,37 @@ export function initAiEventSearch({
           }
         );
       } finally {
+        if (
+          telemetryOutcome
+        ) {
+          trackAiSearchOutcome(
+            {
+              outcome:
+                telemetryOutcome,
+
+              locale,
+
+              durationMs:
+                Date.now() -
+                startedAt,
+
+              httpStatus:
+                telemetryStatus,
+
+              errorCode:
+                telemetryErrorCode,
+
+              clarificationRound:
+                telemetryRound
+            },
+            globalThis,
+            {
+              pushToDataLayer:
+                hasAnalyticsConsent()
+            }
+          );
+        }
+
         const {
           copy:
             latestCopy

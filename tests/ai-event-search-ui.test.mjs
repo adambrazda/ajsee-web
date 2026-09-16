@@ -13,6 +13,15 @@ const controller =
     'utf8'
   );
 
+const analytics =
+  await readFile(
+    new URL(
+      '../src/ai-search/analytics.js',
+      import.meta.url
+    ),
+    'utf8'
+  );
+
 const runtimeConfig =
   await readFile(
     new URL(
@@ -116,6 +125,36 @@ test(
     assert.match(
       controller,
       /status\.textContent/
+    );
+
+    assert.match(
+      controller,
+      /AI_SEARCH_CLIENT_TIMEOUT_MS/
+    );
+
+    assert.match(
+      controller,
+      /new AbortController\(\)/
+    );
+
+    assert.match(
+      controller,
+      /signal:\s*requestController\.signal/
+    );
+
+    assert.match(
+      controller,
+      /trackAiSearchOutcome/
+    );
+
+    assert.match(
+      analytics,
+      /ai_event_search_result/
+    );
+
+    assert.doesNotMatch(
+      analytics,
+      /turnstileToken/
     );
   }
 );
@@ -257,6 +296,42 @@ test(
     assert.match(
       eventsEntry,
       /async function renderAndSync\([\s\S]*?normalizeDates\(\);[\s\S]*?syncQuickNearMeButton\(\);[\s\S]*?syncURLFromFilters\(\);/
+    );
+  }
+);
+
+
+test(
+  'AI search telemetry respects analytics consent and keeps error classifications bounded',
+  () => {
+    assert.match(
+      controller,
+      /hasAnalyticsConsent/
+    );
+
+    assert.match(
+      controller,
+      /pushToDataLayer:\s*hasAnalyticsConsent\(\)/
+    );
+
+    assert.match(
+      controller,
+      /'api-error'/
+    );
+
+    assert.match(
+      controller,
+      /'client-error'/
+    );
+
+    assert.match(
+      controller,
+      /'client-timeout'/
+    );
+
+    assert.doesNotMatch(
+      controller,
+      /telemetryErrorCode[\s\S]{0,180}error\?\.code/
     );
   }
 );

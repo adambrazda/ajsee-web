@@ -30,7 +30,8 @@ function makeRequest(
     method = 'POST',
     contentType = 'application/json',
     url =
-      'https://deploy-preview-175--ajsee-demo.netlify.app/api/ai-event-search'
+      'https://deploy-preview-175--ajsee-demo.netlify.app/api/ai-event-search',
+    origin = ''
   } = {}
 ) {
   const options = {
@@ -41,6 +42,11 @@ function makeRequest(
         contentType
     }
   };
+
+  if (origin) {
+    options.headers.origin =
+      origin;
+  }
 
   if (
     method !== 'GET' &&
@@ -238,7 +244,7 @@ test(
 );
 
 test(
-  'OPTIONS returns empty CORS response without calling OpenAI',
+  'OPTIONS returns empty response without permissive CORS or calling OpenAI',
   async () => {
     let called =
       false;
@@ -272,6 +278,81 @@ test(
     assert.equal(
       response.status,
       204
+    );
+
+    assert.equal(
+      response.headers.get(
+        'access-control-allow-origin'
+      ),
+      null
+    );
+
+    assert.equal(
+      called,
+      false
+    );
+  }
+);
+
+test(
+  'rejects cross-origin browser requests before protected work',
+  async () => {
+    let called =
+      false;
+
+    const handler =
+      createAiEventSearchHandler({
+        fetchImpl:
+          async () => {
+            called =
+              true;
+
+            throw new Error(
+              'must not run'
+            );
+          }
+      });
+
+    const response =
+      await handler(
+        makeRequest(
+          {
+            query:
+              'concert'
+          },
+          {
+            origin:
+              'https://example.invalid'
+          }
+        )
+      );
+
+    assert.equal(
+      response.status,
+      403
+    );
+
+    assert.deepEqual(
+      await bodyJson(
+        response
+      ),
+      {
+        ok:
+          false,
+
+        code:
+          'origin-not-allowed',
+
+        retryable:
+          false
+      }
+    );
+
+    assert.equal(
+      response.headers.get(
+        'access-control-allow-origin'
+      ),
+      null
     );
 
     assert.equal(

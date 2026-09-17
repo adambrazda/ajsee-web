@@ -26,6 +26,11 @@ import {
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
+import {
+  beginAiSearchLearningSession,
+  recordAiSearchFilterState,
+  resetAiSearchLearningSession
+} from './ai-search/learning.js';
 import { mapIntentToFilters } from './ai-search/intent-to-filters.js';
 import { resolveIntentRequirements } from './ai-search/requirement-resolver.js';
 import { materializeSearchPlan } from './ai-search/search-plan-materializer.js';
@@ -3729,6 +3734,13 @@ async function getAiSearchGeolocation() {
 }
 
 async function applyAiEventSearchIntent(intent) {
+  /*
+   * A new AI interpretation starts a new learning
+   * session. This prevents a second AI search from
+   * being misclassified as a manual user correction.
+   */
+  resetAiSearchLearningSession();
+
   const mapped =
     mapIntentToFilters(
       intent,
@@ -3805,6 +3817,24 @@ async function applyAiEventSearchIntent(intent) {
   await renderAndSync({
     resetPage:
       true
+  });
+
+  /*
+   * Start the session only after the AI-applied
+   * filters have rendered successfully.
+   *
+   * The initial AI render therefore cannot be
+   * recorded as a user correction.
+   */
+  beginAiSearchLearningSession({
+    locale:
+      currentLang,
+
+    page:
+      'events',
+
+    filters:
+      currentFilters
   });
 
   setSharedEventFilterDetailsExpanded(
@@ -5721,12 +5751,21 @@ async function renderAndSync({ resetPage = true } = {}) {
       G.bus('ajsee:filters')({ filters: { ...currentFilters }, lang: currentLang });
       updateToggleBadge();
       expandFilters();
+
+      recordAiSearchFilterState(
+        currentFilters
+      );
+
       return;
     }
 
     await renderEvents(currentLang, currentFilters);
     updateToggleBadge();
     expandFilters();
+
+    recordAiSearchFilterState(
+      currentFilters
+    );
 
 
   } finally {

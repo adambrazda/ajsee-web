@@ -686,3 +686,264 @@ test(
     );
   }
 );
+
+
+test(
+  'behavior events persist only privacy-safe ranking context',
+  async () => {
+    const {
+      calls,
+      getStoreFn
+    } =
+      createStoreHarness();
+
+    const handler =
+      createAiSearchLearningHandler({
+        getStoreFn,
+
+        nowProvider:
+          () =>
+            new Date(
+              '2026-09-17T15:00:00.000Z'
+            )
+      });
+
+    const base = {
+      schemaVersion:
+        1,
+
+      searchId:
+        'as_123e4567e89b12d3a456426614174000',
+
+      locale:
+        'cs',
+
+      page:
+        'events',
+
+      eventRefHash:
+        'ev_000102030405060708090a0b0c0d0e0f',
+
+      provider:
+        'ticketmaster',
+
+      resultPosition:
+        3
+    };
+
+    const opened =
+      await handler(
+        createRequest({
+          ...base,
+
+          event:
+            'event_opened',
+
+          sequence:
+            1,
+
+          placement:
+            'event_card'
+        })
+      );
+
+    assert.equal(
+      opened.status,
+      202
+    );
+
+    const clickout =
+      await handler(
+        createRequest({
+          ...base,
+
+          event:
+            'partner_clickout',
+
+          sequence:
+            2,
+
+          placement:
+            'event_modal'
+        })
+      );
+
+    assert.equal(
+      clickout.status,
+      202
+    );
+
+    assert.equal(
+      calls.length,
+      2
+    );
+
+    assert.equal(
+      calls[0].value.event,
+      'event_opened'
+    );
+
+    assert.equal(
+      calls[1].value.event,
+      'partner_clickout'
+    );
+
+    assert.equal(
+      calls[0].value
+        .resultPosition,
+      3
+    );
+
+    assert.equal(
+      calls[1].value
+        .placement,
+      'event_modal'
+    );
+
+    assert.equal(
+      calls[0].key,
+      'sessions/2026-09-17/' +
+        base.searchId +
+        '/0001-event_opened.json'
+    );
+
+    assert.equal(
+      calls[1].key,
+      'sessions/2026-09-17/' +
+        base.searchId +
+        '/0002-partner_clickout.json'
+    );
+
+    const serialized =
+      JSON.stringify(
+        calls.map(
+          item =>
+            item.value
+        )
+      );
+
+    assert.doesNotMatch(
+      serialized,
+      /eventTitle|event_name|outbound|city|url/i
+    );
+  }
+);
+
+test(
+  'behavior events reject raw identity fields and malformed hashes',
+  async () => {
+    const {
+      calls,
+      getStoreFn
+    } =
+      createStoreHarness();
+
+    const handler =
+      createAiSearchLearningHandler({
+        getStoreFn
+      });
+
+    const base = {
+      schemaVersion:
+        1,
+
+      event:
+        'event_opened',
+
+      searchId:
+        'as_123e4567e89b12d3a456426614174000',
+
+      sequence:
+        1,
+
+      locale:
+        'cs',
+
+      page:
+        'events',
+
+      eventRefHash:
+        'ev_000102030405060708090a0b0c0d0e0f',
+
+      provider:
+        'ticketmaster',
+
+      resultPosition:
+        1,
+
+      placement:
+        'event_card'
+    };
+
+    const rawIdentity =
+      await handler(
+        createRequest({
+          ...base,
+
+          eventRef:
+            'ticketmaster-secret-123'
+        })
+      );
+
+    assert.equal(
+      rawIdentity.status,
+      400
+    );
+
+    const malformedHash =
+      await handler(
+        createRequest({
+          ...base,
+
+          eventRefHash:
+            'ticketmaster-secret-123'
+        })
+      );
+
+    assert.equal(
+      malformedHash.status,
+      400
+    );
+
+    assert.equal(
+      calls.length,
+      0
+    );
+  }
+);
+
+test(
+  'filter events cannot smuggle behavior fields',
+  async () => {
+    const {
+      calls,
+      getStoreFn
+    } =
+      createStoreHarness();
+
+    const handler =
+      createAiSearchLearningHandler({
+        getStoreFn
+      });
+
+    const response =
+      await handler(
+        createRequest({
+          ...validAppliedPayload(),
+
+          provider:
+            'ticketmaster'
+        })
+      );
+
+    assert.equal(
+      response.status,
+      400
+    );
+
+    assert.equal(
+      calls.length,
+      0
+    );
+  }
+);

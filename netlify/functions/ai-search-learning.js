@@ -22,7 +22,29 @@ const MAX_BODY_BYTES =
 const SUPPORTED_EVENTS =
   new Set([
     'filters_applied',
-    'filters_corrected'
+    'filters_corrected',
+    'event_opened',
+    'partner_clickout'
+  ]);
+
+const BEHAVIOR_EVENTS =
+  new Set([
+    'event_opened',
+    'partner_clickout'
+  ]);
+
+const SUPPORTED_BEHAVIOR_PROVIDERS =
+  new Set([
+    'ticketmaster',
+    'smsticket',
+    'colosseumticket',
+    'unknown'
+  ]);
+
+const SUPPORTED_BEHAVIOR_PLACEMENTS =
+  new Set([
+    'event_card',
+    'event_modal'
   ]);
 
 const SUPPORTED_PAGES =
@@ -85,7 +107,11 @@ const TOP_LEVEL_KEYS =
     'locale',
     'page',
     'filters',
-    'correctedFields'
+    'correctedFields',
+    'eventRefHash',
+    'provider',
+    'resultPosition',
+    'placement'
   ]);
 
 const FILTER_KEYS =
@@ -762,6 +788,70 @@ async function readJsonBody(
   return value;
 }
 
+function normalizeEventRefHash(
+  value
+) {
+  const normalized =
+    String(value || '')
+      .trim()
+      .toLowerCase();
+
+  if (!normalized) {
+    return '';
+  }
+
+  if (
+    !/^ev_[a-f0-9]{32}$/.test(
+      normalized
+    )
+  ) {
+    throw createHttpError(
+      400,
+      'invalid-event-ref-hash'
+    );
+  }
+
+  return normalized;
+}
+
+function hasOwn(
+  value,
+  key
+) {
+  return Object.prototype
+    .hasOwnProperty
+    .call(
+      value,
+      key
+    );
+}
+
+function assertNoBehaviorFields(
+  value
+) {
+  for (
+    const key
+    of [
+      'eventRefHash',
+      'provider',
+      'resultPosition',
+      'placement'
+    ]
+  ) {
+    if (
+      hasOwn(
+        value,
+        key
+      )
+    ) {
+      throw createHttpError(
+        400,
+        'unexpected-behavior-field'
+      );
+    }
+  }
+}
+
 function normalizePayload(
   value
 ) {
@@ -823,6 +913,105 @@ function normalizePayload(
       'invalid-page'
     );
 
+  if (
+    BEHAVIOR_EVENTS.has(
+      event
+    )
+  ) {
+    if (
+      sequence <
+      1
+    ) {
+      throw createHttpError(
+        400,
+        'invalid-behavior-sequence'
+      );
+    }
+
+    if (
+      hasOwn(
+        value,
+        'filters'
+      ) ||
+      hasOwn(
+        value,
+        'correctedFields'
+      )
+    ) {
+      throw createHttpError(
+        400,
+        'unexpected-filter-field'
+      );
+    }
+
+    for (
+      const key
+      of [
+        'eventRefHash',
+        'provider',
+        'resultPosition',
+        'placement'
+      ]
+    ) {
+      if (
+        !hasOwn(
+          value,
+          key
+        )
+      ) {
+        throw createHttpError(
+          400,
+          'missing-behavior-field'
+        );
+      }
+    }
+
+    return {
+      schemaVersion,
+      event,
+      searchId,
+      sequence,
+      locale,
+      page,
+
+      eventRefHash:
+        normalizeEventRefHash(
+          value.eventRefHash
+        ),
+
+      provider:
+        normalizeEnum(
+          value.provider,
+          SUPPORTED_BEHAVIOR_PROVIDERS,
+          'invalid-behavior-provider'
+        ),
+
+      resultPosition:
+        normalizeInteger(
+          value.resultPosition,
+          {
+            min:
+              1,
+            max:
+              1000,
+            code:
+              'invalid-result-position'
+          }
+        ),
+
+      placement:
+        normalizeEnum(
+          value.placement,
+          SUPPORTED_BEHAVIOR_PLACEMENTS,
+          'invalid-behavior-placement'
+        )
+    };
+  }
+
+  assertNoBehaviorFields(
+    value
+  );
+
   const filters =
     normalizeFilters(
       value.filters
@@ -843,12 +1032,10 @@ function normalizePayload(
     }
 
     if (
-      Object.prototype
-        .hasOwnProperty
-        .call(
-          value,
-          'correctedFields'
-        )
+      hasOwn(
+        value,
+        'correctedFields'
+      )
     ) {
       throw createHttpError(
         400,

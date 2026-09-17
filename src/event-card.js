@@ -1,5 +1,9 @@
 import { formatEventVenueLine } from './event-location.js';
 
+import {
+  recordAiSearchPartnerClickout
+} from './ai-search/learning.js';
+
 const FALLBACK_IMAGE = '/images/fallbacks/concert0.jpg';
 
 function escapeHtml(value = '') {
@@ -418,7 +422,8 @@ export function renderSharedEventCard({
   provider = null,
   providerBadgeHtml = null,
   venueLineHtml = null,
-  eventCityAttrHtml = null
+  eventCityAttrHtml = null,
+  resultPosition = null
 } = {}) {
   const resolvedProvider =
     provider === null
@@ -486,11 +491,25 @@ export function renderSharedEventCard({
   const safeProvider =
     escapeHtml(resolvedProvider);
 
+  const numericResultPosition =
+    Number(resultPosition);
+
+  const safeResultPosition =
+    Number.isInteger(
+      numericResultPosition
+    ) &&
+    numericResultPosition > 0
+      ? String(
+          numericResultPosition
+        )
+      : '';
+
   return `
     <article
       class="event-card"
       data-event-id="${safeModalId}"
       data-event-provider="${safeProvider}"
+      data-result-position="${safeResultPosition}"
     >
       <div
         class="event-image-frame"
@@ -523,6 +542,7 @@ export function renderSharedEventCard({
             type="button"
             class="btn-event detail js-event-detail"
             data-event-id="${safeModalId}"
+            data-result-position="${safeResultPosition}"
           >
             ${detailLabelHtml}
           </button>
@@ -534,6 +554,7 @@ export function renderSharedEventCard({
             rel="noopener noreferrer"
             data-partner="${safeProvider}"
             data-event-id="${safeModalId}"
+            data-result-position="${safeResultPosition}"
             data-placement="event_card"
             data-event-title="${safeTitleAttr}"
             data-event-city="${resolvedCityAttr}"
@@ -738,9 +759,34 @@ export function wireSharedEventCardAnalytics(
 
       tracked = true;
 
-      trackSharedEventPartnerClick(link);
+      trackSharedEventPartnerClick(
+        link
+      );
     };
 
+    const trackLearningClickout =
+      () => {
+        void recordAiSearchPartnerClickout({
+          eventRef:
+            link.dataset.eventId,
+
+          provider:
+            link.dataset.partner,
+
+          resultPosition:
+            link.dataset.resultPosition,
+
+          placement:
+            link.dataset.placement ||
+            'event_card'
+        });
+      };
+
+    /*
+     * Existing rich analytics keeps pointerdown fallback.
+     * Learning records only a completed click so a cancelled
+     * pointer gesture cannot become a false conversion.
+     */
     link.addEventListener(
       'pointerdown',
       trackOnce,
@@ -750,6 +796,11 @@ export function wireSharedEventCardAnalytics(
     link.addEventListener(
       'click',
       trackOnce
+    );
+
+    link.addEventListener(
+      'click',
+      trackLearningClickout
     );
   }
 }

@@ -1071,3 +1071,80 @@ test(
     );
   }
 );
+
+
+test(
+  'modal ticket CTAs preserve AI result position for learning clickout',
+  async () => {
+    await openEventModal(
+      createEvent({
+        __ajseeResultPosition:
+          7
+      }),
+      'cs'
+    );
+
+    const primaryLink =
+      getPrimaryTicketLink();
+
+    assert.equal(
+      primaryLink.dataset
+        .resultPosition,
+      '7'
+    );
+
+    await openEventModal(
+      createEvent({
+        __ajseeResultPosition:
+          4,
+
+        ticketOptions: [
+          {
+            url:
+              'https://www.smsticket.cz/vstupenky/701-test',
+
+            priceFrom:
+              '500 CZK',
+
+            currency:
+              'CZK',
+
+            provider:
+              'smsticket'
+          },
+          {
+            url:
+              'https://www.smsticket.cz/vstupenky/702-test',
+
+            priceFrom:
+              '600 CZK',
+
+            currency:
+              'CZK',
+
+            provider:
+              'smsticket'
+          }
+        ]
+      }),
+      'cs'
+    );
+
+    const optionLinks =
+      getRenderedOptionLinks();
+
+    assert.equal(
+      optionLinks.length,
+      2
+    );
+
+    assert.ok(
+      optionLinks.every(
+        link =>
+          link.dataset
+            .resultPosition ===
+          '4'
+      )
+    );
+  }
+);

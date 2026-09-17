@@ -1781,6 +1781,7 @@ async function applyTranslations(lang) {
   syncLocalizedCityLabelFromCurrentState();
   updateFilterLocaleTexts();
   renderHomeBlog();
+  syncHeroAiSearchBadgeHref(lang);
   syncLangDropdownUI(lang);
   emitI18nReady(lang);
 }
@@ -4996,6 +4997,45 @@ function initLangDropdownCompat() {
   wireOnce(window, 'AJSEE:langChanged', e => {
     syncLangDropdownUI(e?.detail?.lang || getUILang());
   }, 'lang-dd-sync');
+}
+
+function syncHeroAiSearchBadgeHref(lang = currentLang || getUILang()) {
+  const badge =
+    document.querySelector(
+      '[data-hero-ai-search-link]'
+    );
+
+  if (!badge) return;
+
+  const normalized =
+    String(lang || 'cs')
+      .trim()
+      .toLowerCase()
+      .slice(0, 2);
+
+  const localizedLangs =
+    new Set([
+      'en',
+      'de',
+      'sk',
+      'pl',
+      'hu'
+    ]);
+
+  const target =
+    localizedLangs.has(normalized)
+      ? `/${normalized}/events/#events-filters-form`
+      : '/events/#events-filters-form';
+
+  if (
+    badge.getAttribute('href') !==
+    target
+  ) {
+    badge.setAttribute(
+      'href',
+      target
+    );
+  }
 }
 
 /* ───────── homepage CTA helpers ───────── */

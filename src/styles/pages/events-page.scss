@@ -53,6 +53,7 @@ body[data-page="events"] {
 
       #events-filters-form.events-filters.filter-dock {
         position: relative;
+        scroll-margin-top: 96px;
         inset: auto;
         transform: none;
         height: auto;

@@ -29,6 +29,7 @@ import {
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   beginAiSearchLearningSession,
+  recordAiSearchEventOpened,
   recordAiSearchFilterState,
   resetAiSearchLearningSession
 } from './ai-search/learning.js';
@@ -4468,6 +4469,9 @@ ensureSharedEventGridStyles();
 list.innerHTML = toRender.map((ev, index) => {
   const modalId = String(ev.id || `event-${index}`);
 
+  const resultPosition =
+    index + 1;
+
   const titleRaw = (typeof ev.title === 'string'
     ? ev.title
     : (ev.title?.[locale] || ev.title?.en || ev.title?.cs || Object.values(ev.title || {})[0])) || 'Untitled';
@@ -4492,6 +4496,8 @@ list.innerHTML = toRender.map((ev, index) => {
 
   ev.__ajseeTicketsHref = ticketsHref;
   ev.__ajseeModalId = modalId;
+  ev.__ajseeResultPosition =
+    resultPosition;
 
   modalStore.set(modalId, ev);
 
@@ -4501,6 +4507,7 @@ list.innerHTML = toRender.map((ev, index) => {
   return renderSharedEventCard({
     event: ev,
     modalId,
+    resultPosition,
     titleHtml: title,
     titleRaw,
     dateHtml: date,
@@ -4514,7 +4521,7 @@ list.innerHTML = toRender.map((ev, index) => {
 list.__ajseeEventModalStore = modalStore;
 
 qsa('.js-event-detail', list).forEach(btn => {
-  btn.addEventListener('click', event => {
+  btn.addEventListener('click', async event => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -4523,7 +4530,52 @@ qsa('.js-event-detail', list).forEach(btn => {
 
     if (!selectedEvent) return;
 
-    void lazyOpenHomeEventModal(selectedEvent, locale, { t });
+    const card =
+      btn.closest(
+        '.event-card'
+      );
+
+    try {
+      await lazyOpenHomeEventModal(
+        selectedEvent,
+        locale,
+        { t }
+      );
+    } catch {
+      return;
+    }
+
+    const openedModal =
+      document.getElementById(
+        'eventModal'
+      );
+
+    if (
+      !openedModal?.classList
+        .contains(
+          'open'
+        )
+    ) {
+      return;
+    }
+
+    void recordAiSearchEventOpened({
+      eventRef:
+        selectedEvent?.id ||
+        '',
+
+      provider:
+        card?.dataset
+          ?.eventProvider ||
+        '',
+
+      resultPosition:
+        selectedEvent
+          ?.__ajseeResultPosition,
+
+      placement:
+        'event_card'
+    });
   });
 });
 

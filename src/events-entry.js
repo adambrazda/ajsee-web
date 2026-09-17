@@ -28,6 +28,7 @@ import {
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   beginAiSearchLearningSession,
+  recordAiSearchEventOpened,
   recordAiSearchFilterState,
   resetAiSearchLearningSession
 } from './ai-search/learning.js';
@@ -5624,8 +5625,25 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     const modalStore = new Map();
 
+    const resultPositionOffset =
+      isHp
+        ? 0
+        : (
+            (
+              pagination.page -
+              1
+            ) *
+            pagination.perPage
+          );
+
     list.innerHTML = toRender.map((ev, index) => {
       const modalId = String(ev.id || `event-${index}`);
+
+      const resultPosition =
+        resultPositionOffset +
+        index +
+        1;
+
       const titleRaw = (typeof ev.title === 'string'
         ? ev.title
         : (ev.title?.[locale] || ev.title?.en || ev.title?.cs || Object.values(ev.title || {})[0])) || 'Untitled';
@@ -5643,6 +5661,9 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
       ev.__ajseeTicketsHref = ticketsHref;
       ev.__ajseeModalId = modalId;
+      ev.__ajseeResultPosition =
+        resultPosition;
+
       modalStore.set(modalId, ev);
 
       const detailLabel = esc(t('event-details', 'Detail'));
@@ -5651,6 +5672,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       return renderSharedEventCard({
         event: ev,
         modalId,
+        resultPosition,
         titleHtml: title,
         titleRaw,
         dateHtml: date,
@@ -5664,13 +5686,60 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     list.__ajseeEventModalStore = modalStore;
 
     qsa('.js-event-detail', list).forEach(btn => {
-      btn.addEventListener('click', event => {
+      btn.addEventListener('click', async event => {
         event.preventDefault();
         event.stopPropagation();
         const eventId = btn.getAttribute('data-event-id');
         const selectedEvent = modalStore.get(eventId);
+
         if (!selectedEvent) return;
-        openEventModal(selectedEvent, locale, { t });
+
+        const card =
+          btn.closest(
+            '.event-card'
+          );
+
+        try {
+          await openEventModal(
+            selectedEvent,
+            locale,
+            { t }
+          );
+        } catch {
+          return;
+        }
+
+        const openedModal =
+          document.getElementById(
+            'eventModal'
+          );
+
+        if (
+          !openedModal?.classList
+            .contains(
+              'open'
+            )
+        ) {
+          return;
+        }
+
+        void recordAiSearchEventOpened({
+          eventRef:
+            selectedEvent?.id ||
+            '',
+
+          provider:
+            card?.dataset
+              ?.eventProvider ||
+            '',
+
+          resultPosition:
+            selectedEvent
+              ?.__ajseeResultPosition,
+
+          placement:
+            'event_card'
+        });
       });
     });
 

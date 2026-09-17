@@ -915,3 +915,591 @@ test(
     }
   }
 );
+
+
+test(
+  'behavior signals are consent-gated, sequenced and never expose raw event identity',
+  async () => {
+    const calls =
+      [];
+
+    const rawHashes =
+      [];
+
+    const tracker =
+      createAiSearchLearningTracker({
+        consentProvider:
+          () => true,
+
+        cryptoImpl: {
+          randomUUID:
+            () =>
+              'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+
+          subtle: {
+            digest:
+              async (
+                algorithm,
+                bytes
+              ) => {
+                rawHashes.push(
+                  new TextDecoder()
+                    .decode(
+                      bytes
+                    )
+                );
+
+                assert.equal(
+                  algorithm,
+                  'SHA-256'
+                );
+
+                return Uint8Array.from(
+                  {
+                    length:
+                      32
+                  },
+                  (_, index) =>
+                    index
+                ).buffer;
+              }
+          }
+        },
+
+        fetchImpl:
+          (
+            url,
+            options
+          ) => {
+            calls.push({
+              url,
+
+              body:
+                JSON.parse(
+                  options.body
+                )
+            });
+
+            return Promise.resolve({
+              ok:
+                true
+            });
+          }
+      });
+
+    tracker.begin({
+      locale:
+        'cs',
+
+      page:
+        'events',
+
+      filters:
+        baseFilters()
+    });
+
+    const opened =
+      await tracker.eventOpened({
+        eventRef:
+          'ticketmaster-secret-event-123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          3,
+
+        placement:
+          'event_card'
+      });
+
+    assert.equal(
+      opened.event,
+      'event_opened'
+    );
+
+    assert.equal(
+      opened.sequence,
+      1
+    );
+
+    assert.equal(
+      opened.eventRefHash,
+      'ev_000102030405060708090a0b0c0d0e0f'
+    );
+
+    const clickout =
+      await tracker.partnerClickout({
+        eventRef:
+          'ticketmaster-secret-event-123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          3,
+
+        placement:
+          'event_modal'
+      });
+
+    assert.equal(
+      clickout.event,
+      'partner_clickout'
+    );
+
+    assert.equal(
+      clickout.sequence,
+      2
+    );
+
+    assert.equal(
+      calls.length,
+      3
+    );
+
+    assert.deepEqual(
+      rawHashes,
+      [
+        'ticketmaster-secret-event-123',
+        'ticketmaster-secret-event-123'
+      ]
+    );
+
+    const behaviorBodies =
+      calls
+        .map(
+          item =>
+            item.body
+        )
+        .filter(
+          body =>
+            body.event !==
+            'filters_applied'
+        );
+
+    assert.equal(
+      behaviorBodies.length,
+      2
+    );
+
+    const allowedKeys = [
+      'schemaVersion',
+      'event',
+      'searchId',
+      'sequence',
+      'locale',
+      'page',
+      'eventRefHash',
+      'provider',
+      'resultPosition',
+      'placement'
+    ].sort();
+
+    for (
+      const body
+      of behaviorBodies
+    ) {
+      assert.deepEqual(
+        Object.keys(
+          body
+        ).sort(),
+        allowedKeys
+      );
+    }
+
+    const serialized =
+      JSON.stringify(
+        behaviorBodies
+      );
+
+    assert.doesNotMatch(
+      serialized,
+      /ticketmaster-secret-event-123/
+    );
+
+    for (
+      const forbiddenKey
+      of [
+        'eventTitle',
+        'event_name',
+        'eventName',
+        'city',
+        'eventCity',
+        'outboundUrl',
+        'outbound_url',
+        'destination_url',
+        'page_location',
+        'clicked_href'
+      ]
+    ) {
+      assert.equal(
+        behaviorBodies.some(
+          body =>
+            Object.prototype
+              .hasOwnProperty
+              .call(
+                body,
+                forbiddenKey
+              )
+        ),
+        false,
+        'Forbidden behavior key: ' +
+          forbiddenKey
+      );
+    }
+  }
+);
+
+test(
+  'behavior signals reject invalid position, dedupe exact repeats and stop after consent revocation',
+  async () => {
+    const calls =
+      [];
+
+    let consent =
+      true;
+
+    const tracker =
+      createAiSearchLearningTracker({
+        consentProvider:
+          () => consent,
+
+        cryptoImpl: {
+          randomUUID:
+            () =>
+              'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+
+          subtle: {
+            digest:
+              async () =>
+                new Uint8Array(
+                  32
+                ).buffer
+          }
+        },
+
+        fetchImpl:
+          (
+            url,
+            options
+          ) => {
+            calls.push(
+              JSON.parse(
+                options.body
+              )
+            );
+
+            return Promise.resolve({
+              ok:
+                true
+            });
+          }
+      });
+
+    tracker.begin({
+      locale:
+        'en',
+
+      page:
+        'home',
+
+      filters:
+        baseFilters()
+    });
+
+    assert.equal(
+      await tracker.eventOpened({
+        eventRef:
+          'abc123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          0,
+
+        placement:
+          'event_card'
+      }),
+      null
+    );
+
+    const first =
+      await tracker.eventOpened({
+        eventRef:
+          'abc123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          1,
+
+        placement:
+          'event_card'
+      });
+
+    assert.equal(
+      first.sequence,
+      1
+    );
+
+    assert.equal(
+      await tracker.eventOpened({
+        eventRef:
+          'abc123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          1,
+
+        placement:
+          'event_card'
+      }),
+      null
+    );
+
+    assert.equal(
+      calls.length,
+      2
+    );
+
+    consent =
+      false;
+
+    assert.equal(
+      await tracker.partnerClickout({
+        eventRef:
+          'abc123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          1,
+
+        placement:
+          'event_card'
+      }),
+      null
+    );
+
+    assert.equal(
+      calls.length,
+      2
+    );
+  }
+);
+
+
+test(
+  'concurrent behavior signals preserve interaction sequence and dedupe before hashing',
+  async () => {
+    const calls =
+      [];
+
+    const digestResolvers =
+      [];
+
+    let digestCallCount =
+      0;
+
+    const tracker =
+      createAiSearchLearningTracker({
+        consentProvider:
+          () => true,
+
+        cryptoImpl: {
+          randomUUID:
+            () =>
+              'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+
+          subtle: {
+            digest:
+              async () => {
+                const digestIndex =
+                  digestCallCount++;
+
+                return new Promise(
+                  resolve => {
+                    digestResolvers.push(
+                      () => {
+                        const bytes =
+                          new Uint8Array(
+                            32
+                          );
+
+                        bytes.fill(
+                          digestIndex + 1
+                        );
+
+                        resolve(
+                          bytes.buffer
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+          }
+        },
+
+        fetchImpl:
+          (
+            url,
+            options
+          ) => {
+            calls.push(
+              JSON.parse(
+                options.body
+              )
+            );
+
+            return Promise.resolve({
+              ok:
+                true
+            });
+          }
+      });
+
+    tracker.begin({
+      locale:
+        'cs',
+
+      page:
+        'events',
+
+      filters:
+        baseFilters()
+    });
+
+    const openedPromise =
+      tracker.eventOpened({
+        eventRef:
+          'event-real-123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          2,
+
+        placement:
+          'event_card'
+      });
+
+    /*
+     * Exact duplicate arrives while the first SHA-256
+     * is still pending. It must be rejected immediately.
+     */
+    const duplicatePromise =
+      tracker.eventOpened({
+        eventRef:
+          'event-real-123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          2,
+
+        placement:
+          'event_card'
+      });
+
+    const clickoutPromise =
+      tracker.partnerClickout({
+        eventRef:
+          'event-real-123',
+
+        provider:
+          'ticketmaster',
+
+        resultPosition:
+          2,
+
+        placement:
+          'event_modal'
+      });
+
+    assert.equal(
+      digestResolvers.length,
+      2
+    );
+
+    assert.equal(
+      await duplicatePromise,
+      null
+    );
+
+    /*
+     * Complete the second interaction first.
+     * Its reserved sequence must still remain 2.
+     */
+    digestResolvers[1]();
+
+    const clickout =
+      await clickoutPromise;
+
+    assert.equal(
+      clickout.sequence,
+      2
+    );
+
+    digestResolvers[0]();
+
+    const opened =
+      await openedPromise;
+
+    assert.equal(
+      opened.sequence,
+      1
+    );
+
+    assert.equal(
+      digestCallCount,
+      2
+    );
+
+    const behaviorCalls =
+      calls.filter(
+        payload =>
+          payload.event ===
+            'event_opened' ||
+          payload.event ===
+            'partner_clickout'
+      );
+
+    assert.equal(
+      behaviorCalls.length,
+      2
+    );
+
+    const openedCall =
+      behaviorCalls.find(
+        payload =>
+          payload.event ===
+          'event_opened'
+      );
+
+    const clickoutCall =
+      behaviorCalls.find(
+        payload =>
+          payload.event ===
+          'partner_clickout'
+      );
+
+    assert.equal(
+      openedCall.sequence,
+      1
+    );
+
+    assert.equal(
+      clickoutCall.sequence,
+      2
+    );
+  }
+);

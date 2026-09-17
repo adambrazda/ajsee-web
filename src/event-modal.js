@@ -3,6 +3,10 @@ import {
   formatEventVenueLine,
   formatEventCalendarLocation
 } from './event-location.js';
+
+import {
+  recordAiSearchPartnerClickout
+} from './ai-search/learning.js';
 // /src/event-modal.js
 // ---------------------------------------------------------
 // AJSEE – Event modal
@@ -926,7 +930,24 @@ function bindModalPartnerClickTracking(link) {
     '1';
 
   link.addEventListener('click', () => {
-    trackModalPartnerClickFromLink(link);
+    trackModalPartnerClickFromLink(
+      link
+    );
+
+    void recordAiSearchPartnerClickout({
+      eventRef:
+        link.dataset.eventId,
+
+      provider:
+        link.dataset.partner,
+
+      resultPosition:
+        link.dataset.resultPosition,
+
+      placement:
+        link.dataset.placement ||
+        'event_modal'
+    });
   });
 }
 
@@ -1003,6 +1024,13 @@ function renderModalTicketOptions(
     link.dataset.eventCity = eventCity;
     link.dataset.outboundUrl = href;
     link.dataset.placement = 'event_modal';
+
+    link.dataset.resultPosition =
+      String(
+        eventData
+          ?.__ajseeResultPosition ||
+        ''
+      ).trim();
 
     link.dataset.ticketPriceFrom =
       String(option?.priceFrom || '').trim();
@@ -1616,6 +1644,13 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
       ticketHref || '';
 
     ticketEl.dataset.placement = 'event_modal';
+
+    ticketEl.dataset.resultPosition =
+      String(
+        eventData
+          ?.__ajseeResultPosition ||
+        ''
+      ).trim();
 
     ticketEl.dataset.ticketPriceFrom =
       String(

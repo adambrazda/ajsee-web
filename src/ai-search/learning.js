@@ -67,6 +67,26 @@ const CORRECTION_FIELDS =
     'price'
   ]);
 
+const BEHAVIOR_EVENTS =
+  new Set([
+    'event_opened',
+    'partner_clickout'
+  ]);
+
+const SUPPORTED_BEHAVIOR_PROVIDERS =
+  new Set([
+    'ticketmaster',
+    'smsticket',
+    'colosseumticket',
+    'unknown'
+  ]);
+
+const SUPPORTED_BEHAVIOR_PLACEMENTS =
+  new Set([
+    'event_card',
+    'event_modal'
+  ]);
+
 function normalizeEnum(
   value,
   allowed,
@@ -513,6 +533,139 @@ export function diffAiSearchLearningFilters(
   );
 }
 
+function normalizeBehaviorProvider(
+  value
+) {
+  const normalized =
+    String(value || '')
+      .trim()
+      .toLowerCase();
+
+  return SUPPORTED_BEHAVIOR_PROVIDERS
+    .has(
+      normalized
+    )
+    ? normalized
+    : 'unknown';
+}
+
+function normalizeBehaviorPlacement(
+  value
+) {
+  const normalized =
+    String(value || '')
+      .trim()
+      .toLowerCase();
+
+  return SUPPORTED_BEHAVIOR_PLACEMENTS
+    .has(
+      normalized
+    )
+    ? normalized
+    : 'event_card';
+}
+
+function normalizeResultPosition(
+  value
+) {
+  const numeric =
+    Number(value);
+
+  if (
+    !Number.isInteger(
+      numeric
+    ) ||
+    numeric < 1 ||
+    numeric > 1000
+  ) {
+    return null;
+  }
+
+  return numeric;
+}
+
+function normalizeEventRef(
+  value
+) {
+  const normalized =
+    String(value || '')
+      .trim();
+
+  if (
+    !normalized ||
+    normalized.length > 512 ||
+    /^event-\d+$/i.test(
+      normalized
+    )
+  ) {
+    return '';
+  }
+
+  return normalized;
+}
+
+async function createEventRefHash(
+  value,
+  cryptoImpl =
+    globalThis.crypto
+) {
+  const normalized =
+    normalizeEventRef(
+      value
+    );
+
+  if (!normalized) {
+    return '';
+  }
+
+  try {
+    const subtle =
+      cryptoImpl?.subtle;
+
+    const Encoder =
+      globalThis.TextEncoder;
+
+    if (
+      typeof subtle?.digest !==
+        'function' ||
+      typeof Encoder !==
+        'function'
+    ) {
+      return '';
+    }
+
+    const bytes =
+      new Encoder()
+        .encode(
+          normalized
+        );
+
+    const digest =
+      new Uint8Array(
+        await subtle.digest(
+          'SHA-256',
+          bytes
+        )
+      );
+
+    return (
+      'ev_' +
+      Array.from(
+        digest.slice(
+          0,
+          16
+        ),
+        byte =>
+          byte
+            .toString(16)
+            .padStart(2, '0')
+      ).join('')
+    );
+  } catch {
+    return '';
+  }
+}
+
 function createSearchId(
   cryptoImpl = globalThis.crypto
 ) {
@@ -718,7 +871,10 @@ export function createAiSearchLearningTracker({
         normalizedPage,
       sequence:
         0,
-      snapshot
+      snapshot,
+
+      behaviorSignals:
+        new Set()
     };
 
     postEvent({
@@ -816,9 +972,184 @@ export function createAiSearchLearningTracker({
     return correctedFields;
   }
 
+  async function recordBehavior(
+    event,
+    {
+      eventRef = '',
+      provider = '',
+      resultPosition = null,
+      placement = 'event_card'
+    } = {}
+  ) {
+    if (
+      !session ||
+      !BEHAVIOR_EVENTS.has(
+        event
+      )
+    ) {
+      return null;
+    }
+
+    if (
+      !hasConsent()
+    ) {
+      reset();
+      return null;
+    }
+
+    const normalizedPosition =
+      normalizeResultPosition(
+        resultPosition
+      );
+
+    if (
+      normalizedPosition ===
+      null
+    ) {
+      return null;
+    }
+
+    const activeSearchId =
+      session.searchId;
+
+    const normalizedProvider =
+      normalizeBehaviorProvider(
+        provider
+      );
+
+    const normalizedPlacement =
+      normalizeBehaviorPlacement(
+        placement
+      );
+
+    /*
+     * Raw event identity is allowed only inside this
+     * ephemeral browser-memory comparison key.
+     * It is never serialized or sent to the endpoint.
+     */
+    const normalizedEventRef =
+      normalizeEventRef(
+        eventRef
+      );
+
+    /*
+     * Dedupe must happen synchronously, before SHA-256.
+     * Otherwise two near-simultaneous browser events
+     * could both enter the async hashing stage.
+     */
+    const dedupeKey = [
+      event,
+      normalizedProvider,
+      normalizedPosition,
+      normalizedPlacement,
+      normalizedEventRef
+    ].join('|');
+
+    if (
+      session.behaviorSignals
+        .has(
+          dedupeKey
+        )
+    ) {
+      return null;
+    }
+
+    session.behaviorSignals
+      .add(
+        dedupeKey
+      );
+
+    /*
+     * Reserve the sequence synchronously at interaction
+     * time. Network/hash completion order must not change
+     * the semantic funnel order.
+     */
+    session.sequence +=
+      1;
+
+    const reservedSequence =
+      session.sequence;
+
+    const eventRefHash =
+      await createEventRefHash(
+        normalizedEventRef,
+        cryptoImpl
+      );
+
+    /*
+     * Hashing is asynchronous. A new AI search or consent
+     * change may happen while it is running. Never attach
+     * the finished interaction to a stale session.
+     */
+    if (
+      !session ||
+      session.searchId !==
+        activeSearchId ||
+      !hasConsent()
+    ) {
+      return null;
+    }
+
+    const payload = {
+      schemaVersion:
+        SCHEMA_VERSION,
+
+      event,
+
+      searchId:
+        session.searchId,
+
+      sequence:
+        reservedSequence,
+
+      locale:
+        session.locale,
+
+      page:
+        session.page,
+
+      eventRefHash,
+
+      provider:
+        normalizedProvider,
+
+      resultPosition:
+        normalizedPosition,
+
+      placement:
+        normalizedPlacement
+    };
+
+    postEvent(
+      payload
+    );
+
+    return payload;
+  }
+
+  function eventOpened(
+    context = {}
+  ) {
+    return recordBehavior(
+      'event_opened',
+      context
+    );
+  }
+
+  function partnerClickout(
+    context = {}
+  ) {
+    return recordBehavior(
+      'partner_clickout',
+      context
+    );
+  }
+
   return {
     begin,
     record,
+    eventOpened,
+    partnerClickout,
     reset
   };
 }
@@ -839,6 +1170,22 @@ export function recordAiSearchFilterState(
 ) {
   return defaultTracker.record(
     filters
+  );
+}
+
+export function recordAiSearchEventOpened(
+  context = {}
+) {
+  return defaultTracker.eventOpened(
+    context
+  );
+}
+
+export function recordAiSearchPartnerClickout(
+  context = {}
+) {
+  return defaultTracker.partnerClickout(
+    context
   );
 }
 

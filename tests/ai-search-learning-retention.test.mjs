@@ -6,6 +6,7 @@ import {
   LEARNING_RETENTION_DELETE_CONCURRENCY,
   config,
   createAiSearchLearningRetentionHandler,
+  createAiSearchLearningRetentionRunner,
   getLearningRetentionCutoffDate
 } from '../netlify/functions/ai-search-learning-retention.js';
 
@@ -169,7 +170,7 @@ test(
       };
 
     const handler =
-      createAiSearchLearningRetentionHandler({
+      createAiSearchLearningRetentionRunner({
         listStoresFn,
         getStoreFn,
 
@@ -248,7 +249,7 @@ test(
       [];
 
     const handler =
-      createAiSearchLearningRetentionHandler({
+      createAiSearchLearningRetentionRunner({
         listStoresFn:
           async () => ({
             stores: [
@@ -358,7 +359,7 @@ test(
       );
 
     const handler =
-      createAiSearchLearningRetentionHandler({
+      createAiSearchLearningRetentionRunner({
         listStoresFn:
           async () => ({
             stores: [
@@ -449,6 +450,42 @@ test(
     assert.ok(
       maxActiveDeletes <
         blobs.length
+    );
+  }
+);
+
+
+test(
+  'scheduled handler returns undefined after successful cleanup',
+  async () => {
+    const handler =
+      createAiSearchLearningRetentionHandler({
+        listStoresFn:
+          async () => ({
+            stores:
+              []
+          }),
+
+        getStoreFn:
+          () => {
+            throw new Error(
+              'store should not be opened'
+            );
+          },
+
+        nowProvider:
+          () =>
+            new Date(
+              '2026-09-17T15:00:00.000Z'
+            )
+      });
+
+    const result =
+      await handler();
+
+    assert.equal(
+      result,
+      undefined
     );
   }
 );

@@ -318,7 +318,7 @@ async function cleanStore(
   };
 }
 
-export function createAiSearchLearningRetentionHandler({
+export function createAiSearchLearningRetentionRunner({
   listStoresFn =
     listStores,
 
@@ -331,7 +331,7 @@ export function createAiSearchLearningRetentionHandler({
   retentionDays =
     LEARNING_RETENTION_DAYS
 } = {}) {
-  return async function aiSearchLearningRetentionHandler() {
+  return async function runAiSearchLearningRetention() {
     const cutoffDate =
       getLearningRetentionCutoffDate(
         nowProvider(),
@@ -397,6 +397,26 @@ export function createAiSearchLearningRetentionHandler({
     );
 
     return summary;
+  };
+}
+
+export function createAiSearchLearningRetentionHandler(
+  options = {}
+) {
+  const runRetention =
+    createAiSearchLearningRetentionRunner(
+      options
+    );
+
+  return async function aiSearchLearningRetentionHandler() {
+    await runRetention();
+
+    /*
+     * Netlify Scheduled Functions accept only Response
+     * or undefined. The summary is intentionally kept
+     * inside the runner for tests/observability.
+     */
+    return undefined;
   };
 }
 

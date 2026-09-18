@@ -24,13 +24,20 @@ const SUPPORTED_EVENTS =
     'filters_applied',
     'filters_corrected',
     'event_opened',
-    'partner_clickout'
+    'partner_clickout',
+    'search_feedback'
   ]);
 
 const BEHAVIOR_EVENTS =
   new Set([
     'event_opened',
     'partner_clickout'
+  ]);
+
+const SUPPORTED_FEEDBACK_VALUES =
+  new Set([
+    'helpful',
+    'not_helpful'
   ]);
 
 const SUPPORTED_BEHAVIOR_PROVIDERS =
@@ -111,7 +118,8 @@ const TOP_LEVEL_KEYS =
     'eventRefHash',
     'provider',
     'resultPosition',
-    'placement'
+    'placement',
+    'feedback'
   ]);
 
 const FILTER_KEYS =
@@ -852,6 +860,22 @@ function assertNoBehaviorFields(
   }
 }
 
+function assertNoFeedbackField(
+  value
+) {
+  if (
+    hasOwn(
+      value,
+      'feedback'
+    )
+  ) {
+    throw createHttpError(
+      400,
+      'unexpected-feedback-field'
+    );
+  }
+}
+
 function normalizePayload(
   value
 ) {
@@ -944,6 +968,10 @@ function normalizePayload(
       );
     }
 
+    assertNoFeedbackField(
+      value
+    );
+
     for (
       const key
       of [
@@ -1008,7 +1036,74 @@ function normalizePayload(
     };
   }
 
+  if (
+    event ===
+    'search_feedback'
+  ) {
+    if (
+      sequence <
+      1
+    ) {
+      throw createHttpError(
+        400,
+        'invalid-feedback-sequence'
+      );
+    }
+
+    if (
+      hasOwn(
+        value,
+        'filters'
+      ) ||
+      hasOwn(
+        value,
+        'correctedFields'
+      )
+    ) {
+      throw createHttpError(
+        400,
+        'unexpected-filter-field'
+      );
+    }
+
+    assertNoBehaviorFields(
+      value
+    );
+
+    if (
+      !hasOwn(
+        value,
+        'feedback'
+      )
+    ) {
+      throw createHttpError(
+        400,
+        'missing-feedback-field'
+      );
+    }
+
+    return {
+      schemaVersion,
+      event,
+      searchId,
+      sequence,
+      locale,
+      page,
+
+      feedback:
+        normalizeEnum(
+          value.feedback,
+          SUPPORTED_FEEDBACK_VALUES,
+          'invalid-feedback'
+        )
+    };
+  }
+
   assertNoBehaviorFields(
+    value
+  );
+
+  assertNoFeedbackField(
     value
   );
 

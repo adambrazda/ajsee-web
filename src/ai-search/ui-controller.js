@@ -8,6 +8,9 @@ import {
 import {
   trackAiSearchOutcome
 } from './analytics.js';
+import {
+  recordAiSearchFeedback
+} from './learning.js';
 
 import {
   hasAnalyticsConsent
@@ -323,6 +326,62 @@ const APPLY_COPY = {
       'Kész — a szűrőket a kérésed alapján módosítottam.',
     partial:
       'A szűrőket módosítottam, de a kérés egy részét az AJSEE még nem tudja alkalmazni.'
+  }
+};
+
+const FEEDBACK_COPY = {
+  cs: {
+    question:
+      'Pomohlo v\u00e1m toto vyhled\u00e1v\u00e1n\u00ed?',
+    helpful:
+      'Ano',
+    notHelpful:
+      'Ne'
+  },
+
+  en: {
+    question:
+      'Did this search help you?',
+    helpful:
+      'Yes',
+    notHelpful:
+      'No'
+  },
+
+  de: {
+    question:
+      'Hat Ihnen diese Suche geholfen?',
+    helpful:
+      'Ja',
+    notHelpful:
+      'Nein'
+  },
+
+  sk: {
+    question:
+      'Pomohlo v\u00e1m toto vyh\u013ead\u00e1vanie?',
+    helpful:
+      '\u00c1no',
+    notHelpful:
+      'Nie'
+  },
+
+  pl: {
+    question:
+      'Czy to wyszukiwanie by\u0142o pomocne?',
+    helpful:
+      'Tak',
+    notHelpful:
+      'Nie'
+  },
+
+  hu: {
+    question:
+      'Seg\u00edtett ez a keres\u00e9s?',
+    helpful:
+      'Igen',
+    notHelpful:
+      'Nem'
   }
 };
 
@@ -831,6 +890,38 @@ export function initAiEventSearch({
     ></p>
 
     <div
+      class="ai-event-search__feedback"
+      data-ai-search-feedback
+      role="group"
+      aria-labelledby="ai-event-search-feedback-question"
+      hidden
+    >
+      <p
+        class="ai-event-search__feedback-question"
+        id="ai-event-search-feedback-question"
+        data-ai-search-feedback-question
+      ></p>
+
+      <div
+        class="ai-event-search__feedback-actions"
+      >
+        <button
+          class="ai-event-search__feedback-button"
+          type="button"
+          data-ai-search-feedback-value="helpful"
+          aria-pressed="false"
+        ></button>
+
+        <button
+          class="ai-event-search__feedback-button"
+          type="button"
+          data-ai-search-feedback-value="not_helpful"
+          aria-pressed="false"
+        ></button>
+      </div>
+    </div>
+
+    <div
       class="ai-event-search__clarification-actions"
       data-ai-search-clarification-actions
       role="group"
@@ -905,6 +996,23 @@ export function initAiEventSearch({
       '[data-ai-search-clarification-edit]'
     );
 
+  const feedback =
+    root.querySelector(
+      '[data-ai-search-feedback]'
+    );
+
+  const feedbackQuestion =
+    root.querySelector(
+      '[data-ai-search-feedback-question]'
+    );
+
+  const feedbackButtons =
+    Array.from(
+      root.querySelectorAll(
+        '[data-ai-search-feedback-value]'
+      )
+    );
+
   let pendingClarification =
     null;
 
@@ -912,6 +1020,103 @@ export function initAiEventSearch({
     locale =>
       CLARIFICATION_COPY[locale] ||
       CLARIFICATION_COPY.cs;
+
+  const getFeedbackCopy =
+    locale =>
+      FEEDBACK_COPY[locale] ||
+      FEEDBACK_COPY.cs;
+
+  const updateFeedbackCopy =
+    locale => {
+      const feedbackCopy =
+        getFeedbackCopy(
+          locale
+        );
+
+      if (feedbackQuestion) {
+        feedbackQuestion.textContent =
+          feedbackCopy.question;
+      }
+
+      for (
+        const button
+        of feedbackButtons
+      ) {
+        button.textContent =
+          button.dataset
+            .aiSearchFeedbackValue ===
+          'helpful'
+            ? feedbackCopy.helpful
+            : feedbackCopy.notHelpful;
+      }
+    };
+
+  const setFeedbackValue =
+    value => {
+      if (!feedback) {
+        return;
+      }
+
+      feedback.dataset
+        .feedbackValue =
+        value;
+
+      for (
+        const button
+        of feedbackButtons
+      ) {
+        button.setAttribute(
+          'aria-pressed',
+          button.dataset
+            .aiSearchFeedbackValue ===
+            value
+            ? 'true'
+            : 'false'
+        );
+      }
+    };
+
+  const hideFeedback =
+    () => {
+      if (!feedback) {
+        return;
+      }
+
+      feedback.hidden =
+        true;
+
+      feedback.removeAttribute(
+        'data-feedback-value'
+      );
+
+      for (
+        const button
+        of feedbackButtons
+      ) {
+        button.setAttribute(
+          'aria-pressed',
+          'false'
+        );
+      }
+    };
+
+  const showFeedback =
+    locale => {
+      updateFeedbackCopy(
+        locale
+      );
+
+      if (
+        !feedback ||
+        !hasAnalyticsConsent()
+      ) {
+        hideFeedback();
+        return;
+      }
+
+      feedback.hidden =
+        false;
+    };
 
   const hideClarificationActions =
     () => {
@@ -958,6 +1163,10 @@ export function initAiEventSearch({
       getClarificationCopy(
         locale
       );
+
+    updateFeedbackCopy(
+      locale
+    );
 
     label.textContent =
       copy.label;
@@ -1098,6 +1307,8 @@ export function initAiEventSearch({
         requestClarificationContext
           ?.round ||
         0;
+
+      hideFeedback();
 
       submit.disabled =
         true;
@@ -1397,6 +1608,10 @@ export function initAiEventSearch({
                   : applyCopy.success
           }
         );
+
+        showFeedback(
+          locale
+        );
       } catch (error) {
         const {
           copy:
@@ -1515,6 +1730,47 @@ export function initAiEventSearch({
       }
     };
 
+  for (
+    const feedbackButton
+    of feedbackButtons
+  ) {
+    feedbackButton.addEventListener(
+      'click',
+      () => {
+        if (
+          !feedback ||
+          feedback.hidden
+        ) {
+          return;
+        }
+
+        if (
+          !hasAnalyticsConsent()
+        ) {
+          hideFeedback();
+          return;
+        }
+
+        const value =
+          feedbackButton.dataset
+            .aiSearchFeedbackValue;
+
+        const recorded =
+          recordAiSearchFeedback(
+            value
+          );
+
+        if (!recorded) {
+          return;
+        }
+
+        setFeedbackValue(
+          value
+        );
+      }
+    );
+  }
+
   submit.addEventListener(
     'click',
     () => {
@@ -1584,6 +1840,7 @@ export function initAiEventSearch({
   const resetClarificationFlow =
     () => {
       clearPendingClarification();
+      hideFeedback();
 
       input.value =
         '';

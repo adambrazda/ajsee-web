@@ -6,6 +6,7 @@ const ROOT = process.cwd();
 const SITE_ORIGIN = 'https://ajsee.cz';
 const DEFAULT_LANG = 'cs';
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+const REVIEW_VIDEO_MARKER = '[[review-video]]';
 
 const REVIEW_BACK_LABELS = {
   cs: 'Zpět na Blog & Recenze',
@@ -227,6 +228,7 @@ function inlineMarkdownToHtml(value = '') {
 function markdownToPlainText(value = '') {
   return String(value || '')
     .replace(/\r\n/g, '\n')
+    .replaceAll(REVIEW_VIDEO_MARKER, ' ')
     .replace(/^#{1,6}\s+/gm, '')
     .replace(/^[-*]\s+/gm, '')
     .replace(/\*\*(.+?)\*\*/g, '$1')
@@ -832,10 +834,117 @@ function buildReviewGalleryHtml(gallery, lang = DEFAULT_LANG) {
   `;
 }
 
+
+function buildReviewVideoHtml(
+  video = {},
+  translation = {}
+) {
+  const src = String(
+    video?.src || ''
+  ).trim();
+
+  if (!src) {
+    return '';
+  }
+
+  const poster = String(
+    video?.poster || ''
+  ).trim();
+
+  const caption = String(
+    translation?.videoCaption ||
+    video?.caption ||
+    ''
+  ).trim();
+
+  const credit = String(
+    video?.credit || ''
+  ).trim();
+
+  const captionParts = [
+    caption,
+    credit
+  ].filter(Boolean);
+
+  return `
+          <figure class="review-video">
+            <video
+              class="review-video__player"
+              controls
+              playsinline
+              preload="metadata"
+              ${poster ? `poster="${escapeAttr(poster)}"` : ''}
+            >
+              <source
+                src="${escapeAttr(src)}"
+                type="video/mp4"
+              >
+            </video>
+            ${
+              captionParts.length > 0
+                ? `<figcaption class="review-video__caption">${captionParts
+                    .map((part) => escapeHtml(part))
+                    .join(' &middot; ')}</figcaption>`
+                : ''
+            }
+          </figure>
+  `;
+}
+
+function buildReviewBodyHtml(
+  review = {},
+  translation = {}
+) {
+  const body = String(
+    translation?.body || ''
+  );
+
+  const markerIndex =
+    body.indexOf(
+      REVIEW_VIDEO_MARKER
+    );
+
+  if (markerIndex === -1) {
+    return markdownToHtml(body);
+  }
+
+  const before = body.slice(
+    0,
+    markerIndex
+  );
+
+  const after = body
+    .slice(
+      markerIndex +
+      REVIEW_VIDEO_MARKER.length
+    )
+    .replaceAll(
+      REVIEW_VIDEO_MARKER,
+      ''
+    );
+
+  const videoHtml =
+    buildReviewVideoHtml(
+      review?.video,
+      translation
+    );
+
+  return [
+    markdownToHtml(before),
+    videoHtml,
+    markdownToHtml(after)
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
 function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
   const title = translation.title || review.showTitle || review.slug;
   const subtitle = translation.subtitle || '';
-  const bodyHtml = markdownToHtml(translation.body || '');
+  const bodyHtml = buildReviewBodyHtml(
+    review,
+    translation
+  );
   const galleryHtml = buildReviewGalleryHtml(review.gallery, lang);
   const cover = review.cover || '';
   const coverAlt = translation.coverAlt || review.coverAlt || title;

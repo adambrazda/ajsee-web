@@ -73,6 +73,12 @@ const BEHAVIOR_EVENTS =
     'partner_clickout'
   ]);
 
+const SUPPORTED_FEEDBACK_VALUES =
+  new Set([
+    'helpful',
+    'not_helpful'
+  ]);
+
 const SUPPORTED_BEHAVIOR_PROVIDERS =
   new Set([
     'ticketmaster',
@@ -874,7 +880,10 @@ export function createAiSearchLearningTracker({
       snapshot,
 
       behaviorSignals:
-        new Set()
+        new Set(),
+
+      feedbackValue:
+        ''
     };
 
     postEvent({
@@ -1127,6 +1136,77 @@ export function createAiSearchLearningTracker({
     return payload;
   }
 
+  function feedback(
+    value
+  ) {
+    if (!session) {
+      return null;
+    }
+
+    if (
+      !hasConsent()
+    ) {
+      reset();
+      return null;
+    }
+
+    const normalized =
+      String(value || '')
+        .trim()
+        .toLowerCase();
+
+    if (
+      !SUPPORTED_FEEDBACK_VALUES
+        .has(
+          normalized
+        )
+    ) {
+      return null;
+    }
+
+    if (
+      session.feedbackValue ===
+      normalized
+    ) {
+      return null;
+    }
+
+    session.feedbackValue =
+      normalized;
+
+    session.sequence +=
+      1;
+
+    const payload = {
+      schemaVersion:
+        SCHEMA_VERSION,
+
+      event:
+        'search_feedback',
+
+      searchId:
+        session.searchId,
+
+      sequence:
+        session.sequence,
+
+      locale:
+        session.locale,
+
+      page:
+        session.page,
+
+      feedback:
+        normalized
+    };
+
+    postEvent(
+      payload
+    );
+
+    return payload;
+  }
+
   function eventOpened(
     context = {}
   ) {
@@ -1148,6 +1228,7 @@ export function createAiSearchLearningTracker({
   return {
     begin,
     record,
+    feedback,
     eventOpened,
     partnerClickout,
     reset
@@ -1186,6 +1267,14 @@ export function recordAiSearchPartnerClickout(
 ) {
   return defaultTracker.partnerClickout(
     context
+  );
+}
+
+export function recordAiSearchFeedback(
+  value
+) {
+  return defaultTracker.feedback(
+    value
   );
 }
 

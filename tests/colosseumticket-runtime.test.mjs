@@ -78,19 +78,28 @@ test(
 
 
 test(
-  'Colosseum sync is still not enabled in predev or prebuild',
+  'Colosseum sync is enabled in production prebuild but not local predev',
   () => {
-    const hooks =
-      [
-        packageJson.scripts?.predev || '',
-        packageJson.scripts?.prebuild || ''
-      ].join(' ');
+    const predev =
+      packageJson.scripts?.predev ||
+      '';
+
+    const prebuild =
+      packageJson.scripts?.prebuild ||
+      '';
 
     assert.equal(
-      hooks.includes(
+      predev.includes(
         'colosseumticket:sync'
       ),
       false
+    );
+
+    assert.equal(
+      prebuild.includes(
+        'colosseumticket:sync'
+      ),
+      true
     );
   }
 );
@@ -128,11 +137,11 @@ test(
 
 
 test(
-  'Colosseum runtime remains disabled until explicit activation',
+  'Colosseum runtime is explicitly enabled after commercial activation',
   () => {
     assert.match(
       eventsApiSource,
-      /const ENABLE_COLOSSEUMTICKET\s*=\s*false;/
+      /const ENABLE_COLOSSEUMTICKET\s*=\s*true;/
     );
 
     const providerStart =

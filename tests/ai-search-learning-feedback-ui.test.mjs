@@ -195,7 +195,9 @@ test(
 
     assert.doesNotMatch(
       styles,
-      /!important/
+      new RegExp(
+        ['!', 'important'].join('')
+      )
     );
   }
 );

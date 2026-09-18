@@ -295,6 +295,35 @@
   }
 }
 
+
+/* -------- REVIEW VIDEO ----------------------------------------------- */
+
+.review-video {
+  margin: 2rem 0 1.5rem;
+}
+
+.review-video__player {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 0.75rem;
+}
+
+.review-video__caption {
+  margin: 0.55rem 0 0;
+  color: #52677d;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .review-video {
+    margin-top: 1.5rem;
+  }
+}
+
 /* REVIEW DETAIL PRIMARY CTA */
 .review-detail .review-cta {
   display: flex;

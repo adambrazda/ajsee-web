@@ -564,12 +564,139 @@ export function parseColosseumXml(
   return events;
 }
 
+const COLOSSEUMTICKET_IMAGE_HOSTS =
+  new Set([
+    'www.datocms-assets.com'
+  ]);
+
+
+export function normalizeColosseumImageUrl(
+  value
+) {
+  const raw =
+    text(
+      value
+    );
+
+  if (!raw) {
+    return '';
+  }
+
+  let parsed;
+
+  try {
+    parsed =
+      new URL(
+        raw
+      );
+  } catch {
+    return '';
+  }
+
+  if (
+    parsed.protocol !==
+      'https:' ||
+    parsed.username ||
+    parsed.password ||
+    (
+      parsed.port &&
+      parsed.port !==
+        '443'
+    )
+  ) {
+    return '';
+  }
+
+  const hostname =
+    text(
+      parsed.hostname
+    )
+      .toLowerCase()
+      .replace(
+        /\.$/,
+        ''
+      );
+
+  if (
+    !COLOSSEUMTICKET_IMAGE_HOSTS.has(
+      hostname
+    )
+  ) {
+    return '';
+  }
+
+  return parsed.href;
+}
+
+
+function collectColosseumImageCandidates(
+  value,
+  output = []
+) {
+  if (
+    typeof value === 'string' ||
+    typeof value === 'number'
+  ) {
+    const normalized =
+      normalizeColosseumImageUrl(
+        value
+      );
+
+    if (normalized) {
+      output.push(
+        normalized
+      );
+    }
+
+    return output;
+  }
+
+  if (
+    Array.isArray(
+      value
+    )
+  ) {
+    for (
+      const item of value
+    ) {
+      collectColosseumImageCandidates(
+        item,
+        output
+      );
+    }
+
+    return output;
+  }
+
+  if (
+    value &&
+    typeof value === 'object'
+  ) {
+    for (
+      const item of
+      Object.values(
+        value
+      )
+    ) {
+      collectColosseumImageCandidates(
+        item,
+        output
+      );
+    }
+  }
+
+  return output;
+}
+
+
 function normalizeGallery(event) {
-  return toArray(
-    event?.GALLERY
-  )
-    .map(text)
-    .filter(Boolean);
+  return [
+    ...new Set(
+      collectColosseumImageCandidates(
+        event?.GALLERY
+      )
+    )
+  ];
 }
 
 function normalizeProviderCategory(
@@ -712,8 +839,61 @@ const COLOSSEUMTICKET_PURCHASE_HOSTS =
   ]);
 
 
-export function normalizeColosseumPurchaseUrl(
+export function normalizeColosseumAffiliateBox(
   value
+) {
+  const raw =
+    text(
+      value
+    );
+
+  if (!raw) {
+    return '';
+  }
+
+  /*
+   * Do not assume a provider-specific identifier shape.
+   * URLSearchParams performs escaping for us.
+   * Only reject control/whitespace data and unreasonable size.
+   */
+  if (
+    raw.length > 256 ||
+    /[\u0000-\u001f\u007f\s]/.test(
+      raw
+    )
+  ) {
+    throw new Error(
+      'ColosseumTicket affiliate a_box value is invalid.'
+    );
+  }
+
+  return raw;
+}
+
+
+export function requireColosseumAffiliateBox(
+  value
+) {
+  const normalized =
+    normalizeColosseumAffiliateBox(
+      value
+    );
+
+  if (!normalized) {
+    throw new Error(
+      'COLOSSEUMTICKET_A_BOX is required for ColosseumTicket production sync.'
+    );
+  }
+
+  return normalized;
+}
+
+
+export function normalizeColosseumPurchaseUrl(
+  value,
+  {
+    affiliateBox = ''
+  } = {}
 ) {
   const raw =
     text(
@@ -811,15 +991,37 @@ export function normalizeColosseumPurchaseUrl(
     };
   }
 
+  const normalizedAffiliateBox =
+    normalizeColosseumAffiliateBox(
+      affiliateBox
+    );
+
+  if (!normalizedAffiliateBox) {
+    /*
+     * Pure normalization/tests may intentionally omit
+     * affiliate configuration.
+     */
+    return {
+      url:
+        raw,
+
+      rejectionReason:
+        ''
+    };
+  }
+
   /*
-   * Preserve the provider-supplied deep link exactly.
-   *
-   * Affiliate parameters are deliberately NOT added here
-   * until ColosseumTicket confirms their deep-link contract.
+   * URLSearchParams.set guarantees exactly one a_box value
+   * and preserves all unrelated provider query parameters.
    */
+  parsed.searchParams.set(
+    'a_box',
+    normalizedAffiliateBox
+  );
+
   return {
     url:
-      raw,
+      parsed.href,
 
     rejectionReason:
       ''
@@ -892,7 +1094,8 @@ export function classifyColosseumPrice(
 
 function normalizeOccurrence(
   parent,
-  term
+  term,
+  options = {}
 ) {
   const providerEventId =
     text(
@@ -943,15 +1146,23 @@ function normalizeOccurrence(
       parent?.DESCRIPTION
     );
 
-  const image =
-    text(
-      parent?.imageurl
-    );
-
   const gallery =
     normalizeGallery(
       parent
     );
+
+  /*
+   * Provider media is published only from the image host
+   * observed and approved during the live feed audit.
+   * If imageurl is missing or unsafe, prefer the first
+   * validated gallery asset.
+   */
+  const image =
+    normalizeColosseumImageUrl(
+      parent?.imageurl
+    ) ||
+    gallery[0] ||
+    '';
 
   const rawDate =
     text(
@@ -995,7 +1206,8 @@ function normalizeOccurrence(
 
   const purchase =
     normalizeColosseumPurchaseUrl(
-      term?.eventdate?.url_objednavka
+      term?.eventdate?.url_objednavka,
+      options
     );
 
   const priceResult =
@@ -1269,7 +1481,8 @@ function normalizeOccurrence(
 
 
 export function normalizeColosseumFeed(
-  rawEvents
+  rawEvents,
+  options = {}
 ) {
   const events = [];
   const ids = new Set();
@@ -1387,7 +1600,8 @@ export function normalizeColosseumFeed(
       const normalized =
         normalizeOccurrence(
           parent,
-          term
+          term,
+          options
         );
 
       const priceState =
@@ -1563,6 +1777,96 @@ function matchesSubsetCity(
     );
 }
 
+const CITY_SUBSET_DESCRIPTION_MAX_CHARS = 240;
+
+function compactCitySubsetText(
+  value,
+  maximum = CITY_SUBSET_DESCRIPTION_MAX_CHARS
+) {
+  const clean =
+    String(value || '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  if (
+    !clean ||
+    clean.length <= maximum
+  ) {
+    return clean;
+  }
+
+  const candidate =
+    clean.slice(
+      0,
+      maximum + 1
+    );
+
+  const boundary =
+    candidate.lastIndexOf(' ');
+
+  const cutAt =
+    boundary >=
+      Math.floor(
+        maximum * 0.7
+      )
+      ? boundary
+      : maximum;
+
+  return (
+    candidate
+      .slice(
+        0,
+        cutAt
+      )
+      .trim() +
+    '?'
+  );
+}
+
+function compactCitySubsetDescription(
+  description
+) {
+  if (
+    typeof description === 'string'
+  ) {
+    const compact =
+      compactCitySubsetText(
+        description
+      );
+
+    return compact || undefined;
+  }
+
+  if (
+    !description ||
+    typeof description !== 'object' ||
+    Array.isArray(description)
+  ) {
+    return undefined;
+  }
+
+  const output = {};
+
+  for (
+    const [locale, value] of
+    Object.entries(description)
+  ) {
+    const compact =
+      compactCitySubsetText(
+        value
+      );
+
+    if (compact) {
+      output[locale] =
+        compact;
+    }
+  }
+
+  return Object.keys(output).length
+    ? output
+    : undefined;
+}
+
 function createLightEvent(
   event
 ) {
@@ -1574,7 +1878,21 @@ function createLightEvent(
     ...lightEvent
   } = event;
 
-  return lightEvent;
+  const compactDescription =
+    compactCitySubsetDescription(
+      description
+    );
+
+  return {
+    ...lightEvent,
+
+    ...(compactDescription
+      ? {
+          description:
+            compactDescription
+        }
+      : {})
+  };
 }
 
 function createSubsetPayload(
@@ -1605,8 +1923,9 @@ function createSubsetPayload(
         definition.aliases,
       payload:
         'listing-light',
+      descriptionPayload:
+        'excerpt-240',
       removedFields: [
-        'description',
         'gallery',
         'rawUrl',
         'sourceMeta'
@@ -2041,9 +2360,18 @@ export async function runColosseumSync() {
         source.xml
       );
 
+    const affiliateBoxForSync =
+      requireColosseumAffiliateBox(
+        process.env.COLOSSEUMTICKET_A_BOX
+      );
+
     const normalized =
       normalizeColosseumFeed(
-        rawEvents
+        rawEvents,
+        {
+          affiliateBox:
+            affiliateBoxForSync
+        }
       );
 
     if (

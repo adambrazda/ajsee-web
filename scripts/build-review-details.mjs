@@ -1305,6 +1305,57 @@ async function writeLocalizedDistReview(review) {
     written += 1;
   }
 
+  /*
+   * Deploy Preview may intentionally contain only the editorial master
+   * language while the Czech translation is still being prepared.
+   * build-localized-pages.cjs creates /reviews/<slug>/ from that master,
+   * but the missing-CS cleanup above removes the root route. Restore the
+   * root preview from the first real translation so blog cards remain
+   * clickable during editorial review. Production is unaffected because
+   * PREVIEW_MODE is false there.
+   */
+  if (
+    PREVIEW_MODE &&
+    !availableLanguages.has(DEFAULT_LANG)
+  ) {
+    const previewLang =
+      getAvailableTranslationLangs(review)[0];
+
+    if (previewLang) {
+      const previewSource =
+        buildDistReviewFile(
+          slug,
+          previewLang
+        );
+
+      const previewRoot =
+        buildDistReviewFile(
+          slug,
+          DEFAULT_LANG
+        );
+
+      if (!(await fileExists(previewSource))) {
+        throw new Error(
+          `Missing preview review source: ${path.relative(
+            ROOT,
+            previewSource
+          )}`
+        );
+      }
+
+      await ensureDir(
+        path.dirname(previewRoot)
+      );
+
+      await fs.copyFile(
+        previewSource,
+        previewRoot
+      );
+
+      written += 1;
+    }
+  }
+
   return written;
 }
 

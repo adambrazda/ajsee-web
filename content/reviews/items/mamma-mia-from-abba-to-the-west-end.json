@@ -17,6 +17,26 @@
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.tixculture.com/london/shows/304-mamma-mia",
+  "cover": "/uploads/reviews/mamma-mia-from-abba-to-the-west-end/mamma-mia-west-end-cover.webp",
+  "coverAlt": "Three Mamma Mia! performers in white stage costumes sing and point upward in front of a blue door.",
+  "coverCredit": "Photo: TodayTix",
+  "gallery": [
+    {
+      "image": "/uploads/reviews/mamma-mia-from-abba-to-the-west-end/mamma-mia-west-end-company.webp",
+      "alt": "The Mamma Mia! company posing together on stage in colourful costumes.",
+      "credit": "Photo: TodayTix"
+    },
+    {
+      "image": "/uploads/reviews/mamma-mia-from-abba-to-the-west-end/mamma-mia-west-end-dance.webp",
+      "alt": "The Mamma Mia! company performing a dance sequence under purple and blue stage lighting.",
+      "credit": "Photo: TodayTix"
+    },
+    {
+      "image": "/uploads/reviews/mamma-mia-from-abba-to-the-west-end/mamma-mia-west-end-closeup.webp",
+      "alt": "A performer in a turquoise top and denim overalls during Mamma Mia! in London's West End.",
+      "credit": "Photo: TodayTix"
+    }
+  ],
   "translations": {
     "en": {
       "title": "Mamma Mia!: From ABBA to the West End",
@@ -29,8 +49,9 @@
       "seoDescription": "Oya Canli reflects on Mamma Mia!, ABBA's music, her first experience of the musical in Turkey and why London's West End is the next chapter.",
       "venue": "Novello Theatre",
       "city": "London",
-      "country": "United Kingdom"
+      "country": "United Kingdom",
+      "coverAlt": "Three Mamma Mia! performers in white stage costumes sing and point upward in front of a blue door."
     }
   },
-  "internalNotes": "Source: Mamma Mia! article supplied by Oya Canli and provided by Adam Brazda.\nEnglish editorial master approved by Adam Brazda on 23 September 2026.\nOnly the English master is prepared at this stage; the remaining AJSEE languages will be added separately before publication.\nPublication is planned for Monday 28 September 2026 (Europe/Prague). Do not publish earlier.\nKeep status approved, published false, and publishedAt empty until the explicit publication step.\nMamma Mia! tickets are sold through AJSEE's TodayTix/Encore white-label page. The direct show URL is https://ajsee.tixculture.com/london/shows/304-mamma-mia.\nNo cover image or gallery has been added yet."
+  "internalNotes": "Source: Mamma Mia! article supplied by Oya Canli and provided by Adam Brazda.\nEnglish editorial master approved by Adam Brazda on 23 September 2026.\nOnly the English master is prepared at this stage; the remaining AJSEE languages will be added separately before publication.\nPublication is planned for Monday 28 September 2026 (Europe/Prague). Do not publish earlier.\nKeep status approved, published false, and publishedAt empty until the explicit publication step.\nMamma Mia! tickets are sold through AJSEE's TodayTix/Encore white-label page. The direct show URL is https://ajsee.tixculture.com/london/shows/304-mamma-mia.\nCover and three gallery images supplied by Adam Brazda; photo credit confirmed as TodayTix. Web assets prepared as optimized WebP files."
 }

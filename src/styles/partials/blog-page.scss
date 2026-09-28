@@ -250,6 +250,14 @@
   line-height: 1.4;
 }
 
+@media (min-width: 601px) {
+  .review-gallery-item:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    width: calc((100% - 1rem) / 2);
+    justify-self: center;
+  }
+}
+
 @media (max-width: 600px) {
   .review-gallery {
     margin-top: 1.5rem;

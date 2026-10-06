@@ -10,6 +10,7 @@ function ensureLayoutStyles(doc) {
     .event-modal .modal-header { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; padding: 12px 20px 0; }
     .event-modal .modal-brand { font-size: 18px; font-weight: 750; letter-spacing: 2px; color: var(--aj-event-text); }
     .event-modal .event-modal-close { position: static; width: 44px; height: 44px; margin: 0; background: var(--aj-event-soft); color: var(--aj-event-text); box-shadow: none; flex: 0 0 44px; }
+    .event-modal .event-modal-close svg { stroke: currentColor; }
     .event-modal .event-modal-close:focus-visible { outline: 2px solid var(--aj-event-cta); outline-offset: 3px; }
     .event-modal .modal-body { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 28px; min-height: 0; padding: 16px 24px 24px; overflow: auto; overscroll-behavior: contain; }
     .event-modal .modal-visual-column { position: relative; min-width: 0; }
@@ -17,7 +18,7 @@ function ensureLayoutStyles(doc) {
     .event-modal .modal-provider-badge { position: absolute; top: 8px; inset-inline-start: 8px; margin: 0; padding: 4px 8px; max-width: calc(100% - 16px); border-radius: 6px; background: var(--aj-event-surface); color: var(--aj-event-muted); border: 1px solid var(--aj-event-border); font-size: 11px; font-weight: 600; pointer-events: none; }
     .event-modal .modal-details { min-width: 0; padding: 0; overflow: visible; }
     .event-modal .modal-title { margin: 0 0 16px; font-size: clamp(26px, 2.5vw, 32px); line-height: 1.15; letter-spacing: -.025em; color: var(--aj-event-text); overflow-wrap: anywhere; }
-    .event-modal .modal-category { margin: 0 0 6px; color: var(--aj-event-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+    .event-modal .modal-category { margin: 0 0 6px; color: var(--aj-event-muted); font-size: 11px; font-weight: 600; font-style: normal; text-transform: uppercase; letter-spacing: .06em; }
     .event-modal .modal-meta { display: grid; gap: 8px; margin: 0 0 18px; color: var(--aj-event-muted); font-size: 14px; font-weight: 400; line-height: 1.5; }
     .event-modal .modal-meta-row { display: flex; align-items: flex-start; gap: 8px; }
     .event-modal .modal-meta-row svg { flex: 0 0 17px; margin-top: 2px; }

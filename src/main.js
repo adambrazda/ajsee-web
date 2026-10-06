@@ -4728,10 +4728,6 @@ if (!G.flags.mainDomReadyBound) {
 
     card.dataset.eventProvider = partner;
 
-    const content =
-      card.querySelector('.event-content') ||
-      card;
-
     let badge =
       card.querySelector('.event-partner-badge');
 
@@ -4742,19 +4738,17 @@ if (!G.flags.mainDomReadyBound) {
       badge.innerHTML = '<span>' + label + '</span>';
     }
 
-    /*
-     * Provider identity belongs to the card surface, not the event artwork.
-     * Keep it as the first content child so shared responsive CSS can place it
-     * beside the title on larger cards and below the thumbnail on compact cards.
-     */
-    if (
-      content !== card ||
-      !card.querySelector('.event-image-frame')
-    ) {
-      if (badge.parentElement !== content) {
-        const footer =
-          content.querySelector?.('.event-card-footer');
+    const content =
+      card.querySelector('.event-content');
 
+    if (content) {
+      const footer =
+        content.querySelector('.event-card-footer');
+
+      if (
+        badge.parentElement !== content ||
+        (footer && badge.nextElementSibling !== footer)
+      ) {
         content.insertBefore(
           badge,
           footer || null
@@ -4763,8 +4757,26 @@ if (!G.flags.mainDomReadyBound) {
       return;
     }
 
+    /*
+     * Legacy fallback: still keep provider identity outside the artwork.
+     * Canonical cards use .event-content and the shared responsive layout.
+     */
+    const imageFrame =
+      card.querySelector('.event-image-frame');
+
+    if (
+      imageFrame?.parentElement &&
+      badge.parentElement !== imageFrame.parentElement
+    ) {
+      imageFrame.insertAdjacentElement(
+        'afterend',
+        badge
+      );
+      return;
+    }
+
     if (!badge.isConnected) {
-      content.appendChild(badge);
+      card.appendChild(badge);
     }
   }
 

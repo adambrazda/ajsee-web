@@ -201,6 +201,8 @@ const COUNTRY_MARKET_HOST = {
 };
 
 const IMPACT_COUNTRY_BY_IDS = {
+  '1958979|23901': 'CZ',
+  // Legacy Ticketmaster CZ asset kept for old cached/deep links.
   '2038768|23901': 'CZ',
   '2038758|24023': 'GB',
   '2038753|23890': 'DE',

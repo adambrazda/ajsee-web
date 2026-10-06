@@ -21,7 +21,7 @@ const event = {
 };
 
 test(
-  'Ticketmaster CZ defaults to the current official Impact affiliate link',
+  'Ticketmaster CZ defaults to adaptive routing with the current official Impact asset',
   async () => {
     const previousMode =
       process.env.TM_IMPACT_TRACKING_MODE;
@@ -33,37 +33,42 @@ test(
       delete process.env.TM_IMPACT_TRACKING_MODE;
       delete process.env.TM_IMPACT_TRACKING_ENABLED;
 
-      const affiliateModule =
+      const adaptiveModule =
         await import(
-          `${moduleUrl.href}?mode=affiliate-default`
+          `${moduleUrl.href}?mode=adaptive-current-asset`
         );
 
       const response =
-        await affiliateModule.handler(event);
+        await adaptiveModule.handler(event);
 
       assert.equal(
         response.statusCode,
-        302
+        200
       );
 
-      const affiliateUrl =
-        new URL(
-          response.headers.Location
-        );
-
-      assert.equal(
-        affiliateUrl.hostname,
-        'ticketmaster.evyy.net'
+      assert.match(
+        response.headers['Content-Type'],
+        /text\/html/
       );
 
-      assert.equal(
-        affiliateUrl.pathname,
-        '/c/7218577/1958979/23901'
+      assert.match(
+        response.body,
+        /ticketmaster\.evyy\.net/
       );
 
-      assert.equal(
-        affiliateUrl.searchParams.get('u'),
-        target
+      assert.match(
+        response.body,
+        /www\.ojrq\.net/
+      );
+
+      assert.match(
+        response.body,
+        /7218577\/1958979\/23901/
+      );
+
+      assert.match(
+        response.body,
+        /www\.ticketmaster\.cz/
       );
     } finally {
       if (previousMode === undefined) {

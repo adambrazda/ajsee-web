@@ -5993,10 +5993,6 @@ if (!G.flags.mainDomReadyBound) {
 
     card.dataset.eventProvider = 'smsticket';
 
-    const content =
-      card.querySelector('.event-content') ||
-      card;
-
     let badge =
       card.querySelector('.event-partner-badge');
 
@@ -6007,18 +6003,17 @@ if (!G.flags.mainDomReadyBound) {
       badge.innerHTML = '<span>smsticket</span>';
     }
 
-    /*
-     * Keep seller attribution outside the artwork. Shared event-card CSS owns
-     * the final responsive placement and dark-mode appearance.
-     */
-    if (
-      content !== card ||
-      !card.querySelector('.event-image-frame')
-    ) {
-      if (badge.parentElement !== content) {
-        const footer =
-          content.querySelector?.('.event-card-footer');
+    const content =
+      card.querySelector('.event-content');
 
+    if (content) {
+      const footer =
+        content.querySelector('.event-card-footer');
+
+      if (
+        badge.parentElement !== content ||
+        (footer && badge.nextElementSibling !== footer)
+      ) {
         content.insertBefore(
           badge,
           footer || null
@@ -6027,8 +6022,22 @@ if (!G.flags.mainDomReadyBound) {
       return;
     }
 
+    const imageFrame =
+      card.querySelector('.event-image-frame');
+
+    if (
+      imageFrame?.parentElement &&
+      badge.parentElement !== imageFrame.parentElement
+    ) {
+      imageFrame.insertAdjacentElement(
+        'afterend',
+        badge
+      );
+      return;
+    }
+
     if (!badge.isConnected) {
-      content.appendChild(badge);
+      card.appendChild(badge);
     }
   }
 

@@ -27,14 +27,15 @@ const AJSEE_SHARED_ID = 'ajsee_web_events';
 const AJSEE_PARTNER_PROPERTY_ID = '8292139';
 
 // Tracking modes:
-// - adaptive (default): probe the Impact tracking/sync hosts in the user's
-//   browser. If both are reachable, use the official affiliate link;
-//   otherwise fall back to the clean Ticketmaster URL before a TLS/ad-blocker
-//   interstitial can break the purchase journey.
-// - affiliate: emergency override that always uses Impact.
+// - server (default): Netlify resolves the Impact redirect chain server-side
+//   and sends the browser straight to the final Ticketmaster URL carrying the
+//   affiliate click parameters. This prevents local DNSBL/ad-blocking from
+//   breaking the purchase journey while preserving attribution.
+// - affiliate: emergency override that exposes the raw Impact chain.
 // - direct: emergency bypass of Impact.
 //
-// TM_IMPACT_TRACKING_ENABLED is kept only as a backwards-compatible override.
+// Legacy "adaptive" is mapped to server mode. TM_IMPACT_TRACKING_ENABLED is
+// kept only as a backwards-compatible override.
 function resolveImpactTrackingMode() {
   const explicitMode = String(
     process.env.TM_IMPACT_TRACKING_MODE || ''
@@ -42,8 +43,12 @@ function resolveImpactTrackingMode() {
     .trim()
     .toLowerCase();
 
+  if (explicitMode === 'adaptive') {
+    return 'server';
+  }
+
   if (
-    ['adaptive', 'affiliate', 'direct'].includes(
+    ['server', 'affiliate', 'direct'].includes(
       explicitMode
     )
   ) {
@@ -59,7 +64,7 @@ function resolveImpactTrackingMode() {
   if (
     ['1', 'true', 'yes', 'on'].includes(legacy)
   ) {
-    return 'affiliate';
+    return 'server';
   }
 
   if (
@@ -68,7 +73,7 @@ function resolveImpactTrackingMode() {
     return 'direct';
   }
 
-  return 'adaptive';
+  return 'server';
 }
 
 const IMPACT_TRACKING_MODE =
@@ -761,6 +766,292 @@ function buildImpactUrl(destinationUrl, options = {}) {
   return impactUrl.toString();
 }
 
+const SERVER_RESOLVE_MAX_HOPS = 8;
+const SERVER_RESOLVE_TIMEOUT_MS = 3500;
+const SERVER_RESOLVE_TOTAL_MS = 9000;
+
+function isImpactSyncHost(hostname = '') {
+  return normalizeHost(hostname) === 'ojrq.net';
+}
+
+function isAllowedImpactResolverHost(hostname = '') {
+  return (
+    isImpactTicketmasterHost(hostname) ||
+    isImpactSyncHost(hostname) ||
+    isAllowedDestinationHost(hostname)
+  );
+}
+
+function getSetCookieHeaders(headers) {
+  try {
+    if (typeof headers?.getSetCookie === 'function') {
+      return headers.getSetCookie();
+    }
+  } catch {
+    // noop
+  }
+
+  const raw = headers?.get?.('set-cookie');
+  return raw ? [raw] : [];
+}
+
+function cookiePairsFromSetCookie(setCookieHeaders = []) {
+  return setCookieHeaders
+    .map((raw) => String(raw || '').split(';', 1)[0].trim())
+    .filter((pair) => /^[^=;\s]+=[^;]*$/.test(pair));
+}
+
+function mergeCookiePairs(existing = [], incoming = []) {
+  const byName = new Map();
+
+  for (const pair of [...existing, ...incoming]) {
+    const eq = pair.indexOf('=');
+    if (eq <= 0) continue;
+    byName.set(pair.slice(0, eq), pair);
+  }
+
+  return [...byName.values()];
+}
+
+function hasAffiliateEvidence(rawUrl = '') {
+  try {
+    const parsed = new URL(rawUrl);
+    const p = parsed.searchParams;
+
+    return Boolean(
+      p.get('clickId') ||
+      p.get('irclickid') ||
+      p.get('irgwc') === '1' ||
+      p.get('afsrc') === '1' ||
+      p.get('ircid') ||
+      p.get('camefrom') ||
+      p.get('utm_campaign') === AJSEE_IMPACT_ID ||
+      String(p.get('utm_source') || '').includes(AJSEE_IMPACT_ID)
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function resolveAffiliateServerSide(
+  affiliateUrl = '',
+  {
+    userAgent = '',
+    acceptLanguage = '',
+    fetchImpl = globalThis.fetch,
+    now = () => Date.now(),
+  } = {}
+) {
+  if (typeof fetchImpl !== 'function') {
+    return {
+      ok: false,
+      reason: 'fetch_unavailable',
+      url: '',
+      hops: 0,
+    };
+  }
+
+  let current = String(affiliateUrl || '').trim();
+  if (!current) {
+    return {
+      ok: false,
+      reason: 'missing_affiliate_url',
+      url: '',
+      hops: 0,
+    };
+  }
+
+  const startedAt = now();
+  const cookieJar = new Map();
+
+  for (
+    let hop = 0;
+    hop < SERVER_RESOLVE_MAX_HOPS;
+    hop += 1
+  ) {
+    if (now() - startedAt > SERVER_RESOLVE_TOTAL_MS) {
+      return {
+        ok: false,
+        reason: 'total_timeout',
+        url: '',
+        hops: hop,
+      };
+    }
+
+    let parsed;
+
+    try {
+      parsed = new URL(current);
+    } catch {
+      return {
+        ok: false,
+        reason: 'invalid_redirect_url',
+        url: '',
+        hops: hop,
+      };
+    }
+
+    if (!/^https:$/i.test(parsed.protocol)) {
+      return {
+        ok: false,
+        reason: 'non_https_redirect',
+        url: '',
+        hops: hop,
+      };
+    }
+
+    if (!isAllowedImpactResolverHost(parsed.hostname)) {
+      return {
+        ok: false,
+        reason: `blocked_redirect_host:${normalizeHost(parsed.hostname)}`,
+        url: '',
+        hops: hop,
+      };
+    }
+
+    if (isAllowedDestinationHost(parsed.hostname)) {
+      return {
+        ok: true,
+        reason: hasAffiliateEvidence(parsed.toString())
+          ? 'ticketmaster_with_affiliate_evidence'
+          : 'ticketmaster_destination',
+        url: parsed.toString(),
+        hops: hop,
+        affiliateEvidence:
+          hasAffiliateEvidence(parsed.toString()),
+      };
+    }
+
+    const hostKey = normalizeHost(parsed.hostname);
+    const controller = new AbortController();
+    const timeout = setTimeout(
+      () => controller.abort(),
+      SERVER_RESOLVE_TIMEOUT_MS
+    );
+
+    const requestHeaders = {
+      Accept:
+        'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Cache-Control': 'no-cache',
+    };
+
+    if (userAgent) {
+      requestHeaders['User-Agent'] =
+        String(userAgent).slice(0, 500);
+    }
+
+    if (acceptLanguage) {
+      requestHeaders['Accept-Language'] =
+        String(acceptLanguage).slice(0, 300);
+    }
+
+    const hostCookies =
+      cookieJar.get(hostKey) || [];
+
+    if (hostCookies.length) {
+      requestHeaders.Cookie =
+        hostCookies.join('; ');
+    }
+
+    try {
+      const response = await fetchImpl(current, {
+        method: 'GET',
+        redirect: 'manual',
+        cache: 'no-store',
+        headers: requestHeaders,
+        signal: controller.signal,
+      });
+
+      const incomingCookies =
+        cookiePairsFromSetCookie(
+          getSetCookieHeaders(response.headers)
+        );
+
+      if (incomingCookies.length) {
+        cookieJar.set(
+          hostKey,
+          mergeCookiePairs(
+            hostCookies,
+            incomingCookies
+          )
+        );
+      }
+
+      const location =
+        response.headers?.get?.('location');
+
+      if (location) {
+        const next =
+          new URL(location, current);
+
+        if (
+          !/^https:$/i.test(next.protocol) ||
+          !isAllowedImpactResolverHost(next.hostname)
+        ) {
+          return {
+            ok: false,
+            reason: `blocked_location:${normalizeHost(next.hostname)}`,
+            url: '',
+            hops: hop + 1,
+          };
+        }
+
+        current = next.toString();
+        continue;
+      }
+
+      /*
+       * Impact's sync endpoint normally answers with a 3xx Location.
+       * If a variant answers without one, its signed "return" parameter
+       * still identifies the next official Impact URL. We only use it when
+       * it resolves back to ticketmaster.evyy.net.
+       */
+      if (isImpactSyncHost(parsed.hostname)) {
+        const returnUrl =
+          parsed.searchParams.get('return');
+
+        const next =
+          parseUrlMaybe(returnUrl);
+
+        if (
+          next &&
+          isImpactTicketmasterHost(next.hostname) &&
+          /^https:$/i.test(next.protocol)
+        ) {
+          current = next.toString();
+          continue;
+        }
+      }
+
+      return {
+        ok: false,
+        reason: `no_redirect:${response.status || 0}`,
+        url: '',
+        hops: hop + 1,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        reason:
+          error?.name === 'AbortError'
+            ? 'hop_timeout'
+            : (error?.message || String(error)),
+        url: '',
+        hops: hop + 1,
+      };
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  return {
+    ok: false,
+    reason: 'max_hops',
+    url: '',
+    hops: SERVER_RESOLVE_MAX_HOPS,
+  };
+}
+
 export const handler = async (event) => {
   if (event.httpMethod !== 'GET') {
     return json(405, { error: 'Method not allowed' });
@@ -834,6 +1125,46 @@ export const handler = async (event) => {
   if (IMPACT_TRACKING_MODE === 'affiliate') {
     return safeRedirect(affiliateUrl);
   }
+
+  const resolved =
+    await resolveAffiliateServerSide(
+      affiliateUrl,
+      {
+        userAgent:
+          event?.headers?.['user-agent'] ||
+          event?.headers?.['User-Agent'] ||
+          '',
+        acceptLanguage:
+          event?.headers?.['accept-language'] ||
+          event?.headers?.['Accept-Language'] ||
+          '',
+      }
+    );
+
+  if (resolved.ok && resolved.url) {
+    console.info(
+      '[tmOutbound] Impact resolved server-side:',
+      {
+        eventId,
+        expectedCountry,
+        hops: resolved.hops,
+        affiliateEvidence:
+          resolved.affiliateEvidence === true,
+      }
+    );
+
+    return safeRedirect(resolved.url);
+  }
+
+  console.warn(
+    '[tmOutbound] Server-side Impact resolution failed; using browser-safe adaptive fallback:',
+    {
+      eventId,
+      expectedCountry,
+      reason: resolved.reason,
+      hops: resolved.hops,
+    }
+  );
 
   return adaptiveAffiliateRedirect(
     cleanDestinationUrl,

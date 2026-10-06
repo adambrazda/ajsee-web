@@ -59,7 +59,7 @@ function resolveImpactTrackingMode() {
   if (
     ['1', 'true', 'yes', 'on'].includes(legacy)
   ) {
-    return 'adaptive';
+    return 'affiliate';
   }
 
   if (
@@ -68,7 +68,7 @@ function resolveImpactTrackingMode() {
     return 'direct';
   }
 
-  return 'affiliate';
+  return 'adaptive';
 }
 
 const IMPACT_TRACKING_MODE =

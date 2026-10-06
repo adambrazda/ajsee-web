@@ -835,6 +835,8 @@ export function ensureSharedEventGridStyles(
       width: 100%;
       max-width: 1440px;
       margin-inline: auto;
+      box-sizing: border-box;
+      padding-inline: clamp(16px, 3vw, 32px);
 
       grid-template-columns: 1fr;
       justify-content: start;

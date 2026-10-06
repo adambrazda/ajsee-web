@@ -528,6 +528,7 @@ export function renderSharedEventCard({
           decoding="async"
           onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
         />
+        ${resolvedProviderBadge}
       </div>
 
       <div class="event-content">
@@ -536,8 +537,6 @@ export function renderSharedEventCard({
         <p class="event-date">${dateHtml}</p>
 
         ${resolvedVenueLine}
-
-        ${resolvedProviderBadge}
 
         ${renderEventCommerce(event, locale)}
 
@@ -946,6 +945,77 @@ export function ensureSharedEventGridStyles(
     .event-card .event-img[data-ajsee-image-fit="cover"],
     .event-card .event-img[data-ajsee-image-fit="auto"] {
       object-fit: cover;
+    }
+
+    body:is([data-page="home"], [data-page="events"]) #eventsList .event-card {
+      min-height: 0;
+      padding: 16px;
+      border-radius: 22px;
+    }
+
+    body:is([data-page="home"], [data-page="events"]) #eventsList .event-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      width: 100%;
+      min-width: 0;
+      padding-top: 12px;
+    }
+
+    body:is([data-page="home"], [data-page="events"]) #eventsList .event-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+
+    body:is([data-page="home"], [data-page="events"]) #eventsList .event-date {
+      margin: 0 0 4px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    #eventsList .event-card .event-image-frame > .event-partner-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      margin: 0;
+      pointer-events: none;
+    }
+
+    #eventsList .event-card .event-image-frame > .event-partner-badge span {
+      background: #fff;
+      color: #0a3d62;
+      border-color: rgba(10, 61, 98, .1);
+      box-shadow: 0 2px 10px rgba(10, 20, 35, .12);
+      min-height: 26px;
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+
+    body:is([data-page="home"], [data-page="events"]) #eventsList .event-buttons-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: auto;
+      padding-top: 4px;
+      width: 100%;
+    }
+
+    body:is([data-page="home"], [data-page="events"]) #eventsList .event-buttons-group .btn-event {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 44px;
+      padding: 10px 8px;
+      font-size: 14px;
+      line-height: 1.3;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      text-align: center;
+      border-radius: 11px;
     }
 
     @media (min-width: 768px) {

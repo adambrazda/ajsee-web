@@ -84,8 +84,8 @@ export function renderEventCommerce(event = {}, locale = 'cs', {detail = false, 
     <p class="event-price${prices.length ? '' : ' event-price--unknown'}">${esc(prices.join(' / ') || t.priceUnknown)}</p>
     ${detail && prices.length ? `<p class="event-commerce-note">${esc(t.priceNote)}</p>` : ''}
     <details class="event-stock" data-stock-tone="${stock.tone}" data-stock-status="${stock.status}">
-      <summary title="${esc(explanation + (updated ? ' ' + updated : ''))}"><span class="event-stock-dot" aria-hidden="true"></span><span>${esc(t[stock.status])}</span><span aria-hidden="true">ⓘ</span></summary>
-      <div class="event-stock-help">${esc(explanation)}${updated ? `<br>${esc(updated)}` : ''}</div>
+      <summary title="${esc(t[stock.status] + '. ' + explanation + (updated ? ' ' + updated : ''))}"><span class="event-stock-dot" aria-hidden="true"></span><span class="event-stock-label">${esc(t[stock.status])}</span><span aria-hidden="true">ⓘ</span></summary>
+      <div class="event-stock-help"><strong>${esc(t[stock.status])}</strong><br>${esc(explanation)}${updated ? `<br>${esc(updated)}` : ''}</div>
     </details>
     ${detail && countText ? `<p class="event-stock-count">${esc(countText)}</p>` : ''}
   </div>`;
@@ -96,8 +96,8 @@ export function ensureEventCommerceStyles(doc = globalThis.document) {
   const style = doc.createElement('style');
   style.id = 'ajsee-event-commerce-css';
   style.textContent = `
-    .event-commerce { margin: 12px 0; color: #0a3d62; min-width: 0; }
-    .event-commerce .event-price { margin: 0 0 4px; font-size: 18px; font-weight: 750; line-height: 1.4; overflow-wrap: anywhere; }
+    .event-commerce { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; margin: 8px 0; color: var(--aj-text-strong, #0a3d62); min-width: 0; }
+    .event-commerce .event-price { margin: 0; font-size: 18px; font-weight: 750; line-height: 1.4; overflow-wrap: anywhere; }
     .event-commerce .event-price--unknown { font-size: 14px; font-weight: 500; color: #526071; }
     .event-commerce .event-stock { font-size: 13px; line-height: 1.5; color: #344054; }
     .event-commerce .event-stock summary { display: flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; list-style: none; width: fit-content; max-width: 100%; border-radius: 6px; }
@@ -110,9 +110,15 @@ export function ensureEventCommerceStyles(doc = globalThis.document) {
     .event-commerce [data-stock-status="sold_out"] summary { font-weight: 750; background: #f2f4f7; padding: 0 10px; }
     .event-commerce .event-stock-help { display: none; padding: 10px 12px; background: #f2f6fa; border: 1px solid #d8e4ee; border-radius: 8px; overflow-wrap: anywhere; }
     .event-commerce .event-stock[open] .event-stock-help { display: block; }
+    .event-commerce:not(.event-commerce--detail) .event-stock:not([data-stock-status="sold_out"]):not([data-stock-status="canceled"]):not([data-stock-status="postponed"]) .event-stock-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .event-commerce:not(.event-commerce--detail) .event-stock summary { justify-content: center; min-width: 44px; padding-inline: 6px; }
+    .event-commerce .event-stock[open] { grid-column: 1 / -1; width: 100%; }
+    .event-commerce .event-stock-help strong { font-weight: 700; }
+    .event-commerce .event-stock:is([data-stock-status="sold_out"], [data-stock-status="canceled"], [data-stock-status="postponed"]) { grid-column: 1 / -1; }
     .event-commerce .event-commerce-note { margin: 6px 0; font-size: 13px; line-height: 1.5; color: #526071; }
     .event-commerce .event-stock-count { margin: 6px 0; font-size: 14px; font-weight: 650; }
-    .event-commerce--detail { padding: 16px; background: #f8fafc; border: 1px solid #d8e4ee; border-radius: 12px; }
+    .event-commerce--detail { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 14px; margin: 0; background: var(--aj-modal-control-bg, #f8fafc); border: 1px solid var(--aj-modal-control-border, #d8e4ee); border-radius: 14px; }
+    .event-commerce--detail .event-commerce-note { grid-row: 3; margin: 0; font-size: 12px; }
   `;
   doc.head.appendChild(style);
 }

@@ -22,6 +22,7 @@ import { formatEventDateRange } from './event-availability.js';
 // ---------------------------------------------------------
 
 const MODAL_ID = 'eventModal';
+const commerceLayoutBound = new WeakMap();
 
 let previousFocus = null;
 
@@ -1204,7 +1205,100 @@ function ensureModalConversionPolishStyles() {
       }
     }
   `);
-}function ensureEventModalShell() {
+}
+
+function ensureModalCommerceLayout(modal) {
+  const content = modal.querySelector('.event-modal-content');
+  const image = modal.querySelector('#modalImage');
+  const details = modal.querySelector('.modal-details');
+  if (!content || !image || !details) return null;
+
+  let visual = modal.querySelector('.modal-visual-column');
+  if (!visual) {
+    visual = document.createElement('div');
+    visual.className = 'modal-visual-column';
+    image.parentNode.insertBefore(visual, image);
+    visual.appendChild(image);
+  }
+  let commerce = modal.querySelector('#modalCommerce');
+  if (!commerce) {
+    commerce = document.createElement('div');
+    commerce.id = 'modalCommerce';
+  }
+
+  // Moving the same node preserves disclosure state and the reading/tab order
+  // when an open modal crosses the breakpoint, including the legacy HTML shell.
+  if (!commerceLayoutBound.has(modal)) {
+    const mobile = window.matchMedia?.('(max-width: 760px)');
+    const placeCommerce = () => {
+      if (mobile?.matches) {
+        const anchor = modal.querySelector('#modalTicketOptions') || modal.querySelector('#modalTicketsLink');
+        if (anchor) anchor.parentNode.insertBefore(commerce, anchor);
+        else details.appendChild(commerce);
+      } else {
+        visual.appendChild(commerce);
+      }
+    };
+    mobile?.addEventListener?.('change', placeCommerce);
+    commerceLayoutBound.set(modal, placeCommerce);
+  }
+  commerceLayoutBound.get(modal)();
+
+  injectOnce('ajsee-event-modal-compact-layout-css', `
+    .event-modal .event-modal-content {
+      box-sizing: border-box;
+      width: min(960px, 100%);
+      max-width: 960px;
+      max-height: none;
+      overflow: visible;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 28px;
+      padding: 28px;
+      align-items: start;
+    }
+    .event-modal .modal-visual-column {
+      display: grid;
+      gap: 14px;
+      min-width: 0;
+    }
+    .event-modal #modalImage {
+      display: block;
+      width: 100%;
+      height: clamp(200px, 30vw, 340px);
+      min-height: 0;
+      max-height: none;
+      margin: 0;
+      object-fit: contain;
+      border-radius: 16px;
+    }
+    .event-modal .modal-details {
+      min-width: 0;
+      padding: 12px 12px 0 0;
+    }
+    .event-modal #modalCommerce { min-width: 0; }
+    .event-modal .modal-meta { margin-bottom: 12px; font-size: 14px; }
+    .event-modal .modal-description { font-size: 15px; line-height: 1.55; }
+    .event-modal .modal-ticket-cta { margin-bottom: 8px; }
+    .event-modal .modal-seller-note { margin: 8px 0 16px; }
+    .event-modal .calendar-buttons { display: block; margin-top: 16px; }
+    .event-modal .event-modal-close { position: absolute; top: 12px; right: 12px; }
+    @media (max-width: 760px) {
+      .event-modal .event-modal-content {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 18px;
+        padding: 18px;
+        border-radius: 22px;
+      }
+      .event-modal #modalImage { height: clamp(180px, 52vw, 260px); }
+      .event-modal .modal-details { padding: 0; }
+      .event-modal #modalCommerce { margin: 0 0 16px; }
+      .event-modal .modal-ticket-cta { box-sizing: border-box; }
+    }
+  `);
+  return commerce;
+}
+
+function ensureEventModalShell() {
   ensureModalStyles();
   ensureEventCommerceStyles();
 
@@ -1539,15 +1633,9 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const locationEl = modal.querySelector('#modalLocation');
   const descEl = modal.querySelector('#modalDescription');
   const sellerNoteEl = ensureModalSellerNote(modal);
-  let commerceEl = modal.querySelector('#modalCommerce');
-  if (!commerceEl) {
-    commerceEl = document.createElement('div');
-    commerceEl.id = 'modalCommerce';
-    const anchor = modal.querySelector('#modalTicketOptions') || modal.querySelector('#modalTicketsLink');
-    anchor?.parentNode?.insertBefore(commerceEl, anchor);
-  }
+  const commerceEl = ensureModalCommerceLayout(modal);
   // Fully replace on every open so a prior event's price/status cannot leak.
-  commerceEl.innerHTML = renderEventCommerce(eventData, lang, { detail: true });
+  if (commerceEl) commerceEl.innerHTML = renderEventCommerce(eventData, lang, { detail: true });
   const categoryEl = modal.querySelector('#modalCategory');
   const ticketEl = modal.querySelector('#modalTicketsLink');
   const ticketOptionsEl = modal.querySelector('#modalTicketOptions');

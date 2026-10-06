@@ -29,6 +29,15 @@ const dom = new JSDOM(
   }
 );
 
+const commerceMediaListeners = new Set();
+const commerceMedia = {
+  matches: false,
+  addEventListener(type, listener) {
+    if (type === 'change') commerceMediaListeners.add(listener);
+  },
+};
+dom.window.matchMedia = () => commerceMedia;
+
 const globalValues = {
   window:
     dom.window,
@@ -1159,4 +1168,30 @@ test('modal renders a price range and replaces commerce details on the next even
   assert.match(content,/Check availability/);
   assert.doesNotMatch(content,/490|1\s*290|Orientační/);
   assert.equal(getModal().querySelectorAll('#modalCommerce').length,1);
+});
+
+test('open modal moves the same commerce control across the mobile breakpoint without duplication', async () => {
+  await openEventModal(createEvent(), 'cs');
+  const modal = getModal();
+  const commerce = modal.querySelector('#modalCommerce');
+  const summary = commerce.querySelector('summary');
+  summary.click();
+  assert.equal(commerce.parentElement.className, 'modal-visual-column');
+  assert.equal(commerce.previousElementSibling.id, 'modalImage');
+  const listenerCount = commerceMediaListeners.size;
+  try {
+    commerceMedia.matches = true;
+    for (const listener of commerceMediaListeners) listener();
+    assert.equal(commerce.parentElement.className, 'modal-details');
+    assert.equal(commerce.previousElementSibling.className, 'modal-category');
+    assert.equal(commerce.nextElementSibling.id, 'modalTicketOptions');
+    assert.equal(commerce.querySelector('details').open, true);
+    await openEventModal(createEvent(), 'en');
+    assert.equal(commerceMediaListeners.size, listenerCount);
+    assert.equal(modal.querySelectorAll('#modalCommerce').length, 1);
+  } finally {
+    commerceMedia.matches = false;
+    for (const listener of commerceMediaListeners) listener();
+  }
+  assert.equal(commerce.parentElement.className, 'modal-visual-column');
 });

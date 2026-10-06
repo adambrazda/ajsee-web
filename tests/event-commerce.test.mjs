@@ -82,3 +82,14 @@ test('card exposes a touch/keyboard-native expandable explanation and a hover ti
  assert.equal(dom.window.document.querySelector('.event-stock-dot').getAttribute('aria-hidden'),'true');
  dom.window.close();
 });
+
+test('seller badge is attached to the image and availability retains its accessible label',()=>{
+ const dom=new JSDOM(renderSharedEventCard({event:{partner:'ticketmaster',priceFrom:'390 Kč'},locale:'cs'}));
+ const doc=dom.window.document;
+ assert.equal(doc.querySelectorAll('.event-partner-badge').length,1);
+ assert.ok(doc.querySelector('.event-image-frame > .event-partner-badge'));
+ assert.equal(doc.querySelector('.event-content .event-partner-badge'),null);
+ assert.equal(doc.querySelector('.event-stock-label').textContent,'Ověřit dostupnost');
+ assert.match(doc.querySelector('.event-stock summary').title,/Ověřit dostupnost/);
+ dom.window.close();
+});

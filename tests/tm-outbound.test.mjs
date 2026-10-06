@@ -287,7 +287,7 @@ test(
 );
 
 test(
-  'server-side Impact resolution failure retains the safe browser fallback',
+  'server-side Impact resolution failure never exposes the Impact sync chain to the browser',
   async () => {
     const previousMode =
       process.env.TM_IMPACT_TRACKING_MODE;
@@ -319,32 +319,17 @@ test(
 
       assert.equal(
         response.statusCode,
-        200
+        302
       );
 
-      assert.match(
-        response.headers['Content-Type'],
-        /text\/html/
+      assert.equal(
+        response.headers.Location,
+        target
       );
 
-      assert.match(
-        response.body,
-        /ticketmaster\.evyy\.net/
-      );
-
-      assert.match(
-        response.body,
-        /www\.ojrq\.net/
-      );
-
-      assert.match(
-        response.body,
-        /7218577\/1958979\/23901/
-      );
-
-      assert.match(
-        response.body,
-        /www\.ticketmaster\.cz/
+      assert.doesNotMatch(
+        response.headers.Location,
+        /evyy\.net|ojrq\.net/
       );
     } finally {
       globalThis.fetch =

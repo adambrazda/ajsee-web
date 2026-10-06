@@ -151,6 +151,9 @@ export function mapIntentToFilters(
       ? 'family'
       : '';
 
+  filters.searchMode = intent.searchMode;
+  filters.keywordMatch = intent.keywordMatch;
+
   filters.sort =
     intent.sort;
 

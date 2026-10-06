@@ -1,3 +1,4 @@
+import { formatAiResultSummary } from './result-summary.js';
 import {
   MAX_CLARIFICATION_ROUNDS
 } from './clarification-context.js';
@@ -45,7 +46,7 @@ const COPY = {
     badge: 'AI',
     label: 'Co byste chtěli zažít?',
     helper:
-      'Popište zážitek vlastními slovy. AI převede váš požadavek na filtry AJSEE.',
+      'Napište, co chcete zažít. Místo, termín, typ akce i rozpočet můžete napsat jednou větou.',
     placeholder:
       'Např. koncert v Praze tento víkend',
     submit:
@@ -68,7 +69,7 @@ const COPY = {
     badge: 'AI',
     label: 'What would you like to experience?',
     helper:
-      'Describe it in your own words. AI will translate your request into AJSEE filters.',
+      'Tell us what you want to experience. Include a place, dates, event type and budget in one sentence.',
     placeholder:
       'E.g. concert in Prague this weekend',
     submit:
@@ -91,7 +92,7 @@ const COPY = {
     badge: 'AI',
     label: 'Was möchten Sie erleben?',
     helper:
-      'Beschreiben Sie Ihren Wunsch mit eigenen Worten. Die KI überträgt ihn in AJSEE-Filter.',
+      'Was möchten Sie erleben? Nennen Sie Ort, Zeitraum, Veranstaltungsart und Budget in einem Satz.',
     placeholder:
       'Z. B. Konzert in Prag am Wochenende',
     submit:
@@ -114,7 +115,7 @@ const COPY = {
     badge: 'AI',
     label: 'Čo by ste chceli zažiť?',
     helper:
-      'Opíšte zážitok vlastnými slovami. AI prevedie vašu požiadavku na filtre AJSEE.',
+      'Napíšte, čo chcete zažiť. Miesto, termín, typ akcie aj rozpočet môžete napísať jednou vetou.',
     placeholder:
       'Napr. koncert v Prahe tento víkend',
     submit:
@@ -137,7 +138,7 @@ const COPY = {
     badge: 'AI',
     label: 'Czego chcesz doświadczyć?',
     helper:
-      'Opisz to własnymi słowami. AI przełoży Twoją prośbę na filtry AJSEE.',
+      'Napisz, czego chcesz doświadczyć. Podaj miejsce, termin, rodzaj wydarzenia i budżet w jednym zdaniu.',
     placeholder:
       'Np. koncert w Pradze w ten weekend',
     submit:
@@ -160,7 +161,7 @@ const COPY = {
     badge: 'AI',
     label: 'Milyen élményt keresel?',
     helper:
-      'Írd le saját szavaiddal. Az AI AJSEE-szűrőkké alakítja a kérésedet.',
+      'Írd le, milyen élményt keresel. A helyszínt, az időpontot, az esemény típusát és a keretedet egy mondatban is megadhatod.',
     placeholder:
       'Pl. koncert Prágában hétvégén',
     submit:
@@ -1602,10 +1603,10 @@ export function initAiEventSearch({
             state:
               'success',
 
-            message:
-                unsupportedPreferences.length > 0
-                  ? applyCopy.partial
-                  : applyCopy.success
+            message: [
+              formatAiResultSummary(applicationResult, locale),
+              unsupportedPreferences.length > 0 ? applyCopy.partial : ''
+            ].filter(Boolean).join(' ') || applyCopy.success
           }
         );
 

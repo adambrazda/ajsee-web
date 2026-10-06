@@ -26,6 +26,7 @@ import {
   scrollToSharedEventResults,
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
+import { hasAiRelevance, isSoftDiscovery, rankEventsByRelevance, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   beginAiSearchLearningSession,
@@ -314,6 +315,8 @@ const HOME_PRICE_FILTER_TARGET_COUNT = 6;
 const HOME_PRICE_FILTER_API_BATCH_SIZE = 50;
 const HOME_PRICE_FILTER_MAX_BATCHES = 3;
 
+let _lastSearchResult = null;
+let _renderCompletion = Promise.resolve();
 let _renderInflight = false;
 let _renderQueued = false;
 let _lastFetchSig = '';
@@ -2233,7 +2236,8 @@ function updateFilterLocaleTexts() {
   if (lblCity) lblCity.textContent = t('filters.city', 'Město');
 
   const lblKw = qs('label[for="filter-keyword"]');
-  if (lblKw) lblKw.textContent = t('filters.keyword', 'Klíčové slovo');
+  if (lblKw) lblKw.textContent = isSoftDiscovery(currentFilters)
+    ? t('filters.preference', 'Preference') : t('filters.keyword', 'Klíčové slovo');
 
   const segLbl = qs('.segmented .inline-label');
   if (segLbl) segLbl.textContent = t('filters.sort', 'Řazení');
@@ -2807,6 +2811,8 @@ async function resetAllEventFilters() {
 
   currentFilters.category = 'all';
   currentFilters.audience = '';
+  delete currentFilters.searchMode;
+  delete currentFilters.keywordMatch;
   currentFilters.sort = 'nearest';
 
   currentFilters.city = '';
@@ -3059,7 +3065,7 @@ function syncFiltersFromForm() {
   }
 
   currentFilters.sort = sort?.value || 'nearest';
-  currentFilters.keyword = (kw?.value || '').trim();
+  updateManualKeyword(currentFilters, (kw?.value || '').trim());
   currentFilters.dateFrom = from?.value || currentFilters.dateFrom || '';
   currentFilters.dateTo = to?.value || currentFilters.dateTo || '';
 
@@ -3224,6 +3230,10 @@ function syncURLFromFilters() {
           'audience'
         );
 
+  syncAiSearchParams(p, currentFilters);
+  p.delete('keyword');
+  p.delete('search');
+
   currentFilters.keyword
     ? p.set(
         'q',
@@ -3250,89 +3260,71 @@ function syncURLFromFilters() {
 }
 
 /* ───────── sort segmented ───────── */
+let syncAiSortControl = () => {};
+
 function upgradeSortToSegmented() {
   const select = qs('#filter-sort') || qs('#events-sort-filter');
   if (!select || select.dataset.upgraded === 'segmented') return;
-
   select.dataset.upgraded = 'segmented';
-
+  const option = document.createElement('option');
+  option.value = 'relevance';
+  select.appendChild(option);
   const wrap = document.createElement('div');
   wrap.className = 'segmented';
-  wrap.setAttribute('role', 'tablist');
-  wrap.setAttribute('aria-label', t('filters.sort', 'Řazení'));
-
-  const visLabel = document.createElement('span');
-  visLabel.className = 'inline-label';
-  visLabel.textContent = t('filters.sort', 'Řazení');
-  wrap.appendChild(visLabel);
-
+  wrap.setAttribute('role', 'group');
+  const label = document.createElement('span');
+  label.className = 'inline-label';
+  wrap.appendChild(label);
   const indicator = document.createElement('div');
   indicator.className = 'seg-indicator';
+  indicator.setAttribute('aria-hidden', 'true');
   wrap.appendChild(indicator);
-
-  const btnNearest = document.createElement('button');
-  const btnLatest = document.createElement('button');
-  btnNearest.type = 'button';
-  btnLatest.type = 'button';
-  btnNearest.textContent = t('filters.nearest', 'Nearest');
-  btnLatest.textContent = t('filters.latest', 'Latest');
-  wrap.appendChild(btnNearest);
-  wrap.appendChild(btnLatest);
-
+  const buttons = ['relevance', 'nearest', 'latest'].map(value => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.sort = value;
+    button.addEventListener('click', async () => {
+      _userInteractedWithFilters = true;
+      currentFilters.sort = value;
+      await renderAndSync({ resetPage: true });
+    });
+    wrap.appendChild(button);
+    return button;
+  });
   select.parentElement.insertBefore(wrap, select);
   select.setAttribute('aria-hidden', 'true');
   select.tabIndex = -1;
   select.style.display = 'none';
-
-  function setActive(which) {
-    const buttons = [btnNearest, btnLatest];
-
-    buttons.forEach((btn, idx) => {
-      btn.classList.toggle('is-active', idx === which);
-      btn.setAttribute('aria-selected', idx === which ? 'true' : 'false');
-      btn.setAttribute('role', 'tab');
-      btn.tabIndex = idx === which ? 0 : -1;
+  syncAiSortControl = () => {
+    const ai = ['exact', 'discovery'].includes(currentFilters.searchMode);
+    wrap.dataset.aiSearch = String(ai);
+    option.hidden = !ai;
+    option.disabled = !ai;
+    option.textContent = t('filters.relevance', 'Podle relevance');
+    select.value = currentFilters.sort || 'nearest';
+    label.textContent = t('filters.sort', 'Řazení');
+    wrap.setAttribute('aria-label', label.textContent);
+    buttons.forEach(button => {
+      const value = button.dataset.sort;
+      button.hidden = value === 'relevance' && !ai;
+      button.textContent = t('filters.' + value, value);
+      const active = value === select.value;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
     });
-
-    const target = buttons[which];
-    requestAnimationFrame(() => {
+    const keywordLabel = qs('label[for="filter-keyword"]');
+    if (keywordLabel) keywordLabel.textContent = isSoftDiscovery(currentFilters)
+      ? t('filters.preference', 'Preference') : t('filters.keyword', 'Klíčové slovo');
+    const target = buttons.find(button => button.dataset.sort === select.value);
+    if (target) requestAnimationFrame(() => {
       const r = target.getBoundingClientRect();
       const rw = wrap.getBoundingClientRect();
       wrap.style.setProperty('--indi-left', (r.left - rw.left + 6) + 'px');
       wrap.style.setProperty('--indi-width', r.width + 'px');
     });
-  }
-
-  setActive(currentFilters.sort === 'latest' ? 1 : 0);
-
-  wireOnce(btnNearest, 'click', async () => {
-    currentFilters.sort = 'nearest';
-    setActive(0);
-    await renderAndSync({ resetPage: true });
-  }, 'seg-nearest');
-
-  wireOnce(btnLatest, 'click', async () => {
-    currentFilters.sort = 'latest';
-    setActive(1);
-    await renderAndSync({ resetPage: true });
-  }, 'seg-latest');
-
-  wireOnce(wrap, 'keydown', async e => {
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-
-    e.preventDefault();
-
-    const isLatest = currentFilters.sort === 'latest';
-    if (e.key === 'ArrowLeft' && isLatest) {
-      btnNearest.click();
-      btnNearest.focus();
-    } else if (e.key === 'ArrowRight' && !isLatest) {
-      btnLatest.click();
-      btnLatest.focus();
-    }
-  }, 'seg-kbd');
-
-  wireOnce(window, 'resize', () => setActive(currentFilters.sort === 'latest' ? 1 : 0), 'seg-resize', { passive: true });
+  };
+  syncAiSortControl();
+  wireOnce(window, 'resize', syncAiSortControl, 'seg-resize', { passive: true });
 }
 
 function normalizeFilterFormUI() {
@@ -4164,6 +4156,8 @@ function makeFetchSig(locale, api, page, perPage) {
     dateFrom: api.dateFrom || '',
     dateTo: api.dateTo || '',
     keyword: api.keyword || '',
+    searchMode: api.searchMode || '',
+    keywordMatch: api.keywordMatch || '',
     maxPrice: api.maxPrice ?? null,
     priceCurrency: api.priceCurrency || '',
     countryCode: api.countryCode || 'CZ',
@@ -4386,6 +4380,7 @@ async function fetchHomeEventsForRender(
 }
 
 async function renderEvents(locale = 'cs', filters = currentFilters) {
+  _lastSearchResult = null;
   const list = document.getElementById('eventsList');
   if (!list) return;
 
@@ -4443,7 +4438,9 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     let out = [...events];
 
-    if (filters.sort === 'nearest') {
+    if (hasAiRelevance(filters)) {
+      out = rankEventsByRelevance(out, filters);
+    } else if (filters.sort === 'nearest') {
       out.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
     } else {
       out.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
@@ -4579,11 +4576,16 @@ qsa('.js-event-detail', list).forEach(btn => {
   });
 });
 
+    if (out.length || !(window.__ajsee?.tmRateLimit?.until > Date.now())) {
+      // Homepage is a bounded preview; this is never a total inventory count.
+      _lastSearchResult = { filters, count: out.length, hasMore: true };
+    }
     wireSharedEventImageFraming(list);
     wireSharedEventCardAnalytics(list);
 
     announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);
   } catch {
+    _lastSearchResult = null;
     _lastFetchSig = '';
 
     if (list) {
@@ -4597,15 +4599,19 @@ qsa('.js-event-detail', list).forEach(btn => {
 async function renderAndSync({ resetPage = true } = {}) {
   if (_renderInflight) {
     _renderQueued = true;
+    await _renderCompletion;
     return;
   }
 
   _renderInflight = true;
+  let finishRender;
+  _renderCompletion = new Promise(resolve => { finishRender = resolve; });
 
   try {
     if (resetPage) pagination.page = 1;
 
     normalizeDates();
+    syncAiSortControl();
     syncURLFromFilters();
 
     if (SKIP_CORE_EVENTS) {
@@ -4637,6 +4643,7 @@ async function renderAndSync({ resetPage = true } = {}) {
     }
   } finally {
     _renderInflight = false;
+    finishRender();
     _hasDoneFirstRender = true;
 
     if (_renderQueued) {
@@ -5300,6 +5307,8 @@ function initFiltersFromURL() {
       '';
   }
 
+  Object.assign(currentFilters, readAiSearchParams(sp));
+
   if (sp.get('sort')) {
     currentFilters.sort =
       sp.get('sort') ||
@@ -5343,6 +5352,9 @@ function initFiltersFromURL() {
   currentFilters.priceCurrency =
     priceFilter.priceCurrency;
 
+  if (currentFilters.sort === 'relevance' && !hasAiRelevance(currentFilters)) {
+    currentFilters.sort = 'nearest';
+  }
   syncLocalizedCityLabelFromCurrentState();
 }
 
@@ -5436,6 +5448,8 @@ async function applyAiEventSearchIntent(intent) {
     throw error;
   }
 
+  while (_renderInflight) await _renderCompletion;
+
   currentFilters =
     materializedPlanToRuntimeFilters(
       materialized,
@@ -5465,7 +5479,22 @@ async function applyAiEventSearchIntent(intent) {
    * The initial AI render therefore cannot be
    * recorded as a user correction.
    */
+  const searchMetrics = _lastSearchResult?.filters === currentFilters
+    ? {
+        result_count: _lastSearchResult.count,
+        zero_results: _lastSearchResult.count === 0,
+        result_count_is_lower_bound: _lastSearchResult.hasMore,
+        search_mode: currentFilters.searchMode,
+        strict_keyword_present: currentFilters.keywordMatch === 'strict' && Boolean(currentFilters.keyword)
+      }
+    : null;
+
+  if (!searchMetrics) {
+    throw new Error('AI search results could not be loaded.');
+  }
+
   beginAiSearchLearningSession({
+    searchMetrics,
     locale:
       currentLang,
 
@@ -5483,6 +5512,8 @@ async function applyAiEventSearchIntent(intent) {
   scrollToSharedEventResults();
 
   return {
+    resultCount: searchMetrics.result_count,
+    resultCountIsLowerBound: searchMetrics.result_count_is_lower_bound,
     readyToApply:
       true,
 
@@ -6265,6 +6296,8 @@ if (!G.flags.mainDomReadyBound) {
       setIfMissing('from', filters.dateFrom || readInputValue('#filter-date-from') || readInputValue('input[name="date_from"]'));
       setIfMissing('to', filters.dateTo || readInputValue('#filter-date-to') || readInputValue('input[name="date_to"]'));
       setIfMissing('q', filters.keyword || readInputValue('#filter-keyword') || readInputValue('input[name="keyword"]'));
+      syncAiSearchParams(params, filters);
+      if (filters.sort) params.set('sort', filters.sort);
 
       if (filters.audience === 'family') {
         setIfMissing('audience', 'family');

@@ -164,6 +164,8 @@
   "faq-q4": "Ako sa môžem stať partnerom AJSEE?",
   "faq-a4": "Stačí vyplniť formulár na stránke Pre partnerov a ozveme sa vám s ďalším postupom.",
   "filters": {
+    "relevance": "Podľa relevancie",
+    "preference": "Preferencia",
     "title": "Filtre",
     "category": "Kategória",
     "sort": "Triedenie",

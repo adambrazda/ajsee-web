@@ -295,6 +295,8 @@ export function buildFilterIntentJsonSchema(
       'category',
       'audience',
       'keyword',
+      'searchMode',
+      'keywordMatch',
       'sort',
       'unsupportedPreferences',
       'confidence',
@@ -438,6 +440,10 @@ export function buildFilterIntentJsonSchema(
         enum:
           SUPPORTED_AUDIENCES
       },
+
+      searchMode: { type: 'string', enum: ['exact', 'discovery'] },
+
+      keywordMatch: { type: 'string', enum: ['strict', 'soft'] },
 
       keyword: {
         type:
@@ -620,11 +626,21 @@ export function buildParserInstructions({
     'SORT RULES:',
     '- "nearest" means chronologically soonest, never geographic distance.',
     '- Geographic proximity belongs only in place/nearby/radiusKm.',
-    '- Unless the user explicitly asks for newest/latest-added ordering, use nearest.',
+    '- Default to relevance. Use nearest for an explicit soonest/chronological request and latest for an explicit reverse-date request. latest means event date descending, NOT newest-added.',
     '',
     'KEYWORD RULES:',
     '- keyword is only for a meaningful artist, production, team, event title, venue, or search phrase not already represented by another structured filter.',
     '- Do not copy the entire user sentence into keyword.',
+    '',
+    'SEARCH MODE AND KEYWORD MATCH:',
+    '- Use searchMode=exact and keywordMatch=strict when the user wants a specific artist, production, team, event or venue. Keep only that entity in keyword.',
+    '- Use searchMode=discovery and keywordMatch=soft for browsing, genres or recommendations, including requests for something LIKE a named show. A reference title in a recommendation is NOT an exact search.',
+    '- For discovery, keyword is a short textual ranking hint, never an exclusion filter. Use canonical English genre terms (musical, rock, pop, jazz, opera, comedy) where appropriate; event titles stay in their original form.',
+    '- Mood, fame, romantic suitability and inferred similarity are unsupported: preserve them in unsupportedPreferences and never claim semantic recommendations. Do not invent a genre for an unknown reference show.',
+    '- Example: Mamma Mia in London => exact/strict, keyword=Mamma Mia, category=theatre.',
+    '- Example: a big musical in London => discovery/soft, keyword=musical, category=theatre; big is unsupported.',
+    '- Example: rockovy muzikal => discovery/soft, keyword=rock musical, category=theatre.',
+    '- Example: something for a Mamma Mia fan => discovery/soft; preserve similarity as unsupported.',
     '',
     'UNSUPPORTED PREFERENCES:',
     '- Preserve unsupported but meaningful constraints in unsupportedPreferences.',
@@ -1595,7 +1611,7 @@ export function createAiEventSearchHandler({
 
     const validation =
       validateFilterIntent(
-        normalized
+        parsed
       );
 
     if (

@@ -93,3 +93,30 @@ test('seller badge is attached to the image and availability retains its accessi
  assert.match(doc.querySelector('.event-stock summary').title,/Ověřit dostupnost/);
  dom.window.close();
 });
+
+test('compact card keeps two accessible detail triggers and one direct purchase link with the shared arrow',()=>{
+ const dom=new JSDOM(renderSharedEventCard({event:{partner:'ticketmaster',priceFrom:'390 Kč'},modalId:'tm-premium',titleRaw:'Koncert',titleHtml:'Koncert',ticketsHref:'https://example.com/tickets',ticketLabelHtml:'Vstupenky'}));
+ const doc=dom.window.document;
+ const triggers=[...doc.querySelectorAll('.js-event-detail')];
+ assert.equal(triggers.length,2);
+ assert(triggers.every(e=>e.tagName==='BUTTON'&&e.dataset.eventId==='tm-premium'));
+ assert.equal(doc.querySelector('.btn-event.detail'),null);
+ const ticket=doc.querySelector('.btn-event.ticket');
+ assert.equal(ticket.textContent.trim(),'Vstupenky');
+ assert.equal(ticket.href,'https://example.com/tickets');
+ assert(ticket.querySelector('svg.event-ticket-arrow[aria-hidden="true"]'));
+ assert.equal(doc.querySelector('.event-stock-compact').textContent,'Ověřit');
+ dom.window.close();
+});
+
+test('verified seller sell-out disables only purchase while leaving event details accessible',()=>{
+ const event=inv({status:'sold_out',remaining:0,observedAt:new Date().toISOString()});
+ const dom=new JSDOM(renderSharedEventCard({event,ticketsHref:'https://example.com/tickets',ticketLabelHtml:'Vstupenky'}));
+ const ticket=dom.window.document.querySelector('.btn-event.ticket');
+ assert.equal(ticket.getAttribute('aria-disabled'),'true');
+ assert.equal(ticket.hasAttribute('href'),false);
+ assert.equal(ticket.textContent.trim(),'Vstupenky');
+ assert.match(dom.window.document.querySelector('.event-sold-badge').textContent,/u prodejce/);
+ assert.equal(dom.window.document.querySelectorAll('.js-event-detail').length,2);
+ dom.window.close();
+});

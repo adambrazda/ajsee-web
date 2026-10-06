@@ -1,4 +1,6 @@
-import { renderEventCommerce, ensureEventCommerceStyles } from './event-commerce.js';
+import { renderEventCommerce, ensureEventCommerceStyles, eventInventoryState } from './event-commerce.js';
+import { setEventTicketLabel } from './event-ticket-ui.js';
+import { ensurePremiumModalLayout } from './event-modal-layout.js';
 import {
   resolveEventLocation,
   formatEventVenueLine,
@@ -22,7 +24,6 @@ import { formatEventDateRange } from './event-availability.js';
 // ---------------------------------------------------------
 
 const MODAL_ID = 'eventModal';
-const commerceLayoutBound = new WeakMap();
 
 let previousFocus = null;
 
@@ -932,7 +933,11 @@ function bindModalPartnerClickTracking(link) {
   link.dataset.ajseeModalTrackingBound =
     '1';
 
-  link.addEventListener('click', () => {
+  link.addEventListener('click', (event) => {
+    if (link.getAttribute('aria-disabled') === 'true') {
+      event.preventDefault();
+      return;
+    }
     trackModalPartnerClickFromLink(
       link
     );
@@ -1008,7 +1013,7 @@ function renderModalTicketOptions(
       lang
     );
 
-    link.textContent = label;
+    setEventTicketLabel(link, label);
     link.setAttribute(
       'aria-label',
       label + ': ' + title
@@ -1043,6 +1048,12 @@ function renderModalTicketOptions(
 
     link.dataset.ticketOptionIndex =
       String(index + 1);
+
+    if (eventInventoryState({...eventData, partner: option.provider || eventData.partner}).status === 'sold_out') {
+      link.removeAttribute('href');
+      link.setAttribute('aria-disabled', 'true');
+      link.setAttribute('tabindex', '-1');
+    }
 
     bindModalPartnerClickTracking(link);
 
@@ -1208,94 +1219,7 @@ function ensureModalConversionPolishStyles() {
 }
 
 function ensureModalCommerceLayout(modal) {
-  const content = modal.querySelector('.event-modal-content');
-  const image = modal.querySelector('#modalImage');
-  const details = modal.querySelector('.modal-details');
-  if (!content || !image || !details) return null;
-
-  let visual = modal.querySelector('.modal-visual-column');
-  if (!visual) {
-    visual = document.createElement('div');
-    visual.className = 'modal-visual-column';
-    image.parentNode.insertBefore(visual, image);
-    visual.appendChild(image);
-  }
-  let commerce = modal.querySelector('#modalCommerce');
-  if (!commerce) {
-    commerce = document.createElement('div');
-    commerce.id = 'modalCommerce';
-  }
-
-  // Moving the same node preserves disclosure state and the reading/tab order
-  // when an open modal crosses the breakpoint, including the legacy HTML shell.
-  if (!commerceLayoutBound.has(modal)) {
-    const mobile = window.matchMedia?.('(max-width: 760px)');
-    const placeCommerce = () => {
-      if (mobile?.matches) {
-        const anchor = modal.querySelector('#modalTicketOptions') || modal.querySelector('#modalTicketsLink');
-        if (anchor) anchor.parentNode.insertBefore(commerce, anchor);
-        else details.appendChild(commerce);
-      } else {
-        visual.appendChild(commerce);
-      }
-    };
-    mobile?.addEventListener?.('change', placeCommerce);
-    commerceLayoutBound.set(modal, placeCommerce);
-  }
-  commerceLayoutBound.get(modal)();
-
-  injectOnce('ajsee-event-modal-compact-layout-css', `
-    .event-modal .event-modal-content {
-      box-sizing: border-box;
-      width: min(960px, 100%);
-      max-width: 960px;
-      max-height: none;
-      overflow: visible;
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-      gap: 28px;
-      padding: 28px;
-      align-items: start;
-    }
-    .event-modal .modal-visual-column {
-      display: grid;
-      gap: 14px;
-      min-width: 0;
-    }
-    .event-modal #modalImage {
-      display: block;
-      width: 100%;
-      height: clamp(200px, 30vw, 340px);
-      min-height: 0;
-      max-height: none;
-      margin: 0;
-      object-fit: contain;
-      border-radius: 16px;
-    }
-    .event-modal .modal-details {
-      min-width: 0;
-      padding: 12px 12px 0 0;
-    }
-    .event-modal #modalCommerce { min-width: 0; }
-    .event-modal .modal-meta { margin-bottom: 12px; font-size: 14px; }
-    .event-modal .modal-description { font-size: 15px; line-height: 1.55; }
-    .event-modal .modal-ticket-cta { margin-bottom: 8px; }
-    .event-modal .modal-seller-note { margin: 8px 0 16px; }
-    .event-modal .calendar-buttons { display: block; margin-top: 16px; }
-    .event-modal .event-modal-close { position: absolute; top: 12px; right: 12px; }
-    @media (max-width: 760px) {
-      .event-modal .event-modal-content {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 18px;
-        padding: 18px;
-        border-radius: 22px;
-      }
-      .event-modal #modalImage { height: clamp(180px, 52vw, 260px); }
-      .event-modal .modal-details { padding: 0; }
-      .event-modal #modalCommerce { margin: 0 0 16px; }
-      .event-modal .modal-ticket-cta { box-sizing: border-box; }
-    }
-  `);
-  return commerce;
+  return ensurePremiumModalLayout(modal);
 }
 
 function ensureEventModalShell() {
@@ -1505,6 +1429,7 @@ function closeEventModal() {
   modal.classList.remove('open');
   modal.classList.add('hidden');
   modal.setAttribute('aria-hidden', 'true');
+  modal.querySelectorAll('.event-stock[open], .modal-calendar-picker[open]').forEach(disclosure => { disclosure.open = false; });
 
   document.body.style.overflow = '';
 
@@ -1536,11 +1461,31 @@ export function initEventModal() {
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return;
-
     const activeModal = document.getElementById(MODAL_ID);
-    if (activeModal?.classList.contains('open')) {
+    if (!activeModal?.classList.contains('open')) return;
+    if (event.key === 'Escape') {
+      const disclosure = activeModal.querySelector('.event-stock[open], .modal-calendar-picker[open]');
+      if (disclosure) {
+        disclosure.open = false;
+        disclosure.querySelector('summary')?.focus();
+        event.preventDefault();
+        return;
+      }
       closeEventModal();
+      event.preventDefault();
+    } else if (event.key === 'Tab') {
+      const controls = [...activeModal.querySelectorAll('a[href], button:not([disabled]), summary, input:not([disabled]), select:not([disabled]), textarea:not([disabled])')].filter(control => {
+        if (control.closest('[hidden], [aria-hidden="true"]') || control.getAttribute('aria-disabled') === 'true') return false;
+        const closed = control.closest('details:not([open])');
+        return (!closed || control === closed.querySelector('summary')) && window.getComputedStyle(control).display !== 'none';
+      });
+      const first = controls[0], last = controls.at(-1);
+      if (!first) return;
+      if (event.shiftKey && (document.activeElement === first || !activeModal.contains(document.activeElement))) {
+        last.focus(); event.preventDefault();
+      } else if (!event.shiftKey && (document.activeElement === last || !activeModal.contains(document.activeElement))) {
+        first.focus(); event.preventDefault();
+      }
     }
   });
 
@@ -1656,6 +1601,11 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   if (categoryEl) categoryEl.textContent = translateCategory(eventData.category, lang);
 
   const sellerName = modalProviderName(eventData);
+  const providerBadge = modal.querySelector('.modal-provider-badge');
+  if (providerBadge) {
+    providerBadge.textContent = sellerName;
+    providerBadge.hidden = !sellerName;
+  }
 
   const optionSellerNames = [
     ...new Set(
@@ -1717,7 +1667,9 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   }
 
   if (ticketEl) {
-    ticketEl.textContent = i18n(lang, 'tickets');
+    setEventTicketLabel(ticketEl, i18n(lang, 'tickets'));
+    ticketEl.removeAttribute('aria-disabled');
+    ticketEl.removeAttribute('tabindex');
 
     ticketEl.dataset.partner = String(
       eventData?.partner ||
@@ -1774,6 +1726,11 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
         'aria-label',
         i18n(lang, 'tickets') + ': ' + title
       );
+      if (eventInventoryState(eventData).status === 'sold_out') {
+        ticketEl.removeAttribute('href');
+        ticketEl.setAttribute('aria-disabled', 'true');
+        ticketEl.setAttribute('tabindex', '-1');
+      }
     } else {
       ticketEl.href = '#';
       ticketEl.hidden = true;

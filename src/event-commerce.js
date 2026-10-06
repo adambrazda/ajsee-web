@@ -10,6 +10,16 @@ const TEXT = {
 };
 const language = locale => String(locale || 'cs').toLowerCase().split(/[-_]/)[0];
 const words = locale => TEXT[language(locale)] || TEXT.en;
+const COMPACT_STOCK = {
+  cs: { unknown:'Ověřit', plentiful:'Dostatek míst', limited:'Omezeně', last:'Poslední místa', sold_out:'Vyprodáno' },
+  sk: { unknown:'Overiť', plentiful:'Dostatok miest', limited:'Obmedzene', last:'Posledné miesta', sold_out:'Vypredané' },
+  en: { unknown:'Check', plentiful:'Plenty available', limited:'Limited', last:'Last tickets', sold_out:'Sold out' },
+  de: { unknown:'Prüfen', plentiful:'Viele Tickets', limited:'Begrenzt', last:'Letzte Tickets', sold_out:'Ausverkauft' },
+  pl: { unknown:'Sprawdź', plentiful:'Wolne miejsca', limited:'Ograniczone', last:'Ostatnie miejsca', sold_out:'Wyprzedane' },
+  hu: { unknown:'Ellenőrzés', plentiful:'Sok szabad hely', limited:'Korlátozott', last:'Utolsó helyek', sold_out:'Elfogyott' }
+};
+export function eventStockLabel(status, locale = 'cs') { return words(locale)[status]; }
+let stockHelpSequence = 0;
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const amount = value => !['number','string'].includes(typeof value) || String(value).trim() === '' ? null : (Number.isFinite(Number(value)) && Number(value) >= 0 ? Number(value) : null);
 const currency = value => /^[A-Z]{3}$/.test(String(value || '').toUpperCase()) ? String(value).toUpperCase() : '';
@@ -80,13 +90,13 @@ export function renderEventCommerce(event = {}, locale = 'cs', {detail = false, 
   const countText = known && stock.remaining > 0 && stock.remaining < 100 ? t.remaining.replace('{count}',stock.remaining) : '';
   const updated = known ? t.checked.replace('{time}', new Date(stock.observedAt).toLocaleString(TEXT[language(locale)] ? locale : 'en')) : '';
   const explanation = known ? t.stockNote : stock.status === 'unknown' ? t.unknownNote : t.saleNote;
+  const helpId = `event-stock-help-${++stockHelpSequence}`;
   return `<div class="event-commerce${detail ? ' event-commerce--detail' : ''}">
     <p class="event-price${prices.length ? '' : ' event-price--unknown'}">${esc(prices.join(' / ') || t.priceUnknown)}</p>
-    ${detail && prices.length ? `<p class="event-commerce-note">${esc(t.priceNote)}</p>` : ''}
     <details class="event-stock" data-stock-tone="${stock.tone}" data-stock-status="${stock.status}">
-      <summary title="${esc(t[stock.status] + '. ' + explanation + (updated ? ' ' + updated : ''))}"><span class="event-stock-dot" aria-hidden="true"></span><span class="event-stock-label">${esc(t[stock.status])}</span><span aria-hidden="true">ⓘ</span></summary>
-      <div class="event-stock-help"><strong>${esc(t[stock.status])}</strong><br>${esc(explanation)}${updated ? `<br>${esc(updated)}` : ''}</div>
+      <summary aria-controls="${helpId}" aria-describedby="${helpId}" title="${esc(t[stock.status] + '. ' + explanation + (updated ? ' ' + updated : ''))}"><span class="event-stock-dot" aria-hidden="true"></span><span class="event-stock-label">${esc(t[stock.status])}</span><span class="event-stock-compact" aria-hidden="true">${esc((COMPACT_STOCK[language(locale)] || COMPACT_STOCK.en)[stock.status] || t[stock.status])}</span><span class="event-stock-info" aria-hidden="true">ⓘ</span></summary>
     </details>
+    <div id="${helpId}" class="event-stock-help"><strong>${esc(t[stock.status])}</strong><br>${esc(explanation)}${updated ? `<br>${esc(updated)}` : ''}${detail && prices.length ? `<p class="event-commerce-note">${esc(t.priceNote)}</p>` : ''}</div>
     ${detail && countText ? `<p class="event-stock-count">${esc(countText)}</p>` : ''}
   </div>`;
 }
@@ -96,29 +106,49 @@ export function ensureEventCommerceStyles(doc = globalThis.document) {
   const style = doc.createElement('style');
   style.id = 'ajsee-event-commerce-css';
   style.textContent = `
-    .event-commerce { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; margin: 8px 0; color: var(--aj-text-strong, #0a3d62); min-width: 0; }
-    .event-commerce .event-price { margin: 0; font-size: 18px; font-weight: 750; line-height: 1.4; overflow-wrap: anywhere; }
-    .event-commerce .event-price--unknown { font-size: 14px; font-weight: 500; color: #526071; }
-    .event-commerce .event-stock { font-size: 13px; line-height: 1.5; color: #344054; }
-    .event-commerce .event-stock summary { display: flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; list-style: none; width: fit-content; max-width: 100%; border-radius: 6px; }
+    .event-card, .event-modal {
+      --aj-event-surface: #ffffff; --aj-event-soft: #f1f5f8; --aj-event-text: #112b3f;
+      --aj-event-muted: #526475; --aj-event-border: #dce5ec;
+      --aj-event-cta: #006a9e; --aj-event-cta-text: #ffffff; --aj-event-cta-hover: #005780;
+      --aj-event-green: #187343; --aj-event-orange: #9b5700; --aj-event-red: #b72e38;
+    }
+    @media (prefers-color-scheme: dark) {
+      .event-card, .event-modal {
+        --aj-event-surface: #142231; --aj-event-soft: #1c2d3e; --aj-event-text: #f1f6fa;
+        --aj-event-muted: #afbdcc; --aj-event-border: #2a3d50;
+        --aj-event-cta: #70dbdf; --aj-event-cta-text: #0b2635; --aj-event-cta-hover: #8ce7e9;
+        --aj-event-green: #80d6a1; --aj-event-orange: #ffc16c; --aj-event-red: #ff9da4;
+      }
+    }
+    .event-commerce { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto); align-items: center; gap: 4px 10px; margin: 4px 0 6px; color: var(--aj-event-text, #112b3f); min-width: 0; }
+    .event-commerce .event-price { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+    .event-commerce .event-price--unknown { font-size: 13px; font-weight: 500; color: var(--aj-event-muted, #526475); }
+    .event-commerce .event-stock { font-size: 12px; line-height: 1.4; min-width: 0; color: var(--aj-event-muted, #526475); }
+    .event-commerce .event-stock summary { display: flex; align-items: center; gap: 6px; min-height: 44px; cursor: pointer; list-style: none; width: fit-content; max-width: 100%; border-radius: 8px; overflow-wrap: anywhere; }
     .event-commerce .event-stock summary::-webkit-details-marker { display: none; }
-    .event-commerce .event-stock summary:focus-visible { outline: 2px solid #007fac; outline-offset: 3px; }
-    .event-commerce .event-stock-dot { width: 10px; height: 10px; flex: 0 0 10px; border-radius: 50%; background: #667085; }
-    .event-commerce [data-stock-tone="green"] .event-stock-dot { background: #16803b; }
-    .event-commerce [data-stock-tone="orange"] .event-stock-dot { background: #b85e00; }
-    .event-commerce [data-stock-tone="red"] .event-stock-dot { background: #c62828; }
-    .event-commerce [data-stock-status="sold_out"] summary { font-weight: 750; background: #f2f4f7; padding: 0 10px; }
-    .event-commerce .event-stock-help { display: none; padding: 10px 12px; background: #f2f6fa; border: 1px solid #d8e4ee; border-radius: 8px; overflow-wrap: anywhere; }
-    .event-commerce .event-stock[open] .event-stock-help { display: block; }
-    .event-commerce:not(.event-commerce--detail) .event-stock:not([data-stock-status="sold_out"]):not([data-stock-status="canceled"]):not([data-stock-status="postponed"]) .event-stock-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-    .event-commerce:not(.event-commerce--detail) .event-stock summary { justify-content: center; min-width: 44px; padding-inline: 6px; }
-    .event-commerce .event-stock[open] { grid-column: 1 / -1; width: 100%; }
+    .event-commerce .event-stock summary:focus-visible { outline: 2px solid var(--aj-event-cta, #006a9e); outline-offset: 3px; }
+    .event-commerce .event-stock-dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--aj-event-muted, #526475); }
+    .event-commerce [data-stock-tone="green"] .event-stock-dot { background: var(--aj-event-green, #187343); }
+    .event-commerce [data-stock-tone="orange"] .event-stock-dot { background: var(--aj-event-orange, #9b5700); }
+    .event-commerce [data-stock-tone="red"] .event-stock-dot { background: var(--aj-event-red, #b72e38); }
+    .event-commerce .event-stock-help { position: absolute; z-index: 12; inset-inline-end: 0; bottom: calc(100% + 6px); width: min(320px, 100%); display: none; padding: 12px 14px; background: var(--aj-event-surface, #fff); color: var(--aj-event-text, #112b3f); border: 1px solid var(--aj-event-border, #dce5ec); border-radius: 12px; box-shadow: 0 10px 30px rgb(0 0 0 / .18); overflow-wrap: anywhere; }
+    .event-commerce .event-stock[open] + .event-stock-help { display: block; }
+    .event-commerce .event-stock-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .event-commerce .event-stock summary { min-width: 44px; padding-inline: 2px; }
+    @media (hover: hover) and (pointer: fine) { .event-commerce .event-stock:hover + .event-stock-help, .event-commerce .event-stock:focus-within + .event-stock-help { display: block; } }
     .event-commerce .event-stock-help strong { font-weight: 700; }
-    .event-commerce .event-stock:is([data-stock-status="sold_out"], [data-stock-status="canceled"], [data-stock-status="postponed"]) { grid-column: 1 / -1; }
-    .event-commerce .event-commerce-note { margin: 6px 0; font-size: 13px; line-height: 1.5; color: #526071; }
+    .event-commerce .event-commerce-note { margin: 8px 0 0; font-size: 12px; line-height: 1.5; color: var(--aj-event-muted, #526475); }
     .event-commerce .event-stock-count { margin: 6px 0; font-size: 14px; font-weight: 650; }
-    .event-commerce--detail { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 14px; margin: 0; background: var(--aj-modal-control-bg, #f8fafc); border: 1px solid var(--aj-modal-control-border, #d8e4ee); border-radius: 14px; }
-    .event-commerce--detail .event-commerce-note { grid-row: 3; margin: 0; font-size: 12px; }
+    .event-commerce--detail { margin: 0 0 8px; }
+    .event-commerce--detail .event-stock-count { grid-column: 1 / -1; margin: 0 0 6px; font-size: 12px; font-weight: 500; color: var(--aj-event-muted, #526475); }
+    .event-ticket-arrow { flex: 0 0 18px; margin-inline-start: 8px; }
+    .event-modal .modal-ticket-cta, body:is([data-page="home"], [data-page="events"]) #eventsList .btn-event.ticket {
+      background: var(--aj-event-cta); color: var(--aj-event-cta-text); border: 0;
+      box-shadow: none; border-radius: 10px; min-height: 48px; font-weight: 650;
+    }
+    .event-modal .modal-ticket-cta:hover, body:is([data-page="home"], [data-page="events"]) #eventsList .btn-event.ticket:hover { background: var(--aj-event-cta-hover); color: var(--aj-event-cta-text); }
+    .event-modal .modal-ticket-cta:focus-visible, #eventsList .event-card :is(button, .btn-event):focus-visible { outline: 2px solid var(--aj-event-cta); outline-offset: 3px; }
+    .event-modal .modal-ticket-cta[aria-disabled="true"], body:is([data-page="home"], [data-page="events"]) #eventsList .btn-event.ticket[aria-disabled="true"] { background: var(--aj-event-soft); color: var(--aj-event-muted); cursor: default; }
   `;
   doc.head.appendChild(style);
 }

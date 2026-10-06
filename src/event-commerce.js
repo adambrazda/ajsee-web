@@ -72,7 +72,10 @@ export function eventPriceLabels(event = {}, locale = 'cs') {
 // populates ticketInventory. Missing or stale evidence must stay neutral.
 export function eventInventoryState(event = {}, now = Date.now()) {
   const sale = String(event.saleStatus || '');
-  if (['canceled','postponed','offsale'].includes(sale)) return {status:sale,tone:'neutral'};
+  // Ticketmaster "offsale" is a channel sale-state flag, not reliable
+  // evidence that the event has no tickets or that sale has not opened.
+  // Keep it neutral/hidden until we have seller-authoritative inventory.
+  if (['canceled','postponed'].includes(sale)) return {status:sale,tone:'neutral'};
   const inv = event.ticketInventory;
   const age = Number(now) - Date.parse(inv?.observedAt || '');
   const valid = typeof inv?.source === 'string' && inv.source.length > 0 && inv.source === event.partner && inv?.scope === 'seller' && Number.isFinite(age) && age >= 0 && age <= 15 * 60 * 1000;

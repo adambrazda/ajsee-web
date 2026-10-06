@@ -194,6 +194,34 @@ html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.
   display: block;
 }
 
+/* AI sorting needs its own row; the legacy dock hides the native sort group. */
+html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock .filter-group:has(#filter-sort):has(.segmented[data-ai-search="true"]) {
+  display: block;
+  visibility: visible;
+  height: auto;
+  overflow: visible;
+  grid-column: 1 / -1;
+  order: 60;
+  flex-basis: 100%;
+
+  > label {
+    display: none;
+  }
+
+  .segmented {
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: 100%;
+    padding: 4px 8px;
+    gap: 4px;
+    border-radius: 18px;
+  }
+
+  button {
+    min-height: 44px;
+  }
+}
+
 html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock .field,
 html body:is([data-page="home"], [data-page="events"]) form#events-filters-form.events-filters.filter-dock .date-combo {
   position: relative;

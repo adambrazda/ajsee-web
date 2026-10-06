@@ -5993,36 +5993,52 @@ if (!G.flags.mainDomReadyBound) {
 
     card.dataset.eventProvider = 'smsticket';
 
-    if (card.querySelector('.event-partner-badge')) return;
+    let badge =
+      card.querySelector('.event-partner-badge');
 
-    const badge = document.createElement('p');
-    badge.className = 'event-partner-badge';
-    badge.dataset.provider = 'smsticket';
-    badge.innerHTML = '<span>smsticket</span>';
+    if (!badge) {
+      badge = document.createElement('p');
+      badge.className = 'event-partner-badge';
+      badge.dataset.provider = 'smsticket';
+      badge.innerHTML = '<span>smsticket</span>';
+    }
 
-    const actions =
-      link.closest('.event-buttons-group') ||
-      card.querySelector('.event-buttons-group, .event-actions, .card-actions');
+    const content =
+      card.querySelector('.event-content');
 
-    const date = card.querySelector('.event-date, time, [class*="date"]');
-    const title = card.querySelector('h2, h3, .event-title, [class*="title"]');
+    if (content) {
+      const footer =
+        content.querySelector('.event-card-footer');
 
-    if (date && date.parentElement && card.contains(date)) {
-      date.insertAdjacentElement('afterend', badge);
+      if (
+        badge.parentElement !== content ||
+        (footer && badge.nextElementSibling !== footer)
+      ) {
+        content.insertBefore(
+          badge,
+          footer || null
+        );
+      }
       return;
     }
 
-    if (actions && actions.parentElement && card.contains(actions)) {
-      actions.parentElement.insertBefore(badge, actions);
+    const imageFrame =
+      card.querySelector('.event-image-frame');
+
+    if (
+      imageFrame?.parentElement &&
+      badge.parentElement !== imageFrame.parentElement
+    ) {
+      imageFrame.insertAdjacentElement(
+        'afterend',
+        badge
+      );
       return;
     }
 
-    if (title && title.parentElement && card.contains(title)) {
-      title.insertAdjacentElement('afterend', badge);
-      return;
+    if (!badge.isConnected) {
+      card.appendChild(badge);
     }
-
-    link.insertAdjacentElement('beforebegin', badge);
   }
 
   let scheduled = false;

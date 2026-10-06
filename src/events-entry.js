@@ -6322,7 +6322,7 @@ if (!G.flags.mainDomReadyBound) {
   }
 
   function ensureBadge(card) {
-    if (!card || card.querySelector('.event-partner-badge')) return;
+    if (!card) return;
 
     const partner = detectPartner(card);
     const label = labelForPartner(partner);
@@ -6331,32 +6331,56 @@ if (!G.flags.mainDomReadyBound) {
 
     card.dataset.eventProvider = partner;
 
-    const badge = document.createElement('p');
-    badge.className = 'event-partner-badge';
-    badge.dataset.provider = partner;
-    badge.innerHTML = '<span>' + label + '</span>';
+    let badge =
+      card.querySelector('.event-partner-badge');
 
-    const imageFrame = card.querySelector('.event-image-frame');
-    if (imageFrame) {
-      imageFrame.appendChild(badge);
+    if (!badge) {
+      badge = document.createElement('p');
+      badge.className = 'event-partner-badge';
+      badge.dataset.provider = partner;
+      badge.innerHTML = '<span>' + label + '</span>';
+    }
+
+    const content =
+      card.querySelector('.event-content');
+
+    if (content) {
+      const footer =
+        content.querySelector('.event-card-footer');
+
+      if (
+        badge.parentElement !== content ||
+        (footer && badge.nextElementSibling !== footer)
+      ) {
+        content.insertBefore(
+          badge,
+          footer || null
+        );
+      }
       return;
     }
 
-    const date = card.querySelector('.event-date');
-    const buttons = card.querySelector('.event-buttons-group');
-    const content = card.querySelector('.event-content') || card;
+    /*
+     * Legacy fallback: still keep provider identity outside the artwork.
+     * Canonical cards use .event-content and the shared responsive layout.
+     */
+    const imageFrame =
+      card.querySelector('.event-image-frame');
 
-    if (date && date.parentElement) {
-      date.insertAdjacentElement('afterend', badge);
+    if (
+      imageFrame?.parentElement &&
+      badge.parentElement !== imageFrame.parentElement
+    ) {
+      imageFrame.insertAdjacentElement(
+        'afterend',
+        badge
+      );
       return;
     }
 
-    if (buttons && buttons.parentElement) {
-      buttons.parentElement.insertBefore(badge, buttons);
-      return;
+    if (!badge.isConnected) {
+      card.appendChild(badge);
     }
-
-    content.appendChild(badge);
   }
 
   let scheduled = false;

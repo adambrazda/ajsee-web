@@ -85,12 +85,13 @@ test('card exposes a touch/keyboard-native expandable explanation and a hover ti
  dom.window.close();
 });
 
-test('seller badge is attached to the image and verified availability retains its accessible label',()=>{
+test('seller badge lives on the card surface below the artwork and verified availability retains its accessible label',()=>{
  const dom=new JSDOM(renderSharedEventCard({event:{...inv({observedAt:new Date().toISOString()}),priceFrom:'390 Kč'},locale:'cs'}));
  const doc=dom.window.document;
  assert.equal(doc.querySelectorAll('.event-partner-badge').length,1);
- assert.ok(doc.querySelector('.event-image-frame > .event-partner-badge'));
- assert.equal(doc.querySelector('.event-content .event-partner-badge'),null);
+ assert.equal(doc.querySelector('.event-image-frame > .event-partner-badge'),null);
+ assert.ok(doc.querySelector('.event-content > .event-partner-badge'));
+ assert.equal(doc.querySelector('.event-content > .event-partner-badge').previousElementSibling?.classList.contains('event-location') || doc.querySelector('.event-content > .event-partner-badge').previousElementSibling?.classList.contains('event-date'),true);
  assert.equal(doc.querySelector('.event-stock-label').textContent,'Omezená dostupnost');
  assert.match(doc.querySelector('.event-stock summary').title,/Omezená dostupnost/);
  dom.window.close();

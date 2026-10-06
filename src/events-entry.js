@@ -26,6 +26,7 @@ import {
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
 import { hasAiRelevance, isSoftDiscovery, rankEventsByRelevance, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
+import { filterCurrentEventBatch, formatEventDateRange } from './event-availability.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   beginAiSearchLearningSession,
@@ -5256,11 +5257,11 @@ async function fetchNextEventsBatch(
     }
 
     const nextEvents =
-      filterEventPriceBatch(
+      filterCurrentEventBatch(filterEventPriceBatch(
         rawNextEvents,
         requestFilters,
         priceRates || {}
-      );
+      ));
 
     mergeEventsIntoBuffer(
       nextEvents
@@ -5377,7 +5378,7 @@ async function ensureEventsPageLoaded(
   const maxBatches =
     priceFilterActive
       ? EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER
-      : 1;
+      : 3; // Fill sparse pages after excluding expired events; keep request work bounded.
 
   let batchesLoaded =
     0;
@@ -5697,9 +5698,9 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       const title = esc(titleRaw);
 
       const dateVal = ev.datetime || ev.date;
-      const date = dateVal
-        ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
-        : '';
+      const date = esc(formatEventDateRange(ev, locale) || (dateVal
+        ? new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
+        : ''));
 
       const img = eventImageOrFallback(ev);
       const sourcePage = isHp ? 'homepage' : 'events_page';
@@ -6378,4 +6379,3 @@ if (!G.flags.mainDomReadyBound) {
 
   scheduleScan();
 })();
-

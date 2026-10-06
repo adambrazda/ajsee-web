@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const files = readdirSync(new URL('../tests/', import.meta.url))
-  .filter(name => /^(?:ai-event-search-.*|ai-search-.*|event-relevance|event-search-quality)\.test\.mjs$/.test(name))
+  .filter(name => /^(?:ai-event-search-.*|ai-search-.*|event-relevance|event-search-quality|event-availability)\.test\.mjs$/.test(name))
   .sort()
   .map(name => `tests/${name}`);
 // Explicit filenames also work on Windows/Node 20 without shell glob expansion.

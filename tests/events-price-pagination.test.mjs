@@ -76,7 +76,7 @@ test(
 
     assert.match(
       source,
-      /priceFilterActive\s*\?\s*EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER\s*:\s*1/
+      /priceFilterActive\s*\?\s*EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER\s*:\s*3/
     );
   }
 );

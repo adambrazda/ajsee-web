@@ -27,6 +27,7 @@ import {
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
 import { hasAiRelevance, isSoftDiscovery, rankEventsByRelevance, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
+import { filterCurrentEventBatch, formatEventDateRange } from './event-availability.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   beginAiSearchLearningSession,
@@ -4225,22 +4226,30 @@ async function fetchHomeEventsForRender(
   api
 ) {
   /*
-   * Preserve the current lightweight homepage path when
-   * no price filter is active.
+   * Normally one batch is enough. If expired events fill that batch,
+   * continue within the existing request bound without fetching FX rates.
    */
   if (
     !hasActivePriceFilter(
       api
     )
   ) {
-    return (
-      await getAllHomeEvents({
-        locale,
-        filters:
-          api
-      }) ||
-      []
-    );
+    const collected = [];
+    const seen = new Set();
+    for (let page = 0; page < HOME_PRICE_FILTER_MAX_BATCHES; page += 1) {
+      const rawEvents = await getAllHomeEvents({
+        locale, filters: { ...api, page, size: HOME_PRICE_FILTER_API_BATCH_SIZE }
+      }) || [];
+      for (const [index, event] of filterCurrentEventBatch(rawEvents).entries()) {
+        const key = homePriceEventKey(event, index);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        collected.push(event);
+      }
+      if (collected.length >= HOME_PRICE_FILTER_TARGET_COUNT ||
+          rawEvents.length < HOME_PRICE_FILTER_API_BATCH_SIZE) break;
+    }
+    return collected;
   }
 
   let priceRates =
@@ -4308,11 +4317,11 @@ async function fetchHomeEventsForRender(
     }
 
     const acceptedEvents =
-      filterEventPriceBatch(
+      filterCurrentEventBatch(filterEventPriceBatch(
         rawEvents,
         requestFilters,
         priceRates || {}
-      );
+      ));
 
     for (
       let index = 0;
@@ -4476,9 +4485,9 @@ list.innerHTML = toRender.map((ev, index) => {
   const title = esc(titleRaw);
 
   const dateVal = ev.datetime || ev.date;
-  const date = dateVal
-    ? esc(new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' }))
-    : '';
+  const date = esc(formatEventDateRange(ev, locale) || (dateVal
+    ? new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
+    : ''));
 
   const img = eventImageOrFallback(ev);
 

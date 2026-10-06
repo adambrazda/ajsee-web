@@ -574,6 +574,7 @@ function mapSegmentToCategory(ev) {
 
 function pickDate(ev) {
   const dt = ev?.dates?.start || {};
+  if (dt.dateTBA || dt.dateTBD) return '';
   if (dt.dateTime) return dt.dateTime;
   if (dt.localDate && dt.localTime) return `${dt.localDate}T${dt.localTime}`;
   if (dt.localDate) return dt.localDate;
@@ -766,6 +767,16 @@ export function mapTicketmasterEvent(
     category,
     taxonomy,
     datetime: dt,
+    dateAvailability: {
+      startLocalDate: ev?.dates?.start?.localDate || '',
+      endLocalDate: ev?.dates?.end?.localDate || '',
+      endDateTime: ev?.dates?.end?.dateTime || '',
+      timezone: ev?.dates?.timezone || venue?.timezone || '',
+      dateTBA: ev?.dates?.start?.dateTBA === true,
+      dateTBD: ev?.dates?.start?.dateTBD === true,
+      spanMultipleDays: ev?.dates?.spanMultipleDays === true,
+      salesEndDateTime: ev?.sales?.public?.endDateTime || ''
+    },
     location: {
       city: displayCity,
       actualCity,

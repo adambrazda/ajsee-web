@@ -91,7 +91,7 @@ test('seller badge lives on the card surface below the artwork and verified avai
  assert.equal(doc.querySelectorAll('.event-partner-badge').length,1);
  assert.equal(doc.querySelector('.event-image-frame > .event-partner-badge'),null);
  assert.ok(doc.querySelector('.event-content > .event-partner-badge'));
- assert.equal(doc.querySelector('.event-content').firstElementChild.className,'event-partner-badge');
+ assert.equal(doc.querySelector('.event-content > .event-partner-badge').previousElementSibling?.classList.contains('event-location') || doc.querySelector('.event-content > .event-partner-badge').previousElementSibling?.classList.contains('event-date'),true);
  assert.equal(doc.querySelector('.event-stock-label').textContent,'Omezená dostupnost');
  assert.match(doc.querySelector('.event-stock summary').title,/Omezená dostupnost/);
  dom.window.close();

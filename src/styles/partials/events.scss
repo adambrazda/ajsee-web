@@ -1151,6 +1151,14 @@
   min-height: 44px;
 }
 
+.segmented[data-ai-search="true"] {
+  flex-wrap: wrap;
+}
+
+.segmented button[hidden] {
+  display: none;
+}
+
 .segmented .seg-indicator{
   display: none;
 }

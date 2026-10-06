@@ -244,7 +244,9 @@ export function getActiveFilterDescriptors(
   if (keyword) {
     descriptors.push({
       key: 'keyword',
-      label: `“${keyword}”`
+      label: filters.searchMode === 'discovery' && filters.keywordMatch === 'soft'
+        ? `${labels.preference || 'Preference'}: “${keyword}”`
+        : `“${keyword}”`
     });
   }
 

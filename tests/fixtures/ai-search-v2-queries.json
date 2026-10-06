@@ -1,0 +1,1022 @@
+[
+  {
+    "id": "cs-01",
+    "locale": "cs",
+    "query": "Mamma Mia v Londýně",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Mamma Mia",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "cs-02",
+    "locale": "cs",
+    "query": "Céline Dion v Paříži",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Céline Dion",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "cs-03",
+    "locale": "cs",
+    "query": "Hamlet v Praze",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Hamlet",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "cs-04",
+    "locale": "cs",
+    "query": "Pokáč v Brně",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Pokáč",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "cs-05",
+    "locale": "cs",
+    "query": "ABBA v Praze",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "ABBA",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "cs-06",
+    "locale": "cs",
+    "query": "Nějaký muzikál v Londýně",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "musical",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "cs-07",
+    "locale": "cs",
+    "query": "Rockový koncert v Praze",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "rock",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "cs-08",
+    "locale": "cs",
+    "query": "Popový koncert v Paříži",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "pop",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "cs-09",
+    "locale": "cs",
+    "query": "Jazz v Brně",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "jazz",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "cs-10",
+    "locale": "cs",
+    "query": "Operu v Praze",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "opera",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "sk-01",
+    "locale": "sk",
+    "query": "Mamma Mia v Londýne",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Mamma Mia",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "sk-02",
+    "locale": "sk",
+    "query": "Céline Dion v Paríži",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Céline Dion",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "sk-03",
+    "locale": "sk",
+    "query": "Hamlet v Prahe",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Hamlet",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "sk-04",
+    "locale": "sk",
+    "query": "Pokáč v Brne",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Pokáč",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "sk-05",
+    "locale": "sk",
+    "query": "ABBA v Prahe",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "ABBA",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "sk-06",
+    "locale": "sk",
+    "query": "Nejaký muzikál v Londýne",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "musical",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "sk-07",
+    "locale": "sk",
+    "query": "Rockový koncert v Prahe",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "rock",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "sk-08",
+    "locale": "sk",
+    "query": "Popový koncert v Paríži",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "pop",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "sk-09",
+    "locale": "sk",
+    "query": "Jazz v Brne",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "jazz",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "sk-10",
+    "locale": "sk",
+    "query": "Operu v Prahe",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "opera",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "en-01",
+    "locale": "en",
+    "query": "Mamma Mia in London",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Mamma Mia",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "en-02",
+    "locale": "en",
+    "query": "Céline Dion in Paris",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Céline Dion",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "en-03",
+    "locale": "en",
+    "query": "Hamlet in Prague",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Hamlet",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "en-04",
+    "locale": "en",
+    "query": "Pokáč in Brno",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Pokáč",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "en-05",
+    "locale": "en",
+    "query": "ABBA in Prague",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "ABBA",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "en-06",
+    "locale": "en",
+    "query": "A musical in London",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "musical",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "en-07",
+    "locale": "en",
+    "query": "A rock concert in Prague",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "rock",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "en-08",
+    "locale": "en",
+    "query": "A pop concert in Paris",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "pop",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "en-09",
+    "locale": "en",
+    "query": "Jazz in Brno",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "jazz",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "en-10",
+    "locale": "en",
+    "query": "An opera in Prague",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "opera",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "de-01",
+    "locale": "de",
+    "query": "Mamma Mia in London",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Mamma Mia",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "de-02",
+    "locale": "de",
+    "query": "Céline Dion in Paris",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Céline Dion",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "de-03",
+    "locale": "de",
+    "query": "Hamlet in Prag",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Hamlet",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "de-04",
+    "locale": "de",
+    "query": "Pokáč in Brünn",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Pokáč",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "de-05",
+    "locale": "de",
+    "query": "ABBA in Prag",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "ABBA",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "de-06",
+    "locale": "de",
+    "query": "Ein Musical in London",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "musical",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "de-07",
+    "locale": "de",
+    "query": "Ein Rockkonzert in Prag",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "rock",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "de-08",
+    "locale": "de",
+    "query": "Ein Popkonzert in Paris",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "pop",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "de-09",
+    "locale": "de",
+    "query": "Jazz in Brünn",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "jazz",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "de-10",
+    "locale": "de",
+    "query": "Eine Oper in Prag",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "opera",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "pl-01",
+    "locale": "pl",
+    "query": "Mamma Mia w Londynie",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Mamma Mia",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "pl-02",
+    "locale": "pl",
+    "query": "Céline Dion w Paryżu",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Céline Dion",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "pl-03",
+    "locale": "pl",
+    "query": "Hamlet w Pradze",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Hamlet",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "pl-04",
+    "locale": "pl",
+    "query": "Pokáč w Brnie",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Pokáč",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "pl-05",
+    "locale": "pl",
+    "query": "ABBA w Pradze",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "ABBA",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "pl-06",
+    "locale": "pl",
+    "query": "Jakiś musical w Londynie",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "musical",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "pl-07",
+    "locale": "pl",
+    "query": "Koncert rockowy w Pradze",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "rock",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "pl-08",
+    "locale": "pl",
+    "query": "Koncert popowy w Paryżu",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "pop",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "pl-09",
+    "locale": "pl",
+    "query": "Jazz w Brnie",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "jazz",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "pl-10",
+    "locale": "pl",
+    "query": "Opera w Pradze",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "opera",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "hu-01",
+    "locale": "hu",
+    "query": "Mamma Mia Londonban",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Mamma Mia",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "hu-02",
+    "locale": "hu",
+    "query": "Céline Dion Párizsban",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Céline Dion",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "hu-03",
+    "locale": "hu",
+    "query": "Hamlet Prágában",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Hamlet",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "hu-04",
+    "locale": "hu",
+    "query": "Pokáč Brnóban",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "Pokáč",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "hu-05",
+    "locale": "hu",
+    "query": "ABBA Prágában",
+    "expected": {
+      "searchMode": "exact",
+      "keywordMatch": "strict",
+      "keyword": "ABBA",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "hu-06",
+    "locale": "hu",
+    "query": "Egy musical Londonban",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "musical",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "London",
+        "countryCode": "GB"
+      },
+      "category": "theatre"
+    }
+  },
+  {
+    "id": "hu-07",
+    "locale": "hu",
+    "query": "Rockkoncert Prágában",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "rock",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "hu-08",
+    "locale": "hu",
+    "query": "Popkoncert Párizsban",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "pop",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Paris",
+        "countryCode": "FR"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "hu-09",
+    "locale": "hu",
+    "query": "Dzsessz Brnóban",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "jazz",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Brno",
+        "countryCode": "CZ"
+      },
+      "category": "concert"
+    }
+  },
+  {
+    "id": "hu-10",
+    "locale": "hu",
+    "query": "Opera Prágában",
+    "expected": {
+      "searchMode": "discovery",
+      "keywordMatch": "soft",
+      "keyword": "opera",
+      "sort": "relevance",
+      "place": {
+        "type": "city",
+        "label": "Praha",
+        "countryCode": "CZ"
+      },
+      "category": "theatre"
+    }
+  }
+]

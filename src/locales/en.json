@@ -167,6 +167,8 @@
   "faq-q4": "How can I become an AJSEE partner?",
   "faq-a4": "Just fill out the form on the Partners page and we will contact you with the next steps.",
   "filters": {
+    "relevance": "Relevance",
+    "preference": "Preference",
     "title": "Filters",
     "category": "Category",
     "sort": "Sort by",

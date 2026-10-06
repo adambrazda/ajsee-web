@@ -66,7 +66,8 @@ export const SUPPORTED_AUDIENCES = Object.freeze([
 
 export const SUPPORTED_SORTS = Object.freeze([
   'nearest',
-  'latest'
+  'latest',
+  'relevance'
 ]);
 
 export const DEFAULT_CONFIDENCE_THRESHOLD = 0.72;
@@ -440,6 +441,10 @@ export function normalizeFilterIntent(
         source.audience,
         'any'
       ),
+
+    searchMode: asString(source.searchMode, 'exact'),
+
+    keywordMatch: asString(source.keywordMatch, 'strict'),
 
     keyword:
       asString(
@@ -819,6 +824,20 @@ export function validateFilterIntent(
       'unsupported_sort',
       `Unsupported sort: ${intent.sort}`
     );
+  }
+
+  if (!['exact', 'discovery'].includes(intent.searchMode)) {
+    addError('searchMode', 'invalid_search_mode', 'Unknown search mode.');
+  }
+
+  if (!['strict', 'soft'].includes(intent.keywordMatch) ||
+      (intent.searchMode === 'exact' && intent.keywordMatch !== 'strict') ||
+      (intent.searchMode === 'discovery' && intent.keywordMatch !== 'soft')) {
+    addError('keywordMatch', 'invalid_keyword_match', 'Exact searches require strict keywords; discovery requires soft keywords.');
+  }
+
+  if (raw?.keyword != null && typeof raw.keyword !== 'string') {
+    addError('keyword', 'invalid_keyword_type', 'Keyword must be a string.');
   }
 
   if (

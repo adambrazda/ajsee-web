@@ -30,6 +30,7 @@ import { fetchEvents as fetchColosseumTicketEvents } from '../adapters/colosseum
 import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 import { matchesEventDiscoveryFilters } from '../taxonomy/event-filtering.js';
+import { hasAiRelevance, isSoftDiscovery, providerSearchFilters, rankEventsByRelevance } from '../search/event-relevance.js';
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
 import { mergeExactCrossProviderOccurrences } from '../event-cross-provider-merge.js';
 
@@ -781,10 +782,11 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   // A meaningful artist/event keyword without an active place filter should
   // be discoverable across Ticketmaster markets. Keep the normal CZ/default
   // country for local providers and for ordinary no-keyword discovery.
+  const providerFilters = providerSearchFilters(filters);
   const normalizedKeyword = String(
-    filters.keyword ??
-    filters.q ??
-    filters.search ??
+    providerFilters.keyword ??
+    providerFilters.q ??
+    providerFilters.search ??
     ''
   ).trim();
 
@@ -816,7 +818,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     !hasNearMeFilter;
 
   const upstreamFilters = {
-    ...filters,
+    ...providerFilters,
     dateFrom: filters.dateFrom ?? filters.from ?? '',
     dateTo: filters.dateTo ?? filters.to ?? '',
     category: filters.category ?? filters.segment ?? 'all',
@@ -1142,7 +1144,7 @@ if (ENABLE_SEATPLAN) {
     });
   }
 
-  if (keyword) {
+  if (keyword && !isSoftDiscovery(filters)) {
     const q = normalizeStr(keyword);
 
     all = all.filter((ev) => matchesKeywordPrefix(eventSearchText(ev, loc), q));
@@ -1162,6 +1164,10 @@ if (ENABLE_SEATPLAN) {
 
     return sort === 'latest' ? db - da : da - db;
   });
+
+  if (hasAiRelevance(filters)) {
+    return rankEventsByRelevance(all, filters);
+  }
 
   if (ENABLE_SEATPLAN && hasSeatPlanPilotIntent(normalizedClientFilters)) {
     all.sort((a, b) => {

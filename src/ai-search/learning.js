@@ -839,7 +839,8 @@ export function createAiSearchLearningTracker({
   function begin({
     locale = 'cs',
     page = 'events',
-    filters = {}
+    filters = {},
+    searchMetrics = null
   } = {}) {
     reset();
 
@@ -889,6 +890,14 @@ export function createAiSearchLearningTracker({
     postEvent({
       schemaVersion:
         SCHEMA_VERSION,
+
+      ...(searchMetrics ? { searchMetrics: {
+        result_count: searchMetrics.result_count,
+        zero_results: searchMetrics.zero_results,
+        result_count_is_lower_bound: searchMetrics.result_count_is_lower_bound,
+        search_mode: searchMetrics.search_mode,
+        strict_keyword_present: searchMetrics.strict_keyword_present
+      } } : {}),
 
       event:
         'filters_applied',

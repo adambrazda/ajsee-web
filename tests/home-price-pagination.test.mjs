@@ -12,11 +12,11 @@ const source =
   );
 
 test(
-  'homepage keeps its existing single-request path without a price filter',
+  'homepage can refill expired batches without a price filter',
   () => {
     assert.match(
       source,
-      /if\s*\(\s*!hasActivePriceFilter\(\s*api\s*\)\s*\)[\s\S]*?getAllHomeEvents\(\{[\s\S]*?filters:\s*api/
+      /if\s*\(\s*!hasActivePriceFilter\(\s*api\s*\)\s*\)[\s\S]*?getAllHomeEvents\(\{[\s\S]*?filters:\s*\{\s*\.\.\.api,\s*page,\s*size:/
     );
   }
 );

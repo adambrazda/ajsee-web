@@ -108,6 +108,7 @@ const SUPPORTED_COUNTRY_CODE_SET =
 const TOP_LEVEL_KEYS =
   new Set([
     'schemaVersion',
+    'searchMetrics',
     'event',
     'searchId',
     'sequence',
@@ -876,6 +877,27 @@ function assertNoFeedbackField(
   }
 }
 
+function normalizeSearchMetrics(value) {
+  assertExactKeys(value, new Set([
+    'result_count', 'zero_results', 'result_count_is_lower_bound',
+    'search_mode', 'strict_keyword_present'
+  ]), 'search-metrics');
+  const resultCount = normalizeInteger(value.result_count, {
+    min: 0, max: 1000000, code: 'invalid-result-count'
+  });
+  const zeroResults = normalizeBoolean(value.zero_results, 'invalid-zero-results');
+  if (zeroResults !== (resultCount === 0)) {
+    throw createHttpError(400, 'inconsistent-result-count');
+  }
+  return {
+    result_count: resultCount,
+    zero_results: zeroResults,
+    result_count_is_lower_bound: normalizeBoolean(value.result_count_is_lower_bound, 'invalid-result-count-bound'),
+    search_mode: normalizeEnum(value.search_mode, new Set(['exact', 'discovery']), 'invalid-search-mode'),
+    strict_keyword_present: normalizeBoolean(value.strict_keyword_present, 'invalid-strict-keyword')
+  };
+}
+
 function normalizePayload(
   value
 ) {
@@ -904,6 +926,10 @@ function normalizePayload(
       SUPPORTED_EVENTS,
       'invalid-event'
     );
+
+  if (hasOwn(value, 'searchMetrics') && event !== 'filters_applied') {
+    throw createHttpError(400, 'unexpected-search-metrics');
+  }
 
   const searchId =
     normalizeSearchId(
@@ -1145,7 +1171,10 @@ function normalizePayload(
       sequence,
       locale,
       page,
-      filters
+      filters,
+      ...(hasOwn(value, 'searchMetrics')
+        ? { searchMetrics: normalizeSearchMetrics(value.searchMetrics) }
+        : {})
     };
   }
 

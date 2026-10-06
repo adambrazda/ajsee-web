@@ -979,12 +979,6 @@ export function ensureSharedEventGridStyles(
       overflow-wrap: anywhere;
     }
 
-    body:is([data-page="home"], [data-page="events"]) #eventsList
-      .event-card[data-event-provider]:has(.event-partner-badge)
-      .event-title {
-      padding-inline-end: 104px;
-    }
-
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-date {
       margin: 0 0 4px;
       font-size: 13px;
@@ -993,9 +987,15 @@ export function ensureSharedEventGridStyles(
       font-weight: 400;
     }
 
+    body:is([data-page="home"], [data-page="events"]) #eventsList
+      .event-card[data-event-provider]:has(.event-partner-badge)
+      .event-date {
+      padding-inline-end: 104px;
+    }
+
     #eventsList .event-card .event-content > .event-partner-badge {
       position: absolute;
-      top: 14px;
+      top: 70px;
       inset-inline-end: 16px;
       z-index: 3;
       max-width: 96px;
@@ -1089,8 +1089,8 @@ export function ensureSharedEventGridStyles(
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-card { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 6px 12px; padding: 14px; }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-content { display: contents; }
       #eventsList .event-card .event-image-frame { grid-column: 1; grid-row: 1 / span 3; height: 112px; aspect-ratio: auto; border-radius: 8px; }
-      #eventsList .event-card .event-title { grid-column: 2; margin: 0; padding-inline-end: 0; font-size: 17px; line-height: 1.28; }
-      #eventsList .event-card .event-date { grid-column: 2; margin: 0; line-height: 1.4; font-size: 12px; }
+      #eventsList .event-card .event-title { grid-column: 2; margin: 0; font-size: 17px; line-height: 1.28; }
+      #eventsList .event-card .event-date { grid-column: 2; margin: 0; padding-inline-end: 0; line-height: 1.4; font-size: 12px; }
       #eventsList .event-card .event-card-footer { grid-column: 1 / -1; grid-row: 4; padding-top: 6px; margin-top: 6px; border-top: 1px solid var(--aj-event-border); }
       #eventsList .event-card .event-content > .event-partner-badge {
         position: relative;

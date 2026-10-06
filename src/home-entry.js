@@ -5993,36 +5993,40 @@ if (!G.flags.mainDomReadyBound) {
 
     card.dataset.eventProvider = 'smsticket';
 
-    if (card.querySelector('.event-partner-badge')) return;
+    const content =
+      card.querySelector('.event-content') ||
+      card;
 
-    const badge = document.createElement('p');
-    badge.className = 'event-partner-badge';
-    badge.dataset.provider = 'smsticket';
-    badge.innerHTML = '<span>smsticket</span>';
+    let badge =
+      card.querySelector('.event-partner-badge');
 
-    const actions =
-      link.closest('.event-buttons-group') ||
-      card.querySelector('.event-buttons-group, .event-actions, .card-actions');
+    if (!badge) {
+      badge = document.createElement('p');
+      badge.className = 'event-partner-badge';
+      badge.dataset.provider = 'smsticket';
+      badge.innerHTML = '<span>smsticket</span>';
+    }
 
-    const date = card.querySelector('.event-date, time, [class*="date"]');
-    const title = card.querySelector('h2, h3, .event-title, [class*="title"]');
-
-    if (date && date.parentElement && card.contains(date)) {
-      date.insertAdjacentElement('afterend', badge);
+    /*
+     * Keep seller attribution outside the artwork. Shared event-card CSS owns
+     * the final responsive placement and dark-mode appearance.
+     */
+    if (
+      content !== card ||
+      !card.querySelector('.event-image-frame')
+    ) {
+      if (badge.parentElement !== content) {
+        content.insertBefore(
+          badge,
+          content.firstElementChild || null
+        );
+      }
       return;
     }
 
-    if (actions && actions.parentElement && card.contains(actions)) {
-      actions.parentElement.insertBefore(badge, actions);
-      return;
+    if (!badge.isConnected) {
+      content.appendChild(badge);
     }
-
-    if (title && title.parentElement && card.contains(title)) {
-      title.insertAdjacentElement('afterend', badge);
-      return;
-    }
-
-    link.insertAdjacentElement('beforebegin', badge);
   }
 
   let scheduled = false;

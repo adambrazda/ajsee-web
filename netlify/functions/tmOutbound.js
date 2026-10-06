@@ -27,12 +27,11 @@ const AJSEE_SHARED_ID = 'ajsee_web_events';
 const AJSEE_PARTNER_PROPERTY_ID = '8292139';
 
 // Tracking modes:
-// - adaptive (default): probe the two Impact hosts in the user's browser.
-//   If both are reachable, continue through the official Impact link;
-//   otherwise fall back to the clean Ticketmaster URL before the user can
-//   hit a TLS/ad-blocker interstitial.
-// - affiliate: always use Impact.
-// - direct: always bypass Impact.
+// - affiliate (default): always use the official Impact link so eligible
+//   Ticketmaster purchases retain affiliate attribution.
+// - adaptive: probe the two Impact hosts in the user's browser and fall back
+//   to the clean Ticketmaster URL if the tracking chain is unreachable.
+// - direct: emergency bypass of Impact.
 //
 // TM_IMPACT_TRACKING_ENABLED is kept only as a backwards-compatible override.
 function resolveImpactTrackingMode() {
@@ -68,7 +67,7 @@ function resolveImpactTrackingMode() {
     return 'direct';
   }
 
-  return 'adaptive';
+  return 'affiliate';
 }
 
 const IMPACT_TRACKING_MODE =
@@ -77,7 +76,7 @@ const IMPACT_TRACKING_MODE =
 const DEFAULT_FALLBACK_URL = 'https://www.ticketmaster.cz/';
 
 const MARKET_MAP = {
-  'ticketmaster.cz':    { assetId: '2038768', programId: '23901', countryCode: 'CZ' },
+  'ticketmaster.cz':    { assetId: '1958979', programId: '23901', countryCode: 'CZ' },
   'ticketmaster.co.uk': { assetId: '2038758', programId: '24023', countryCode: 'GB' },
   'ticketweb.uk':       { assetId: '2038758', programId: '24023', countryCode: 'GB' },
   'ticketmaster.de':    { assetId: '2038753', programId: '23890', countryCode: 'DE' },

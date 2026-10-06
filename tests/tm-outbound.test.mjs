@@ -21,7 +21,7 @@ const event = {
 };
 
 test(
-  'Ticketmaster outbound defaults to adaptive Impact routing with a direct fallback',
+  'Ticketmaster CZ defaults to the current official Impact affiliate link',
   async () => {
     const previousMode =
       process.env.TM_IMPACT_TRACKING_MODE;
@@ -33,52 +33,37 @@ test(
       delete process.env.TM_IMPACT_TRACKING_MODE;
       delete process.env.TM_IMPACT_TRACKING_ENABLED;
 
-      const adaptiveModule =
+      const affiliateModule =
         await import(
-          `${moduleUrl.href}?mode=adaptive-default`
+          `${moduleUrl.href}?mode=affiliate-default`
         );
 
       const response =
-        await adaptiveModule.handler(event);
+        await affiliateModule.handler(event);
 
       assert.equal(
         response.statusCode,
-        200
+        302
       );
 
-      assert.match(
-        response.headers['Content-Type'],
-        /text\/html/
+      const affiliateUrl =
+        new URL(
+          response.headers.Location
+        );
+
+      assert.equal(
+        affiliateUrl.hostname,
+        'ticketmaster.evyy.net'
       );
 
-      assert.match(
-        response.body,
-        /ticketmaster\.evyy\.net/
+      assert.equal(
+        affiliateUrl.pathname,
+        '/c/7218577/1958979/23901'
       );
 
-      assert.match(
-        response.body,
-        /www\.ojrq\.net/
-      );
-
-      assert.match(
-        response.body,
-        /ajsee\.tmImpactReachability\.v1/
-      );
-
-      assert.match(
-        response.body,
-        /window\.location\.replace/
-      );
-
-      assert.match(
-        response.body,
-        /2038768\/23901/
-      );
-
-      assert.match(
-        response.body,
-        /www\.ticketmaster\.cz/
+      assert.equal(
+        affiliateUrl.searchParams.get('u'),
+        target
       );
     } finally {
       if (previousMode === undefined) {
@@ -150,6 +135,11 @@ test(
       assert.equal(
         affiliateUrl.hostname,
         'ticketmaster.evyy.net'
+      );
+
+      assert.equal(
+        affiliateUrl.pathname,
+        '/c/7218577/1958979/23901'
       );
 
       assert.equal(

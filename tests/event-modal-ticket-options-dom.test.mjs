@@ -1167,7 +1167,7 @@ test('modal renders a price range and replaces commerce details on the next even
   await openEventModal(createEvent({priceFrom:null,ticketOptions:[]}), 'en');
   const content=getModal().querySelector('#modalCommerce').textContent;
   assert.match(content,/Price at seller/);
-  assert.match(content,/Check availability/);
+  assert.equal(getModal().querySelector('.event-stock'),null);
   assert.doesNotMatch(content,/490|1\s*290|Orientační/);
   assert.equal(getModal().querySelectorAll('#modalCommerce').length,1);
 });
@@ -1176,7 +1176,8 @@ test('open modal moves the same commerce control across the mobile breakpoint wi
   await openEventModal(createEvent(), 'cs');
   const modal = getModal();
   const commerce = modal.querySelector('#modalCommerce');
-  const summary = commerce.querySelector('summary');
+  const calendar = modal.querySelector('.modal-calendar-picker');
+  const summary = calendar.querySelector('summary');
   summary.click();
   assert.equal(commerce.parentElement.className, 'modal-purchase');
   assert.equal(commerce.parentElement.parentElement.className, 'modal-visual-column');
@@ -1189,7 +1190,7 @@ test('open modal moves the same commerce control across the mobile breakpoint wi
     assert.equal(commerce.parentElement.parentElement.className, 'event-modal-content');
     assert.equal(modal.querySelector('.modal-body').firstElementChild.className, 'modal-intro');
     assert.equal(commerce.nextElementSibling.id, 'modalTicketOptions');
-    assert.equal(commerce.querySelector('details').open, true);
+    assert.equal(calendar.open, true);
     await openEventModal(createEvent(), 'en');
     assert.equal(commerceMediaListeners.size, listenerCount);
     assert.equal(modal.querySelectorAll('#modalCommerce').length, 1);
@@ -1202,7 +1203,7 @@ test('open modal moves the same commerce control across the mobile breakpoint wi
 });
 
 test('purchase and disclosure nodes survive desktop, tablet and mobile transitions', async () => {
-  await openEventModal(createEvent(), 'cs');
+  await openEventModal(createEvent({ticketInventory:{source:'smsticket',scope:'seller',observedAt:new Date().toISOString(),status:'limited',remaining:37}}), 'cs');
   const modal=getModal(), purchase=modal.querySelector('.modal-purchase'), ticket=getPrimaryTicketLink(), stock=modal.querySelector('.event-stock');
   stock.open=true;
   try {
@@ -1237,9 +1238,9 @@ test('modal uses the same ticket label and icon, traps Tab, and dismisses a disc
   assert.equal(document.activeElement,calendar.querySelector('summary'));
   document.activeElement.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));
   assert.equal(document.activeElement,close);
-  const stock=modal.querySelector('.event-stock');stock.open=true;
+  calendar.open=true;
   document.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
-  assert.equal(stock.open,false);
+  assert.equal(calendar.open,false);
   assert(modal.classList.contains('open'));
   document.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
   assert(!modal.classList.contains('open'));

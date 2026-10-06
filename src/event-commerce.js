@@ -91,12 +91,15 @@ export function renderEventCommerce(event = {}, locale = 'cs', {detail = false, 
   const updated = known ? t.checked.replace('{time}', new Date(stock.observedAt).toLocaleString(TEXT[language(locale)] ? locale : 'en')) : '';
   const explanation = known ? t.stockNote : stock.status === 'unknown' ? t.unknownNote : t.saleNote;
   const helpId = `event-stock-help-${++stockHelpSequence}`;
-  return `<div class="event-commerce${detail ? ' event-commerce--detail' : ''}">
-    <p class="event-price${prices.length ? '' : ' event-price--unknown'}">${esc(prices.join(' / ') || t.priceUnknown)}</p>
-    <details class="event-stock" data-stock-tone="${stock.tone}" data-stock-status="${stock.status}">
+  const saleStatus = !known && stock.status !== 'unknown';
+  const priceNoteId = detail && prices.length ? `${helpId}-price` : '';
+  return `<div class="event-commerce${detail ? ' event-commerce--detail' : ''}${!known && !saleStatus ? ' event-commerce--price-only' : ''}">
+    <p class="event-price${prices.length ? '' : ' event-price--unknown'}"${priceNoteId ? ` aria-describedby="${priceNoteId}" title="${esc(t.priceNote)}"` : ''}>${esc(prices.join(' / ') || t.priceUnknown)}</p>
+    ${known ? `<details class="event-stock" data-stock-tone="${stock.tone}" data-stock-status="${stock.status}">
       <summary aria-controls="${helpId}" aria-describedby="${helpId}" title="${esc(t[stock.status] + '. ' + explanation + (updated ? ' ' + updated : ''))}"><span class="event-stock-dot" aria-hidden="true"></span><span class="event-stock-label">${esc(t[stock.status])}</span><span class="event-stock-compact" aria-hidden="true">${esc((COMPACT_STOCK[language(locale)] || COMPACT_STOCK.en)[stock.status] || t[stock.status])}</span><span class="event-stock-info" aria-hidden="true">ⓘ</span></summary>
     </details>
-    <div id="${helpId}" class="event-stock-help"><strong>${esc(t[stock.status])}</strong><br>${esc(explanation)}${updated ? `<br>${esc(updated)}` : ''}${detail && prices.length ? `<p class="event-commerce-note">${esc(t.priceNote)}</p>` : ''}</div>
+    <div id="${helpId}" class="event-stock-help"><strong>${esc(t[stock.status])}</strong><br>${esc(explanation)}${updated ? `<br>${esc(updated)}` : ''}</div>` : saleStatus ? `<p class="event-sale-status">${esc(t[stock.status])}</p>` : ''}
+    ${priceNoteId ? `<p id="${priceNoteId}" class="event-commerce-note" hidden>${esc(t.priceNote)}</p>` : ''}
     ${detail && countText ? `<p class="event-stock-count">${esc(countText)}</p>` : ''}
   </div>`;
 }
@@ -123,6 +126,8 @@ export function ensureEventCommerceStyles(doc = globalThis.document) {
     .event-commerce { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto); align-items: center; gap: 4px 10px; margin: 4px 0 6px; color: var(--aj-event-text, #112b3f); min-width: 0; }
     .event-commerce .event-price { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
     .event-commerce .event-price--unknown { font-size: 13px; font-weight: 500; color: var(--aj-event-muted, #526475); }
+    .event-commerce--price-only { grid-template-columns: minmax(0, 1fr); }
+    .event-commerce .event-sale-status { margin: 0; color: var(--aj-event-muted, #526475); font-size: 12px; line-height: 1.4; }
     .event-commerce .event-stock { font-size: 12px; line-height: 1.4; min-width: 0; color: var(--aj-event-muted, #526475); }
     .event-commerce .event-stock summary { display: flex; align-items: center; gap: 6px; min-height: 44px; cursor: pointer; list-style: none; width: fit-content; max-width: 100%; border-radius: 8px; overflow-wrap: anywhere; }
     .event-commerce .event-stock summary::-webkit-details-marker { display: none; }

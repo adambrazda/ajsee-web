@@ -39,8 +39,8 @@ function ensureLayoutStyles(doc) {
     .event-modal .modal-calendar-picker .calendar-label { margin: 0; color: inherit; font-size: inherit; font-weight: 500; }
     .event-modal .modal-calendar-picker .calendar-buttons { margin: 4px 0 0; }
     .event-modal .modal-calendar-picker:not([open]) .calendar-buttons { display: none; }
-    .event-modal .modal-calendar-picker .calendar-btns-wrap { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
-    .event-modal .modal-calendar-picker .calendar-btn { flex: 1 1 90px; width: auto; min-height: 44px; margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--aj-event-soft); border-color: var(--aj-event-border); color: var(--aj-event-text); font-size: 12px; font-weight: 500; }
+    .event-modal .modal-calendar-picker .calendar-btns-wrap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; width: 100%; }
+    .event-modal .modal-calendar-picker .calendar-btn { box-sizing: border-box; width: 100%; min-width: 0; min-height: 44px; margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--aj-event-soft); border-color: var(--aj-event-border); color: var(--aj-event-text); font-size: 12px; font-weight: 500; text-align: center; white-space: normal; }
     @media (min-width: 600px) and (max-width: 1023px) {
       .event-modal { padding: 16px; }
       .event-modal .event-modal-content { max-height: calc(100dvh - 32px); }
@@ -62,6 +62,7 @@ function ensureLayoutStyles(doc) {
       .event-modal .modal-meta { margin-bottom: 0; font-size: 13px; }
       .event-modal #modalImage { height: 160px; margin: 0; }
       .event-modal .modal-description { padding-top: 14px; font-size: 13px; }
+      .event-modal .modal-calendar-picker .calendar-btns-wrap { grid-template-columns: minmax(0, 1fr); }
       .event-modal[data-layout="mobile"] .modal-purchase { padding-inline: 16px; gap: 0 12px; }
       .event-modal[data-layout="mobile"] .event-commerce--detail { grid-template-columns: minmax(0, 1fr); gap: 0; margin: 0; }
       .event-modal[data-layout="mobile"] .modal-purchase .event-price { font-size: 21px; }

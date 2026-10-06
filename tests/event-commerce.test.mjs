@@ -52,9 +52,10 @@ test('verified inventory statuses produce distinct tones and seller-scoped sold-
  }
  assert.match(renderEventCommerce(inv({status:'sold_out',remaining:0}),'cs',{now}),/Vyprodáno u prodejce/);
 });
-test('missing, stale, future, wrong-seller and contradictory inventory evidence stays neutral',()=>{
+test('missing, stale, future, wrong-seller and contradictory inventory evidence never renders availability',()=>{
  for(const changes of [{observedAt:''},{observedAt:'2026-10-06T17:00:00Z'},{observedAt:'2026-10-06T19:00:00Z'},{source:'other'},{scope:'venue'},{status:'sold_out',remaining:5},{status:'last',remaining:0}]){
   assert.equal(eventInventoryState(inv(changes),now).status,'unknown');
+  assert.doesNotMatch(renderEventCommerce(inv(changes),'cs',{detail:true,now}),/class="event-stock"|class="event-stock-help"|class="event-stock-count"/);
  }
  assert.equal(eventInventoryState({...inv(),saleStatus:'canceled'},now).status,'canceled');
  assert.equal(eventInventoryState({ticketInventory:{...inv().ticketInventory,source:undefined}},now).status,'unknown');
@@ -65,15 +66,16 @@ test('count under 100 is only shown in detail with evidence and last-updated tim
  assert.doesNotMatch(renderEventCommerce(inv(),'cs',{now}),/přibližně 37/);
  for(const remaining of [100,101,null,-1,1.5,'37']) assert.doesNotMatch(renderEventCommerce(inv({remaining}),'cs',{detail:true,now}),/přibližně/);
 });
-test('all six locales render prices, neutral availability and notes without leaking Czech',()=>{
+test('all six locales keep prices and price notes while omitting unavailable inventory',()=>{
  for(const locale of ['cs','sk','en','de','pl','hu']){
   const html=renderEventCommerce({priceFrom:'500 Kč'},locale,{detail:true});
   assert.match(html,/500/);assert.doesNotMatch(html,/undefined|NaN/);
+  assert.doesNotMatch(html,/class="event-stock"/);
   if(locale!=='cs') assert.doesNotMatch(html,/Ověřit dostupnost|Cena u prodejce/);
  }
 });
 test('card exposes a touch/keyboard-native expandable explanation and a hover title',()=>{
- const dom=new JSDOM(renderSharedEventCard({event:{priceFrom:'390 Kč'},locale:'en'}));
+ const dom=new JSDOM(renderSharedEventCard({event:{...inv({observedAt:new Date().toISOString()}),priceFrom:'390 Kč'},locale:'en'}));
  const details=dom.window.document.querySelector('.event-stock');
  const summary=details.querySelector('summary');
  assert.match(summary.title,/seller/);
@@ -83,14 +85,14 @@ test('card exposes a touch/keyboard-native expandable explanation and a hover ti
  dom.window.close();
 });
 
-test('seller badge is attached to the image and availability retains its accessible label',()=>{
- const dom=new JSDOM(renderSharedEventCard({event:{partner:'ticketmaster',priceFrom:'390 Kč'},locale:'cs'}));
+test('seller badge is attached to the image and verified availability retains its accessible label',()=>{
+ const dom=new JSDOM(renderSharedEventCard({event:{...inv({observedAt:new Date().toISOString()}),priceFrom:'390 Kč'},locale:'cs'}));
  const doc=dom.window.document;
  assert.equal(doc.querySelectorAll('.event-partner-badge').length,1);
  assert.ok(doc.querySelector('.event-image-frame > .event-partner-badge'));
  assert.equal(doc.querySelector('.event-content .event-partner-badge'),null);
- assert.equal(doc.querySelector('.event-stock-label').textContent,'Ověřit dostupnost');
- assert.match(doc.querySelector('.event-stock summary').title,/Ověřit dostupnost/);
+ assert.equal(doc.querySelector('.event-stock-label').textContent,'Omezená dostupnost');
+ assert.match(doc.querySelector('.event-stock summary').title,/Omezená dostupnost/);
  dom.window.close();
 });
 
@@ -105,7 +107,26 @@ test('compact card keeps two accessible detail triggers and one direct purchase 
  assert.equal(ticket.textContent.trim(),'Vstupenky');
  assert.equal(ticket.href,'https://example.com/tickets');
  assert(ticket.querySelector('svg.event-ticket-arrow[aria-hidden="true"]'));
- assert.equal(doc.querySelector('.event-stock-compact').textContent,'Ověřit');
+ assert.equal(doc.querySelector('.event-stock'),null);
+ dom.window.close();
+});
+
+test('cards and detail retain price without a placeholder semaphore before inventory integration',()=>{
+ for(const detail of [false,true]){
+  const dom=new JSDOM(renderEventCommerce({partner:'smsticket',priceFrom:'498 Kč'},'cs',{detail}));
+  const doc=dom.window.document;
+  assert.match(clean(doc.querySelector('.event-price').textContent),/498 Kč/);
+  assert.equal(doc.querySelector('.event-stock, .event-stock-help, .event-stock-count'),null);
+  assert(doc.querySelector('.event-commerce--price-only'));
+  if(detail){
+   const price=doc.querySelector('.event-price');
+   assert.match(doc.getElementById(price.getAttribute('aria-describedby')).textContent,/Orientační cena/);
+  }
+  dom.window.close();
+ }
+ const dom=new JSDOM(renderEventCommerce({saleStatus:'canceled'},'cs'));
+ assert.equal(dom.window.document.querySelector('.event-sale-status').textContent,'Akce zrušena');
+ assert.equal(dom.window.document.querySelector('.event-stock'),null);
  dom.window.close();
 });
 

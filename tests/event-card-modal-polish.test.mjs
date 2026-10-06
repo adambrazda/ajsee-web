@@ -17,6 +17,11 @@ const modalSource = readFileSync(
   'utf8'
 );
 
+const modalLayoutSource = readFileSync(
+  new URL('../src/event-modal-layout.js', import.meta.url),
+  'utf8'
+);
+
 const ticketmasterSource = readFileSync(
   new URL('../src/adapters/ticketmaster.js', import.meta.url),
   'utf8'
@@ -115,24 +120,15 @@ test('existing modal shell receives seller trust note at runtime', () => {
 
 test('desktop calendar actions use three compact columns', () => {
   assert.match(
-    modalSource,
-    /AJSEE_MODAL_CALENDAR_3COL_V1/
+    modalLayoutSource,
+    /\.modal-calendar-picker \.calendar-btns-wrap\s*\{[^}]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/
   );
-
-  assert.match(
-    modalSource,
-    /grid-template-columns:repeat\(3,\s*minmax\(0,\s*1fr\)\)/
-  );
+  assert.doesNotMatch(modalSource,/installAjseeModalDesktopCalendarPolish/);
 });
 
 test('mobile calendar actions remain one column', () => {
   assert.match(
-    modalSource,
-    /AJSEE_MODAL_CALENDAR_MOBILE_1COL_V1/
-  );
-
-  assert.match(
-    modalSource,
-    /grid-template-columns:1fr/
+    modalLayoutSource,
+    /@media \(max-width: 599px\)[\s\S]*\.modal-calendar-picker \.calendar-btns-wrap \{ grid-template-columns: minmax\(0, 1fr\); \}/
   );
 });

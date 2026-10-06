@@ -27,10 +27,11 @@ const AJSEE_SHARED_ID = 'ajsee_web_events';
 const AJSEE_PARTNER_PROPERTY_ID = '8292139';
 
 // Tracking modes:
-// - affiliate (default): always use the official Impact link so eligible
-//   Ticketmaster purchases retain affiliate attribution.
-// - adaptive: probe the two Impact hosts in the user's browser and fall back
-//   to the clean Ticketmaster URL if the tracking chain is unreachable.
+// - adaptive (default): probe the Impact tracking/sync hosts in the user's
+//   browser. If both are reachable, use the official affiliate link;
+//   otherwise fall back to the clean Ticketmaster URL before a TLS/ad-blocker
+//   interstitial can break the purchase journey.
+// - affiliate: emergency override that always uses Impact.
 // - direct: emergency bypass of Impact.
 //
 // TM_IMPACT_TRACKING_ENABLED is kept only as a backwards-compatible override.
@@ -67,7 +68,7 @@ function resolveImpactTrackingMode() {
     return 'direct';
   }
 
-  return 'affiliate';
+  return 'adaptive';
 }
 
 const IMPACT_TRACKING_MODE =

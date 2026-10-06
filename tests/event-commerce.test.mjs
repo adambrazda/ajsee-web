@@ -85,13 +85,17 @@ test('card exposes a touch/keyboard-native expandable explanation and a hover ti
  dom.window.close();
 });
 
-test('seller badge lives on the card surface below the artwork and verified availability retains its accessible label',()=>{
+test('seller badges stay off artwork, with mobile metadata placement and desktop price-row placement',()=>{
  const dom=new JSDOM(renderSharedEventCard({event:{...inv({observedAt:new Date().toISOString()}),priceFrom:'390 Kč'},locale:'cs'}));
  const doc=dom.window.document;
- assert.equal(doc.querySelectorAll('.event-partner-badge').length,1);
+ const badges=[...doc.querySelectorAll('.event-partner-badge')];
+ assert.equal(badges.length,2);
  assert.equal(doc.querySelector('.event-image-frame > .event-partner-badge'),null);
- assert.ok(doc.querySelector('.event-content > .event-partner-badge'));
- assert.equal(doc.querySelector('.event-content > .event-partner-badge').previousElementSibling?.classList.contains('event-location') || doc.querySelector('.event-content > .event-partner-badge').previousElementSibling?.classList.contains('event-date'),true);
+ assert.ok(doc.querySelector('.event-content > .event-partner-badge:not(.event-partner-badge--commerce)'));
+ const desktopBadge=doc.querySelector('.event-commerce-row > .event-partner-badge--commerce');
+ assert.ok(desktopBadge);
+ assert.equal(desktopBadge.getAttribute('aria-hidden'),'true');
+ assert.equal(doc.querySelector('.event-commerce-row > .event-commerce') !== null,true);
  assert.equal(doc.querySelector('.event-stock-label').textContent,'Omezená dostupnost');
  assert.match(doc.querySelector('.event-stock summary').title,/Omezená dostupnost/);
  dom.window.close();

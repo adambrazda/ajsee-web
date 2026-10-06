@@ -4719,7 +4719,7 @@ if (!G.flags.mainDomReadyBound) {
   }
 
   function ensureBadge(card) {
-    if (!card || card.querySelector('.event-partner-badge')) return;
+    if (!card) return;
 
     const partner = detectPartner(card);
     const label = labelForPartner(partner);
@@ -4728,26 +4728,41 @@ if (!G.flags.mainDomReadyBound) {
 
     card.dataset.eventProvider = partner;
 
-    const badge = document.createElement('p');
-    badge.className = 'event-partner-badge';
-    badge.dataset.provider = partner;
-    badge.innerHTML = '<span>' + label + '</span>';
+    const content =
+      card.querySelector('.event-content') ||
+      card;
 
-    const date = card.querySelector('.event-date');
-    const buttons = card.querySelector('.event-buttons-group');
-    const content = card.querySelector('.event-content') || card;
+    let badge =
+      card.querySelector('.event-partner-badge');
 
-    if (date && date.parentElement) {
-      date.insertAdjacentElement('afterend', badge);
+    if (!badge) {
+      badge = document.createElement('p');
+      badge.className = 'event-partner-badge';
+      badge.dataset.provider = partner;
+      badge.innerHTML = '<span>' + label + '</span>';
+    }
+
+    /*
+     * Provider identity belongs to the card surface, not the event artwork.
+     * Keep it as the first content child so shared responsive CSS can place it
+     * beside the title on larger cards and below the thumbnail on compact cards.
+     */
+    if (
+      content !== card ||
+      !card.querySelector('.event-image-frame')
+    ) {
+      if (badge.parentElement !== content) {
+        content.insertBefore(
+          badge,
+          content.firstElementChild || null
+        );
+      }
       return;
     }
 
-    if (buttons && buttons.parentElement) {
-      buttons.parentElement.insertBefore(badge, buttons);
-      return;
+    if (!badge.isConnected) {
+      content.appendChild(badge);
     }
-
-    content.appendChild(badge);
   }
 
   let scheduled = false;

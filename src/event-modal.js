@@ -1,3 +1,6 @@
+import { renderEventCommerce, ensureEventCommerceStyles, eventInventoryState } from './event-commerce.js';
+import { setEventTicketLabel } from './event-ticket-ui.js';
+import { ensurePremiumModalLayout } from './event-modal-layout.js';
 import {
   resolveEventLocation,
   formatEventVenueLine,
@@ -930,7 +933,11 @@ function bindModalPartnerClickTracking(link) {
   link.dataset.ajseeModalTrackingBound =
     '1';
 
-  link.addEventListener('click', () => {
+  link.addEventListener('click', (event) => {
+    if (link.getAttribute('aria-disabled') === 'true') {
+      event.preventDefault();
+      return;
+    }
     trackModalPartnerClickFromLink(
       link
     );
@@ -1006,7 +1013,7 @@ function renderModalTicketOptions(
       lang
     );
 
-    link.textContent = label;
+    setEventTicketLabel(link, label);
     link.setAttribute(
       'aria-label',
       label + ': ' + title
@@ -1041,6 +1048,12 @@ function renderModalTicketOptions(
 
     link.dataset.ticketOptionIndex =
       String(index + 1);
+
+    if (eventInventoryState({...eventData, partner: option.provider || eventData.partner}).status === 'sold_out') {
+      link.removeAttribute('href');
+      link.setAttribute('aria-disabled', 'true');
+      link.setAttribute('tabindex', '-1');
+    }
 
     bindModalPartnerClickTracking(link);
 
@@ -1203,8 +1216,15 @@ function ensureModalConversionPolishStyles() {
       }
     }
   `);
-}function ensureEventModalShell() {
+}
+
+function ensureModalCommerceLayout(modal) {
+  return ensurePremiumModalLayout(modal);
+}
+
+function ensureEventModalShell() {
   ensureModalStyles();
+  ensureEventCommerceStyles();
 
   let modal = document.getElementById(MODAL_ID);
 
@@ -1409,6 +1429,7 @@ function closeEventModal() {
   modal.classList.remove('open');
   modal.classList.add('hidden');
   modal.setAttribute('aria-hidden', 'true');
+  modal.querySelectorAll('.event-stock[open], .modal-calendar-picker[open]').forEach(disclosure => { disclosure.open = false; });
 
   document.body.style.overflow = '';
 
@@ -1440,11 +1461,31 @@ export function initEventModal() {
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return;
-
     const activeModal = document.getElementById(MODAL_ID);
-    if (activeModal?.classList.contains('open')) {
+    if (!activeModal?.classList.contains('open')) return;
+    if (event.key === 'Escape') {
+      const disclosure = activeModal.querySelector('.event-stock[open], .modal-calendar-picker[open]');
+      if (disclosure) {
+        disclosure.open = false;
+        disclosure.querySelector('summary')?.focus();
+        event.preventDefault();
+        return;
+      }
       closeEventModal();
+      event.preventDefault();
+    } else if (event.key === 'Tab') {
+      const controls = [...activeModal.querySelectorAll('a[href], button:not([disabled]), summary, input:not([disabled]), select:not([disabled]), textarea:not([disabled])')].filter(control => {
+        if (control.closest('[hidden], [aria-hidden="true"]') || control.getAttribute('aria-disabled') === 'true') return false;
+        const closed = control.closest('details:not([open])');
+        return (!closed || control === closed.querySelector('summary')) && window.getComputedStyle(control).display !== 'none';
+      });
+      const first = controls[0], last = controls.at(-1);
+      if (!first) return;
+      if (event.shiftKey && (document.activeElement === first || !activeModal.contains(document.activeElement))) {
+        last.focus(); event.preventDefault();
+      } else if (!event.shiftKey && (document.activeElement === last || !activeModal.contains(document.activeElement))) {
+        first.focus(); event.preventDefault();
+      }
     }
   });
 
@@ -1537,6 +1578,9 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const locationEl = modal.querySelector('#modalLocation');
   const descEl = modal.querySelector('#modalDescription');
   const sellerNoteEl = ensureModalSellerNote(modal);
+  const commerceEl = ensureModalCommerceLayout(modal);
+  // Fully replace on every open so a prior event's price/status cannot leak.
+  if (commerceEl) commerceEl.innerHTML = renderEventCommerce(eventData, lang, { detail: true });
   const categoryEl = modal.querySelector('#modalCategory');
   const ticketEl = modal.querySelector('#modalTicketsLink');
   const ticketOptionsEl = modal.querySelector('#modalTicketOptions');
@@ -1557,6 +1601,11 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   if (categoryEl) categoryEl.textContent = translateCategory(eventData.category, lang);
 
   const sellerName = modalProviderName(eventData);
+  const providerBadge = modal.querySelector('.modal-provider-badge');
+  if (providerBadge) {
+    providerBadge.textContent = sellerName;
+    providerBadge.hidden = !sellerName;
+  }
 
   const optionSellerNames = [
     ...new Set(
@@ -1618,7 +1667,9 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   }
 
   if (ticketEl) {
-    ticketEl.textContent = i18n(lang, 'tickets');
+    setEventTicketLabel(ticketEl, i18n(lang, 'tickets'));
+    ticketEl.removeAttribute('aria-disabled');
+    ticketEl.removeAttribute('tabindex');
 
     ticketEl.dataset.partner = String(
       eventData?.partner ||
@@ -1675,6 +1726,11 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
         'aria-label',
         i18n(lang, 'tickets') + ': ' + title
       );
+      if (eventInventoryState(eventData).status === 'sold_out') {
+        ticketEl.removeAttribute('href');
+        ticketEl.setAttribute('aria-disabled', 'true');
+        ticketEl.setAttribute('tabindex', '-1');
+      }
     } else {
       ticketEl.href = '#';
       ticketEl.hidden = true;
@@ -2002,239 +2058,6 @@ window.__ajseeOpenEventModal = openEventModal;
   function scan() {
     scheduled = false;
     getVisibleModalRoots().forEach(applyToRoot);
-  }
-
-  function scheduleScan() {
-    if (scheduled) return;
-    scheduled = true;
-    window.setTimeout(scan, 80);
-  }
-
-  ensureStyles();
-
-  document.addEventListener('click', scheduleScan, true);
-  document.addEventListener('keydown', scheduleScan, true);
-
-  const observer = new MutationObserver(scheduleScan);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scheduleScan, { once: true });
-  } else {
-    scheduleScan();
-  }
-})();
-
-
-/* AJSEE_MODAL_DESKTOP_CALENDAR_POLISH_v1
-   ---------------------------------------------------------
-   Desktop-only calendar layout polish for event modal.
-   Mobile layout intentionally unchanged.
-   --------------------------------------------------------- */
-
-(function installAjseeModalDesktopCalendarPolish() {
-  if (typeof window === 'undefined' || typeof document === 'undefined') return;
-  if (window.__ajseeModalDesktopCalendarPolishInstalled) return;
-
-  window.__ajseeModalDesktopCalendarPolishInstalled = true;
-
-  const STYLE_ID = 'ajsee-modal-desktop-calendar-polish-css';
-
-  function ensureStyles() {
-    if (document.getElementById(STYLE_ID)) return;
-
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = `
-      @media (min-width: 900px){
-        .ajsee-modal-calendar-group-v1{
-          display:grid;
-          grid-template-columns:1fr;
-          gap:10px;
-          align-items:start;
-          margin-top:18px;
-        }
-
-        .ajsee-modal-calendar-label-v1{
-          display:block;
-          margin:0;
-          font-weight:800;
-          line-height:1.25;
-        }
-
-        .ajsee-modal-calendar-actions-v1{
-          display:grid;
-          grid-template-columns:repeat(3, minmax(118px, 1fr));
-          gap:10px;
-          align-items:center;
-          width:min(100%, 520px);
-        }
-
-        .ajsee-modal-calendar-actions-v1 > a,
-        .ajsee-modal-calendar-actions-v1 > button{
-          width:100%;
-          min-height:44px;
-          white-space:nowrap;
-          text-align:center;
-        }
-      }
-    `;
-
-    document.head.appendChild(style);
-  }
-
-  function isVisible(el) {
-    if (!el || !el.getBoundingClientRect) return false;
-
-    const rect = el.getBoundingClientRect();
-    const style = window.getComputedStyle(el);
-
-    return (
-      rect.width > 20 &&
-      rect.height > 20 &&
-      style.display !== 'none' &&
-      style.visibility !== 'hidden' &&
-      Number(style.opacity || 1) !== 0
-    );
-  }
-
-  function getVisibleModalRoots() {
-    return Array.from(document.querySelectorAll([
-      '[role="dialog"]',
-      '[aria-modal="true"]',
-      '.event-modal',
-      '.event-detail-modal',
-      '.ajsee-event-modal',
-      '.ajsee-modal',
-      '.modal',
-      '[class*="modal"]',
-      '[class*="dialog"]'
-    ].join(','))).filter(isVisible);
-  }
-
-  function normalizedText(el) {
-    return String(el?.textContent || '')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  function isCalendarButton(el) {
-    const text = normalizedText(el).toLowerCase();
-    const href = String(el?.getAttribute?.('href') || '').toLowerCase();
-
-    return (
-      text === 'google' ||
-      text === 'outlook' ||
-      text === 'apple / ics' ||
-      text === 'apple/ics' ||
-      href.includes('calendar.google') ||
-      href.includes('outlook') ||
-      href.includes('.ics')
-    );
-  }
-
-  function findCalendarLabel(root) {
-    const candidates = Array.from(root.querySelectorAll('strong, b, p, span, div'))
-      .filter((el) => {
-        const text = normalizedText(el).toLowerCase();
-
-        if (!text) return false;
-        if (text.length > 80) return false;
-
-        return (
-          text.includes('přidat do kalendáře') ||
-          text.includes('pridat do kalendare') ||
-          text.includes('add to calendar') ||
-          text.includes('do kalendáře') ||
-          text.includes('do kalendare')
-        );
-      });
-
-    return candidates[0] || null;
-  }
-
-  function commonAncestor(elements) {
-    const valid = elements.filter(Boolean);
-
-    if (!valid.length) return null;
-    if (valid.length === 1) return valid[0].parentElement;
-
-    const paths = valid.map((el) => {
-      const path = [];
-      let node = el;
-
-      while (node && node !== document.documentElement) {
-        path.push(node);
-        node = node.parentElement;
-      }
-
-      return path;
-    });
-
-    return paths[0].find((node) => paths.every((path) => path.includes(node))) || null;
-  }
-
-  function directChildOf(parent, child) {
-    let node = child;
-
-    while (node && node.parentElement && node.parentElement !== parent) {
-      node = node.parentElement;
-    }
-
-    return node && node.parentElement === parent ? node : child;
-  }
-
-  function applyCalendarPolish(root) {
-    if (!root || root.dataset.ajseeCalendarPolishV1 === '1') return;
-
-    const buttons = Array.from(root.querySelectorAll('a, button')).filter(isCalendarButton);
-
-    if (buttons.length < 2) return;
-
-    const label = findCalendarLabel(root);
-    const group = commonAncestor(label ? [label, ...buttons] : buttons);
-
-    if (!group || group === document.body || group === document.documentElement) return;
-
-    const actionsCommon = commonAncestor(buttons);
-    const actionsChild = actionsCommon && group.contains(actionsCommon)
-      ? directChildOf(group, actionsCommon)
-      : null;
-
-    root.dataset.ajseeCalendarPolishV1 = '1';
-    group.classList.add('ajsee-modal-calendar-group-v1');
-
-    if (label) {
-      label.classList.add('ajsee-modal-calendar-label-v1');
-    }
-
-    if (actionsChild) {
-      actionsChild.classList.add('ajsee-modal-calendar-actions-v1');
-    } else {
-      const buttonParent = buttons[0]?.parentElement;
-
-      if (buttonParent) {
-        buttonParent.classList.add('ajsee-modal-calendar-actions-v1');
-      }
-    }
-
-    try {
-      window.__ajseeModalCalendarPolishLast = {
-        applied: true,
-        buttons: buttons.map((button) => normalizedText(button)),
-        at: new Date().toISOString()
-      };
-    } catch {
-      // noop
-    }
-  }
-
-  let scheduled = false;
-
-  function scan() {
-    scheduled = false;
-    ensureStyles();
-    getVisibleModalRoots().forEach(applyCalendarPolish);
   }
 
   function scheduleScan() {

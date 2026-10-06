@@ -124,12 +124,12 @@ test(
 
     assert.match(
       sharedSource,
-      /@media\s*\(min-width:\s*1024px\)/
+      /@media\s*\(min-width:\s*1100px\)/
     );
 
     assert.match(
       sharedSource,
-      /@media\s*\(min-width:\s*1536px\)[\s\S]*repeat\(\s*4,\s*minmax\(0,\s*1fr\)\s*\)/
+      /@media\s*\(min-width:\s*1500px\)[\s\S]*repeat\(\s*4,\s*minmax\(0,\s*1fr\)\s*\)/
     );
 
     assert.match(
@@ -139,7 +139,7 @@ test(
 
     assert.match(
       sharedSource,
-      /@media\s*\(max-width:\s*700px\)/
+      /@media\s*\(max-width:\s*599px\)/
     );
   }
 );
@@ -349,11 +349,11 @@ test(
 
 
 test(
-  'shared event image frame uses a stable 4:3 presentation without decorative backdrops',
+  'shared event image frame uses a compact 16:9 presentation without decorative backdrops',
   () => {
     assert.match(
       sharedSource,
-      /\.event-card \.event-image-frame \{[\s\S]*?aspect-ratio: 4 \/ 3;/
+      /\.event-card \.event-image-frame \{[\s\S]*?aspect-ratio: 16 \/ 9;/
     );
 
     assert.doesNotMatch(

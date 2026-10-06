@@ -807,6 +807,10 @@ export function mapTicketmasterEvent(
     url: outboundUrl,
     tickets: outboundUrl,
     priceFrom: price,
+    // Retain all provider ranges for display, including maximum and currency.
+    priceRanges: (Array.isArray(ev.priceRanges) ? ev.priceRanges : [])
+      .map(range => ({ min: range.min, max: range.max, currency: range.currency })),
+    saleStatus: String(ev?.dates?.status?.code || ''),
 
     ...(priceCurrency
       ? {

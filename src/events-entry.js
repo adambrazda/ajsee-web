@@ -5719,6 +5719,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
       return renderSharedEventCard({
         event: ev,
+        locale,
         modalId,
         resultPosition,
         titleHtml: title,
@@ -6334,6 +6335,12 @@ if (!G.flags.mainDomReadyBound) {
     badge.className = 'event-partner-badge';
     badge.dataset.provider = partner;
     badge.innerHTML = '<span>' + label + '</span>';
+
+    const imageFrame = card.querySelector('.event-image-frame');
+    if (imageFrame) {
+      imageFrame.appendChild(badge);
+      return;
+    }
 
     const date = card.querySelector('.event-date');
     const buttons = card.querySelector('.event-buttons-group');

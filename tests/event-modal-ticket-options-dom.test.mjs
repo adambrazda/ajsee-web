@@ -29,6 +29,17 @@ const dom = new JSDOM(
   }
 );
 
+const commerceMediaListeners = new Set();
+const commerceMedia = {
+  matches: false,
+  addEventListener(type, listener) {
+    if (type === 'change') commerceMediaListeners.add(listener);
+  },
+};
+const tabletMediaListeners = new Set();
+const tabletMedia = { matches:false, addEventListener(type, listener) { if(type==='change') tabletMediaListeners.add(listener); } };
+dom.window.matchMedia = query => query.includes('min-width: 600px') ? tabletMedia : commerceMedia;
+
 const globalValues = {
   window:
     dom.window,
@@ -1148,3 +1159,103 @@ test(
     );
   }
 );
+
+test('modal renders a price range and replaces commerce details on the next event', async () => {
+  await openEventModal(createEvent({priceRanges:[{min:490,max:1290,currency:'CZK'}]}),'cs');
+  assert.match(getModal().querySelector('#modalCommerce').textContent,/490.*1\s*290/s);
+  assert.match(getModal().querySelector('#modalCommerce').textContent,/Orientační cena/);
+  await openEventModal(createEvent({priceFrom:null,ticketOptions:[]}), 'en');
+  const content=getModal().querySelector('#modalCommerce').textContent;
+  assert.match(content,/Price at seller/);
+  assert.equal(getModal().querySelector('.event-stock'),null);
+  assert.doesNotMatch(content,/490|1\s*290|Orientační/);
+  assert.equal(getModal().querySelectorAll('#modalCommerce').length,1);
+});
+
+test('open modal moves the same commerce control across the mobile breakpoint without duplication', async () => {
+  await openEventModal(createEvent(), 'cs');
+  const modal = getModal();
+  const commerce = modal.querySelector('#modalCommerce');
+  const calendar = modal.querySelector('.modal-calendar-picker');
+  const summary = calendar.querySelector('summary');
+  summary.click();
+  assert.equal(commerce.parentElement.className, 'modal-purchase');
+  assert.equal(commerce.parentElement.parentElement.className, 'modal-visual-column');
+  assert.equal(commerce.parentElement.parentElement.querySelector('#modalImage').id, 'modalImage');
+  const listenerCount = commerceMediaListeners.size;
+  try {
+    commerceMedia.matches = true;
+    for (const listener of commerceMediaListeners) listener();
+    assert.equal(commerce.parentElement.className, 'modal-purchase');
+    assert.equal(commerce.parentElement.parentElement.className, 'event-modal-content');
+    assert.equal(modal.querySelector('.modal-body').firstElementChild.className, 'modal-intro');
+    assert.equal(commerce.nextElementSibling.id, 'modalTicketOptions');
+    assert.equal(calendar.open, true);
+    await openEventModal(createEvent(), 'en');
+    assert.equal(commerceMediaListeners.size, listenerCount);
+    assert.equal(modal.querySelectorAll('#modalCommerce').length, 1);
+  } finally {
+    commerceMedia.matches = false;
+    for (const listener of commerceMediaListeners) listener();
+  }
+  assert.equal(commerce.parentElement.className, 'modal-purchase');
+  assert.equal(commerce.parentElement.parentElement.className, 'modal-visual-column');
+});
+
+test('purchase and disclosure nodes survive desktop, tablet and mobile transitions', async () => {
+  await openEventModal(createEvent({ticketInventory:{source:'smsticket',scope:'seller',observedAt:new Date().toISOString(),status:'limited',remaining:37}}), 'cs');
+  const modal=getModal(), purchase=modal.querySelector('.modal-purchase'), ticket=getPrimaryTicketLink(), stock=modal.querySelector('.event-stock');
+  stock.open=true;
+  try {
+    tabletMedia.matches=true;
+    for(const listener of tabletMediaListeners) listener();
+    assert.equal(modal.dataset.layout,'tablet');
+    assert.equal(purchase.parentElement.className,'event-modal-content');
+    assert(modal.querySelector('.modal-details > .modal-intro'));
+    commerceMedia.matches=true;tabletMedia.matches=false;
+    for(const listener of commerceMediaListeners) listener();
+    assert.equal(modal.dataset.layout,'mobile');
+    assert(modal.querySelector('.modal-body > .modal-intro'));
+    assert.equal(purchase.querySelector('#modalTicketsLink'),ticket);
+    assert.equal(stock.open,true);
+  } finally {
+    commerceMedia.matches=false;tabletMedia.matches=false;
+    for(const listener of commerceMediaListeners) listener();
+  }
+  assert.equal(modal.dataset.layout,'desktop');
+  assert.equal(purchase.parentElement.className,'modal-visual-column');
+  assert.equal(modal.querySelectorAll('#modalCommerce').length,1);
+});
+
+test('modal uses the same ticket label and icon, traps Tab, and dismisses a disclosure before closing', async () => {
+  await openEventModal(createEvent(), 'cs');
+  const modal=getModal(), close=modal.querySelector('#modalClose'), ticket=getPrimaryTicketLink(), calendar=modal.querySelector('.modal-calendar-picker');
+  assert.equal(ticket.textContent,'Vstupenky');
+  assert(ticket.querySelector('svg.event-ticket-arrow'));
+  assert.equal(calendar.open,false);
+  close.focus();
+  close.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true,cancelable:true}));
+  assert.equal(document.activeElement,calendar.querySelector('summary'));
+  document.activeElement.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));
+  assert.equal(document.activeElement,close);
+  calendar.open=true;
+  document.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+  assert.equal(calendar.open,false);
+  assert(modal.classList.contains('open'));
+  document.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+  assert(!modal.classList.contains('open'));
+});
+
+test('seller sell-out cannot navigate or record a purchase, and a subsequent event re-enables the CTA', async () => {
+  await openEventModal(createEvent({ticketInventory:{source:'smsticket',scope:'seller',observedAt:new Date().toISOString(),status:'sold_out',remaining:0}}),'cs');
+  const ticket=getPrimaryTicketLink();
+  assert.equal(ticket.getAttribute('aria-disabled'),'true');
+  assert.equal(ticket.hasAttribute('href'),false);
+  const before=window.dataLayer?.length || 0;
+  clickWithoutNavigation(ticket);
+  assert.equal(window.dataLayer?.length || 0,before);
+  await openEventModal(createEvent(),'en');
+  assert.equal(ticket.getAttribute('aria-disabled'),null);
+  assert.equal(ticket.textContent,'Tickets');
+  assert.match(ticket.href,/smsticket/);
+});

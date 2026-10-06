@@ -11,7 +11,7 @@ const TEXT = {
 const language = locale => String(locale || 'cs').toLowerCase().split(/[-_]/)[0];
 const words = locale => TEXT[language(locale)] || TEXT.en;
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const amount = value => value === null || value === undefined || value === '' || typeof value === 'boolean' ? null : (Number.isFinite(Number(value)) && Number(value) >= 0 ? Number(value) : null);
+const amount = value => !['number','string'].includes(typeof value) || String(value).trim() === '' ? null : (Number.isFinite(Number(value)) && Number(value) >= 0 ? Number(value) : null);
 const currency = value => /^[A-Z]{3}$/.test(String(value || '').toUpperCase()) ? String(value).toUpperCase() : '';
 
 // Never join multiple numbers into one price, or compare prices across currencies.
@@ -32,11 +32,13 @@ function textPrice(value, explicitCurrency) {
 export function eventPriceLabels(event = {}, locale = 'cs') {
   const ranges = [];
   for (const raw of Array.isArray(event.priceRanges) ? event.priceRanges : []) {
+    if (!raw || typeof raw !== 'object') continue;
     const min = amount(raw.min), max = amount(raw.max), cur = currency(raw.currency);
     if (min !== null && cur) ranges.push({min, max:max !== null && max >= min ? max : null, currency:cur});
   }
   if (!ranges.length) {
     for (const raw of [...(Array.isArray(event.priceOptions) ? event.priceOptions : []), ...(Array.isArray(event.ticketOptions) ? event.ticketOptions : []), {priceFrom:event.priceFrom, currency:event.currency}]) {
+      if (!raw || typeof raw !== 'object') continue;
       const p = raw.amount !== undefined
         ? {min:amount(raw.amount), max:null, currency:currency(raw.currency)}
         : textPrice(raw.priceFrom, raw.currency);
@@ -63,7 +65,7 @@ export function eventInventoryState(event = {}, now = Date.now()) {
   if (['canceled','postponed','offsale'].includes(sale)) return {status:sale,tone:'neutral'};
   const inv = event.ticketInventory;
   const age = Number(now) - Date.parse(inv?.observedAt || '');
-  const valid = inv?.source === event.partner && inv?.scope === 'seller' && Number.isFinite(age) && age >= 0 && age <= 15 * 60 * 1000;
+  const valid = typeof inv?.source === 'string' && inv.source.length > 0 && inv.source === event.partner && inv?.scope === 'seller' && Number.isFinite(age) && age >= 0 && age <= 15 * 60 * 1000;
   const allowed = ['plentiful','limited','last','sold_out','available','unavailable'];
   if (!valid || !allowed.includes(inv.status)) return {status:'unknown',tone:'neutral'};
   const count = Number.isInteger(inv.remaining) && inv.remaining >= 0 ? inv.remaining : null;

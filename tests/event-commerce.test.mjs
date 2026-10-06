@@ -18,6 +18,7 @@ test('single minimum, free minimum, decimals and missing price stay distinct',()
  assert.equal(clean(eventPriceLabels({priceFrom:'350 Kč'},'cs')[0]),'Od 350 Kč');
  assert.equal(clean(eventPriceLabels({priceFrom:0,currency:'EUR'},'en')[0]),'From €0');
  assert.equal(eventPriceLabels({priceFrom:null,currency:'EUR'}).length,0);
+ assert.equal(eventPriceLabels({priceRanges:[null,{min:' ',currency:'EUR'}],priceOptions:[null]}).length,0);
  assert.equal(eventPriceLabels({priceFrom:'no price'}).length,0);
  assert.equal(eventPriceLabels({priceFrom:'-40 Kč'}).length,0);
  assert.match(eventPriceLabels({priceFrom:'28.50 GBP'},'en')[0],/28\.50/);
@@ -56,6 +57,7 @@ test('missing, stale, future, wrong-seller and contradictory inventory evidence 
   assert.equal(eventInventoryState(inv(changes),now).status,'unknown');
  }
  assert.equal(eventInventoryState({...inv(),saleStatus:'canceled'},now).status,'canceled');
+ assert.equal(eventInventoryState({ticketInventory:{...inv().ticketInventory,source:undefined}},now).status,'unknown');
 });
 test('count under 100 is only shown in detail with evidence and last-updated time',()=>{
  assert.match(renderEventCommerce(inv(),'cs',{detail:true,now}),/přibližně 37 vstupenek/);

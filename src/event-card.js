@@ -538,13 +538,14 @@ export function renderSharedEventCard({
       </div>
 
       <div class="event-content">
-        ${resolvedProviderBadge}
         <h3 class="event-title"><button type="button" class="event-title-action js-event-detail"
           data-event-id="${safeModalId}" data-result-position="${safeResultPosition}">${titleHtml}</button></h3>
 
         <p class="event-date">${dateHtml}</p>
 
         ${resolvedVenueLine}
+
+        ${resolvedProviderBadge}
 
         <div class="event-card-footer">
           ${renderEventCommerce(event, locale)}
@@ -963,9 +964,9 @@ export function ensureSharedEventGridStyles(
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-content {
-      position: relative;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto auto minmax(0, 1fr);
       flex: 1;
       width: 100%;
       min-width: 0;
@@ -973,6 +974,8 @@ export function ensureSharedEventGridStyles(
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-title {
+      grid-column: 1 / -1;
+      grid-row: 1;
       margin: 0 0 8px;
       font-size: 19px;
       line-height: 1.3;
@@ -980,6 +983,7 @@ export function ensureSharedEventGridStyles(
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-date {
+      grid-column: 1;
       margin: 0 0 4px;
       font-size: 13px;
       line-height: 1.45;
@@ -988,18 +992,23 @@ export function ensureSharedEventGridStyles(
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList
-      .event-card[data-event-provider]:has(.event-partner-badge)
-      .event-date {
-      padding-inline-end: 104px;
+      .event-title + .event-date {
+      grid-row: 2;
+    }
+
+    body:is([data-page="home"], [data-page="events"]) #eventsList
+      .event-location {
+      grid-row: 3;
     }
 
     #eventsList .event-card .event-content > .event-partner-badge {
-      position: absolute;
-      top: 70px;
-      inset-inline-end: 16px;
+      grid-column: 2;
+      grid-row: 2 / span 2;
+      align-self: start;
+      justify-self: end;
       z-index: 3;
       max-width: 96px;
-      margin: 0;
+      margin: 0 0 0 12px;
       line-height: 1;
       pointer-events: none;
     }
@@ -1043,7 +1052,7 @@ export function ensureSharedEventGridStyles(
     .event-card .event-image-action { position: absolute; inset: 0; z-index: 2; border: 0; border-radius: inherit; padding: 0; background: transparent; cursor: pointer; }
     .event-card .event-title-action { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; width: 100%; background: transparent; color: var(--aj-event-text); border: 0; padding: 0; text-align: start; font: inherit; font-weight: 650; cursor: pointer; }
     .event-card .event-title-action:hover { color: var(--aj-event-cta); }
-    .event-card .event-card-footer { margin-top: auto; padding-top: 4px; min-width: 0; }
+    .event-card .event-card-footer { grid-column: 1 / -1; grid-row: 4; align-self: end; margin-top: auto; padding-top: 4px; min-width: 0; }
     .event-card .event-sold-badge { position: absolute; bottom: 8px; inset-inline-end: 8px; z-index: 3; max-width: calc(100% - 16px); padding: 4px 8px; border-radius: 7px; background: var(--aj-event-surface); color: var(--aj-event-red); font-size: 11px; font-weight: 650; pointer-events: none; }
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-card:hover { transform: translateY(-2px); }
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-card:is(:hover, :focus-within) { z-index: 4; }

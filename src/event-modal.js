@@ -1,3 +1,4 @@
+import { renderEventCommerce, ensureEventCommerceStyles } from './event-commerce.js';
 import {
   resolveEventLocation,
   formatEventVenueLine,
@@ -1205,6 +1206,7 @@ function ensureModalConversionPolishStyles() {
   `);
 }function ensureEventModalShell() {
   ensureModalStyles();
+  ensureEventCommerceStyles();
 
   let modal = document.getElementById(MODAL_ID);
 
@@ -1537,6 +1539,15 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const locationEl = modal.querySelector('#modalLocation');
   const descEl = modal.querySelector('#modalDescription');
   const sellerNoteEl = ensureModalSellerNote(modal);
+  let commerceEl = modal.querySelector('#modalCommerce');
+  if (!commerceEl) {
+    commerceEl = document.createElement('div');
+    commerceEl.id = 'modalCommerce';
+    const anchor = modal.querySelector('#modalTicketOptions') || modal.querySelector('#modalTicketsLink');
+    anchor?.parentNode?.insertBefore(commerceEl, anchor);
+  }
+  // Fully replace on every open so a prior event's price/status cannot leak.
+  commerceEl.innerHTML = renderEventCommerce(eventData, lang, { detail: true });
   const categoryEl = modal.querySelector('#modalCategory');
   const ticketEl = modal.querySelector('#modalTicketsLink');
   const ticketOptionsEl = modal.querySelector('#modalTicketOptions');

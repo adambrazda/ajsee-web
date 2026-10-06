@@ -4512,6 +4512,7 @@ list.innerHTML = toRender.map((ev, index) => {
 
   return renderSharedEventCard({
     event: ev,
+    locale,
     modalId,
     resultPosition,
     titleHtml: title,

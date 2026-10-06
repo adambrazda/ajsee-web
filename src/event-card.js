@@ -1,3 +1,4 @@
+import { renderEventCommerce, ensureEventCommerceStyles } from './event-commerce.js';
 import { formatEventVenueLine } from './event-location.js';
 
 import {
@@ -411,6 +412,7 @@ export function wireSharedEventImageFraming(
  */
 export function renderSharedEventCard({
   event = {},
+  locale = 'cs',
   modalId = '',
   titleHtml = '',
   titleRaw = '',
@@ -536,6 +538,8 @@ export function renderSharedEventCard({
         ${resolvedVenueLine}
 
         ${resolvedProviderBadge}
+
+        ${renderEventCommerce(event, locale)}
 
         <div class="event-buttons-group">
           <button
@@ -808,6 +812,7 @@ export function ensureSharedEventGridStyles(
   doc = globalThis.document
 ) {
   if (!doc?.head) return;
+  ensureEventCommerceStyles(doc);
 
   if (
     doc.getElementById(

@@ -1148,3 +1148,15 @@ test(
     );
   }
 );
+
+test('modal renders a price range and replaces commerce details on the next event', async () => {
+  await openEventModal(createEvent({priceRanges:[{min:490,max:1290,currency:'CZK'}]}),'cs');
+  assert.match(getModal().querySelector('#modalCommerce').textContent,/490.*1\s*290/s);
+  assert.match(getModal().querySelector('#modalCommerce').textContent,/Orientační cena/);
+  await openEventModal(createEvent({priceFrom:null,ticketOptions:[]}), 'en');
+  const content=getModal().querySelector('#modalCommerce').textContent;
+  assert.match(content,/Price at seller/);
+  assert.match(content,/Check availability/);
+  assert.doesNotMatch(content,/490|1\s*290|Orientační/);
+  assert.equal(getModal().querySelectorAll('#modalCommerce').length,1);
+});

@@ -5719,6 +5719,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
       return renderSharedEventCard({
         event: ev,
+        locale,
         modalId,
         resultPosition,
         titleHtml: title,

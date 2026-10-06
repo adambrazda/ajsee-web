@@ -534,11 +534,11 @@ export function renderSharedEventCard({
         <button type="button" class="event-image-action js-event-detail"
           data-event-id="${safeModalId}" data-result-position="${safeResultPosition}"
           aria-label="${safeTitleAttr || escapeHtml(detailLabelHtml) || 'Detail'}"></button>
-        ${resolvedProviderBadge}
         ${soldOut ? `<span class="event-sold-badge" title="${soldOutLabel}">${soldOutLabel}</span>` : ''}
       </div>
 
       <div class="event-content">
+        ${resolvedProviderBadge}
         <h3 class="event-title"><button type="button" class="event-title-action js-event-detail"
           data-event-id="${safeModalId}" data-result-position="${safeResultPosition}">${titleHtml}</button></h3>
 
@@ -963,6 +963,7 @@ export function ensureSharedEventGridStyles(
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-content {
+      position: relative;
       display: flex;
       flex-direction: column;
       flex: 1;
@@ -978,6 +979,12 @@ export function ensureSharedEventGridStyles(
       overflow-wrap: anywhere;
     }
 
+    body:is([data-page="home"], [data-page="events"]) #eventsList
+      .event-card[data-event-provider]:has(.event-partner-badge)
+      .event-title {
+      padding-inline-end: 104px;
+    }
+
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-date {
       margin: 0 0 4px;
       font-size: 13px;
@@ -986,23 +993,27 @@ export function ensureSharedEventGridStyles(
       font-weight: 400;
     }
 
-    #eventsList .event-card .event-image-frame > .event-partner-badge {
+    #eventsList .event-card .event-content > .event-partner-badge {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      top: 14px;
+      inset-inline-end: 16px;
       z-index: 3;
+      max-width: 96px;
       margin: 0;
+      line-height: 1;
       pointer-events: none;
     }
 
-    #eventsList .event-card .event-image-frame > .event-partner-badge span {
-      background: var(--aj-event-surface);
-      color: var(--aj-event-muted);
-      border-color: var(--aj-event-border);
-      box-shadow: 0 2px 10px rgba(10, 20, 35, .12);
-      min-height: 26px;
-      padding: 5px 10px;
+    #eventsList .event-card .event-content > .event-partner-badge span {
+      min-height: 24px;
+      max-width: 100%;
+      padding: 4px 9px;
+      border-radius: 999px;
       font-size: 11px;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: none;
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-buttons-group {
@@ -1078,11 +1089,34 @@ export function ensureSharedEventGridStyles(
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-card { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 6px 12px; padding: 14px; }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-content { display: contents; }
       #eventsList .event-card .event-image-frame { grid-column: 1; grid-row: 1 / span 3; height: 112px; aspect-ratio: auto; border-radius: 8px; }
-      #eventsList .event-card .event-title { grid-column: 2; margin: 0; font-size: 17px; line-height: 1.28; }
+      #eventsList .event-card .event-title { grid-column: 2; margin: 0; padding-inline-end: 0; font-size: 17px; line-height: 1.28; }
       #eventsList .event-card .event-date { grid-column: 2; margin: 0; line-height: 1.4; font-size: 12px; }
-      #eventsList .event-card .event-card-footer { grid-column: 1 / -1; padding-top: 6px; margin-top: 6px; border-top: 1px solid var(--aj-event-border); }
-      #eventsList .event-card .event-image-frame > .event-partner-badge { left: 3px; top: 3px; max-width: calc(100% - 6px); }
-      #eventsList .event-card .event-image-frame > .event-partner-badge span { min-height: 0; padding: 3px 5px; border-radius: 4px; font-size: 11px; line-height: 1.3; white-space: normal; overflow-wrap: anywhere; }
+      #eventsList .event-card .event-card-footer { grid-column: 1 / -1; grid-row: 4; padding-top: 6px; margin-top: 6px; border-top: 1px solid var(--aj-event-border); }
+      #eventsList .event-card .event-content > .event-partner-badge {
+        position: relative;
+        grid-column: 1;
+        grid-row: 4;
+        align-self: start;
+        justify-self: start;
+        top: auto;
+        inset-inline-end: auto;
+        z-index: 3;
+        max-width: 82px;
+        margin: 14px 0 0;
+      }
+      #eventsList .event-card .event-content > .event-partner-badge span {
+        min-height: 22px;
+        max-width: 82px;
+        padding: 3px 6px;
+        border-radius: 999px;
+        font-size: 10px;
+        line-height: 1.25;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #eventsList .event-card[data-event-provider]:has(.event-partner-badge) .event-card-footer > .event-commerce {
+        padding-inline-start: 94px;
+      }
       #eventsList .event-card .event-sold-badge { bottom: 3px; inset-inline-end: 3px; max-width: calc(100% - 6px); font-size: 11px; padding: 3px 5px; }
     }
     @media (prefers-reduced-motion: reduce) { body:is([data-page="home"], [data-page="events"]) #eventsList .event-card { transition: none; } }

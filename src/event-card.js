@@ -964,9 +964,8 @@ export function ensureSharedEventGridStyles(
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-content {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-rows: auto auto auto minmax(0, 1fr);
+      display: flex;
+      flex-direction: column;
       flex: 1;
       width: 100%;
       min-width: 0;
@@ -974,8 +973,6 @@ export function ensureSharedEventGridStyles(
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-title {
-      grid-column: 1 / -1;
-      grid-row: 1;
       margin: 0 0 8px;
       font-size: 19px;
       line-height: 1.3;
@@ -983,7 +980,6 @@ export function ensureSharedEventGridStyles(
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-date {
-      grid-column: 1;
       margin: 0 0 4px;
       font-size: 13px;
       line-height: 1.45;
@@ -991,24 +987,11 @@ export function ensureSharedEventGridStyles(
       font-weight: 400;
     }
 
-    body:is([data-page="home"], [data-page="events"]) #eventsList
-      .event-title + .event-date {
-      grid-row: 2;
-    }
-
-    body:is([data-page="home"], [data-page="events"]) #eventsList
-      .event-location {
-      grid-row: 3;
-    }
-
     #eventsList .event-card .event-content > .event-partner-badge {
-      grid-column: 2;
-      grid-row: 2 / span 2;
-      align-self: start;
-      justify-self: end;
+      align-self: flex-start;
       z-index: 3;
-      max-width: 96px;
-      margin: 0 0 0 12px;
+      max-width: 100%;
+      margin: 6px 0 10px;
       line-height: 1;
       pointer-events: none;
     }
@@ -1052,7 +1035,7 @@ export function ensureSharedEventGridStyles(
     .event-card .event-image-action { position: absolute; inset: 0; z-index: 2; border: 0; border-radius: inherit; padding: 0; background: transparent; cursor: pointer; }
     .event-card .event-title-action { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; width: 100%; background: transparent; color: var(--aj-event-text); border: 0; padding: 0; text-align: start; font: inherit; font-weight: 650; cursor: pointer; }
     .event-card .event-title-action:hover { color: var(--aj-event-cta); }
-    .event-card .event-card-footer { grid-column: 1 / -1; grid-row: 4; align-self: end; margin-top: auto; padding-top: 4px; min-width: 0; }
+    .event-card .event-card-footer { margin-top: auto; padding-top: 4px; min-width: 0; }
     .event-card .event-sold-badge { position: absolute; bottom: 8px; inset-inline-end: 8px; z-index: 3; max-width: calc(100% - 16px); padding: 4px 8px; border-radius: 7px; background: var(--aj-event-surface); color: var(--aj-event-red); font-size: 11px; font-weight: 650; pointer-events: none; }
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-card:hover { transform: translateY(-2px); }
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-card:is(:hover, :focus-within) { z-index: 4; }
@@ -1095,36 +1078,66 @@ export function ensureSharedEventGridStyles(
       body:is([data-page="home"], [data-page="events"]) #eventsList.events-list > .event-card {
         max-width: none;
       }
-      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card { display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 6px 12px; padding: 14px; }
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card {
+        display: grid;
+        grid-template-columns: 82px minmax(0, 1fr);
+        grid-template-rows: auto auto auto auto auto;
+        gap: 6px 12px;
+        padding: 14px;
+      }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-content { display: contents; }
-      #eventsList .event-card .event-image-frame { grid-column: 1; grid-row: 1 / span 3; height: 112px; aspect-ratio: auto; border-radius: 8px; }
-      #eventsList .event-card .event-title { grid-column: 2; margin: 0; font-size: 17px; line-height: 1.28; }
-      #eventsList .event-card .event-date { grid-column: 2; margin: 0; padding-inline-end: 0; line-height: 1.4; font-size: 12px; }
-      #eventsList .event-card .event-card-footer { grid-column: 1 / -1; grid-row: 4; padding-top: 6px; margin-top: 6px; border-top: 1px solid var(--aj-event-border); }
-      #eventsList .event-card .event-content > .event-partner-badge {
-        position: relative;
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-image-frame {
         grid-column: 1;
+        grid-row: 1 / span 4;
+        height: 112px;
+        aspect-ratio: auto;
+        border-radius: 8px;
+      }
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-title {
+        grid-column: 2;
+        grid-row: 1;
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.28;
+      }
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-title + .event-date {
+        grid-column: 2;
+        grid-row: 2;
+        margin: 0;
+        line-height: 1.4;
+        font-size: 12px;
+      }
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-location {
+        grid-column: 2;
+        grid-row: 3;
+        margin: 0;
+        line-height: 1.4;
+        font-size: 12px;
+      }
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-content > .event-partner-badge {
+        grid-column: 2;
         grid-row: 4;
         align-self: start;
         justify-self: start;
-        top: auto;
-        inset-inline-end: auto;
-        z-index: 3;
-        max-width: 82px;
-        margin: 14px 0 0;
+        max-width: 100%;
+        margin: 2px 0 0;
       }
-      #eventsList .event-card .event-content > .event-partner-badge span {
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-content > .event-partner-badge span {
         min-height: 22px;
-        max-width: 82px;
-        padding: 3px 6px;
+        max-width: 100%;
+        padding: 3px 7px;
         border-radius: 999px;
         font-size: 10px;
         line-height: 1.25;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      #eventsList .event-card[data-event-provider]:has(.event-partner-badge) .event-card-footer > .event-commerce {
-        padding-inline-start: 94px;
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-card-footer {
+        grid-column: 1 / -1;
+        grid-row: 5;
+        padding-top: 6px;
+        margin-top: 6px;
+        border-top: 1px solid var(--aj-event-border);
       }
       #eventsList .event-card .event-sold-badge { bottom: 3px; inset-inline-end: 3px; max-width: calc(100% - 6px); font-size: 11px; padding: 3px 5px; }
     }

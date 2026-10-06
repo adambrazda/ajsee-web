@@ -132,3 +132,43 @@ test('mobile calendar actions remain one column', () => {
     /@media \(max-width: 599px\)[\s\S]*\.modal-calendar-picker \.calendar-btns-wrap \{ grid-template-columns: minmax\(0, 1fr\); \}/
   );
 });
+
+
+test('mobile event cards keep artwork and text in separate grid columns and put provider badge below metadata', () => {
+  assert.match(
+    sharedCardSource,
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-card \.event-image-frame\s*\{[\s\S]*?grid-column:\s*1;[\s\S]*?grid-row:\s*1 \/ span 4;/
+  );
+
+  assert.match(
+    sharedCardSource,
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-card \.event-title\s*\{[\s\S]*?grid-column:\s*2;[\s\S]*?grid-row:\s*1;/
+  );
+
+  assert.match(
+    sharedCardSource,
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-content > \.event-partner-badge\s*\{[\s\S]*?grid-column:\s*2;[\s\S]*?grid-row:\s*4;/
+  );
+
+  assert.match(
+    sharedCardSource,
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-card-footer\s*\{[\s\S]*?grid-row:\s*5;/
+  );
+});
+
+test('event modal never creates or styles a provider badge over the image', () => {
+  assert.doesNotMatch(
+    modalLayoutSource,
+    /provider\.className\s*=\s*['"]modal-provider-badge['"]/
+  );
+
+  assert.doesNotMatch(
+    modalLayoutSource,
+    /\.event-modal \.modal-provider-badge\s*\{/
+  );
+
+  assert.doesNotMatch(
+    modalSource,
+    /const providerBadge\s*=\s*modal\.querySelector\(['"]\.modal-provider-badge['"]\)/
+  );
+});

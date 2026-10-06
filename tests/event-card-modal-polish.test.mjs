@@ -172,3 +172,26 @@ test('event modal never creates or styles a provider badge over the image', () =
     /const providerBadge\s*=\s*modal\.querySelector\(['"]\.modal-provider-badge['"]\)/
   );
 });
+
+
+test('desktop provider badge shares the price row while mobile badge placement remains unchanged', () => {
+  assert.match(
+    sharedCardSource,
+    /@media\s*\(min-width:\s*600px\)[\s\S]*?\.event-commerce-row\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto;/
+  );
+
+  assert.match(
+    sharedCardSource,
+    /@media\s*\(min-width:\s*600px\)[\s\S]*?\.event-content > \.event-partner-badge:not\(\.event-partner-badge--commerce\)\s*\{[\s\S]*?display:\s*none;/
+  );
+
+  assert.match(
+    sharedCardSource,
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-content > \.event-partner-badge\s*\{[\s\S]*?grid-column:\s*2;[\s\S]*?grid-row:\s*4;/
+  );
+
+  assert.match(
+    sharedCardSource,
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-partner-badge--commerce\s*\{\s*display:\s*none;\s*\}/
+  );
+});

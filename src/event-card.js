@@ -438,6 +438,14 @@ export function renderSharedEventCard({
       ? eventProviderBadgeHtml(event)
       : String(providerBadgeHtml || '');
 
+  const resolvedProviderBadgeCommerce =
+    resolvedProviderBadge
+      ? resolvedProviderBadge.replace(
+          'class="event-partner-badge"',
+          'class="event-partner-badge event-partner-badge--commerce" aria-hidden="true"'
+        )
+      : '';
+
   const resolvedVenueLine =
     venueLineHtml === null
       ? (() => {
@@ -548,7 +556,10 @@ export function renderSharedEventCard({
         ${resolvedProviderBadge}
 
         <div class="event-card-footer">
-          ${renderEventCommerce(event, locale)}
+          <div class="event-commerce-row">
+            ${renderEventCommerce(event, locale)}
+            ${resolvedProviderBadgeCommerce}
+          </div>
           <div class="event-buttons-group">
 
           <a
@@ -1048,6 +1059,46 @@ export function ensureSharedEventGridStyles(
             minmax(0, 1fr)
           );
       }
+
+      body:is([data-page="home"], [data-page="events"]) #eventsList
+        .event-content > .event-partner-badge:not(.event-partner-badge--commerce) {
+        display: none;
+      }
+
+      body:is([data-page="home"], [data-page="events"]) #eventsList
+        .event-commerce-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      body:is([data-page="home"], [data-page="events"]) #eventsList
+        .event-commerce-row > .event-commerce {
+        min-width: 0;
+      }
+
+      body:is([data-page="home"], [data-page="events"]) #eventsList
+        .event-partner-badge--commerce {
+        display: block;
+        align-self: center;
+        justify-self: end;
+        max-width: 104px;
+        margin: 0 0 2px;
+      }
+
+      body:is([data-page="home"], [data-page="events"]) #eventsList
+        .event-partner-badge--commerce span {
+        min-height: 24px;
+        max-width: 104px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        line-height: 1.25;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     @media (min-width: 1100px) {
@@ -1086,6 +1137,7 @@ export function ensureSharedEventGridStyles(
         padding: 14px;
       }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-content { display: contents; }
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-partner-badge--commerce { display: none; }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-image-frame {
         grid-column: 1;
         grid-row: 1 / span 4;

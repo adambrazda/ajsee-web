@@ -192,6 +192,6 @@ test('desktop provider badge shares the price row while mobile badge placement r
 
   assert.match(
     sharedCardSource,
-    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-partner-badge--commerce\s*\{\s*display:\s*none !important;\s*\}/
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-partner-badge--commerce\s*\{\s*display:\s*none;\s*\}/
   );
 });

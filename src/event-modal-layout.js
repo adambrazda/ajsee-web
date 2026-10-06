@@ -15,7 +15,6 @@ function ensureLayoutStyles(doc) {
     .event-modal .modal-body { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 28px; min-height: 0; padding: 16px 24px 24px; overflow: auto; overscroll-behavior: contain; }
     .event-modal .modal-visual-column { position: relative; min-width: 0; }
     .event-modal #modalImage { display: block; width: 100%; height: clamp(200px, 26vw, 300px); min-height: 0; max-height: none; margin: 0 0 14px; object-fit: contain; background: var(--aj-event-soft); border-radius: 12px; }
-    .event-modal .modal-provider-badge { position: absolute; top: 8px; inset-inline-start: 8px; margin: 0; padding: 4px 8px; max-width: calc(100% - 16px); border-radius: 6px; background: var(--aj-event-surface); color: var(--aj-event-muted); border: 1px solid var(--aj-event-border); font-size: 11px; font-weight: 600; pointer-events: none; }
     .event-modal .modal-details { min-width: 0; padding: 0; overflow: visible; }
     .event-modal .modal-title { margin: 0 0 16px; font-size: clamp(26px, 2.5vw, 32px); line-height: 1.15; letter-spacing: -.025em; color: var(--aj-event-text); overflow-wrap: anywhere; }
     .event-modal .modal-category { margin: 0 0 6px; color: var(--aj-event-muted); font-size: 11px; font-weight: 600; font-style: normal; text-transform: uppercase; letter-spacing: .06em; }
@@ -29,7 +28,7 @@ function ensureLayoutStyles(doc) {
     .event-modal .modal-purchase .event-commerce--detail .event-price { font-size: 23px; }
     .event-modal .modal-purchase .event-commerce--detail .event-price--unknown { font-size: 14px; }
     .event-modal .modal-purchase .modal-ticket-cta { display: flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box; margin: 0; padding: 12px 14px; font-size: 15px; line-height: 1.4; white-space: normal; overflow-wrap: anywhere; }
-    .event-modal .modal-purchase .modal-ticket-cta[hidden], .event-modal .modal-purchase .modal-ticket-options[hidden], .event-modal .modal-provider-badge[hidden] { display: none; }
+    .event-modal .modal-purchase .modal-ticket-cta[hidden], .event-modal .modal-purchase .modal-ticket-options[hidden] { display: none; }
     .event-modal .modal-purchase .modal-ticket-options { margin: 0; gap: 8px; }
     .event-modal .modal-purchase .modal-seller-note { margin: 8px 0 0; color: var(--aj-event-muted); text-align: center; font-size: 11px; font-weight: 400; line-height: 1.5; }
     .event-modal .modal-calendar-picker { display: block; margin-top: 14px; border-top: 1px solid var(--aj-event-border); padding-top: 8px; }
@@ -81,6 +80,7 @@ export function ensurePremiumModalLayout(modal) {
   const image = modal.querySelector('#modalImage');
   const details = modal.querySelector('.modal-details');
   if (!content || !image || !details) return null;
+  modal.querySelectorAll('.modal-provider-badge').forEach((badge) => badge.remove());
   if (!layouts.has(modal)) {
     const header = doc.createElement('div');
     header.className = 'modal-header';
@@ -92,10 +92,7 @@ export function ensurePremiumModalLayout(modal) {
     body.className = 'modal-body';
     const visual = doc.createElement('div');
     visual.className = 'modal-visual-column';
-    const provider = doc.createElement('p');
-    provider.className = 'modal-provider-badge';
-    provider.hidden = true;
-    visual.append(image, provider);
+    visual.append(image);
     body.append(visual, details);
     content.append(header, body);
 

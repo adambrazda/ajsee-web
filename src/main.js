@@ -4752,9 +4752,12 @@ if (!G.flags.mainDomReadyBound) {
       !card.querySelector('.event-image-frame')
     ) {
       if (badge.parentElement !== content) {
+        const footer =
+          content.querySelector?.('.event-card-footer');
+
         content.insertBefore(
           badge,
-          content.firstElementChild || null
+          footer || null
         );
       }
       return;

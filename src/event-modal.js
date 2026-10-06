@@ -1601,11 +1601,6 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   if (categoryEl) categoryEl.textContent = translateCategory(eventData.category, lang);
 
   const sellerName = modalProviderName(eventData);
-  const providerBadge = modal.querySelector('.modal-provider-badge');
-  if (providerBadge) {
-    providerBadge.textContent = sellerName;
-    providerBadge.hidden = !sellerName;
-  }
 
   const optionSellerNames = [
     ...new Set(

@@ -26,6 +26,15 @@ const AJSEE_IMPACT_ID = '7218577';
 const AJSEE_SHARED_ID = 'ajsee_web_events';
 const AJSEE_PARTNER_PROPERTY_ID = '8292139';
 
+// Safety default: keep the purchase journey on the seller's HTTPS domain.
+// Impact tracking can be re-enabled explicitly after the complete redirect
+// chain is verified across browsers, networks and tracker-blocking setups.
+const IMPACT_TRACKING_ENABLED = ['1', 'true', 'yes', 'on'].includes(
+  String(process.env.TM_IMPACT_TRACKING_ENABLED || '')
+    .trim()
+    .toLowerCase()
+);
+
 const DEFAULT_FALLBACK_URL = 'https://www.ticketmaster.cz/';
 
 const MARKET_MAP = {
@@ -558,6 +567,13 @@ export const handler = async (event) => {
     });
 
     return safeRedirect(fallbackUrlForCountry(expectedCountry));
+  }
+
+  // Direct-link fail-safe.
+  // The UI records AJSEE click-out analytics before navigation, so disabling
+  // the external affiliate hop does not remove our own product analytics.
+  if (!IMPACT_TRACKING_ENABLED) {
+    return safeRedirect(cleanDestinationUrl);
   }
 
   const sourcePage = q.source || q.subId1 || 'events_page';

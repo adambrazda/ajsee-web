@@ -1137,7 +1137,7 @@ export function ensureSharedEventGridStyles(
         padding: 14px;
       }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-content { display: contents; }
-      body:is([data-page="home"], [data-page="events"]) #eventsList .event-partner-badge--commerce { display: none !important; }
+      body:is([data-page="home"], [data-page="events"]) #eventsList .event-partner-badge--commerce { display: none; }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-image-frame {
         grid-column: 1;
         grid-row: 1 / span 4;

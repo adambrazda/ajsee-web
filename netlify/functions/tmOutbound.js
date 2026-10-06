@@ -26,14 +26,53 @@ const AJSEE_IMPACT_ID = '7218577';
 const AJSEE_SHARED_ID = 'ajsee_web_events';
 const AJSEE_PARTNER_PROPERTY_ID = '8292139';
 
-// Safety default: keep the purchase journey on the seller's HTTPS domain.
-// Impact tracking can be re-enabled explicitly after the complete redirect
-// chain is verified across browsers, networks and tracker-blocking setups.
-const IMPACT_TRACKING_ENABLED = ['1', 'true', 'yes', 'on'].includes(
-  String(process.env.TM_IMPACT_TRACKING_ENABLED || '')
+// Tracking modes:
+// - adaptive (default): probe the two Impact hosts in the user's browser.
+//   If both are reachable, continue through the official Impact link;
+//   otherwise fall back to the clean Ticketmaster URL before the user can
+//   hit a TLS/ad-blocker interstitial.
+// - affiliate: always use Impact.
+// - direct: always bypass Impact.
+//
+// TM_IMPACT_TRACKING_ENABLED is kept only as a backwards-compatible override.
+function resolveImpactTrackingMode() {
+  const explicitMode = String(
+    process.env.TM_IMPACT_TRACKING_MODE || ''
+  )
     .trim()
-    .toLowerCase()
-);
+    .toLowerCase();
+
+  if (
+    ['adaptive', 'affiliate', 'direct'].includes(
+      explicitMode
+    )
+  ) {
+    return explicitMode;
+  }
+
+  const legacy = String(
+    process.env.TM_IMPACT_TRACKING_ENABLED || ''
+  )
+    .trim()
+    .toLowerCase();
+
+  if (
+    ['1', 'true', 'yes', 'on'].includes(legacy)
+  ) {
+    return 'affiliate';
+  }
+
+  if (
+    ['0', 'false', 'no', 'off'].includes(legacy)
+  ) {
+    return 'direct';
+  }
+
+  return 'adaptive';
+}
+
+const IMPACT_TRACKING_MODE =
+  resolveImpactTrackingMode();
 
 const DEFAULT_FALLBACK_URL = 'https://www.ticketmaster.cz/';
 
@@ -147,6 +186,208 @@ function safeRedirect(location, statusCode = 302) {
       'Referrer-Policy': 'strict-origin-when-cross-origin',
     },
     body: '',
+  };
+}
+
+function safeJsonForInlineScript(value = '') {
+  return JSON.stringify(String(value || ''))
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
+function adaptiveAffiliateRedirect(
+  directUrl = '',
+  affiliateUrl = ''
+) {
+  const directJson =
+    safeJsonForInlineScript(directUrl);
+
+  const affiliateJson =
+    safeJsonForInlineScript(affiliateUrl);
+
+  const html = `<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Otevíráme vstupenky…</title>
+  <style>
+    :root{color-scheme:light dark}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f9fb;color:#173248}
+    main{width:min(92vw,420px);padding:28px;text-align:center}
+    .spinner{width:28px;height:28px;margin:0 auto 18px;border:3px solid rgba(23,50,72,.18);border-top-color:#0077a8;border-radius:50%;animation:spin .7s linear infinite}
+    p{margin:0;font-size:16px;font-weight:650;line-height:1.45}
+    small{display:block;margin-top:8px;color:#647587;font-size:13px;font-weight:500}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media (prefers-reduced-motion:reduce){.spinner{animation:none;border-top-color:rgba(23,50,72,.18)}}
+    @media (prefers-color-scheme:dark){body{background:#101a24;color:#eef5fa}.spinner{border-color:rgba(238,245,250,.2);border-top-color:#75dce0}small{color:#aab8c5}}
+  </style>
+</head>
+<body>
+  <main aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Otevíráme vstupenky…</p>
+    <small>Bezpečně vás přesměrujeme k Ticketmasteru.</small>
+  </main>
+  <script>
+    (() => {
+      const directUrl = ${directJson};
+      const affiliateUrl = ${affiliateJson};
+      const cacheKey = 'ajsee.tmImpactReachability.v1';
+      const successTtlMs = 30 * 60 * 1000;
+      const failureTtlMs = 5 * 60 * 1000;
+      const probeTimeoutMs = 900;
+
+      function finish(url) {
+        window.location.replace(url);
+      }
+
+      function readCachedDecision() {
+        try {
+          const cached = JSON.parse(
+            localStorage.getItem(cacheKey) || 'null'
+          );
+
+          if (
+            !cached ||
+            typeof cached.ok !== 'boolean' ||
+            !Number.isFinite(cached.at)
+          ) {
+            return null;
+          }
+
+          const ttl =
+            cached.ok
+              ? successTtlMs
+              : failureTtlMs;
+
+          if (
+            Date.now() - cached.at > ttl
+          ) {
+            return null;
+          }
+
+          return cached.ok;
+        } catch {
+          return null;
+        }
+      }
+
+      function writeCachedDecision(ok) {
+        try {
+          localStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              ok: Boolean(ok),
+              at: Date.now()
+            })
+          );
+        } catch {
+          // Storage can be unavailable in strict privacy modes.
+        }
+      }
+
+      async function canReach(url) {
+        const controller =
+          new AbortController();
+
+        const timer =
+          window.setTimeout(
+            () => controller.abort(),
+            probeTimeoutMs
+          );
+
+        try {
+          await fetch(url, {
+            method: 'GET',
+            mode: 'no-cors',
+            redirect: 'manual',
+            credentials: 'omit',
+            cache: 'no-store',
+            signal: controller.signal
+          });
+
+          return true;
+        } catch {
+          return false;
+        } finally {
+          window.clearTimeout(timer);
+        }
+      }
+
+      async function run() {
+        const cached =
+          readCachedDecision();
+
+        if (cached === true) {
+          finish(affiliateUrl);
+          return;
+        }
+
+        if (cached === false) {
+          finish(directUrl);
+          return;
+        }
+
+        const [impactOk, syncOk] =
+          await Promise.all([
+            canReach(
+              'https://ticketmaster.evyy.net/favicon.ico?ajsee_probe=1'
+            ),
+            canReach(
+              'https://www.ojrq.net/favicon.ico?ajsee_probe=1'
+            )
+          ]);
+
+        const ok =
+          impactOk && syncOk;
+
+        writeCachedDecision(ok);
+
+        finish(
+          ok
+            ? affiliateUrl
+            : directUrl
+        );
+      }
+
+      run().catch(
+        () => finish(directUrl)
+      );
+
+      window.setTimeout(
+        () => finish(directUrl),
+        1800
+      );
+    })();
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0;url=${directUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}">
+  </noscript>
+</body>
+</html>`;
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type':
+        'text/html; charset=utf-8',
+      'Cache-Control':
+        'no-store',
+      'Referrer-Policy':
+        'no-referrer',
+      'X-Content-Type-Options':
+        'nosniff',
+      'X-Robots-Tag':
+        'noindex, nofollow',
+      'Content-Security-Policy':
+        "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://ticketmaster.evyy.net https://www.ojrq.net; img-src data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    },
+    body: html,
   };
 }
 
@@ -569,13 +810,6 @@ export const handler = async (event) => {
     return safeRedirect(fallbackUrlForCountry(expectedCountry));
   }
 
-  // Direct-link fail-safe.
-  // The UI records AJSEE click-out analytics before navigation, so disabling
-  // the external affiliate hop does not remove our own product analytics.
-  if (!IMPACT_TRACKING_ENABLED) {
-    return safeRedirect(cleanDestinationUrl);
-  }
-
   const sourcePage = q.source || q.subId1 || 'events_page';
   const placement = q.placement || q.subId2 || 'event_card';
   const eventId = q.eid || q.eventId || q.subId3 || '';
@@ -593,5 +827,16 @@ export const handler = async (event) => {
     return safeRedirect(cleanDestinationUrl);
   }
 
-  return safeRedirect(affiliateUrl);
+  if (IMPACT_TRACKING_MODE === 'direct') {
+    return safeRedirect(cleanDestinationUrl);
+  }
+
+  if (IMPACT_TRACKING_MODE === 'affiliate') {
+    return safeRedirect(affiliateUrl);
+  }
+
+  return adaptiveAffiliateRedirect(
+    cleanDestinationUrl,
+    affiliateUrl
+  );
 };

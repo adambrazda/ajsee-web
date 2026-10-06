@@ -39,12 +39,12 @@ test('merged ticket options use minimum per currency without false currency conv
  const p=eventPriceLabels({ticketOptions:[{priceFrom:'500 CZK'},{priceFrom:'390 CZK'},{priceFrom:'20 EUR'}]},'en');
  assert.equal(p.length,2);assert.match(p[0],/390/);assert.match(p[1],/20/);
 });
-test('current providers remain neutral; on-sale is not ample, and off-sale is not sold out',()=>{
- for(const event of [{partner:'smsticket',priceFrom:'500 Kč'},{partner:'ticketmaster',saleStatus:'onsale'},{}]){
+test('current providers remain neutral; provider sale flags do not masquerade as inventory',()=>{
+ for(const event of [{partner:'smsticket',priceFrom:'500 Kč'},{partner:'ticketmaster',saleStatus:'onsale'},{partner:'ticketmaster',saleStatus:'offsale'},{}]){
   assert.equal(eventInventoryState(event,now).status,'unknown');
  }
- assert.equal(eventInventoryState({saleStatus:'offsale'},now).status,'offsale');
- assert.doesNotMatch(renderEventCommerce({saleStatus:'offsale'},'cs'),/Vyprodáno|Dostatek/);
+ const offsaleHtml=renderEventCommerce({partner:'ticketmaster',saleStatus:'offsale'},'cs');
+ assert.doesNotMatch(offsaleHtml,/Vyprodáno|Dostatek|Prodej není otevřen|class="event-sale-status"/);
 });
 test('verified inventory statuses produce distinct tones and seller-scoped sold-out badge',()=>{
  for(const [status,tone] of [['plentiful','green'],['limited','orange'],['last','red'],['sold_out','neutral'],['available','neutral'],['unavailable','neutral']]){

@@ -129,10 +129,6 @@ body[data-page="events"] main#main .events-hero {
     background: var(--events-hero-button-arrow);
   }
 
-  .events-hero-eye-inline {
-    display: none;
-  }
-
   .events-hero-visual {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -298,29 +294,9 @@ body[data-page="events"] main#main .events-hero {
       max-width: none;
     }
 
-    .events-hero-eye-inline {
-      position: relative;
-      isolation: isolate;
-      display: block;
-      grid-column: 1;
-      grid-row: 1;
-      justify-self: center;
-      width: 72px;
-      aspect-ratio: 1;
-
-      &::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background: radial-gradient(ellipse, var(--events-hero-ambient), transparent 72%);
-      }
-    }
-
     .events-hero-title {
       grid-column: 1 / -1;
-      grid-row: 2;
+      grid-row: 1;
       max-width: none;
       margin: 0;
       font-size: clamp(28px, 8.3vw, 36px);

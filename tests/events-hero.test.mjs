@@ -29,9 +29,9 @@ test('London link is an internal landing page with its own accessible content', 
   assert.equal(london.querySelector('svg').closest('[aria-hidden="true"]').className, 'events-hero-london-arrow');
 });
 
-test('both responsive eye placements preserve the exact original image', () => {
+test('the desktop hero eye preserves the exact original image', () => {
   const eyes = hero.querySelectorAll('.events-hero-eye');
-  assert.equal(eyes.length, 2);
+  assert.equal(eyes.length, 1);
   for (const eye of eyes) {
     assert.equal(eye.getAttribute('src'), '/images/ajsee-events-eye.jpg');
     assert.equal(eye.getAttribute('width'), '1254');

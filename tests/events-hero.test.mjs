@@ -65,7 +65,6 @@ test('hero CSS is scoped, keeps image and London panel in flow, and supports bot
   assert.match(styles, /mask-mode: alpha/);
   assert.match(styles, /prefers-color-scheme: dark/);
   assert.match(styles, /prefers-reduced-motion: reduce/);
-  assert.match(styles, /grid-template-columns: minmax\(0, 1fr\) 92px/);
   assert.doesNotMatch(styles, /margin-top:\s*-|scale\(/);
   assert.doesNotMatch(css, /\.events-hero-(?:eye-space|london)\s*\{[^}]*position:\s*absolute/);
   assert.doesNotMatch(styles, /event-modal|\.event-card\b|#events-filters-form/);

@@ -70,18 +70,30 @@ test('hero CSS is scoped, keeps image and London panel in flow, and supports bot
   assert.doesNotMatch(styles, /event-modal|\.event-card\b|#events-filters-form/);
 });
 
-test('CTA text keeps strong contrast in light and dark appearances', () => {
+test('both hero actions keep readable text in light and dark appearances', () => {
   const luminance = hex => {
+    if (hex.length === 4) hex = '#' + [...hex.slice(1)].map(value => value + value).join('');
     const channels = [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16) / 255);
     return channels.reduce((sum, value, index) => sum + [.2126, .7152, .0722][index] * (value <= .04045 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4), 0);
   };
-  for (const [foreground, colors] of [
-    ['#ffffff', ['#164b5a', '#103448', '#15535d']],
-    ['#f3fcfc', ['#216374', '#164457', '#1a5b65']]
-  ]) {
-    for (const color of colors) {
-      const [low, high] = [luminance(foreground), luminance(color)].sort((a, b) => a - b);
-      assert.ok((high + .05) / (low + .05) >= 4.5);
+  for (const appearance of styles.split('@media (prefers-color-scheme: dark)')) {
+    const token = name => {
+      const value = appearance.match(new RegExp('--events-hero-' + name + ':\\s*([^;]+);'))?.[1];
+      assert.ok(value, 'Missing appearance token: ' + name);
+      return value.trim();
+    };
+    const primaryStops = ['start', 'mid', 'end'].map(stop => token('button-' + stop));
+    const londonStops = token('london-bg').match(/#[\da-f]{3,8}\b/gi);
+    assert.ok(londonStops?.length);
+    for (const [foreground, colors] of [
+      [token('button-text'), primaryStops],
+      [token('london-text'), londonStops],
+      [token('london-muted'), londonStops]
+    ]) {
+      for (const color of colors) {
+        const [low, high] = [luminance(foreground), luminance(color)].sort((a, b) => a - b);
+        assert.ok((high + .05) / (low + .05) >= 4.5, foreground + ' on ' + color);
+      }
     }
   }
 });

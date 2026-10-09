@@ -51,7 +51,7 @@ function initPartnerForm() {
 
   function clearErrors() {
     fields.forEach((name) => {
-      const input = form.elements[name];
+      const input = form.elements.namedItem(name);
       const errEl = form.querySelector(`#error-${name}`);
 
       if (errEl) {
@@ -67,7 +67,7 @@ function initPartnerForm() {
   }
 
   function showError(fieldName, msg) {
-    const input = form.elements[fieldName];
+    const input = form.elements.namedItem(fieldName);
     const errEl = form.querySelector(`#error-${fieldName}`);
 
     if (!errEl || !input) return;
@@ -102,7 +102,7 @@ function initPartnerForm() {
   }
 
   fields.forEach((name) => {
-    const input = form.elements[name];
+    const input = form.elements.namedItem(name);
 
     if (!input) return;
 
@@ -131,17 +131,17 @@ function initPartnerForm() {
 
     if (honey?.value) return;
 
-    const company = (form.company?.value || "").trim();
-    const name = (form.name?.value || "").trim();
-    const email = (form.email?.value || "").trim();
-    const message = (form.message?.value || "").trim();
+    const company = (form.elements.namedItem('company')?.value || "").trim();
+    const name = (form.elements.namedItem('name')?.value || "").trim();
+    const email = (form.elements.namedItem('email')?.value || "").trim();
+    const message = (form.elements.namedItem('message')?.value || "").trim();
 
     let valid = true;
 
     if (!company) {
       showError(
         "company",
-        tr("partner-error-company", "Vyplňte název firmy nebo instituce.")
+        tr("partner-error-company", "Vyplňte název firmy nebo značky.")
       );
       valid = false;
     }
@@ -149,7 +149,7 @@ function initPartnerForm() {
     if (!name) {
       showError(
         "name",
-        tr("partner-error-name", "Zadejte své jméno.")
+        tr("partner-error-name", "Vyplňte své jméno.")
       );
       valid = false;
     }
@@ -167,7 +167,7 @@ function initPartnerForm() {
     if (!message) {
       showError(
         "message",
-        tr("partner-error-message", "Napište vzkaz.")
+        tr("partner-error-message", "Napište nám krátkou zprávu.")
       );
       valid = false;
     }
@@ -216,13 +216,10 @@ function initPartnerForm() {
         if (p) {
           p.textContent = tr(
             "partner-error-msg",
-            "Odeslání se nezdařilo. Zkuste to prosím později."
+            "Zprávu se nepodařilo odeslat. Zkuste to prosím znovu nebo nám napište na partners@ajsee.cz."
           );
         }
 
-        setTimeout(() => {
-          errorBox.style.display = "none";
-        }, 4500);
       }
     } finally {
       setLoading(false);

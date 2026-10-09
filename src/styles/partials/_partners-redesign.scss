@@ -1,0 +1,546 @@
+// Partners page only. Shared navigation, footer and Events styles stay independent.
+body[data-page='partners'] {
+  --partner-bg: #fafbf8;
+  --partner-surface: #ffffff;
+  --partner-soft: #f1f6f4;
+  --partner-heading: #14303e;
+  --partner-text: #506571;
+  --partner-line: #dbe5e3;
+  --partner-accent: #087c7b;
+  --partner-button-bg: #153b47;
+  --partner-button-text: #ffffff;
+  --partner-button-hover: #1d505d;
+  --partner-hero-glow: rgba(23, 193, 183, 0.09);
+  background: var(--partner-bg);
+  color: var(--partner-heading);
+
+  .partners-page {
+    font-family: 'Inter', sans-serif;
+    background: var(--partner-bg);
+  }
+
+  .partners-container {
+    width: min(1160px, calc(100% - 48px));
+    margin-inline: auto;
+  }
+
+  .partners-page h1,
+  .partners-page h2,
+  .partners-page h3 {
+    color: var(--partner-heading);
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-weight: 700;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .partners-page h2 {
+    font-size: clamp(1.65rem, 2.5vw, 2rem);
+    line-height: 1.25;
+    letter-spacing: -0.035em;
+  }
+
+  .partners-page h3 {
+    font-size: 1.1rem;
+    line-height: 1.45;
+    letter-spacing: -0.018em;
+  }
+
+  .partners-page p {
+    margin: 0;
+    color: var(--partner-text);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .partners-page a {
+    text-decoration: none;
+  }
+
+  .partners-page :is(a, button, input, textarea):focus-visible {
+    outline: 3px solid var(--partner-accent);
+    outline-offset: 4px;
+  }
+
+  #our-partners,
+  #partner-contact {
+    scroll-margin-top: calc(var(--header-offset, 100px) + 24px);
+  }
+
+  .partners-hero {
+    padding: 58px 0 52px;
+    background: radial-gradient(ellipse at 50% 10%, var(--partner-hero-glow), transparent 72%);
+    text-align: center;
+  }
+
+  .partners-hero-inner {
+    max-width: 960px;
+  }
+
+  .partners-hero h1 {
+    font-size: clamp(2.35rem, 4.25vw, 3.6rem);
+    line-height: 1.12;
+    letter-spacing: -0.055em;
+  }
+
+  .partners-hero h1 > span {
+    display: block;
+  }
+
+  .partners-hero .partners-hero-accent {
+    color: var(--partner-accent);
+  }
+
+  .partners-hero .partners-hero-lead {
+    margin-top: 24px;
+    font-size: 1.075rem;
+    line-height: 1.65;
+  }
+
+  .partners-hero-lead > span {
+    display: block;
+  }
+
+  .partners-hero-actions {
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+  }
+
+  .partners-page .partner-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 54px;
+    padding: 15px 24px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: var(--partner-button-bg);
+    color: var(--partner-button-text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 160ms ease, box-shadow 160ms ease;
+  }
+
+  .partners-page .partner-button:hover {
+    background: var(--partner-button-hover);
+    box-shadow: 0 6px 18px rgba(19, 59, 70, 0.12);
+  }
+
+  .partner-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  .partner-anchor {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    color: var(--partner-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .partner-anchor:hover,
+  .partner-case-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
+
+  .partners-roster {
+    padding: 34px 0 46px;
+    border-block: 1px solid var(--partner-line);
+  }
+
+  .partners-roster h2 {
+    font-size: 1.25rem;
+    text-align: center;
+    letter-spacing: -0.025em;
+  }
+
+  .partner-roster-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px;
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+  }
+
+  .partner-roster-item {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .partner-roster-logo {
+    display: grid;
+    place-items: center;
+    min-height: 80px;
+    border-radius: 10px;
+    transition: background 160ms ease;
+  }
+
+  .partner-roster-logo:hover {
+    background: var(--partner-soft);
+  }
+
+  .partner-roster-logo picture {
+    display: contents;
+  }
+
+  .partner-roster-logo img {
+    width: 180px;
+    max-width: 100%;
+    height: 72px;
+    object-fit: contain;
+    display: block;
+  }
+
+  .partner-roster-logo--todaytix {
+    min-height: 80px;
+  }
+
+  .partner-roster-logo--todaytix img {
+    width: 154px;
+    height: 72px;
+  }
+
+  .partner-roster-item p {
+    margin-top: 12px;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .partners-section {
+    padding-block: 64px;
+  }
+
+  .partner-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 44px;
+    margin-top: 34px;
+  }
+
+  .partner-option-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--partner-soft);
+    color: var(--partner-accent);
+    margin-bottom: 18px;
+  }
+
+  .partner-option-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .partner-option p {
+    margin-top: 12px;
+  }
+
+  .partners-case {
+    padding-top: 0;
+  }
+
+  .partner-case-panel {
+    display: grid;
+    grid-template-columns: 1fr 1.08fr;
+    background: var(--partner-surface);
+    border: 1px solid var(--partner-line);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .partner-case-copy {
+    padding: 38px;
+    align-self: center;
+  }
+
+  .partner-case-copy .partner-case-label {
+    margin-bottom: 12px;
+    color: var(--partner-accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .partner-case-copy > p:not(.partner-case-label) {
+    margin-top: 18px;
+  }
+
+  .partner-case-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+    min-height: 44px;
+    color: var(--partner-accent);
+    font-size: 0.94rem;
+    line-height: 1.45;
+    font-weight: 600;
+  }
+
+  .partner-case-link svg {
+    flex: 0 0 20px;
+  }
+
+  .partner-case-media {
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    background: #101726;
+  }
+
+  .partner-case-media img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .partners-process {
+    padding-top: 0;
+  }
+
+  .partner-process-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 36px;
+    list-style: none;
+    padding: 0;
+    margin: 32px 0 0;
+  }
+
+  .partner-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    border-top: 1px solid var(--partner-line);
+    padding-top: 22px;
+    min-width: 0;
+  }
+
+  .partner-step-number {
+    color: var(--partner-accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding-top: 4px;
+    flex: 0 0 auto;
+  }
+
+  .partner-step p {
+    margin-top: 10px;
+    font-size: 0.94rem;
+  }
+
+  .partner-contact-section {
+    border-top: 1px solid var(--partner-line);
+    background: var(--partner-soft);
+  }
+
+  .partner-contact-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .partner-contact-copy {
+    padding-top: 20px;
+  }
+
+  .partner-contact-copy p {
+    margin-top: 20px;
+    max-width: 390px;
+  }
+
+  .partner-contact-email {
+    display: inline-block;
+    color: var(--partner-accent);
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    font-weight: 600;
+    margin-top: 26px;
+    min-height: 44px;
+    overflow-wrap: anywhere;
+  }
+
+  .partner-contact-email:hover {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+  }
+
+  .partner-form-panel {
+    background: var(--partner-surface);
+    border: 1px solid var(--partner-line);
+    border-radius: 18px;
+    padding: 30px;
+  }
+
+  .partner-contact-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+  }
+
+  .partner-field {
+    min-width: 0;
+  }
+
+  .partner-field--full,
+  .partner-contact-form > button,
+  .partner-form-error {
+    grid-column: 1 / -1;
+  }
+
+  .partner-field label {
+    display: block;
+    color: var(--partner-heading);
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+  .partner-field :is(input, textarea) {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid var(--partner-line);
+    border-radius: 9px;
+    padding: 11px 13px;
+    background: var(--partner-bg);
+    color: var(--partner-heading);
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .partner-field textarea {
+    resize: vertical;
+    min-height: 112px;
+  }
+
+  .partner-field :is(input, textarea)::placeholder {
+    color: var(--partner-text);
+    opacity: 0.85;
+  }
+
+  .partner-field [aria-invalid='true'] {
+    border-color: #c34848;
+  }
+
+  .partner-field .form-error {
+    display: none;
+    margin-top: 6px;
+    color: var(--aj-form-error-text);
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .partner-field .form-error.active {
+    display: block;
+  }
+
+  .partner-form-error,
+  .partner-form-success {
+    padding: 16px;
+    border: 1px solid var(--aj-form-error-border);
+    border-radius: 10px;
+    background: var(--aj-form-error-bg);
+  }
+
+  .partner-form-error p {
+    color: var(--aj-form-error-text);
+    font-size: 0.9rem;
+  }
+
+  .partner-form-success {
+    margin-top: 24px;
+    border-color: var(--aj-form-success-border);
+    background: var(--aj-form-success-bg);
+  }
+
+  .partner-form-success p {
+    color: var(--aj-form-success-text);
+  }
+
+  @media (max-width: 1000px) {
+    .partner-roster-grid { gap: 18px; }
+    .partner-roster-logo img { width: 155px; }
+    .partner-roster-logo--todaytix img { width: 118px; }
+    .partner-options-grid { gap: 28px; }
+    .partner-contact-grid { gap: 40px; }
+    .partner-case-copy { padding: 28px; }
+  }
+
+  @media (max-width: 760px) {
+    .partners-container { width: calc(100% - 40px); }
+    .partners-hero { padding-block: 42px 38px; }
+    .partners-hero h1 { font-size: clamp(2.25rem, 5.5vw, 2.75rem); }
+    .partners-hero .partners-hero-lead { font-size: 1rem; }
+    .partners-hero-lead > span + span { margin-top: 8px; }
+    .partner-roster-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 22px; }
+    .partner-roster-item:last-child { grid-column: 1 / -1; width: calc((100% - 22px) / 2); justify-self: center; }
+    .partner-roster-logo img { width: 180px; }
+    .partner-roster-logo--todaytix img { width: 132px; }
+    .partners-section { padding-block: 44px; }
+    .partner-options-grid { grid-template-columns: 1fr; gap: 30px; margin-top: 28px; }
+    .partner-option-icon { margin-bottom: 12px; }
+    .partners-case { padding-top: 0; }
+    .partner-case-panel { grid-template-columns: 1fr; }
+    .partner-case-copy { padding: 28px; }
+    .partner-case-media img { width: 100%; }
+    .partners-process { padding-top: 0; }
+    .partner-process-grid { grid-template-columns: 1fr; gap: 24px; }
+    .partner-contact-grid { grid-template-columns: 1fr; gap: 24px; }
+    .partner-contact-copy { padding-top: 0; }
+    .partner-contact-copy p { max-width: 100%; }
+  }
+
+  @media (max-width: 480px) {
+    .partners-hero h1 { font-size: clamp(2rem, 8vw, 2.35rem); }
+    .partners-hero-actions { flex-direction: column; gap: 8px; margin-top: 24px; }
+    .partners-hero-actions > .partner-button { width: 100%; }
+    .partners-roster { padding-block: 28px 34px; }
+    .partner-roster-grid { gap: 22px 18px; }
+    .partner-roster-item:last-child { width: calc((100% - 18px) / 2); }
+    .partner-roster-item p { font-size: 0.8rem; }
+    .partner-roster-logo img { max-width: 150px; }
+    .partner-roster-logo--todaytix img { width: 115px; }
+    .partner-case-copy { padding: 24px; }
+    .partner-form-panel { padding: 22px; }
+    .partner-contact-form { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    --partner-bg: #0c1922;
+    --partner-surface: #12232d;
+    --partner-soft: #10232c;
+    --partner-heading: #edf4f4;
+    --partner-text: #b1c2cc;
+    --partner-line: #29404b;
+    --partner-accent: #53d5c8;
+    --partner-button-bg: #56d8c9;
+    --partner-button-text: #102a34;
+    --partner-button-hover: #7be5d9;
+    --partner-hero-glow: rgba(31, 184, 176, 0.085);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .partners-page :is(a, button) { transition: none; }
+  }
+}

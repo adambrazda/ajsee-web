@@ -1,18 +1,36 @@
 {
   "headline": "Naši partneři",
-  "description": "Spolupracujeme s nejlepšími firmami, institucemi a agenturami z celého světa.",
+  "description": "Vstupenky, živé akce a ubytování od našich partnerů.",
   "items": [
     {
       "name": "Ticketmaster",
-      "bio": "Globální lídr v prodeji vstupenek.",
-      "logo": "/images/uploads/ticketmaster.png",
-      "url": "https://www.ticketmaster.com/"
+      "bio": "Vstupenky na koncerty, sport a další živé akce.",
+      "logo": "/images/partners/ticketmaster.svg",
+      "url": "https://www.ticketmaster.cz/"
     },
     {
-      "name": "GoOut.cz",
-      "bio": "Největší kulturní portál v Česku.",
-      "logo": "/images/uploads/goout.png",
-      "url": "https://goout.net/"
+      "name": "smsticket",
+      "bio": "Vstupenky na kulturní akce v Česku.",
+      "logo": "/images/partners/smsticket.png",
+      "url": "https://www.smsticket.cz/"
+    },
+    {
+      "name": "TodayTix",
+      "bio": "Muzikály a divadlo na londýnském West Endu.",
+      "logo": "/images/partners/todaytix.svg",
+      "url": "https://www.todaytixgroup.com/"
+    },
+    {
+      "name": "ColosseumTicket",
+      "bio": "Vstupenky na divadlo, koncerty a další kulturní akce.",
+      "logo": "/images/partners/colosseumticket.svg",
+      "url": "https://www.colosseumticket.cz/"
+    },
+    {
+      "name": "TrustedStays",
+      "bio": "Ubytování ve Spojeném království.",
+      "logo": "/images/partners/trustedstays/TrustedStays_Primary_RGB_R.svg",
+      "url": "https://www.trustedstays.co.uk/"
     }
   ]
 }

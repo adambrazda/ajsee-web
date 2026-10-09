@@ -12,9 +12,7 @@
 @use '../partials/header';
 @use '../partials/footer';
 
-@use '../partials/partners';
-@use '../partials/contact';
-@use '../partials/theme-partners';
+@use '../partials/partners-redesign';
 
 @use '../partials/cookie-consent';
 
@@ -29,19 +27,4 @@ body {
   position: sticky;
   top: 0;
   z-index: 9999;
-}
-
-// Mobile: partners page keeps content text-first, without decorative hero visual.
-@media (max-width: 767px) {
-  body[data-page="partners"] section.partners-hero .partners-hero-media {
-    display: none;
-  }
-
-  body[data-page="partners"] section.partners-hero .partners-hero-inner {
-    display: block;
-  }
-
-  body[data-page="partners"] section.partners-hero .partners-hero-content {
-    max-width: 100%;
-  }
 }

@@ -456,7 +456,7 @@ function compactCitySubsetText(
         cutAt
       )
       .trim() +
-    '?'
+    '…'
   );
 }
 

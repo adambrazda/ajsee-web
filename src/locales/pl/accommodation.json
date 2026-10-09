@@ -8,41 +8,36 @@
   "nav-contact": "Kontakt",
   "nav-faq": "FAQ",
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Wszelkie prawa zastrzeżone.",
-
   "seo": {
     "accommodation": {
-      "title": "Noclegi przy koncertach, sporcie i wydarzeniach w UK | AJSEE",
-      "description": "Znajdź nocleg w Wielkiej Brytanii podczas podróży na koncerty, sport i inne wydarzenia. AJSEE łączy Cię z TrustedStays; rezerwacja odbywa się u partnera.",
-      "ogTitle": "Noclegi przy koncertach, sporcie i wydarzeniach w UK | AJSEE",
-      "ogDescription": "Podróżujesz do Wielkiej Brytanii na koncert, wydarzenie sportowe lub przeżycie na żywo? AJSEE łączy Cię z TrustedStays, gdzie odbywa się zapytanie, rezerwacja i potwierdzenie noclegu."
+      "title": "Noclegi w Wielkiej Brytanii i Francji | AJSEE",
+      "description": "Poznaj noclegi TrustedStays w Wielkiej Brytanii i wybrane apartamenty w Paryżu. Sprawdź ofertę i możliwości rezerwacji w każdym miejscu.",
+      "ogTitle": "Noclegi w Wielkiej Brytanii i Francji | AJSEE",
+      "ogDescription": "Poznaj noclegi TrustedStays w Wielkiej Brytanii i wybrane apartamenty w Paryżu. Sprawdź ofertę i możliwości rezerwacji w każdym miejscu."
     }
   },
-
   "accommodation": {
     "hero": {
-      "title": "Noclegi w UK na podróże po przeżycia",
-      "lead": "Podróżujesz do Wielkiej Brytanii na koncert, sport lub inne wydarzenie na żywo? AJSEE łączy Cię z TrustedStays, gdzie zapytanie lub rezerwację kończysz bezpośrednio u partnera.",
-      "ctaPrimary": "Zobacz noclegi w UK",
+      "title": "Noclegi na wyjazdy pełne wrażeń.",
+      "lead": "Wybierz się na wyjątkowe wydarzenie i zostań kilka dni dłużej. Poznaj ofertę noclegów naszego partnera TrustedStays.",
+      "ctaPrimary": "Wybierz kierunek",
       "ctaSecondary": "Jak to działa",
-      "micro": "Oficjalne partnerstwo • Aktualnie UK • Zapytanie, rezerwacja i potwierdzenie odbywają się na TrustedStays"
+      "micro": "Wielka Brytania · Francja"
     },
-
     "partner": {
       "label": "Oficjalny partner AJSEE ds. noclegów",
-      "scope": "Uwaga: Ta strona jest obecnie przeznaczona wyłącznie dla noclegów w Wielkiej Brytanii."
+      "scope": "Wielka Brytania · Francja — Paryż"
     },
-
     "trustedstays": {
       "title": "TrustedStays w skrócie",
-      "lead": "TrustedStays oferuje akredytowane, profesjonalnie zarządzane i bezpieczne noclegi w całej Wielkiej Brytanii — odpowiednie na podróże służbowe, dłuższe pobyty oraz wybrane wyjazdy na wydarzenia.",
+      "lead": "Poznaj apartamenty i domy na krótsze i dłuższe pobyty. Wybrane apartamenty dostępne przez systemy rezerwacji podróży służbowych.",
       "points": {
-        "1": "Aktualne ukierunkowanie na Wielką Brytanię",
+        "1": "Wielka Brytania · Francja",
         "2": "Akredytowane noclegi z naciskiem na standardy, bezpieczeństwo i profesjonalne zarządzanie",
         "3": "Odpowiednie na krótkie i dłuższe pobyty — od kilku nocy do kilku miesięcy"
       },
       "scope": "Zapytanie lub rezerwację, płatność i potwierdzenie kończysz bezpośrednio na TrustedStays."
     },
-
     "support": {
       "title": "Lokalne wsparcie AJSEE",
       "text": "Nie jesteś pewien/-na kolejnych kroków lub napotkałeś/-aś problem? Napisz do nas — pomożemy Ci odnaleźć się w zapytaniu lub rezerwacji w Twoim języku.",
@@ -50,7 +45,6 @@
       "cta": "Skontaktuj się z AJSEE",
       "ctaSecondary": "↗ Otwórz TrustedStays"
     },
-
     "how": {
       "title": "Jak to działa",
       "steps": {
@@ -60,7 +54,7 @@
         },
         "2": {
           "title": "Wybierz miejsce i termin",
-          "text": "Wyszukaj noclegi w Wielkiej Brytanii według miasta, dat, liczby gości i typu pobytu."
+          "text": "Uwzględnij termin, liczbę gości i miejsce wydarzenia."
         },
         "3": {
           "title": "Wyślij zapytanie lub zarezerwuj",
@@ -68,7 +62,6 @@
         }
       }
     },
-
     "faq": {
       "title": "FAQ",
       "q1": {
@@ -88,14 +81,59 @@
         "a": "Anulowanie, zmiany rezerwacji, płatności i potwierdzenia obsługuje TrustedStays zgodnie ze swoimi warunkami. AJSEE może pomóc Ci odnaleźć się w procesie i komunikacji."
       }
     },
-
     "disclaimer": "AJSEE nie jest dostawcą noclegu, biurem podróży ani operatorem płatności. Zapytanie, rezerwacja, płatność, potwierdzenie i warunki pobytu są obsługiwane przez TrustedStays.",
-
     "final": {
-      "title": "Gotowe? Wybierz nocleg w UK.",
+      "title": "Wybierz kierunek podróży",
       "text": "TrustedStays otworzy się w nowej karcie. Tam kończysz zapytanie lub rezerwację bezpośrednio u partnera.",
-      "ctaPrimary": "Zobacz noclegi w UK",
+      "ctaPrimary": "Wybierz kierunek",
       "ctaSecondary": "Skontaktuj się z AJSEE"
+    },
+    "redesign": {
+      "titleStart": "Noclegi na",
+      "titleEnd": "wyjazdy pełne wrażeń.",
+      "lead1": "Wybierz się na wyjątkowe wydarzenie i zostań kilka dni dłużej.",
+      "lead2": "Poznaj ofertę noclegów naszego partnera TrustedStays.",
+      "cta": "Wybierz kierunek",
+      "howLink": "Jak to działa",
+      "partnerLabel": "Oficjalny partner AJSEE",
+      "photoAlt": "Salon z oferty noclegów TrustedStays",
+      "photoCaption": "Zdjęcie z oferty TrustedStays",
+      "destinationsTitle": "Wybierz kierunek podróży",
+      "ukTitle": "Wielka Brytania",
+      "ukLocation": "Londyn i inne brytyjskie miasta",
+      "ukDescription": "Poznaj apartamenty i domy na krótsze i dłuższe pobyty.",
+      "ukCta": "Zobacz ofertę",
+      "franceTitle": "Francja",
+      "franceNew": "Nowość",
+      "franceLocation": "Paryż",
+      "franceDescription": "Wybrane apartamenty dostępne przez systemy rezerwacji podróży służbowych.",
+      "franceCta": "Możliwości rezerwacji",
+      "benefit1Title": "Sprawdzone noclegi",
+      "benefit1Text": "TrustedStays sprawdza standardy obiektów w swojej ofercie.",
+      "benefit2Title": "Krótsze i dłuższe pobyty",
+      "benefit2Text": "Na kilka nocy lub dłuższy wyjazd, zależnie od oferty obiektu.",
+      "benefit3Title": "Rezerwacja u partnera",
+      "benefit3Text": "TrustedStays potwierdza dostępność, cenę i warunki rezerwacji.",
+      "howTitle": "Jak zarezerwować pobyt",
+      "step1Title": "Wybierz kierunek",
+      "step1Text": "Sprawdź noclegi i możliwości rezerwacji w kraju, do którego się wybierasz.",
+      "step2Title": "Znajdź odpowiedni nocleg",
+      "step2Text": "Uwzględnij termin, liczbę gości i miejsce wydarzenia.",
+      "step3Title": "Dokończ rezerwację",
+      "step3Text": "Dokończ rezerwację bezpośrednio u TrustedStays, zgodnie z warunkami wybranego pobytu.",
+      "faqTitle": "Warto wiedzieć",
+      "faqBookingQ": "Czy rezerwuję na AJSEE?",
+      "faqBookingA": "AJSEE kieruje do TrustedStays. Wybór noclegu, rezerwację i płatność dokonujesz bezpośrednio u partnera.",
+      "franceQ": "Jak zarezerwować nocleg we Francji?",
+      "franceA": "Wybrane apartamenty w Paryżu są dostępne przez systemy rezerwacji podróży służbowych. Szczegóły oferty i możliwości rezerwacji sprawdź bezpośrednio w TrustedStays.",
+      "franceLink": "Francuska oferta TrustedStays",
+      "faqAffiliateQ": "Czy to link partnerski?",
+      "faqAffiliateA": "Tak. Link pomaga naszemu partnerowi rozpoznać odwiedziny z AJSEE.",
+      "faqCancelQ": "Kto zajmuje się zmianami i anulowaniem rezerwacji?",
+      "faqCancelA": "Zmiany, anulowanie rezerwacji i płatności uzgodnisz bezpośrednio z TrustedStays, zgodnie z warunkami swojego pobytu.",
+      "supportTitle": "Potrzebujesz pomocy?",
+      "supportText": "Napisz do nas. Pomożemy Ci zorientować się w ofercie i kolejnych krokach.",
+      "supportCta": "Napisz do AJSEE"
     }
   }
 }

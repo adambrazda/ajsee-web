@@ -8,53 +8,48 @@
   "nav-contact": "Kapcsolat",
   "nav-faq": "GYIK",
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Minden jog fenntartva.",
-
   "seo": {
     "accommodation": {
-      "title": "Szállás koncertekhez, sporthoz és eseményekhez az Egyesült Királyságban | AJSEE",
-      "description": "Találj szállást az Egyesült Királyságban, ha koncertre, sportra vagy más eseményre utazol. Az AJSEE összekapcsol a TrustedStays partnerrel; a foglalás a partnernél történik.",
-      "ogTitle": "Szállás koncertekhez, sporthoz és eseményekhez az Egyesült Királyságban | AJSEE",
-      "ogDescription": "Koncertre, sporteseményre vagy élő élményre utazol az Egyesült Királyságba? Az AJSEE összekapcsol a TrustedStays partnerrel, ahol az ajánlatkérés, foglalás és visszaigazolás történik."
+      "title": "Szállások az Egyesült Királyságban és Franciaországban | AJSEE",
+      "description": "Fedezze fel a TrustedStays szállásait az Egyesült Királyságban és válogatott párizsi apartmanjait. Nézze meg a kínálatot és a foglalási lehetőségeket.",
+      "ogTitle": "Szállások az Egyesült Királyságban és Franciaországban | AJSEE",
+      "ogDescription": "Fedezze fel a TrustedStays szállásait az Egyesült Királyságban és válogatott párizsi apartmanjait. Nézze meg a kínálatot és a foglalási lehetőségeket."
     }
   },
-
   "accommodation": {
     "hero": {
-      "title": "Szállás az Egyesült Királyságban élményutazásokhoz",
-      "lead": "Koncertre, sporteseményre vagy más élő élményre utazol az Egyesült Királyságba? Az AJSEE összekapcsol a TrustedStays partnerrel, ahol az ajánlatkérést vagy foglalást közvetlenül a partnernél fejezheted be.",
-      "ctaPrimary": "UK szállások megtekintése",
+      "title": "Szállás az élmények mellé.",
+      "lead": "Utazzon egy különleges élményért, és maradjon néhány nappal tovább. Fedezze fel partnerünk, a TrustedStays szálláskínálatát.",
+      "ctaPrimary": "Úti cél kiválasztása",
       "ctaSecondary": "Hogyan működik",
-      "micro": "Hivatalos partnerség • Jelenleg UK • Ajánlatkérés, foglalás és visszaigazolás a TrustedStays-en történik",
+      "micro": "Egyesült Királyság · Franciaország",
       "trust": {
         "1": "Partnerség a TrustedStays-szel",
         "2": "Jelenleg UK — szállások az Egyesült Királyságban",
         "3": "Ajánlatkérés vagy foglalás közvetlenül a TrustedStays-en"
       }
     },
-
     "sticky": {
       "text": "Gyorsan választanál UK szállást?",
       "cta": "↗ Ajánlat megnyitása"
     },
-
     "partner": {
       "label": "Az AJSEE hivatalos szálláspartnere",
       "eyebrow": "Partner UK-szállásokhoz",
       "about": "A TrustedStays ellenőrzött, akkreditált és professzionálisan kezelt szállásokat kínál az Egyesült Királyságban — a standardokra, biztonságra és következetes vendégélményre fókuszálva.",
       "more": "Miért a TrustedStays? →",
-      "scope": "Megjegyzés: Ez az oldal jelenleg kizárólag az Egyesült Királyságban elérhető szállásokra vonatkozik.",
+      "scope": "Egyesült Királyság · Franciaország — Párizs",
       "points": {
         "1": "Ellenőrzött szállások az Egyesült Királyságban",
         "2": "Akkreditált szállások — fókusz a standardokra, biztonságra és professzionális kezelésre",
         "3": "Ajánlatkérés vagy foglalás közvetlenül a TrustedStays-en"
       }
     },
-
     "trustedstays": {
       "title": "TrustedStays röviden",
-      "lead": "A TrustedStays akkreditált, professzionálisan kezelt és biztonságos szállásokat kínál az Egyesült Királyságban — alkalmas üzleti utakhoz, hosszabb tartózkodásokhoz és kiválasztott eseményutazásokhoz.",
+      "lead": "Fedezze fel a rövidebb és hosszabb tartózkodásra kínált apartmanokat és házakat. Válogatott apartmanok vállalati foglalási rendszereken keresztül.",
       "points": {
-        "1": "Jelenlegi fókusz: Egyesült Királyság",
+        "1": "Egyesült Királyság · Franciaország",
         "2": "Akkreditált szállások — fókusz a standardokra, biztonságra és professzionális kezelésre",
         "3": "Rövid és hosszabb tartózkodásokhoz is megfelelő — néhány éjszakától akár több hónapig"
       },
@@ -74,7 +69,6 @@
         }
       }
     },
-
     "support": {
       "title": "AJSEE helyi támogatás",
       "text": "Nem vagy biztos a lépésekben, vagy elakadtál? Írj nekünk — segítünk eligazodni az ajánlatkérésben vagy foglalásban a saját nyelveden.",
@@ -82,7 +76,6 @@
       "cta": "Kapcsolat az AJSEE-vel",
       "ctaSecondary": "↗ TrustedStays megnyitása"
     },
-
     "how": {
       "title": "Hogyan működik",
       "steps": {
@@ -92,7 +85,7 @@
         },
         "2": {
           "title": "Válaszd ki az úti célt és a dátumot",
-          "text": "Keress szállást az Egyesült Királyságban város, dátum, vendégszám és tartózkodási típus alapján."
+          "text": "Vegye figyelembe az időpontot, a vendégek számát és az esemény helyszínét."
         },
         "3": {
           "title": "Kérj ajánlatot vagy foglalj",
@@ -100,7 +93,6 @@
         }
       }
     },
-
     "faq": {
       "title": "GYIK",
       "q1": {
@@ -120,14 +112,59 @@
         "a": "A lemondást, foglalásmódosítást, fizetést és visszaigazolást a TrustedStays kezeli a saját feltételei szerint. Az AJSEE segíthet eligazodni a folyamatban és a kommunikációban."
       }
     },
-
     "disclaimer": "Az AJSEE nem szállásszolgáltató, nem utazási iroda és nem fizetési szolgáltató. Az ajánlatkérést, foglalást, fizetést, visszaigazolást és a tartózkodási feltételeket a TrustedStays kezeli.",
-
     "final": {
-      "title": "Készen állsz? Válassz szállást az Egyesült Királyságban.",
+      "title": "Válasszon úti célt",
       "text": "A TrustedStays új lapon nyílik meg. Ott fejezheted be az ajánlatkérést vagy foglalást közvetlenül a partnernél.",
-      "ctaPrimary": "UK szállások megtekintése",
+      "ctaPrimary": "Úti cél kiválasztása",
       "ctaSecondary": "Kapcsolat az AJSEE-vel"
+    },
+    "redesign": {
+      "titleStart": "Szállás az",
+      "titleEnd": "élmények mellé.",
+      "lead1": "Utazzon egy különleges élményért, és maradjon néhány nappal tovább.",
+      "lead2": "Fedezze fel partnerünk, a TrustedStays szálláskínálatát.",
+      "cta": "Úti cél kiválasztása",
+      "howLink": "Hogyan működik?",
+      "partnerLabel": "Az AJSEE hivatalos partnere",
+      "photoAlt": "Nappali a TrustedStays szálláskínálatából",
+      "photoCaption": "Fotó a TrustedStays kínálatából",
+      "destinationsTitle": "Válasszon úti célt",
+      "ukTitle": "Egyesült Királyság",
+      "ukLocation": "London és más brit városok",
+      "ukDescription": "Fedezze fel a rövidebb és hosszabb tartózkodásra kínált apartmanokat és házakat.",
+      "ukCta": "Szálláskínálat megtekintése",
+      "franceTitle": "Franciaország",
+      "franceNew": "Újdonság",
+      "franceLocation": "Párizs",
+      "franceDescription": "Válogatott apartmanok vállalati foglalási rendszereken keresztül.",
+      "franceCta": "Foglalási lehetőségek",
+      "benefit1Title": "Ellenőrzött szállások",
+      "benefit1Text": "A TrustedStays ellenőrzi a kínálatában szereplő szállások minőségét.",
+      "benefit2Title": "Rövidebb és hosszabb tartózkodás",
+      "benefit2Text": "Néhány éjszakára vagy hosszabb útra, az adott szállás kínálatától függően.",
+      "benefit3Title": "Foglalás a partnernél",
+      "benefit3Text": "Az elérhetőséget, az árat és a feltételeket a TrustedStays erősíti meg.",
+      "howTitle": "A foglalás menete",
+      "step1Title": "Válasszon úti célt",
+      "step1Text": "Nézze meg az úti cél szálláskínálatát és foglalási lehetőségeit.",
+      "step2Title": "Találja meg a megfelelő szállást",
+      "step2Text": "Vegye figyelembe az időpontot, a vendégek számát és az esemény helyszínét.",
+      "step3Title": "Fejezze be a foglalást",
+      "step3Text": "A foglalást közvetlenül a TrustedStaysnél fejezheti be, a kiválasztott szállás feltételei szerint.",
+      "faqTitle": "Hasznos tudnivalók",
+      "faqBookingQ": "Az AJSEE oldalán foglalok?",
+      "faqBookingA": "Az AJSEE összeköti Önt a TrustedStaysszel. A szállás kiválasztása, a foglalás és a fizetés közvetlenül a partnernél történik.",
+      "franceQ": "Hogyan foglalhatok szállást Franciaországban?",
+      "franceA": "Válogatott párizsi apartmanok vállalati foglalási rendszereken keresztül érhetők el. A kínálatról és a foglalási lehetőségekről közvetlenül a TrustedStaysnél tájékozódhat.",
+      "franceLink": "A TrustedStays franciaországi kínálata",
+      "faqAffiliateQ": "Ez egy partnerlink?",
+      "faqAffiliateA": "Igen. A hivatkozás segít partnerünknek azonosítani az AJSEE oldaláról érkező látogatásokat.",
+      "faqCancelQ": "Ki intézi a módosításokat és lemondásokat?",
+      "faqCancelA": "A módosításokat, lemondásokat és fizetéseket közvetlenül a TrustedStaysszel egyeztetheti, a foglalási feltételek szerint.",
+      "supportTitle": "Segítségre van szüksége?",
+      "supportText": "Írjon nekünk. Segítünk eligazodni a kínálatban és a következő lépésekben.",
+      "supportCta": "Írjon az AJSEE-nek"
     }
   }
 }

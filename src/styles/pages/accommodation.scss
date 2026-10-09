@@ -37,7 +37,16 @@
 .page-accommodation {
   @include stay-light;
   background: var(--ac-bg); color: var(--ac-heading); font-family: 'Inter', sans-serif;
+  overflow-x: clip;
   @media (prefers-color-scheme: dark) { @include stay-dark; }
+  @media (min-width: 951px) and (max-width: 1120px) {
+    .header-inner { grid-template-columns: auto minmax(0,1fr) auto; column-gap: 16px; }
+    .main-nav a { font-size: .875rem; padding-inline: 8px; }
+    .main-nav ul { gap: 4px; }
+  }
+  @media (max-width: 950px) {
+    .main-nav:not(.open) { visibility: hidden; }
+  }
   .stay-container { width: min(1160px, calc(100% - 48px)); margin-inline: auto; }
   .stay-main { background: var(--ac-bg); }
   .stay-main :is(h1,h2,h3) {

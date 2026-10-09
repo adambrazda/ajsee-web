@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'node:fs';
 import { eventPriceLabels, eventInventoryState, renderEventCommerce } from '../src/event-commerce.js';
 import { mapTicketmasterEvent } from '../src/adapters/ticketmaster.js';
 import { renderSharedEventCard } from '../src/event-card.js';
@@ -83,6 +84,21 @@ test('card exposes a touch/keyboard-native expandable explanation and a hover ti
  assert.match(dom.window.document.querySelector('.event-price').textContent,/From/);
  assert.equal(dom.window.document.querySelector('.event-stock-dot').getAttribute('aria-hidden'),'true');
  dom.window.close();
+});
+
+test('desktop provider badge labels are never clipped by the commerce-row cap',()=>{
+ const source=readFileSync(new URL('../src/event-card.js',import.meta.url),'utf8');
+ const start=source.indexOf('.event-partner-badge--commerce {');
+ const end=source.indexOf('@media (min-width: 1100px)',start);
+ assert.notEqual(start,-1);
+ assert.ok(end>start);
+ const desktopBadgeCss=source.slice(start,end);
+ assert.match(desktopBadgeCss,/width:\s*max-content/);
+ assert.match(desktopBadgeCss,/max-width:\s*none/);
+ assert.match(desktopBadgeCss,/overflow:\s*visible/);
+ assert.match(desktopBadgeCss,/text-overflow:\s*clip/);
+ assert.doesNotMatch(desktopBadgeCss,/max-width:\s*104px/);
+ assert.doesNotMatch(desktopBadgeCss,/text-overflow:\s*ellipsis/);
 });
 
 test('seller badges stay off artwork, with mobile metadata placement and desktop price-row placement',()=>{

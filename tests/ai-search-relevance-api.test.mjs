@@ -23,12 +23,34 @@ test('discovery preserves category/city/date and ranks after provider filtering;
       event('date', 'Rock musical later', '20'),
       event('category', 'Rock concert', '02', 'Praha', 'concert')
     ] }) };
+    if (url.includes('/data/colosseumticket-events')) return { ok: true, json: async () => ({ events: [
+      {
+        id: 'colosseumticket-ai-best',
+        sourceId: 'ai-parent:ai-term',
+        providerEventId: 'ai-parent',
+        providerOccurrenceId: 'ai-term',
+        partner: 'colosseumticket',
+        source: 'colosseumticket',
+        sourceName: 'ColosseumTicket',
+        title: { cs: 'Rock musical' },
+        description: { cs: 'Rock musical v Praze' },
+        datetime: '2099-01-04T19:00:00',
+        location: { city: 'Praha' },
+        venue: { name: 'Test theatre', city: 'Praha' },
+        categories: ['Muzikál'],
+        types: ['Muzikál'],
+        sourceMeta: { rawType: 'Muzikál', rawCategories: ['Muzikál'] },
+        tickets: 'https://colosseumticket.cz/cs/akce/ai-test',
+        url: 'https://colosseumticket.cz/cs/akce/ai-test'
+      }
+    ] }) };
     throw new Error('Unexpected request: ' + url);
   };
   const { fetchEvents } = await import('../src/api/eventsApi.js');
   const base = { countryCode: 'CZ', placeType: 'city', city: 'Praha', cityCountryCode: 'CZ', dateFrom: '2099-01-01', dateTo: '2099-01-10', category: 'theatre' };
   const discovery = await fetchEvents({ locale: 'cs', filters: { ...base, searchMode: 'discovery', keywordMatch: 'soft', keyword: 'rock musical', sort: 'relevance' } });
-  assert.deepEqual(discovery.map(e => e.id), ['smsticket-best', 'smsticket-early']);
+  assert.deepEqual(discovery.map(e => e.id), ['colosseumticket-ai-best', 'smsticket-best', 'smsticket-early']);
+  assert.ok(requests.some(u => u.includes('/data/colosseumticket-events-praha.json')));
   assert.ok(requests.filter(u => u.includes('ticketmasterEvents')).every(u => !new URL(u, 'https://ajsee.test').searchParams.has('keyword')));
   for (const extra of [{}, { searchMode: 'exact', keywordMatch: 'strict', sort: 'relevance' }]) {
     const result = await fetchEvents({ locale: 'cs', filters: { ...base, keyword: 'Hamlet', ...extra } });

@@ -7,6 +7,7 @@ import {
 } from './ai-search/learning.js';
 
 const FALLBACK_IMAGE = '/images/fallbacks/concert0.jpg';
+const COLOSSEUMTICKET_FALLBACK_IMAGE = '/images/logo-ajsee.png';
 
 function escapeHtml(value = '') {
   return String(value)
@@ -67,6 +68,12 @@ function eventProviderBadgeHtml(event = {}) {
   `;
 }
 
+export function eventFallbackImage(event = {}) {
+  return eventProviderKey(event) === 'colosseumticket'
+    ? COLOSSEUMTICKET_FALLBACK_IMAGE
+    : FALLBACK_IMAGE;
+}
+
 export function eventImageOrFallback(event = {}) {
   const raw = String(
     event?.image ||
@@ -78,7 +85,7 @@ export function eventImageOrFallback(event = {}) {
 
   return raw
     ? raw.replace(/^http:\/\//i, 'https://')
-    : FALLBACK_IMAGE;
+    : eventFallbackImage(event);
 }
 
 const EVENT_IMAGE_CONTAIN_MAX_RATIO = 1.3;
@@ -471,6 +478,9 @@ export function renderSharedEventCard({
     imageSrc ||
     eventImageOrFallback(event);
 
+  const resolvedFallbackImage =
+    eventFallbackImage(event);
+
   const imagePresentation =
     eventImagePresentation(event);
 
@@ -492,6 +502,11 @@ export function renderSharedEventCard({
 
   const safeImage =
     escapeHtml(resolvedImage);
+
+  const safeFallbackImage =
+    escapeHtml(
+      resolvedFallbackImage
+    );
 
   const safeHref =
     escapeHtml(ticketsHref);
@@ -537,7 +552,7 @@ export function renderSharedEventCard({
           style="object-position: ${safeImagePosition};"
           loading="lazy"
           decoding="async"
-          onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
+          onerror="this.onerror=null;this.src='${safeFallbackImage}';"
         />
         <button type="button" class="event-image-action js-event-detail"
           data-event-id="${safeModalId}" data-result-position="${safeResultPosition}"
@@ -1084,20 +1099,21 @@ export function ensureSharedEventGridStyles(
         display: block;
         align-self: center;
         justify-self: end;
-        max-width: 104px;
+        width: max-content;
+        max-width: none;
         margin: 0 0 2px;
       }
 
       body:is([data-page="home"], [data-page="events"]) #eventsList
         .event-partner-badge--commerce span {
         min-height: 24px;
-        max-width: 104px;
+        max-width: none;
         padding: 4px 9px;
         border-radius: 999px;
         font-size: 11px;
         line-height: 1.25;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        overflow: visible;
+        text-overflow: clip;
       }
     }
 

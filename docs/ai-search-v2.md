@@ -31,7 +31,7 @@ The client allowlists these fields; the server validates types, keys and consist
 
 This is lexical ranking of **retrieved candidates**, not global ranking of all provider inventory. Providers still paginate by date and can cap or partially fail requests. `zero_results` therefore measures the loaded result set, not proof that no matching event exists anywhere. The existing loader does not expose complete per-provider coverage; interpret this metric alongside failures and lower-bound flags.
 
-Unsupported moods, fame, romantic suitability and inferred similarity remain unsupported preferences. This release cannot infer that a show is suitable for a particular person. Time of day and new zero-result recovery actions are outside this iteration. Disabled SeatPlan/ColosseumTicket integrations stay disabled.
+Unsupported moods, fame, romantic suitability and inferred similarity remain unsupported preferences. This release cannot infer that a show is suitable for a particular person. Time of day and new zero-result recovery actions are outside this iteration. SeatPlan stays disabled. ColosseumTicket is active for the CZ market; because its feed does not provide coordinates, Near Me and city-radius searches intentionally return no ColosseumTicket results.
 
 London musicals currently use the separate TodayTix white-label site, which is not connected to this search. Zero results for Mamma Mia in London are therefore expected with the current inventory (confirmed by the owner on 2026-10-06).
 
@@ -50,4 +50,4 @@ Before merge, run the query set on the deploy preview with the configured model 
 - `npm run ai-search:test` runs the AI regression suites, relevance tests, provider integration fixtures and reference intent cases. The same gate is included in `prebuild`.
 - Related homepage/filter/price/taxonomy tests and the CSS priority guard are checked separately.
 - `npx vite build` verifies the frontend build without running live feed synchronization. It is not a full Netlify deployment test.
-- Known baseline failure at base commit `fb3a1571685f167232b24f5457bbfb33a8d32968`: `tests/provider-isolation.test.mjs` expects a ColosseumTicket request although `ENABLE_COLOSSEUMTICKET` is false. Reproduced on the unchanged base; not repaired by enabling an intentionally disabled provider.
+- ColosseumTicket activation has dedicated runtime, feed-safety, commercial URL, taxonomy, UI, city-subset and AI relevance regression coverage. Its static-feed provider remains isolated so a ColosseumTicket failure does not abort other providers.

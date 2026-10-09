@@ -138,11 +138,12 @@ function initLangDropdown() {
 }
 
 function initCtaTracking() {
-  const links = Array.from(document.querySelectorAll('a[href*="trustedstays.co.uk/book-a-home"]'));
+  const links = Array.from(document.querySelectorAll('a[data-trustedstays-outbound]'));
   if (!links.length) return;
 
   links.forEach((a) => {
     const source = (() => {
+      if (a.dataset.trackSource) return a.dataset.trackSource;
       if (a.id === 'trustedstaysCta') return 'hero_primary';
       if (a.closest('#support')) return 'support';
       if (a.closest('#final')) return 'final';

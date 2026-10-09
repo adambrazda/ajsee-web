@@ -8,41 +8,36 @@
   "nav-contact": "Kontakt",
   "nav-faq": "FAQ",
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Všechna práva vyhrazena.",
-
   "seo": {
     "accommodation": {
-      "title": "Ubytování u koncertů, sportu a akcí v UK | AJSEE",
-      "description": "Najdi ubytování ve Spojeném království při cestách na koncerty, sport a další akce. AJSEE tě propojí s TrustedStays; rezervace probíhá u partnera.",
-      "ogTitle": "Ubytování u koncertů, sportu a akcí v UK | AJSEE",
-      "ogDescription": "Cestuješ do Spojeného království za koncertem, sportem nebo akcí? AJSEE tě propojí s TrustedStays, kde probíhá poptávka, rezervace i potvrzení ubytování."
+      "title": "Ubytování ve Spojeném království a Francii | AJSEE",
+      "description": "Objevte ubytování s TrustedStays ve Spojeném království a vybrané apartmány v Paříži. Prohlédněte si nabídku a možnosti rezervace podle destinace.",
+      "ogTitle": "Ubytování ve Spojeném království a Francii | AJSEE",
+      "ogDescription": "Objevte ubytování s TrustedStays ve Spojeném království a vybrané apartmány v Paříži. Prohlédněte si nabídku a možnosti rezervace podle destinace."
     }
   },
-
   "accommodation": {
     "hero": {
-      "title": "Ubytování v UK pro cesty za zážitky",
-      "lead": "Cestuješ do Spojeného království za koncertem, sportem nebo jinou akcí? AJSEE tě propojí s TrustedStays, kde si poptávku nebo rezervaci dokončíš přímo u partnera.",
-      "ctaPrimary": "Zobrazit ubytování v UK",
+      "title": "Ubytování pro cesty za zážitky.",
+      "lead": "Vyrazte za zážitky a dopřejte si pár dní navíc. Objevte nabídku ubytování našeho partnera TrustedStays.",
+      "ctaPrimary": "Vybrat destinaci",
       "ctaSecondary": "Jak to funguje",
-      "micro": "Oficiální partnerství • Aktuálně UK • Poptávka, rezervace a potvrzení probíhají na TrustedStays"
+      "micro": "Spojené království · Francie"
     },
-
     "partner": {
       "label": "Oficiální partner AJSEE pro ubytování",
-      "scope": "Pozn.: Tato stránka je aktuálně určená pouze pro ubytování ve Spojeném království."
+      "scope": "Spojené království · Francie — Paříž"
     },
-
     "trustedstays": {
       "title": "TrustedStays v kostce",
-      "lead": "TrustedStays nabízí akreditované, profesionálně spravované a bezpečné ubytování napříč Spojeným královstvím — vhodné pro pracovní cesty, delší pobyty i cesty za vybranými akcemi.",
+      "lead": "Prohlédněte si apartmány a domy na krátké i delší pobyty. Prohlédněte si pařížské apartmány. U partnera vyhledejte „Paris“.",
       "points": {
-        "1": "Aktuálně zaměření na Spojené království",
+        "1": "Spojené království · Francie",
         "2": "Akreditované ubytování s důrazem na standardy, bezpečnost a profesionální správu",
         "3": "Vhodné pro krátké i delší pobyty — od několika nocí až po několik měsíců"
       },
       "scope": "Poptávku nebo rezervaci, platbu a potvrzení dokončíš přímo na TrustedStays."
     },
-
     "support": {
       "title": "Lokální podpora AJSEE",
       "text": "Nejsi si jistý/á postupem nebo narazíš na problém? Napiš nám — pomůžeme ti zorientovat se v poptávce nebo rezervaci ve tvém jazyce.",
@@ -50,7 +45,6 @@
       "cta": "Kontaktovat AJSEE",
       "ctaSecondary": "↗ Otevřít TrustedStays"
     },
-
     "how": {
       "title": "Jak to funguje",
       "steps": {
@@ -60,7 +54,7 @@
         },
         "2": {
           "title": "Vyber destinaci a termín",
-          "text": "Vyhledej ubytování ve Spojeném království podle města, termínu, počtu osob a typu pobytu."
+          "text": "Zohledněte termín, počet hostů i místo, kam vyrážíte za zážitkem."
         },
         "3": {
           "title": "Odešli poptávku nebo rezervuj",
@@ -68,7 +62,6 @@
         }
       }
     },
-
     "faq": {
       "title": "Časté dotazy",
       "q1": {
@@ -88,14 +81,59 @@
         "a": "Storno, změny rezervace, platby a potvrzení řeší TrustedStays podle svých podmínek. AJSEE ti může pomoci s orientací a komunikací."
       }
     },
-
     "disclaimer": "AJSEE není poskytovatelem ubytování, cestovní kanceláří ani provozovatelem platební služby. Poptávka, rezervace, platba, potvrzení a podmínky pobytu probíhají u TrustedStays.",
-
     "final": {
-      "title": "Vše připraveno? Vyber si ubytování v UK.",
+      "title": "Vyberte si destinaci",
       "text": "Otevřeš nabídku TrustedStays v nové kartě a poptávku nebo rezervaci dokončíš přímo u partnera.",
-      "ctaPrimary": "Zobrazit ubytování v UK",
+      "ctaPrimary": "Vybrat destinaci",
       "ctaSecondary": "Kontaktovat AJSEE"
+    },
+    "redesign": {
+      "titleStart": "Ubytování pro",
+      "titleEnd": "cesty za zážitky.",
+      "lead1": "Vyrazte za zážitky a dopřejte si pár dní navíc.",
+      "lead2": "Objevte nabídku ubytování našeho partnera TrustedStays.",
+      "cta": "Vybrat destinaci",
+      "howLink": "Jak to funguje",
+      "partnerLabel": "Oficiální partner AJSEE",
+      "photoAlt": "Obývací pokoj z nabídky ubytování TrustedStays",
+      "photoCaption": "Fotografie z nabídky TrustedStays",
+      "destinationsTitle": "Vyberte si destinaci",
+      "ukTitle": "Spojené království",
+      "ukLocation": "Londýn a další britská města",
+      "ukDescription": "Prohlédněte si apartmány a domy na krátké i delší pobyty.",
+      "ukCta": "Prohlédnout nabídku",
+      "franceTitle": "Francie",
+      "franceNew": "Nově",
+      "franceLocation": "Paříž",
+      "franceDescription": "Prohlédněte si pařížské apartmány. U partnera vyhledejte „Paris“.",
+      "franceCta": "Prohlédnout nabídku",
+      "benefit1Title": "Prověřené ubytování",
+      "benefit1Text": "TrustedStays prověřuje standardy ubytování ve své nabídce.",
+      "benefit2Title": "Krátké i delší pobyty",
+      "benefit2Text": "Na několik nocí i delší cestu, podle nabídky partnera.",
+      "benefit3Title": "Rezervace u partnera",
+      "benefit3Text": "Dostupnost, cenu a podmínky vám potvrdí TrustedStays.",
+      "howTitle": "Jak na rezervaci",
+      "step1Title": "Vyberte destinaci",
+      "step1Text": "Prohlédněte si nabídku a možnosti rezervace v zemi, kam se chystáte.",
+      "step2Title": "Najděte vhodný pobyt",
+      "step2Text": "Zohledněte termín, počet hostů i místo, kam vyrážíte za zážitkem.",
+      "step3Title": "Dokončete rezervaci",
+      "step3Text": "Rezervaci dokončíte přímo u TrustedStays podle podmínek zvoleného pobytu.",
+      "faqTitle": "Co vás může zajímat",
+      "faqBookingQ": "Probíhá rezervace na AJSEE?",
+      "faqBookingA": "AJSEE vás propojí s TrustedStays. Výběr ubytování, rezervaci i platbu dokončíte přímo u partnera.",
+      "franceQ": "Jak rezervovat ubytování ve Francii?",
+      "franceA": "Otevřete nabídku TrustedStays a ve vyhledávání zadejte „Paris“. Vyberte destinaci z nabízených možností a doplňte termín pobytu.",
+      "franceLink": "Otevřít nabídku TrustedStays",
+      "faqAffiliateQ": "Je odkaz partnerský?",
+      "faqAffiliateA": "Ano. Odkaz partnerovi pomáhá rozpoznat návštěvy, které přicházejí z AJSEE.",
+      "faqCancelQ": "Kdo řeší změny a zrušení rezervace?",
+      "faqCancelA": "Změny, zrušení rezervace a platby vyřešíte přímo s TrustedStays podle podmínek svého pobytu.",
+      "supportTitle": "Potřebujete poradit?",
+      "supportText": "Napište nám. Pomůžeme vám zorientovat se v nabídce i v dalším postupu.",
+      "supportCta": "Napsat AJSEE"
     }
   }
 }

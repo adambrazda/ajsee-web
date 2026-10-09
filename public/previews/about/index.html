@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow"><title>AJSEE · O nás — náhled</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#eaf0ed;color:#14303e;font:14px/1.5 system-ui,sans-serif}
+    .toolbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:17px 24px;border-bottom:1px solid #d7e2dc;background:#fff}
+    .title{font-weight:650}.title small{display:block;font-size:12px;font-weight:400;color:#667a82}
+    .controls{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.group{display:flex;gap:3px;padding:3px;border-radius:9px;background:#eef4f0}
+    button{border:0;border-radius:6px;background:transparent;color:#48616b;padding:8px 12px;font:500 12px/1.5 system-ui;cursor:pointer}
+    button[aria-pressed=true]{background:#153b47;color:white}button:focus-visible,a:focus-visible{outline:3px solid #087c7b;outline-offset:4px}
+    .open{font-size:12px;font-weight:600;color:#087c7b;text-decoration:none}.open:hover{text-decoration:underline}
+    .stage{padding:25px 24px 32px;overflow:hidden}.frame-wrap{position:relative;margin-inline:auto;border-radius:12px;background:#fafbf8;box-shadow:0 12px 45px #14303e17;overflow:hidden}
+    iframe{display:block;border:0;max-width:none;transform-origin:top left;background:#fafbf8}.info{margin:0 auto 17px;text-align:center;color:#667a82;font-size:12px}
+    @media(max-width:700px){.toolbar{padding:13px 16px;gap:12px}.title{width:100%}.controls{gap:10px}.stage{padding:18px 12px 24px}button{padding:7px 10px}}
+  </style>
+</head>
+<body>
+  <header class="toolbar">
+    <div class="title">AJSEE · O nás<small>Návrh se schválenými texty</small></div>
+    <div class="controls">
+      <div class="group" aria-label="Šířka náhledu">
+        <button type="button" data-width="1440" aria-pressed="false">Velký monitor</button>
+        <button type="button" data-width="1024" aria-pressed="true">Notebook</button>
+        <button type="button" data-width="390" aria-pressed="false">Mobil</button>
+      </div>
+      <div class="group" aria-label="Barevný režim">
+        <button type="button" data-theme="light" aria-pressed="true">Světlý</button>
+        <button type="button" data-theme="dark" aria-pressed="false">Tmavý</button>
+      </div>
+      <a class="open" href="/about/" target="_blank" rel="noopener">Otevřít stránku ↗</a>
+    </div>
+  </header>
+  <main class="stage">
+    <p id="info" class="info" aria-live="polite">Notebook · 1024 px · světlý režim</p>
+    <div class="frame-wrap" id="frame-wrap"><iframe id="about-frame" title="Náhled stránky O nás" src="/about/"></iframe></div>
+  </main>
+  <script>
+  (() => {
+    const frame=document.getElementById('about-frame'),wrap=document.getElementById('frame-wrap');
+    const params=new URLSearchParams(location.search);
+    let width=[1440,1024,390].includes(Number(params.get('width')))?Number(params.get('width')):1024;
+    let theme=params.get('theme')==='dark'?'dark':'light';
+    let observer;
+    const size=()=>{
+      const available=document.querySelector('.stage').clientWidth-(innerWidth<=700?24:48);
+      const scale=Math.min(1,available/width);
+      frame.style.width=width+'px';
+      const doc=frame.contentDocument;
+      const height=doc?.body?Math.max(doc.body.offsetHeight,900):900;
+      frame.style.height=height+'px';frame.style.transform='scale('+scale+')';
+      wrap.style.width=width*scale+'px';wrap.style.height=height*scale+'px';
+    };
+    const update=()=>{
+      document.querySelectorAll('[data-width]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.width)===width)));
+      document.querySelectorAll('[data-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===theme)));
+      document.getElementById('info').textContent=(width===390?'Mobil':width===1024?'Notebook':'Velký monitor')+' · '+width+' px · '+(theme==='dark'?'tmavý':'světlý')+' režim';
+      const doc=frame.contentDocument;
+      if(doc?.body){
+        let sheet=doc.getElementById('about-review-theme');
+        if(!sheet){sheet=doc.createElement('link');sheet.id='about-review-theme';sheet.rel='stylesheet';doc.head.append(sheet)}
+        sheet.onload=size;sheet.href='/previews/about/forced-'+theme+'.css';
+      }
+      const url=new URL(location.href);url.searchParams.set('width',width);url.searchParams.set('theme',theme);history.replaceState(null,'',url);
+      size();
+    };
+    frame.addEventListener('load',()=>{
+      observer?.disconnect();observer=new ResizeObserver(size);observer.observe(frame.contentDocument.body);
+      frame.contentDocument.fonts.ready.then(size);update();
+    });
+    document.querySelectorAll('[data-width]').forEach(b=>b.addEventListener('click',()=>{width=Number(b.dataset.width);update()}));
+    document.querySelectorAll('[data-theme]').forEach(b=>b.addEventListener('click',()=>{theme=b.dataset.theme;update()}));
+    window.addEventListener('resize',size);update();
+  })();
+  </script>
+</body>
+</html>

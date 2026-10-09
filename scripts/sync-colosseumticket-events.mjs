@@ -1819,7 +1819,7 @@ function compactCitySubsetText(
         cutAt
       )
       .trim() +
-    '?'
+    '…'
   );
 }
 

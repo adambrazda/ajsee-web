@@ -1,42 +1,50 @@
 {
   "about": {
-    "headline": "Rólunk",
-    "title": "Az AJSEE-ről | Világszintű események nyelvi akadályok nélkül",
+    "headline": "Kik állnak az AJSEE mögött",
+    "title": "Rólunk | AJSEE",
     "hero": {
-      "headlineFull": "Történetünk. Jövőképünk.",
-      "text": "Az élményeknek nincsenek határai. Ezért született meg az AJSEE.",
-      "subtext": "Célunk, hogy a világ kulturális, szórakoztató és sporteseményeit könnyebben elérhetővé tegyük – érthetően, átláthatóan és felesleges akadályok nélkül az események, jegyek és utazási lehetőségek felfedezése során.",
-      "claim": "Az AJSEE<sup>®</sup> egy modern platform mindazoknak, akik felesleges akadályok nélkül szeretnék megélni a világot."
+      "headlineStart": "Tudd, hová indulj",
+      "headlineEnd": "legközelebb.",
+      "headlineFull": "Tudd, hová indulj legközelebb.",
+      "lead1": "Az AJSEE-n megtudhatod, milyen események közelednek, és mi érdekelhet közülük.",
+      "lead2": "Fesztiválokat, színházi előadásokat, koncerteket és sporteseményeket találsz nálunk belföldön és külföldön egyaránt."
     },
     "story": {
-      "headline": "Hogyan kezdődött az egész",
-      "p1": "<strong>2024</strong> őszén történt. Egy kocsmában ültünk, ittunk egy sört – és ahogy lenni szokott, <strong>egy hétköznapi beszélgetésből hamar valódi ötlet lett.</strong>",
-      "p2": "Még aznap este megszületett az <strong>AJSEE név</strong>, az első logóterv és a vízió: <strong>a világszintű élményeket nyelvi akadályok nélkül elérhetőbbé tenni.</strong>",
-      "p3": "Ezután jött a legnehezebb rész: <strong>valóban elkezdeni.</strong>",
-      "p4": "Mindketten teljes állásban dolgoztunk, <strong>180 kilométer</strong> választott el minket, és kevés volt az idő. A projekt megakadt, mielőtt igazán beindulhatott volna.",
-      "p5": "Egészen addig, míg egy nap egyikünk <strong>egyszerűen elindította</strong>. Nem tökéletes tervvel, de azzal a bizonyossággal, hogy ennek van értelme. Ekkor kezdett az AJSEE valósággá válni."
+      "headline": "Így kezdődött",
+      "p1": "Az AJSEE ötlete 2024 őszén, egy sörözés közben született. Még aznap este kitaláltuk az AJSEE nevet, és elkészítettük a logó tervét.",
+      "p2": "Az AJSEE-t teljes munkaidős állásunk mellett, távolról kezdtük építeni — 180 kilométer választott el bennünket. Ezért hosszabb út vezetett az első ötlettől a működő projektig."
     },
     "team": {
-      "headline": "Kik állnak mögötte?",
+      "headline": "Kik állnak az AJSEE mögött",
+      "shared": "Az AJSEE jövőjéről és a partnerekkel való együttműködésről közösen döntünk.",
       "adam": {
         "name": "Adam Brázda",
-        "role": "Az AJSEE® társalapítója",
-        "claim": "Az első gondolattól kezdve részese az AJSEE®-nek. Hisz az egyszerű megoldások erejében, amelyek felesleges akadályok nélkül nyitják meg az élmények világát.",
-        "linkedin": "LinkedIn-profil"
+        "role": "Társalapító",
+        "claim": "Az első ötlettől kezdve részt vesz az AJSEE építésében. Hisz az egyszerű megoldások erejében, amelyek felesleges akadályok nélkül nyitják meg az élmények világát az emberek előtt.",
+        "linkedin": "LinkedIn"
       },
       "jan": {
         "name": "Jan Oujezdský",
-        "role": "Az AJSEE® társalapítója",
-        "claim": "Első naptól osztozik a vízión, hogy a kultúrát, a sportot és a szórakozást a lehető legtöbb ember számára elérhetővé tegye. Az AJSEE®-nél az ötleteket, a hozzáférhetőséget és a részletek iránti figyelmet kapcsolja össze.",
-        "linkedin": "LinkedIn-profil"
+        "role": "Társalapító",
+        "claim": "Az első naptól osztja azt az elképzelést, hogy a kultúra, a sport és a szórakozás minél több ember számára elérhető legyen. Az AJSEE-ben az ötleteket, a hozzáférhetőséget és a részletekre való odafigyelést kapcsolja össze.",
+        "linkedin": "LinkedIn"
       }
     },
     "future": {
-      "headline": "🎯 Merre tartunk",
-      "p1": "2026-ban a platform tartalmi, partneri és technikai alapjainak fejlesztésén dolgozunk.",
-      "p2": "Fejlesztjük a nyelvi verziókat, a gyakorlati útmutatókat és a nemzetközi partnerekkel való együttműködést.",
-      "p3": "Lépésről lépésre szeretnénk bővíteni az eseménykínálatot, a kapcsolódó szolgáltatásokat és az elérhetőséget szélesebb közönség számára.",
-      "p4": "Azt szeretnénk, hogy az AJSEE legyen az első kiindulópont mindenkinek, aki világszintű élményekhez keres utat – Londonban, Barcelonában vagy akár közelebb az otthonához."
+      "headline": "Merre tartunk",
+      "text": "Szeretnénk megkönnyíteni, hogy eljuss oda, ahol azt élheted át, amit szeretsz. Ezért az AJSEE-n fokozatosan összekapcsoljuk az eseményeket a szálláslehetőségekkel, a közlekedéssel és a környékbeli programötletekkel."
+    },
+    "cta": {
+      "events": "Események felfedezése",
+      "partners": "Partnereknek"
+    }
+  },
+  "seo": {
+    "about": {
+      "title": "Rólunk | AJSEE",
+      "description": "Ismerd meg az AJSEE történetét és alapítóit. Fedezz fel fesztiválokat, színházi előadásokat, koncerteket és sporteseményeket belföldön és külföldön.",
+      "ogTitle": "Rólunk | AJSEE",
+      "ogDescription": "Ismerd meg az AJSEE történetét és alapítóit. Fedezz fel fesztiválokat, színházi előadásokat, koncerteket és sporteseményeket belföldön és külföldön."
     }
   }
 }

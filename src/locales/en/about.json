@@ -1,42 +1,50 @@
 {
   "about": {
-    "headline": "About us",
-    "title": "About AJSEE | Global events without language barriers",
+    "headline": "The people behind AJSEE",
+    "title": "About us | AJSEE",
     "hero": {
-      "headlineFull": "Our story. Our vision.",
-      "text": "Experiences know no boundaries. That’s why AJSEE was born.",
-      "subtext": "Our goal is to make cultural, entertainment and sporting events from around the world easier to discover — clearly, intuitively and without unnecessary barriers when exploring events, tickets and travel options.",
-      "claim": "AJSEE<sup>®</sup> is a modern platform for everyone who wants to experience the world to the fullest — without unnecessary obstacles."
+      "headlineStart": "Know where to",
+      "headlineEnd": "go next.",
+      "headlineFull": "Know where to go next.",
+      "lead1": "AJSEE helps you discover what’s coming up and what you might enjoy.",
+      "lead2": "Find festivals, theatre, concerts and sporting events at home and abroad."
     },
     "story": {
-      "headline": "How it all began",
-      "p1": "It was autumn <strong>2024</strong>. We were sitting in a pub, having a beer – and as it happens, <strong>one ordinary conversation sparked something that soon turned into a real idea.</strong>",
-      "p2": "That same evening, the <strong>name AJSEE</strong>, the first logo draft and the vision were born: <strong>to make global experiences easier to access without language barriers.</strong>",
-      "p3": "Then came the hardest part: <strong>to actually start.</strong>",
-      "p4": "We both had full-time jobs, lived <strong>180 kilometres</strong> apart, and time was short. The project stalled before it could even get going.",
-      "p5": "Until one day, one of us <strong>just launched it</strong>. Without a perfect plan, but with the certainty that it made sense. And that’s when AJSEE started becoming real."
+      "headline": "How it started",
+      "p1": "The idea for AJSEE came over a beer in autumn 2024. That same evening, we came up with the name AJSEE and a design for the logo.",
+      "p2": "We started AJSEE alongside our full-time jobs, working remotely with 180 kilometres between us. Getting from the first idea to a working project took time."
     },
     "team": {
-      "headline": "Who’s behind it?",
+      "headline": "The people behind AJSEE",
+      "shared": "We decide on AJSEE’s direction and our partnerships together.",
       "adam": {
         "name": "Adam Brázda",
-        "role": "Co-founder of AJSEE®",
-        "claim": "Part of AJSEE® from the very first idea. He believes in simple solutions that open the world of experiences without unnecessary barriers.",
-        "linkedin": "LinkedIn profile"
+        "role": "Co-founder",
+        "claim": "He has been part of AJSEE from the very first idea. He believes in simple solutions that help people discover a world of experiences without unnecessary barriers.",
+        "linkedin": "LinkedIn"
       },
       "jan": {
         "name": "Jan Oujezdský",
-        "role": "Co-founder of AJSEE®",
-        "claim": "From day one, he has shared the vision to make culture, sport and entertainment accessible to as many people as possible. At AJSEE®, he connects ideas, accessibility and attention to detail.",
-        "linkedin": "LinkedIn profile"
+        "role": "Co-founder",
+        "claim": "From day one, he has shared the vision of making culture, sport and entertainment accessible to as many people as possible. At AJSEE, he brings together ideas, accessibility and an eye for detail.",
+        "linkedin": "LinkedIn"
       }
     },
     "future": {
-      "headline": "🎯 Where we’re heading",
-      "p1": "In 2026, we are expanding the content, partnerships and technical foundation of the platform.",
-      "p2": "We are developing language versions, practical guides and partnerships with international platforms.",
-      "p3": "Step by step, we want to expand the selection of events, related services and accessibility for a wider audience.",
-      "p4": "We want AJSEE to become a first-choice starting point for anyone looking for global experiences — whether in London, Barcelona or closer to home."
+      "headline": "Where we’re heading",
+      "text": "We want to make it easier to travel for the things you enjoy. Over time, we’ll bring events, accommodation, transport and ideas for things to do nearby together on AJSEE."
+    },
+    "cta": {
+      "events": "Explore events",
+      "partners": "For partners"
+    }
+  },
+  "seo": {
+    "about": {
+      "title": "About us | AJSEE",
+      "description": "Meet the people behind AJSEE and discover how it began. Find festivals, theatre, concerts and sporting events at home and abroad.",
+      "ogTitle": "About us | AJSEE",
+      "ogDescription": "Meet the people behind AJSEE and discover how it began. Find festivals, theatre, concerts and sporting events at home and abroad."
     }
   }
 }

@@ -4,15 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title data-i18n-key="seo.about.title">O AJSEE | Světové akce bez jazykových bariér</title>
+  <title data-i18n-key="seo.about.title">O nás | AJSEE</title>
   <meta
     name="description"
     data-i18n-content="seo.about.description"
-    content="Poznej AJSEE – platformu, která pomáhá lidem objevovat koncerty, festivaly, sportovní události a další zážitky po celém světě přehledně a bez jazykových bariér."
+    content="Poznejte příběh AJSEE a jeho zakladatele. Objevujte s námi festivaly, divadlo, koncerty i sportovní akce doma a v zahraničí."
   />
 
   <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#0077cc" />
+  <meta name="theme-color" content="#153b47" />
   <link rel="canonical" href="https://ajsee.cz/about" />
 
   <!-- Favicona -->
@@ -25,12 +25,12 @@
   <meta
     property="og:title"
     data-i18n-content="seo.about.ogTitle"
-    content="O AJSEE | Světové akce bez jazykových bariér"
+    content="O nás | AJSEE"
   />
   <meta
     property="og:description"
     data-i18n-content="seo.about.ogDescription"
-    content="AJSEE vzniká jako moderní discovery platforma pro koncerty, festivaly, sport, kulturu a cestování za zážitky."
+    content="Poznejte příběh AJSEE a jeho zakladatele. Objevujte s námi festivaly, divadlo, koncerty i sportovní akce doma a v zahraničí."
   />
   <meta property="og:url" content="https://ajsee.cz/about" />
   <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
@@ -40,11 +40,13 @@
   <meta name="twitter:card" content="summary" />
   <meta
     name="twitter:title"
-    content="O AJSEE | Světové akce bez jazykových bariér"
+    data-i18n-content="seo.about.ogTitle"
+    content="O nás | AJSEE"
   />
   <meta
     name="twitter:description"
-    content="AJSEE pomáhá lidem objevovat koncerty, festivaly, sportovní události a další zážitky po celém světě přehledně a bez bariér."
+    data-i18n-content="seo.about.ogDescription"
+    content="Poznejte příběh AJSEE a jeho zakladatele. Objevujte s námi festivaly, divadlo, koncerty i sportovní akce doma a v zahraničí."
   />
   <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
   <meta name="twitter:image:alt" content="Logo AJSEE" />
@@ -75,7 +77,7 @@
           "@id": "https://ajsee.cz/about#about-page",
           "url": "https://ajsee.cz/about",
           "name": "O AJSEE",
-          "description": "AJSEE pomáhá lidem objevovat koncerty, festivaly, sportovní události a další zážitky po celém světě přehledně a bez jazykových bariér.",
+          "description": "Poznejte příběh AJSEE a jeho zakladatele. Objevujte s námi festivaly, divadlo, koncerty i sportovní akce doma a v zahraničí.",
           "isPartOf": {
             "@id": "https://ajsee.cz/#website"
           },
@@ -112,31 +114,7 @@
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
-  <!-- Stabilizace layoutu: "Jak to celé začalo" drží 2 sloupce na desktopu (bez vynucené priority) -->
-  <style>
-    body[data-page="about"] .about-story-inner {
-      display: grid;
-      grid-template-columns: minmax(320px, 1fr) minmax(320px, 460px);
-      gap: 48px;
-      align-items: center;
-    }
-
-    @media (max-width: 900px) {
-      body[data-page="about"] .about-story-inner {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        align-items: start;
-      }
-    }
-
-    body[data-page="about"] .about-story-visual svg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-  </style>
-
-  <!-- ✅ JEDINÝ vstup (dev i prod) -->
+<!-- ✅ JEDINÝ vstup (dev i prod) -->
   <script type="module" src="/src/about-entry.js"></script>
 </head>
 <body data-page="about">
@@ -238,364 +216,68 @@
   </div>
 </header>
 
-<main id="main">
-  <section class="about-hero">
-    <div class="container about-hero-inner">
-      <div class="about-hero-textblock">
-        <h1 data-i18n-key="about-headline-full">Náš příběh. Naše vize.</h1>
-        <div class="about-hero-text">
-          <p data-i18n-key="about-hero-text">
-            Zážitky nemají hranice. A právě proto vzniklo AJSEE.
-          </p>
-          <p data-i18n-key="about-hero-subtext">Naším cílem je zpřístupnit lidem kulturní, zábavní i sportovní události z celého světa – jasně, srozumitelně a bez zbytečných bariér při objevování akcí, vstupenek i cestovních možností.</p>
-          <p>
-            <!-- Pozn.: claim může obsahovat HTML (sup), dole to ošetříme innerHTML -->
-            <strong data-i18n-key="about-hero-claim">
-              AJSEE<sup>®</sup> je moderní platforma pro všechny, kdo chtějí zažívat svět naplno – bez překážek.
-            </strong>
-          </p>
-        </div>
+<main id="main" class="about-main">
+  <section class="about-hero" aria-labelledby="about-title">
+    <div class="about-container about-hero-grid">
+      <div class="about-hero-copy">
+        <h1 id="about-title" class="about-title"><span data-i18n-key="about.hero.headlineStart">Ať víte, kam</span> <span data-i18n-key="about.hero.headlineEnd" class="about-title-accent">příště vyrazit.</span></h1>
+        <p class="about-lead"><span data-i18n-key="about.hero.lead1">Na AJSEE zjistíte, co se chystá a co by vás mohlo bavit.</span> <span data-i18n-key="about.hero.lead2">Najdete u nás festivaly, divadelní představení, koncerty i sportovní akce doma a v zahraničí.</span></p>
       </div>
-
-      <div class="about-hero-visual">
-        <svg class="hero-globe" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stylizovaná koule s orbitami a značkami">
-          <defs>
-            <clipPath id="clip"><circle cx="110" cy="110" r="105"/></clipPath>
-            <radialGradient id="bgGrad" cx="35%" cy="30%">
-              <stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e6f4fb"/><stop offset="100%" stop-color="#d9eef9"/>
-            </radialGradient>
-            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#14c2c5"/><stop offset="100%" stop-color="#0077cc"/>
-            </linearGradient>
-            <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/>
-              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <filter id="drop" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity="0.35"/>
-            </filter>
-          </defs>
-
-          <style>
-            .spin-slow { animation: spin 36s linear infinite; transform-origin: 110px 110px; }
-            .spin-rev  { animation: spin 24s linear infinite reverse; transform-origin: 110px 110px; }
-            .pulse     { animation: pulse 2.8s ease-in-out infinite; }
-            .twinkle   { animation: twinkle 3.8s ease-in-out infinite; }
-            @keyframes spin { to { transform: rotate(360deg); } }
-            @keyframes pulse { 0%{ r:3; opacity:1 } 70%{ r:12; opacity:0 } 100%{ r:12; opacity:0 } }
-            @keyframes twinkle { 0%{ opacity:.25 } 100%{ opacity:.9 } }
-            @media (prefers-reduced-motion: reduce){
-              .spin-slow, .spin-rev, .pulse, .twinkle { animation: none; }
-            }
-          </style>
-
-          <circle cx="110" cy="110" r="105" fill="url(#bgGrad)" stroke="url(#ringGrad)" stroke-width="3"/>
-          <circle cx="110" cy="110" r="105" fill="none" stroke="#14c2c566" stroke-width="10" opacity=".25" filter="url(#softGlow)"/>
-
-          <g clip-path="url(#clip)">
-            <g class="spin-slow" opacity=".6" stroke-linecap="round">
-              <ellipse cx="110" cy="110" rx="70" ry="30" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-              <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-              <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(-60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-              <ellipse cx="110" cy="110" rx="55" ry="24" fill="none" stroke="#14c2c540" stroke-width="1"/>
-              <ellipse cx="110" cy="110" rx="40" ry="15" fill="none" stroke="#14c2c540" stroke-width="1"/>
-            </g>
-
-            <g class="spin-rev">
-              <circle cx="110" cy="110" r="74" fill="none" stroke="url(#ringGrad)" stroke-width="2" stroke-dasharray="6 8" stroke-linecap="round"/>
-            </g>
-
-            <circle cx="110" cy="110" r="90" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="18" stroke-dasharray="60 400" transform="rotate(-35 110 110)"/>
-
-            <g filter="url(#drop)">
-              <g><circle cx="70" cy="70" r="4" fill="#14c2c5"/><circle cx="70" cy="70" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="70" cy="70" r="3" fill="#14c2c5" opacity=".35"/></g>
-              <g><circle cx="150" cy="80" r="4" fill="#0077cc"/><circle cx="150" cy="80" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="150" cy="80" r="3" fill="#0077cc" opacity=".35"/></g>
-              <g><circle cx="130" cy="150" r="4" fill="#14c2c5"/><circle cx="130" cy="150" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="130" cy="150" r="3" fill="#14c2c5" opacity=".35"/></g>
-              <g><circle cx="80" cy="140" r="4" fill="#0077cc"/><circle cx="80" cy="140" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="80" cy="140" r="3" fill="#0077cc" opacity=".35"/></g>
-            </g>
-
-            <g>
-              <circle class="twinkle" cx="170" cy="60" r="1.5" fill="#ffffff" style="animation-delay:-1s"/>
-              <circle class="twinkle" cx="45" cy="120" r="1.2" fill="#ffffff" style="animation-delay:-2s"/>
-              <circle class="twinkle" cx="165" cy="150" r="1.2" fill="#ffffff" style="animation-delay:-3s"/>
-              <circle class="twinkle" cx="100" cy="40" r="1.0" fill="#ffffff" style="animation-delay:-1.7s"/>
-            </g>
-          </g>
-        </svg>
+      <div class="about-eye-space" aria-hidden="true">
+        <img class="about-eye" src="/images/ajsee-events-eye.jpg" alt="" width="1254" height="1254" loading="eager" fetchpriority="high" decoding="async">
       </div>
     </div>
   </section>
-
-  <section class="about-story">
-    <div class="container about-story-inner">
-      <div class="about-story-textblock">
-        <!-- ALIASY klíčů: nové tečkové + staré “dash” varianty -->
-        <h2 data-i18n-key="about.story.headline|about-story-headline|about-story-title">Jak to celé začalo</h2>
-
-        <div class="about-story-text">
-          <p data-i18n-key="about.story.p1|about-story-p1|about-story-text-1">Byl podzim <strong>2024</strong>. Seděli jsme v hospodě, dali si pivo — a jak už to bývá, <strong>jedno obyčejné povídání odstartovalo něco, co se brzy proměnilo ve skutečný nápad.</strong></p>
-          <p data-i18n-key="about.story.p2|about-story-p2|about-story-text-2">Ještě ten večer vznikl <strong>název AJSEE</strong>, první návrh loga i vize: <strong>usnadnit lidem přístup ke světovým zážitkům bez jazykových překážek.</strong></p>
-          <p data-i18n-key="about.story.p3|about-story-p3|about-story-text-3">Ale pak přišla ta nejtěžší fáze: začít doopravdy.</p>
-          <p data-i18n-key="about.story.p4|about-story-p4|about-story-text-4">Oba jsme měli práci na plný úvazek, dělilo nás 180 kilometrů a času bylo málo. Projekt se na chvíli zastavil, ještě než se stihl rozběhnout.</p>
-          <p data-i18n-key="about.story.p5|about-story-p5|about-story-text-5">Až jednoho dne to jeden z nás <strong>prostě spustil</strong>. Bez dokonalého plánu, ale s jistotou, že to dává smysl.</p>
-          <p data-i18n-key="about.story.p6|about-story-p6|about-story-text-6">A tehdy se AJSEE začalo stávat skutečností.</p>
-        </div>
-      </div>
-
-      <div class="about-story-visual">
-        <!-- (SVG beze změny) -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 360" width="100%" role="img" aria-labelledby="steps-title steps-desc" preserveAspectRatio="xMidYMid meet">
-          <title id="steps-title">Ilustrace: schody se čtyřmi přepracovanými ikonami</title>
-          <desc id="steps-desc">Modré 3D schody a čtyři kruhové bubliny s moderními ikonami: chat, nápad, pauza a hotovo.</desc>
-
-          <style>
-            :root { --ac:#2F84D6; }
-            .bubble{ transform-box:fill-box; transform-origin:center; }
-            @media (prefers-reduced-motion: reduce){ .anim { display:none; } }
-          </style>
-
-          <defs>
-            <linearGradient id="gTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#CFE6FA"/><stop offset="1" stop-color="#A7D1F5"/></linearGradient>
-            <linearGradient id="gFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7EB9EB"/><stop offset="1" stop-color="#5EA1DE"/></linearGradient>
-            <linearGradient id="gSide" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FC3EE"/><stop offset="1" stop-color="#6CADE4"/></linearGradient>
-            <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-opacity="0.25"/></filter>
-
-            <symbol id="i-chat" viewBox="0 0 24 24">
-              <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="4" y="6" width="16" height="10" rx="3"/>
-                <path d="M8 16v3l3-3" class="anim">
-                  <animateTransform attributeName="transform" type="translate" values="0 0; 0 -0.9; 0 0" dur="1.2s" begin="0.2s" repeatCount="indefinite"/>
-                </path>
-                <circle cx="8.5" cy="11" r="0.9" opacity="0.85" class="anim">
-                  <animate attributeName="r" values="0.7;1.5;0.7" dur="1.1s" begin="0s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.5;1;0.5" dur="1.1s" begin="0s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="12" cy="11" r="0.9" opacity="0.85" class="anim">
-                  <animate attributeName="r" values="0.7;1.5;0.7" dur="1.1s" begin="0.15s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.5;1;0.5" dur="1.1s" begin="0.15s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="15.5" cy="11" r="0.9" opacity="0.85" class="anim">
-                  <animate attributeName="r" values="0.7;1.5;0.7" dur="1.1s" begin="0.3s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.5;1;0.5" dur="1.1s" begin="0.3s" repeatCount="indefinite"/>
-                </circle>
-              </g>
-            </symbol>
-
-            <symbol id="i-idea" viewBox="0 0 24 24">
-              <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="9.5" r="5.5">
-                  <animate class="anim" attributeName="stroke-opacity" values="0.7;1;0.7" dur="2.4s" repeatCount="indefinite"/>
-                </circle>
-                <path d="M9.5 15.5h5M10 18h4M10 16.8h4"/>
-              </g>
-            </symbol>
-
-            <symbol id="i-pause" viewBox="0 0 24 24">
-              <g fill="none" stroke="currentColor" stroke-linecap="round">
-                <g class="anim">
-                  <animateTransform attributeName="transform" type="translate" values="0 0; 0 -0.8; 0 0" dur="1.6s" repeatCount="indefinite"/>
-                </g>
-                <line x1="9" y1="7" x2="9" y2="17" stroke-width="2.4" class="anim">
-                  <animate attributeName="stroke-width" values="2.4;3;2.4" dur="1.6s" repeatCount="indefinite"/>
-                  <animate attributeName="x1" values="9;7.8;9" dur="1.6s" repeatCount="indefinite"/>
-                  <animate attributeName="x2" values="9;7.8;9" dur="1.6s" repeatCount="indefinite"/>
-                  <animate attributeName="y1" values="7;6.5;7" dur="1.6s" repeatCount="indefinite"/>
-                  <animate attributeName="y2" values="17;17.5;17" dur="1.6s" repeatCount="indefinite"/>
-                </line>
-                <line x1="15" y1="7" x2="15" y2="17" stroke-width="2.4" class="anim">
-                  <animate attributeName="stroke-width" values="2.4;3;2.4" dur="1.6s" begin="0.1s" repeatCount="indefinite"/>
-                  <animate attributeName="x1" values="15;16.2;15" dur="1.6s" repeatCount="indefinite"/>
-                  <animate attributeName="x2" values="15;16.2;15" dur="1.6s" repeatCount="indefinite"/>
-                  <animate attributeName="y1" values="7;6.5;7" dur="1.6s" repeatCount="indefinite"/>
-                  <animate attributeName="y2" values="17;17.5;17" dur="1.6s" repeatCount="indefinite"/>
-                </line>
-              </g>
-            </symbol>
-
-            <symbol id="i-check" viewBox="0 0 24 24">
-              <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <g class="anim">
-                  <animateTransform attributeName="transform" type="scale" values="1;1;1.08;1" keyTimes="0;0.24;0.26;1" dur="2.6s" repeatCount="indefinite"/>
-                </g>
-                <path d="M6.8 12.2l3.4 3.6L17.4 8.6" stroke-width="2.4" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" class="anim">
-                  <animate attributeName="stroke-dashoffset" values="100;0;0;100" keyTimes="0;0.24;0.86;1" dur="2.6s" repeatCount="indefinite"/>
-                </path>
-              </g>
-            </symbol>
-          </defs>
-
-          <ellipse cx="120" cy="300" rx="60" ry="12" fill="#000" opacity="0.08"/>
-          <ellipse cx="206" cy="260" rx="60" ry="12" fill="#000" opacity="0.08"/>
-          <ellipse cx="292" cy="218" rx="60" ry="12" fill="#000" opacity="0.08"/>
-          <ellipse cx="378" cy="176" rx="60" ry="12" fill="#000" opacity="0.08"/>
-
-          <g>
-            <polygon points="60,260 180,260 214,243 94,243" fill="url(#gTop)"/>
-            <polygon points="60,260 180,260 180,284 60,284" fill="url(#gFront)"/>
-            <polygon points="180,260 214,243 214,267 180,284" fill="url(#gSide)"/>
-          </g>
-          <g>
-            <polygon points="144,218 264,218 298,201 178,201" fill="url(#gTop)"/>
-            <polygon points="144,218 264,218 264,242 144,242" fill="url(#gFront)"/>
-            <polygon points="264,218 298,201 298,225 264,242" fill="url(#gSide)"/>
-          </g>
-          <g>
-            <polygon points="228,176 348,176 382,159 262,159" fill="url(#gTop)"/>
-            <polygon points="228,176 348,176 348,200 228,200" fill="url(#gFront)"/>
-            <polygon points="348,176 382,159 382,183 348,200" fill="url(#gSide)"/>
-          </g>
-          <g>
-            <polygon points="312,134 432,134 466,117 346,117" fill="url(#gTop)"/>
-            <polygon points="312,134 432,134 432,158 312,158" fill="url(#gFront)"/>
-            <polygon points="432,134 466,117 466,141 432,158" fill="url(#gSide)"/>
-          </g>
-
-          <g filter="url(#shadow)">
-            <g class="bubble" transform="translate(100 226)">
-              <circle r="22" fill="#fff"/><circle r="22" fill="none" stroke="var(--ac)" stroke-width="3"/>
-              <g style="color:var(--ac)"><use href="#i-chat" x="-12" y="-12" width="24" height="24"/></g>
-            </g>
-            <g class="bubble" transform="translate(188 186)">
-              <circle r="22" fill="#fff"/><circle r="22" fill="none" stroke="var(--ac)" stroke-width="3"/>
-              <g style="color:var(--ac)"><use href="#i-idea" x="-12" y="-12" width="24" height="24"/></g>
-            </g>
-            <g class="bubble" transform="translate(276 146)">
-              <circle r="22" fill="#fff"/><circle r="22" fill="none" stroke="var(--ac)" stroke-width="3"/>
-              <g style="color:var(--ac)"><use href="#i-pause" x="-12" y="-12" width="24" height="24"/></g>
-            </g>
-            <g class="bubble" transform="translate(364 106)">
-              <circle r="22" fill="#fff"/><circle r="22" fill="none" stroke="var(--ac)" stroke-width="3"/>
-              <g style="color:var(--ac)"><use href="#i-check" x="-12" y="-12" width="24" height="24"/></g>
-            </g>
-          </g>
-        </svg>
+  <section class="about-story" aria-labelledby="about-story-title">
+    <div class="about-container about-story-grid">
+      <h2 data-i18n-key="about.story.headline" id="about-story-title">Jak to začalo</h2>
+      <div class="about-story-copy">
+        <p data-i18n-key="about.story.p1">Nápad na AJSEE vznikl na podzim 2024 při posezení u piva. Ještě ten večer jsme vymysleli název AJSEE a návrh loga.</p>
+        <p data-i18n-key="about.story.p2">AJSEE jsme rozjížděli vedle práce na plný úvazek a na dálku — dělilo nás 180 kilometrů. Od prvního nápadu k fungujícímu projektu proto vedla delší cesta.</p>
       </div>
     </div>
   </section>
-
-  <section class="about-future">
-    <div class="container about-future-inner">
-      <div class="about-future-textblock">
-        <h2 data-i18n-key="about.future.headline|about-future-headline|about-future-title">🎯 Kam míříme</h2>
-
-        <div class="about-future-text">
-          <p data-i18n-key="about.future.p1|about-future-p1|about-future-text-1">V roce 2026 pracujeme na rozšiřování obsahu, partnerství a technického základu platformy.</p>
-          <p data-i18n-key="about.future.p2|about-future-p2|about-future-text-2">Rozvíjíme jazykové mutace, obsahové průvodce a spolupráci s mezinárodními partnery.</p>
-          <p data-i18n-key="about.future.p3|about-future-p3|about-future-text-3">Postupně chceme rozšiřovat nabídku akcí, souvisejících služeb a dostupnost pro širší publikum.</p>
-          <p data-i18n-key="about.future.p4|about-future-p4|about-future-text-4">Chceme, aby byl AJSEE první volbou pro každého, kdo hledá cestu ke světovým zážitkům – ať už v Londýně, Barceloně nebo doma v Brně.</p>
-        </div>
-      </div>
-
-      <div class="about-future-visual">
-        <!-- (SVG beze změny) -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="100%" role="img" aria-labelledby="goal-title goal-desc">
-          <title id="goal-title">Cíl – vizualizace trasy k cíli</title>
-          <desc id="goal-desc">Křivková cesta s pohybující se šipkou a pulzujícím terčem vpravo.</desc>
-
-          <defs>
-            <style>
-              :root{ --bg1:var(--aj-about-route-bg-1, #eaf6ff); --bg2:var(--aj-about-route-bg-2, #dff1ff); --glow:rgba(47,147,255,.18); --path:#2a7cff; --accent:#00c2ff; --ring:#49bfff; --dot:#1288d6; }
-              #route-glow{ stroke:var(--glow); stroke-width:14; fill:none; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:1; animation:draw 4.2s ease-in-out forwards .3s; filter:url(#blur); }
-              #route{ stroke:var(--path); stroke-width:6; fill:none; stroke-linecap:round; stroke-linejoin:round; animation:draw 4.2s ease-in-out forwards .3s; filter:url(#soft-glow); }
-              #arrow g{ filter:url(#lift); }
-              .pulse{ transform-box:fill-box; transform-origin:center; animation:pulse 2.6s ease-out infinite; }
-              .target-core{ filter:url(#lift); }
-              @media (prefers-reduced-motion: reduce){
-                #arrow-anim{display:none}
-                #arrow-static{display:block}
-                .pulse{animation:none}
-                #route,#route-glow{animation:none;stroke-dashoffset:0}
-              }
-              @keyframes draw{ to{ stroke-dashoffset:0 } }
-              @keyframes pulse{ 0%{transform:scale(1);opacity:.7} 70%,100%{transform:scale(2.15);opacity:0} }
-            </style>
-
-            <radialGradient id="bg" cx="35%" cy="20%" r="115%"><stop offset="0%" stop-color="var(--aj-about-route-bg-start, #ffffff)"/><stop offset="60%" stop-color="var(--bg2)"/><stop offset="100%" stop-color="var(--bg1)"/></radialGradient>
-            <filter id="blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>
-            <filter id="soft-glow" x="-30%" y="-30%" width="160%"><feGaussianBlur stdDeviation="1.6" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-            <filter id="lift" x="-20%" y="-20%" width="140%"><feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-opacity=".35"/></filter>
-            <g id="arrow-shape"><path d="M0,-10 L22,0 L0,10 L6,2 L-20,2 L-20,-2 L6,-2 Z" fill="var(--accent)"/></g>
-          </defs>
-
-          <rect x="0" y="0" width="800" height="320" rx="16" fill="url(#bg)"/>
-
-          <g id="goal" transform="translate(720, 86)">
-            <g class="pulse"><circle r="34" fill="none" stroke="var(--ring)" stroke-width="2"/></g>
-            <g class="target-core">
-              <circle r="28" fill="#ffffff" opacity=".95"/>
-              <circle r="20" fill="var(--ring)"/>
-              <circle r="12" fill="#ffffff"/>
-              <circle r="4" fill="var(--dot)"/>
-            </g>
-          </g>
-
-          <path id="route-glow" d="M64,256 C138,230 160,212 214,210 S332,234 396,206 S530,142 598,132 S720,112 720,86" pathLength="1"/>
-          <path id="route"      d="M64,256 C138,230 160,212 214,210 S332,234 396,206 S530,142 598,132 S720,112 720,86" pathLength="1"/>
-
-          <g id="arrow-anim">
-            <g id="arrow">
-              <use href="#arrow-shape"/>
-              <animateMotion dur="6s" begin=".6s" fill="freeze" repeatCount="indefinite" rotate="auto">
-                <mpath href="#route" xlink:href="#route"/>
-              </animateMotion>
-            </g>
-          </g>
-
-          <g id="arrow-static" style="display:none" transform="translate(598,128) rotate(-18)">
-            <use href="#arrow-shape"/>
-          </g>
-        </svg>
-      </div>
-    </div>
-  </section>
-
-  <section class="about-team">
-    <div class="container">
-      <h2 data-i18n-key="about.team.headline|about-team-headline|about-team-title">Kdo za tím stojí?</h2>
-
-      <div class="team-list">
-        <div class="team-member">
-          <img src="/images/team/adam.png" alt="Adam Brázda" class="team-photo" width="150" height="150" loading="lazy" decoding="async" />
-          <div class="team-info">
-            <div class="team-name" data-i18n-key="about.team.adam.name|about-team-adam-name">Adam Brázda</div>
-            <div class="team-role" data-i18n-key="about.team.adam.role|about-team-adam-role">Spoluzakladatel AJSEE®</div>
-            <div class="team-claim" data-i18n-key="about.team.adam.claim|about-team-adam-claim">Stojí u zrodu AJSEE® od samotné myšlenky. Věří v sílu jednoduchých řešení, která lidem otevírají svět zážitků bez zbytečných bariér.</div>
-            <a href="https://www.linkedin.com/in/adam-brazda-604179a0" class="team-linkedin" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Adam Brázda">
-              <img src="/images/icons/linkedin.svg" alt="LinkedIn" /><span class="sr-only" data-i18n-key="about.team.adam.linkedin|about-team-adam-linkedin">LinkedIn profil</span>
-            </a>
+  <section class="about-founders" aria-labelledby="about-team-title">
+    <div class="about-container">
+      <h2 data-i18n-key="about.team.headline" id="about-team-title">Kdo stojí za AJSEE</h2>
+      <div class="about-founder-grid">
+        <article class="about-founder" aria-labelledby="about-founder-adam">
+          <div class="about-founder-heading">
+            <img class="about-founder-photo" src="/images/team/adam.png" alt="Adam Brázda" width="1960" height="2047" loading="lazy" decoding="async">
+            <div class="about-founder-info">
+              <h3 data-i18n-key="about.team.adam.name" id="about-founder-adam">Adam Brázda</h3>
+              <p data-i18n-key="about.team.adam.role" class="about-founder-role">Spoluzakladatel</p>
+            </div>
           </div>
-        </div>
-
-        <div class="team-member">
-          <img src="/images/team/jan.png" alt="Jan Oujezdský" class="team-photo" width="150" height="150" loading="lazy" decoding="async" />
-          <div class="team-info">
-            <div class="team-name" data-i18n-key="about.team.jan.name|about-team-jan-name">Jan Oujezdský</div>
-            <div class="team-role" data-i18n-key="about.team.jan.role|about-team-jan-role">Spoluzakladatel AJSEE®</div>
-            <div class="team-claim" data-i18n-key="about.team.jan.claim|about-team-jan-claim">Od prvního dne sdílí vizi zpřístupnit svět kultury, sportu a zábavy co nejširšímu publiku. V AJSEE® propojuje nápady, přístupnost a smysl pro detail.</div>
-            <a href="https://www.linkedin.com/in/jan-oujezdsky-595875380/" class="team-linkedin" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Jan Oujezdský">
-              <img src="/images/icons/linkedin.svg" alt="LinkedIn" /><span class="sr-only" data-i18n-key="about.team.jan.linkedin|about-team-jan-linkedin">LinkedIn profil</span>
-            </a>
+          <p data-i18n-key="about.team.adam.claim" class="about-founder-bio">Stojí u zrodu AJSEE od samotné myšlenky. Věří v sílu jednoduchých řešení, která lidem otevírají svět zážitků bez zbytečných bariér.</p>
+          <a class="about-founder-link" href="https://www.linkedin.com/in/adam-brazda-604179a0" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn — Adam Brázda"><span data-i18n-key="about.team.adam.linkedin">LinkedIn</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+        </article><article class="about-founder" aria-labelledby="about-founder-jan">
+          <div class="about-founder-heading">
+            <img class="about-founder-photo" src="/images/team/jan.png" alt="Jan Oujezdský" width="1960" height="2047" loading="lazy" decoding="async">
+            <div class="about-founder-info">
+              <h3 data-i18n-key="about.team.jan.name" id="about-founder-jan">Jan Oujezdský</h3>
+              <p data-i18n-key="about.team.jan.role" class="about-founder-role">Spoluzakladatel</p>
+            </div>
           </div>
+          <p data-i18n-key="about.team.jan.claim" class="about-founder-bio">Od prvního dne sdílí vizi zpřístupnit svět kultury, sportu a zábavy co nejširšímu publiku. V AJSEE propojuje nápady, přístupnost a smysl pro detail.</p>
+          <a class="about-founder-link" href="https://www.linkedin.com/in/jan-oujezdsky-595875380/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn — Jan Oujezdský"><span data-i18n-key="about.team.jan.linkedin">LinkedIn</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+        </article>
+      </div>
+      <p data-i18n-key="about.team.shared" class="about-team-shared">O dalším směřování AJSEE a spolupráci s partnery rozhodujeme společně.</p>
+    </div>
+  </section>
+  <section class="about-future" aria-labelledby="about-future-title">
+    <div class="about-container">
+      <div class="about-future-copy">
+        <h2 data-i18n-key="about.future.headline" id="about-future-title">Kam míříme</h2>
+        <p data-i18n-key="about.future.text" class="about-future-text">Chceme vám usnadnit cestu za tím, co vás baví. Na AJSEE proto postupně propojíme nabídku akcí s ubytováním, dopravou a tipy, co podniknout v okolí.</p>
+        <div class="about-actions">
+          <a class="about-button" href="/events"><span data-i18n-key="about.cta.events">Prozkoumat události</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
+          <a class="about-partner-link" href="/partners"><span data-i18n-key="about.cta.partners">Pro partnery</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
         </div>
       </div>
     </div>
   </section>
-
-  <section class="about-cta">
-    <div class="container">
-      <h2 data-i18n-key="about-cta-headline">Chceš být u toho?</h2>
-      <div class="about-cta-text" data-i18n-key="about-cta-text">
-        AJSEE® je otevřená spolupráci, nápadům i novým partnerstvím. Pokud tě naše mise zaujala, napiš nám – těšíme se na zprávu!
-      </div>
-      <div class="about-cta-actions">
-        <a href="/#contact" class="btn-primary" data-i18n-key="about-cta-contact">Kontaktovat AJSEE®</a>
-      </div>
-    </div>
-  </section>
-
-  <div class="about-back-link" style="text-align:center; margin:2.5rem 0 1rem 0;">
-    <a href="/" class="btn-secondary" data-i18n-key="about-back">Zpět na hlavní stránku</a>
-  </div>
 </main>
 
 <footer class="site-footer">

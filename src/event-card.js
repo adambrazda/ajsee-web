@@ -1099,20 +1099,21 @@ export function ensureSharedEventGridStyles(
         display: block;
         align-self: center;
         justify-self: end;
-        max-width: 104px;
+        width: max-content;
+        max-width: none;
         margin: 0 0 2px;
       }
 
       body:is([data-page="home"], [data-page="events"]) #eventsList
         .event-partner-badge--commerce span {
         min-height: 24px;
-        max-width: 104px;
+        max-width: none;
         padding: 4px 9px;
         border-radius: 999px;
         font-size: 11px;
         line-height: 1.25;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        overflow: visible;
+        text-overflow: clip;
       }
     }
 

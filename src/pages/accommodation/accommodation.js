@@ -163,15 +163,6 @@ function initCtaTracking() {
   });
 }
 
-function initDestinationDetails() {
-  const details = document.getElementById('france-reservations');
-  if (!details) return;
-  document.querySelectorAll('a[href="#france-reservations"]').forEach((link) => {
-    link.addEventListener('click', () => { details.open = true; });
-  });
-  if (window.location.hash === '#france-reservations') details.open = true;
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
   const lang = detectLang();
 
@@ -183,7 +174,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 3) tracking
   initCtaTracking();
-  initDestinationDetails();
 
   // 4) až teď překlady
   await applyTranslations(lang);

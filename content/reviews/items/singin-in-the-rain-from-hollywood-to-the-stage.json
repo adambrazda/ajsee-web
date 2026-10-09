@@ -17,10 +17,31 @@
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.tixculture.com/london/shows/22731-singin--in-the-rain",
-  "cover": "",
-  "coverAlt": "",
+  "cover": "/uploads/reviews/singin-in-the-rain-from-hollywood-to-the-stage/singin-in-the-rain-cover.avif",
+  "coverAlt": "A performer dances through falling rain in the stage production of Singin’ in the Rain.",
   "coverCredit": "Photo: TodayTix",
-  "gallery": [],
+  "gallery": [
+    {
+      "image": "/uploads/reviews/singin-in-the-rain-from-hollywood-to-the-stage/singin-in-the-rain-ensemble.avif",
+      "alt": "The company dances through falling rain with colourful umbrellas in Singin’ in the Rain.",
+      "credit": "Photo: TodayTix"
+    },
+    {
+      "image": "/uploads/reviews/singin-in-the-rain-from-hollywood-to-the-stage/singin-in-the-rain-duet.avif",
+      "alt": "Two performers dance together on stage in Singin’ in the Rain.",
+      "credit": "Photo: TodayTix"
+    },
+    {
+      "image": "/uploads/reviews/singin-in-the-rain-from-hollywood-to-the-stage/singin-in-the-rain-monumental-pictures.avif",
+      "alt": "The company performs in front of the Monumental Pictures set in Singin’ in the Rain.",
+      "credit": "Photo: TodayTix"
+    },
+    {
+      "image": "/uploads/reviews/singin-in-the-rain-from-hollywood-to-the-stage/singin-in-the-rain-scene.avif",
+      "alt": "The company performs a scene on a Hollywood-inspired set in Singin’ in the Rain.",
+      "credit": "Photo: TodayTix"
+    }
+  ],
   "translations": {
     "en": {
       "title": "Singin’ in the Rain: From Hollywood to the Stage",
@@ -34,7 +55,7 @@
       "venue": "Sadler's Wells",
       "city": "London",
       "country": "United Kingdom",
-      "coverAlt": ""
+      "coverAlt": "A performer dances through falling rain in the stage production of Singin’ in the Rain."
     },
     "cs": {
       "title": "Singin’ in the Rain: Z Hollywoodu na jeviště",
@@ -107,5 +128,5 @@
       "coverAlt": "Egy előadó zuhogó esőben táncol a Singin’ in the Rain színpadi produkciójában."
     }
   },
-  "internalNotes": "Source: Singin’ in the Rain article supplied by Oya Canli and provided by Adam Brazda.\nEnglish editorial master approved by Adam Brazda on 9 October 2026.\nCzech editorial master approved by Adam Brazda on 9 October 2026.\nSlovak editorial master approved by Adam Brazda on 9 October 2026.\nGerman editorial master approved by Adam Brazda on 9 October 2026.\nPolish editorial master approved by Adam Brazda on 9 October 2026.\nHungarian editorial master approved by Adam Brazda on 9 October 2026.\nAll six AJSEE language masters are prepared and approved.\nEditorial feature stored as contentType review because the current AJSEE review schema supports review/preview only.\nDo not publish until Adam Brazda explicitly approves publication.\nSingin’ in the Rain tickets for Sadler’s Wells are sold through AJSEE's TodayTix/Encore white-label page: https://ajsee.tixculture.com/london/shows/22731-singin--in-the-rain.\nSix TodayTix image sources supplied by Adam Brazda. Intended cover: rain dance image. Intended gallery: ensemble rain, dance duet, Monumental Pictures ensemble, and stage scene. Key art retained as a supporting asset. Photo credit: TodayTix.\nRepository image assets are not yet attached to this draft; keep cover and gallery empty until optimized files are staged."
+  "internalNotes": "Source: Singin’ in the Rain article supplied by Oya Canli and provided by Adam Brazda.\nEnglish editorial master approved by Adam Brazda on 9 October 2026.\nCzech editorial master approved by Adam Brazda on 9 October 2026.\nSlovak editorial master approved by Adam Brazda on 9 October 2026.\nGerman editorial master approved by Adam Brazda on 9 October 2026.\nPolish editorial master approved by Adam Brazda on 9 October 2026.\nHungarian editorial master approved by Adam Brazda on 9 October 2026.\nAll six AJSEE language masters are prepared and approved.\nEditorial feature stored as contentType review because the current AJSEE review schema supports review/preview only.\nDo not publish until Adam Brazda explicitly approves publication.\nSingin’ in the Rain tickets for Sadler’s Wells are sold through AJSEE's TodayTix/Encore white-label page: https://ajsee.tixculture.com/london/shows/22731-singin--in-the-rain.\nSix TodayTix image sources supplied by Adam Brazda. Cover: rain dance image. Gallery: ensemble rain, dance duet, Monumental Pictures ensemble, and stage scene. Key art retained as a supporting source asset. Photo credit: TodayTix.\nFive optimized AVIF production images are staged in the repository for the cover and gallery."
 }

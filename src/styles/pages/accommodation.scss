@@ -172,6 +172,3 @@
   }
   @media (prefers-reduced-motion: reduce) { .stay-button { transition: none; } }
 }
-// Preview viewer overrides only; the normal page follows the system theme.
-.page-accommodation[data-ac-preview-theme='light'] { @include stay-light; }
-.page-accommodation[data-ac-preview-theme='dark'] { @include stay-dark; }

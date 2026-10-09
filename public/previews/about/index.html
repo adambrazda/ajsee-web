@@ -48,11 +48,12 @@
       const scale=Math.min(1,available/width);
       frame.style.width=width+'px';
       const doc=frame.contentDocument;
-      const height=doc?.body?Math.max(doc.body.offsetHeight,900):900;
+      const height=doc?.body?Math.max(doc.body.scrollHeight,900):900;
       frame.style.height=height+'px';frame.style.transform='scale('+scale+')';
       wrap.style.width=width*scale+'px';wrap.style.height=height*scale+'px';
     };
     const update=()=>{
+      frame.style.width=width+'px';frame.style.height='900px';
       document.querySelectorAll('[data-width]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.width)===width)));
       document.querySelectorAll('[data-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===theme)));
       document.getElementById('info').textContent=(width===390?'Mobil':width===1024?'Notebook':'Velký monitor')+' · '+width+' px · '+(theme==='dark'?'tmavý':'světlý')+' režim';

@@ -10,7 +10,7 @@ import {
 import {
   recordAiSearchPartnerClickout
 } from './ai-search/learning.js';
-import { formatEventDateRange } from './event-availability.js';
+import { formatEventDateTime } from './event-date-time.js';
 // /src/event-modal.js
 // ---------------------------------------------------------
 // AJSEE – Event modal
@@ -1543,15 +1543,7 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
     pickLocalized(eventData.description, preferredLocales).trim();
 
   const dateVal = eventData.datetime || eventData.date || '';
-  const dateObj = parseEventDate(dateVal);
-
-  const dateText = formatEventDateRange(eventData, intlLocale) || (dateObj
-    ? dateObj.toLocaleDateString(intlLocale, {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : '');
+  const dateText = formatEventDateTime(eventData, intlLocale);
 
   const resolvedLocation =
     resolveEventLocation(eventData);

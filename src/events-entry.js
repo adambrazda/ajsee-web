@@ -26,7 +26,8 @@ import {
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
 import { hasAiRelevance, isSoftDiscovery, rankEventsByRelevance, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
-import { filterCurrentEventBatch, formatEventDateRange } from './event-availability.js';
+import { filterCurrentEventBatch } from './event-availability.js';
+import { formatEventDateTime } from './event-date-time.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   beginAiSearchLearningSession,
@@ -5697,10 +5698,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
         : (ev.title?.[locale] || ev.title?.en || ev.title?.cs || Object.values(ev.title || {})[0])) || 'Untitled';
       const title = esc(titleRaw);
 
-      const dateVal = ev.datetime || ev.date;
-      const date = esc(formatEventDateRange(ev, locale) || (dateVal
-        ? new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-        : ''));
+      const date = esc(formatEventDateTime(ev, locale));
 
       const img = eventImageOrFallback(ev);
       const sourcePage = isHp ? 'homepage' : 'events_page';

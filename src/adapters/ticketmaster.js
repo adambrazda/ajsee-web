@@ -771,11 +771,14 @@ export function mapTicketmasterEvent(
     datetime: dt,
     dateAvailability: {
       startLocalDate: ev?.dates?.start?.localDate || '',
+      startLocalTime: ev?.dates?.start?.localTime || '',
       endLocalDate: ev?.dates?.end?.localDate || '',
       endDateTime: ev?.dates?.end?.dateTime || '',
       timezone: ev?.dates?.timezone || venue?.timezone || '',
       dateTBA: ev?.dates?.start?.dateTBA === true,
       dateTBD: ev?.dates?.start?.dateTBD === true,
+      timeTBA: ev?.dates?.start?.timeTBA === true,
+      noSpecificTime: ev?.dates?.start?.noSpecificTime === true,
       spanMultipleDays: ev?.dates?.spanMultipleDays === true,
       salesEndDateTime: ev?.sales?.public?.endDateTime || ''
     },

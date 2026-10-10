@@ -27,7 +27,8 @@ import {
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
 import { hasAiRelevance, isSoftDiscovery, rankEventsByRelevance, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
-import { filterCurrentEventBatch, formatEventDateRange } from './event-availability.js';
+import { filterCurrentEventBatch } from './event-availability.js';
+import { formatEventDateTime } from './event-date-time.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
   beginAiSearchLearningSession,
@@ -4484,10 +4485,7 @@ list.innerHTML = toRender.map((ev, index) => {
 
   const title = esc(titleRaw);
 
-  const dateVal = ev.datetime || ev.date;
-  const date = esc(formatEventDateRange(ev, locale) || (dateVal
-    ? new Date(dateVal).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-    : ''));
+  const date = esc(formatEventDateTime(ev, locale));
 
   const img = eventImageOrFallback(ev);
 

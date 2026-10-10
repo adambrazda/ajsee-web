@@ -9,6 +9,7 @@ import assert from 'node:assert/strict';
 import {
   JSDOM,
 } from 'jsdom';
+import { formatEventDateTime } from '../src/event-date-time.js';
 
 const dom = new JSDOM(
   `<!doctype html>
@@ -1258,4 +1259,44 @@ test('seller sell-out cannot navigate or record a purchase, and a subsequent eve
   assert.equal(ticket.getAttribute('aria-disabled'),null);
   assert.equal(ticket.textContent,'Tickets');
   assert.match(ticket.href,/smsticket/);
+});
+
+test('modal displays the matching show time and preserves seller links across responsive layouts', async () => {
+  for (const partner of ['smsticket', 'colosseumticket', 'ticketmaster']) {
+    const href = partner === 'ticketmaster'
+      ? '/.netlify/functions/tmOutbound?eventId=time-test&country=CZ&source_page=events_page&placement=event_card&u=https%3A%2F%2Fwww.ticketmaster.cz%2Fevent%2F12345'
+      : `https://${partner === 'smsticket' ? 'www.smsticket.cz' : 'colosseumticket.cz'}/vstupenky/test?a_box=test-affiliate&occurrence=early`;
+    const event = createEvent({ partner, source: partner, tickets: href, url: href,
+      date: '2026-10-11', datetime: '2026-10-11T09:30:00', time: '09:30'
+    });
+    await openEventModal(event, 'cs');
+    const ticket = getPrimaryTicketLink();
+    const beforeHref = ticket.href;
+    const beforeTracking = { ...ticket.dataset };
+    if (partner === 'ticketmaster') {
+      const outbound = new URL(beforeHref);
+      assert.equal(outbound.pathname, '/.netlify/functions/tmOutbound');
+      assert.equal(outbound.searchParams.get('placement'), 'event_modal');
+      assert.equal(outbound.searchParams.get('source_page'), 'events_page');
+      assert.equal(outbound.searchParams.get('u'), 'https://www.ticketmaster.cz/event/12345');
+    } else {
+      assert.equal(beforeHref, href);
+    }
+    assert.equal(getModal().querySelector('#modalDate').textContent, formatEventDateTime(event));
+    assert.ok(getModal().querySelector('#modalDate').textContent.endsWith('09:30'));
+    for (const [desktop, tablet] of [[true, true], [false, true], [false, false]]) {
+      commerceMedia.matches = desktop;
+      tabletMedia.matches = tablet;
+      for (const listener of commerceMediaListeners) listener(commerceMedia);
+      for (const listener of tabletMediaListeners) listener(tabletMedia);
+      assert.equal(ticket.href, beforeHref);
+      assert.deepEqual({ ...ticket.dataset }, beforeTracking);
+    }
+    await openEventModal({ ...event, datetime: '2026-10-11T10:30:00', time: '10:30' }, 'cs');
+    assert.ok(getModal().querySelector('#modalDate').textContent.endsWith('10:30'));
+    assert.equal(ticket.href, beforeHref);
+    await openEventModal({ ...event, time: '' }, 'cs');
+    assert.equal(getModal().querySelector('#modalDate').textContent, '11. října 2026');
+    assert.equal(ticket.href, beforeHref);
+  }
 });

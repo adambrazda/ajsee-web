@@ -63,7 +63,8 @@ import './utils/ajsee-date-popover.js';
 import { initLangDropdown } from './utils/lang-dropdown.js';
 import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 
-import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js';
+import { canonForInputCity, guessCountryCodeFromCity, matchesCityIdentity, countryCodeFromInput } from './city/canonical.js';
+import { countryCodeForEventCity } from './city/eventCityCatalog.js';
 
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
@@ -671,6 +672,9 @@ function canonPreferredCity(label) {
 function cityCountryCodeFromLabel(label, fallback = '') {
   const raw = String(label || '').trim();
 
+  const fromCatalog = countryCodeForEventCity(raw);
+  if (fromCatalog) return fromCatalog;
+
   if (raw) {
     try {
       const direct = guessCountryCodeFromCity?.(raw);
@@ -686,7 +690,8 @@ function cityCountryCodeFromLabel(label, fallback = '') {
   }
 
   const fb = String(fallback || '').trim().toUpperCase();
-  return /^[A-Z]{2}$/.test(fb) ? fb : '';
+  const previousCity = currentFilters.cityLabel || currentFilters.city || '';
+  return matchesCityIdentity(raw, previousCity) && /^[A-Z]{2}$/.test(fb) ? fb : '';
 }
 
 function syncLocalizedCityLabelFromCurrentState() {
@@ -3123,6 +3128,9 @@ function syncFiltersFromForm() {
         ''
       ).trim();
 
+    const previousCityCountry = matchesCityIdentity(rawCity, currentFilters.cityLabel || currentFilters.city)
+      ? currentFilters.cityCountryCode : '';
+
     if (
       shouldPreserveCityRadiusInput(
         currentFilters,
@@ -3153,9 +3161,17 @@ function syncFiltersFromForm() {
         rawCity
           ? cityCountryCodeFromLabel(
               rawCity,
-              currentFilters.cityCountryCode
+              previousCityCountry
             )
           : '';
+
+      const countryCc = countryCodeFromInput(rawCity);
+      if (countryCc) {
+        currentFilters.placeType = 'country';
+        currentFilters.city = '';
+        currentFilters.cityCountryCode = '';
+      }
+      currentFilters.countryCode = countryCc || currentFilters.cityCountryCode || 'CZ';
 
       currentFilters.nearMeLat =
         null;
@@ -4012,11 +4028,13 @@ function buildCityTypeaheadOptions(input, locale) {
     onChoose: item => {
       const label = item?.city || item?.label || item?.name || '';
       const pickedCc = String(item?.countryCode || item?.country || '').trim().toUpperCase();
+      const countryCc = countryCodeFromInput(label) || (item?.isCountry ? pickedCc : '');
 
-      currentFilters.placeType = 'city';
-      currentFilters.city = canonPreferredCity(label);
+      currentFilters.placeType = countryCc ? 'country' : 'city';
+      currentFilters.city = countryCc ? '' : canonPreferredCity(label);
       currentFilters.cityLabel = label;
-      currentFilters.cityCountryCode = pickedCc || cityCountryCodeFromLabel(label, currentFilters.cityCountryCode);
+      currentFilters.cityCountryCode = countryCc ? '' : pickedCc || cityCountryCodeFromLabel(label, '');
+      currentFilters.countryCode = countryCc || currentFilters.cityCountryCode || 'CZ';
       currentFilters.nearMeLat = null;
       currentFilters.nearMeLon = null;
 

@@ -4,7 +4,7 @@
 //
 // - robustní normalizace (bez diakritiky, lower, trim)
 // - baseCityKey(): sloučí "Praha 1/2/7…" → prague, "Bratislava - Staré Mesto" → bratislava
-// - canonForInputCity(): aliasy -> kanonické endonym/exonym pro TM (EN varianty) + fuzzy
+// - canonForInputCity(): pouze potvrzené aliasy a městské části; ostatní názvy zachová
 // - labelForCanon(): preferovaný popisek dle UI jazyka
 // - guessCountryCodeFromCity(): odvodí správný countryCode z města
 // - findBestCityMatchInfo(): detail fuzzy shody (kanonické EN + skóre)
@@ -46,6 +46,7 @@ function compactKey(s = '') {
 function collapseDistricts(s = '') {
   // Praha/Prague 1.. → prague
   s = s.replace(/\b(praha|prague)\s+([ivxlcdm]+|\d+)\b.*$/, '$1');
+  s = s.replace(/^(praha|prague)\s*[-–]\s*.+$/, '$1');
   // Paris 11e/12 → paris
   s = s.replace(/\bparis\s+\d+\w?\b.*$/, 'paris');
   // London borough/zone → london
@@ -470,16 +471,18 @@ export function canonForInputCity(input) {
   // Země nejsou města. Vracíme prázdno, aby si vyšší vrstvy mohly držet country-only search.
   if (countryCodeFromInput(input)) return '';
 
-  const hit = findBestCityMatchInfo(input);
-  if (hit) return hit.canonical;
+  // A filter is a selected place, not a spelling suggestion. Fuzzy matches
+  // silently changed Kyjov to Kyiv, Kroměříž to Rome and names containing
+  // "la" to Los Angeles. Keep fuzzy matching opt-in via findBestCityMatchInfo.
+  const exact = aliasIndex.get(normalizeForMatch(collapseDistricts(normalize(input))));
+  return exact || String(input).trim();
+}
 
-  const base = baseCityKey(input);
-  if (base === 'prague') return 'Prague';
-  if (base === 'bratislava') return 'Bratislava';
-  if (base === 'budapest') return 'Budapest';
-  if (base === 'vienna') return 'Vienna';
-
-  return input;
+/** Compare complete city identities, with known aliases/districts only. */
+export function matchesCityIdentity(left = '', right = '') {
+  const a = normalizeForMatch(canonForInputCity(left));
+  const b = normalizeForMatch(canonForInputCity(right));
+  return Boolean(a && b && a === b);
 }
 
 // Preferované popisky pro UI

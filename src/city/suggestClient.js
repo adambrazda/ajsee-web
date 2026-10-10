@@ -34,6 +34,7 @@ import {
   labelForCanon,
   guessCountryCodeFromCity
 } from './canonical.js';
+import { loadEventCityCatalog, getEventCitySuggestions } from './eventCityCatalog.js';
 
 export const CITY_SUGGEST_SCOPE = [
   'CZ', 'SK', 'PL', 'HU',
@@ -387,6 +388,7 @@ function buildCountrySuggestion(code = '', locale = 'cs', score = 0, source = 'l
     lat: undefined,
     lon: undefined,
     score,
+    aliases: COUNTRY_ALIAS_ENTRIES.filter(entry => entry.code === cc).map(entry => entry.alias),
     source
   };
 }
@@ -447,17 +449,7 @@ function localCountryFallback(keyword = '', locale = 'cs', countryCodes = CITY_S
 // Sloučení městských částí.
 function collapseDistricts(name) {
   if (!name) return name;
-
-  let s = String(name).trim();
-
-  s = s.replace(/\s*[-–]\s*.+$/, '');                       // "Praha - Libuš" → "Praha"
-  s = s.split(',')[0].trim();                               // "Praha, CZ" → "Praha"
-  s = s.replace(/\s+(?:\d+|[IVXLCDM]+)\.?$/i, '').trim();   // "Praha 7" → "Praha"
-  s = s.replace(/\s+\d+\s*-.+$/i, '').trim();               // "Praha 4-Libuš" → "Praha"
-  s = s.replace(/^paris\s+\d+\w?\b.*$/i, 'Paris');         // "Paris 11e" → "Paris"
-  s = s.replace(/^london\s+(borough|zone)\b.*$/i, 'London');
-
-  return s;
+  return canonForInputCity(String(name).trim()) || String(name).trim();
 }
 
 // Vytvoří klíč pro seskupení (Prague/Vienna/… pokud známe; jinak base city).
@@ -670,6 +662,7 @@ function normalizeSuggestionItem(it = {}) {
       ? it.lon
       : (typeof it.longitude === 'number' ? it.longitude : undefined),
     score: typeof it.score === 'number' ? it.score : undefined,
+    aliases: Array.isArray(it.aliases) ? it.aliases : [],
     source: it.source || undefined
   };
 }
@@ -699,6 +692,8 @@ function mergeSuggestionLists(primary = [], secondary = [], knownRule = null, co
         out[
           indexByKey.get(key)
         ];
+
+      existing.aliases = [...new Set([...(existing.aliases || []), ...(normalized.aliases || [])])];
 
       /*
        * Local fallback intentionally wins for the display label,
@@ -785,6 +780,9 @@ export async function suggestCities({
   const countryFallback = localCountryFallback(q, lang, countryCodes);
   const knownRule = countryFallback.length ? null : getKnownCityRule(q, lang);
   const cityFallback = localCityFallback(q, lang, countryCodes, knownRule);
+  const exactCountryCode = countryCodeFromInput(q);
+  if (!exactCountryCode) await loadEventCityCatalog();
+  const feedFallback = exactCountryCode ? [] : getEventCitySuggestions(q, { locale: lang, countryCodes, size: limit });
 
   const cacheKey = [
     (lang || 'cs').toLowerCase(),
@@ -800,20 +798,15 @@ export async function suggestCities({
 
   const cache = suggestCities.__cache;
 
-  if (cache.has(cacheKey)) {
-    return cache.get(cacheKey);
-  }
-
   const localFallback = mergeSuggestionLists(
     countryFallback,
-    cityFallback,
+    [...cityFallback, ...feedFallback],
     knownRule,
     countryCodes
   ).slice(0, limit);
 
   // Pokud je dotaz jednoznačně země, nemusíme vůbec volat TM city suggest.
   // Šetříme request a zabráníme tomu, aby se k FR/HU přimíchala náhodná města.
-  const exactCountryCode = countryCodeFromInput(q);
   if (exactCountryCode && localFallback.length) {
     cache.set(cacheKey, localFallback);
     return localFallback;
@@ -834,8 +827,12 @@ export async function suggestCities({
   // Do not call it for short intermediate typing states like "lon" / "lond".
   // The typeahead already renders local/default suggestions immediately.
   if (q.length < 5) {
-    cache.set(cacheKey, localFallback);
     return localFallback;
+  }
+
+  const cached = cache.get(cacheKey);
+  if (cached?.expiresAt > Date.now()) {
+    return mergeSuggestionLists(localFallback, cached.items, knownRule, countryCodes).slice(0, limit);
   }
 
 
@@ -844,13 +841,13 @@ export async function suggestCities({
   try {
     const r = await fetch(`/.netlify/functions/ticketmasterCitySuggest?${qsParams.toString()}`, {
       cache: 'no-store',
+      signal: AbortSignal.timeout(1800),
       headers: {
         Accept: 'application/json'
       }
     });
 
     if (!r.ok) {
-      cache.set(cacheKey, localFallback);
       return localFallback;
     }
 
@@ -941,16 +938,15 @@ export async function suggestCities({
     // např. Amsterdam → NL, Paříž → FR, Londýn → GB.
     // Country fallback je úplně první, protože země není city suggestion z TM.
     const finalList = mergeSuggestionLists(
-      [...countryFallback, ...cityFallback],
+      localFallback,
       list,
       knownRule,
       countryCodes
     ).slice(0, limit);
 
-    cache.set(cacheKey, finalList);
+    cache.set(cacheKey, { items: list, expiresAt: Date.now() + 60_000 });
     return finalList;
   } catch {
-    cache.set(cacheKey, localFallback);
     return localFallback;
   }
 }

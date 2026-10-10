@@ -80,6 +80,7 @@ import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banne
 import { getAllEvents } from './api/eventsApi.js';
 import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js';
+import { countryCodeForEventCity } from './city/eventCityCatalog.js';
 import { getSortedBlogArticles } from './blogArticles.js';
 import { initNav } from './nav-core.js';
 import { initContactFormValidation } from './contact-validate.js';
@@ -680,6 +681,9 @@ function cityCountryCodeFromLabel(label, fallback = '') {
   const countryFromRaw = countryCodeFromInput(raw);
   if (countryFromRaw) return countryFromRaw;
 
+  const fromCatalog = countryCodeForEventCity(raw);
+  if (fromCatalog) return fromCatalog;
+
   const fromFallback = firstCountryCodeFromInput(fallback);
   const slug = findSlugByAnyLabel(raw);
 
@@ -738,7 +742,7 @@ function setCityPlace(label = '', code = '') {
   currentFilters.city = raw ? (canonPreferredCity(raw) || raw) : '';
   currentFilters.cityCountryCode = raw ? cc : '';
 
-  if (cc) currentFilters.countryCode = cc;
+  currentFilters.countryCode = cc || '';
 
   currentFilters.nearMeLat = null;
   currentFilters.nearMeLon = null;

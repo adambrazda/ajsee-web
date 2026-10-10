@@ -28,7 +28,8 @@ import { fetchEvents as fetchTicketmasterEvents } from '../adapters/ticketmaster
 import { fetchEvents as fetchSmsticketEvents } from '../adapters/smsticket.js';
 import { fetchEvents as fetchColosseumTicketEvents } from '../adapters/colosseumticket.js';
 import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
-import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
+import { canonForInputCity, guessCountryCodeFromCity, matchesCityIdentity } from '../city/canonical.js';
+import { loadEventCityCatalog, countryCodeForEventCity } from '../city/eventCityCatalog.js';
 import { matchesEventDiscoveryFilters } from '../taxonomy/event-filtering.js';
 import { hasAiRelevance, isSoftDiscovery, providerSearchFilters, rankEventsByRelevance } from '../search/event-relevance.js';
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
@@ -534,7 +535,7 @@ function matchesSelectedCity(eventCity = '', selectedCity = '') {
 
   if (!evId || !qId) return false;
 
-  if (evId === qId || evId.includes(qId) || qId.includes(evId)) {
+  if (matchesCityIdentity(eventCity, selectedCity) || evId === qId) {
     return true;
   }
 
@@ -732,6 +733,8 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   const isCountrySearchFromCityField = Boolean(rawCityInput && countryFromCityInput);
 
   const localCityInput = isCountrySearchFromCityField ? '' : rawCityInput;
+  if (localCityInput) await loadEventCityCatalog();
+  const catalogCityCc = countryCodeForEventCity(localCityInput);
   let upstreamCity = localCityInput;
 
   // City hotfix: kdyĹľ kanonizĂˇtor vrĂˇtĂ­ prĂˇzdno, ponechĂˇme pĹŻvodnĂ­ vstup.
@@ -764,7 +767,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     : '';
 
   const selectedCityCc = upstreamCity
-    ? String(explicitCityCountry || guessedCityCc || explicitCountry || '').trim().toUpperCase()
+    ? String(explicitCityCountry || catalogCityCc || guessedCityCc || explicitCountry || '').trim().toUpperCase()
     : '';
 
   // Pokud je to country-only search, rozhodujĂ­cĂ­ je zemÄ› zadanĂˇ v city inputu.
@@ -895,11 +898,11 @@ var ajseeSmsTicketCityText = String([
   .replace(/[\u0300-\u036f]/g, '');
 
 var ajseeSmsTicketCc = String(
-  (filters && (
-    filters.cityCountryCode ||
-    filters.cityCc ||
-    filters.countryCode ||
-    filters.country
+  (localProviderFilters && (
+    localProviderFilters.cityCountryCode ||
+    localProviderFilters.cityCc ||
+    localProviderFilters.countryCode ||
+    localProviderFilters.country
   )) ||
   ''
 ).trim().toUpperCase();

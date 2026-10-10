@@ -327,7 +327,7 @@ function cityAliasTokens(value = '') {
   }
 
   for (const foldedGroup of FOLDED_CITY_ALIAS_GROUPS) {
-    if (foldedGroup.some((alias) => base === alias || base.includes(alias) || alias.includes(base))) {
+    if (foldedGroup.some((alias) => base === alias)) {
       foldedGroup.forEach((alias) => tokens.add(alias));
     }
   }
@@ -338,11 +338,7 @@ function cityAliasTokens(value = '') {
 function cityTokenMatches(a = '', b = '') {
   if (!a || !b) return false;
 
-  return (
-    a === b ||
-    a.includes(b) ||
-    b.includes(a)
-  );
+  return a === b;
 }
 
 function matchesCity(ev, city = '') {

@@ -339,7 +339,7 @@ function isSameCity(a = '', b = '') {
   const aa = cityKey(a);
   const bb = cityKey(b);
   if (!aa || !bb) return false;
-  return aa === bb || aa.includes(bb) || bb.includes(aa);
+  return aa === bb;
 }
 
 const METRO_CITY_ALIASES = {

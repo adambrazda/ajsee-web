@@ -212,13 +212,7 @@ function matchesCity(
     (selected) =>
       eventTokens.some(
         (candidate) =>
-          candidate === selected ||
-          candidate.includes(
-            selected
-          ) ||
-          selected.includes(
-            candidate
-          )
+          candidate === selected
       )
   );
 }

@@ -36,3 +36,4 @@ review-preview/
 
 # Generated ColosseumTicket feeds
 public/data/colosseumticket-events*.json
+public/data/event-cities.json

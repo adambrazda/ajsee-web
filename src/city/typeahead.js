@@ -4,6 +4,8 @@
 // ---------------------------------------------------------
 
 import { suggestCities, CITY_SUGGEST_SCOPE } from './suggestClient.js';
+import { loadEventCityCatalog, getEventCitySuggestions } from './eventCityCatalog.js';
+import { countryCodeFromInput } from './canonical.js';
 
 const STYLE_ID = 'ajsee-city-typeahead-inline-styles';
 
@@ -616,12 +618,16 @@ function normalizeAndDedupe(list = []) {
     seen.add(key);
 
     out.push({
+      type: it.type || it.kind || (it.isCountry ? 'country' : 'city'),
+      kind: it.kind || it.type || (it.isCountry ? 'country' : 'city'),
+      isCountry: it.isCountry === true || it.type === 'country',
       city,
       state,
       countryCode: cc || undefined,
       lat: typeof it.lat === 'number' ? it.lat : (typeof it.latitude === 'number' ? it.latitude : undefined),
       lon: typeof it.lon === 'number' ? it.lon : (typeof it.longitude === 'number' ? it.longitude : undefined),
-      score: typeof it.score === 'number' ? it.score : undefined
+      score: typeof it.score === 'number' ? it.score : undefined,
+      aliases: Array.isArray(it.aliases) ? it.aliases : []
     });
   }
 
@@ -645,7 +651,7 @@ function getPresetCity(slug, lang = 'cs') {
 }
 
 const DEFAULT_CITY_PRESET_COUNTRY = {
-  praha: 'CZ',
+  prague: 'CZ',
   brno: 'CZ',
   ostrava: 'CZ',
   plzen: 'CZ',
@@ -758,9 +764,11 @@ function filterDefaultCityItems(query, lang = 'cs') {
 function cityItemMatchesQuery(item, query = '') {
   const q = norm(query);
   if (!q) return true;
+  if (item.isCountry && countryCodeFromInput(query) === item.countryCode) return true;
 
   const city = norm(item?.city || item?.name || item?.label || '');
   const state = norm(item?.state || item?.region || '');
+  const aliases = (item?.aliases || []).map(norm);
 
   if (!city && !state) return false;
 
@@ -768,6 +776,7 @@ function cityItemMatchesQuery(item, query = '') {
     city === q ||
     city.startsWith(q) ||
     city.includes(q) ||
+    aliases.some(alias => alias.includes(q)) ||
     state === q ||
     state.startsWith(q)
   );
@@ -777,40 +786,11 @@ function mergeCityItems(primary = [], secondary = []) {
   return normalizeAndDedupe([...(primary || []), ...(secondary || [])]);
 }
 
-const CITY_SUGGEST_CACHE_TTL_MS = 10 * 60 * 1000;
-
-// Remote Ticketmaster city suggest is best-effort and should not run
-// for short intermediate typing states like "lon" / "lond".
-const CITY_SUGGEST_REMOTE_MIN_CHARS = 5;
-// Remote city suggest is best-effort only.
-// Event results must not feel blocked by slow city autocomplete.
-const CITY_SUGGEST_TIMEOUT_MS = 900;
-const CITY_SUGGEST_CACHE = new Map();
-
-function citySuggestCacheKey({ locale = '', keyword = '', countryCode = '' } = {}) {
-  return [
-    String(locale || '').trim().toLowerCase(),
-    norm(keyword || ''),
-    String(countryCode || '').trim().toUpperCase()
-  ].join('|');
-}
-
-function withCitySuggestTimeout(promise, ms = CITY_SUGGEST_TIMEOUT_MS) {
-  let timer = null;
-
-  const timeout = new Promise((resolve) => {
-    timer = setTimeout(() => resolve({ __timeout: true }), ms);
-  });
-
-  return Promise.race([promise, timeout]).finally(() => {
-    if (timer) clearTimeout(timer);
-  });
-}
-
 export function setupCityTypeahead(inputEl, opts = {}) {
   if (!inputEl) return;
 
   injectStylesOnce();
+  void loadEventCityCatalog();
 
   if (typeof inputEl.__ajseeTypeaheadCleanup === 'function') {
     try { inputEl.__ajseeTypeaheadCleanup(); } catch {}
@@ -1052,6 +1032,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   }
 
   function closeDesktop() {
+    lastLoadId++;
+    clearTimeout(timer);
     panel.hidden = true;
     inputEl.setAttribute('aria-expanded', 'false');
     inputEl.removeAttribute('aria-activedescendant');
@@ -1205,6 +1187,15 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     });
 
     on(sheetSearch, 'input', () => {
+      lastLoadId++;
+      const query = sheetSearch.value.trim();
+      lastQuery = query;
+      items = normalizeAndDedupe([
+        ...filterDefaultCityItems(query, locale),
+        ...getEventCitySuggestions(query, { locale, countryCodes })
+      ]);
+      loading = false;
+      renderMobile();
       debouncedLoad(() => sheetSearch.value.trim());
     });
 
@@ -1346,6 +1337,8 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   }
 
   function closeMobile({ restoreFocus = false } = {}) {
+    lastLoadId++;
+    clearTimeout(timer);
     if (!backdrop || !sheetOpen) return;
 
     backdrop.classList.remove('is-open');
@@ -1578,6 +1571,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
   }
 
   async function load(getQueryFn) {
+  const myLoadId = ++lastLoadId;
   const q = typeof getQueryFn === 'function'
     ? getQueryFn()
     : getCurrentSearchValue();
@@ -1588,7 +1582,7 @@ export function setupCityTypeahead(inputEl, opts = {}) {
     if (isMobile()) return;
 
     if (items.length) setActive(includeNearMe ? 1 : 0);
-    else setActive(includeNearMe ? 0 : -1);
+    else setActive(!q && includeNearMe ? 0 : -1);
   };
 
   if (q.length < minChars) {
@@ -1598,71 +1592,32 @@ export function setupCityTypeahead(inputEl, opts = {}) {
 
     if (!isMobile()) {
       openDesktop();
-      setActive(includeNearMe ? 0 : -1);
+      setActive(!q && includeNearMe ? 0 : -1);
     }
 
     return;
   }
 
-  const countryCodeKey = Array.isArray(countryCodes)
-    ? countryCodes.join(',')
-    : String(countryCodes || '');
-
-  const cacheKey = citySuggestCacheKey({
-    locale,
-    keyword: q,
-    countryCode: countryCodeKey
-  });
-
-  const now = Date.now();
-  const cached = CITY_SUGGEST_CACHE.get(cacheKey);
-
-  if (cached && cached.expiresAt > now) {
-    items = normalizeAndDedupe(Array.isArray(cached.items) ? cached.items : []);
-    loading = false;
-
-    if (!isMobile()) openDesktop();
-
-    render();
-    setDesktopActiveAfterRender();
-    return;
-  }
-
-  const instantItems = normalizeAndDedupe(filterDefaultCityItems(q, locale));
+  const instantItems = normalizeAndDedupe([
+    ...filterDefaultCityItems(q, locale),
+    ...getEventCitySuggestions(q, { locale, countryCodes })
+  ]);
 
   items = instantItems;
   loading = instantItems.length === 0;
 
-  
-  // AJSEE_TYPEAHEAD_REMOTE_MIN_CHARS_v1
-  // Keep autocomplete responsive while the user is still typing.
-  if (q.length < CITY_SUGGEST_REMOTE_MIN_CHARS) {
-    if (!isMobile()) openDesktop();
-
-    CITY_SUGGEST_CACHE.set(cacheKey, {
-      expiresAt: Date.now() + CITY_SUGGEST_CACHE_TTL_MS,
-      items: instantItems
-    });
-
-    loading = false;
-    render();
-    setDesktopActiveAfterRender();
-    return;
-  }
-if (!isMobile()) openDesktop();
+  if (!isMobile()) openDesktop();
 
   render();
-
-  const myLoadId = ++lastLoadId;
+  setDesktopActiveAfterRender();
 
   try {
-    const list = await withCitySuggestTimeout(suggestCities({
+    const list = await suggestCities({
       locale,
       keyword: q,
       size: 32,
-      countryCodes,
-      countryCode: countryCodeKey
-    }));
+      countryCodes
+    });
 
     if (myLoadId !== lastLoadId) return;
 
@@ -1672,11 +1627,6 @@ if (!isMobile()) openDesktop();
 
     const relevantRemoteItems = normalized.filter((item) => cityItemMatchesQuery(item, q));
     const nextItems = mergeCityItems(instantItems, relevantRemoteItems);
-
-    CITY_SUGGEST_CACHE.set(cacheKey, {
-      expiresAt: Date.now() + CITY_SUGGEST_CACHE_TTL_MS,
-      items: nextItems
-    });
 
     items = nextItems;
     loading = false;
@@ -1710,6 +1660,17 @@ if (!isMobile()) openDesktop();
 
   on(inputEl, 'input', () => {
     if (isMobile()) return;
+    lastLoadId++;
+    const query = inputEl.value.trim();
+    lastQuery = query;
+    items = normalizeAndDedupe([
+      ...filterDefaultCityItems(query, locale),
+      ...getEventCitySuggestions(query, { locale, countryCodes })
+    ]);
+    loading = false;
+    renderDesktop();
+    openDesktop();
+    setActive(items.length ? (includeNearMe ? 1 : 0) : (!query && includeNearMe ? 0 : -1));
     debouncedLoad(() => inputEl.value.trim());
   });
 
@@ -1720,13 +1681,18 @@ if (!isMobile()) openDesktop();
       return;
     }
 
-    items = filterDefaultCityItems(inputEl.value.trim(), locale);
+    const query = inputEl.value.trim();
+    items = normalizeAndDedupe([
+      ...filterDefaultCityItems(query, locale),
+      ...getEventCitySuggestions(query, { locale, countryCodes })
+    ]);
     loading = false;
     renderDesktop();
     openDesktop();
 
     const hasCities = items.length > 0;
-    setActive(includeNearMe ? 0 : (hasCities ? 0 : -1));
+    setActive(!query && includeNearMe ? 0 : (hasCities ? (includeNearMe ? 1 : 0) : -1));
+    if (query.length >= minChars) void load(() => inputEl.value.trim());
   });
 
   on(inputEl, 'click', (e) => {
@@ -1805,6 +1771,7 @@ if (!isMobile()) openDesktop();
   applyMode();
 
   inputEl.__ajseeTypeaheadCleanup = () => {
+    lastLoadId++;
     controller.abort();
     clearTimeout(timer);
     cleanupViewport?.();

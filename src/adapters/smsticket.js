@@ -988,7 +988,7 @@ export async function fetchEvents({ filters = {} } = {}) {
     filters.sort || 'nearest'
   );
 
-  return pageSlice(filtered, filters);
+  return filters.allLocalEvents === true ? filtered : pageSlice(filtered, filters);
 }
 
 export default fetchEvents;

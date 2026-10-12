@@ -954,6 +954,8 @@ export async function fetchEvents({
       'nearest'
     );
 
+  if (filters.allLocalEvents === true) return sorted;
+
   return pageSlice(
     sorted,
     filters

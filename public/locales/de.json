@@ -438,5 +438,8 @@
       "text": "Erleben Sie die unverwechselbare Atmosphäre des West End. Wählen Sie aus weltbekannten Musicals, gehen Sie weiter zu den Ticketoptionen und ergänzen Sie Ihre Planung um eine geprüfte Unterkunft in London.",
       "cta": "Musicals ansehen"
     }
-  }
+  },
+  "events-search-pending-title": "Die Suche ist noch nicht abgeschlossen",
+  "events-search-pending-body": "Wir haben einen Teil des Angebots durchsucht. Setze die Suche mit denselben Filtern fort.",
+  "events-search-continue": "Suche fortsetzen"
 }

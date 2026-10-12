@@ -1,4 +1,5 @@
 import { withLambda } from '@netlify/aws-lambda-compat';
+import { ticketmasterPageInfo } from '../../src/event-pagination.js';
 
 // /netlify/functions/ticketmasterEvents.js
 // ---------------------------------------------------------
@@ -604,7 +605,7 @@ export const handler = async (event) => {
     if (!url.searchParams.has('size')) url.searchParams.set('size', '50');
 
     const finalUrl = url.toString();
-const cacheKey = makeCacheKey(finalUrl);
+const cacheKey = makeCacheKey(finalUrl) + (q.paginationMode === 'cursor' ? '|cursor' : '');
 
 // debug=1 uz nesmi automaticky vypinat cache.
 // Primy upstream test pouzij jen vedome pres forceUpstream=1.
@@ -765,6 +766,11 @@ if (!resp.ok) {
           if (ajseeDebug) ajseeDebug.afterLocalCountryFilterCount = filtered.length;
 
           if (filtered.length !== events.length) {
+            if (q.paginationMode === 'cursor') {
+              parsed._ajseePageInfo = ticketmasterPageInfo(parsed, {
+                page: Number(q.page || 0), size: Number(q.size || 50), sort: q.sort || 'date,asc'
+              });
+            }
             parsed._embedded = parsed._embedded || {};
             parsed._embedded.events = filtered;
 

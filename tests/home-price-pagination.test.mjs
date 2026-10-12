@@ -1,127 +1,41 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import { entryFunction } from './helpers/entry-function.mjs';
+import { createEventSearchSession } from '../src/event-search-session.js';
+import { withEventPageInfo } from '../src/event-pagination.js';
+const e=(id,price='1000 CZK')=>({id,partner:'ticketmaster',datetime:'2099-01-01',title:id,priceFrom:price,currency:'CZK'});
+const page=(events,hasMore)=>withEventPageInfo(events,{hasMore,frontier:Date.parse('2099-01-01'),ticketmasterCursor:{streams:{}}});
+function home(fetchBatch,getRates=async()=>({})) {
+  return entryFunction('home-entry.js','fetchHomeEventsForRender',{
+    createEventSearchSession,getAllHomeEvents:fetchBatch,getRatesForPriceFilter:getRates,
+    HOME_PRICE_FILTER_TARGET_COUNT:6,HOME_PRICE_FILTER_MAX_BATCHES:3
+  });
+}
 
-const source =
-  fs.readFileSync(
-    new URL(
-      '../src/home-entry.js',
-      import.meta.url
-    ),
-    'utf8'
-  );
+test('homepage considers all local candidates and finds a cheap event beyond candidate 300',async()=>{
+  const candidates=Array.from({length:301},(_,i)=>e(String(i),i===300?'50 CZK':'1000 CZK'));
+  let requests=0,rates=0;
+  const result=await home(async({filters})=>{requests++;assert.equal(filters.allLocalEvents,true);return page(candidates,false);},async()=>{rates++;return{};})('cs',{maxPrice:100,priceCurrency:'CZK'});
+  assert.equal(requests,1);assert.equal(rates,1);assert.deepEqual(result.map(e=>e.id),['300']);
+  assert.equal(result.searchState.hasMore,false);
+});
 
-test(
-  'homepage can refill expired batches without a price filter',
-  () => {
-    assert.match(
-      source,
-      /if\s*\(\s*!hasActivePriceFilter\(\s*api\s*\)\s*\)[\s\S]*?getAllHomeEvents\(\{[\s\S]*?filters:\s*\{\s*\.\.\.api,\s*page,\s*size:/
-    );
-  }
-);
+test('homepage bounded search exposes an incomplete result rather than proving no affordable events',async()=>{
+  let requests=0;
+  const result=await home(async()=>{requests++;return page([e(String(requests))],true);})('cs',{maxPrice:100,priceCurrency:'CZK'});
+  assert.equal(requests,3);assert.equal(result.length,0);assert.equal(result.searchState.hasMore,true);
+});
 
-test(
-  'homepage loads FX rates only for an active price filter',
-  () => {
-    assert.match(
-      source,
-      /hasActivePriceFilter\(\s*api\s*\)/
-    );
+test('homepage loads no exchange rates without a price filter and deduplicates provider IDs',async()=>{
+  const result=await home(async()=>page([e('one'),e('one'),e('two')],false),async()=>{throw new Error('FX must not load');})('en',{});
+  assert.deepEqual(result.map(e=>e.id),['one','two']);assert.equal(result.searchState.totalKnown,2);
+});
 
-    assert.match(
-      source,
-      /getRatesForPriceFilter\(\s*api\s*\)/
-    );
-  }
-);
+test('homepage same-currency matching survives missing exchange rates',async()=>{
+  const result=await home(async()=>page([e('local','50 CZK'),{...e('foreign','1 GBP'),currency:'GBP'}],false),async()=>{throw new Error('FX unavailable');})('cs',{maxPrice:100,priceCurrency:'CZK'});
+  assert.deepEqual(result.map(e=>e.id),['local']);
+});
 
-test(
-  'homepage filters raw batches before collecting preview events',
-  () => {
-    assert.match(
-      source,
-      /filterEventPriceBatch\(\s*rawEvents,\s*requestFilters,\s*priceRates \|\| \{\}\s*\)/
-    );
-  }
-);
-
-test(
-  'homepage price search targets six cards with bounded batch loading',
-  () => {
-    assert.match(
-      source,
-      /HOME_PRICE_FILTER_TARGET_COUNT\s*=\s*6/
-    );
-
-    assert.match(
-      source,
-      /HOME_PRICE_FILTER_API_BATCH_SIZE\s*=\s*50/
-    );
-
-    assert.match(
-      source,
-      /HOME_PRICE_FILTER_MAX_BATCHES\s*=\s*3/
-    );
-  }
-);
-
-test(
-  'homepage stops based on the raw aggregation batch rather than affordable count',
-  () => {
-    assert.match(
-      source,
-      /rawEvents\.length\s*<\s*HOME_PRICE_FILTER_API_BATCH_SIZE/
-    );
-
-    assert.doesNotMatch(
-      source,
-      /acceptedEvents\.length\s*<\s*HOME_PRICE_FILTER_API_BATCH_SIZE/
-    );
-  }
-);
-
-test(
-  'homepage deduplicates price-filtered results across batches',
-  () => {
-    assert.match(
-      source,
-      /const seen\s*=\s*new Set\(\)/
-    );
-
-    assert.match(
-      source,
-      /seen\.has\(\s*key\s*\)/
-    );
-
-    assert.match(
-      source,
-      /seen\.add\(\s*key\s*\)/
-    );
-  }
-);
-
-test(
-  'homepage render uses the price-aware fetch path',
-  () => {
-    assert.match(
-      source,
-      /const events\s*=\s*await fetchHomeEventsForRender\(\s*locale,\s*api\s*\)/
-    );
-  }
-);
-
-test(
-  'homepage FX failure degrades to same-currency comparisons',
-  () => {
-    assert.match(
-      source,
-      /priceRates\s*=\s*\{\}/
-    );
-
-    assert.match(
-      source,
-      /same-currency comparisons only/
-    );
-  }
-);
+test('homepage keeps current filters and locale in the provider request',async()=>{
+  await home(async({locale,filters})=>{assert.equal(locale,'pl');assert.equal(filters.audience,'family');assert.equal(filters.city,'Praha');assert.equal(filters.maxPrice,300);return page([],false);})('pl',{audience:'family',city:'Praha',maxPrice:300,priceCurrency:'CZK'});
+});

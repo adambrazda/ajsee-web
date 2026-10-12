@@ -39,27 +39,21 @@ test(`${entry}: sort control follows AI, manual sort, reset and locale changes; 
 });
 }
 
-test('buffer ranks across provider batches, while classic sort stays chronological', () => {
-  const code = source.slice(source.indexOf('function sortBufferedEvents('), source.indexOf('async function fetchNextEventsBatch('));
-  const pager = { buffer: [{ id: 'early', title: 'Hamlet', date: '2026-10-01' }] };
-  const sort = new Function('eventsPager','hasAiRelevance','rankEventsByRelevance', code + '; return sortBufferedEvents;')(pager,hasAiRelevance,rankEventsByRelevance);
-  pager.buffer.push({ id: 'best', title: 'Mamma Mia', date: '2026-10-03' });
-  sort('relevance', { sort: 'relevance', searchMode: 'exact', keyword: 'Mamma Mia' });
-  assert.deepEqual(pager.buffer.map(e => e.id), ['best','early']);
-  sort('nearest');
-  assert.deepEqual(pager.buffer.map(e => e.id), ['early','best']);
-  sort('latest');
-  assert.deepEqual(pager.buffer.map(e => e.id), ['best','early']);
+test('the shared session ranks complete candidates while classic sort stays chronological', async () => {
+  const { createEventSearchSession } = await import('../src/event-search-session.js');
+  const { withEventPageInfo } = await import('../src/event-pagination.js');
+  const events = [{ id:'early',title:'Hamlet',date:'2099-01-01' },{ id:'best',title:'Mamma Mia',date:'2099-01-03' }];
+  for(const [filters,expected] of [[{sort:'nearest'},['early','best']],[{sort:'latest'},['best','early']],[{sort:'relevance',searchMode:'exact',keyword:'Mamma Mia'},['best','early']]]) {
+    const session=createEventSearchSession({filters,fetchBatch:async()=>withEventPageInfo(events,{hasMore:false})});
+    assert.deepEqual((await session.load(20)).events.map(e=>e.id),expected);
+  }
 });
 
-test('a later high-scoring batch cannot displace already viewed pages or repeat events', () => {
-  const code = source.slice(source.indexOf('function sortBufferedEvents('), source.indexOf('async function fetchNextEventsBatch('));
-  const pager = { relevancePinnedCount: 1, buffer: [
-    { id: 'viewed', title: 'Hamlet', date: '2026-10-01' },
-    { id: 'unseen', title: 'Other show', date: '2026-10-02' },
-    { id: 'new-best', title: 'Mamma Mia', date: '2026-10-03' }
-  ] };
-  const sort = new Function('eventsPager','hasAiRelevance','rankEventsByRelevance', code + '; return sortBufferedEvents;')(pager,hasAiRelevance,rankEventsByRelevance);
-  sort('relevance', { sort: 'relevance', searchMode: 'exact', keyword: 'Mamma Mia' });
-  assert.deepEqual(pager.buffer.map(e => e.id), ['viewed','new-best','unseen']);
+test('later relevance cannot displace an already viewed page or repeat an event',async()=>{
+  const { createEventSearchSession } = await import('../src/event-search-session.js');
+  const { withEventPageInfo } = await import('../src/event-pagination.js');
+  let calls=0;
+  const session=createEventSearchSession({filters:{sort:'relevance',searchMode:'exact',keyword:'Mamma Mia'},fetchBatch:async()=>withEventPageInfo(++calls===1?[{id:'viewed',title:'Hamlet',date:'2099-01-01'}]:[{id:'unseen',title:'Other show',date:'2099-01-02'},{id:'new-best',title:'Mamma Mia',date:'2099-01-03'}],{hasMore:calls===1})});
+  assert.equal((await session.load(1)).events[0].id,'viewed');
+  assert.deepEqual((await session.load(3)).events.map(e=>e.id),['viewed','new-best','unseen']);
 });

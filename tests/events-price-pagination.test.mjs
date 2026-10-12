@@ -1,97 +1,59 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import { JSDOM } from 'jsdom';
+import { entryFunction } from './helpers/entry-function.mjs';
 
-const source =
-  fs.readFileSync(
-    new URL(
-      '../src/events-entry.js',
-      import.meta.url
-    ),
-    'utf8'
-  );
+function controls(buffer, hasMore) {
+  const dom = new JSDOM('<div id="pager"></div>');
+  const host = dom.window.document.querySelector('#pager');
+  const pagination = { page: 1, perPage: 20 };
+  const eventsPager = { buffer, hasMore, loading: false, totalKnown: buffer.length };
+  let renders = 0;
+  const update = entryFunction('events-entry.js', 'updateEventsPagerControls', {
+    isHome: () => false, injectOnce() {}, ensureEventsPagerHost: () => host,
+    pagination, eventsPager, t: (key, fallback) => fallback, esc: String, eventsPagerLabel: () => 'results',
+    renderAndSync: async () => { renders++; }, scrollToSharedEventResults() {}, _userInteractedWithFilters: false
+  });
+  update();
+  return { dom, host, pagination, eventsPager, update, renders: () => renders };
+}
 
-test(
-  'events runtime loads FX rates only for an active price filter',
-  () => {
-    assert.match(
-      source,
-      /hasActivePriceFilter\(\s*api\s*\)/
-    );
+test('a zero-match incomplete price search exposes continuation', () => {
+  const c = controls([], true);
+  assert.equal(c.host.hidden, false);
+  const next = c.host.querySelector('[data-events-page-next]');
+  assert.ok(next); assert.equal(next.disabled, false);
+  assert.match(next.textContent, /Pokračovat/);
+  c.dom.window.close();
+});
 
-    assert.match(
-      source,
-      /getRatesForPriceFilter\(\s*api\s*\)/
-    );
-  }
-);
+test('an exhausted zero-match search hides pagination', () => {
+  const c = controls([], false);
+  assert.equal(c.host.hidden, true); assert.equal(c.host.innerHTML, '');
+  c.dom.window.close();
+});
 
-test(
-  'events runtime filters each raw batch before merging it into the buffer',
-  () => {
-    assert.match(
-      source,
-      /const rawNextEvents\s*=/
-    );
+test('continuing a partially filled page does not skip its unfilled slots', async () => {
+  const c = controls(Array.from({length:19}, (_,i)=>({id:String(i)})), true);
+  c.host.querySelector('[data-events-page-next]').click();
+  await Promise.resolve();
+  assert.equal(c.pagination.page, 1); assert.equal(c.renders(), 1);
+  c.eventsPager.buffer.push({id:'20'}); c.update();
+  c.host.querySelector('[data-events-page-next]').click();
+  await Promise.resolve();
+  assert.equal(c.pagination.page, 2);
+  c.dom.window.close();
+});
 
-    assert.match(
-      source,
-      /filterEventPriceBatch\(\s*rawNextEvents,\s*requestFilters,\s*priceRates \|\| \{\}\s*\)/
-    );
-
-    assert.match(
-      source,
-      /mergeEventsIntoBuffer\(\s*nextEvents\s*\)/
-    );
-  }
-);
-
-test(
-  'events pagination derives hasMore from the raw unfiltered batch',
-  () => {
-    assert.match(
-      source,
-      /rawNextEvents\.length\s*<\s*EVENTS_API_BATCH_SIZE/
-    );
-
-    assert.doesNotMatch(
-      source,
-      /nextEvents\.length\s*<\s*EVENTS_API_BATCH_SIZE/
-    );
-  }
-);
-
-test(
-  'active price filtering may load multiple raw batches to fill the UI page',
-  () => {
-    assert.match(
-      source,
-      /EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER\s*=\s*5/
-    );
-
-    assert.match(
-      source,
-      /while\s*\(\s*eventsPager\.buffer\.length\s*<\s*needed[\s\S]*?eventsPager\.hasMore[\s\S]*?batchesLoaded\s*<\s*maxBatches/
-    );
-
-    assert.match(
-      source,
-      /priceFilterActive\s*\?\s*EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER\s*:\s*3/
-    );
-  }
-);
-
-test(
-  'FX failure degrades to safe same-currency comparisons',
-  () => {
-    assert.match(
-      source,
-      /priceRates\s*=\s*\{\}/
-    );
-
-    assert.match(
-      source,
-      /same-currency comparisons only/
-    );
-  }
-);
+test('a completed request from an abandoned filter session cannot overwrite the new session', async () => {
+  let finish;
+  const old = {load:()=>new Promise(resolve=>{finish=resolve;})};
+  const pager = {session:old,buffer:[],loading:false};
+  const fetch = entryFunction('events-entry.js','fetchNextEventsBatch',{
+    eventsPager:pager,pagination:{page:1,perPage:20}
+  });
+  const running=fetch('cs',{});
+  const current={};pager.session=current;pager.buffer=[{id:'new-filter'}];pager.loading=true;
+  finish({events:[{id:'old-filter'}],hasMore:false,totalKnown:1});await running;
+  assert.deepEqual(pager.buffer,[{id:'new-filter'}]);assert.equal(pager.loading,true);
+});

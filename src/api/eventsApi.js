@@ -34,6 +34,7 @@ import { matchesEventDiscoveryFilters } from '../taxonomy/event-filtering.js';
 import { hasAiRelevance, isSoftDiscovery, providerSearchFilters, rankEventsByRelevance } from '../search/event-relevance.js';
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
 import { mergeExactCrossProviderOccurrences } from '../event-cross-provider-merge.js';
+import { withEventPageInfo } from '../event-pagination.js';
 
 // DEV detekce (localhost/Vite)
 const isDev =
@@ -708,6 +709,8 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   const loc = mapLangToLocale(lng);
 
   let all = [];
+  let pageInfo = { hasMore: false, frontier: null, ticketmasterCursor: { streams: {} } };
+  const result = events => filters.paginationMode === 'cursor' ? withEventPageInfo(events, pageInfo) : events;
 
   const cityRadiusSearch =
     isCityRadiusPlace(
@@ -858,6 +861,7 @@ try {
 
   if (Array.isArray(tm)) {
     all = all.concat(tm);
+    if (tm.pageInfo) pageInfo = tm.pageInfo;
   }
 } catch (e) {
   if (isRateLimitError(e)) {
@@ -1169,7 +1173,7 @@ if (ENABLE_SEATPLAN) {
   });
 
   if (hasAiRelevance(filters)) {
-    return rankEventsByRelevance(all, filters);
+    return result(rankEventsByRelevance(all, filters));
   }
 
   if (ENABLE_SEATPLAN && hasSeatPlanPilotIntent(normalizedClientFilters)) {
@@ -1191,7 +1195,7 @@ if (ENABLE_SEATPLAN) {
     });
   }
 
-  return all;
+  return result(all);
 }
 
 // Backward-compat: starĹˇĂ­ kĂłd volĂˇ getAllEvents

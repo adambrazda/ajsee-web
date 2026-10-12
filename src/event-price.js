@@ -113,6 +113,9 @@ export function parsePriceAmount(
     return null;
   }
 
+  // A form limit is not a price range; never turn a negative limit positive.
+  if (/^[\s\p{Sc}]*[-−]/u.test(text)) return null;
+
   text = text
     .replace(/\u00a0/g, ' ')
     .replace(/[^\d.,\s]/g, '')

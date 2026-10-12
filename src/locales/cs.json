@@ -459,5 +459,8 @@
   "events-empty-clear": "Vymazat filtry",
   "events-empty-remove": "Odebrat „{filter}“",
   "events-empty-no-filters": "Pro aktuální výběr zatím nejsou dostupné žádné akce.",
-  "category-film": "Film a kino"
+  "category-film": "Film a kino",
+  "events-search-pending-title": "Hledání ještě není dokončené",
+  "events-search-pending-body": "Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.",
+  "events-search-continue": "Pokračovat v hledání"
 }

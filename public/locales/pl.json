@@ -438,5 +438,8 @@
       "text": "Poczuj niepowtarzalną atmosferę West Endu. Wybierz spośród światowej sławy musicali, przejdź do opcji biletów i dodaj do planu sprawdzony nocleg w Londynie.",
       "cta": "Zobacz musicale"
     }
-  }
+  },
+  "events-search-pending-title": "Wyszukiwanie nie jest jeszcze zakończone",
+  "events-search-pending-body": "Przeszukaliśmy część oferty. Kontynuuj wyszukiwanie z tymi samymi filtrami.",
+  "events-search-continue": "Kontynuuj wyszukiwanie"
 }

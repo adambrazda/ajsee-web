@@ -138,6 +138,7 @@ test(
   'current-event guard keeps event through its local calendar day',
   () => {
     const event = {
+      dateAvailability: { timezone: 'Europe/Prague' },
       datetime:
         '2099-08-30T19:00:00'
     };
@@ -146,7 +147,7 @@ test(
       isColosseumTicketEventCurrent(
         event,
         new Date(
-          '2099-08-30T23:00:00'
+          '2099-08-30T23:00:00+02:00'
         )
       ),
       true
@@ -156,7 +157,7 @@ test(
       isColosseumTicketEventCurrent(
         event,
         new Date(
-          '2099-08-31T00:01:00'
+          '2099-08-31T00:01:00+02:00'
         )
       ),
       false

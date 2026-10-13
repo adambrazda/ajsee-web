@@ -7,6 +7,22 @@ import {
   parseColosseumXml
 } from '../scripts/sync-colosseumticket-events.mjs';
 
+test('normalization preserves the declared occurrence end independently of booking URLs', () => {
+  const raw = {
+    '@_id': 'range-test', eventname: 'Festival', type: 'Hudba',
+    'TERMÍNY': { 'TERMÍN': {
+      ID_TERMIN: 'range', CENA: '100 Kč',
+      location: { locationname: 'Venue', city: 'Praha' },
+      eventdate: { datefrom: '08/10/2026', dateto: '11/10/2026', timefrom: '19:00:00',
+        url_objednavka: 'https://colosseumticket.cz/cs/akce/range-test?a_box=source' }
+    } }
+  };
+  const result = normalizeColosseumFeed([raw]);
+  assert.equal(result.events.length, 1);
+  assert.equal(result.events[0].dateAvailability.endLocalDate, '2026-10-11');
+  assert.match(result.events[0].tickets, /a_box=/);
+});
+
 test(
   'parses Colosseum single and range CZK prices',
   () => {

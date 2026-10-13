@@ -1,5 +1,6 @@
 import { withLambda } from '@netlify/aws-lambda-compat';
 import { ticketmasterPageInfo } from '../../src/event-pagination.js';
+import { ticketmasterCalendarRange } from '../../src/event-calendar.js';
 
 // /netlify/functions/ticketmasterEvents.js
 // ---------------------------------------------------------
@@ -210,45 +211,6 @@ function cacheSet(key, body, statusCode = 200) {
   });
 }
 
-function toIsoDay(dateStr, endOfDay = false) {
-  if (!dateStr) return '';
-
-  let y, m, d;
-  const reIso = /^(\d{4})-(\d{2})-(\d{2})$/;
-  const reCz = /^(\d{2})\.(\d{2})\.(\d{4})$/;
-
-  if (reIso.test(dateStr)) {
-    const m1 = dateStr.match(reIso);
-    y = m1[1];
-    m = m1[2];
-    d = m1[3];
-  } else if (reCz.test(dateStr)) {
-    const m2 = dateStr.match(reCz);
-    d = m2[1];
-    m = m2[2];
-    y = m2[3];
-  } else {
-    const dt = new Date(dateStr);
-    if (Number.isNaN(dt.getTime())) return '';
-
-    const res = new Date(Date.UTC(
-      dt.getUTCFullYear(),
-      dt.getUTCMonth(),
-      dt.getUTCDate(),
-      endOfDay ? 23 : 0,
-      endOfDay ? 59 : 0,
-      endOfDay ? 59 : 0
-    ));
-
-    return res.toISOString();
-  }
-
-  const hh = endOfDay ? '23' : '00';
-  const mm = endOfDay ? '59' : '00';
-  const ss = endOfDay ? '59' : '00';
-
-  return `${y}-${m}-${d}T${hh}:${mm}:${ss}Z`;
-}
 
 function toTmSort(s) {
   if (s === 'nearest') return 'date,asc';
@@ -572,10 +534,11 @@ export const handler = async (event) => {
 
     url.searchParams.set('sort', toTmSort(q.sort));
 
-    const startDateTime = q.startDateTime || toIsoDay(q.dateFrom, false);
-    const endDateTime = q.endDateTime || toIsoDay(q.dateTo, true);
-    if (startDateTime) url.searchParams.set('startDateTime', startDateTime);
-    if (endDateTime) url.searchParams.set('endDateTime', endDateTime);
+    const localRange = ticketmasterCalendarRange(q.dateFrom, q.dateTo);
+    if (localRange) url.searchParams.set('localStartEndDateTime', localRange);
+    // Preserve explicitly requested absolute-time filters for API consumers.
+    if (q.startDateTime) url.searchParams.set('startDateTime', String(q.startDateTime));
+    if (q.endDateTime) url.searchParams.set('endDateTime', String(q.endDateTime));
 
     if (q.segmentName) url.searchParams.set('segmentName', String(q.segmentName));
     if (q.classificationName) url.searchParams.set('classificationName', String(q.classificationName));

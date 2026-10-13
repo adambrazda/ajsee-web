@@ -14,6 +14,8 @@ import {
 import {
   matchesKeywordPrefix
 } from '../search/keyword-match.js';
+import { isLocalEventDateAvailable, matchesEventDateRange } from '../event-calendar.js';
+import { withProviderDateRange } from '../provider-event-dates.js';
 
 
 const DEFAULT_DATA_URL =
@@ -471,89 +473,13 @@ function dateMs(value) {
 }
 
 
-function boundaryMs(
-  value,
-  isEnd = false
-) {
-  const raw =
-    text(
-      value
-    );
-
-  if (!raw) {
-    return Number.NaN;
-  }
-
-  const match =
-    raw.match(
-      /^(\d{4})-(\d{2})-(\d{2})$/
-    );
-
-  if (match) {
-    return new Date(
-      Number(match[1]),
-      Number(match[2]) - 1,
-      Number(match[3]),
-      isEnd ? 23 : 0,
-      isEnd ? 59 : 0,
-      isEnd ? 59 : 0,
-      isEnd ? 999 : 0
-    ).getTime();
-  }
-
-  return new Date(
-    raw
-  ).getTime();
-}
 
 
 export function isColosseumTicketEventCurrent(
   event = {},
   now = new Date()
 ) {
-  const currentDate =
-    now instanceof Date
-      ? now
-      : new Date(
-          now
-        );
-
-  const nowMs =
-    currentDate.getTime();
-
-  if (
-    !Number.isFinite(
-      nowMs
-    )
-  ) {
-    return false;
-  }
-
-  const source =
-    text(
-      event?.datetime ||
-      event?.date ||
-      ''
-    );
-
-  const dateMatch =
-    source.match(
-      /^(\d{4}-\d{2}-\d{2})/
-    );
-
-  const eventDayEndMs =
-    boundaryMs(
-      dateMatch?.[1] ||
-      source,
-      true
-    );
-
-  return (
-    Number.isFinite(
-      eventDayEndMs
-    ) &&
-    eventDayEndMs >= nowMs
-  );
+  return isLocalEventDateAvailable(withProviderDateRange(event), now);
 }
 
 
@@ -562,58 +488,7 @@ function inDateRange(
   dateFrom = '',
   dateTo = ''
 ) {
-  if (
-    !dateFrom &&
-    !dateTo
-  ) {
-    return true;
-  }
-
-  const eventMs =
-    dateMs(
-      event?.datetime ||
-      event?.date
-    );
-
-  if (
-    !Number.isFinite(
-      eventMs
-    )
-  ) {
-    return false;
-  }
-
-  const fromMs =
-    boundaryMs(
-      dateFrom,
-      false
-    );
-
-  const toMs =
-    boundaryMs(
-      dateTo,
-      true
-    );
-
-  if (
-    Number.isFinite(
-      fromMs
-    ) &&
-    eventMs < fromMs
-  ) {
-    return false;
-  }
-
-  if (
-    Number.isFinite(
-      toMs
-    ) &&
-    eventMs > toMs
-  ) {
-    return false;
-  }
-
-  return true;
+  return matchesEventDateRange(event, dateFrom, dateTo);
 }
 
 
@@ -880,9 +755,10 @@ export async function fetchEvents({
   const candidates = [];
 
   for (
-    const event of
+    const sourceEvent of
     sourceEvents
   ) {
+    const event = withProviderDateRange(sourceEvent);
     if (
       !isColosseumTicketEventCurrent(
         event

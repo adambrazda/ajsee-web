@@ -10,6 +10,8 @@
 
 import { canonForInputCity } from '../city/canonical.js';
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
+import { isLocalEventDateAvailable, matchesEventDateRange } from '../event-calendar.js';
+import { withProviderDateRange } from '../provider-event-dates.js';
 
 import {
   buildSmsticketTaxonomy,
@@ -187,70 +189,13 @@ function getDateMs(raw) {
   return new Date(value).getTime();
 }
 
-function boundaryMs(raw, isEnd = false) {
-  const value = String(raw || '').trim();
-  if (!value) return NaN;
-
-  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (match) {
-    return isEnd
-      ? new Date(+match[1], +match[2] - 1, +match[3], 23, 59, 59, 999).getTime()
-      : new Date(+match[1], +match[2] - 1, +match[3], 0, 0, 0, 0).getTime();
-  }
-
-  return new Date(value).getTime();
-}
 
 function inDateRange(ev, dateFrom = '', dateTo = '') {
-  if (!dateFrom && !dateTo) return true;
-
-  const t = getDateMs(ev?.datetime || ev?.date);
-  if (!Number.isFinite(t)) return false;
-
-  const from = boundaryMs(dateFrom, false);
-  const to = boundaryMs(dateTo, true);
-
-  if (Number.isFinite(from) && t < from) return false;
-  if (Number.isFinite(to) && t > to) return false;
-
-  return true;
+  return matchesEventDateRange(ev, dateFrom, dateTo);
 }
 
 export function isSmsticketEventAvailable(ev = {}, now = new Date()) {
-  const nowDate = now instanceof Date ? now : new Date(now);
-  const nowMs = nowDate.getTime();
-
-  if (!Number.isFinite(nowMs)) return false;
-
-  const eventDateSource = String(
-    ev?.datetime || ev?.date || ''
-  ).trim();
-
-  const dateMatch = eventDateSource.match(
-    /^(\d{4}-\d{2}-\d{2})/
-  );
-
-  const eventDayEndMs = eventDateSource
-    ? boundaryMs(
-        dateMatch?.[1] || eventDateSource,
-        true
-      )
-    : Number.NaN;
-
-  const bookingEndMs = boundaryMs(
-    ev?.bookingEndsAt,
-    true
-  );
-
-  const eventIsCurrent =
-    Number.isFinite(eventDayEndMs) &&
-    eventDayEndMs >= nowMs;
-
-  const bookingIsCurrent =
-    Number.isFinite(bookingEndMs) &&
-    bookingEndMs >= nowMs;
-
-  return eventIsCurrent || bookingIsCurrent;
+  return isLocalEventDateAvailable(withProviderDateRange(ev), now, { allowBooking: true });
 }
 
 function haversineKm(lat1, lon1, lat2, lon2) {
@@ -912,7 +857,8 @@ export async function fetchEvents({ filters = {} } = {}) {
 
   const candidates = [];
 
-  for (const ev of events) {
+  for (const sourceEvent of events) {
+    const ev = withProviderDateRange(sourceEvent);
     if (!isSmsticketEventAvailable(ev)) continue;
 
     if (

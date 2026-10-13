@@ -35,6 +35,7 @@ import { hasAiRelevance, isSoftDiscovery, providerSearchFilters, rankEventsByRel
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
 import { mergeExactCrossProviderOccurrences } from '../event-cross-provider-merge.js';
 import { withEventPageInfo } from '../event-pagination.js';
+import { matchesEventDateRange } from '../event-calendar.js';
 
 // DEV detekce (localhost/Vite)
 const isDev =
@@ -78,37 +79,6 @@ function tsLocalMidday(raw) {
 }
 
 /** Hranice dne z ISO "YYYY-MM-DD" v lokĂˇlnĂ­m ÄŤase (start/end). */
-function boundaryMs(iso, isEnd = false) {
-  if (!iso) return NaN;
-
-  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-
-  if (m) {
-    const y = +m[1];
-    const mo = +m[2] - 1;
-    const d = +m[3];
-
-    return isEnd
-      ? new Date(y, mo, d, 23, 59, 59, 999).getTime()
-      : new Date(y, mo, d, 0, 0, 0, 0).getTime();
-  }
-
-  return ts(iso);
-}
-
-function inRange(dateStr, fromStr, toStr) {
-  const t = tsLocalMidday(dateStr);
-
-  if (!Number.isFinite(t)) return false;
-
-  const f = boundaryMs(fromStr, false);
-  const to = boundaryMs(toStr, true);
-
-  if (Number.isFinite(f) && t < f) return false;
-  if (Number.isFinite(to) && t > to) return false;
-
-  return true;
-}
 
 function normalizeText(s) {
   return (s || '')
@@ -1158,7 +1128,7 @@ if (ENABLE_SEATPLAN) {
   }
 
   if (dateFrom || dateTo) {
-    all = all.filter((ev) => inRange(ev.datetime || ev.date, dateFrom, dateTo));
+    all = all.filter((ev) => matchesEventDateRange(ev, dateFrom, dateTo));
   }
 
   all.sort((a, b) => {

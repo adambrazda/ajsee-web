@@ -124,3 +124,9 @@ test('visitor timezone never enters a Ticketmaster venue-day overlap query', () 
   assert.equal(ticketmasterCalendarRange('2026-02-30', ''), '');
   assert.equal(calendarDay('2026-06-15T24:30:00'), '');
 });
+
+test('fractional provider wall times retain their exact ordering around midnight', () => {
+  const event = { datetime: '2026-06-15T00:30:00.500', time: '00:30:00.500', country: 'CZ' };
+  assert.equal(eventStartInstant(event), Date.parse('2026-06-14T22:30:00.500Z'));
+  assert.equal(matchesEventDateRange(event, '2026-06-15', '2026-06-15'), true);
+});

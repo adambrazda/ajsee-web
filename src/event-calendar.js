@@ -111,10 +111,10 @@ function calculateStartInstant(event) {
   if (!start) return Number.NaN;
   const raw = String(event.datetime || '').trim();
   if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(raw)) return new Date(raw).getTime();
-  const rawTime = raw.match(/T(\d{2}:\d{2}(?::\d{2})?)/)?.[1];
+  const rawTime = raw.match(/T(\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?)/)?.[1];
   const supplied = data.startLocalTime || (Object.hasOwn(event, 'time') ? event.time : rawTime);
   const time = !data.timeTBA && !data.noSpecificTime &&
-    /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/.test(supplied || '') ? supplied : '12:00:00';
+    /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?$/.test(supplied || '') ? supplied : '12:00:00';
   const wall = new Date(`${start}T${time}Z`).getTime();
   if (!Number.isFinite(wall) || timezone === 'UTC') return wall;
   try {
@@ -127,9 +127,10 @@ function calculateStartInstant(event) {
     }
     let candidate = wall;
     for (let i = 0; i < 4; i++) {
-      const parts = formatter.formatToParts(new Date(candidate));
+      const instant = new Date(candidate);
+      const parts = formatter.formatToParts(instant);
       const get = type => parts.find(part => part.type === type)?.value;
-      const observed = new Date(`${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}Z`).getTime();
+      const observed = new Date(`${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}:${get('second')}Z`).getTime() + instant.getUTCMilliseconds();
       if (observed === wall) return candidate;
       candidate += wall - observed;
     }

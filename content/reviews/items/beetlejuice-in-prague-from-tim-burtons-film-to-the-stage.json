@@ -17,10 +17,31 @@
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://colosseumticket.cz/cs/akce/YN1Nj3tZQhKIUkzyjBBDlg-beetlejuice-muzikal-hdk-praha?a_box=yhvyrwgu&language=cs-cz&locale=cs-cz",
-  "cover": "",
-  "coverAlt": "",
+  "cover": "/uploads/reviews/beetlejuice-in-prague-from-tim-burtons-film-to-the-stage/beetlejuice-prague-cover.avif",
+  "coverAlt": "The Beetlejuice stage at Hudební divadlo Karlín before the performance.",
   "coverCredit": "Photo: Oya Canli",
-  "gallery": [],
+  "gallery": [
+    {
+      "image": "/uploads/reviews/beetlejuice-in-prague-from-tim-burtons-film-to-the-stage/beetlejuice-prague-auditorium-stage.avif",
+      "alt": "A wide view of the Beetlejuice stage and historic auditorium at Hudební divadlo Karlín.",
+      "credit": "Photo: Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/beetlejuice-in-prague-from-tim-burtons-film-to-the-stage/beetlejuice-prague-theatre-ceiling.avif",
+      "alt": "The ornate ceiling and chandelier of Hudební divadlo Karlín lit for Beetlejuice.",
+      "credit": "Photo: Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/beetlejuice-in-prague-from-tim-burtons-film-to-the-stage/beetlejuice-prague-cast-board.avif",
+      "alt": "The cast board for the 1 October 2026 performance of Beetlejuice at Hudební divadlo Karlín.",
+      "credit": "Photo: Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/beetlejuice-in-prague-from-tim-burtons-film-to-the-stage/beetlejuice-prague-oya-canli.avif",
+      "alt": "Oya Canli standing beside a Beetlejuice promotional backdrop at Hudební divadlo Karlín.",
+      "credit": "Photo: Oya Canli"
+    }
+  ],
   "translations": {
     "en": {
       "title": "Beetlejuice in Prague: From Tim Burton’s Film to the Stage",
@@ -107,5 +128,5 @@
       "coverAlt": "A Beetlejuice musical színpada a Hudební divadlo Karlínban az előadás kezdete előtt."
     }
   },
-  "internalNotes": "Source: original Beetlejuice review supplied by Oya Canli and provided by Adam Brazda.\nEnglish editorial master approved for web upload by Adam Brazda on 13 October 2026.\nCzech editorial master approved by Adam Brazda on 13 October 2026, including final wording changes for 'lehce mrazivý' and the daughter quote.\nDo not publish until Adam Brazda explicitly approves publication.\nPlanned publication: Monday 19 October 2026 (Europe/Prague). Do not publish earlier.\nTickets are sold through AJSEE partner ColosseumTicket: https://colosseumticket.cz/cs/akce/YN1Nj3tZQhKIUkzyjBBDlg-beetlejuice-muzikal-hdk-praha?a_box=yhvyrwgu&language=cs-cz&locale=cs-cz\nSix original Oya Canli photos were supplied in chat on 13 October 2026. Photo credit: Oya Canli. Repository cover/gallery assets are not yet staged.\nSlovak editorial master approved by Adam Brazda on 13 October 2026.\nGerman editorial master approved by Adam Brazda on 13 October 2026.\nPolish editorial master approved by Adam Brazda on 13 October 2026, with Polish en-dash typography standardized.\nHungarian editorial master approved by Adam Brazda on 13 October 2026."
+  "internalNotes": "Source: original Beetlejuice review supplied by Oya Canli and provided by Adam Brazda.\nEnglish editorial master approved for web upload by Adam Brazda on 13 October 2026.\nCzech editorial master approved by Adam Brazda on 13 October 2026, including final wording changes for 'lehce mrazivý' and the daughter quote.\nDo not publish until Adam Brazda explicitly approves publication.\nPlanned publication: Monday 19 October 2026 (Europe/Prague). Do not publish earlier.\nTickets are sold through AJSEE partner ColosseumTicket: https://colosseumticket.cz/cs/akce/YN1Nj3tZQhKIUkzyjBBDlg-beetlejuice-muzikal-hdk-praha?a_box=yhvyrwgu&language=cs-cz&locale=cs-cz\nSix original Oya Canli photos were supplied in chat on 13 October 2026. Photo credit: Oya Canli. Five selected photos were optimized to AVIF and staged for the article: one cover and four gallery images; the backdrop-only image was omitted as redundant.\nSlovak editorial master approved by Adam Brazda on 13 October 2026.\nGerman editorial master approved by Adam Brazda on 13 October 2026.\nPolish editorial master approved by Adam Brazda on 13 October 2026, with Polish en-dash typography standardized.\nHungarian editorial master approved by Adam Brazda on 13 October 2026."
 }

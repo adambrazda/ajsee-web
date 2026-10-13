@@ -27,7 +27,7 @@ export function declaredDescriptionEnd(event, description = descriptions(event))
     // A programme item may carry Festival taxonomy and a description of the
     // whole festival. Require the ticket's own title in the range context.
     if (!identity(sentence).includes(title)) return;
-    if (/predprodej|prodej vstupenek|rezervac|registrac|early bird|sleva|sale/.test(sentence)) return;
+    if (/predprodej|prodej vstupenek|rezervac|registrac|early bird|sleva|\b(?:presale|on sale|ticket sales)\b/.test(sentence)) return;
     candidates.add(last);
   };
   for (const m of text.matchAll(/\b(\d{4}-\d{2}-\d{2})\s*[-–—]\s*(\d{4}-\d{2}-\d{2})\b/g)) {

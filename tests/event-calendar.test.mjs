@@ -138,3 +138,8 @@ test('one lecture at Go Kamera does not inherit the whole festival date range', 
   assert.equal(normalized.dateAvailability, undefined);
   assert.equal(matchesEventDateRange(normalized, '2026-11-05', '2026-11-05'), false);
 });
+
+test('a Czech hall description is not mistaken for an English ticket-sale period', () => {
+  const event = festival('Festival KOMA se uskuteční v sále galerie v termínu 8.–11. října 2026.');
+  assert.equal(withProviderDateRange(event).dateAvailability.endLocalDate, '2026-10-11');
+});

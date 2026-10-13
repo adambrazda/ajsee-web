@@ -180,7 +180,7 @@ function isFutureOrActive(event) {
   const startDate = text(event?.dates?.start_date);
   const bookingEndDate = text(event?.dates?.booking_end_date);
   const dated = withProviderDateRange({
-    date: startDate, country: 'CZ', bookingEndsAt: bookingEndDate,
+    date: startDate, title: text(event?.name), country: 'CZ', bookingEndsAt: bookingEndDate,
     types: getTypes(event), description: stripHtml(decodeHtmlEntities(String(event.description || '')))
   }, { endLocalDate: text(event?.dates?.end_date) });
   return isLocalEventDateAvailable(dated, new Date(), { allowBooking: true });

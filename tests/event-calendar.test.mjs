@@ -64,10 +64,10 @@ test('invalid, uncertain and reversed calendar bounds do not invent matches', ()
 });
 
 const festival = (description, date = '2026-10-08') => ({ partner: 'smsticket', date,
-  types: ['Festival'], description: { cs: description }, tickets: 'https://www.smsticket.cz/vstupenky/70117?a_box=kept' });
+  title: 'Festival KOMA 2026', types: ['Festival'], description: { cs: description }, tickets: 'https://www.smsticket.cz/vstupenky/70117?a_box=kept' });
 
 test('KOMA-like explicit provider description range becomes an event end without touching commerce URLs', () => {
-  const original = festival('Čtyři dny plné komiksu. Festival se uskuteční v termínu 8. – 11. října 2026.');
+  const original = festival('Čtyři dny plné komiksu. Festival KOMA se uskuteční v termínu 8. – 11. října 2026.');
   const normalized = withProviderDateRange(original);
   assert.equal(normalized.dateAvailability.endLocalDate, '2026-10-11');
   assert.equal(normalized.dateAvailability.endSource, 'provider-description-range');
@@ -79,17 +79,17 @@ test('KOMA-like explicit provider description range becomes an event end without
 
 test('description parsing validates numeric/ISO ranges, cross-year dates and ambiguous editions', () => {
   for (const text of ['8.–11.10.2026', '8.10. – 11.10.2026', '2026-10-08 – 2026-10-11']) {
-    assert.equal(withProviderDateRange(festival(text)).dateAvailability?.endLocalDate, '2026-10-11');
+    assert.equal(withProviderDateRange(festival('Festival KOMA ' + text)).dateAvailability?.endLocalDate, '2026-10-11');
   }
-  assert.equal(withProviderDateRange(festival('28.12. – 2.1.2027', '2026-12-28')).dateAvailability.endLocalDate, '2027-01-02');
+  assert.equal(withProviderDateRange(festival('Festival KOMA 28.12. – 2.1.2027', '2026-12-28')).dateAvailability.endLocalDate, '2027-01-02');
   for (const text of ['8.–11. října 2025', '8.–32. října 2026', '8.–11. října 2026; 8.–12. října 2026']) {
-    assert.equal(withProviderDateRange(festival(text)).dateAvailability, undefined);
+    assert.equal(withProviderDateRange(festival('Festival KOMA ' + text)).dateAvailability, undefined);
   }
 });
 
 test('sale periods and a theatre run cannot extend one performance', () => {
   for (const text of ['Předprodej v termínu 8.–11. října 2026', 'Rezervace 8.–11. října 2026', 'Early bird 8.–11. října 2026']) {
-    assert.equal(withProviderDateRange(festival(text)).dateAvailability, undefined);
+    assert.equal(withProviderDateRange(festival('Festival KOMA ' + text)).dateAvailability, undefined);
   }
   assert.equal(withProviderDateRange({ ...festival('Hrajeme 8.–11. října 2026'), types: ['Divadlo'] }).dateAvailability, undefined);
   assert.equal(withProviderDateRange(festival(''), { endLocalDate: '2026-10-12' }).dateAvailability.endLocalDate, '2026-10-12');
@@ -129,4 +129,12 @@ test('fractional provider wall times retain their exact ordering around midnight
   const event = { datetime: '2026-06-15T00:30:00.500', time: '00:30:00.500', country: 'CZ' };
   assert.equal(eventStartInstant(event), Date.parse('2026-06-14T22:30:00.500Z'));
   assert.equal(matchesEventDateRange(event, '2026-06-15', '2026-06-15'), true);
+});
+
+test('one lecture at Go Kamera does not inherit the whole festival date range', () => {
+  const event = { date: '2026-11-04', title: 'Go Kamera 2026, Michal Kleslo', types: ['Festival'],
+    description: { cs: 'CESTOVATELSKÝ FESTIVAL GO KAMERA 4.11.—6.11.2026 pořádá CK LIVINGSTONE.\nMichal Kleslo, lezec: Hory střední Ameriky' } };
+  const normalized = withProviderDateRange(event);
+  assert.equal(normalized.dateAvailability, undefined);
+  assert.equal(matchesEventDateRange(normalized, '2026-11-05', '2026-11-05'), false);
 });

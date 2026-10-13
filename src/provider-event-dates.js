@@ -3,6 +3,7 @@ import { calendarDay, eventDateBounds, validCalendarDay } from './event-calendar
 const MONTHS = ['ledna', 'unora', 'brezna', 'dubna', 'kvetna', 'cervna',
   'cervence', 'srpna', 'zari', 'rijna', 'listopadu', 'prosince'];
 const fold = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const identity = value => fold(value).replace(/\b\d{4}\b/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 const day = (year, month, date) => validCalendarDay(`${year}-${String(month).padStart(2, '0')}-${String(date).padStart(2, '0')}`);
 const descriptions = event => typeof event.description === 'string' ? event.description
   : String(event.description?.cs || '');
@@ -15,12 +16,17 @@ export function declaredDescriptionEnd(event, description = descriptions(event))
       !/\b(festival|vystava|exhibition|konference|conference|veletrh|tabor)\b/.test(types)) return '';
   const { start } = eventDateBounds(event);
   if (!start) return '';
+  const title = identity(typeof event.title === 'string' ? event.title : event.title?.cs);
+  if (!title) return '';
   const text = fold(description).replace(/<[^>]*>/g, ' ').replace(/\u00a0/g, ' ');
   const candidates = new Set();
   const accept = (match, first, last) => {
     if (first !== start || !last || last <= start) return;
     // Keep sales/promotions and past editions separate from the event interval.
-    const sentence = text.slice(Math.max(0, match.index - 100), match.index);
+    const sentence = text.slice(Math.max(0, match.index - 400), match.index);
+    // A programme item may carry Festival taxonomy and a description of the
+    // whole festival. Require the ticket's own title in the range context.
+    if (!identity(sentence).includes(title)) return;
     if (/predprodej|prodej vstupenek|rezervac|registrac|early bird|sleva|sale/.test(sentence)) return;
     candidates.add(last);
   };

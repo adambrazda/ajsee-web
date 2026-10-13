@@ -1,3 +1,5 @@
+import { eventStartInstant } from './event-calendar.js';
+
 // Keep the legacy array API while carrying authoritative continuation separately.
 export function withEventPageInfo(events, pageInfo) {
   Object.defineProperty(events, 'pageInfo', { value: pageInfo, configurable: true });
@@ -5,8 +7,7 @@ export function withEventPageInfo(events, pageInfo) {
 }
 
 export function eventTime(event = {}) {
-  const raw = event.datetime || event.date || '';
-  const time = new Date(raw).getTime();
+  const time = eventStartInstant(event);
   return Number.isFinite(time) ? time : Infinity;
 }
 
@@ -16,9 +17,14 @@ export function ticketmasterPageInfo(data, { page, size, sort }) {
   const totalPages = Number(data?.page?.totalPages);
   const hasTotal = data?.page?.totalPages != null && Number.isFinite(totalPages);
   const hasMore = hasTotal ? page + 1 < totalPages : events.length >= size;
-  const times = events.map(event => new Date(event?.dates?.start?.dateTime ||
-    (event?.dates?.start?.localDate
-      ? `${event.dates.start.localDate}T${event.dates.start.localTime || '12:00:00'}` : '')).getTime())
+  const times = events.map(event => eventStartInstant({
+    datetime: event?.dates?.start?.dateTime || '',
+    dateAvailability: {
+      startLocalDate: event?.dates?.start?.localDate || '',
+      startLocalTime: event?.dates?.start?.localTime || '',
+      timezone: event?.dates?.timezone || event?._embedded?.venues?.[0]?.timezone || ''
+    }, location: { country: event?._embedded?.venues?.[0]?.country?.countryCode || '' }
+  }))
     .filter(Number.isFinite);
   return {
     hasMore, nextPage: page + 1,

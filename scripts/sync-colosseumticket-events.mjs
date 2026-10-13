@@ -1,4 +1,5 @@
 import { XMLParser } from 'fast-xml-parser';
+import { withProviderDateRange } from '../src/provider-event-dates.js';
 import {
   mkdir,
   readFile,
@@ -1468,7 +1469,9 @@ function normalizeOccurrence(
   };
 
   return {
-    event,
+    event: withProviderDateRange(event, {
+      endLocalDate: parseDate(text(term?.eventdate?.dateto))
+    }),
 
     rejectionReason:
       '',

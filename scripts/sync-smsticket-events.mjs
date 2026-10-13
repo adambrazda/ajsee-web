@@ -6,6 +6,8 @@
 // ---------------------------------------------------------
 
 import { XMLParser } from 'fast-xml-parser';
+import { withProviderDateRange } from '../src/provider-event-dates.js';
+import { isLocalEventDateAvailable } from '../src/event-calendar.js';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -177,15 +179,11 @@ function isTestEvent(event) {
 function isFutureOrActive(event) {
   const startDate = text(event?.dates?.start_date);
   const bookingEndDate = text(event?.dates?.booking_end_date);
-  const relevantDate = bookingEndDate || startDate;
-
-  if (!relevantDate) return false;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const eventDate = new Date(`${relevantDate}T23:59:59`);
-  return Number.isFinite(eventDate.getTime()) && eventDate >= today;
+  const dated = withProviderDateRange({
+    date: startDate, country: 'CZ', bookingEndsAt: bookingEndDate,
+    types: getTypes(event), description: stripHtml(decodeHtmlEntities(String(event.description || '')))
+  }, { endLocalDate: text(event?.dates?.end_date) });
+  return isLocalEventDateAvailable(dated, new Date(), { allowBooking: true });
 }
 
 async function readSmsticketImageAnalysisCache() {
@@ -288,7 +286,7 @@ function normalizeEvent(
       image
     );
 
-  return {
+  return withProviderDateRange({
     id: `smsticket-${sourceId}`,
     partner: 'smsticket',
     source: 'smsticket',
@@ -369,7 +367,7 @@ function normalizeEvent(
       provider: 'smsticket',
       param: AFFILIATE_PARAM
     }
-  };
+  }, { endLocalDate: text(event?.dates?.end_date), description: stripHtml(rawDescription) });
 }
 
 

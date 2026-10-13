@@ -1,4 +1,5 @@
 import { formatEventDateRange } from './event-availability.js';
+import { eventDateBounds, knownEventTimezone } from './event-calendar.js';
 
 function validDay(value = '') {
   const raw = String(value).trim();
@@ -40,9 +41,8 @@ export function eventLocalStart(event = {}) {
   if (data.dateTBA || data.dateTBD) return { date: '', time: '' };
 
   const raw = String(event.datetime || event.date || '').trim();
-  const zoned = venueStart(raw, data.timezone || event.timezone || '');
-  const date = validDay(data.startLocalDate) || validDay(event.date) ||
-    zoned?.date || validDay(raw.slice(0, 10));
+  const zoned = venueStart(raw, knownEventTimezone(event));
+  const date = eventDateBounds(event).start;
   if (!date || data.timeTBA || data.noSpecificTime) return { date, time: '' };
 
   let time = '';

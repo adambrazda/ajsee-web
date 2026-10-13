@@ -459,5 +459,8 @@
   "events-empty-clear": "Wyczyść filtry",
   "events-empty-remove": "Usuń „{filter}”",
   "events-empty-no-filters": "Dla tego wyboru nie ma obecnie dostępnych wydarzeń.",
-  "category-film": "Film i kino"
+  "category-film": "Film i kino",
+  "events-search-pending-title": "Wyszukiwanie nie jest jeszcze zakończone",
+  "events-search-pending-body": "Przeszukaliśmy część oferty. Kontynuuj wyszukiwanie z tymi samymi filtrami.",
+  "events-search-continue": "Kontynuuj wyszukiwanie"
 }

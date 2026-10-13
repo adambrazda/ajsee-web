@@ -438,5 +438,8 @@
       "text": "Zažijte neopakovatelnou atmosféru West Endu. Vyberte si ze slavných světových muzikálů, pokračujte k nákupu vstupenek a rovnou k plánu přidejte i prověřené ubytování v Londýně.",
       "cta": "Prohlédnout muzikály"
     }
-  }
+  },
+  "events-search-pending-title": "Hledání ještě není dokončené",
+  "events-search-pending-body": "Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.",
+  "events-search-continue": "Pokračovat v hledání"
 }

@@ -81,46 +81,26 @@ test('cards and modal can show a localized real date range; sale end is not inve
   assert.equal(formatEventDateRange(tm('2026-09-01'), 'cs'), '');
 });
 
-const homeSource = fs.readFileSync(new URL('../src/home-entry.js', import.meta.url), 'utf8');
-const eventsSource = fs.readFileSync(new URL('../src/events-entry.js', import.meta.url), 'utf8');
+
+import { createEventSearchSession } from '../src/event-search-session.js';
+import { withEventPageInfo } from '../src/event-pagination.js';
 const expiredBatch = Array.from({ length: 50 }, (_, i) => ({ ...tm('2022-01-01'), id: `old-${i}` }));
 const futureBatch = Array.from({ length: 20 }, (_, i) => ({ ...tm('2099-01-01'), id: `future-${i}` }));
+const page=(events,hasMore)=>withEventPageInfo(events,{hasMore,frontier:Date.parse('2099-01-01'),ticketmasterCursor:{streams:{}}});
 
-test('homepage fetches beyond a full expired batch, without loading FX, and preserves deduplication', async () => {
-  let calls = 0;
-  const code = homeSource.slice(homeSource.indexOf('function homePriceEventKey('), homeSource.indexOf('async function renderEvents('));
-  const run = new Function('getAllHomeEvents', 'hasActivePriceFilter', 'filterCurrentEventBatch', `
-    const HOME_PRICE_FILTER_MAX_BATCHES=3, HOME_PRICE_FILTER_API_BATCH_SIZE=50, HOME_PRICE_FILTER_TARGET_COUNT=6;
-    ${code}; return fetchHomeEventsForRender;`)(async () => ++calls === 1 ? expiredBatch : [...futureBatch, futureBatch[0]], () => false, events => filterCurrentEventBatch(events, now));
-  const result = await run('en', {});
-  assert.equal(calls, 2);
-  assert.equal(result.length, 20);
-  assert.ok(result.every(event => event.id.startsWith('future-')));
+test('shared homepage and events search refills an expired batch without fetching exchange rates',async()=>{
+ let calls=0;
+ const session=createEventSearchSession({now:()=>now,getRates:async()=>{throw new Error('must not load FX');},fetchBatch:async()=>++calls===1?page(expiredBatch,true):page([...futureBatch,futureBatch[0]],false)});
+ const result=await session.load(6);
+ assert.equal(calls,2);assert.equal(result.events.length,20);assert.ok(result.events.every(e=>e.id.startsWith('future-')));
 });
-
-test('homepage stops at its bounded request limit if all fetched batches are expired', async () => {
-  let calls = 0;
-  const code = homeSource.slice(homeSource.indexOf('function homePriceEventKey('), homeSource.indexOf('async function renderEvents('));
-  const run = new Function('getAllHomeEvents', 'hasActivePriceFilter', 'filterCurrentEventBatch', `
-    const HOME_PRICE_FILTER_MAX_BATCHES=3, HOME_PRICE_FILTER_API_BATCH_SIZE=50, HOME_PRICE_FILTER_TARGET_COUNT=6;
-    ${code}; return fetchHomeEventsForRender;`)(async () => { calls++; return expiredBatch; }, () => false, events => filterCurrentEventBatch(events, now));
-  assert.deepEqual(await run('en', {}), []);
-  assert.equal(calls, 3);
+test('expiry does not falsely exhaust a provider at the bounded request limit',async()=>{
+ let calls=0;
+ const session=createEventSearchSession({now:()=>now,fetchBatch:async()=>{calls++;return page(expiredBatch,true);}});
+ const result=await session.load(6,{maxBatches:3});assert.equal(calls,3);assert.equal(result.events.length,0);assert.equal(result.hasMore,true);
 });
-
-test('events pager counts raw batches, fills a page after expiry filtering and then stops at provider end', async () => {
-  let calls = 0;
-  const pager = { apiPage: 0, loading: false, hasMore: true, buffer: [] };
-  const code = eventsSource.slice(eventsSource.indexOf('async function fetchNextEventsBatch('), eventsSource.indexOf('function eventsPagerLabel('));
-  const deps = { eventsPager: pager, getAllEvents: async () => ++calls === 1 ? expiredBatch : futureBatch,
-    filterEventPriceBatch: events => events, filterCurrentEventBatch: events => filterCurrentEventBatch(events, now),
-    mergeEventsIntoBuffer: events => pager.buffer.push(...events), hasAiRelevance: () => false,
-    shouldPreserveSeatPlanApiOrder: () => false, sortBufferedEvents: () => {},
-    isTicketmasterRateLimited: () => false, isTicketmasterRateLimitError: () => false,
-    hasActivePriceFilter: () => false };
-  const run = new Function(...Object.keys(deps), `const EVENTS_API_BATCH_SIZE=50, EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER=5, pagination={perPage:20}; ${code}; return ensureEventsPageLoaded;`)(...Object.values(deps));
-  await run('en', { sort: 'nearest' }, 1);
-  assert.equal(calls, 2); assert.equal(pager.apiPage, 2); assert.equal(pager.buffer.length, 20);
-  assert.equal(pager.hasMore, false);
-  assert.ok(pager.buffer.every(event => event.id.startsWith('future-')));
+test('provider exhaustion after expired rows gives a definitive result only after continuation',async()=>{
+ let calls=0;
+ const session=createEventSearchSession({now:()=>now,fetchBatch:async()=>++calls===1?page(expiredBatch,true):page(futureBatch,false)});
+ const result=await session.load(20);assert.equal(calls,2);assert.equal(result.events.length,20);assert.equal(result.hasMore,false);
 });

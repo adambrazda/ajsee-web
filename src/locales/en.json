@@ -459,5 +459,8 @@
   "events-empty-clear": "Clear filters",
   "events-empty-remove": "Remove “{filter}”",
   "events-empty-no-filters": "No events are currently available for this selection.",
-  "category-film": "Film & cinema"
+  "category-film": "Film & cinema",
+  "events-search-pending-title": "Search is not complete yet",
+  "events-search-pending-body": "We have searched part of the listings. Continue searching with the same filters.",
+  "events-search-continue": "Continue searching"
 }

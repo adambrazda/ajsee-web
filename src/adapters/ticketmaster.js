@@ -15,6 +15,7 @@
 // ---------------------------------------------------------
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
+import { withEventPageInfo, ticketmasterPageInfo } from '../event-pagination.js';
 
 import {
   buildTicketmasterTaxonomy,
@@ -1413,6 +1414,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         });
 
   const putCommonParams = (qs, categoryVariant = {}) => {
+    if (filters.paginationMode === 'cursor') qs.set('paginationMode', 'cursor');
     if (filters.keyword) qs.set('keyword', String(filters.keyword));
     if (categoryVariant.segmentName) qs.set('segmentName', String(categoryVariant.segmentName));
     if (categoryVariant.classificationName) qs.set('classificationName', String(categoryVariant.classificationName));
@@ -1575,6 +1577,9 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const hasGeo = Boolean(filters.latlong || (filters.nearMeLat != null && filters.nearMeLon != null));
   const collectedRaw = [];
   let rateLimited = false;
+  const cursorMode = filters.paginationMode === 'cursor';
+  const previousStreams = filters.ticketmasterCursor?.streams || {};
+  const streams = { ...previousStreams };
 
   outer:
   for (const locTry of locales) {
@@ -1582,7 +1587,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       for (const attempt of uniqAttempts) {
         const enoughCollected = !shouldContinueAfterCollected(collectedRaw, size);
 
-        if (enoughCollected && !attempt.force) {
+        if (!cursorMode && enoughCollected && !attempt.force) {
           if (hasForcedAttempts) continue;
           break outer;
         }
@@ -1600,6 +1605,11 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         } else if (attempt.mode === 'keyword' && attempt.keyword && !filters.keyword) {
           qs.set('keyword', attempt.keyword);
         }
+
+        const streamKey = `${locTry}|${categoryVariantKey(categoryVariant)}|${keyOf(attempt)}`;
+        const previous = previousStreams[streamKey];
+        if (cursorMode && previous?.hasMore === false) continue;
+        if (cursorMode) qs.set('page', String(previous?.nextPage ?? 0));
 
         const url = `/.netlify/functions/ticketmasterEvents?${qs.toString()}`;
 
@@ -1620,6 +1630,9 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
         try {
           const data = await fetchJsonCached(url);
           const list = data?._embedded?.events || [];
+          if (cursorMode) streams[streamKey] = ticketmasterPageInfo(data, {
+            page: Number(qs.get('page')), size: Number(size), sort
+          });
 
           if (!Array.isArray(list) || !list.length) continue;
 
@@ -1642,6 +1655,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
             break outer;
           }
 
+          if (cursorMode) streams[streamKey] = { hasMore: false, nextPage: Number(qs.get('page')), frontier: null, failed: true };
           if (debugTm) {
             console.error('[Ticketmaster adapter] fetch error:', locTry, attempt, err);
           }
@@ -1676,12 +1690,12 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   }
 
   let dedupedRaw = dedupeRawEvents(collectedRaw);
-  if (!dedupedRaw.length) return [];
+  if (!dedupedRaw.length && !cursorMode) return [];
 
   dedupedRaw = filterObviouslyWrongMarketUrls(dedupedRaw, targetCountryForMarketFilter);
   dedupedRaw = sortRawEvents(dedupedRaw, sort, targetCountryForMarketFilter);
 
-  return dedupedRaw.map((ev) => mapTicketmasterEvent(ev, locale, {
+  const mapped = dedupedRaw.map((ev) => mapTicketmasterEvent(ev, locale, {
     selectedCity: tmCity,
     selectedDisplayCity: String(
       filters.cityLabel ||
@@ -1692,6 +1706,13 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     ).trim(),
     selectedCountry: selectedCityCountry
   }));
+  if (!cursorMode) return mapped;
+  const active = Object.values(streams).filter(stream => stream.hasMore);
+  const boundaries = active.map(stream => stream.frontier);
+  const frontier = boundaries.length && boundaries.every(Number.isFinite)
+    ? (sort === 'date,desc' ? Math.max(...boundaries) : Math.min(...boundaries)) : null;
+  return withEventPageInfo(mapped, { hasMore: !rateLimited && active.length > 0, frontier,
+    ticketmasterCursor: { streams }, interrupted: rateLimited || Object.values(streams).some(stream => stream.failed) });
 }
 
 export default { fetchEvents };

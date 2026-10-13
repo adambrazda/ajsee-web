@@ -123,7 +123,7 @@ for (
 
       const sync =
         scope.indexOf(
-          'syncFiltersFromForm();',
+          'syncFiltersFromForm()',
           submit
         );
 

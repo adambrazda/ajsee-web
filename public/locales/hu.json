@@ -438,5 +438,8 @@
       "text": "Éld át a West End felejthetetlen hangulatát. Válassz a világhírű musicalek közül, nézd meg a jegyvásárlási lehetőségeket, és adj hozzá megbízható londoni szállást a tervedhez.",
       "cta": "Musicalek megtekintése"
     }
-  }
+  },
+  "events-search-pending-title": "A keresés még nem fejeződött be",
+  "events-search-pending-body": "A kínálat egy részét már átnéztük. Folytasd a keresést ugyanazokkal a szűrőkkel.",
+  "events-search-continue": "Keresés folytatása"
 }

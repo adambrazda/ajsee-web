@@ -14,9 +14,6 @@ import {
   syncPriceFilterSearchParams
 } from './event-price.js';
 
-import {
-  filterEventPriceBatch
-} from './event-price-filtering.js';
 
 import {
   getRatesForPriceFilter
@@ -25,8 +22,7 @@ import {
   scrollToSharedEventResults,
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
-import { hasAiRelevance, isSoftDiscovery, rankEventsByRelevance, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
-import { filterCurrentEventBatch } from './event-availability.js';
+import { hasAiRelevance, isSoftDiscovery, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
 import { formatEventDateTime } from './event-date-time.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
@@ -78,6 +74,7 @@ import {
 import { initLangDropdown } from './utils/lang-dropdown.js';
 import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 import { getAllEvents } from './api/eventsApi.js';
+import { createEventSearchSession } from './event-search-session.js';
 import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js';
 import { countryCodeForEventCity } from './city/eventCityCatalog.js';
@@ -165,6 +162,8 @@ let currentFilters = {
 const pagination = { page: 1, perPage: EVENTS_UI_PAGE_SIZE };
 
 const eventsPager = {
+  session: null,
+  totalKnown: 0,
   filterSig: '',
   apiPage: 0,
   relevancePinnedCount: 0,
@@ -1914,6 +1913,17 @@ function renderEventsStateMessage(kind = 'rateLimit') {
 
   ensureEventsStateStyles();
 
+  if (kind === 'searchPending') {
+    resetEventsEmptyStateViewTracking();
+    const title = t('events-search-pending-title', 'Hledání ještě není dokončené');
+    const body = t('events-search-pending-body', 'Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.');
+    updateResultsCount(`${eventsPager.totalKnown}+`);
+    list.innerHTML = `<div class="ajsee-events-state" role="region" aria-labelledby="eventsPendingStateTitle"><h3 id="eventsPendingStateTitle">${esc(title)}</h3><p>${esc(body)}</p></div>`;
+    updateEventsPagerControls();
+    announce(`${title}. ${body}`);
+    return;
+  }
+
   const isRateLimit =
     kind === 'rateLimit';
 
@@ -3304,6 +3314,7 @@ function validatePriceFilterInput({
 }
 
 function syncFiltersFromForm() {
+  if (!validatePriceFilterInput({ focus: true })) return false;
   const cat =
     qs('#filter-category') ||
     qs('#events-category-filter');
@@ -3943,7 +3954,7 @@ function bindFilterFormInteractions(formEl) {
         _userInteractedWithFilters =
           true;
 
-        syncFiltersFromForm();
+        if (syncFiltersFromForm() === false) return;
         resetEventsPager();
 
         await renderAndSync({
@@ -3968,6 +3979,8 @@ function bindFilterFormInteractions(formEl) {
         _userInteractedWithFilters =
           true;
 
+        if (!validatePriceFilterInput({ focus: true })) return;
+
         const nextActive =
           audience.getAttribute(
             'aria-pressed'
@@ -3983,7 +3996,7 @@ function bindFilterFormInteractions(formEl) {
           nextActive
         );
 
-        syncFiltersFromForm();
+        if (syncFiltersFromForm() === false) return;
         resetEventsPager();
 
         await renderAndSync({
@@ -4030,12 +4043,12 @@ function bindFilterFormInteractions(formEl) {
       return;
     }
 
-    syncFiltersFromForm();
+    if (syncFiltersFromForm() === false) return;
 
     const city = getCityInputEl();
     if (city && !city.hasAttribute('readonly') && isNearMeTyped(city) && !(currentFilters.nearMeLat && currentFilters.nearMeLon)) {
       await activateNearMeViaGeo(city);
-      syncFiltersFromForm();
+      if (syncFiltersFromForm() === false) return;
     }
 
     resetEventsPager();
@@ -4869,6 +4882,7 @@ function makeFetchSig(locale, api, page, perPage) {
     perPage,
     placeType: api.placeType || '',
     category: api.category || 'all',
+    audience: api.audience || '',
     sort: api.sort || 'nearest',
     city: api.city || '',
     cityLabel: api.cityLabel || '',
@@ -4892,6 +4906,8 @@ function makeEventsPagerFilterSig(locale, api) {
 }
 
 function resetEventsPager(nextSig = '') {
+  eventsPager.session = null;
+  eventsPager.totalKnown = 0;
   eventsPager.filterSig = nextSig;
   eventsPager.apiPage = 0;
   eventsPager.relevancePinnedCount = 0;
@@ -4900,34 +4916,9 @@ function resetEventsPager(nextSig = '') {
   eventsPager.loading = false;
 }
 
-function eventBufferKey(ev, idx = 0) {
-  const id = String(ev?.id || '').trim();
-  if (id) return id;
 
-  const title = typeof ev?.title === 'string'
-    ? ev.title
-    : (ev?.title?.cs || ev?.title?.en || Object.values(ev?.title || {})[0] || '');
 
-  return [
-    ev?.partner || 'x',
-    ev?.datetime || ev?.date || '',
-    ev?.location?.city || ev?.venue?.city || '',
-    title || '',
-    idx
-  ].join('|').toLowerCase();
-}
 
-function mergeEventsIntoBuffer(nextEvents = []) {
-  if (!Array.isArray(nextEvents) || !nextEvents.length) return;
-
-  const seen = new Set(eventsPager.buffer.map((ev, idx) => eventBufferKey(ev, idx)));
-  for (const ev of nextEvents) {
-    const key = eventBufferKey(ev, eventsPager.buffer.length);
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    eventsPager.buffer.push(ev);
-  }
-}
 
 
 /* AJSEE_SEATPLAN_EVENTS_ENTRY_PRESERVE_ORDER_v1
@@ -5149,269 +5140,47 @@ function ajseeApplyProviderMixForFirstPage(events = [], options = {}) {
   return mixedFirstWindow.concat(remaining.slice(remainingIndex));
 }
 
-function sortBufferedEvents(sort = 'nearest', filters = {}) {
-  if (hasAiRelevance(filters)) {
-    // Keep already displayed pages stable when a later provider batch arrives.
-    // Rank only candidates the user has not seen yet.
-    const pinned = eventsPager.relevancePinnedCount || 0;
-    eventsPager.buffer = eventsPager.buffer.slice(0, pinned).concat(
-      rankEventsByRelevance(eventsPager.buffer.slice(pinned), filters)
-    );
-    return;
+
+
+async function fetchNextEventsBatch(locale, api, { targetCount = pagination.page * pagination.perPage, maxBatches = 1 } = {}) {
+  if (!eventsPager.session) {
+    eventsPager.session = createEventSearchSession({
+      locale, filters: api, fetchBatch: getAllEvents, getRates: getRatesForPriceFilter,
+      firstPageSize: pagination.perPage,
+      mixFirstPage: events => ajseeApplyProviderMixForFirstPage(events, { filters: api, api, pageSize: pagination.perPage })
+    });
   }
-  eventsPager.buffer.sort((a, b) => {
-    const da = new Date(a.datetime || a.date).getTime();
-    const db = new Date(b.datetime || b.date).getTime();
-    const aOk = Number.isFinite(da);
-    const bOk = Number.isFinite(db);
-
-    if (!aOk && !bOk) return 0;
-    if (!aOk) return 1;
-    if (!bOk) return -1;
-    return sort === 'latest' ? db - da : da - db;
-  });
-}
-
-async function fetchNextEventsBatch(
-  locale,
-  api,
-  {
-    priceRates =
-      null
-  } = {}
-) {
-  if (
-    eventsPager.loading ||
-    !eventsPager.hasMore
-  ) {
-    return {
-      rawCount:
-        0,
-
-      acceptedCount:
-        0
-    };
-  }
-
-  eventsPager.loading =
-    true;
-
+  const session = eventsPager.session;
+  eventsPager.loading = true;
   try {
-    const requestFilters = {
-      ...api,
-
-      page:
-        eventsPager.apiPage,
-
-      size:
-        EVENTS_API_BATCH_SIZE
-    };
-
-    const rawNextEvents =
-      await getAllEvents({
-        locale,
-
-        filters:
-          requestFilters
-      }) || [];
-
-    if (
-      isTicketmasterRateLimited() &&
-      (
-        !Array.isArray(
-          rawNextEvents
-        ) ||
-        rawNextEvents.length ===
-          0
-      )
-    ) {
-      const err =
-        new Error(
-          'Ticketmaster rate limited'
-        );
-
-      err.status =
-        429;
-
-      err.rateLimited =
-        true;
-
-      throw err;
-    }
-
-    eventsPager.apiPage +=
-      1;
-
-    if (
-      !Array.isArray(
-        rawNextEvents
-      ) ||
-      rawNextEvents.length ===
-        0
-    ) {
-      eventsPager.hasMore =
-        false;
-
-      return {
-        rawCount:
-          0,
-
-        acceptedCount:
-          0
-      };
-    }
-
-    const nextEvents =
-      filterCurrentEventBatch(filterEventPriceBatch(
-        rawNextEvents,
-        requestFilters,
-        priceRates || {}
-      ));
-
-    mergeEventsIntoBuffer(
-      nextEvents
-    );
-
-    if (
-      hasAiRelevance(requestFilters) ||
-      !shouldPreserveSeatPlanApiOrder(
-        requestFilters,
-        eventsPager.buffer
-      )
-    ) {
-      sortBufferedEvents(
-        api.sort ||
-        'nearest',
-        api
-      );
-    }
-
-    /*
-     * Important:
-     * hasMore is based on the provider/aggregation batch BEFORE
-     * the local price filter. A batch with 50 expensive events
-     * must not make AJSEE conclude that later affordable events
-     * do not exist.
-     */
-    if (
-      rawNextEvents.length <
-      EVENTS_API_BATCH_SIZE
-    ) {
-      eventsPager.hasMore =
-        false;
-    }
-
-    return {
-      rawCount:
-        rawNextEvents.length,
-
-      acceptedCount:
-        nextEvents.length
-    };
-  } catch (err) {
-    if (
-      isTicketmasterRateLimitError(
-        err
-      ) ||
-      isTicketmasterRateLimited()
-    ) {
-      eventsPager.hasMore =
-        true;
-
-      throw err;
-    }
-
-    throw err;
+    const state = await session.load(targetCount, { maxBatches });
+    if (eventsPager.session !== session) return;
+    eventsPager.buffer = state.events;
+    eventsPager.hasMore = state.hasMore;
+    eventsPager.totalKnown = state.totalKnown;
+    eventsPager.apiPage += 1;
   } finally {
-    eventsPager.loading =
-      false;
+    if (eventsPager.session === session) eventsPager.loading = false;
   }
 }
 
-async function ensureEventsPageLoaded(
-  locale,
-  api,
-  uiPage = 1
-) {
-  const needed =
-    Math.max(
-      1,
-      uiPage
-    ) *
-    pagination.perPage;
-
-  if (
-    eventsPager.buffer.length >=
-    needed
-  ) {
+async function ensureEventsPageLoaded(locale, api, uiPage = 1) {
+  const needed = Math.max(1, uiPage) * pagination.perPage;
+  if (eventsPager.buffer.length >= needed) {
+    const state = await eventsPager.session.load(needed, { maxBatches: 0 });
+    eventsPager.buffer = state.events;
     return;
   }
-
-  const priceFilterActive =
-    hasActivePriceFilter(
-      api
-    );
-
-  let priceRates =
-    null;
-
-  if (
-    priceFilterActive
-  ) {
-    try {
-      priceRates =
-        await getRatesForPriceFilter(
-          api
-        );
-    } catch (err) {
-      /*
-       * Safe degraded mode:
-       * same-currency comparisons still work.
-       * Cross-currency events are not claimed to fit
-       * without a reliable conversion rate.
-       */
-      priceRates =
-        {};
-
-      console.warn(
-        '[AJSEE price filter] FX rates unavailable; using same-currency comparisons only.',
-        err
-      );
-    }
-  }
-
-  const maxBatches =
-    priceFilterActive
-      ? EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER
-      : 3; // Fill sparse pages after excluding expired events; keep request work bounded.
-
-  let batchesLoaded =
-    0;
-
-  while (
-    eventsPager.buffer.length <
-      needed &&
-    eventsPager.hasMore &&
-    batchesLoaded <
-      maxBatches
-  ) {
-    await fetchNextEventsBatch(
-      locale,
-      api,
-      {
-        priceRates
-      }
-    );
-
-    batchesLoaded +=
-      1;
-  }
+  await fetchNextEventsBatch(locale, api, {
+    targetCount: needed,
+    maxBatches: hasActivePriceFilter(api) ? EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER : 3
+  });
 }
 
 function eventsPagerLabel() {
   const from = ((pagination.page - 1) * pagination.perPage) + 1;
   const to = Math.min(pagination.page * pagination.perPage, eventsPager.buffer.length);
-  const total = `${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`;
+  const total = `${eventsPager.totalKnown}${eventsPager.hasMore ? '+' : ''}`;
   if (!eventsPager.buffer.length) return '';
   return `${from}-${to} / ${total}`;
 }
@@ -5454,7 +5223,7 @@ function updateEventsPagerControls() {
   const canNextFromApi = eventsPager.hasMore;
   const canNext = canNextFromCache || canNextFromApi;
 
-  if (!eventsPager.buffer.length) {
+  if (!eventsPager.buffer.length && !eventsPager.hasMore) {
     host.innerHTML = '';
     host.hidden = true;
     return;
@@ -5465,7 +5234,7 @@ function updateEventsPagerControls() {
   const prevLabel = t('pagination.previous', 'Zpět');
   const nextLabel = canNextFromCache
     ? t('pagination.next', 'Další')
-    : t('pagination.loadMore', 'Načíst dalších 20');
+    : t('events-search-continue', 'Pokračovat v hledání');
 
   host.innerHTML = `
     <div class="events-pager__status">${esc(eventsPagerLabel())}</div>
@@ -5494,7 +5263,7 @@ function updateEventsPagerControls() {
     next.addEventListener('click', async () => {
       if (!canNext || eventsPager.loading) return;
       _userInteractedWithFilters = true;
-      pagination.page += 1;
+      if (shownEnd <= eventsPager.buffer.length) pagination.page += 1;
       await renderAndSync({ resetPage: false });
       scrollToSharedEventResults();
     }, { once: true });
@@ -5603,8 +5372,11 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
      * return results from independent providers such as SMS Ticket.
      */
     await ensureEventsPageLoaded(locale, api, pagination.page);
+    if (!eventsPager.hasMore && pagination.page > 1 && (pagination.page - 1) * pagination.perPage >= eventsPager.buffer.length) {
+      pagination.page = Math.max(1, Math.ceil(eventsPager.buffer.length / pagination.perPage));
+    }
 
-    if (eventsPager.buffer.length === 0 && isTicketmasterRateLimited()) {
+    if (eventsPager.buffer.length === 0 && isTicketmasterRateLimited() && !eventsPager.hasMore) {
       renderEventsStateMessage('rateLimit');
       return;
     }
@@ -5613,6 +5385,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       filterSig,
       uiPage: pagination.page,
       bufferLength: eventsPager.buffer.length,
+      totalKnown: eventsPager.totalKnown,
       hasMore: eventsPager.hasMore,
       loading: eventsPager.loading
     });
@@ -5632,21 +5405,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
      * results intentionally retain their original legacy category.
      */
 
-    if (!hasAiRelevance(api) && !shouldPreserveSeatPlanApiOrder(api, out)) {
-      if (filters.sort === 'nearest') out.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
-      else out.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
-    }
-
-    if (!isHome() && !hasAiRelevance(api)) {
-      out = ajseeApplyProviderMixForFirstPage(out, {
-        filters,
-        api,
-        pageSize: pagination.perPage || 20
-      });
-    }
-
-    _lastSearchResult = { filters, count: eventsPager.buffer.length, hasMore: eventsPager.hasMore || isTicketmasterRateLimited() };
-    updateResultsCount(`${eventsPager.buffer.length}${eventsPager.hasMore ? '+' : ''}`);
+    _lastSearchResult = { filters, count: eventsPager.totalKnown, hasMore: eventsPager.hasMore || isTicketmasterRateLimited() };
+    updateResultsCount(`${eventsPager.totalKnown}${eventsPager.hasMore ? '+' : ''}`);
 
     const isHp = isHome();
     let toRender = out;
@@ -5660,7 +5420,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     }
 
     if (!toRender.length) {
-      if (isTicketmasterRateLimited()) renderEventsStateMessage('rateLimit');
+      if (eventsPager.hasMore) renderEventsStateMessage('searchPending');
+      else if (isTicketmasterRateLimited()) renderEventsStateMessage('rateLimit');
       else renderEventsStateMessage('empty');
       return;
     }

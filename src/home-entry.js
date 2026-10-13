@@ -15,9 +15,6 @@ import {
   syncPriceFilterSearchParams
 } from './event-price.js';
 
-import {
-  filterEventPriceBatch
-} from './event-price-filtering.js';
 
 import {
   getRatesForPriceFilter
@@ -26,8 +23,8 @@ import {
   scrollToSharedEventResults,
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
-import { hasAiRelevance, isSoftDiscovery, rankEventsByRelevance, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
-import { filterCurrentEventBatch } from './event-availability.js';
+import { hasAiRelevance, isSoftDiscovery, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
+import { createEventSearchSession } from './event-search-session.js';
 import { formatEventDateTime } from './event-date-time.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
@@ -2529,6 +2526,7 @@ function updateResultsCount(total, options = {}) {
   }
 
   const count = Math.max(0, Number(total) || 0);
+  const countLabel = `${count}${options.hasMore ? '+' : ''}`;
   const visible = Math.max(0, Number(options.visible) || 0);
   const isHomePreview = !!options.isHomePreview;
   const isTruncatedHomePreview = isHomePreview && visible > 0 && count > visible;
@@ -2538,28 +2536,28 @@ function updateResultsCount(total, options = {}) {
 
   const copy = {
     cs: {
-      showing: `Ukazujeme ${visible} z ${count} výsledků`,
-      showAll: `Zobrazit všech ${count} výsledků`
+      showing: `Ukazujeme ${visible} z ${countLabel} výsledků`,
+      showAll: `Zobrazit všech ${countLabel} výsledků`
     },
     sk: {
-      showing: `Zobrazujeme ${visible} z ${count} výsledkov`,
-      showAll: `Zobraziť všetkých ${count} výsledkov`
+      showing: `Zobrazujeme ${visible} z ${countLabel} výsledkov`,
+      showAll: `Zobraziť všetkých ${countLabel} výsledkov`
     },
     en: {
-      showing: `Showing ${visible} of ${count} results`,
-      showAll: `View all ${count} results`
+      showing: `Showing ${visible} of ${countLabel} results`,
+      showAll: `View all ${countLabel} results`
     },
     de: {
-      showing: `Wir zeigen ${visible} von ${count} Ergebnissen`,
-      showAll: `Alle ${count} Ergebnisse anzeigen`
+      showing: `Wir zeigen ${visible} von ${countLabel} Ergebnissen`,
+      showAll: `Alle ${countLabel} Ergebnisse anzeigen`
     },
     pl: {
-      showing: `Pokazujemy ${visible} z ${count} wyników`,
-      showAll: `Zobacz wszystkie ${count} wyniki`
+      showing: `Pokazujemy ${visible} z ${countLabel} wyników`,
+      showAll: `Zobacz wszystkie ${countLabel} wyniki`
     },
     hu: {
-      showing: `${visible} / ${count} találat megjelenítve`,
-      showAll: `Az összes ${count} találat megtekintése`
+      showing: `${visible} / ${countLabel} találat megjelenítve`,
+      showAll: `Az összes ${countLabel} találat megtekintése`
     }
   };
 
@@ -2567,7 +2565,7 @@ function updateResultsCount(total, options = {}) {
   el.innerHTML = '';
 
   if (!isTruncatedHomePreview) {
-    el.textContent = `${label}: ${count}`;
+    el.textContent = `${label}: ${countLabel}`;
     return;
   }
 
@@ -2578,7 +2576,7 @@ function updateResultsCount(total, options = {}) {
 
   const link = document.createElement('a');
   link.className = 'events-results-count__cta btn-primary';
-  link.textContent = (copy[lang] || copy.en).showAll;
+  link.textContent = options.hasMore ? t('events-search-continue', 'Pokračovat v hledání') : (copy[lang] || copy.en).showAll;
 
   try {
     const targetLang = ['en', 'de', 'sk', 'pl', 'hu'].includes(lang) ? lang : '';
@@ -3042,6 +3040,7 @@ function validatePriceFilterInput({
 }
 
 function syncFiltersFromForm() {
+  if (!validatePriceFilterInput({ focus: true })) return false;
   const cat = qs('#filter-category') || qs('#events-category-filter');
   const audience = qs('#filter-audience-family');
   const sort = qs('#filter-sort') || qs('#events-sort-filter');
@@ -4187,224 +4186,16 @@ function makeFetchSig(locale, api, page, perPage) {
   });
 }
 
-function homePriceEventKey(
-  event,
-  index = 0
-) {
-  const id =
-    String(
-      event?.id ||
-      ''
-    ).trim();
 
-  if (id) {
-    return id;
-  }
 
-  const title =
-    typeof event?.title ===
-      'string'
-      ? event.title
-      : (
-          event?.title?.cs ||
-          event?.title?.en ||
-          Object.values(
-            event?.title ||
-            {}
-          )[0] ||
-          ''
-        );
-
-  return [
-    event?.partner ||
-      event?.source ||
-      'x',
-
-    event?.datetime ||
-      event?.date ||
-      '',
-
-    event?.location?.city ||
-      event?.venue?.city ||
-      '',
-
-    title,
-
-    event?.tickets ||
-      event?.url ||
-      '',
-
-    index
-  ]
-    .join('|')
-    .toLowerCase();
-}
-
-async function fetchHomeEventsForRender(
-  locale,
-  api
-) {
-  /*
-   * Normally one batch is enough. If expired events fill that batch,
-   * continue within the existing request bound without fetching FX rates.
-   */
-  if (
-    !hasActivePriceFilter(
-      api
-    )
-  ) {
-    const collected = [];
-    const seen = new Set();
-    for (let page = 0; page < HOME_PRICE_FILTER_MAX_BATCHES; page += 1) {
-      const rawEvents = await getAllHomeEvents({
-        locale, filters: { ...api, page, size: HOME_PRICE_FILTER_API_BATCH_SIZE }
-      }) || [];
-      for (const [index, event] of filterCurrentEventBatch(rawEvents).entries()) {
-        const key = homePriceEventKey(event, index);
-        if (seen.has(key)) continue;
-        seen.add(key);
-        collected.push(event);
-      }
-      if (collected.length >= HOME_PRICE_FILTER_TARGET_COUNT ||
-          rawEvents.length < HOME_PRICE_FILTER_API_BATCH_SIZE) break;
-    }
-    return collected;
-  }
-
-  let priceRates =
-    null;
-
-  try {
-    priceRates =
-      await getRatesForPriceFilter(
-        api
-      );
-  } catch (err) {
-    /*
-     * Safe degraded mode:
-     * same-currency comparisons remain valid.
-     * Cross-currency events are not claimed to fit
-     * without reliable FX data.
-     */
-    priceRates =
-      {};
-
-    console.warn(
-      '[AJSEE price filter] Homepage FX rates unavailable; using same-currency comparisons only.',
-      err
-    );
-  }
-
-  const collected =
-    [];
-
-  const seen =
-    new Set();
-
-  for (
-    let page = 0;
-    page <
-      HOME_PRICE_FILTER_MAX_BATCHES;
-    page += 1
-  ) {
-    const requestFilters = {
-      ...api,
-
-      page,
-
-      size:
-        HOME_PRICE_FILTER_API_BATCH_SIZE
-    };
-
-    const rawEvents =
-      await getAllHomeEvents({
-        locale,
-
-        filters:
-          requestFilters
-      }) ||
-      [];
-
-    if (
-      !Array.isArray(
-        rawEvents
-      ) ||
-      rawEvents.length ===
-        0
-    ) {
-      break;
-    }
-
-    const acceptedEvents =
-      filterCurrentEventBatch(filterEventPriceBatch(
-        rawEvents,
-        requestFilters,
-        priceRates || {}
-      ));
-
-    for (
-      let index = 0;
-      index <
-        acceptedEvents.length;
-      index += 1
-    ) {
-      const event =
-        acceptedEvents[
-          index
-        ];
-
-      const key =
-        homePriceEventKey(
-          event,
-          index
-        );
-
-      if (
-        !key ||
-        seen.has(
-          key
-        )
-      ) {
-        continue;
-      }
-
-      seen.add(
-        key
-      );
-
-      collected.push(
-        event
-      );
-
-      if (
-        collected.length >=
-        HOME_PRICE_FILTER_TARGET_COUNT
-      ) {
-        break;
-      }
-    }
-
-    if (
-      collected.length >=
-      HOME_PRICE_FILTER_TARGET_COUNT
-    ) {
-      break;
-    }
-
-    /*
-     * As on /events, termination is based on the raw
-     * unfiltered aggregation batch, never on the number
-     * of affordable events.
-     */
-    if (
-      rawEvents.length <
-      HOME_PRICE_FILTER_API_BATCH_SIZE
-    ) {
-      break;
-    }
-  }
-
-  return collected;
+async function fetchHomeEventsForRender(locale, api) {
+  const session = createEventSearchSession({
+    locale, filters: api, fetchBatch: getAllHomeEvents,
+    getRates: getRatesForPriceFilter, firstPageSize: HOME_PRICE_FILTER_TARGET_COUNT
+  });
+  const state = await session.load(HOME_PRICE_FILTER_TARGET_COUNT, { maxBatches: HOME_PRICE_FILTER_MAX_BATCHES });
+  Object.defineProperty(state.events, 'searchState', { value: { hasMore: state.hasMore, totalKnown: state.totalKnown } });
+  return state.events;
 }
 
 async function renderEvents(locale = 'cs', filters = currentFilters) {
@@ -4466,13 +4257,6 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
     let out = [...events];
 
-    if (hasAiRelevance(filters)) {
-      out = rankEventsByRelevance(out, filters);
-    } else if (filters.sort === 'nearest') {
-      out.sort((a, b) => new Date(a.datetime || a.date) - new Date(b.datetime || b.date));
-    } else {
-      out.sort((a, b) => new Date(b.datetime || b.date) - new Date(a.datetime || a.date));
-    }
     const isHp = isHome();
     let toRender = out;
 
@@ -4485,10 +4269,17 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
 const modalStore = new Map();
 
-    updateResultsCount(out.length, {
+    updateResultsCount(events.searchState?.totalKnown ?? out.length, {
       visible: toRender.length,
-      isHomePreview: true
+      isHomePreview: true,
+      hasMore: events.searchState?.hasMore
     });
+    if (!toRender.length && events.searchState?.hasMore) {
+      const href = (currentLang === 'cs' ? '/events/' : `/${currentLang}/events/`) + location.search;
+      list.innerHTML = `<div role="status"><h3>${esc(t('events-search-pending-title', 'Hledání ještě není dokončené'))}</h3><p>${esc(t('events-search-pending-body', 'Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.'))}</p><a class="btn" href="${esc(href)}">${esc(t('events-search-continue', 'Pokračovat v hledání'))}</a></div>`;
+      _lastSearchResult = { filters, count: events.searchState.totalKnown, hasMore: true };
+      return;
+    }
 ensureSharedEventGridStyles();
 
 list.innerHTML = toRender.map((ev, index) => {
@@ -4603,8 +4394,8 @@ qsa('.js-event-detail', list).forEach(btn => {
 });
 
     if (out.length || !(window.__ajsee?.tmRateLimit?.until > Date.now())) {
-      // Homepage is a bounded preview; this is never a total inventory count.
-      _lastSearchResult = { filters, count: out.length, hasMore: true };
+      _lastSearchResult = { filters, count: events.searchState?.totalKnown ?? out.length,
+        hasMore: events.searchState?.hasMore || !!(window.__ajsee?.tmRateLimit?.until > Date.now()) };
     }
     wireSharedEventImageFraming(list);
     wireSharedEventCardAnalytics(list);
@@ -5596,7 +5387,7 @@ function bindFilterFormInteractions(formEl) {
       async () => {
         _userInteractedWithFilters = true;
 
-        syncFiltersFromForm();
+        if (syncFiltersFromForm() === false) return;
 
         await renderAndSync({
           resetPage: true
@@ -5616,6 +5407,8 @@ function bindFilterFormInteractions(formEl) {
       async () => {
         _userInteractedWithFilters = true;
 
+        if (!validatePriceFilterInput({ focus: true })) return;
+
         const nextActive =
           audience.getAttribute(
             'aria-pressed'
@@ -5631,7 +5424,7 @@ function bindFilterFormInteractions(formEl) {
           nextActive
         );
 
-        syncFiltersFromForm();
+        if (syncFiltersFromForm() === false) return;
 
         await renderAndSync({
           resetPage: true
@@ -5691,7 +5484,7 @@ function bindFilterFormInteractions(formEl) {
       return;
     }
 
-    syncFiltersFromForm();
+    if (syncFiltersFromForm() === false) return;
 
     const city = getCityInputEl();
 
@@ -5705,7 +5498,7 @@ function bindFilterFormInteractions(formEl) {
       )
     ) {
       await activateNearMeViaGeo(city);
-      syncFiltersFromForm();
+      if (syncFiltersFromForm() === false) return;
     }
 
     await renderAndSync({

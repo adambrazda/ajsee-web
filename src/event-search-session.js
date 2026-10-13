@@ -6,6 +6,9 @@ import { hasAiRelevance, rankEventsByRelevance } from './search/event-relevance.
 import { eventTime } from './event-pagination.js';
 
 function eventKey(event) {
+  // Exact occurrence merging happens before pagination. Distinct IDs from
+  // one provider must remain distinct even when their title and time match.
+  if (event.id != null && event.id !== '') return String(event.id);
   const occurrence = exactCrossProviderOccurrenceKey(event);
   return occurrence ? `occurrence:${occurrence}` : String(event.id || [
     event.partner, event.datetime || event.date, event.location?.city,

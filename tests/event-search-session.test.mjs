@@ -59,6 +59,17 @@ test('local price filtering considers a cheap event beyond the first 300 candida
   assert.equal(ratesCalls, 1);
 });
 
+test('distinct provider IDs with the same title, city and time survive a page boundary', async () => {
+  const events = ['one', 'two'].map(id => ({
+    ...event(id, 1, 500, 'colosseumticket'), title: 'Parallel workshop'
+  }));
+  const session = createEventSearchSession({ fetchBatch: async () => batch(events) });
+  const first = await session.load(1);
+  assert.equal(first.totalKnown, 2);
+  const next = await session.load(2);
+  assert.deepEqual(next.events.map(e => e.id), ['one', 'two']);
+});
+
 test('zero affordable results remain resumable when the bounded remote search is incomplete', async () => {
   let calls = 0, ratesCalls = 0;
   const session = createEventSearchSession({ filters: { maxPrice: 100, priceCurrency: 'CZK' },

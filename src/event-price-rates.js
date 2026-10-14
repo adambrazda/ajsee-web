@@ -1,6 +1,7 @@
 import {
   hasActivePriceFilter
 } from './event-price.js';
+import { withRequestDeadline } from './provider-request.js';
 
 const REQUIRED_CURRENCIES =
   Object.freeze([
@@ -110,7 +111,7 @@ export function createEventPriceRatesClient({
   let inflight =
     null;
 
-  async function loadFresh() {
+  async function loadFresh(signal) {
     if (
       typeof fetchImpl !==
       'function'
@@ -124,6 +125,7 @@ export function createEventPriceRatesClient({
       await fetchImpl(
         endpoint,
         {
+          signal,
           method:
             'GET',
 
@@ -203,7 +205,7 @@ export function createEventPriceRatesClient({
     }
 
     inflight =
-      loadFresh();
+      withRequestDeadline(signal => loadFresh(signal));
 
     try {
       return await inflight;

@@ -442,5 +442,8 @@
   "events-found": "Found",
   "events-search-pending-title": "Search is not complete yet",
   "events-search-pending-body": "We have searched part of the listings. Continue searching with the same filters.",
-  "events-search-continue": "Continue searching"
+  "events-search-continue": "Continue searching",
+  "events-search-incomplete": "These listings are incomplete. Some sources could not be loaded. Try searching again.",
+  "events-search-retry": "Try again",
+  "events-search-ranking-partial": "Relevance is based on listings searched so far. Continuing the search may find better matches."
 }

@@ -441,5 +441,8 @@
   },
   "events-search-pending-title": "A keresés még nem fejeződött be",
   "events-search-pending-body": "A kínálat egy részét már átnéztük. Folytasd a keresést ugyanazokkal a szűrőkkel.",
-  "events-search-continue": "Keresés folytatása"
+  "events-search-continue": "Keresés folytatása",
+  "events-search-incomplete": "A kínálat nem teljes. Egyes forrásokat nem sikerült betölteni. Próbáld újra a keresést.",
+  "events-search-retry": "Újrapróbálás",
+  "events-search-ranking-partial": "A találatok sorrendje az eddig átnézett kínálaton alapul. A keresés folytatása jobb találatokat hozhat."
 }

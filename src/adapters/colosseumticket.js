@@ -16,6 +16,7 @@ import {
 } from '../search/keyword-match.js';
 import { isLocalEventDateAvailable, matchesEventDateRange } from '../event-calendar.js';
 import { withProviderDateRange } from '../provider-event-dates.js';
+import { fetchProviderJson } from '../provider-request.js';
 
 
 const DEFAULT_DATA_URL =
@@ -292,33 +293,7 @@ async function loadDataUrl(
   const promise =
     (async () => {
       try {
-        const response =
-          await fetch(
-            dataUrl,
-            {
-              cache:
-                'default'
-            }
-          );
-
-        if (!response.ok) {
-          dataCache.set(
-            dataUrl,
-            null
-          );
-
-          return null;
-        }
-
-        const payload =
-          await response.json();
-
-        const events =
-          Array.isArray(
-            payload?.events
-          )
-            ? payload.events
-            : [];
+        const events = await fetchProviderJson(dataUrl);
 
         dataCache.set(
           dataUrl,
@@ -332,11 +307,6 @@ async function loadDataUrl(
             dataUrl +
             ':',
           error
-        );
-
-        dataCache.set(
-          dataUrl,
-          null
         );
 
         return null;
@@ -395,7 +365,7 @@ async function loadData(
     }
   }
 
-  return [];
+  throw new Error('ColosseumTicket feed unavailable');
 }
 
 

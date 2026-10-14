@@ -34,7 +34,7 @@ test(
 
     assert.match(
       eventsApiSource,
-      /AJSEE_COLOSSEUM_PROVIDER_ISOLATION_v1/
+      /runProvider\('colosseumticket'/
     );
   }
 );
@@ -71,7 +71,7 @@ test(
   () => {
     assert.match(
       eventsApiSource,
-      /try\s*\{[\s\S]*fetchColosseumTicketEvents[\s\S]*\}\s*catch\s*\(e\)/
+      /runProvider\('colosseumticket',\s*\(\) => fetchColosseumTicketEvents/
     );
   }
 );
@@ -144,31 +144,6 @@ test(
       /const ENABLE_COLOSSEUMTICKET\s*=\s*true;/
     );
 
-    const providerStart =
-      eventsApiSource.indexOf(
-        '// --- ColosseumTicket ---'
-      );
-
-    const providerEnd =
-      eventsApiSource.indexOf(
-        '// --- SeatPlan ---',
-        providerStart
-      );
-
-    assert.ok(
-      providerStart >= 0 &&
-      providerEnd > providerStart
-    );
-
-    const providerBlock =
-      eventsApiSource.slice(
-        providerStart,
-        providerEnd
-      );
-
-    assert.match(
-      providerBlock,
-      /if\s*\(\s*ENABLE_COLOSSEUMTICKET\s*\)/
-    );
+    assert.match(eventsApiSource, /ENABLE_COLOSSEUMTICKET\s*\?\s*runProvider\('colosseumticket'/);
   }
 );

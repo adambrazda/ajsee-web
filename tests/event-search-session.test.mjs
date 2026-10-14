@@ -137,3 +137,48 @@ test('upstream totals and proxy-preserved page state survive filtering and dedup
   const saved = { hasMore: true, nextPage: 3, frontier: 500 };
   assert.equal(ticketmasterPageInfo({ _ajseePageInfo: saved, page: { totalPages: 0 } }, { page: 2, size: 50 }), saved);
 });
+
+test('a failed source releases partial local data and requires a fresh search for ordering', async () => {
+  let calls = 0;
+  const session = createEventSearchSession({ fetchBatch: async () => {
+    calls++;
+    return withEventPageInfo([event('available-local', 3, 500, 'smsticket')], {
+      hasMore: true, frontier: null, interrupted: true,
+      ticketmasterCursor: { streams: { retry: { hasMore: true, nextPage: 0, frontier: null, failed: true } } }
+    });
+  } });
+  const result = await session.load(20);
+  assert.equal(calls, 1, 'a timeout must not trigger three automatic retries');
+  assert.deepEqual(result.events.map(e => e.id), ['available-local']);
+  assert.equal(result.incomplete, true);
+  assert.equal(result.pending, true);
+  assert.equal(result.hasMore, false, 'continuation cannot append unknown earlier events behind a published page');
+  await session.load(40);
+  assert.equal(calls, 1);
+});
+
+test('a failed source never turns an empty partial search into definitive zero', async () => {
+  const session = createEventSearchSession({ fetchBatch: async () => withEventPageInfo([], {
+    hasMore: false, failedProviders: ['colosseumticket'], ticketmasterCursor: { streams: {} }
+  }) });
+  const result = await session.load(6);
+  assert.equal(result.events.length, 0);
+  assert.equal(result.incomplete, true);
+  assert.equal(result.pending, true);
+});
+
+test('exchange rates and providers start together rather than adding their latency', async () => {
+  let finishRates;
+  let providerStarted = false;
+  const session = createEventSearchSession({ filters: { maxPrice: 100, priceCurrency: 'CZK' },
+    getRates: () => new Promise(resolve => { finishRates = resolve; }),
+    fetchBatch: async () => { providerStarted = true; return batch([event('local', 1, 50)]); }
+  });
+  const running = session.load(6);
+  await new Promise(resolve => setImmediate(resolve));
+  const startedBeforeRates = providerStarted;
+  finishRates({});
+  const result = await running;
+  assert.equal(startedBeforeRates, true);
+  assert.deepEqual(result.events.map(e => e.id), ['local']);
+});

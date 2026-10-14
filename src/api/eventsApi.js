@@ -31,11 +31,12 @@ import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
 import { canonForInputCity, guessCountryCodeFromCity, matchesCityIdentity } from '../city/canonical.js';
 import { loadEventCityCatalog, countryCodeForEventCity } from '../city/eventCityCatalog.js';
 import { matchesEventDiscoveryFilters } from '../taxonomy/event-filtering.js';
-import { hasAiRelevance, isSoftDiscovery, providerSearchFilters, rankEventsByRelevance } from '../search/event-relevance.js';
+import { hasAiRelevance, isSoftDiscovery, providerSearchFilters, rankEventsByRelevance, ticketmasterDiscoveryKeywords } from '../search/event-relevance.js';
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
 import { mergeExactCrossProviderOccurrences } from '../event-cross-provider-merge.js';
 import { withEventPageInfo } from '../event-pagination.js';
 import { matchesEventDateRange } from '../event-calendar.js';
+import { withRequestDeadline } from '../provider-request.js';
 
 // DEV detekce (localhost/Vite)
 const isDev =
@@ -758,6 +759,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   // A meaningful artist/event keyword without an active place filter should
   // be discoverable across Ticketmaster markets. Keep the normal CZ/default
   // country for local providers and for ordinary no-keyword discovery.
+  const discoveryKeywords = ticketmasterDiscoveryKeywords(filters);
   const providerFilters = providerSearchFilters(filters);
   const normalizedKeyword = String(
     providerFilters.keyword ??
@@ -789,7 +791,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
       'cityradius';
 
   const shouldUseGlobalTicketmasterKeywordSearch =
-    normalizedKeyword.length >= 2 &&
+    (normalizedKeyword.length >= 2 || discoveryKeywords.length > 0) &&
     !hasExplicitPlaceFilter &&
     !hasNearMeFilter;
 
@@ -800,6 +802,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     category: filters.category ?? filters.segment ?? 'all',
     audience: filters.audience ?? '',
     keyword: normalizedKeyword,
+    discoveryKeywords,
     // KlĂ­ÄŤovĂˇ zmÄ›na:
     // pokud uĹľivatel zadal "Francie", neposĂ­lĂˇme to dĂˇl jako city.
     city: upstreamCity,
@@ -822,137 +825,30 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
         }
       : upstreamFilters;
 
-// --- Ticketmaster ---
-try {
-  const tm = await fetchTicketmasterEvents({
-    locale: loc,
-    filters: ticketmasterFilters
+  // Start independent providers together. Preserve provider order when combining
+  // results, regardless of response order, so equal-score ties remain stable.
+  const failures = [];
+  const remainingMs = Number.isFinite(filters.providerDeadline)
+    ? Math.max(1, Math.min(6500, filters.providerDeadline - Date.now())) : 6500;
+  const runProvider = (provider, operation) => withRequestDeadline(operation, remainingMs).catch(error => {
+    failures.push(provider);
+    if (!isRateLimitError(error)) console.warn(`[eventsApi] ${provider} unavailable:`, error);
+    return [];
   });
-
-  if (Array.isArray(tm)) {
-    all = all.concat(tm);
-    if (tm.pageInfo) pageInfo = tm.pageInfo;
-  }
-} catch (e) {
-  if (isRateLimitError(e)) {
-    /*
-     * AJSEE_PROVIDER_ISOLATION_v1
-     *
-     * Ticketmaster rate limiting must not abort the whole aggregation.
-     * The Ticketmaster adapter already exposes its cooldown state, so the UI
-     * can still show a rate-limit message when no other provider has results.
-     *
-     * Continue here so SMS Ticket and any other independent providers can
-     * still return usable events.
-     */
-    if (isDev) {
-      console.warn(
-        '[eventsApi] Ticketmaster is rate limited; continuing with other providers.',
-        e
-      );
-    }
-  } else {
-    console.warn('[eventsApi] Ticketmaster fetch failed:', e);
-  }
-}
-
-
-// --- smsticket ---
-// AJSEE_SKIP_SMSTICKET_NON_CZSK_INLINE_v3
-// SMS Ticket is a CZ/SK local affiliate source.
-// Skip its large static feed for explicit non-CZ/SK contexts such as London/GB.
-var ajseeSmsTicketCityText = String([
-  filters && filters.city,
-  filters && filters.cityLabel,
-  filters && filters.location
-].filter(Boolean).join(' '))
-  .trim()
-  .toLowerCase()
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '');
-
-var ajseeSmsTicketCc = String(
-  (localProviderFilters && (
-    localProviderFilters.cityCountryCode ||
-    localProviderFilters.cityCc ||
-    localProviderFilters.countryCode ||
-    localProviderFilters.country
-  )) ||
-  ''
-).trim().toUpperCase();
-
-var ajseeSkipSmsTicket =
-  ajseeSmsTicketCityText.includes('london') ||
-  ajseeSmsTicketCityText.includes('west end') ||
-  (ajseeSmsTicketCc && ajseeSmsTicketCc !== 'CZ' && ajseeSmsTicketCc !== 'SK');
-
-if (!ajseeSkipSmsTicket) {
-  try {
-    const smsticket = await fetchSmsticketEvents({
-      locale: loc,
-      filters: localProviderFilters
-    });
-
-    if (Array.isArray(smsticket)) {
-      all = all.concat(smsticket);
-    }
-  } catch (e) {
-    console.warn('[eventsApi] smsticket fetch failed:', e);
-  }
-}
-
-// --- ColosseumTicket ---
-// AJSEE_COLOSSEUM_PROVIDER_ISOLATION_v1
-//
-// ColosseumTicket is an independent static-feed provider currently scoped by AJSEE to CZ.
-// Always pass localProviderFilters:
-// - Ticketmaster global keyword search must remain Ticketmaster-only.
-// - explicit non-CZ and Near Me queries are rejected by the adapter
-//   before any Colosseum static feed is loaded.
-// - provider failure must never abort the other providers.
-if (ENABLE_COLOSSEUMTICKET) {
-  try {
-    const colosseumticket =
-      await fetchColosseumTicketEvents({
-        locale: loc,
-        filters: localProviderFilters
-      });
-
-    if (
-      Array.isArray(
-        colosseumticket
-      )
-    ) {
-      all =
-        all.concat(
-          colosseumticket
-        );
-    }
-  } catch (e) {
-    console.warn(
-      '[eventsApi] ColosseumTicket fetch failed:',
-      e
-    );
-  }
-}
-
-// --- SeatPlan ---
-// Disabled: London theatre/musical ticket sales are now handled through
-// the AJSEE partner purchase page powered by TodayTix/Encore.
-if (ENABLE_SEATPLAN) {
-  try {
-    const seatplan = await fetchSeatPlanEvents({
-      locale: loc,
-      filters: localProviderFilters
-    });
-
-    if (Array.isArray(seatplan)) {
-      all = all.concat(seatplan);
-    }
-  } catch (e) {
-    console.warn('[eventsApi] SeatPlan fetch failed:', e);
-  }
-}
+  const localCountry = String(localProviderFilters.cityCountryCode || localProviderFilters.countryCode || '').toUpperCase();
+  const localCity = String([filters.city, filters.cityLabel, filters.location].filter(Boolean).join(' ')).toLowerCase();
+  const skipSms = localCity.includes('london') || localCity.includes('west end') ||
+    (localCountry && !['CZ', 'SK'].includes(localCountry));
+  const [ticketmaster, smsticket, colosseumticket, seatplan] = await Promise.all([
+    runProvider('ticketmaster', () => fetchTicketmasterEvents({ locale: loc, filters: ticketmasterFilters })),
+    skipSms ? [] : runProvider('smsticket', () => fetchSmsticketEvents({ locale: loc, filters: localProviderFilters })),
+    ENABLE_COLOSSEUMTICKET ? runProvider('colosseumticket', () => fetchColosseumTicketEvents({ locale: loc, filters: localProviderFilters })) : [],
+    ENABLE_SEATPLAN ? runProvider('seatplan', () => fetchSeatPlanEvents({ locale: loc, filters: localProviderFilters })) : []
+  ]);
+  if (ticketmaster.pageInfo) pageInfo = ticketmaster.pageInfo;
+  pageInfo = { ...pageInfo, failedProviders: failures,
+    interrupted: pageInfo.interrupted === true || failures.length > 0 };
+  all = all.concat(ticketmaster, smsticket, colosseumticket, seatplan);
 
   // --- Demo zdroj v DEV ---
   if (isDev) {

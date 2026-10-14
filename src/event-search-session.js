@@ -25,6 +25,7 @@ export function createEventSearchSession({ locale = 'cs', filters = {}, fetchBat
   let cursor = null;
   let started = false;
   let hasMore = true;
+  let incomplete = false;
   let frontier = null;
   let published = [];
   let ratesPromise = null;
@@ -34,7 +35,7 @@ export function createEventSearchSession({ locale = 'cs', filters = {}, fetchBat
   let cachedMinute = -1;
 
   async function rates() {
-    if (!hasActivePriceFilter(searchFilters)) return {};
+    if (!hasActivePriceFilter(searchFilters)) return currentRates;
     if (!ratesPromise) ratesPromise = Promise.resolve().then(() => getRates(searchFilters)).catch(err => {
       console.warn('[AJSEE price filter] FX rates unavailable; using same-currency comparisons only.', err);
       return {};
@@ -77,35 +78,45 @@ export function createEventSearchSession({ locale = 'cs', filters = {}, fetchBat
 
   function snapshot() {
     const { all, rest } = available();
-    return { events: published.concat(rest), hasMore, totalKnown: all.length,
-      pending: hasMore, pageInfo: lastPageInfo };
+    return { events: published.concat(rest), hasMore, incomplete, rankingPartial: hasMore && hasAiRelevance(searchFilters), totalKnown: all.length,
+      pending: hasMore || incomplete, pageInfo: lastPageInfo };
   }
 
   async function load(targetCount, { maxBatches = 3 } = {}) {
     if (inflight) { await inflight; return load(targetCount, { maxBatches }); }
     const target = Math.max(1, Number(targetCount) || 1);
     inflight = (async () => {
-      const nextRates = await rates();
-      if (nextRates !== currentRates) orderedCache = null;
-      currentRates = nextRates;
+      const providerDeadline = Date.now() + 6500;
+      const ratesReady = rates();
       let batches = 0;
-      while (hasMore && (published.length + available().rest.length < target || !started) && batches < maxBatches) {
-        const batch = await fetchBatch({ locale, filters: {
+      while (hasMore && (published.length + available().rest.length < target || !started || lastPageInfo?.discoveryPending) && batches < maxBatches) {
+        if (started && Date.now() >= providerDeadline) break;
+        const [batch, nextRates] = await Promise.all([fetchBatch({ locale, filters: {
           ...searchFilters, paginationMode: 'cursor', allLocalEvents: true, size: 50,
+          providerDeadline,
           ticketmasterCursor: cursor,
           includeSmsticket: !started && searchFilters.includeSmsticket !== false,
           includeColosseumticket: !started && searchFilters.includeColosseumticket !== false
-        } });
+        } }), ratesReady]);
+        if (nextRates !== currentRates) orderedCache = null;
+        currentRates = nextRates;
         if (!Array.isArray(batch) || !batch.pageInfo) throw new Error('Event continuation metadata unavailable');
         for (const event of batch) candidates.set(String(event.id || eventKey(event)), event);
         orderedCache = null;
         lastPageInfo = batch.pageInfo;
         cursor = lastPageInfo.ticketmasterCursor;
-        hasMore = lastPageInfo.hasMore === true;
+        incomplete = lastPageInfo.interrupted === true || lastPageInfo.failedProviders?.length > 0;
+        // A failed source cannot establish the order of unseen remote events.
+        // Release available data as explicitly partial, then retry in a fresh
+        // session rather than append earlier events behind published pages.
+        hasMore = lastPageInfo.hasMore === true && !incomplete;
         frontier = lastPageInfo.frontier;
         started = true;
         batches += 1;
       }
+      const nextRates = await ratesReady;
+      if (nextRates !== currentRates) orderedCache = null;
+      currentRates = nextRates;
       let { rest } = available();
       if (!published.length && mixFirstPage && !hasAiRelevance(searchFilters)) {
         rest = mixFirstPage(rest);

@@ -49,6 +49,19 @@ function validPayload(
   };
 }
 
+test('a stuck FX response times out, aborts, and allows a later retry', async () => {
+  let broken = true;
+  let signal;
+  const client = createEventPriceRatesClient({ fetchImpl: async (_url, options) => {
+    signal = options.signal;
+    return { ok: true, json: () => broken ? new Promise(() => {}) : Promise.resolve(validPayload()) };
+  } });
+  await assert.rejects(client.getSnapshot(), { code: 'PROVIDER_TIMEOUT' });
+  assert.equal(signal.aborted, true);
+  broken = false;
+  assert.equal((await client.getSnapshot()).rates.CZK, 24.153);
+});
+
 test(
   'normalizes a valid event-price FX snapshot',
   () => {

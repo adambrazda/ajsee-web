@@ -441,5 +441,8 @@
   },
   "events-search-pending-title": "Vyhľadávanie ešte nie je dokončené",
   "events-search-pending-body": "Zatiaľ sme prešli časť ponuky. Pokračujte vo vyhľadávaní s rovnakými filtrami.",
-  "events-search-continue": "Pokračovať vo vyhľadávaní"
+  "events-search-continue": "Pokračovať vo vyhľadávaní",
+  "events-search-incomplete": "Ponuka je neúplná. Niektoré zdroje sa nepodarilo načítať. Skúste hľadanie znova.",
+  "events-search-retry": "Skúsiť znova",
+  "events-search-ranking-partial": "Poradie podľa zhody vychádza z doteraz prehľadanej ponuky. Ďalšie hľadanie môže nájsť vhodnejšie akcie."
 }

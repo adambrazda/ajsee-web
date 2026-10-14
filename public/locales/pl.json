@@ -441,5 +441,8 @@
   },
   "events-search-pending-title": "Wyszukiwanie nie jest jeszcze zakończone",
   "events-search-pending-body": "Przeszukaliśmy część oferty. Kontynuuj wyszukiwanie z tymi samymi filtrami.",
-  "events-search-continue": "Kontynuuj wyszukiwanie"
+  "events-search-continue": "Kontynuuj wyszukiwanie",
+  "events-search-incomplete": "Oferta jest niepełna. Nie udało się wczytać niektórych źródeł. Spróbuj wyszukać ponownie.",
+  "events-search-retry": "Spróbuj ponownie",
+  "events-search-ranking-partial": "Kolejność trafności opiera się na dotychczas przeszukanej ofercie. Dalsze wyszukiwanie może znaleźć lepsze dopasowania."
 }

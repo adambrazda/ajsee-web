@@ -33,6 +33,38 @@ test('an exhausted zero-match search hides pagination', () => {
   c.dom.window.close();
 });
 
+test('a failed source shows a retry action and an explicitly incomplete count', async () => {
+  const c = controls([], false);
+  let resets = 0;
+  c.eventsPager.incomplete = true;
+  const update = entryFunction('events-entry.js', 'updateEventsPagerControls', {
+    isHome: () => false, injectOnce() {}, ensureEventsPagerHost: () => c.host,
+    pagination: c.pagination, eventsPager: c.eventsPager, t: (key, fallback) => fallback,
+    esc: String, eventsPagerLabel: () => '', resetEventsPager: () => { resets++; c.eventsPager.incomplete = false; },
+    renderAndSync: async () => {}, _lastFetchSig: 'old'
+  });
+  update();
+  assert.equal(c.host.hidden, false);
+  assert.match(c.host.textContent, /Nabídka je neúplná/);
+  const retry = c.host.querySelector('[data-events-search-retry]');
+  assert.ok(retry);
+  c.pagination.page = 3;
+  retry.click();
+  await Promise.resolve();
+  assert.equal(resets, 1);
+  assert.equal(c.pagination.page, 1);
+  c.dom.window.close();
+});
+
+test('partial AI ranking is disclosed while continuation remains available', () => {
+  const c = controls([{ id: 'first' }], true);
+  c.eventsPager.rankingPartial = true;
+  c.update();
+  assert.match(c.host.textContent, /dosud prohledané nabídky/);
+  assert.equal(c.host.querySelector('[data-events-page-next]').disabled, false);
+  c.dom.window.close();
+});
+
 test('continuing a partially filled page does not skip its unfilled slots', async () => {
   const c = controls(Array.from({length:19}, (_,i)=>({id:String(i)})), true);
   c.host.querySelector('[data-events-page-next]').click();

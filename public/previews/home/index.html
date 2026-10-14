@@ -26,7 +26,7 @@ function themeFrame(){
   const d=frame.contentDocument;if(!d?.head)return;
   let style=d.querySelector('#homepage-preview-theme');
   if(!style){style=d.createElement('link');style.id='homepage-preview-theme';style.rel='stylesheet';d.head.append(style)}
-  style.href='/previews/home/forced-'+theme+'.css?v=2';
+  style.href='/previews/home/forced-'+theme+'.css?v=3';
 }
 function render(){
   const height=width===390?844:width===1024?768:900;

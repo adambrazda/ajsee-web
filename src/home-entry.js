@@ -6154,6 +6154,12 @@ async function bootstrapMain() {
 
   upgradeSortToSegmented();
   normalizeFilterFormUI();
+  // Keep the homepage introduction compact without removing any filter.
+  if (document.body.classList.contains('home-premium')) {
+    const toolbar = formEl?.querySelector('.filters-toolbar');
+    const details = formEl?.querySelector('#events-filters-details');
+    if (toolbar && details) details.insertBefore(toolbar, details.querySelector('.filter-group'));
+  }
   installCitySheetObserver();
   bindFilterFormInteractions(formEl);
   bindQuickNearMeButton();

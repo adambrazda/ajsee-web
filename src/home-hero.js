@@ -18,7 +18,6 @@ export function initHomeHeroPhoto(doc = document, options = {}) {
     previousId = storage.getItem(LAST_PHOTO_KEY);
   } catch { /* Random selection also works when storage is unavailable. */ }
 
-  const preview = /^(deploy-preview-\d+--ajsee-demo\.netlify\.app|localhost|127\.0\.0\.1)$/.test(win.location.hostname);
   let activePhoto;
   let usedOriginalFallback = false;
 
@@ -47,9 +46,6 @@ export function initHomeHeroPhoto(doc = document, options = {}) {
     source.srcset = originalFallback
       ? '/uploads/reviews/jesus-christ-superstar-london-2026/jesus-christ-superstar-standing-ovation-oya-canli.jpg'
       : `/images/home-hero/${photo.id}-640.webp 640w, /images/home-hero/${photo.id}-1200.webp 1200w`;
-    if (preview && win.parent !== win) {
-      win.parent.postMessage({ type: 'ajsee-home-hero-ready', index: HOME_HERO_PHOTOS.indexOf(photo) + 1, total: HOME_HERO_PHOTOS.length }, win.location.origin);
-    }
   }
 
   image.addEventListener('load', () => {
@@ -61,14 +57,6 @@ export function initHomeHeroPhoto(doc = document, options = {}) {
     showPhoto(HOME_HERO_PHOTOS[0], true);
   });
   new win.MutationObserver(updateLabels).observe(doc.documentElement, { attributes: true, attributeFilter: ['lang'] });
-
-  if (preview) {
-    win.addEventListener('message', event => {
-      if (event.origin !== win.location.origin || event.source !== win.parent || event.data?.type !== 'ajsee-home-hero-next') return;
-      const index = HOME_HERO_PHOTOS.indexOf(activePhoto);
-      showPhoto(HOME_HERO_PHOTOS[(index + 1) % HOME_HERO_PHOTOS.length]);
-    });
-  }
 
   showPhoto(selectHomeHeroPhoto(HOME_HERO_PHOTOS, previousId, options.random));
 }

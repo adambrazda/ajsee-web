@@ -197,7 +197,7 @@ const getInitialLang = () => {
     /[?&](lang|city|from|to|segment|q|sort|lat|lon|radius)=/.test(window.location.search) ||
     window.location.hash === '#events';
 
-  const shouldLoadEarly = getInitialLang() !== 'cs' || hasStatefulUrl;
+  const shouldLoadEarly = getInitialLang() !== 'cs' || hasStatefulUrl || !!document.querySelector('.home-hero-search');
 
   const wake = () => {
     window.removeEventListener('pointerdown', wake);
@@ -265,7 +265,7 @@ const getInitialLang = () => {
     })();
   </script>
 </head>
-<body data-page="home">
+<body data-page="home" class="home-premium">
 <header class="site-header">
   <div class="header-inner">
     <!-- Logo -->
@@ -362,265 +362,70 @@ const getInitialLang = () => {
   </div>
 </header>
 
-<main>
-  <!-- HERO -->
-  <section class="hero-section hero--watermark" id="hero">
-    <div class="container hero-flex">
-      <div class="hero-content">
-                <a class="hero-badge" href="events#events-filters-form" data-hero-ai-search-link>
-          <span class="badge-icon" aria-hidden="true">AI</span>
-          <span data-i18n-key="hero.badge">NOVÉ AI HLEDÁNÍ</span>
-        </a>
-
-        <h1 data-i18n-key="hero.headline">Světové akce bez bariér</h1>
-        <p data-i18n-key="hero.intro">Objevuj koncerty, festivaly, sport, divadlo i další zážitky z celého světa přehledně na jednom místě.</p>
-
-        <div class="hero-buttons">
-          <a href="/events" class="btn-primary" data-i18n-key="hero.cta-primary">Prozkoumat události</a>
-          <a href="/about" class="btn-secondary" data-i18n-key="hero.cta-secondary">Zjistit víc o AJSEE</a>
-          <a
-            id="hpWaitlistCta"
-            href="/coming-soon/"
-            class="btn-secondary hero-waitlist-cta"
-            data-i18n-key="comingSoon.submit"
-          >
-            Přidat se na čekací listinu
-          </a>
+<main class="home-page-main">
+  <section class="home-hero" id="hero" aria-labelledby="home-title">
+    <div class="home-container home-hero-grid">
+      <div class="home-hero-copy">
+        <h1 class="home-title" id="home-title"><span data-i18n-key="home.hero.start">Kam vyrazíte</span> <span data-i18n-key="home.hero.end" class="home-title-accent">příště?</span></h1>
+        <p class="home-intro"><span data-i18n-key="home.hero.lead1">Festivaly, divadlo, koncerty i sport.</span> <span data-i18n-key="home.hero.lead2">Objevte akce doma i v zahraničí.</span></p>
+        <div class="home-search home-hero-search">
+          <form id="events-filters-form" class="events-filters filter-dock" novalidate role="search"></form>
         </div>
-
-        <p class="hero-partner-note">
-          <a href="/partners" class="hero-partner-link" data-i18n-key="hero.partner-note">Pro partnery: Budujeme síť pro ticketing, kulturu, sport, cestování a zážitky.</a>
-        </p>
+        <a class="home-text-link home-hero-all" href="/events/"><span data-i18n-key="home.allEvents">Prohlédnout všechny události</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
+      <figure class="home-hero-photo">
+        <img src="/uploads/reviews/jesus-christ-superstar-london-2026/jesus-christ-superstar-standing-ovation-oya-canli.jpg" alt="Děkovačka Jesus Christ Superstar v London Palladium" data-i18n-key="home.hero.alt" data-i18n-attr="alt" width="1600" height="837" fetchpriority="high" loading="eager" decoding="async">
+        <figcaption><span data-i18n-key="home.hero.caption">Jesus Christ Superstar · London Palladium</span><span data-i18n-key="home.hero.credit">Foto: Oya Canli</span></figcaption>
+      </figure>
     </div>
   </section>
-
-  <!-- UDÁLOSTI -->
-  <section class="section-events" id="events">
-    <div class="container">
-
-      <div class="home-announcements" aria-label="Důležitá oznámení">
-        
+  <section class="home-events" id="events" aria-labelledby="home-events-title">
+    <div class="home-container">
+      <div class="home-section-heading">
+        <div><h2 data-i18n-key="home.events.title" id="home-events-title" data-home-events-title>Co se chystá</h2><p data-i18n-key="home.events.intro">Vyberte si z aktuální nabídky akcí.</p></div>
+        <a class="home-text-link" href="/events/"><span data-i18n-key="home.allEvents">Prohlédnout všechny události</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
-<div class="event-demo-badge hp-banner hp-banner--secondary hp-banner--london-musicals" role="region" aria-label="Londýnské muzikály na dosah">
-          <div class="hp-banner__icon ib-icon" aria-hidden="true">🎭</div>
-
-          <div class="hp-banner__content">
-            <strong class="hp-banner__title" data-i18n-key="londonMusicals.home.title">Londýnské muzikály na dosah</strong>
-            <span class="hp-banner__body" data-i18n-key="londonMusicals.home.text">Zažijte neopakovatelnou atmosféru West Endu. Vyberte si ze slavných světových muzikálů, pokračujte k nákupu vstupenek a rovnou k plánu přidejte i prověřené ubytování v Londýně.</span>
-          </div>
-
-          <a class="ib-cta hp-banner__cta" href="/londynske-muzikaly/" data-i18n-key="londonMusicals.home.cta">Prohlédnout muzikály</a>
-        </div>
-
-<div class="event-demo-badge hp-banner hp-banner--secondary" role="region" aria-live="polite" data-i18n-aria="event-demo.ariaLabel" aria-label="Informace o ubytování s TrustedStays pro vybrané akce v UK." title="Informace o ubytování s TrustedStays pro vybrané akce v UK.">
-          <div class="hp-banner__icon ib-icon" aria-hidden="true">🏨</div>
-
-          <div class="hp-banner__content">
-            <strong class="hp-banner__title" data-i18n-key="event-demo.title">Nově i ubytování s TrustedStays</strong>
-            <span class="hp-banner__body" data-i18n-key="event-demo.body">Plánuješ cestu za zážitky do UK? U vybraných akcí tě propojíme s ubytováním přes TrustedStays.</span>
-          </div>
-
-          <a class="ib-cta hp-banner__cta" id="demoBadgeCta" href="/accommodation" data-i18n-key="event-demo.cta">Najít ubytování</a>
-        </div>
-
-<div class="events-header">
-        <h2 class="events-title" data-i18n-key="section-events-title">Nejbližší události</h2>
-        <p class="events-subtitle" data-i18n-key="section-events-subtitle">Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa.</p>
-      </div>
-
-      <!-- Filtry -->
-      <form id="events-filters-form" class="events-filters filter-dock" novalidate role="search">
-          <!-- Filter controls are injected from src/event-filters.js. -->
-        </form>
-
       <div id="eventsList" class="events-list" aria-live="polite"></div>
       <noscript>Pro zobrazení událostí povolte JavaScript.</noscript>
     </div>
   </section>
-
-  <!-- O NÁS -->
-  <section id="about" class="about-hero about-hero--home">
-    <div class="container about-hero-inner">
-      <div class="about-hero-textblock">
-        <h2 class="about-home-title" data-i18n-key="about-headline">O nás</h2>
-
-        <div class="about-hero-text">
-          <p class="about-home-kicker" data-i18n-key="about-lead">Zážitky nemají hranice.</p>
-
-          <p class="about-home-body" data-i18n-key="about-text"><strong>AJSEE<sup>®</sup></strong> vzniklo z potřeby cestovat za kulturou bez stresu a zbytečných bariér. Budujeme platformu, která ti otevře dveře ke koncertům, festivalům, divadlu i sportu – doma i v zahraničí.</p>
-        </div>
-
-        <div class="about-hero-actions">
-          <a href="/about" class="about-hero-cta btn-main btn-with-icon">
-            <span data-i18n-key="about-btn">Zjisti více o AJSEE<sup>®</sup></span>
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-              <circle cx="11" cy="11" r="11" fill="#14c2c5"/>
-              <path d="M8 11H14M14 11L11.5 8.5M14 11L11.5 13.5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </div>
+  <section class="home-explore" aria-label="Za zážitky do zahraničí">
+    <div class="home-container home-explore-grid">
+      <article class="home-promo home-promo--london">
+        <img src="/images/london-musicals-todaytix-hero-960.webp" alt="AJSEE × TodayTix" width="960" height="640" loading="lazy" decoding="async">
+        <div class="home-promo-copy"><h2 data-i18n-key="home.london.title">Muzikály v Londýně</h2><p data-i18n-key="home.london.text">Zažijte atmosféru West Endu. Vyberte si muzikál a najděte vstupenky na svůj termín.</p><a class="home-promo-button" href="/londynske-muzikaly/"><span data-i18n-key="home.london.cta">Prohlédnout muzikály</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+      </article>
+      <article class="home-promo">
+        <img src="/images/accommodation/trustedstays-home-original.jpg" alt="TrustedStays" width="458" height="348" loading="lazy" decoding="async">
+        <div class="home-promo-copy"><h2 data-i18n-key="home.stay.title">Ubytování k vašemu výletu</h2><p data-i18n-key="home.stay.text">Apartmány od TrustedStays ve Spojeném království a Francii. Najděte si místo, kde se budete cítit dobře.</p><a class="home-text-link" href="/accommodation/"><span data-i18n-key="home.stay.cta">Najít ubytování</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+      </article>
+    </div>
+  </section>
+  <section class="homepage-blog home-editorial" id="blog">
+    <div class="container">
+      <div class="home-section-heading"><div><h2 data-i18n-key="home.editorial.title">Naše recenze a tipy</h2><p data-i18n-key="home.editorial.intro">Příběhy z hlediště i rady na cestu za zážitky.</p></div>
+        <a class="home-text-link homepage-blog-more" href="/blog/"><span data-i18n-key="blog-show-all">Zobrazit všechny články</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
-
-      <div class="about-hero-visual" aria-hidden="true">
-        <svg class="hero-globe" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
-          <defs>
-            <clipPath id="homeAboutClip"><circle cx="110" cy="110" r="105"/></clipPath>
-            <radialGradient id="homeAboutBgGrad" cx="35%" cy="30%">
-              <stop offset="0%" stop-color="#ffffff"/><stop offset="60%" stop-color="#e6f4fb"/><stop offset="100%" stop-color="#d9eef9"/>
-            </radialGradient>
-            <linearGradient id="homeAboutRingGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#14c2c5"/><stop offset="100%" stop-color="#0077cc"/>
-            </linearGradient>
-            <filter id="homeAboutSoftGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <filter id="homeAboutDrop" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity="0.35"/>
-            </filter>
-          </defs>
-
-          <style>
-            .spin-slow { animation: spin 36s linear infinite; transform-origin: 110px 110px; }
-            .spin-rev  { animation: spin 24s linear infinite reverse; transform-origin: 110px 110px; }
-            .pulse     { animation: pulse 2.8s ease-in-out infinite; }
-            .twinkle   { animation: twinkle 3.8s ease-in-out infinite; }
-            @keyframes spin { to { transform: rotate(360deg); } }
-            @keyframes pulse { 0%{ r:3; opacity:1 } 70%{ r:12; opacity:0 } 100%{ r:12; opacity:0 } }
-            @keyframes twinkle { 0%{ opacity:.25 } 100%{ opacity:.9 } }
-            @media (prefers-reduced-motion: reduce){ .spin-slow, .spin-rev, .pulse, .twinkle { animation: none; } }
-          </style>
-
-          <circle cx="110" cy="110" r="105" fill="url(#homeAboutBgGrad)" stroke="url(#homeAboutRingGrad)" stroke-width="3"/>
-          <circle cx="110" cy="110" r="105" fill="none" stroke="#14c2c566" stroke-width="10" opacity=".25" filter="url(#homeAboutSoftGlow)"/>
-
-          <g clip-path="url(#homeAboutClip)">
-            <g class="spin-slow" opacity=".6" stroke-linecap="round">
-              <ellipse cx="110" cy="110" rx="70" ry="30" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-              <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-              <ellipse cx="110" cy="110" rx="70" ry="30" transform="rotate(-60 110 110)" fill="none" stroke="#0077cc40" stroke-width="1.2" stroke-dasharray="2 4"/>
-              <ellipse cx="110" cy="110" rx="55" ry="24" fill="none" stroke="#14c2c540" stroke-width="1"/>
-              <ellipse cx="110" cy="110" rx="40" ry="15" fill="none" stroke="#14c2c540" stroke-width="1"/>
-            </g>
-
-            <g class="spin-rev">
-              <circle cx="110" cy="110" r="74" fill="none" stroke="url(#homeAboutRingGrad)" stroke-width="2" stroke-dasharray="6 8" stroke-linecap="round"/>
-            </g>
-
-            <circle cx="110" cy="110" r="90" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="18" stroke-dasharray="60 400" transform="rotate(-35 110 110)"/>
-
-            <g filter="url(#homeAboutDrop)">
-              <g><circle cx="70" cy="70" r="4" fill="#14c2c5"/><circle cx="70" cy="70" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="70" cy="70" r="3" fill="#14c2c5" opacity=".35"/></g>
-              <g><circle cx="150" cy="80" r="4" fill="#0077cc"/><circle cx="150" cy="80" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="150" cy="80" r="3" fill="#0077cc" opacity=".35"/></g>
-              <g><circle cx="130" cy="150" r="4" fill="#14c2c5"/><circle cx="130" cy="150" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="130" cy="150" r="3" fill="#14c2c5" opacity=".35"/></g>
-              <g><circle cx="80" cy="140" r="4" fill="#0077cc"/><circle cx="80" cy="140" r="3" fill="#fff" opacity=".4"/><circle class="pulse" cx="80" cy="140" r="3" fill="#0077cc" opacity=".35"/></g>
-            </g>
-
-            <g>
-              <circle class="twinkle" cx="170" cy="60" r="1.5" fill="#ffffff" style="animation-delay:-1s"/>
-              <circle class="twinkle" cx="45" cy="120" r="1.2" fill="#ffffff" style="animation-delay:-2s"/>
-              <circle class="twinkle" cx="165" cy="150" r="1.2" fill="#ffffff" style="animation-delay:-3s"/>
-              <circle class="twinkle" cx="100" cy="40" r="1.0" fill="#ffffff" style="animation-delay:-1.7s"/>
-            </g>
-          </g>
-        </svg>
+      <div class="homepage-blog-cards blog-cards" id="homepage-blog-list" data-home-blog>
+        <a class="homepage-blog-card blog-card" data-type="review" href="/reviews/singin-in-the-rain-from-hollywood-to-the-stage/"><img src="/uploads/reviews/singin-in-the-rain-from-hollywood-to-the-stage/singin-in-the-rain-cover.avif" alt="A performer dances through falling rain in the stage production of Singin’ in the Rain." width="1600" height="1000" loading="lazy" decoding="async"><div class="blog-card-content"><h3 data-i18n-key="home.editorial.static1.title">Singin’ in the Rain: Z Hollywoodu na jeviště</h3><p data-i18n-key="home.editorial.static1.excerpt">Oya Canli se ohlíží za filmem, který proměnil tanec v dešti v jednu z nejslavnějších scén filmové historie, a dívá se na novou generaci jevištních inscenací Singin’ in the Rain.</p><span class="btn-primary">Přečíst recenzi</span></div></a>
+<a class="homepage-blog-card blog-card" data-type="review" href="/reviews/evita-from-madonna-to-rachel-zegler/"><img src="/uploads/reviews/evita-from-madonna-to-rachel-zegler/evita-2025-cover.webp" alt="Rachel Zegler as Eva Perón performs with the company of Evita on the London Palladium stage." width="1600" height="1000" loading="lazy" decoding="async"><div class="blog-card-content"><h3 data-i18n-key="home.editorial.static2.title">Evita: Od Madonny po Rachel Zegler</h3><p data-i18n-key="home.editorial.static2.excerpt">Oya Canli se ohlíží za cestou Evity od původního alba přes film s Madonnou až k inscenaci Jamieho Lloyda z roku 2025 a vzpomíná na Rachel Zegler v roli Evy Perón.</p><span class="btn-primary">Přečíst recenzi</span></div></a>
+<a class="homepage-blog-card blog-card" data-type="review" href="/reviews/mamma-mia-from-abba-to-the-west-end/"><img src="/uploads/reviews/mamma-mia-from-abba-to-the-west-end/mamma-mia-west-end-cover.webp" alt="Three Mamma Mia! performers in white stage costumes sing and point upward in front of a blue door." width="1600" height="1000" loading="lazy" decoding="async"><div class="blog-card-content"><h3 data-i18n-key="home.editorial.static3.title">Mamma Mia!: Od ABBY až na West End</h3><p data-i18n-key="home.editorial.static3.excerpt">Oya Canli vzpomíná na své první setkání s Mamma Mia!, na trvalou sílu hudby skupiny ABBA a na to, proč pro ni návštěva londýnského West Endu představuje další kapitolu jejího vztahu k tomuto muzikálu.</p><span class="btn-primary">Přečíst recenzi</span></div></a>
       </div>
     </div>
   </section>
-
-  <!-- BLOG -->
-  <section class="homepage-blog blog" id="blog">
-    <div class="container">
-      <h2 data-i18n-key="blog-headline-home">Blog o zážitcích</h2>
-<div class="homepage-blog-cards blog-cards" id="homepage-blog-list" data-home-blog data-static-blog-list="true">
-  <article class="blog-card" data-type="article" data-category="festival">
-    <div class="card-media">
-      <img
-        src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=480&q=70"
-        alt="Sziget Festival Budapešť"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-
-    <div class="blog-card-body">
-      <p class="blog-card-meta">
-        <time datetime="2025-08-17">17. 8. 2025</time> · Festivaly
-      </p>
-      <h3 class="blog-card-title">
-        Recenze: Sziget Festival Budapešť – Týden hudby a svobody
-      </h3>
-      <div class="blog-card-lead">
-        Největší festival střední Evropy přivezl světové hvězdy i nezapomenutelnou atmosféru.
-      </div>
-      <div class="blog-card-actions">
-        <a class="blog-readmore" href="/blog/recenze-budapest-sziget-festival-2025/">Číst dál</a>
-      </div>
-    </div>
-  </article>
-
-  <article class="blog-card" data-type="article" data-category="theatre">
-    <div class="card-media">
-      <img
-        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=480&q=70"
-        alt="Letní shakespearovské slavnosti v Praze"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-
-    <div class="blog-card-body">
-      <p class="blog-card-meta">
-        <time datetime="2025-07-20">20. 7. 2025</time> · Divadlo
-      </p>
-      <h3 class="blog-card-title">
-        Tip: Letní shakespearovské slavnosti v Praze
-      </h3>
-      <div class="blog-card-lead">
-        Divadlo pod širým nebem, atmosféra Hradčan a slavné hry v originálním podání.
-      </div>
-      <div class="blog-card-actions">
-        <a class="blog-readmore" href="/blog/praha-shakespeare-divadlo-2025/">Číst dál</a>
-      </div>
-    </div>
-  </article>
-
-  <article class="blog-card" data-type="article" data-category="concert">
-    <div class="card-media">
-      <img
-        src="https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=480&q=70"
-        alt="Coldplay v Praze"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-
-    <div class="blog-card-body">
-      <p class="blog-card-meta">
-        <time datetime="2025-06-11">11. 6. 2025</time> · Koncerty
-      </p>
-      <h3 class="blog-card-title">
-        Recenze: Coldplay v Praze – hudební zážitek roku
-      </h3>
-      <div class="blog-card-lead">
-        Unikátní show Coldplay poprvé v Praze. Jaké byly největší momenty?
-      </div>
-      <div class="blog-card-actions">
-        <a class="blog-readmore" href="/blog/koncert-coldplay-praha-2025/">Číst dál</a>
-      </div>
-    </div>
-  </article>
-</div>
-      <a href="/blog" class="homepage-blog-more" data-i18n-key="blog-show-all">Zobrazit všechny články</a>
+  <section class="home-about" id="about">
+    <div class="home-container home-about-grid">
+      <div><h2 data-i18n-key="home.about.title">O AJSEE</h2><div class="home-team-photos"><img src="/images/team/adam.png" alt="Adam Brázda" width="64" height="64" loading="lazy"><img src="/images/team/jan.png" alt="Jan Oujezdský" width="64" height="64" loading="lazy"></div></div>
+      <div><p data-i18n-key="home.about.text">Za AJSEE stojí Adam a Jan. Společně s našimi autory sdílíme recenze, zkušenosti a tipy, kam vyrazit.</p><a class="home-text-link" href="/about/"><span data-i18n-key="home.about.cta">Přečíst náš příběh</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
     </div>
   </section>
-
-  <!-- KONTAKT -->
-  <section id="contact" class="contact-section">
-    <div class="container">
-      <h2 data-i18n-key="contact-headline">Kontaktujte nás</h2>
-      <div class="contact-content">
-        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thank-you" class="contact-form" id="contact-form" autocomplete="on" novalidate>
+  <section class="home-partners" aria-label="Partneři AJSEE">
+    <div class="home-container home-partners-inner"><p data-i18n-key="home.partners.label" class="home-partners-label">Vstupenky od našich partnerů</p><div class="home-partner-logos"><span><img class="home-logo--light" src="/images/partners/Ticketmaster-Logo-Dark-RGB.svg" alt="Ticketmaster" width="150" height="35" loading="lazy"><img class="home-logo--dark" src="/images/partners/Ticketmaster-Logo-White-RGB.svg" alt="Ticketmaster" width="150" height="35" loading="lazy"></span><span><img class="home-logo--light" src="/images/partners/smsticket.png" alt="smsticket" width="150" height="35" loading="lazy"><img class="home-logo--dark" src="/images/partners/smsticket-dark.png" alt="smsticket" width="150" height="35" loading="lazy"></span><span><img class="home-logo--light" src="/images/partners/ttx_logo_horizontal.svg" alt="TodayTix" width="150" height="35" loading="lazy"><img class="home-logo--dark" src="/images/partners/ttx_logo_horizontal_white.svg" alt="TodayTix" width="150" height="35" loading="lazy"></span><span><img class="home-logo--light" src="/images/partners/colosseumticket.svg" alt="ColosseumTicket" width="150" height="35" loading="lazy"><img class="home-logo--dark" src="/images/partners/colosseumticket-dark.svg" alt="ColosseumTicket" width="150" height="35" loading="lazy"></span></div></div>
+  </section>
+  <section id="contact" class="home-contact">
+    <div class="home-container home-contact-inner">
+      <div class="home-contact-top"><div><h2 data-i18n-key="home.contact.title">Ozvěte se nám</h2><p data-i18n-key="home.contact.text">Máte otázku nebo tip na akci? Napište nám.</p></div><a class="home-text-link" href="/partners/"><span data-i18n-key="home.contact.partners">Pro partnery</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+      <details><summary><span data-i18n-key="home.contact.form">Napsat zprávu</span></summary><form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thank-you" class="contact-form" id="contact-form" autocomplete="on" novalidate>
           <input type="hidden" name="form-name" value="contact" />
           <div style="display:none"><label>Don’t fill this out: <input name="bot-field" /></label></div>
 
@@ -644,8 +449,8 @@ const getInitialLang = () => {
 
           <button type="submit" class="btn-primary" data-i18n-key="contact-send">Odeslat</button>
 
-          <p class="form-legal-note" data-i18n-key="contact-legal-note">
-            Odesláním formuláře bereš na vědomí naše
+          <p class="form-legal-note" data-i18n-key="home.contact.legal">
+            Odesláním formuláře berete na vědomí naše
             <a href="/privacy-policy" data-lang-link>Zásady ochrany osobních údajů</a>
             a
             <a href="/cookies-policy" data-lang-link>Zásady cookies</a>.
@@ -654,12 +459,8 @@ const getInitialLang = () => {
           <div class="contact-error" id="contact-error" style="display:none;">
             <p data-i18n-key="contact-error-msg">Odeslání se nezdařilo. Zkuste to prosím později.</p>
           </div>
-        </form>
-      </div>
-
-      <div class="contact-success" style="display:none;" id="contact-success">
-        <p data-i18n-key="contact-success-msg">Děkujeme za zprávu! Ozveme se vám co nejdříve.</p>
-      </div>
+        </form></details>
+      <div class="contact-success" style="display:none;" id="contact-success"><p data-i18n-key="contact-success-msg">Děkujeme za zprávu! Ozveme se vám co nejdříve.</p></div>
     </div>
   </section>
 </main>

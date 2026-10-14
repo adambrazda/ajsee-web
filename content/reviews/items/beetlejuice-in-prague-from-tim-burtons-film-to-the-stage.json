@@ -1,0 +1,49 @@
+{
+  "slug": "beetlejuice-in-prague-from-tim-burtons-film-to-the-stage",
+  "contentType": "review",
+  "status": "approved",
+  "published": false,
+  "featured": false,
+  "category": "theatre",
+  "showTitle": "Beetlejuice",
+  "productionTitle": "Beetlejuice – Hudební divadlo Karlín",
+  "venue": "Hudební divadlo Karlín",
+  "city": "Prague",
+  "country": "Czech Republic",
+  "performanceDate": "2026-10-01",
+  "eventDate": "",
+  "reviewDate": "2026-10-13",
+  "publishedAt": "",
+  "author": "Oya Canli",
+  "rating": null,
+  "ticketUrl": "https://colosseumticket.cz/cs/akce/YN1Nj3tZQhKIUkzyjBBDlg-beetlejuice-muzikal-hdk-praha?a_box=yhvyrwgu&language=cs-cz&locale=cs-cz",
+  "cover": "",
+  "coverAlt": "",
+  "coverCredit": "Photo: Oya Canli",
+  "gallery": [],
+  "translations": {
+    "en": {
+      "title": "Beetlejuice in Prague: From Tim Burton’s Film to the Stage",
+      "subtitle": "Test subtitle.",
+      "excerpt": "Test excerpt.",
+      "body": "Test review body.",
+      "ctaText": "Book Beetlejuice tickets",
+      "seoTitle": "Beetlejuice in Prague: From Film to Stage | AJSEE",
+      "seoDescription": "Test SEO description for the Beetlejuice review in Prague."
+    },
+    "cs": {
+      "title": "Beetlejuice v Praze: Z filmu Tima Burtona na jeviště",
+      "subtitle": "Testovací podtitulek.",
+      "excerpt": "Testovací perex.",
+      "body": "Testovací text recenze.",
+      "ctaText": "Koupit vstupenky na Beetlejuice",
+      "seoTitle": "Beetlejuice v Praze: Z filmu na jeviště | AJSEE",
+      "seoDescription": "Testovací SEO popis recenze Beetlejuice v Praze."
+    },
+    "sk": {},
+    "de": {},
+    "pl": {},
+    "hu": {}
+  },
+  "internalNotes": "Temporary diagnostic copy for Netlify preview isolation."
+}

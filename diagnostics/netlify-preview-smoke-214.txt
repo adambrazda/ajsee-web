@@ -1,0 +1,1 @@
+Temporary Netlify deploy-preview smoke test for PR #214.

@@ -516,9 +516,11 @@ export const handler = async (event) => {
       if (!Number.isFinite(radius) || radius <= 0) radius = 50;
 
       const unitIn = String(q.unit || 'km').toLowerCase();
+      // Discovery accepts integer miles. Widen the upstream circle so rounding
+      // cannot remove an event inside the user's exact client-side radius.
       const miles = unitIn === 'km'
-        ? Math.max(1, Math.round(radius * 0.621371))
-        : Math.max(1, Math.round(radius));
+        ? Math.max(1, Math.ceil(radius / 1.609344))
+        : Math.max(1, Math.ceil(radius));
 
       url.searchParams.set('radius', String(miles));
       url.searchParams.set('unit', 'miles');

@@ -4,7 +4,7 @@ export function isHomeDiscovery(filters = {}) {
   return !(
     (filters.category && filters.category !== 'all') || filters.audience ||
     filters.placeType || filters.city || filters.dateFrom || filters.dateTo ||
-    filters.keyword || filters.searchMode || filters.aiQuery ||
+    filters.keyword || filters.searchMode || filters.aiQuery || (filters.sort && filters.sort !== 'nearest') ||
     (filters.maxPrice !== null && filters.maxPrice !== undefined && filters.maxPrice !== '') ||
     filters.nearMeLat !== null && filters.nearMeLat !== undefined ||
     filters.nearMeLon !== null && filters.nearMeLon !== undefined

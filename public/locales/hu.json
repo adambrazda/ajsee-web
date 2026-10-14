@@ -473,8 +473,8 @@
   "home.hero.lead1": "Fesztiválok, színház, koncertek és sport.",
   "home.hero.lead2": "Fedezzen fel eseményeket itthon és külföldön.",
   "home.allEvents": "Az összes esemény megtekintése",
-  "home.events.title": "Mi várható?",
-  "home.events.intro": "Válasszon az aktuális eseménykínálatból.",
+  "home.events.title": "Programok, amelyeket ajánlunk",
+  "home.events.intro": "Élmények, amelyeket érdemes felfedezni.",
   "home.events.results": "Keresési eredmények",
   "home.london.title": "Musicalek Londonban",
   "home.london.text": "Élje át a West End hangulatát. Válasszon musicalt, és keressen jegyet a megfelelő időpontra.",
@@ -501,5 +501,7 @@
   "home.editorial.static2.excerpt": "Oya Canli felidézi az Evita útját az eredeti albumtól a Madonnával készült filmen át Jamie Lloyd 2025-ös rendezéséig, és visszatekint Rachel Zegler Eva Perón-alakítására.",
   "home.editorial.static3.title": "Mamma Mia!: Az ABBÁ-tól a West Endig",
   "home.editorial.static3.excerpt": "Oya Canli felidézi első találkozását a Mamma Mia!-val, az ABBA zenéjének időtálló erejét, és azt, miért érzi úgy, hogy a londoni West End jelenti saját történetének következő fejezetét ezzel a musicallel.",
-  "home.contact.legal": "Az űrlap elküldésével tudomásul veszed az <a href=\"/privacy-policy\" data-lang-link>Adatvédelmi tájékoztatót</a> és a <a href=\"/cookies-policy\" data-lang-link>Cookie-szabályzatot</a>."
+  "home.contact.legal": "Az űrlap elküldésével tudomásul veszed az <a href=\"/privacy-policy\" data-lang-link>Adatvédelmi tájékoztatót</a> és a <a href=\"/cookies-policy\" data-lang-link>Cookie-szabályzatot</a>.",
+  "home.events.searchIntro": "Válasszon a talált események közül.",
+  "home.events.empty": "További programokat az események listájában talál."
 }

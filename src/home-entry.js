@@ -1,3 +1,5 @@
+import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
+import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from './event-search-listing.js';
 import {
   applyGeoRadiusToApiFilters,
   isCityRadiusPlace,
@@ -24,7 +26,6 @@ import {
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
 import { hasAiRelevance, isSoftDiscovery, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
-import { createEventSearchSession } from './event-search-session.js';
 import { formatEventDateTime } from './event-date-time.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
@@ -40,7 +41,9 @@ import { createSuggestCitiesResolver } from './ai-search/city-resolver-adapter.j
 import { materializedPlanToRuntimeFilters } from './ai-search/runtime-filter-state.js';
 import {
   detectDatePreset,
-  getDatePresetRange
+  getDatePresetRange,
+  getEmptyStateRecommendation,
+  getEmptyStateRecommendationLabel
 } from './events-filter-ux.js';
 import {
   ensureSharedEventGridStyles,
@@ -60,7 +63,7 @@ import './utils/ajsee-date-popover.js';
 import { initLangDropdown } from './utils/lang-dropdown.js';
 import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 
-import { canonForInputCity, guessCountryCodeFromCity, matchesCityIdentity, countryCodeFromInput } from './city/canonical.js';
+import { canonForInputCity, guessCountryCodeFromCity, matchesCityIdentity } from './city/canonical.js';
 import { countryCodeForEventCity } from './city/eventCityCatalog.js';
 
 import { getSortedBlogArticles } from './blogArticles.js';
@@ -289,6 +292,12 @@ if (!G.flags.mainInitialized) {
   G.flags.mainInitialized = true;
 }
 
+function defaultCountryCodeForLang(lang = getUILang()) {
+  const langToCountry = { cs: 'CZ', sk: 'SK', de: 'DE', pl: 'PL', hu: 'HU', en: 'CZ' };
+  const ccCookie = getCookie('aj_country');
+  return String(ccCookie || langToCountry[String(lang || '').slice(0, 2)] || 'CZ').trim().toUpperCase();
+}
+
 /* ───────── state ───────── */
 let currentFilters = {
   category: 'all',
@@ -311,9 +320,6 @@ let currentFilters = {
 
 const pagination = { page: 1, perPage: 12 };
 
-const HOME_PRICE_FILTER_TARGET_COUNT = 6;
-const HOME_PRICE_FILTER_API_BATCH_SIZE = 50;
-const HOME_PRICE_FILTER_MAX_BATCHES = 3;
 
 let _lastSearchResult = null;
 let _renderCompletion = Promise.resolve();
@@ -668,27 +674,78 @@ function canonPreferredCity(label) {
 
 function cityCountryCodeFromLabel(label, fallback = '') {
   const raw = String(label || '').trim();
+  if (!raw) return '';
+
+  const countryFromRaw = countryCodeFromInput(raw);
+  if (countryFromRaw) return countryFromRaw;
 
   const fromCatalog = countryCodeForEventCity(raw);
   if (fromCatalog) return fromCatalog;
 
-  if (raw) {
-    try {
-      const direct = guessCountryCodeFromCity?.(raw);
-      if (direct) return String(direct).toUpperCase();
+  const fromFallback = firstCountryCodeFromInput(fallback);
+  const slug = findSlugByAnyLabel(raw);
 
-      const canon = canonPreferredCity(raw);
-      const fromCanon = guessCountryCodeFromCity?.(canon);
+  if (!slug) {
+    // AJSEE_SAFE_EVENTS_ENTRY_CITY_CC_FALLBACK_v1
+    // For unknown but explicitly selected city items, trust cityCc/item country.
+    // This prevents Jihlava + CZ from being guessed as Los Angeles + US.
+    if (fromFallback) return fromFallback;
 
-      if (fromCanon) return String(fromCanon).toUpperCase();
-    } catch {
-      // noop
+    const currentLabel = String(currentFilters.cityLabel || currentFilters.city || '').trim();
+    if (raw && currentLabel && normKey(raw) === normKey(currentLabel) && currentFilters.cityCountryCode) {
+      return String(currentFilters.cityCountryCode || '').trim().toUpperCase();
     }
+
+    return '';
   }
 
-  const fb = String(fallback || '').trim().toUpperCase();
-  const previousCity = currentFilters.cityLabel || currentFilters.city || '';
-  return matchesCityIdentity(raw, previousCity) && /^[A-Z]{2}$/.test(fb) ? fb : '';
+  let guessedCityCc = '';
+  try {
+    guessedCityCc = String(guessCountryCodeFromCity?.(raw) || '').trim().toUpperCase();
+  } catch {
+    guessedCityCc = '';
+  }
+
+  if (guessedCityCc) return guessedCityCc;
+  if (fromFallback) return fromFallback;
+
+  const currentLabel = String(currentFilters.cityLabel || currentFilters.city || '').trim();
+  if (raw && currentLabel && normKey(raw) === normKey(currentLabel) && currentFilters.cityCountryCode) {
+    return String(currentFilters.cityCountryCode || '').trim().toUpperCase();
+  }
+
+  return '';
+}
+
+function setCountryPlace(rawLabel = '', code = '') {
+  const cc = countryCodeFromInput(code) || countryCodeFromInput(rawLabel);
+  if (!cc) return false;
+
+  currentFilters.placeType = 'country';
+  currentFilters.city = '';
+  currentFilters.cityLabel = rawLabel || countryLabelForCode(cc, currentLang);
+  currentFilters.cityCountryCode = '';
+  currentFilters.countryCode = cc;
+  currentFilters.nearMeLat = null;
+  currentFilters.nearMeLon = null;
+  return true;
+}
+
+function setCityPlace(label = '', code = '') {
+  const raw = String(label || '').trim();
+  const cc = cityCountryCodeFromLabel(raw, code);
+
+  currentFilters.placeType = raw ? 'city' : '';
+  currentFilters.cityLabel = raw;
+  currentFilters.city = raw ? (canonPreferredCity(raw) || raw) : '';
+  currentFilters.cityCountryCode = raw ? cc : '';
+
+  currentFilters.countryCode = cc || '';
+
+  currentFilters.nearMeLat = null;
+  currentFilters.nearMeLon = null;
+
+  if (!raw) currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
 }
 
 function syncLocalizedCityLabelFromCurrentState() {
@@ -702,6 +759,26 @@ function syncLocalizedCityLabelFromCurrentState() {
 
     currentFilters.cityLabel =
       nearMeLabel();
+
+    return;
+  }
+
+  if (
+    currentFilters.placeType ===
+      'country' &&
+    currentFilters.countryCode
+  ) {
+    currentFilters.city =
+      '';
+
+    currentFilters.cityCountryCode =
+      '';
+
+    currentFilters.cityLabel =
+      countryLabelForCode(
+        currentFilters.countryCode,
+        currentLang
+      );
 
     return;
   }
@@ -2505,6 +2582,367 @@ function ensureHomeResultsCountCtaStyles() {
   document.head.appendChild(style);
 }
 
+function ensureEventsStateStyles() {
+  injectOnce('ajsee-events-state-css', String.raw`
+    .events-list{
+      position:relative;
+      min-height:260px;
+    }
+    .ajsee-events-loading{
+      grid-column:1 / -1;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:18px;
+      width:100%;
+    }
+    .events-list.is-loading > :not(.ajsee-events-loading){
+      display:none;
+    }
+    @media (max-width:900px){
+      .ajsee-events-loading{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+    @media (max-width:640px){
+      .ajsee-events-loading{
+        grid-template-columns:minmax(0,1fr);
+      }
+    }
+    @media (prefers-reduced-motion:reduce){
+      body[data-page="events"] .ajsee-events-loading .ph-img{
+        animation:none;
+      }
+    }
+    .ajsee-events-state{
+      max-width:720px;
+      margin:18px auto 0;
+      padding:22px 24px;
+      border:1px solid rgba(10,61,98,.14);
+      border-radius:24px;
+      background:rgba(255,255,255,.94);
+      box-shadow:0 18px 48px rgba(9,30,66,.10);
+      text-align:center;
+    }
+    .ajsee-events-state__eyebrow{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:38px;
+      height:38px;
+      border-radius:999px;
+      background:rgba(255,193,7,.16);
+      margin-bottom:10px;
+      font-size:20px;
+    }
+    .ajsee-events-state h3{
+      margin:0 0 8px;
+      color:#14213d;
+      font-size:22px;
+      line-height:1.2;
+    }
+    .ajsee-events-state p{
+      margin:0 auto 16px;
+      max-width:580px;
+      color:#667085;
+      line-height:1.55;
+    }
+    .ajsee-events-state button{
+      border:1px solid #0A3D62;
+      background:#0A3D62;
+      color:#fff;
+      border-radius:999px;
+      padding:11px 18px;
+      min-height:44px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(9,30,66,.12);
+    }
+    .ajsee-events-state__actions{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin-top:18px;
+    }
+    .ajsee-events-state .ajsee-events-state__secondary{
+      background:#fff;
+      color:#0A3D62;
+      box-shadow:none;
+    }
+    .ajsee-events-state button:hover{
+      transform:translateY(-1px);
+    }
+    .ajsee-events-state button:focus-visible{
+      outline:3px solid rgba(14,136,240,.32);
+      outline-offset:3px;
+    }
+    .ajsee-events-state button:disabled{
+      cursor:wait;
+      opacity:.65;
+      transform:none;
+    }
+    @media (max-width:520px){
+      .ajsee-events-state__actions{
+        align-items:stretch;
+        flex-direction:column;
+      }
+      .ajsee-events-state__actions button{
+        width:100%;
+      }
+    }
+  `);
+}
+
+function getEventsFilterUxLabels() {
+  return {
+    found: t('events-found', currentLang === 'en' ? 'Found' : 'Nalezeno'),
+    activeFilters: t('events-active-filters', currentLang === 'en' ? 'Active filters' : 'Aktivní filtry'),
+    clearAll: t('events-clear-filters', currentLang === 'en' ? 'Clear all' : 'Vymazat vše'),
+    removeFilter: t('events-remove-filter', currentLang === 'en' ? 'Remove filter' : 'Odebrat filtr'),
+    nearMe: nearMeLabel(),
+    from: t('filters.from', currentLang === 'en' ? 'From' : 'Od'),
+    to: t('filters.to', currentLang === 'en' ? 'To' : 'Do'),
+    datePresets: {
+      today: t('filters.today', currentLang === 'en' ? 'Today' : 'Dnes'),
+      tomorrow: t('filters.tomorrow', currentLang === 'en' ? 'Tomorrow' : 'Zítra'),
+      thisWeek: t('filters.thisWeek', currentLang === 'en' ? 'This week' : 'Tento týden'),
+      weekend: t('filters.weekend', currentLang === 'en' ? 'This weekend' : 'Tento víkend')
+    },
+    categories: {
+      concert:
+        t(
+          'category-concert',
+          'Koncerty'
+        ),
+
+      festival:
+        t(
+          'category-festival',
+          'Festivaly'
+        ),
+
+      theatre:
+        t(
+          'category-theatre',
+          'Divadlo'
+        ),
+
+      sport:
+        t(
+          'category-sport',
+          'Sport'
+        ),
+
+      film:
+        t(
+          'category-film',
+          currentLang === 'en'
+            ? 'Film & cinema'
+            : 'Film a kino'
+        )
+    },
+
+    audiences: {
+      family:
+        t(
+          'filters.family',
+          currentLang === 'en'
+            ? 'Family-friendly'
+            : 'Pro rodiny'
+        )
+    },
+
+    preference: t('filters.preference', 'Preference'),
+    sorts: {
+      relevance: t('filters.relevance', 'Podle relevance'),
+      latest: t('filters.latest', currentLang === 'en' ? 'Newest' : 'Nejnovější')
+    }
+  };
+}
+
+function formatEventsMessage(
+  template,
+  values = {}
+) {
+  return Object.entries(
+    values
+  ).reduce(
+    (
+      result,
+      [key, value]
+    ) =>
+      result
+        .split(
+          `{${key}}`
+        )
+        .join(
+          String(value)
+        ),
+    String(
+      template ||
+      ''
+    )
+  );
+}
+
+function focusEventsResultsSummary() {
+  const count =
+    qs('#eventsResultsCount');
+
+  if (!count) {
+    return;
+  }
+
+  count.setAttribute(
+    'tabindex',
+    '-1'
+  );
+
+  count.focus({
+    preventScroll:
+      true
+  });
+
+  count.addEventListener(
+    'blur',
+    () => {
+      count.removeAttribute(
+        'tabindex'
+      );
+    },
+    {
+      once:
+        true
+    }
+  );
+}
+
+function focusEventsStateMessage() {
+  const state =
+    qs(
+      '#eventsList .ajsee-events-state'
+    );
+
+  if (!state) {
+    return;
+  }
+
+  state.setAttribute(
+    'tabindex',
+    '-1'
+  );
+
+  state.focus({
+    preventScroll:
+      true
+  });
+
+  state.addEventListener(
+    'blur',
+    () => {
+      state.removeAttribute(
+        'tabindex'
+      );
+    },
+    {
+      once:
+        true
+    }
+  );
+}
+
+async function clearSingleEventFilter(key) {
+  switch (key) {
+    case 'category':
+      currentFilters.category = 'all';
+      break;
+
+    case 'audience':
+      currentFilters.audience = '';
+      break;
+
+    case 'place':
+      currentFilters.placeType = '';
+      currentFilters.city = '';
+      currentFilters.cityLabel = '';
+      currentFilters.cityCountryCode = '';
+      currentFilters.nearMeLat = null;
+      currentFilters.nearMeLon = null;
+      currentFilters.nearMeRadiusKm = 50;
+      currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+      break;
+
+    case 'date':
+      currentFilters.dateFrom = '';
+      currentFilters.dateTo = '';
+      break;
+
+    case 'keyword':
+      updateManualKeyword(currentFilters, '');
+      break;
+
+    case 'price':
+      currentFilters.maxPrice = null;
+      currentFilters.priceCurrency = '';
+      break;
+
+    case 'sort':
+      currentFilters.sort = 'nearest';
+      break;
+
+    default:
+      return;
+  }
+
+  _userInteractedWithFilters = true;
+  _lastFetchSig = '';
+  setFilterInputsFromState();
+  updateToggleBadge();
+  syncQuickFilterButtons();
+  await renderAndSync({ resetPage: true });
+}
+
+function renderHomeEmptyState(filters = currentFilters) {
+  const list = document.getElementById('eventsList');
+  if (!list) return;
+  ensureEventsStateStyles();
+  const recommendation = getEmptyStateRecommendation(filters, {
+    locale: currentLang, labels: getEventsFilterUxLabels()
+  });
+  const label = getEmptyStateRecommendationLabel(recommendation);
+  const title = t('events-empty-title', currentLang === 'en' ? 'No events found' : 'Nenašli jsme žádné akce');
+  const body = recommendation
+    ? formatEventsMessage(t('events-empty-body', currentLang === 'en'
+      ? 'Try removing “{filter}” while keeping the other settings.'
+      : 'Zkuste odebrat filtr „{filter}“ a ponechat ostatní nastavení.'), { filter: label })
+    : t('events-empty-no-filters', currentLang === 'en'
+      ? 'No events are currently available for this selection.'
+      : 'Pro aktuální výběr zatím nejsou dostupné žádné akce.');
+  const remove = formatEventsMessage(t('events-empty-remove', currentLang === 'en'
+    ? 'Remove “{filter}”' : 'Odebrat „{filter}“'), { filter: label });
+  const clear = t('events-empty-clear', currentLang === 'en' ? 'Clear all filters' : 'Vymazat všechny filtry');
+  list.innerHTML = `<div class="ajsee-events-state" role="region" aria-labelledby="eventsEmptyStateTitle">
+    <div class="ajsee-events-state__eyebrow" aria-hidden="true">🔎</div>
+    <h3 id="eventsEmptyStateTitle">${esc(title)}</h3><p>${esc(body)}</p>
+    ${recommendation ? `<div class="ajsee-events-state__actions">
+      <button type="button" data-ajsee-events-remove-filter>${esc(remove)}</button>
+      <button type="button" class="ajsee-events-state__secondary" data-ajsee-events-clear>${esc(clear)}</button>
+    </div>` : ''}</div>`;
+  list.querySelector('[data-ajsee-events-remove-filter]')?.addEventListener('click', async event => {
+    event.currentTarget.disabled = true;
+    await clearSingleEventFilter(recommendation.key);
+    focusEventsResultsSummary();
+  }, { once: true });
+  list.querySelector('[data-ajsee-events-clear]')?.addEventListener('click', async event => {
+    event.currentTarget.disabled = true;
+    await resetAllEventFilters();
+    focusEventsResultsSummary();
+  }, { once: true });
+  announce(`${title}. ${body}`);
+  if (_userInteractedWithFilters) requestAnimationFrame(focusEventsStateMessage);
+}
+
 function updateResultsCount(total, options = {}) {
   ensureHomeResultsCountCtaStyles();
   const host =
@@ -2561,6 +2999,7 @@ function updateResultsCount(total, options = {}) {
     }
   };
 
+  el.dataset.ajseeSearchSummary = 'canonical';
   el.classList.toggle('is-home-preview', isTruncatedHomePreview);
   el.innerHTML = '';
   const appendGeoNotice = () => {
@@ -2826,51 +3265,31 @@ async function applyQuickDatePreset(preset) {
 }
 
 async function resetAllEventFilters() {
-  const langToCountry = {
-    cs: 'CZ',
-    sk: 'SK',
-    de: 'DE',
-    pl: 'PL',
-    hu: 'HU',
-    en: 'CZ'
-  };
-
   currentFilters.category = 'all';
   currentFilters.audience = '';
   delete currentFilters.searchMode;
   delete currentFilters.keywordMatch;
   currentFilters.sort = 'nearest';
-
+  currentFilters.placeType = '';
   currentFilters.city = '';
   currentFilters.cityLabel = '';
   currentFilters.cityCountryCode = '';
-
   currentFilters.dateFrom = '';
   currentFilters.dateTo = '';
   currentFilters.keyword = '';
   currentFilters.maxPrice = null;
   currentFilters.priceCurrency = '';
-  currentFilters.placeType = '';
-
-  currentFilters.countryCode = (
-    getCookie('aj_country') ||
-    langToCountry[currentLang] ||
-    'CZ'
-  ).toUpperCase();
-
+  currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
   currentFilters.nearMeLat = null;
   currentFilters.nearMeLon = null;
   currentFilters.nearMeRadiusKm = 50;
 
   _userInteractedWithFilters = true;
   _lastFetchSig = '';
-
   setFilterInputsFromState();
   updateToggleBadge();
-
-  await renderAndSync({
-    resetPage: true
-  });
+  syncQuickFilterButtons();
+  await renderAndSync({ resetPage: true });
 }
 function setFilterInputsFromState() {
   const cat = qs('#filter-category') || qs('#events-category-filter');
@@ -3062,10 +3481,21 @@ function validatePriceFilterInput({
 
 function syncFiltersFromForm() {
   if (!validatePriceFilterInput({ focus: true })) return false;
-  const cat = qs('#filter-category') || qs('#events-category-filter');
-  const audience = qs('#filter-audience-family');
-  const sort = qs('#filter-sort') || qs('#events-sort-filter');
-  const city = getCityInputEl();
+  const cat =
+    qs('#filter-category') ||
+    qs('#events-category-filter');
+
+  const audience =
+    qs(
+      '#filter-audience-family'
+    );
+
+  const sort =
+    qs('#filter-sort') ||
+    qs('#events-sort-filter');
+
+  const city =
+    getCityInputEl();
   const from = qs('#filter-date-from') || qs('#events-date-from');
   const to = qs('#filter-date-to') || qs('#events-date-to');
   const kw = qs('#filter-keyword');
@@ -3076,14 +3506,20 @@ function syncFiltersFromForm() {
   const priceCurrency =
     qs('#filter-price-currency');
 
-  currentFilters.category = cat?.value || 'all';
+  currentFilters.category =
+    cat?.value ||
+    'all';
 
   if (audience) {
     const active =
-      audience.getAttribute('aria-pressed') === 'true';
+      audience.getAttribute(
+        'aria-pressed'
+      ) === 'true';
 
     currentFilters.audience =
-      active ? 'family' : '';
+      active
+        ? 'family'
+        : '';
 
     audience.classList.toggle(
       'is-active',
@@ -3091,7 +3527,9 @@ function syncFiltersFromForm() {
     );
   }
 
-  currentFilters.sort = sort?.value || 'nearest';
+  currentFilters.sort =
+    sort?.value ||
+    'nearest';
   updateManualKeyword(currentFilters, (kw?.value || '').trim());
   currentFilters.dateFrom = from?.value || currentFilters.dateFrom || '';
   currentFilters.dateTo = to?.value || currentFilters.dateTo || '';
@@ -3136,75 +3574,42 @@ function syncFiltersFromForm() {
     );
   }
 
-  if (
-    city &&
-    !city.matches(
-      '[data-autofromnearme="1"]'
-    )
-  ) {
-    const rawCity =
-      (
-        city.value ||
-        ''
-      ).trim();
+  if (city && !city.matches('[data-autofromnearme="1"]')) {
+    const rawPlace = (city.value || '').trim();
 
-    const previousCityCountry = matchesCityIdentity(rawCity, currentFilters.cityLabel || currentFilters.city)
-      ? currentFilters.cityCountryCode : '';
-
-    if (
+    if (!rawPlace) {
+      currentFilters.placeType = '';
+      currentFilters.city = '';
+      currentFilters.cityLabel = '';
+      currentFilters.cityCountryCode = '';
+      currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
+      currentFilters.nearMeLat = null;
+      currentFilters.nearMeLon = null;
+      city.removeAttribute('data-autofromnearme');
+    } else if (
       shouldPreserveCityRadiusInput(
         currentFilters,
-        rawCity
+        rawPlace
       )
     ) {
       /*
-       * Keep the resolved city-radius center on
-       * an unchanged form submission.
+       * Submitting an unchanged city-radius city must
+       * preserve its resolved center coordinates.
        */
     } else {
-      currentFilters.placeType =
-        rawCity
-          ? 'city'
-          : '';
+      const countryCc =
+        countryCodeFromInput(
+          rawPlace
+        );
 
-      currentFilters.cityLabel =
-        rawCity;
-
-      currentFilters.city =
-        rawCity
-          ? canonPreferredCity(
-              rawCity
-            )
-          : '';
-
-      currentFilters.cityCountryCode =
-        rawCity
-          ? cityCountryCodeFromLabel(
-              rawCity,
-              previousCityCountry
-            )
-          : '';
-
-      const countryCc = countryCodeFromInput(rawCity);
       if (countryCc) {
-        currentFilters.placeType = 'country';
-        currentFilters.city = '';
-        currentFilters.cityCountryCode = '';
-      }
-      currentFilters.countryCode = countryCc || currentFilters.cityCountryCode || 'CZ';
-
-      currentFilters.nearMeLat =
-        null;
-
-      currentFilters.nearMeLon =
-        null;
-
-      if (!rawCity) {
-        currentFilters.cityCountryCode =
-          '';
-
-        city.removeAttribute(
-          'data-autofromnearme'
+        setCountryPlace(
+          rawPlace,
+          countryCc
+        );
+      } else {
+        setCityPlace(
+          rawPlace
         );
       }
     }
@@ -4039,30 +4444,41 @@ function buildCityTypeaheadOptions(input, locale) {
     debounceMs: 220,
     countryCodes: [
       'CZ', 'SK', 'PL', 'HU',
-      'DE', 'AT', 'CH',
-      'GB', 'IE',
+      'DE', 'AT', 'GB', 'IE',
       'FR', 'NL', 'BE',
       'IT', 'ES',
-      'DK', 'SE', 'FI', 'NO'
+      'DK', 'CH', 'NO', 'SE', 'FI'
     ],
     onChoose: item => {
       const label = item?.city || item?.label || item?.name || '';
-      const pickedCc = String(item?.countryCode || item?.country || '').trim().toUpperCase();
-      const countryCc = countryCodeFromInput(label) || (item?.isCountry ? pickedCc : '');
+      const itemType = String(item?.type || item?.kind || '').toLowerCase();
+      const itemCc = item?.countryCode || item?.country || '';
+      const isCountryItem = itemType === 'country' || itemType === 'country-only' || item?.isCountry === true;
+      const countryCc = countryCodeFromInput(label) || (isCountryItem ? countryCodeFromInput(itemCc) : '');
 
-      currentFilters.placeType = countryCc ? 'country' : 'city';
-      currentFilters.city = countryCc ? '' : canonPreferredCity(label);
-      currentFilters.cityLabel = label;
-      currentFilters.cityCountryCode = countryCc ? '' : pickedCc || cityCountryCodeFromLabel(label, '');
-      currentFilters.countryCode = countryCc || currentFilters.cityCountryCode || 'CZ';
-      currentFilters.nearMeLat = null;
-      currentFilters.nearMeLon = null;
+      if (countryCc) {
+        setCountryPlace(label || countryLabelForCode(countryCc, currentLang), countryCc);
+      } else {
+        const cc = cityCountryCodeFromLabel(label, itemCc);
+        currentFilters.placeType = 'city';
+        currentFilters.city = canonPreferredCity(label) || label;
+        currentFilters.cityLabel = label;
+        currentFilters.cityCountryCode = cc;
+        if (cc) currentFilters.countryCode = cc;
+        currentFilters.nearMeLat = null;
+        currentFilters.nearMeLon = null;
+      }
 
-      input.value = label;
+      input.value = currentFilters.cityLabel || label;
       input.removeAttribute('data-autofromnearme');
+
+      _userInteractedWithFilters = true;
+      _lastFetchSig = '';
       void renderAndSync({ resetPage: true }).then(() => expandFilters());
     },
     onNearMe: async ({ lat, lon } = {}) => {
+      _userInteractedWithFilters = true;
+
       if (
         typeof lat === 'number' &&
         typeof lon === 'number' &&
@@ -4187,11 +4603,12 @@ function makeFetchSig(locale, api, page, perPage) {
     locale,
     page,
     perPage,
+    placeType: api.placeType || '',
     category: api.category || 'all',
     audience: api.audience || '',
     sort: api.sort || 'nearest',
-    placeType: api.placeType || '',
     city: api.city || '',
+    cityLabel: api.cityLabel || '',
     cityCountryCode: api.cityCountryCode || '',
     dateFrom: api.dateFrom || '',
     dateTo: api.dateTo || '',
@@ -4210,16 +4627,91 @@ function makeFetchSig(locale, api, page, perPage) {
 
 
 async function fetchHomeEventsForRender(locale, api) {
-  const session = createEventSearchSession({
-    locale, filters: api, fetchBatch: getAllHomeEvents,
-    getRates: getRatesForPriceFilter, firstPageSize: HOME_PRICE_FILTER_TARGET_COUNT
+  const session = createEventListingSession({
+    locale, filters: api, fetchBatch: getAllHomeEvents, getRates: getRatesForPriceFilter
   });
-  const state = await session.load(HOME_PRICE_FILTER_TARGET_COUNT, { maxBatches: HOME_PRICE_FILTER_MAX_BATCHES });
+  const state = await session.load(EVENT_LISTING_PAGE_SIZE, { maxBatches: eventListingBatchLimit(api) });
   Object.defineProperty(state.events, 'searchState', { value: {
     hasMore: state.hasMore, incomplete: state.incomplete, rankingPartial: state.rankingPartial,
     geographyLimited: state.geographyLimited, totalKnown: state.totalKnown
   } });
   return state.events;
+}
+
+function buildApiFilters(filters) {
+  const countryFromPlace =
+    countryCodeFromInput(
+      filters.cityLabel
+    ) ||
+    countryCodeFromInput(
+      filters.city
+    );
+
+  const isCountryPlace =
+    filters.placeType ===
+      'country' ||
+    (
+      !filters.city &&
+      filters.cityLabel &&
+      countryFromPlace
+    ) ||
+    (
+      filters.city &&
+      countryFromPlace
+    );
+
+  const normalizedCity =
+    (
+      !isCountryPlace &&
+      filters.city
+    )
+      ? (
+          canonPreferredCity(
+            filters.city
+          ) ||
+          filters.city
+        )
+      : '';
+
+  const api = {
+    ...filters,
+
+    placeType:
+      isCountryPlace
+        ? 'country'
+        : (
+            filters.placeType ||
+            ''
+          ),
+
+    city:
+      normalizedCity,
+
+    cityCountryCode:
+      isCountryPlace
+        ? ''
+        : (
+            filters.cityCountryCode ||
+            ''
+          ),
+
+    countryCode:
+      isCountryPlace
+        ? String(
+            filters.countryCode ||
+            countryFromPlace ||
+            ''
+          ).toUpperCase()
+        : (
+            filters.cityCountryCode ||
+            filters.countryCode ||
+            ''
+          )
+  };
+
+  return applyGeoRadiusToApiFilters(
+    api
+  );
 }
 
 async function renderEvents(locale = 'cs', filters = currentFilters) {
@@ -4231,40 +4723,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   setBusy(true);
 
   try {
-    let api = {
-      ...filters,
-      city:
-        filters.city
-          ? canonPreferredCity(
-              filters.city
-            )
-          : ''
-    };
-
-    if (
-      api.city &&
-      !api.cityCountryCode
-    ) {
-      api.cityCountryCode =
-        cityCountryCodeFromLabel(
-          api.city,
-          ''
-        );
-    }
-
-    if (
-      api.placeType ===
-        'cityRadius' &&
-      api.cityCountryCode
-    ) {
-      api.countryCode =
-        api.cityCountryCode;
-    }
-
-    api =
-      applyGeoRadiusToApiFilters(
-        api
-      );
+    const api = buildApiFilters(filters);
 
     const sig = makeFetchSig(locale, api, pagination.page, pagination.perPage);
     if (sig === _lastFetchSig) return;
@@ -4314,6 +4773,11 @@ const modalStore = new Map();
       const action = events.searchState.incomplete ? t('events-search-retry', 'Zkusit znovu') : t('events-search-continue', 'Pokračovat v hledání');
       list.innerHTML = `<div role="status"><h3>${esc(title)}</h3><p>${esc(body)}</p>${geoOnly ? '' : `<a class="btn" href="${esc(href)}">${esc(action)}</a>`}</div>`;
       _lastSearchResult = { filters, count: events.searchState.totalKnown, hasMore: true };
+      return;
+    }
+if (!toRender.length) {
+      _lastSearchResult = { filters, count: events.searchState?.totalKnown ?? 0, hasMore: false };
+      renderHomeEmptyState(filters);
       return;
     }
 ensureSharedEventGridStyles();
@@ -5059,6 +5523,16 @@ function initFiltersFromURL() {
       sp
     );
 
+  const urlCountryRaw =
+    sp.get('country') ||
+    sp.get('countryCode') ||
+    '';
+
+  const urlCountryCc =
+    firstCountryCodeFromInput(
+      urlCountryRaw
+    );
+
   if (
     geoPlace?.mode ===
     'cityRadius'
@@ -5104,28 +5578,60 @@ function initFiltersFromURL() {
       sp.get('city') ||
       '';
 
-    currentFilters.placeType =
-      'city';
-
-    currentFilters.city =
-      canonPreferredCity(raw);
-
-    currentFilters.cityLabel =
-      raw;
-
-    currentFilters.cityCountryCode =
-      cityCountryCodeFromLabel(
-        raw,
-        sp.get('cityCc') ||
-        ''
+    const cityAsCountry =
+      countryCodeFromInput(
+        raw
       );
 
-    if (
-      currentFilters.cityCountryCode
-    ) {
-      currentFilters.countryCode =
-        currentFilters.cityCountryCode;
+    if (cityAsCountry) {
+      setCountryPlace(
+        raw,
+        cityAsCountry
+      );
+    } else {
+      const cc =
+        cityCountryCodeFromLabel(
+          raw,
+          sp.get('cityCc') ||
+          ''
+        );
+
+      currentFilters.placeType =
+        'city';
+
+      currentFilters.city =
+        canonPreferredCity(raw) ||
+        raw;
+
+      currentFilters.cityLabel =
+        raw;
+
+      currentFilters.cityCountryCode =
+        cc;
+
+      if (cc) {
+        currentFilters.countryCode =
+          cc;
+      }
     }
+  } else if (urlCountryCc) {
+    currentFilters.placeType =
+      'country';
+
+    currentFilters.city =
+      '';
+
+    currentFilters.cityLabel =
+      countryLabelForCode(
+        urlCountryCc,
+        currentLang
+      );
+
+    currentFilters.cityCountryCode =
+      '';
+
+    currentFilters.countryCode =
+      urlCountryCc;
   }
 
   if (sp.get('from')) {
@@ -5146,18 +5652,21 @@ function initFiltersFromURL() {
       'all';
   }
 
-  if (
+  currentFilters.audience =
     sp.get('audience') ===
     'family'
-  ) {
-    currentFilters.audience =
-      'family';
-  }
+      ? 'family'
+      : '';
 
-  if (sp.get('q')) {
+  const urlKeyword =
+    sp.get('q') ||
+    sp.get('keyword') ||
+    sp.get('search') ||
+    '';
+
+  if (urlKeyword) {
     currentFilters.keyword =
-      sp.get('q') ||
-      '';
+      urlKeyword.trim();
   }
 
   Object.assign(currentFilters, readAiSearchParams(sp));
@@ -5625,9 +6134,7 @@ async function bootstrapMain() {
   try { localStorage.setItem('ajsee.lang', currentLang); } catch {}
   document.documentElement.lang = currentLang;
 
-  const langToCountry = { cs: 'CZ', sk: 'SK', de: 'DE', pl: 'PL', hu: 'HU', en: 'CZ' };
-  const ccCookie = getCookie('aj_country');
-  currentFilters.countryCode = (ccCookie || langToCountry[currentLang] || 'CZ').toUpperCase();
+  currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
 
   initFiltersFromURL();
   await ensureTranslations(currentLang);
@@ -6071,7 +6578,7 @@ if (!G.flags.mainDomReadyBound) {
   function findCountElement() {
     const candidates = Array.from(document.querySelectorAll('p, div, span, strong'))
       .filter((el) => {
-        if (isInsideModal(el)) return false;
+        if (isInsideModal(el) || el.closest('[data-ajsee-search-summary="canonical"]')) return false;
 
         const text = String(el.textContent || '').replace(/\s+/g, ' ').trim();
 

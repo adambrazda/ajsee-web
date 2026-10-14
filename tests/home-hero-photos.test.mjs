@@ -13,6 +13,11 @@ test('all ten photographs have valid responsive assets, distinct IDs, credits an
   assert.equal(HOME_HERO_PHOTOS.length, 10);
   assert.equal(new Set(HOME_HERO_PHOTOS.map(photo => photo.id)).size, 10);
   assert.deepEqual(HOME_HERO_PHOTOS.reduce((counts, photo) => ({ ...counts, [photo.category]: (counts[photo.category] || 0) + 1 }), {}), { theatre: 3, concert: 3, festival: 2, sport: 2 });
+  const placeholder = home.match(/src="data:image\/gif;base64,([^"]+)"/)[1];
+  const pixel = await sharp(Buffer.from(placeholder, 'base64')).metadata();
+  assert.equal(pixel.width, 1);
+  assert.equal(pixel.height, 1);
+  await sharp(Buffer.from(placeholder, 'base64')).raw().toBuffer();
   for (const photo of HOME_HERO_PHOTOS) {
     assert.ok(photo.author && photo.source);
     for (const width of [640, 1200]) {

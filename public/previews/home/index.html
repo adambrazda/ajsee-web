@@ -24,9 +24,14 @@ let theme=params.get('theme')==='dark'?'dark':'light';
 const frame=document.querySelector('#home-frame'),wrap=document.querySelector('.frame-wrap');
 function themeFrame(){
   const d=frame.contentDocument;if(!d?.head)return;
+  for(const mode of ['light','dark']){
+    if(!d.querySelector('#homepage-preview-preload-'+mode)){
+      const preload=d.createElement('link');preload.id='homepage-preview-preload-'+mode;preload.rel='preload';preload.as='style';preload.href='/previews/home/forced-'+mode+'.css?v=4';d.head.append(preload);
+    }
+  }
   let style=d.querySelector('#homepage-preview-theme');
   if(!style){style=d.createElement('link');style.id='homepage-preview-theme';style.rel='stylesheet';d.head.append(style)}
-  style.href='/previews/home/forced-'+theme+'.css?v=3';
+  style.href='/previews/home/forced-'+theme+'.css?v=4';
 }
 function render(){
   const height=width===390?844:width===1024?768:900;

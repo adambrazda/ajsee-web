@@ -1,5 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import { withProviderDateRange } from '../src/provider-event-dates.js';
+import { withColosseumGeography } from '../shared/geo/colosseum-geography.js';
 import {
   mkdir,
   readFile,
@@ -1340,7 +1341,7 @@ function normalizeOccurrence(
 
     /*
      * Provider XML does not expose a country field.
-     * Do not manufacture canonical geography metadata.
+     * Only reviewed venue evidence may add canonical geography metadata.
      */
     location: {
       city
@@ -1469,7 +1470,7 @@ function normalizeOccurrence(
   };
 
   return {
-    event: withProviderDateRange(event, {
+    event: withProviderDateRange(withColosseumGeography(event), {
       endLocalDate: parseDate(text(term?.eventdate?.dateto))
     }),
 

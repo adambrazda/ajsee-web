@@ -33,3 +33,12 @@ test('partial local results display the failure and offer a fresh search with th
   assert.equal(status.querySelector('a').getAttribute('href'), '/events/?city=Brno&priceMax=100');
   dom.window.close();
 });
+
+test('a complete small preview still discloses missing venue geography without a misleading continuation', () => {
+  const dom = count(2, { visible: 2, hasMore: false, geographyLimited: true });
+  const status = dom.window.document.querySelector('#eventsResultsCount');
+  assert.match(status.textContent, /bez ověřené polohy/);
+  assert.match(status.textContent, /podle města/);
+  assert.equal(status.querySelector('a'), null);
+  dom.window.close();
+});

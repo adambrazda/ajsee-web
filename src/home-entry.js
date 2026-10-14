@@ -2563,9 +2563,17 @@ function updateResultsCount(total, options = {}) {
 
   el.classList.toggle('is-home-preview', isTruncatedHomePreview);
   el.innerHTML = '';
+  const appendGeoNotice = () => {
+    if (!options.geographyLimited || !visible) return;
+    const notice = document.createElement('p');
+    notice.setAttribute('role', 'status');
+    notice.textContent = t('events-geo-coverage-note', 'Akce bez ověřené polohy do hledání v okruhu nezahrnujeme. Úplnější nabídku zobrazíte hledáním podle města nebo bez okruhu.');
+    el.appendChild(notice);
+  };
 
   if (!isTruncatedHomePreview) {
     el.textContent = `${label}: ${countLabel}`;
+    appendGeoNotice();
     return;
   }
 
@@ -2606,6 +2614,7 @@ function updateResultsCount(total, options = {}) {
     status.textContent = notice;
     el.appendChild(status);
   }
+  appendGeoNotice();
 }
 /* ───────── date range / combo label ───────── */
 function applyDateRangeFromDetail(detail = {}, options = {}) {
@@ -4207,7 +4216,8 @@ async function fetchHomeEventsForRender(locale, api) {
   });
   const state = await session.load(HOME_PRICE_FILTER_TARGET_COUNT, { maxBatches: HOME_PRICE_FILTER_MAX_BATCHES });
   Object.defineProperty(state.events, 'searchState', { value: {
-    hasMore: state.hasMore, incomplete: state.incomplete, rankingPartial: state.rankingPartial, totalKnown: state.totalKnown
+    hasMore: state.hasMore, incomplete: state.incomplete, rankingPartial: state.rankingPartial,
+    geographyLimited: state.geographyLimited, totalKnown: state.totalKnown
   } });
   return state.events;
 }
@@ -4288,15 +4298,21 @@ const modalStore = new Map();
       isHomePreview: true,
       hasMore: events.searchState?.hasMore,
       incomplete: events.searchState?.incomplete,
-      rankingPartial: events.searchState?.rankingPartial
+      rankingPartial: events.searchState?.rankingPartial,
+      geographyLimited: events.searchState?.geographyLimited
     });
-    if (!toRender.length && (events.searchState?.hasMore || events.searchState?.incomplete)) {
+    if (!toRender.length && (events.searchState?.hasMore || events.searchState?.incomplete || events.searchState?.geographyLimited)) {
       const href = (currentLang === 'cs' ? '/events/' : `/${currentLang}/events/`) + location.search;
-      const body = events.searchState.incomplete
+      const geoOnly = events.searchState.geographyLimited && !events.searchState.hasMore && !events.searchState.incomplete;
+      const title = geoOnly ? t('events-geo-empty-title', 'V tomto okruhu jsme nenašli akce s ověřenou polohou')
+        : t('events-search-pending-title', 'Hledání ještě není dokončené');
+      const body = geoOnly
+        ? t('events-geo-coverage-note', 'Akce bez ověřené polohy do hledání v okruhu nezahrnujeme. Úplnější nabídku zobrazíte hledáním podle města nebo bez okruhu.')
+        : events.searchState.incomplete
         ? t('events-search-incomplete', 'Nabídka je neúplná. Některé zdroje se nepodařilo načíst. Zkuste hledání znovu.')
         : t('events-search-pending-body', 'Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.');
       const action = events.searchState.incomplete ? t('events-search-retry', 'Zkusit znovu') : t('events-search-continue', 'Pokračovat v hledání');
-      list.innerHTML = `<div role="status"><h3>${esc(t('events-search-pending-title', 'Hledání ještě není dokončené'))}</h3><p>${esc(body)}</p><a class="btn" href="${esc(href)}">${esc(action)}</a></div>`;
+      list.innerHTML = `<div role="status"><h3>${esc(title)}</h3><p>${esc(body)}</p>${geoOnly ? '' : `<a class="btn" href="${esc(href)}">${esc(action)}</a>`}</div>`;
       _lastSearchResult = { filters, count: events.searchState.totalKnown, hasMore: true };
       return;
     }
@@ -4415,7 +4431,7 @@ qsa('.js-event-detail', list).forEach(btn => {
 
     if (out.length || !(window.__ajsee?.tmRateLimit?.until > Date.now())) {
       _lastSearchResult = { filters, count: events.searchState?.totalKnown ?? out.length,
-        hasMore: events.searchState?.hasMore || !!(window.__ajsee?.tmRateLimit?.until > Date.now()) };
+        hasMore: events.searchState?.hasMore || events.searchState?.incomplete || events.searchState?.geographyLimited || !!(window.__ajsee?.tmRateLimit?.until > Date.now()) };
     }
     wireSharedEventImageFraming(list);
     wireSharedEventCardAnalytics(list);

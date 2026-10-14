@@ -182,3 +182,18 @@ test('exchange rates and providers start together rather than adding their laten
   assert.equal(startedBeforeRates, true);
   assert.deepEqual(result.events.map(e => e.id), ['local']);
 });
+
+test('geographic coverage survives later remote batches that skip local providers', async () => {
+  let calls = 0;
+  const session = createEventSearchSession({ fetchBatch: async () => {
+    calls++;
+    return withEventPageInfo([event(`geo-${calls}`, calls)], {
+      hasMore: calls < 2, frontier: Date.parse(event('boundary', calls).datetime), ticketmasterCursor: { streams: {} },
+      ...(calls === 1 ? { geographyCoverage: { colosseumticket: { located: 3, missing: 2 } } } : {})
+    });
+  } });
+  const result = await session.load(20);
+  assert.equal(calls, 2);
+  assert.equal(result.geographyLimited, true);
+  assert.deepEqual(result.geographyCoverage.colosseumticket, { located: 3, missing: 2 });
+});

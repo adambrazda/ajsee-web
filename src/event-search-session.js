@@ -26,6 +26,7 @@ export function createEventSearchSession({ locale = 'cs', filters = {}, fetchBat
   let started = false;
   let hasMore = true;
   let incomplete = false;
+  let geographyCoverage = {};
   let frontier = null;
   let published = [];
   let ratesPromise = null;
@@ -78,7 +79,9 @@ export function createEventSearchSession({ locale = 'cs', filters = {}, fetchBat
 
   function snapshot() {
     const { all, rest } = available();
-    return { events: published.concat(rest), hasMore, incomplete, rankingPartial: hasMore && hasAiRelevance(searchFilters), totalKnown: all.length,
+    return { events: published.concat(rest), hasMore, incomplete, geographyCoverage,
+      geographyLimited: Object.values(geographyCoverage).some(provider => provider.missing > 0),
+      rankingPartial: hasMore && hasAiRelevance(searchFilters), totalKnown: all.length,
       pending: hasMore || incomplete, pageInfo: lastPageInfo };
   }
 
@@ -104,6 +107,7 @@ export function createEventSearchSession({ locale = 'cs', filters = {}, fetchBat
         for (const event of batch) candidates.set(String(event.id || eventKey(event)), event);
         orderedCache = null;
         lastPageInfo = batch.pageInfo;
+        if (lastPageInfo.geographyCoverage) geographyCoverage = { ...geographyCoverage, ...lastPageInfo.geographyCoverage };
         cursor = lastPageInfo.ticketmasterCursor;
         incomplete = lastPageInfo.interrupted === true || lastPageInfo.failedProviders?.length > 0;
         // A failed source cannot establish the order of unseen remote events.

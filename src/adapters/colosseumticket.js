@@ -17,6 +17,9 @@ import {
 import { isLocalEventDateAvailable, matchesEventDateRange } from '../event-calendar.js';
 import { withProviderDateRange } from '../provider-event-dates.js';
 import { fetchProviderJson } from '../provider-request.js';
+import { withColosseumGeography } from '../../shared/geo/colosseum-geography.js';
+import { eventCoordinates, distanceKm } from '../../shared/geo/coordinates.js';
+import { withEventPageInfo } from '../event-pagination.js';
 
 
 const DEFAULT_DATA_URL =
@@ -224,6 +227,7 @@ function matchesCity(
 function resolveDataUrl(
   filters = {}
 ) {
+  if (hasNearMe(filters)) return DEFAULT_DATA_URL;
   const city =
     text(
       filters.city ||
@@ -657,18 +661,6 @@ export async function fetchEvents({
   }
 
   /*
-   * The current feed contains no coordinates.
-   * Returning [] is safer than false Near Me positives.
-   */
-  if (
-    hasNearMe(
-      filters
-    )
-  ) {
-    return [];
-  }
-
-  /*
    * AJSEE currently scopes this provider integration to CZ.
    * This gate is independent of canonical event country data.
    */
@@ -685,7 +677,8 @@ export async function fetchEvents({
       filters
     );
 
-  const city =
+  const geo = hasNearMe(filters);
+  const city = geo ? '' :
     text(
       filters.city ||
       ''
@@ -723,12 +716,13 @@ export async function fetchEvents({
     );
 
   const candidates = [];
+  const coverage = { located: 0, missing: 0 };
 
   for (
     const sourceEvent of
     sourceEvents
   ) {
-    const event = withProviderDateRange(sourceEvent);
+    const event = withProviderDateRange(withColosseumGeography(sourceEvent));
     if (
       !isColosseumTicketEventCurrent(
         event
@@ -788,6 +782,14 @@ export async function fetchEvents({
       continue;
     }
 
+    if (geo) {
+      const point = eventCoordinates(normalized);
+      if (!point) { coverage.missing++; continue; }
+      coverage.located++;
+      const radius = Number.isFinite(+filters.nearMeRadiusKm) ? +filters.nearMeRadiusKm : 50;
+      if (distanceKm(filters.nearMeLat, filters.nearMeLon, point.lat, point.lon) > radius) continue;
+    }
+
     candidates.push(
       normalized
     );
@@ -800,12 +802,8 @@ export async function fetchEvents({
       'nearest'
     );
 
-  if (filters.allLocalEvents === true) return sorted;
-
-  return pageSlice(
-    sorted,
-    filters
-  );
+  const result = filters.allLocalEvents === true ? sorted : pageSlice(sorted, filters);
+  return geo ? withEventPageInfo(result, { geographyCoverage: { colosseumticket: coverage } }) : result;
 }
 
 

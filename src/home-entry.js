@@ -1,4 +1,5 @@
-import { isHomeDiscovery, selectHomeDiscoveryEvents } from './home-discovery.js';
+import { isHomeDiscovery } from './home-discovery.js';
+import { loadHomeFeaturedSnapshot, renderHomeFeaturedMarkup } from './home-featured.js';
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
 import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from './event-search-listing.js';
 import {
@@ -323,6 +324,7 @@ const pagination = { page: 1, perPage: 12 };
 
 
 let _lastSearchResult = null;
+let homeSearchRequested = false;
 let _renderCompletion = Promise.resolve();
 let _renderInflight = false;
 let _renderQueued = false;
@@ -3250,6 +3252,7 @@ async function applyQuickDatePreset(preset) {
 }
 
 async function resetAllEventFilters() {
+  homeSearchRequested = false;
   currentFilters.category = 'all';
   currentFilters.audience = '';
   delete currentFilters.searchMode;
@@ -4703,18 +4706,38 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   _lastSearchResult = null;
   const list = document.getElementById('eventsList');
   if (!list) return;
+  const featuredMode = isHome() && isHomeDiscovery(filters) && !homeSearchRequested;
 
   const heading = document.querySelector('[data-home-events-title]');
   if (heading) {
-    const key = isHomeDiscovery(filters) ? 'home.events.title' : 'home.events.results';
+    const key = featuredMode ? 'home.events.title' : 'home.events.results';
     heading.dataset.i18nKey = key;
-    heading.textContent = t(key, isHomeDiscovery(filters) ? 'Co se chystá' : 'Výsledky hledání');
+    heading.textContent = t(key, featuredMode ? 'Naše tipy, kam vyrazit' : 'Výsledky hledání');
+    const intro = heading.parentElement?.querySelector('p');
+    if (intro) {
+      intro.dataset.i18nKey = featuredMode ? 'home.events.intro' : 'home.events.searchIntro';
+      intro.textContent = t(intro.dataset.i18nKey, featuredMode ? 'Akce, které stojí za pozornost.' : 'Vyberte si z nalezených akcí.');
+    }
   }
 
   list.setAttribute('aria-live', 'polite');
   setBusy(true);
 
   try {
+    if (featuredMode) {
+      _lastFetchSig = '';
+      document.getElementById('eventsResultsCount')?.remove();
+      const snapshot = await loadHomeFeaturedSnapshot(document);
+      const { events: featured, markup } = renderHomeFeaturedMarkup(snapshot, locale, { translate: t });
+      ensureSharedEventGridStyles();
+      list.innerHTML = markup || `<p>${esc(t('home.events.empty', 'Další tipy najdete v přehledu událostí.'))}</p>`;
+      delete list.dataset.homeStaticFeatured;
+      wireHomeEventCards(list, new Map(featured.map(event => [String(event.id), event])), locale);
+      wireSharedEventImageFraming(list);
+      wireSharedEventCardAnalytics(list);
+      return;
+    }
+    delete list.dataset.homeStaticFeatured;
     const api = buildApiFilters(filters);
 
     const sig = makeFetchSig(locale, api, pagination.page, pagination.perPage);
@@ -4736,7 +4759,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     let toRender = out;
 
     if (isHp) {
-      toRender = isHomeDiscovery(filters) ? selectHomeDiscoveryEvents(out) : out.slice(0, 6);
+      toRender = out.slice(0, 6);
     } else {
       const end = pagination.page * pagination.perPage;
       toRender = out.slice(0, end);
@@ -4824,9 +4847,31 @@ list.innerHTML = toRender.map((ev, index) => {
   });
 }).join('');
 
-list.__ajseeEventModalStore = modalStore;
+wireHomeEventCards(list, modalStore, locale);
 
-qsa('.js-event-detail', list).forEach(btn => {
+    if (out.length || !(window.__ajsee?.tmRateLimit?.until > Date.now())) {
+      _lastSearchResult = { filters, count: events.searchState?.totalKnown ?? out.length,
+        hasMore: events.searchState?.hasMore || events.searchState?.incomplete || events.searchState?.geographyLimited || !!(window.__ajsee?.tmRateLimit?.until > Date.now()) };
+    }
+    wireSharedEventImageFraming(list);
+    wireSharedEventCardAnalytics(list);
+
+    announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);
+  } catch {
+    _lastSearchResult = null;
+    _lastFetchSig = '';
+
+    if (list && (!featuredMode || !list.querySelector('.event-card'))) {
+      list.innerHTML = `<p>${esc(t('events-load-error', 'Unable to load events. Try again later.'))}</p>`;
+    }
+  } finally {
+    setBusy(false);
+  }
+}
+
+function wireHomeEventCards(list, modalStore, locale) {
+  list.__ajseeEventModalStore = modalStore;
+  qsa('.js-event-detail', list).forEach(btn => {
   btn.addEventListener('click', async event => {
     event.preventDefault();
     event.stopPropagation();
@@ -4885,24 +4930,6 @@ qsa('.js-event-detail', list).forEach(btn => {
   });
 });
 
-    if (out.length || !(window.__ajsee?.tmRateLimit?.until > Date.now())) {
-      _lastSearchResult = { filters, count: events.searchState?.totalKnown ?? out.length,
-        hasMore: events.searchState?.hasMore || events.searchState?.incomplete || events.searchState?.geographyLimited || !!(window.__ajsee?.tmRateLimit?.until > Date.now()) };
-    }
-    wireSharedEventImageFraming(list);
-    wireSharedEventCardAnalytics(list);
-
-    announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);
-  } catch {
-    _lastSearchResult = null;
-    _lastFetchSig = '';
-
-    if (list) {
-      list.innerHTML = `<p>${esc(t('events-load-error', 'Unable to load events. Try again later.'))}</p>`;
-    }
-  } finally {
-    setBusy(false);
-  }
 }
 
 async function renderAndSync({ resetPage = true } = {}) {
@@ -6022,6 +6049,7 @@ function bindFilterFormInteractions(formEl) {
     }
 
     if (syncFiltersFromForm() === false) return;
+    homeSearchRequested = true;
 
     const city = getCityInputEl();
 
@@ -6207,51 +6235,9 @@ async function bootstrapMain() {
     await renderAndSync({ resetPage: true });
   }, 'ajsee-lang-change-main');
 
-  if (isHome()) {
-    let didRunInitialHomeEvents = false;
-
-    const runInitialHomeEventsRender = () => {
-      if (didRunInitialHomeEvents) return;
-
-      didRunInitialHomeEvents = true;
-      void renderAndSync({ resetPage: true });
-    };
-
-    const armInitialHomeEventsRender = () => {
-      const eventsAnchor =
-        document.getElementById('events') ||
-        document.getElementById('eventsList') ||
-        document.querySelector('[data-events-section]') ||
-        document.querySelector('.events-section');
-
-      if (eventsAnchor && 'IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) {
-            observer.disconnect();
-            runInitialHomeEventsRender();
-          }
-        }, {
-          root: null,
-          rootMargin: '0px 0px',
-          threshold: 0.01
-        });
-
-        observer.observe(eventsAnchor);
-
-        window.setTimeout(() => {
-          observer.disconnect();
-          runInitialHomeEventsRender();
-        }, 5200);
-      } else {
-        window.setTimeout(runInitialHomeEventsRender, 5200);
-      }
-    };
-
-    // Homepage hero / LCP má prioritu před Ticketmaster feedem, event obrázky a DOM prací.
-    window.setTimeout(armInitialHomeEventsRender, 2800);
-  } else {
-    await renderAndSync({ resetPage: true });
-  }
+  // Initial recommendations use only the embedded small snapshot. Provider
+  // catalogues are requested through the shared session only after searching.
+  await renderAndSync({ resetPage: true });
 }
 if (!G.flags.mainDomReadyBound) {
   G.flags.mainDomReadyBound = true;

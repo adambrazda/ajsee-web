@@ -37,3 +37,6 @@ review-preview/
 # Generated ColosseumTicket feeds
 public/data/colosseumticket-events*.json
 public/data/event-cities.json
+
+# Homepage recommendations are rebuilt from the current partner feeds.
+public/data/home-featured-events.json

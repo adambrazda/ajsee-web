@@ -473,8 +473,8 @@
   "home.hero.lead1": "Festivaly, divadlo, koncerty aj šport.",
   "home.hero.lead2": "Objavte podujatia doma aj v zahraničí.",
   "home.allEvents": "Prezrieť všetky podujatia",
-  "home.events.title": "Čo sa chystá",
-  "home.events.intro": "Vyberte si z aktuálnej ponuky podujatí.",
+  "home.events.title": "Naše tipy, kam vyraziť",
+  "home.events.intro": "Podujatia, ktoré stoja za pozornosť.",
   "home.events.results": "Výsledky hľadania",
   "home.london.title": "Muzikály v Londýne",
   "home.london.text": "Zažite atmosféru West Endu. Vyberte si muzikál a nájdite vstupenky na svoj termín.",
@@ -501,5 +501,7 @@
   "home.editorial.static2.excerpt": "Oya Canli sa obzerá za cestou Evity od pôvodného albumu cez film s Madonnou až po inscenáciu Jamieho Lloyda z roku 2025 a spomína na Rachel Zegler v úlohe Evy Perón.",
   "home.editorial.static3.title": "Mamma Mia!: Od ABBY až na West End",
   "home.editorial.static3.excerpt": "Oya Canli spomína na svoje prvé stretnutie s Mamma Mia!, na trvalú silu hudby skupiny ABBA a na to, prečo pre ňu návšteva londýnskeho West Endu predstavuje ďalšiu kapitolu jej vzťahu k tomuto muzikálu.",
-  "home.contact.legal": "Odoslaním formulára beriete na vedomie naše <a href=\"/privacy-policy\" data-lang-link>Zásady ochrany osobných údajov</a> a <a href=\"/cookies-policy\" data-lang-link>Zásady používania cookies</a>."
+  "home.contact.legal": "Odoslaním formulára beriete na vedomie naše <a href=\"/privacy-policy\" data-lang-link>Zásady ochrany osobných údajov</a> a <a href=\"/cookies-policy\" data-lang-link>Zásady používania cookies</a>.",
+  "home.events.searchIntro": "Vyberte si z nájdených podujatí.",
+  "home.events.empty": "Ďalšie tipy nájdete v prehľade podujatí."
 }

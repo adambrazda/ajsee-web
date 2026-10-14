@@ -473,8 +473,8 @@
   "home.hero.lead1": "Festiwale, teatr, koncerty i sport.",
   "home.hero.lead2": "Odkrywaj wydarzenia w kraju i za granicą.",
   "home.allEvents": "Zobacz wszystkie wydarzenia",
-  "home.events.title": "Co się zbliża?",
-  "home.events.intro": "Wybierz coś z aktualnej oferty wydarzeń.",
+  "home.events.title": "Nasze propozycje wydarzeń",
+  "home.events.intro": "Wydarzenia, na które warto się wybrać.",
   "home.events.results": "Wyniki wyszukiwania",
   "home.london.title": "Musicale w Londynie",
   "home.london.text": "Poczuj atmosferę West Endu. Wybierz musical i znajdź bilety na odpowiedni termin.",
@@ -501,5 +501,7 @@
   "home.editorial.static2.excerpt": "Oya Canli przypomina drogę Evity od oryginalnego albumu przez film z Madonną aż po inscenizację Jamiego Lloyda z 2025 roku i wspomina Rachel Zegler w roli Evy Perón.",
   "home.editorial.static3.title": "Mamma Mia!: Od ABBY po West End",
   "home.editorial.static3.excerpt": "Oya Canli wspomina swoje pierwsze spotkanie z Mamma Mia!, ponadczasową siłę muzyki ABBY i wyjaśnia, dlaczego zobaczenie musicalu na londyńskim West Endzie jest dla niej kolejnym rozdziałem tej historii.",
-  "home.contact.legal": "Wysyłając formularz, potwierdzasz zapoznanie się z naszą <a href=\"/privacy-policy\" data-lang-link>Polityką prywatności</a> i <a href=\"/cookies-policy\" data-lang-link>Polityką cookies</a>."
+  "home.contact.legal": "Wysyłając formularz, potwierdzasz zapoznanie się z naszą <a href=\"/privacy-policy\" data-lang-link>Polityką prywatności</a> i <a href=\"/cookies-policy\" data-lang-link>Polityką cookies</a>.",
+  "home.events.searchIntro": "Wybierz spośród znalezionych wydarzeń.",
+  "home.events.empty": "Więcej propozycji znajdziesz w pełnej liście wydarzeń."
 }

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "leadHours": 24,
+  "horizonDays": 180,
+  "maxForeign": 1,
+  "editorial": [
+    { "provider": "colosseumticket", "providerEventId": "MtdPMiVxQfK9FQ8WYgO6AQ", "title": "LUCIE BÍLÁ - TURNÉ OBYČEJNÁ HOLKA 2026" },
+    { "provider": "colosseumticket", "providerEventId": "5470841", "title": "Jesus Christ Superstar (NDM)" }
+  ]
+}

@@ -16,7 +16,7 @@ export function entryRuntime(file, { query = '', locale = 'cs', cookie = '' } = 
   const source = readFileSync(new URL('../../src/' + file, import.meta.url), 'utf8');
   const body = parse(source, { sourceType: 'module', ecmaVersion: 'latest' }).body;
   const functions = body.filter(n => n.type === 'FunctionDeclaration');
-  const names = new Set(['CITY_SYNONYMS', 'LANGS', 'slugList', 'normKey', 'currentFilters', 'nearMeLabel', 'announce', '_lastEventsEmptyStateViewSignature']);
+  const names = new Set(['CITY_SYNONYMS', 'LANGS', 'slugList', 'normKey', 'currentFilters', 'nearMeLabel', 'announce', '_lastEventsEmptyStateViewSignature', 'homeSearchRequested']);
   const variables = body.filter(n => n.type === 'VariableDeclaration' && n.declarations.every(d => names.has(d.id.name)));
   const dom = new JSDOM(`<html lang="${locale}"><body><div id="eventsResultsCount"></div><div id="eventsList"></div>
     <form><select id="filter-category"><option value="all">all</option><option value="theatre">theatre</option></select>

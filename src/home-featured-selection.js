@@ -48,6 +48,9 @@ export function isHomeFeaturedEligible(event, { now = new Date(), leadHours = 24
   const bucket = homeFeaturedBucket(event);
   if (!title || !bucket || !event.location?.city || !country(event) || !event.image || !isHomeFeaturedTicketUrl(event)) return false;
   if (['canceled', 'cancelled', 'postponed', 'rescheduled'].includes(String(event.saleStatus || '').toLowerCase())) return false;
+  // A CZK 1 lower bound on a much wider range can be an unconfirmed special
+  // tariff. Keep that occurrence in search, but choose a clearer homepage tip.
+  if (event.price?.currency === 'CZK' && event.price.min <= 1 && event.price.max >= 100) return false;
   if (/\b(parking|parkovani|fast track|vip upgrade|vip doplatek|meet and greet|early entry|soundcheck upgrade)\b/.test(fold(title))) return false;
   const bounds = eventDateBounds(event);
   if (bounds.uncertain || !bounds.start) return false;

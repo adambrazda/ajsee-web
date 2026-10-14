@@ -5,7 +5,7 @@ import { JSDOM } from 'jsdom';
 import { entryFunction } from './helpers/entry-function.mjs';
 import { isHomeDiscovery } from '../src/home-discovery.js';
 import { selectHomeFeaturedEvents, buildHomeFeaturedPool, isHomeFeaturedEligible, homeFeaturedBucket } from '../src/home-featured-selection.js';
-import { collectHomeFeaturedSources, createHomeFeaturedSnapshot } from '../shared/home-featured-source.js';
+import { collectHomeFeaturedSources, createHomeFeaturedSnapshot, normalizeHomeFeaturedLocalEvent } from '../shared/home-featured-source.js';
 import { renderHomeFeaturedMarkup, loadHomeFeaturedSnapshot } from '../src/home-featured.js';
 import { createHomeFeaturedHandler } from '../netlify/functions/home-featured.js';
 import { createHomeFeaturedRefresh } from '../netlify/functions/home-featured-refresh.js';
@@ -59,6 +59,16 @@ test('unknown sales availability never becomes a sold-out claim, and offsale rem
   assert.equal(isHomeFeaturedEligible(make('neutral', 'concert', { saleStatus: 'offsale', availability: null, seats: 0 }), { now }), true);
   const { markup } = renderHomeFeaturedMarkup({ policy: {}, events: [make('neutral', 'concert', { saleStatus: 'offsale', seats: 0 })] }, 'cs', { now });
   assert.doesNotMatch(markup, /event-sold-badge|Vyprodáno/);
+});
+
+test('an anomalous one-crown tariff is excluded from recommendations and normal source ranges remain intact', () => {
+  assert.equal(isHomeFeaturedEligible(make('special', 'concert', { price: { min: 1, max: 2590, currency: 'CZK' } }), { now }), false);
+  const event = normalizeHomeFeaturedLocalEvent(make('ordinary', 'concert', { partner: 'colosseumticket',
+    tickets: 'https://colosseumticket.cz/cs/udalost/ordinary?a_box=keep', priceFrom: '890 - 2590 Kč',
+    price: { min: 890, max: 2590, currency: 'CZK' }, priceOptions: [{ amount: 890, currency: 'CZK' }] }));
+  const { markup } = renderHomeFeaturedMarkup({ events: [event], policy: {} }, 'cs', { now });
+  assert.ok(markup.includes('890') && markup.includes('2&nbsp;590') || markup.includes('2 590'));
+  assert.doesNotMatch(markup, /Od 890/);
 });
 
 test('foreign quota is respected without starving an available domestic category', () => {

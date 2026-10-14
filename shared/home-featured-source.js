@@ -6,7 +6,10 @@ import { buildHomeFeaturedPool } from '../src/home-featured-selection.js';
 export function normalizeHomeFeaturedLocalEvent(source) {
   const event = withProviderDateRange(source);
   const taxonomy = event.partner === 'smsticket' ? buildSmsticketTaxonomy(event) : buildColosseumTicketTaxonomy(event);
-  return { ...event, taxonomy, category: deriveLegacyCategory(taxonomy) };
+  const range = event.price;
+  const priceRanges = event.partner === 'colosseumticket' && Number.isFinite(range?.min) && range?.currency
+    ? [{ min: range.min, max: range.max, currency: range.currency }] : event.priceRanges;
+  return { ...event, taxonomy, category: deriveLegacyCategory(taxonomy), ...(priceRanges ? { priceRanges } : {}) };
 }
 
 export function compactHomeFeaturedEvent(event) {
@@ -14,7 +17,7 @@ export function compactHomeFeaturedEvent(event) {
   // Commercial links, dates, image framing and currency data stay intact.
   for (const key of ['id', 'partner', 'providerEventId', 'sourceId', 'sourceName', 'title', 'date', 'datetime', 'time', 'dateAvailability',
     'location', 'venue', 'image', 'imageAsset', 'imagePresentation', 'tickets', 'url', 'priceFrom', 'currency',
-    'priceOptions', 'priceRanges', 'saleStatus', 'category', 'homeFeatured']) {
+    'price', 'priceOptions', 'priceRanges', 'saleStatus', 'category', 'homeFeatured']) {
     if (event[key] !== undefined) result[key] = event[key];
   }
   if (event.taxonomy) {

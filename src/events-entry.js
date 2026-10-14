@@ -171,6 +171,7 @@ const eventsPager = {
   hasMore: true,
   incomplete: false,
   rankingPartial: false,
+  geographyLimited: false,
   loading: false
 };
 
@@ -1915,10 +1916,14 @@ function renderEventsStateMessage(kind = 'rateLimit') {
 
   ensureEventsStateStyles();
 
-  if (kind === 'searchPending' || kind === 'providerIncomplete') {
+  if (kind === 'searchPending' || kind === 'providerIncomplete' || kind === 'geographyLimited') {
     resetEventsEmptyStateViewTracking();
-    const title = t('events-search-pending-title', 'Hledání ještě není dokončené');
-    const body = kind === 'providerIncomplete'
+    const title = kind === 'geographyLimited'
+      ? t('events-geo-empty-title', 'V tomto okruhu jsme nenašli akce s ověřenou polohou')
+      : t('events-search-pending-title', 'Hledání ještě není dokončené');
+    const body = kind === 'geographyLimited'
+      ? t('events-geo-coverage-note', 'Akce bez ověřené polohy do hledání v okruhu nezahrnujeme. Úplnější nabídku zobrazíte hledáním podle města nebo bez okruhu.')
+      : kind === 'providerIncomplete'
       ? t('events-search-incomplete', 'Nabídka je neúplná. Některé zdroje se nepodařilo načíst. Zkuste hledání znovu.')
       : t('events-search-pending-body', 'Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.');
     updateResultsCount(`${eventsPager.totalKnown}+`);
@@ -4919,6 +4924,7 @@ function resetEventsPager(nextSig = '') {
   eventsPager.hasMore = true;
   eventsPager.incomplete = false;
   eventsPager.rankingPartial = false;
+  eventsPager.geographyLimited = false;
   eventsPager.loading = false;
 }
 
@@ -5165,6 +5171,7 @@ async function fetchNextEventsBatch(locale, api, { targetCount = pagination.page
     eventsPager.hasMore = state.hasMore;
     eventsPager.incomplete = state.incomplete;
     eventsPager.rankingPartial = state.rankingPartial;
+    eventsPager.geographyLimited = state.geographyLimited;
     eventsPager.totalKnown = state.totalKnown;
     eventsPager.apiPage += 1;
   } finally {
@@ -5248,9 +5255,11 @@ function updateEventsPagerControls() {
     : eventsPager.rankingPartial
       ? t('events-search-ranking-partial', 'Řazení podle shody vychází z dosud prohledané nabídky. Další hledání může najít vhodnější akce.')
       : '';
+  const geoNotice = eventsPager.geographyLimited
+    ? t('events-geo-coverage-note', 'Akce bez ověřené polohy do hledání v okruhu nezahrnujeme. Úplnější nabídku zobrazíte hledáním podle města nebo bez okruhu.') : '';
 
   host.innerHTML = `
-    <div class="events-pager__status" role="status">${esc(eventsPagerLabel())}${notice ? `<p>${esc(notice)}</p>` : ''}</div>
+    <div class="events-pager__status" role="status">${esc(eventsPagerLabel())}${notice ? `<p>${esc(notice)}</p>` : ''}${geoNotice ? `<p>${esc(geoNotice)}</p>` : ''}</div>
     <button type="button" class="events-pager__btn" data-events-page-prev ${canPrev ? '' : 'disabled'}>
       ${esc(prevLabel)}
     </button>
@@ -5410,6 +5419,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       totalKnown: eventsPager.totalKnown,
       hasMore: eventsPager.hasMore,
       incomplete: eventsPager.incomplete,
+      geographyLimited: eventsPager.geographyLimited,
       loading: eventsPager.loading
     });
 
@@ -5428,7 +5438,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
      * results intentionally retain their original legacy category.
      */
 
-    _lastSearchResult = { filters, count: eventsPager.totalKnown, hasMore: eventsPager.hasMore || eventsPager.incomplete || isTicketmasterRateLimited() };
+    _lastSearchResult = { filters, count: eventsPager.totalKnown, hasMore: eventsPager.hasMore || eventsPager.incomplete || eventsPager.geographyLimited || isTicketmasterRateLimited() };
     updateResultsCount(`${eventsPager.totalKnown}${eventsPager.hasMore || eventsPager.incomplete ? '+' : ''}`);
 
     const isHp = isHome();
@@ -5446,6 +5456,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       if (eventsPager.incomplete && !isTicketmasterRateLimited()) renderEventsStateMessage('providerIncomplete');
       else if (eventsPager.hasMore) renderEventsStateMessage('searchPending');
       else if (isTicketmasterRateLimited()) renderEventsStateMessage('rateLimit');
+      else if (eventsPager.geographyLimited) renderEventsStateMessage('geographyLimited');
       else renderEventsStateMessage('empty');
       return;
     }

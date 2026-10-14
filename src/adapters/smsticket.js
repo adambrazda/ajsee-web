@@ -13,6 +13,7 @@ import { matchesKeywordPrefix } from '../search/keyword-match.js';
 import { isLocalEventDateAvailable, matchesEventDateRange } from '../event-calendar.js';
 import { withProviderDateRange } from '../provider-event-dates.js';
 import { fetchProviderJson } from '../provider-request.js';
+import { distanceKm as haversineKm, eventCoordinates } from '../../shared/geo/coordinates.js';
 
 import {
   buildSmsticketTaxonomy,
@@ -69,6 +70,7 @@ function getCanonicalCityText(cityText = '') {
 }
 
 function resolveSmsticketDataUrl(filters = {}) {
+  if (hasNearMe(filters)) return DEFAULT_DATA_URL;
   const cityText = getFilterCityText(filters);
 
   if (!cityText) return DEFAULT_DATA_URL;
@@ -188,28 +190,6 @@ function inDateRange(ev, dateFrom = '', dateTo = '') {
 
 export function isSmsticketEventAvailable(ev = {}, now = new Date()) {
   return isLocalEventDateAvailable(withProviderDateRange(ev), now, { allowBooking: true });
-}
-
-function haversineKm(lat1, lon1, lat2, lon2) {
-  if (
-    lat1 == null || lon1 == null ||
-    lat2 == null || lon2 == null ||
-    !Number.isFinite(+lat1) || !Number.isFinite(+lon1) ||
-    !Number.isFinite(+lat2) || !Number.isFinite(+lon2)
-  ) {
-    return Infinity;
-  }
-
-  const toRad = (x) => (+x * Math.PI) / 180;
-  const R = 6371;
-  const dLat = toRad(+lat2 - +lat1);
-  const dLon = toRad(+lon2 - +lon1);
-
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(+lat1)) * Math.cos(toRad(+lat2)) * Math.sin(dLon / 2) ** 2;
-
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function hasNearMe(filters = {}) {
@@ -440,19 +420,8 @@ function matchesNearMe(ev, filters = {}) {
     ? +filters.nearMeRadiusKm
     : 50;
 
-  const lat =
-    ev?.location?.lat ??
-    ev?.location?.latitude ??
-    ev?.venue?.location?.lat ??
-    ev?.venue?.location?.latitude;
-
-  const lon =
-    ev?.location?.lon ??
-    ev?.location?.longitude ??
-    ev?.venue?.location?.lon ??
-    ev?.venue?.location?.longitude;
-
-  return haversineKm(+filters.nearMeLat, +filters.nearMeLon, +lat, +lon) <= radius;
+  const point = eventCoordinates(ev);
+  return point != null && haversineKm(filters.nearMeLat, filters.nearMeLon, point.lat, point.lon) <= radius;
 }
 
 
@@ -837,7 +806,7 @@ export async function fetchEvents({ filters = {} } = {}) {
   // Keep the adapter result equivalent, but avoid several full-array passes
   // over the large static feed. City is checked first because explicit city
   // searches usually reduce the candidate set the most.
-  const city = filters.city || '';
+  const city = hasNearMe(filters) ? '' : filters.city || '';
   const category = filters.category ?? filters.segment ?? 'all';
   const audience = filters.audience ?? '';
   const keyword = filters.keyword || '';

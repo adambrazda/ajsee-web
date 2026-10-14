@@ -465,5 +465,7 @@
   "events-search-continue": "Suche fortsetzen",
   "events-search-incomplete": "Das Angebot ist unvollständig. Einige Quellen konnten nicht geladen werden. Versuche die Suche erneut.",
   "events-search-retry": "Erneut versuchen",
-  "events-search-ranking-partial": "Die Relevanz basiert auf dem bisher durchsuchten Angebot. Eine weitere Suche kann passendere Veranstaltungen finden."
+  "events-search-ranking-partial": "Die Relevanz basiert auf dem bisher durchsuchten Angebot. Eine weitere Suche kann passendere Veranstaltungen finden.",
+  "events-geo-coverage-note": "Veranstaltungen ohne verifizierten Standort werden bei der Umkreissuche nicht berücksichtigt. Suche nach Stadt oder ohne Umkreis, um mehr Angebote zu sehen.",
+  "events-geo-empty-title": "In diesem Umkreis wurden keine Veranstaltungen mit verifiziertem Standort gefunden"
 }

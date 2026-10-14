@@ -465,5 +465,7 @@
   "events-search-continue": "Keresés folytatása",
   "events-search-incomplete": "A kínálat nem teljes. Egyes forrásokat nem sikerült betölteni. Próbáld újra a keresést.",
   "events-search-retry": "Újrapróbálás",
-  "events-search-ranking-partial": "A találatok sorrendje az eddig átnézett kínálaton alapul. A keresés folytatása jobb találatokat hozhat."
+  "events-search-ranking-partial": "A találatok sorrendje az eddig átnézett kínálaton alapul. A keresés folytatása jobb találatokat hozhat.",
+  "events-geo-coverage-note": "Az ellenőrzött helyszín nélküli események nem szerepelnek a körzet szerinti keresésben. Keress város szerint vagy körzeti szűrő nélkül a bővebb kínálatért.",
+  "events-geo-empty-title": "Ebben a körzetben nem találtunk ellenőrzött helyszínnel rendelkező eseményt"
 }

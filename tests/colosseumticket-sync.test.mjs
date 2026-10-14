@@ -140,21 +140,10 @@ test(
       'Praha'
     );
 
-    assert.equal(
-      Object.hasOwn(
-        event.location,
-        'country'
-      ),
-      false
-    );
-
-    assert.equal(
-      Object.hasOwn(
-        event.venue,
-        'country'
-      ),
-      false
-    );
+    assert.equal(event.location.country, 'CZ');
+    assert.equal(event.venue.country, 'CZ');
+    assert.equal(event.sourceMeta.geography.source, 'ruian-address');
+    assert.ok(Number.isFinite(event.location.lat) && Number.isFinite(event.location.lon));
 
     assert.equal(
       event.venue.name,

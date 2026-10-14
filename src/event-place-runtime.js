@@ -1,3 +1,5 @@
+import { validCoordinates as isValidCoordinates } from '../shared/geo/coordinates.js';
+
 export const PLACE_TYPE_CITY =
   'city';
 
@@ -23,7 +25,8 @@ function finiteCoordinate(value) {
   if (
     value === null ||
     value === undefined ||
-    value === ''
+    String(value).trim() === '' ||
+    !['number', 'string'].includes(typeof value)
   ) {
     return null;
   }
@@ -77,7 +80,8 @@ export function hasGeoCoordinates(
 
   if (
     lat === null ||
-    lon === null
+    lon === null ||
+    !isValidCoordinates(lat, lon)
   ) {
     return false;
   }
@@ -527,6 +531,7 @@ export function readGeoPlaceFromSearchParams(
   const validCoordinates =
     lat !== null &&
     lon !== null &&
+    isValidCoordinates(lat, lon) &&
     (
       Math.abs(lat) +
       Math.abs(lon)

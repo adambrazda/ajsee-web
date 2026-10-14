@@ -37,6 +37,7 @@ import { mergeExactCrossProviderOccurrences } from '../event-cross-provider-merg
 import { withEventPageInfo } from '../event-pagination.js';
 import { matchesEventDateRange } from '../event-calendar.js';
 import { withRequestDeadline } from '../provider-request.js';
+import { distanceKm as haversineKm, eventCoordinates } from '../../shared/geo/coordinates.js';
 
 // DEV detekce (localhost/Vite)
 const isDev =
@@ -118,31 +119,6 @@ function foldText(value) {
     .replace(/[^a-z0-9]+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
-}
-
-// Haversine distance in km
-function haversineKm(lat1, lon1, lat2, lon2) {
-  if (
-    lat1 == null || lon1 == null ||
-    lat2 == null || lon2 == null ||
-    !Number.isFinite(+lat1) || !Number.isFinite(+lon1) ||
-    !Number.isFinite(+lat2) || !Number.isFinite(+lon2)
-  ) {
-    return Infinity;
-  }
-
-  const toRad = (x) => (+x * Math.PI) / 180;
-  const R = 6371;
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c;
 }
 
 // ------- Country aliases -------
@@ -847,7 +823,8 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   ]);
   if (ticketmaster.pageInfo) pageInfo = ticketmaster.pageInfo;
   pageInfo = { ...pageInfo, failedProviders: failures,
-    interrupted: pageInfo.interrupted === true || failures.length > 0 };
+    interrupted: pageInfo.interrupted === true || failures.length > 0,
+    geographyCoverage: colosseumticket.pageInfo?.geographyCoverage };
   all = all.concat(ticketmaster, smsticket, colosseumticket, seatplan);
 
   // --- Demo zdroj v DEV ---
@@ -997,21 +974,8 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     const radius = Number.isFinite(+nearMeRadiusKm) ? +nearMeRadiusKm : 50;
 
     all = all.filter((ev) => {
-      const lat =
-        ev?.location?.lat ??
-        ev?.location?.latitude ??
-        ev?.venue?.location?.lat ??
-        ev?.venue?.location?.latitude ??
-        ev?.lat;
-
-      const lon =
-        ev?.location?.lon ??
-        ev?.location?.longitude ??
-        ev?.venue?.location?.lon ??
-        ev?.venue?.location?.longitude ??
-        ev?.lon;
-
-      const d = haversineKm(+nearMeLat, +nearMeLon, +lat, +lon);
+      const point = eventCoordinates(ev);
+      const d = point ? haversineKm(nearMeLat, nearMeLon, point.lat, point.lon) : Infinity;
 
       return d <= radius;
     });

@@ -65,6 +65,30 @@ test('partial AI ranking is disclosed while continuation remains available', () 
   c.dom.window.close();
 });
 
+test('geographic coverage is disclosed without offering a retry for missing source metadata', () => {
+  const c = controls([{ id: 'located' }], false);
+  c.eventsPager.geographyLimited = true;
+  c.update();
+  assert.match(c.host.textContent, /bez ověřené polohy/);
+  assert.equal(c.host.querySelector('[data-events-search-retry]'), null);
+  c.dom.window.close();
+});
+
+test('zero located results do not claim that all events in the radius have been excluded', () => {
+  const dom = new JSDOM('<div id="eventsList"></div>');
+  const render = entryFunction('events-entry.js', 'renderEventsStateMessage', {
+    document: dom.window.document, ensureEventsStateStyles() {}, resetEventsEmptyStateViewTracking() {},
+    t: (key, fallback) => fallback, esc: String, eventsPager: { totalKnown: 0 },
+    updateResultsCount() {}, updateEventsPagerControls() {}, announce() {}
+  });
+  render('geographyLimited');
+  const content = dom.window.document.querySelector('#eventsList').textContent;
+  assert.match(content, /akce s ověřenou polohou/);
+  assert.match(content, /hledáním podle města/);
+  assert.doesNotMatch(content, /Nenašli jsme žádné akce/);
+  dom.window.close();
+});
+
 test('continuing a partially filled page does not skip its unfilled slots', async () => {
   const c = controls(Array.from({length:19}, (_,i)=>({id:String(i)})), true);
   c.host.querySelector('[data-events-page-next]').click();

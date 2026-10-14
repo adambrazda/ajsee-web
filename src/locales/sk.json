@@ -465,5 +465,7 @@
   "events-search-continue": "Pokračovať vo vyhľadávaní",
   "events-search-incomplete": "Ponuka je neúplná. Niektoré zdroje sa nepodarilo načítať. Skúste hľadanie znova.",
   "events-search-retry": "Skúsiť znova",
-  "events-search-ranking-partial": "Poradie podľa zhody vychádza z doteraz prehľadanej ponuky. Ďalšie hľadanie môže nájsť vhodnejšie akcie."
+  "events-search-ranking-partial": "Poradie podľa zhody vychádza z doteraz prehľadanej ponuky. Ďalšie hľadanie môže nájsť vhodnejšie akcie.",
+  "events-geo-coverage-note": "Akcie bez overenej polohy do hľadania v okruhu nezahŕňame. Úplnejšiu ponuku zobrazíte hľadaním podľa mesta alebo bez okruhu.",
+  "events-geo-empty-title": "V tomto okruhu sme nenašli akcie s overenou polohou"
 }

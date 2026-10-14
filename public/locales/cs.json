@@ -444,5 +444,7 @@
   "events-search-continue": "Pokračovat v hledání",
   "events-search-incomplete": "Nabídka je neúplná. Některé zdroje se nepodařilo načíst. Zkuste hledání znovu.",
   "events-search-retry": "Zkusit znovu",
-  "events-search-ranking-partial": "Řazení podle shody vychází z dosud prohledané nabídky. Další hledání může najít vhodnější akce."
+  "events-search-ranking-partial": "Řazení podle shody vychází z dosud prohledané nabídky. Další hledání může najít vhodnější akce.",
+  "events-geo-coverage-note": "Akce bez ověřené polohy do hledání v okruhu nezahrnujeme. Úplnější nabídku zobrazíte hledáním podle města nebo bez okruhu.",
+  "events-geo-empty-title": "V tomto okruhu jsme nenašli akce s ověřenou polohou"
 }

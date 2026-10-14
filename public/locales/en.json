@@ -445,5 +445,7 @@
   "events-search-continue": "Continue searching",
   "events-search-incomplete": "These listings are incomplete. Some sources could not be loaded. Try searching again.",
   "events-search-retry": "Try again",
-  "events-search-ranking-partial": "Relevance is based on listings searched so far. Continuing the search may find better matches."
+  "events-search-ranking-partial": "Relevance is based on listings searched so far. Continuing the search may find better matches.",
+  "events-geo-coverage-note": "Events without a verified location are excluded from radius searches. Search by city or without a radius to see more listings.",
+  "events-geo-empty-title": "No events with a verified location were found in this radius"
 }

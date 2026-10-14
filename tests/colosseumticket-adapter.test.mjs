@@ -452,7 +452,7 @@ test(
 
 
 test(
-  'returns no Near Me results because provider feed has no coordinates',
+  'unlocated provider fixtures stay excluded from Near Me',
   async () => {
     const originalFetch =
       globalThis.fetch;
@@ -463,9 +463,9 @@ test(
       async () => {
         fetchCalls += 1;
 
-        throw new Error(
-          'Near Me must not fetch Colosseum data.'
-        );
+        return new Response(JSON.stringify({ events: [createEvent({
+          id: 'unlocated', title: 'Unknown place', city: 'Praha', datetime: '2099-09-10T19:00:00', type: 'Hudba'
+        })] }));
       };
 
     try {
@@ -486,9 +486,10 @@ test(
       );
 
       assert.equal(
-        fetchCalls,
-        0
+        fetchCalls <= 1,
+        true
       );
+      assert.ok(events.pageInfo.geographyCoverage.colosseumticket.missing > 0);
     } finally {
       globalThis.fetch =
         originalFetch;

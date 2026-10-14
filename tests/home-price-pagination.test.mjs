@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { entryFunction } from './helpers/entry-function.mjs';
-import { createEventSearchSession } from '../src/event-search-session.js';
+import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from '../src/event-search-listing.js';
 import { withEventPageInfo } from '../src/event-pagination.js';
 const e=(id,price='1000 CZK')=>({id,partner:'ticketmaster',datetime:'2099-01-01',title:id,priceFrom:price,currency:'CZK'});
 const page=(events,hasMore)=>withEventPageInfo(events,{hasMore,frontier:Date.parse('2099-01-01'),ticketmasterCursor:{streams:{}}});
 function home(fetchBatch,getRates=async()=>({})) {
   return entryFunction('home-entry.js','fetchHomeEventsForRender',{
-    createEventSearchSession,getAllHomeEvents:fetchBatch,getRatesForPriceFilter:getRates,
-    HOME_PRICE_FILTER_TARGET_COUNT:6,HOME_PRICE_FILTER_MAX_BATCHES:3
+    createEventListingSession,EVENT_LISTING_PAGE_SIZE,eventListingBatchLimit,
+    getAllHomeEvents:fetchBatch,getRatesForPriceFilter:getRates
   });
 }
 
@@ -23,7 +23,7 @@ test('homepage considers all local candidates and finds a cheap event beyond can
 test('homepage bounded search exposes an incomplete result rather than proving no affordable events',async()=>{
   let requests=0;
   const result=await home(async()=>{requests++;return page([e(String(requests))],true);})('cs',{maxPrice:100,priceCurrency:'CZK'});
-  assert.equal(requests,3);assert.equal(result.length,0);assert.equal(result.searchState.hasMore,true);
+  assert.equal(requests,5);assert.equal(result.length,0);assert.equal(result.searchState.hasMore,true);
 });
 
 test('homepage loads no exchange rates without a price filter and deduplicates provider IDs',async()=>{

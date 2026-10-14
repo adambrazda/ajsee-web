@@ -1,3 +1,5 @@
+import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
+import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from './event-search-listing.js';
 import {
   applyGeoRadiusToApiFilters,
   isNearMePlace,
@@ -74,7 +76,6 @@ import {
 import { initLangDropdown } from './utils/lang-dropdown.js';
 import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 import { getAllEvents } from './api/eventsApi.js';
-import { createEventSearchSession } from './event-search-session.js';
 import { setupCityTypeahead } from './city/typeahead.js';
 import { canonForInputCity, guessCountryCodeFromCity } from './city/canonical.js';
 import { countryCodeForEventCity } from './city/eventCityCatalog.js';
@@ -127,18 +128,10 @@ if (!G.flags.mainInitialized) {
 }
 
 /* ───────── constants / state ───────── */
-const EVENTS_UI_PAGE_SIZE = 20;
+const EVENTS_UI_PAGE_SIZE = EVENT_LISTING_PAGE_SIZE;
 const EVENTS_API_BATCH_SIZE = 50;
-const EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER = 5;
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
-const SUPPORTED_COUNTRY_CODES = new Set([
-  'CZ', 'SK', 'PL', 'HU',
-  'DE', 'AT', 'CH',
-  'GB', 'IE',
-  'FR', 'NL', 'BE',
-  'IT', 'ES',
-  'DK', 'SE', 'FI', 'NO'
-]);
+
 
 let currentFilters = {
   category: 'all',
@@ -347,18 +340,7 @@ function normKey(s = '') {
     .toLowerCase();
 }
 
-function foldPlaceText(value) {
-  return String(value || '')
-    .trim()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/&/g, ' and ')
-    .replace(/['’`]/g, '')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
+
 
 function getUILang() {
   const normalize = value => {
@@ -565,88 +547,36 @@ const CITY_SYNONYMS = {
 const LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const slugList = Object.keys(CITY_SYNONYMS);
 
-const COUNTRY_LABELS = {
-  CZ: { cs: 'Česko', en: 'Czechia', de: 'Tschechien', sk: 'Česko', pl: 'Czechy', hu: 'Csehország' },
-  SK: { cs: 'Slovensko', en: 'Slovakia', de: 'Slowakei', sk: 'Slovensko', pl: 'Słowacja', hu: 'Szlovákia' },
-  PL: { cs: 'Polsko', en: 'Poland', de: 'Polen', sk: 'Poľsko', pl: 'Polska', hu: 'Lengyelország' },
-  HU: { cs: 'Maďarsko', en: 'Hungary', de: 'Ungarn', sk: 'Maďarsko', pl: 'Węgry', hu: 'Magyarország' },
-  DE: { cs: 'Německo', en: 'Germany', de: 'Deutschland', sk: 'Nemecko', pl: 'Niemcy', hu: 'Németország' },
-  AT: { cs: 'Rakousko', en: 'Austria', de: 'Österreich', sk: 'Rakúsko', pl: 'Austria', hu: 'Ausztria' },
-  CH: { cs: 'Švýcarsko', en: 'Switzerland', de: 'Schweiz', sk: 'Švajčiarsko', pl: 'Szwajcaria', hu: 'Svájc' },
-  GB: { cs: 'Velká Británie', en: 'United Kingdom', de: 'Vereinigtes Königreich', sk: 'Veľká Británia', pl: 'Wielka Brytania', hu: 'Egyesült Királyság' },
-  IE: { cs: 'Irsko', en: 'Ireland', de: 'Irland', sk: 'Írsko', pl: 'Irlandia', hu: 'Írország' },
-  FR: { cs: 'Francie', en: 'France', de: 'Frankreich', sk: 'Francúzsko', pl: 'Francja', hu: 'Franciaország' },
-  NL: { cs: 'Nizozemsko', en: 'Netherlands', de: 'Niederlande', sk: 'Holandsko', pl: 'Holandia', hu: 'Hollandia' },
-  BE: { cs: 'Belgie', en: 'Belgium', de: 'Belgien', sk: 'Belgicko', pl: 'Belgia', hu: 'Belgium' },
-  IT: { cs: 'Itálie', en: 'Italy', de: 'Italien', sk: 'Taliansko', pl: 'Włochy', hu: 'Olaszország' },
-  ES: { cs: 'Španělsko', en: 'Spain', de: 'Spanien', sk: 'Španielsko', pl: 'Hiszpania', hu: 'Spanyolország' },
-  DK: { cs: 'Dánsko', en: 'Denmark', de: 'Dänemark', sk: 'Dánsko', pl: 'Dania', hu: 'Dánia' },
-  SE: { cs: 'Švédsko', en: 'Sweden', de: 'Schweden', sk: 'Švédsko', pl: 'Szwecja', hu: 'Svédország' },
-  FI: { cs: 'Finsko', en: 'Finland', de: 'Finnland', sk: 'Fínsko', pl: 'Finlandia', hu: 'Finnország' },
-  NO: { cs: 'Norsko', en: 'Norway', de: 'Norwegen', sk: 'Nórsko', pl: 'Norwegia', hu: 'Norvégia' }
-};
 
-const COUNTRY_ALIASES = Object.create(null);
 
-function addCountryAliases(code, aliases) {
-  const cc = String(code || '').trim().toUpperCase();
-  if (!SUPPORTED_COUNTRY_CODES.has(cc)) return;
 
-  for (const alias of aliases) {
-    const key = foldPlaceText(alias);
-    if (key) COUNTRY_ALIASES[key] = cc;
-  }
-}
 
-addCountryAliases('CZ', ['CZ', 'Czechia', 'Czech Republic', 'Česko', 'Cesko', 'Česká republika', 'Ceska republika', 'Czechy', 'Tschechien']);
-addCountryAliases('SK', ['SK', 'Slovakia', 'Slovensko', 'Slovenská republika', 'Slovenska republika']);
-addCountryAliases('PL', ['PL', 'Poland', 'Polsko', 'Polska']);
-addCountryAliases('HU', ['HU', 'Hungary', 'Maďarsko', 'Madarsko', 'Magyarország', 'Magyarorszag', 'Węgry', 'Wegry', 'Ungarn']);
-addCountryAliases('DE', ['DE', 'Germany', 'Německo', 'Nemecko', 'Deutschland', 'Niemcy', 'Germania']);
-addCountryAliases('AT', ['AT', 'Austria', 'Rakousko', 'Rakúsko', 'Rakouska', 'Österreich', 'Osterreich']);
-addCountryAliases('CH', ['CH', 'Switzerland', 'Švýcarsko', 'Svycarsko', 'Švajčiarsko', 'Szwajcaria', 'Schweiz', 'Suisse', 'Svizzera']);
-addCountryAliases('GB', ['GB', 'UK', 'United Kingdom', 'Great Britain', 'Britain', 'England', 'Scotland', 'Wales', 'Northern Ireland', 'Velká Británie', 'Velka Britanie', 'Spojené království', 'Spojene kralovstvi', 'Anglie', 'Wielka Brytania', 'Egyesült Királyság']);
-addCountryAliases('IE', ['IE', 'Ireland', 'Irsko', 'Írsko', 'Irlandia', 'Éire', 'Eire']);
-addCountryAliases('FR', ['FR', 'France', 'Francie', 'Francúzsko', 'Francuzsko', 'Francja', 'Franciaország', 'Franciaorszag', 'Francia', 'Frankreich']);
-addCountryAliases('NL', ['NL', 'Netherlands', 'The Netherlands', 'Nizozemsko', 'Holandsko', 'Holandia', 'Nederland', 'Holland', 'Niederlande']);
-addCountryAliases('BE', ['BE', 'Belgium', 'Belgie', 'Belgicko', 'Belgia', 'Belgique', 'België', 'Belgien']);
-addCountryAliases('IT', ['IT', 'Italy', 'Itálie', 'Italie', 'Taliansko', 'Włochy', 'Wlochy', 'Italia', 'Italien']);
-addCountryAliases('ES', ['ES', 'Spain', 'Španělsko', 'Spanelsko', 'Španielsko', 'Spanielsko', 'Hiszpania', 'España', 'Espana', 'Spanien']);
-addCountryAliases('DK', ['DK', 'Denmark', 'Dánsko', 'Dansko', 'Dania', 'Danmark', 'Dänemark']);
-addCountryAliases('SE', ['SE', 'Sweden', 'Švédsko', 'Svedsko', 'Szwecja', 'Sverige', 'Schweden']);
-addCountryAliases('FI', ['FI', 'Finland', 'Finsko', 'Fínsko', 'Finlandia', 'Suomi', 'Finnland']);
-addCountryAliases('NO', ['NO', 'Norway', 'Norsko', 'Nórsko', 'Norwegia', 'Norge', 'Norwegen']);
 
-function countryCodeFromInput(value) {
-  const raw = String(value || '').trim();
-  if (!raw) return '';
 
-  const upper = raw.toUpperCase();
-  const normalizedCode = upper === 'UK' ? 'GB' : upper;
 
-  if (/^[A-Z]{2}$/.test(normalizedCode) && SUPPORTED_COUNTRY_CODES.has(normalizedCode)) return normalizedCode;
-  return COUNTRY_ALIASES[foldPlaceText(raw)] || '';
-}
 
-function firstCountryCodeFromInput(value) {
-  const raw = String(value || '').trim();
-  if (!raw) return '';
 
-  const parts = raw.split(',').map(part => part.trim()).filter(Boolean);
-  for (const part of parts) {
-    const cc = countryCodeFromInput(part);
-    if (cc) return cc;
-  }
-  return '';
-}
 
-function countryLabelForCode(code, lang = currentLang || getUILang()) {
-  const cc = String(code || '').trim().toUpperCase();
-  if (!cc) return '';
 
-  const labels = COUNTRY_LABELS[cc];
-  return labels?.[lang] || labels?.cs || labels?.en || cc;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function localizedCityLabel(slug, lang) {
   const map = CITY_SYNONYMS[slug];
@@ -5002,164 +4932,19 @@ function shouldPreserveSeatPlanApiOrder(filters = {}, events = []) {
    Keeps SeatPlan boost, but avoids a first page owned by one provider only.
    Applies only on full events pages, only when multiple providers are already loaded.
    Does not fetch anything and does not affect API limits. */
-function ajseeProviderKeyForVisibleMix(ev = {}) {
-  try {
-    if (typeof ajseeEventProviderKey === 'function') {
-      const fromHelper = ajseeEventProviderKey(ev);
-      if (fromHelper) return fromHelper;
-    }
-  } catch {
-    /* noop */
-  }
 
-  const raw = String(
-    ev?.partner ||
-    ev?.source ||
-    ev?.bookingProvider ||
-    ev?.affiliate?.provider ||
-    ev?.tickets ||
-    ev?.url ||
-    ''
-  ).trim().toLowerCase();
 
-  if (raw.includes('seatplan')) return 'seatplan';
-  if (raw.includes('ticketmaster')) return 'ticketmaster';
-  if (raw.includes('smsticket')) return 'smsticket';
-  if (raw.includes('colosseum')) return 'colosseumticket';
 
-  return raw
-    .replace(/[^a-z0-9_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
 
-function ajseeHasProviderMixIntent(filters = {}, api = {}) {
-  const keyword = String(
-    filters.keyword ||
-    filters.q ||
-    filters.search ||
-    api.keyword ||
-    api.q ||
-    api.search ||
-    ''
-  ).trim();
 
-  if (keyword) return false;
-
-  return Boolean(
-    filters.city ||
-    filters.cityLabel ||
-    filters.cityCountryCode ||
-    filters.countryCode ||
-    api.city ||
-    api.cityLabel ||
-    api.cityCountryCode ||
-    api.countryCode ||
-    api.placeType === 'country' ||
-    filters.placeType === 'country'
-  );
-}
-
-function ajseeApplyProviderMixForFirstPage(events = [], options = {}) {
-  if (!Array.isArray(events) || events.length < 2) return events;
-
-  const filters = options.filters || {};
-  const api = options.api || {};
-  const pageSize = Math.max(6, Number(options.pageSize) || 20);
-
-  if (!ajseeHasProviderMixIntent(filters, api)) return events;
-
-  const providerCounts = new Map();
-
-  for (const event of events) {
-    const provider = ajseeProviderKeyForVisibleMix(event);
-    if (!provider) continue;
-    providerCounts.set(provider, (providerCounts.get(provider) || 0) + 1);
-  }
-
-  const providers = Array.from(providerCounts.keys());
-  if (providers.length < 2) return events;
-
-  const windowSize = Math.min(pageSize, events.length);
-  const firstWindow = events.slice(0, windowSize);
-
-  const firstWindowCounts = new Map();
-
-  for (const event of firstWindow) {
-    const provider = ajseeProviderKeyForVisibleMix(event) || 'unknown';
-    firstWindowCounts.set(provider, (firstWindowCounts.get(provider) || 0) + 1);
-  }
-
-  const dominantProvider = Array.from(firstWindowCounts.entries())
-    .sort((a, b) => b[1] - a[1])[0]?.[0];
-
-  if (!dominantProvider) return events;
-
-  const nonDominantTotal = events.filter((event) => {
-    const provider = ajseeProviderKeyForVisibleMix(event);
-    return provider && provider !== dominantProvider;
-  }).length;
-
-  if (!nonDominantTotal) return events;
-
-  const currentNonDominantInWindow = firstWindow.filter((event) => {
-    const provider = ajseeProviderKeyForVisibleMix(event);
-    return provider && provider !== dominantProvider;
-  }).length;
-
-  const targetNonDominant = Math.min(
-    nonDominantTotal,
-    Math.max(2, Math.min(5, Math.floor(windowSize * 0.25)))
-  );
-
-  if (currentNonDominantInWindow >= targetNonDominant) return events;
-
-  const promoted = events
-    .filter((event) => {
-      const provider = ajseeProviderKeyForVisibleMix(event);
-      return provider && provider !== dominantProvider;
-    })
-    .slice(0, targetNonDominant);
-
-  if (!promoted.length) return events;
-
-  const promotedSet = new Set(promoted);
-  const remaining = events.filter((event) => !promotedSet.has(event));
-
-  const insertPositions = [2, 6, 10, 14, 18].filter((position) => position < windowSize);
-  const mixedFirstWindow = [];
-
-  let promotedIndex = 0;
-  let remainingIndex = 0;
-
-  for (let index = 0; index < windowSize; index += 1) {
-    if (insertPositions.includes(index) && promotedIndex < promoted.length) {
-      mixedFirstWindow.push(promoted[promotedIndex]);
-      promotedIndex += 1;
-      continue;
-    }
-
-    if (remainingIndex < remaining.length) {
-      mixedFirstWindow.push(remaining[remainingIndex]);
-      remainingIndex += 1;
-    }
-  }
-
-  while (mixedFirstWindow.length < windowSize && promotedIndex < promoted.length) {
-    mixedFirstWindow.push(promoted[promotedIndex]);
-    promotedIndex += 1;
-  }
-
-  return mixedFirstWindow.concat(remaining.slice(remainingIndex));
-}
 
 
 
 async function fetchNextEventsBatch(locale, api, { targetCount = pagination.page * pagination.perPage, maxBatches = 1 } = {}) {
   if (!eventsPager.session) {
-    eventsPager.session = createEventSearchSession({
+    eventsPager.session = createEventListingSession({
       locale, filters: api, fetchBatch: getAllEvents, getRates: getRatesForPriceFilter,
-      firstPageSize: pagination.perPage,
-      mixFirstPage: events => ajseeApplyProviderMixForFirstPage(events, { filters: api, api, pageSize: pagination.perPage })
+      pageSize: pagination.perPage
     });
   }
   const session = eventsPager.session;
@@ -5188,7 +4973,7 @@ async function ensureEventsPageLoaded(locale, api, uiPage = 1) {
   }
   await fetchNextEventsBatch(locale, api, {
     targetCount: needed,
-    maxBatches: hasActivePriceFilter(api) ? EVENTS_PRICE_FILTER_MAX_BATCHES_PER_RENDER : 3
+    maxBatches: eventListingBatchLimit(api)
   });
 }
 

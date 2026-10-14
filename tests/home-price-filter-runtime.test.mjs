@@ -86,7 +86,7 @@ test(
   () => {
     assert.match(
       source,
-      /async function renderEvents[\s\S]*?let api = \{[\s\S]*?\.\.\.filters,/
+      /function buildApiFilters\(filters\)[\s\S]*?const api = \{[\s\S]*?\.\.\.filters,/
     );
   }
 );

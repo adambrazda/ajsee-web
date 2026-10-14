@@ -34,7 +34,7 @@ body[data-page='home'].home-premium {
   .home-intro { margin: 22px 0 24px; font-size: 1.05rem; }
   .home-intro > span { display: block; }
   .home-hero-photo { margin: 0; min-width: 0; }
-  .home-hero-photo img { display: block; width: 100%; aspect-ratio: 1.22; object-fit: cover; object-position: 62% center; border-radius: 24px; box-shadow: var(--home-shadow); }
+  .home-hero-photo img { display: block; width: 100%; height: auto; aspect-ratio: 1.22; object-fit: cover; object-position: 62% center; border-radius: 24px; box-shadow: var(--home-shadow); }
   .home-hero-photo figcaption { padding: 11px 4px 0; color: var(--home-muted); font-size: .69rem; line-height: 1.6; }
   .home-hero-photo figcaption span { display: block; }
   .home-text-link { display: inline-flex; align-items: center; gap: 9px; color: var(--home-accent); font-size: .87rem; font-weight: 650; line-height: 1.6; text-decoration: none; }
@@ -60,9 +60,12 @@ body[data-page='home'].home-premium {
   form#events-filters-form .chip { min-height: 35px; padding: 7px 11px; border: 1px solid var(--home-line); background: var(--home-surface); color: var(--home-heading); box-shadow: none; font-size: .72rem; font-weight: 600; }
   form#events-filters-form .chip[aria-pressed='true'] { background: var(--home-accent-soft); border-color: var(--home-accent); color: var(--home-accent); }
   form#events-filters-form .chip.ghost { border-color: transparent; background: transparent; color: var(--home-muted); }
-  form#events-filters-form .filters-details-toggle { justify-self: start; width: auto; min-height: 36px; padding: 5px 0; color: var(--home-accent); font-size: .79rem; font-weight: 600; }
+  form#events-filters-form #filters-details-toggle { display: inline-flex; justify-self: start; width: auto; min-height: 36px; padding: 5px 0; color: var(--home-accent); font-size: .79rem; font-weight: 600; }
+  form#events-filters-form[data-ajsee-filter-details-expanded='false'] #events-filters-details { display: none; }
   @media (min-width: 721px) {
     form#events-filters-form #events-filters-details { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+    form#events-filters-form #events-filters-details > .filter-group { grid-column: auto; grid-row: auto; min-width: 0; }
+    form#events-filters-form #events-filters-details > .filter-actions { grid-column: 1 / -1; grid-row: auto; }
   }
   .home-events { padding: 36px 0 50px; border-top: 1px solid var(--home-line); }
   .home-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }

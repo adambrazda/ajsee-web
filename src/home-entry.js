@@ -1,3 +1,4 @@
+import { isHomeDiscovery, selectHomeDiscoveryEvents } from './home-discovery.js';
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
 import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from './event-search-listing.js';
 import {
@@ -1071,7 +1072,7 @@ async function renderHomeBlog() {
 
   if (
     host.dataset.ajRenderedLang === lang &&
-    host.dataset.ajHomeBlogMix === 'review-1-article-1-mg-1' &&
+    host.dataset.ajHomeBlogMix === 'review-2-mg-1' &&
     host.children.length === 3
   ) {
     return;
@@ -1229,11 +1230,13 @@ if (slug) {
     return null;
   }
 
-  async function loadHomepageReview(targetLang) {
+  let homepageReviewsPromise = null;
+
+  async function loadHomepageReview(targetLang, offset = 0) {
     try {
-      const payload = await fetchJson(
+      const payload = await (homepageReviewsPromise ||= fetchJson(
         '/content/reviews/index.json'
-      );
+      ));
 
       const items = Array.isArray(payload)
         ? payload
@@ -1275,7 +1278,7 @@ if (slug) {
           return bt - at;
         });
 
-      for (const item of publishedItems) {
+      for (const item of publishedItems.slice(offset)) {
         const slug = String(item.slug || '').trim();
         if (!slug) continue;
 
@@ -1404,27 +1407,9 @@ if (slug) {
     more.href = localizeHomepageHref('/blog/', lang);
   }
 
-  let articleItems = [];
-  try {
-    const allArticles =
-      getSortedBlogArticles?.(lang) ||
-      getSortedBlogArticles?.() ||
-      [];
-
-    articleItems = allArticles
-      .filter((item) => {
-        return (
-          !isMicroguideItem(item) &&
-          !isReviewItem(item)
-        );
-      })
-      .slice(0, 1);
-  } catch {
-    articleItems = [];
-  }
-
-  const [reviewItem, microguideItem] = await Promise.all([
+  const [reviewItem, secondReviewItem, microguideItem] = await Promise.all([
     loadHomepageReview(lang),
+    loadHomepageReview(lang, 1),
     loadHomepageMicroguide(lang)
   ]);
 
@@ -1434,7 +1419,7 @@ if (slug) {
 
   const selectedItems = [
     reviewItem,
-    ...articleItems,
+    secondReviewItem,
     microguideItem
   ].filter(Boolean);
 
@@ -1459,7 +1444,7 @@ if (slug) {
   if (!selectedItems.length) {
     host.innerHTML = '';
     host.dataset.ajRenderedLang = lang;
-    host.dataset.ajHomeBlogMix = 'review-1-article-1-mg-1';
+    host.dataset.ajHomeBlogMix = 'review-2-mg-1';
     return;
   }
 
@@ -1525,7 +1510,7 @@ if (slug) {
   }).join('');
 
   host.dataset.ajRenderedLang = lang;
-  host.dataset.ajHomeBlogMix = 'review-1-article-1-mg-1';
+  host.dataset.ajHomeBlogMix = 'review-2-mg-1';
 }
 
 /* ───────── live region ───────── */
@@ -4719,6 +4704,13 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
   const list = document.getElementById('eventsList');
   if (!list) return;
 
+  const heading = document.querySelector('[data-home-events-title]');
+  if (heading) {
+    const key = isHomeDiscovery(filters) ? 'home.events.title' : 'home.events.results';
+    heading.dataset.i18nKey = key;
+    heading.textContent = t(key, isHomeDiscovery(filters) ? 'Co se chystá' : 'Výsledky hledání');
+  }
+
   list.setAttribute('aria-live', 'polite');
   setBusy(true);
 
@@ -4744,7 +4736,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     let toRender = out;
 
     if (isHp) {
-      if (out.length > 6) toRender = out.slice(0, 6);
+      toRender = isHomeDiscovery(filters) ? selectHomeDiscoveryEvents(out) : out.slice(0, 6);
     } else {
       const end = pagination.page * pagination.perPage;
       toRender = out.slice(0, end);
@@ -6162,6 +6154,12 @@ async function bootstrapMain() {
 
   upgradeSortToSegmented();
   normalizeFilterFormUI();
+  // Keep the homepage introduction compact without removing any filter.
+  if (document.body.classList.contains('home-premium')) {
+    const toolbar = formEl?.querySelector('.filters-toolbar');
+    const details = formEl?.querySelector('#events-filters-details');
+    if (toolbar && details) details.insertBefore(toolbar, details.querySelector('.filter-group'));
+  }
   installCitySheetObserver();
   bindFilterFormInteractions(formEl);
   bindQuickNearMeButton();

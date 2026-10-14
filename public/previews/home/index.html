@@ -13,25 +13,31 @@
   <div class="controls">
     <div class="group" aria-label="Velikost obrazovky"><button data-width="1440" aria-pressed="true">Velký monitor</button><button data-width="1024" aria-pressed="false">Notebook</button><button data-width="390" aria-pressed="false">Mobil</button></div>
     <div class="group" aria-label="Barevný režim"><button data-theme="light" aria-pressed="true">Světlý</button><button data-theme="dark" aria-pressed="false">Tmavý</button></div>
+    <div class="group" aria-label="Fotografie v hero"><button id="next-hero-photo">Další fotka <span id="hero-photo-count"></span></button></div>
   </div>
   <a class="open-link" href="/" target="_blank" rel="noopener">Otevřít samostatně ↗</a>
 </header>
-<main class="review-stage"><div class="frame-wrap"><iframe id="home-frame" src="/" title="Náhled nové homepage AJSEE"></iframe></div><p class="review-note">Stránku posouvejte uvnitř náhledu. Nahoře můžete přepnout velikost obrazovky a barevný režim.</p></main>
+<main class="review-stage"><div class="frame-wrap"><iframe id="home-frame" src="/" title="Náhled nové homepage AJSEE"></iframe></div><p class="review-note">Stránku posouvejte uvnitř náhledu. Nahoře můžete přepnout velikost obrazovky, barevný režim a projít všech deset fotek. Při obnovení stránky se fotka vybírá náhodně.</p></main>
 <script>
 const params=new URLSearchParams(location.search);
 let width=[1440,1024,390].includes(Number(params.get('width')))?Number(params.get('width')):1440;
 let theme=params.get('theme')==='dark'?'dark':'light';
 const frame=document.querySelector('#home-frame'),wrap=document.querySelector('.frame-wrap');
+document.querySelector('#next-hero-photo').addEventListener('click',()=>frame.contentWindow.postMessage({type:'ajsee-home-hero-next'},location.origin));
+window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.type!=='ajsee-home-hero-ready')return;
+  document.querySelector('#hero-photo-count').textContent='('+event.data.index+'/'+event.data.total+')';
+});
 function themeFrame(){
   const d=frame.contentDocument;if(!d?.head)return;
   for(const mode of ['light','dark']){
     if(!d.querySelector('#homepage-preview-preload-'+mode)){
-      const preload=d.createElement('link');preload.id='homepage-preview-preload-'+mode;preload.rel='preload';preload.as='style';preload.href='/previews/home/forced-'+mode+'.css?v=4';d.head.append(preload);
+      const preload=d.createElement('link');preload.id='homepage-preview-preload-'+mode;preload.rel='preload';preload.as='style';preload.href='/previews/home/forced-'+mode+'.css?v=5';d.head.append(preload);
     }
   }
   let style=d.querySelector('#homepage-preview-theme');
   if(!style){style=d.createElement('link');style.id='homepage-preview-theme';style.rel='stylesheet';d.head.append(style)}
-  style.href='/previews/home/forced-'+theme+'.css?v=4';
+  style.href='/previews/home/forced-'+theme+'.css?v=5';
 }
 function render(){
   const height=width===390?844:width===1024?768:900;

@@ -169,6 +169,8 @@ const eventsPager = {
   relevancePinnedCount: 0,
   buffer: [],
   hasMore: true,
+  incomplete: false,
+  rankingPartial: false,
   loading: false
 };
 
@@ -1913,10 +1915,12 @@ function renderEventsStateMessage(kind = 'rateLimit') {
 
   ensureEventsStateStyles();
 
-  if (kind === 'searchPending') {
+  if (kind === 'searchPending' || kind === 'providerIncomplete') {
     resetEventsEmptyStateViewTracking();
     const title = t('events-search-pending-title', 'Hledání ještě není dokončené');
-    const body = t('events-search-pending-body', 'Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.');
+    const body = kind === 'providerIncomplete'
+      ? t('events-search-incomplete', 'Nabídka je neúplná. Některé zdroje se nepodařilo načíst. Zkuste hledání znovu.')
+      : t('events-search-pending-body', 'Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.');
     updateResultsCount(`${eventsPager.totalKnown}+`);
     list.innerHTML = `<div class="ajsee-events-state" role="region" aria-labelledby="eventsPendingStateTitle"><h3 id="eventsPendingStateTitle">${esc(title)}</h3><p>${esc(body)}</p></div>`;
     updateEventsPagerControls();
@@ -4913,6 +4917,8 @@ function resetEventsPager(nextSig = '') {
   eventsPager.relevancePinnedCount = 0;
   eventsPager.buffer = [];
   eventsPager.hasMore = true;
+  eventsPager.incomplete = false;
+  eventsPager.rankingPartial = false;
   eventsPager.loading = false;
 }
 
@@ -5157,6 +5163,8 @@ async function fetchNextEventsBatch(locale, api, { targetCount = pagination.page
     if (eventsPager.session !== session) return;
     eventsPager.buffer = state.events;
     eventsPager.hasMore = state.hasMore;
+    eventsPager.incomplete = state.incomplete;
+    eventsPager.rankingPartial = state.rankingPartial;
     eventsPager.totalKnown = state.totalKnown;
     eventsPager.apiPage += 1;
   } finally {
@@ -5180,7 +5188,7 @@ async function ensureEventsPageLoaded(locale, api, uiPage = 1) {
 function eventsPagerLabel() {
   const from = ((pagination.page - 1) * pagination.perPage) + 1;
   const to = Math.min(pagination.page * pagination.perPage, eventsPager.buffer.length);
-  const total = `${eventsPager.totalKnown}${eventsPager.hasMore ? '+' : ''}`;
+  const total = `${eventsPager.totalKnown}${eventsPager.hasMore || eventsPager.incomplete ? '+' : ''}`;
   if (!eventsPager.buffer.length) return '';
   return `${from}-${to} / ${total}`;
 }
@@ -5223,7 +5231,7 @@ function updateEventsPagerControls() {
   const canNextFromApi = eventsPager.hasMore;
   const canNext = canNextFromCache || canNextFromApi;
 
-  if (!eventsPager.buffer.length && !eventsPager.hasMore) {
+  if (!eventsPager.buffer.length && !eventsPager.hasMore && !eventsPager.incomplete) {
     host.innerHTML = '';
     host.hidden = true;
     return;
@@ -5235,16 +5243,30 @@ function updateEventsPagerControls() {
   const nextLabel = canNextFromCache
     ? t('pagination.next', 'Další')
     : t('events-search-continue', 'Pokračovat v hledání');
+  const notice = eventsPager.incomplete
+    ? t('events-search-incomplete', 'Nabídka je neúplná. Některé zdroje se nepodařilo načíst. Zkuste hledání znovu.')
+    : eventsPager.rankingPartial
+      ? t('events-search-ranking-partial', 'Řazení podle shody vychází z dosud prohledané nabídky. Další hledání může najít vhodnější akce.')
+      : '';
 
   host.innerHTML = `
-    <div class="events-pager__status">${esc(eventsPagerLabel())}</div>
+    <div class="events-pager__status" role="status">${esc(eventsPagerLabel())}${notice ? `<p>${esc(notice)}</p>` : ''}</div>
     <button type="button" class="events-pager__btn" data-events-page-prev ${canPrev ? '' : 'disabled'}>
       ${esc(prevLabel)}
     </button>
     <button type="button" class="events-pager__btn events-pager__btn--primary" data-events-page-next ${canNext ? '' : 'disabled'}>
       ${esc(eventsPager.loading ? t('pagination.loading', 'Načítám…') : nextLabel)}
     </button>
+    ${eventsPager.incomplete ? `<button type="button" class="events-pager__btn" data-events-search-retry>${esc(t('events-search-retry', 'Zkusit znovu'))}</button>` : ''}
   `;
+
+  host.querySelector('[data-events-search-retry]')?.addEventListener('click', async () => {
+    if (eventsPager.loading) return;
+    resetEventsPager();
+    pagination.page = 1;
+    _lastFetchSig = '';
+    await renderAndSync({ resetPage: true });
+  }, { once: true });
 
   const prev = host.querySelector('[data-events-page-prev]');
   const next = host.querySelector('[data-events-page-next]');
@@ -5387,6 +5409,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
       bufferLength: eventsPager.buffer.length,
       totalKnown: eventsPager.totalKnown,
       hasMore: eventsPager.hasMore,
+      incomplete: eventsPager.incomplete,
       loading: eventsPager.loading
     });
 
@@ -5405,8 +5428,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
      * results intentionally retain their original legacy category.
      */
 
-    _lastSearchResult = { filters, count: eventsPager.totalKnown, hasMore: eventsPager.hasMore || isTicketmasterRateLimited() };
-    updateResultsCount(`${eventsPager.totalKnown}${eventsPager.hasMore ? '+' : ''}`);
+    _lastSearchResult = { filters, count: eventsPager.totalKnown, hasMore: eventsPager.hasMore || eventsPager.incomplete || isTicketmasterRateLimited() };
+    updateResultsCount(`${eventsPager.totalKnown}${eventsPager.hasMore || eventsPager.incomplete ? '+' : ''}`);
 
     const isHp = isHome();
     let toRender = out;
@@ -5420,7 +5443,8 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
     }
 
     if (!toRender.length) {
-      if (eventsPager.hasMore) renderEventsStateMessage('searchPending');
+      if (eventsPager.incomplete && !isTicketmasterRateLimited()) renderEventsStateMessage('providerIncomplete');
+      else if (eventsPager.hasMore) renderEventsStateMessage('searchPending');
       else if (isTicketmasterRateLimited()) renderEventsStateMessage('rateLimit');
       else renderEventsStateMessage('empty');
       return;

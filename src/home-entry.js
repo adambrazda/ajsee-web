@@ -2526,10 +2526,10 @@ function updateResultsCount(total, options = {}) {
   }
 
   const count = Math.max(0, Number(total) || 0);
-  const countLabel = `${count}${options.hasMore ? '+' : ''}`;
+  const countLabel = `${count}${options.hasMore || options.incomplete ? '+' : ''}`;
   const visible = Math.max(0, Number(options.visible) || 0);
   const isHomePreview = !!options.isHomePreview;
-  const isTruncatedHomePreview = isHomePreview && visible > 0 && count > visible;
+  const isTruncatedHomePreview = isHomePreview && visible > 0 && (count > visible || options.hasMore || options.incomplete);
 
   const lang = String(currentLang || getUILang?.() || document.documentElement.lang || 'cs').toLowerCase().slice(0, 2);
   const label = t('events-found', 'Nalezeno') || 'Nalezeno';
@@ -2576,7 +2576,8 @@ function updateResultsCount(total, options = {}) {
 
   const link = document.createElement('a');
   link.className = 'events-results-count__cta btn-primary';
-  link.textContent = options.hasMore ? t('events-search-continue', 'Pokračovat v hledání') : (copy[lang] || copy.en).showAll;
+  link.textContent = options.incomplete ? t('events-search-retry', 'Zkusit znovu')
+    : options.hasMore ? t('events-search-continue', 'Pokračovat v hledání') : (copy[lang] || copy.en).showAll;
 
   try {
     const targetLang = ['en', 'de', 'sk', 'pl', 'hu'].includes(lang) ? lang : '';
@@ -2594,6 +2595,17 @@ function updateResultsCount(total, options = {}) {
   }
 
   el.appendChild(link);
+  const notice = options.incomplete
+    ? t('events-search-incomplete', 'Nabídka je neúplná. Některé zdroje se nepodařilo načíst. Zkuste hledání znovu.')
+    : options.rankingPartial
+      ? t('events-search-ranking-partial', 'Řazení podle shody vychází z dosud prohledané nabídky. Další hledání může najít vhodnější akce.')
+      : '';
+  if (notice) {
+    const status = document.createElement('p');
+    status.setAttribute('role', 'status');
+    status.textContent = notice;
+    el.appendChild(status);
+  }
 }
 /* ───────── date range / combo label ───────── */
 function applyDateRangeFromDetail(detail = {}, options = {}) {
@@ -4194,7 +4206,9 @@ async function fetchHomeEventsForRender(locale, api) {
     getRates: getRatesForPriceFilter, firstPageSize: HOME_PRICE_FILTER_TARGET_COUNT
   });
   const state = await session.load(HOME_PRICE_FILTER_TARGET_COUNT, { maxBatches: HOME_PRICE_FILTER_MAX_BATCHES });
-  Object.defineProperty(state.events, 'searchState', { value: { hasMore: state.hasMore, totalKnown: state.totalKnown } });
+  Object.defineProperty(state.events, 'searchState', { value: {
+    hasMore: state.hasMore, incomplete: state.incomplete, rankingPartial: state.rankingPartial, totalKnown: state.totalKnown
+  } });
   return state.events;
 }
 
@@ -4272,11 +4286,17 @@ const modalStore = new Map();
     updateResultsCount(events.searchState?.totalKnown ?? out.length, {
       visible: toRender.length,
       isHomePreview: true,
-      hasMore: events.searchState?.hasMore
+      hasMore: events.searchState?.hasMore,
+      incomplete: events.searchState?.incomplete,
+      rankingPartial: events.searchState?.rankingPartial
     });
-    if (!toRender.length && events.searchState?.hasMore) {
+    if (!toRender.length && (events.searchState?.hasMore || events.searchState?.incomplete)) {
       const href = (currentLang === 'cs' ? '/events/' : `/${currentLang}/events/`) + location.search;
-      list.innerHTML = `<div role="status"><h3>${esc(t('events-search-pending-title', 'Hledání ještě není dokončené'))}</h3><p>${esc(t('events-search-pending-body', 'Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.'))}</p><a class="btn" href="${esc(href)}">${esc(t('events-search-continue', 'Pokračovat v hledání'))}</a></div>`;
+      const body = events.searchState.incomplete
+        ? t('events-search-incomplete', 'Nabídka je neúplná. Některé zdroje se nepodařilo načíst. Zkuste hledání znovu.')
+        : t('events-search-pending-body', 'Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.');
+      const action = events.searchState.incomplete ? t('events-search-retry', 'Zkusit znovu') : t('events-search-continue', 'Pokračovat v hledání');
+      list.innerHTML = `<div role="status"><h3>${esc(t('events-search-pending-title', 'Hledání ještě není dokončené'))}</h3><p>${esc(body)}</p><a class="btn" href="${esc(href)}">${esc(action)}</a></div>`;
       _lastSearchResult = { filters, count: events.searchState.totalKnown, hasMore: true };
       return;
     }

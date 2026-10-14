@@ -45,6 +45,16 @@ export function providerSearchFilters(filters = {}) {
   return { ...filters, keyword: '', q: '', search: '' };
 }
 
+// At most two targeted streams supplement broad soft discovery. Canonical genre
+// aliases also reach English-language inventory for Czech/Polish genre queries.
+export function ticketmasterDiscoveryKeywords(filters = {}) {
+  if (!isSoftDiscovery(filters) || !hasAiRelevance(filters)) return [];
+  const original = String(filters.keyword || '').trim();
+  if (original.length < 2) return [];
+  const canonical = terms(original).join(' ');
+  return [...new Set([original, canonical].filter(value => value.length >= 2))].slice(0, 2);
+}
+
 export function createEventRelevanceScorer(filters = {}) {
   const query = normalize(filters.keyword || '');
   const queryTerms = [...new Set(terms(query))];

@@ -462,5 +462,8 @@
   "category-film": "Film a kino",
   "events-search-pending-title": "Hledání ještě není dokončené",
   "events-search-pending-body": "Zatím jsme prošli část nabídky. Pokračujte v hledání se stejnými filtry.",
-  "events-search-continue": "Pokračovat v hledání"
+  "events-search-continue": "Pokračovat v hledání",
+  "events-search-incomplete": "Nabídka je neúplná. Některé zdroje se nepodařilo načíst. Zkuste hledání znovu.",
+  "events-search-retry": "Zkusit znovu",
+  "events-search-ranking-partial": "Řazení podle shody vychází z dosud prohledané nabídky. Další hledání může najít vhodnější akce."
 }

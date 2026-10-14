@@ -12,6 +12,7 @@ import { canonForInputCity } from '../city/canonical.js';
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
 import { isLocalEventDateAvailable, matchesEventDateRange } from '../event-calendar.js';
 import { withProviderDateRange } from '../provider-event-dates.js';
+import { fetchProviderJson } from '../provider-request.js';
 
 import {
   buildSmsticketTaxonomy,
@@ -99,21 +100,12 @@ async function loadSmsticketDataUrl(dataUrl = DEFAULT_DATA_URL) {
 
   const promise = (async () => {
     try {
-      const response = await fetch(dataUrl, { cache: 'default' });
-
-      if (!response.ok) {
-        dataCache.set(dataUrl, null);
-        return null;
-      }
-
-      const payload = await response.json();
-      const events = Array.isArray(payload?.events) ? payload.events : [];
+      const events = await fetchProviderJson(dataUrl);
 
       dataCache.set(dataUrl, events);
       return events;
     } catch (error) {
       console.warn('[smsticket adapter] failed to load data from ' + dataUrl + ':', error);
-      dataCache.set(dataUrl, null);
       return null;
     } finally {
       dataPromiseCache.delete(dataUrl);
@@ -136,7 +128,7 @@ async function loadSmsticketData(filters = {}) {
     if (Array.isArray(fallbackEvents)) return fallbackEvents;
   }
 
-  return [];
+  throw new Error('SMS Ticket feed unavailable');
 }
 
 function fold(value = '') {

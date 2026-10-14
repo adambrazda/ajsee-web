@@ -462,5 +462,8 @@
   "category-film": "Film & Kino",
   "events-search-pending-title": "Die Suche ist noch nicht abgeschlossen",
   "events-search-pending-body": "Wir haben einen Teil des Angebots durchsucht. Setze die Suche mit denselben Filtern fort.",
-  "events-search-continue": "Suche fortsetzen"
+  "events-search-continue": "Suche fortsetzen",
+  "events-search-incomplete": "Das Angebot ist unvollständig. Einige Quellen konnten nicht geladen werden. Versuche die Suche erneut.",
+  "events-search-retry": "Erneut versuchen",
+  "events-search-ranking-partial": "Die Relevanz basiert auf dem bisher durchsuchten Angebot. Eine weitere Suche kann passendere Veranstaltungen finden."
 }

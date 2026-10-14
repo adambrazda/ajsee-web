@@ -16,6 +16,7 @@
 
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 import { withEventPageInfo, ticketmasterPageInfo } from '../event-pagination.js';
+import { withRequestDeadline } from '../provider-request.js';
 
 import {
   buildTicketmasterTaxonomy,
@@ -1223,7 +1224,7 @@ function setRateLimitCooldown(reason = 'ticketmaster_rate_limited', untilOverrid
   return RATE_LIMIT_UNTIL;
 }
 
-async function fetchJsonCached(url) {
+async function fetchJsonCached(url, timeoutMs = 5000) {
   const now = Date.now();
 
   const cooldownUntil = getEffectiveRateLimitUntil(now);
@@ -1239,7 +1240,8 @@ async function fetchJsonCached(url) {
     return cached.promise;
   }
 
-  const promise = fetch(url, { cache: 'default' }).then(async (res) => {
+  const promise = withRequestDeadline(async signal => {
+    const res = await fetch(url, { cache: 'default', signal });
     const status = res.status;
     const text = await res.text();
 
@@ -1276,7 +1278,7 @@ async function fetchJsonCached(url) {
     }
 
     return data;
-  });
+  }, timeoutMs);
 
   REQUEST_CACHE.set(url, {
     exp: now + REQUEST_CACHE_TTL_MS,
@@ -1365,11 +1367,14 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     filters.search ||
     ''
   ).trim();
+  const discoveryKeywords = Array.isArray(filters.discoveryKeywords)
+    ? [...new Set(filters.discoveryKeywords.filter(value => typeof value === 'string' && value.trim().length >= 2))].slice(0, 2)
+    : [];
 
   const allowGlobalKeywordSearch =
     filters.globalKeywordSearch === true &&
     !effectiveRawCity &&
-    globalKeyword.length >= 2 &&
+    (globalKeyword.length >= 2 || discoveryKeywords.length > 0) &&
     !filters.latlong &&
     !(
       filters.nearMeLat != null &&
@@ -1580,87 +1585,115 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const cursorMode = filters.paginationMode === 'cursor';
   const previousStreams = filters.ticketmasterCursor?.streams || {};
   const streams = { ...previousStreams };
-
-  outer:
-  for (const locTry of locales) {
-    for (const categoryVariant of categoryVariants) {
-      for (const attempt of uniqAttempts) {
-        const enoughCollected = !shouldContinueAfterCollected(collectedRaw, size);
-
-        if (!cursorMode && enoughCollected && !attempt.force) {
-          if (hasForcedAttempts) continue;
-          break outer;
-        }
-
-        const qs = new URLSearchParams();
-        putCommonParams(qs, categoryVariant);
-        qs.set('locale', locTry);
-
-        if (!hasGeo && attempt.countryCode) qs.set('countryCode', attempt.countryCode);
-        if (attempt.countryStrategy) qs.set('countryStrategy', attempt.countryStrategy);
-        else if (filters.countryStrategy) qs.set('countryStrategy', String(filters.countryStrategy));
-
-        if (attempt.mode === 'city') {
-          qs.set('city', attempt.city);
-        } else if (attempt.mode === 'keyword' && attempt.keyword && !filters.keyword) {
-          qs.set('keyword', attempt.keyword);
-        }
-
-        const streamKey = `${locTry}|${categoryVariantKey(categoryVariant)}|${keyOf(attempt)}`;
-        const previous = previousStreams[streamKey];
-        if (cursorMode && previous?.hasMore === false) continue;
-        if (cursorMode) qs.set('page', String(previous?.nextPage ?? 0));
-
-        const url = `/.netlify/functions/ticketmasterEvents?${qs.toString()}`;
-
-        if (debugTm) {
-          console.info(
-            '[TM adapter] GET',
-            url,
-            '| raw city =', rawCity || '(none)',
-            '| effective city =', tmCity || '(none)',
-            '| city input country =', cityInputCountry || '(none)',
-            '| selected country =', selectedCityCountry || countrySearchCode || explicitCountry || '(none)',
-            '| using =', attempt.mode,
-            '| category variant =', categoryVariantKey(categoryVariant) || '(none)',
-            '| patch =', AJSEE_TM_PATCH_MARKER
-          );
-        }
-
-        try {
-          const data = await fetchJsonCached(url);
-          const list = data?._embedded?.events || [];
-          if (cursorMode) streams[streamKey] = ticketmasterPageInfo(data, {
-            page: Number(qs.get('page')), size: Number(size), sort
-          });
-
-          if (!Array.isArray(list) || !list.length) continue;
-
-          const strictRawList = (attempt.strictCity || attempt.strictCountry)
-            ? filterRawEventsByStrictCityCountry(list, {
-                strictCity: attempt.strictCity,
-                strictCountry: attempt.strictCountry
-              })
-            : list;
-
-          if (!strictRawList.length) continue;
-          const discoverableRawList = strictRawList.filter(
-            (event) => !isTicketmasterAncillaryEvent(event)
-          );
-          if (!discoverableRawList.length) continue;
-          collectedRaw.push(...discoverableRawList);
-        } catch (err) {
-          if (err?.status === 429 || err?.rateLimited) {
-            rateLimited = true;
-            break outer;
-          }
-
-          if (cursorMode) streams[streamKey] = { hasMore: false, nextPage: Number(qs.get('page')), frontier: null, failed: true };
-          if (debugTm) {
-            console.error('[Ticketmaster adapter] fetch error:', locTry, attempt, err);
-          }
+  const queries = [];
+  const keywords = discoveryKeywords.length ? [...discoveryKeywords, ''] : [null];
+  for (const keyword of keywords) {
+    for (const locTry of locales) {
+      for (const categoryVariant of categoryVariants) {
+        for (const attempt of uniqAttempts) {
+          const baseKey = `${locTry}|${categoryVariantKey(categoryVariant)}|${keyOf(attempt)}`;
+          const streamKey = keyword == null ? baseKey : `${baseKey}|discovery:${keyword}`;
+          queries.push({ keyword, locTry, categoryVariant, attempt, streamKey });
+          // Deferred queries remain resumable and cannot manufacture a safe
+          // chronological frontier before their first response arrives.
+          if (cursorMode && !streams[streamKey]) streams[streamKey] = { hasMore: true, nextPage: 0, frontier: null };
         }
       }
+    }
+  }
+  // Visit deferred streams before advancing a busy stream again. Without this,
+  // a per-batch request cap could starve every query after the first eight.
+  queries.sort((a, b) => (streams[a.streamKey]?.nextPage ?? 0) - (streams[b.streamKey]?.nextPage ?? 0));
+  const deadline = Math.min(Date.now() + 6000, Number.isFinite(filters.providerDeadline) ? filters.providerDeadline : Infinity);
+  let requests = 0;
+  let interrupted = false;
+
+  outer:
+  for (const { keyword, locTry, categoryVariant, attempt, streamKey } of queries) {
+    const enoughCollected = !shouldContinueAfterCollected(collectedRaw, size);
+
+    if (!cursorMode && !discoveryKeywords.length && enoughCollected && !attempt.force) {
+      if (hasForcedAttempts) continue;
+      break outer;
+    }
+
+    const qs = new URLSearchParams();
+    putCommonParams(qs, categoryVariant);
+    qs.set('locale', locTry);
+    if (keyword) qs.set('keyword', keyword);
+
+    if (!hasGeo && attempt.countryCode) qs.set('countryCode', attempt.countryCode);
+    // A place-free targeted search may span markets. Its broad fallback
+    // keeps normal CZ discovery instead of downloading global inventory.
+    const contextCountry = keyword === '' && allowGlobalKeywordSearch && discoveryKeywords.length ? 'CZ' : '';
+    if (contextCountry) qs.set('countryCode', contextCountry);
+    if (attempt.countryStrategy) qs.set('countryStrategy', attempt.countryStrategy);
+    else if (filters.countryStrategy) qs.set('countryStrategy', String(filters.countryStrategy));
+
+    if (attempt.mode === 'city') {
+      qs.set('city', attempt.city);
+    } else if (attempt.mode === 'keyword' && attempt.keyword && !filters.keyword) {
+      qs.set('keyword', attempt.keyword);
+    }
+
+    const previous = previousStreams[streamKey];
+    if (cursorMode && previous?.hasMore === false) continue;
+    if (cursorMode) qs.set('page', String(previous?.nextPage ?? 0));
+    if (cursorMode && requests >= 8) break;
+    const remainingMs = deadline - Date.now();
+    if (remainingMs <= 0) { interrupted = true; break; }
+
+    const url = `/.netlify/functions/ticketmasterEvents?${qs.toString()}`;
+
+    if (debugTm) {
+      console.info(
+        '[TM adapter] GET',
+        url,
+        '| raw city =', rawCity || '(none)',
+        '| effective city =', tmCity || '(none)',
+        '| city input country =', cityInputCountry || '(none)',
+        '| selected country =', selectedCityCountry || countrySearchCode || explicitCountry || '(none)',
+        '| using =', attempt.mode,
+        '| category variant =', categoryVariantKey(categoryVariant) || '(none)',
+        '| patch =', AJSEE_TM_PATCH_MARKER
+      );
+    }
+
+    try {
+      requests += 1;
+      const data = await fetchJsonCached(url, Math.min(5000, remainingMs));
+      const list = data?._embedded?.events || [];
+      if (cursorMode) streams[streamKey] = ticketmasterPageInfo(data, {
+        page: Number(qs.get('page')), size: Number(size), sort
+      });
+
+      if (!Array.isArray(list) || !list.length) continue;
+
+      const strictRawList = (attempt.strictCity || attempt.strictCountry || contextCountry)
+        ? filterRawEventsByStrictCityCountry(list, {
+            strictCity: attempt.strictCity,
+            strictCountry: attempt.strictCountry || contextCountry
+          })
+        : list;
+
+      if (!strictRawList.length) continue;
+      const discoverableRawList = strictRawList.filter(
+        (event) => !isTicketmasterAncillaryEvent(event)
+      );
+      if (!discoverableRawList.length) continue;
+      collectedRaw.push(...discoverableRawList);
+    } catch (err) {
+      if (err?.status === 429 || err?.rateLimited) {
+        rateLimited = true;
+        break outer;
+      }
+
+      interrupted = true;
+      if (cursorMode) streams[streamKey] = { ...streams[streamKey], hasMore: true, nextPage: Number(qs.get('page')), failed: true };
+      if (debugTm) {
+        console.error('[Ticketmaster adapter] fetch error:', locTry, attempt, err);
+      }
+      if (err?.code === 'PROVIDER_TIMEOUT') break;
     }
   }
 
@@ -1711,8 +1744,9 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   const boundaries = active.map(stream => stream.frontier);
   const frontier = boundaries.length && boundaries.every(Number.isFinite)
     ? (sort === 'date,desc' ? Math.max(...boundaries) : Math.min(...boundaries)) : null;
-  return withEventPageInfo(mapped, { hasMore: !rateLimited && active.length > 0, frontier,
-    ticketmasterCursor: { streams }, interrupted: rateLimited || Object.values(streams).some(stream => stream.failed) });
+  const discoveryPending = discoveryKeywords.length > 0 && active.some(stream => !stream.nextPage);
+  return withEventPageInfo(mapped, { hasMore: !rateLimited && active.length > 0, frontier, discoveryPending,
+    ticketmasterCursor: { streams }, interrupted: rateLimited || interrupted });
 }
 
 export default { fetchEvents };

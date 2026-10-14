@@ -16,7 +16,7 @@ test('discovery preserves category/city/date and ranks after provider filtering;
   });
   globalThis.fetch = async input => {
     const url = String(input); requests.push(url);
-    if (url.includes('ticketmasterEvents')) return { ok: true, json: async () => ({ _embedded: { events: [] }, page: { totalPages: 0 } }) };
+    if (url.includes('ticketmasterEvents')) return new Response(JSON.stringify({ _embedded: { events: [] }, page: { totalPages: 0 } }));
     if (url.includes('/data/smsticket-events')) return { ok: true, json: async () => ({ events: [
       event('early', 'Hamlet', '01'), event('best', 'Rockový muzikál', '03'),
       event('city', 'Rock musical Brno', '02', 'Brno'),
@@ -51,7 +51,10 @@ test('discovery preserves category/city/date and ranks after provider filtering;
   const discovery = await fetchEvents({ locale: 'cs', filters: { ...base, searchMode: 'discovery', keywordMatch: 'soft', keyword: 'rock musical', sort: 'relevance' } });
   assert.deepEqual(discovery.map(e => e.id), ['colosseumticket-ai-best', 'smsticket-best', 'smsticket-early']);
   assert.ok(requests.some(u => u.includes('/data/colosseumticket-events-praha.json')));
-  assert.ok(requests.filter(u => u.includes('ticketmasterEvents')).every(u => !new URL(u, 'https://ajsee.test').searchParams.has('keyword')));
+  const remoteQueries = requests.filter(u => u.includes('ticketmasterEvents')).map(u => new URL(u, 'https://ajsee.test'));
+  assert.ok(remoteQueries.some(u => !u.searchParams.has('keyword')), 'soft discovery retains broad candidates');
+  assert.ok(remoteQueries.some(u => u.searchParams.get('keyword') === 'rock musical'), 'targeted candidates supplement broad discovery');
+  assert.ok(remoteQueries.every(u => u.searchParams.get('city') === 'Prague' && u.searchParams.get('countryCode') === 'CZ' && u.searchParams.get('dateTo') === '2099-01-10'));
   for (const extra of [{}, { searchMode: 'exact', keywordMatch: 'strict', sort: 'relevance' }]) {
     const result = await fetchEvents({ locale: 'cs', filters: { ...base, keyword: 'Hamlet', ...extra } });
     assert.deepEqual(result.map(e => e.id), ['smsticket-early']);

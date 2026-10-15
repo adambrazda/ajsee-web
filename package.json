@@ -18,7 +18,7 @@
     "dev:ntl": "netlify dev",
     "start": "npm run dev",
     "prebuild": "npm run styles:guard && npm run ticketmaster:safety && npm run events:hero:test && npm run partners:test && npm run ai-search:test && npm run city-filters:test && npm run colosseumticket:test && npm run reviews:test && npm run smsticket:sync && npm run colosseumticket:sync && npm run colosseumticket:geography -- --summary && npm run event-cities:build && npm run home:featured:build && npm run home:featured:test && cpy src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run reviews:build && npm run review-details:build && npm run blog:build",
-    "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build && node scripts/build-localized-pages.cjs && npm run review-details:localize && node scripts/render-home-featured.mjs && node scripts/build-home-tips-preview.mjs && node scripts/generate-sitemap.cjs",
+    "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build && node scripts/build-localized-pages.cjs && npm run review-details:localize && node scripts/render-home-featured.mjs && node scripts/build-home-tips-preview.mjs && node scripts/build-ai-brand-preview.mjs && node scripts/generate-sitemap.cjs",
     "preview": "vite preview",
     "webpack:dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack serve --mode development",
     "webpack:build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack --mode production",

@@ -29,6 +29,33 @@
   margin-bottom: 1px;
 }
 
+.ai-event-search__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  margin: 0 0 10px;
+  color: var(--home-heading, var(--aj-text-strong, #14303e));
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ai-event-search__brand-mark,
+.ai-event-search__brand-mark svg {
+  display: block;
+  width: 34px;
+  height: 26px;
+  flex: 0 0 auto;
+}
+
+.ai-event-search__brand-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: .09em;
+}
+
 .ai-event-search__label {
   margin: 0;
   color: inherit;
@@ -44,16 +71,16 @@
   align-items: center;
   justify-content: center;
 
-  min-height: 19px;
-  padding: 2px 6px;
+  min-height: 22px;
+  padding: 4px 6px;
 
   border: 1px solid rgba(11, 128, 145, 0.28);
-  border-radius: 999px;
+  border-radius: 6px;
 
-  background: rgba(22, 169, 183, 0.1);
-  color: var(--ai-search-accent-strong);
+  background: var(--home-accent-soft, rgba(22, 169, 183, 0.1));
+  color: var(--home-accent, #087c7b);
 
-  font-size: 0.68rem;
+  font-size: 11px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.05em;
@@ -342,6 +369,30 @@ form#events-filters-form
 html[data-theme="dark"] .ai-event-search,
 body[data-theme="dark"] .ai-event-search {
   border-bottom-color: rgba(87, 210, 220, 0.22);
+}
+
+html[data-theme="dark"] .ai-event-search__brand,
+body[data-theme="dark"] .ai-event-search__brand {
+  color: var(--home-heading, #eef6f4);
+}
+
+html[data-theme="dark"] .ai-event-search__badge,
+body[data-theme="dark"] .ai-event-search__badge {
+  border-color: rgba(107, 221, 208, .28);
+  background: var(--home-accent-soft, #123b3e);
+  color: var(--home-accent, #6bddd0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ai-event-search__brand {
+    color: var(--home-heading, var(--aj-text-strong, #eef6f4));
+  }
+
+  .ai-event-search__badge {
+    border-color: rgba(107, 221, 208, .28);
+    background: var(--home-accent-soft, #123b3e);
+    color: var(--home-accent, #6bddd0);
+  }
 }
 
 html[data-theme="dark"] .ai-event-search__input,

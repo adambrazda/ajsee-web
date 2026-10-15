@@ -18,6 +18,7 @@ import {
 } from '../utils/consent.js';
 
 import '../styles/partials/_ai-event-search.scss';
+import aiBrandMark from '../assets/ajsee-ai-mark.svg?raw';
 
 const AI_SEARCH_ENDPOINT =
   '/api/ai-event-search';
@@ -50,7 +51,7 @@ const COPY = {
     placeholder:
       'Např. koncert v Praze tento víkend',
     submit:
-      'Najít pomocí AI',
+      'Najít události',
     loading:
       'Rozumím dotazu…',
     invalid:
@@ -73,7 +74,7 @@ const COPY = {
     placeholder:
       'E.g. concert in Prague this weekend',
     submit:
-      'Find with AI',
+      'Find events',
     loading:
       'Understanding your request…',
     invalid:
@@ -96,7 +97,7 @@ const COPY = {
     placeholder:
       'Z. B. Konzert in Prag am Wochenende',
     submit:
-      'Mit KI suchen',
+      'Events finden',
     loading:
       'Anfrage wird verstanden…',
     invalid:
@@ -119,7 +120,7 @@ const COPY = {
     placeholder:
       'Napr. koncert v Prahe tento víkend',
     submit:
-      'Nájsť pomocou AI',
+      'Nájsť udalosti',
     loading:
       'Rozumiem požiadavke…',
     invalid:
@@ -142,7 +143,7 @@ const COPY = {
     placeholder:
       'Np. koncert w Pradze w ten weekend',
     submit:
-      'Znajdź z AI',
+      'Znajdź wydarzenia',
     loading:
       'Rozumiem zapytaniu…',
     invalid:
@@ -165,7 +166,7 @@ const COPY = {
     placeholder:
       'Pl. koncert Prágában hétvégén',
     submit:
-      'Keresés AI-val',
+      'Események keresése',
     loading:
       'Értelmezem a kérést…',
     invalid:
@@ -842,6 +843,12 @@ export function initAiEventSearch({
   );
 
   root.innerHTML = `
+    <div class="ai-event-search__brand" role="img" aria-label="AJSEE AI">
+      <span class="ai-event-search__brand-mark" aria-hidden="true">${aiBrandMark}</span>
+      <span class="ai-event-search__brand-name" aria-hidden="true">AJSEE</span>
+      <span class="ai-event-search__badge" data-ai-search-badge aria-hidden="true"></span>
+    </div>
+
     <div class="ai-event-search__heading">
       <label
         class="ai-event-search__label"
@@ -849,11 +856,6 @@ export function initAiEventSearch({
         data-ai-search-label
       ></label>
 
-      <span
-        class="ai-event-search__badge"
-        data-ai-search-badge
-        aria-hidden="true"
-      ></span>
     </div>
 
     <p

@@ -114,7 +114,7 @@ body[data-page='home'].home-premium {
   .home-partners-label { margin: 0; color: var(--home-muted); font-size: .75rem; }
   .home-partner-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 28px; }
   .home-partner-logos img { width: auto; height: 25px; max-width: 125px; object-fit: contain; }
-  .home-partner-logos.home-partner-stay img { width: 145px; height: 32px; max-width: none; }
+  .home-partner-logos.home-partner-stay img { width: auto; height: 40px; max-width: 145px; }
   .home-partner-logos .home-logo--dark { display: none; }
   @media (prefers-color-scheme: dark) {
     .home-partner-logos .home-logo--light { display: none; }

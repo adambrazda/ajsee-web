@@ -26,7 +26,7 @@
     "city-filters:test": "node scripts/test-city-filters.mjs",
     "event-cities:build": "node scripts/build-event-cities.mjs",
     "home:featured:build": "node scripts/build-home-featured.mjs",
-    "home:featured:test": "node --test tests/home-featured.test.mjs",
+    "home:featured:test": "node --test tests/home-featured.test.mjs tests/home-promo-typography.test.mjs",
     "styles:guard": "node --test tests/no-important.test.mjs",
     "check:locales": "node scripts/check-locales.js",
     "blog:build": "node scripts/build-blog.mjs",

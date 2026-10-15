@@ -1808,6 +1808,13 @@ function setBtnLabel(el, txt) {
 
 
 
+function formatHomePromoTitle(key, value, lang) {
+  const text = String(value);
+  if (lang !== 'cs' || (key !== 'home.london.title' && key !== 'home.stay.title')) return text;
+  // Older cached translations must not restore an orphaned preposition.
+  return text.replace(/(^|\s)([vk]) (?=\S)/g, '$1$2\u00a0');
+}
+
 async function applyTranslations(lang) {
   window.translations = await loadTranslations(lang);
 
@@ -1817,7 +1824,7 @@ async function applyTranslations(lang) {
 
     if (value === undefined || String(value).trim() === '') return;
 
-    const next = String(value);
+    const next = formatHomePromoTitle(key, value, lang);
 
     if (/[<][a-z]/i.test(next)) {
       if (el.innerHTML !== next) el.innerHTML = next;

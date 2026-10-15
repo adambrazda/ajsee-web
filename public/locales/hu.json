@@ -503,5 +503,10 @@
   "home.editorial.static3.excerpt": "Oya Canli felidézi első találkozását a Mamma Mia!-val, az ABBA zenéjének időtálló erejét, és azt, miért érzi úgy, hogy a londoni West End jelenti saját történetének következő fejezetét ezzel a musicallel.",
   "home.contact.legal": "Az űrlap elküldésével tudomásul veszed az <a href=\"/privacy-policy\" data-lang-link>Adatvédelmi tájékoztatót</a> és a <a href=\"/cookies-policy\" data-lang-link>Cookie-szabályzatot</a>.",
   "home.events.searchIntro": "Válasszon a talált események közül.",
-  "home.events.empty": "További programokat az események listájában talál."
+  "home.events.empty": "További programokat az események listájában talál.",
+  "home.about.story": "Az AJSEE ötlete 2024 őszén, egy sörözés közben született. Még aznap este kitaláltuk az AJSEE nevet, és elkészítettük a logó tervét.",
+  "home.partners.staysLabel": "Szállás partnerünktől",
+  "home.contact.intro": "Kérdése van, ajánlana egy eseményt, vagy van ötlete, hogyan tehetnénk jobbá az AJSEE-t? Írjon nekünk.",
+  "home.contact.partnerTitle": "Együttműködés az AJSEE-vel",
+  "home.contact.partnerText": "Rendezvényt szervez, vagy olyan szolgáltatást kínál, amely érdekelheti látogatóinkat? Ismerje meg az együttműködési lehetőségeket."
 }

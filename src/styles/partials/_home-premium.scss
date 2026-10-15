@@ -75,6 +75,7 @@ body[data-page='home'].home-premium {
   }
   .home-events { padding: 36px 0 50px; border-top: 1px solid var(--home-line); }
   .home-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+  .home-section-heading > .home-text-link { margin: 0; flex-shrink: 0; }
   .home-section-heading p { margin: 8px 0 0; font-size: .93rem; }
   .home-events .events-list { width: 100%; margin-inline: 0; }
   .home-events #eventsResultsCount { margin: 0 0 20px; font-size: .84rem; }
@@ -106,12 +107,14 @@ body[data-page='home'].home-premium {
   .home-about-grid { display: grid; grid-template-columns: minmax(0,.75fr) minmax(0,1.5fr); gap: 48px; align-items: start; }
   .home-about p { margin: 0 0 14px; font-size: .94rem; }
   .home-team-photos { display: flex; gap: 12px; margin-top: 20px; }
-  .home-team-photos img { width: 64px; height: 64px; object-fit: cover; object-position: center 37%; border-radius: 14px; }
+  .home-team-photos img { width: 96px; height: 96px; object-fit: cover; object-position: center 37%; border-radius: 18px; }
   .home-partners { padding: 20px 0 36px; }
-  .home-partners-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; border-top: 1px solid var(--home-line); }
+  .home-partners-inner { display: grid; gap: 22px; padding-top: 24px; border-top: 1px solid var(--home-line); }
+  .home-partners-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
   .home-partners-label { margin: 0; color: var(--home-muted); font-size: .75rem; }
   .home-partner-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 28px; }
   .home-partner-logos img { width: auto; height: 25px; max-width: 125px; object-fit: contain; }
+  .home-partner-logos.home-partner-stay img { width: 145px; height: 32px; max-width: none; }
   .home-partner-logos .home-logo--dark { display: none; }
   @media (prefers-color-scheme: dark) {
     .home-partner-logos .home-logo--light { display: none; }
@@ -119,13 +122,23 @@ body[data-page='home'].home-premium {
   }
   .home-contact { padding: 30px 0 42px; background: var(--home-bg); }
   .home-contact-inner { border-top: 1px solid var(--home-line); padding-top: 34px; }
-  .home-contact .home-contact-top { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-  .home-contact h2 { font-size: 1.45rem; }
-  .home-contact p { margin: 8px 0 0; font-size: .88rem; }
-  .home-contact details { margin-top: 20px; }
-  .home-contact summary { display: inline-flex; cursor: pointer; color: var(--home-accent); font-size: .87rem; font-weight: 650; padding: 8px 0; }
-  .home-contact summary::after { content: '+'; margin-left: 12px; }
+  .home-contact .home-contact-top { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,.8fr); align-items: start; gap: clamp(32px,5vw,64px); }
+  .home-contact-main, .home-contact-partner { min-width: 0; }
+  .home-contact p { margin: 12px 0 0; font-size: .94rem; max-width: 54ch; }
+  .home-contact details { margin-top: 22px; }
+  .home-contact summary, .home-contact-partner-link { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; padding: 12px 20px; border: 1px solid transparent; border-radius: 10px; font-size: .87rem; font-weight: 650; line-height: 1.4; text-decoration: none; }
+  .home-contact summary { cursor: pointer; list-style: none; color: var(--home-button-text); background: var(--home-button); }
+  .home-contact summary::-webkit-details-marker { display: none; }
+  .home-contact summary:hover { background: var(--home-button-hover); }
+  .home-contact summary:focus-visible { outline: 3px solid var(--home-accent); outline-offset: 4px; }
+  .home-contact summary::after { content: '+'; margin-left: 2px; font-size: 1.1rem; font-weight: 400; line-height: 1; }
   .home-contact details[open] summary::after { content: '−'; }
+  .home-contact-partner { border-left: 1px solid var(--home-line); padding-left: 32px; }
+  .home-contact-partner h3 { margin: 0; font-size: 1.12rem; line-height: 1.45; }
+  .home-contact-partner p { font-size: .88rem; }
+  .home-contact-partner-link { margin-top: 22px; background: var(--home-surface); color: var(--home-accent); border-color: var(--home-accent); }
+  .home-contact-partner-link svg { width: 17px; height: 17px; flex-shrink: 0; }
+  .home-contact-partner-link:hover { background: var(--home-accent-soft); color: var(--home-accent); }
   .home-contact .contact-form { max-width: 700px; margin: 16px 0 0; padding: 25px; border: 1px solid var(--home-line); border-radius: 18px; background: var(--home-surface); box-shadow: none; }
   .home-contact .contact-form .form-group label { color: var(--home-heading); }
   .home-contact .contact-form .form-group :is(input,textarea) { background: var(--home-bg); color: var(--home-heading); border-color: var(--home-line); }
@@ -176,12 +189,17 @@ body[data-page='home'].home-premium {
     .home-about { padding: 34px 0 28px; }
     .home-about-grid { grid-template-columns: 1fr; gap: 20px; }
     .home-team-photos { margin-top: 16px; }
+    .home-team-photos img { width: 64px; height: 64px; border-radius: 14px; }
     .home-partners { padding: 12px 0 26px; }
     .home-partners-inner { gap: 18px; }
+    .home-partners-row { flex-direction: column; align-items: start; gap: 14px; }
     .home-partner-logos { justify-content: space-between; width: 100%; gap: 18px; }
     .home-partner-logos img { height: 21px; max-width: 110px; }
+    .home-partner-logos.home-partner-stay { width: auto; justify-content: flex-start; }
     .home-contact { padding: 20px 0 34px; }
-    .home-contact .home-contact-top { align-items: start; flex-direction: column; gap: 16px; }
+    .home-contact .home-contact-top { grid-template-columns: 1fr; gap: 26px; }
+    .home-contact-partner { border-left: 0; border-top: 1px solid var(--home-line); padding: 24px 0 0; }
+    .home-contact summary, .home-contact-partner-link { width: 100%; }
   }
   @media (max-width: 370px) {
     .home-container, .home-editorial .container { width: calc(100% - 32px); }

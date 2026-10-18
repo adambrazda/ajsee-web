@@ -184,6 +184,13 @@ const IS_LOCAL_DEV =
   location.hostname === '0.0.0.0';
 
 const I18N_FETCH_CACHE_MODE = IS_LOCAL_DEV ? 'no-store' : 'default';
+// Content-hashed URLs prevent returning visitors from reusing an outdated
+// /locales/{lang}.json after a deployment, without disabling browser caching.
+const EVENTS_LOCALE_URLS = import.meta.glob('./locales/??.json', {
+  eager: true,
+  query: '?url',
+  import: 'default'
+});
 const JSON_CACHE = new Map();
 const JSON_PROMISE_CACHE = new Map();
 const TRANSLATIONS_CACHE = new Map();
@@ -2195,7 +2202,8 @@ function getPageKeyForI18n() {
 }
 
 function getI18nFilesForPage(lang, pageKey = getPageKeyForI18n()) {
-  const files = [`/locales/${lang}.json`];
+  const fallback = `/locales/${lang}.json`;
+  const files = [IS_LOCAL_DEV ? fallback : (EVENTS_LOCALE_URLS[`./locales/${lang}.json`] || fallback)];
   if (pageKey === 'partners') files.push(`/locales/partners-${lang}.json`);
   return files;
 }

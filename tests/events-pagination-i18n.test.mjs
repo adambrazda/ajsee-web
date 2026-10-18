@@ -38,6 +38,17 @@ function controls(language) {
 }
 
 for (const [language, copy] of Object.entries(expected)) {
+  test(`${language}: production locale requests follow the content-hashed asset`, () => {
+    const key = `./locales/${language}.json`;
+    const urls = { [key]: `/assets/${language}-first.json` };
+    const files = entryFunction('events-entry.js', 'getI18nFilesForPage', {
+      IS_LOCAL_DEV: false, EVENTS_LOCALE_URLS: urls
+    });
+    assert.deepEqual(files(language, 'events'), [`/assets/${language}-first.json`]);
+    urls[key] = `/assets/${language}-updated.json`;
+    assert.deepEqual(files(language, 'events'), [`/assets/${language}-updated.json`]);
+  });
+
   test(`${language}: pagination translations exist in source and published dictionaries`, () => {
     for (const directory of ['src', 'public']) {
       assert.deepEqual(locale(directory, language).pagination, copy, `${directory}/${language}`);
@@ -90,4 +101,33 @@ test('rerendering the pager after a language change replaces both labels', t => 
     assert.equal(c.host.querySelector('[data-events-page-prev]').textContent.trim(), copy.previous);
     assert.equal(c.host.querySelector('[data-events-page-next]').textContent.trim(), copy.next);
   }
+});
+
+test('local development keeps the source-locale alias and legacy partner override', () => {
+  const files = entryFunction('events-entry.js', 'getI18nFilesForPage', {
+    IS_LOCAL_DEV: true, EVENTS_LOCALE_URLS: { './locales/en.json': '/src/locales/en.json' }
+  });
+  assert.deepEqual(files('en', 'events'), ['/locales/en.json']);
+  assert.deepEqual(files('en', 'partners'), ['/locales/en.json', '/locales/partners-en.json']);
+});
+
+test('a cached pre-fix dictionary cannot override the new production locale asset', async () => {
+  const stale = { 'events-found': 'Found' };
+  const current = locale('src', 'en');
+  const requests = [];
+  const files = entryFunction('events-entry.js', 'getI18nFilesForPage', {
+    IS_LOCAL_DEV: false, EVENTS_LOCALE_URLS: { './locales/en.json': '/assets/en-current.json' }
+  });
+  const fetchJSON = entryFunction('events-entry.js', 'fetchJSON', {
+    JSON_CACHE: new Map([['/locales/en.json', stale]]),
+    JSON_PROMISE_CACHE: new Map(), I18N_FETCH_CACHE_MODE: 'default',
+    fetch: async (path, options) => {
+      requests.push(path);
+      assert.equal(options.cache, 'default');
+      return { ok: true, json: async () => path === '/assets/en-current.json' ? current : stale };
+    }
+  });
+  const dictionary = await fetchJSON(files('en', 'events')[0]);
+  assert.deepEqual(dictionary.pagination, expected.en);
+  assert.deepEqual(requests, ['/assets/en-current.json']);
 });

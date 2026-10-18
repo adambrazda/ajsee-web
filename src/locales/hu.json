@@ -450,6 +450,11 @@
       "cta": "Musicalek megtekintése"
     }
   },
+  "pagination": {
+    "previous": "Előző",
+    "next": "Következő",
+    "loading": "Betöltés…"
+  },
   "events-found": "Találatok",
   "events-active-filters": "Aktív szűrők",
   "events-clear-filters": "Összes törlése",

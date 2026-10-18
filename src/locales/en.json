@@ -450,6 +450,11 @@
       "cta": "Browse musicals"
     }
   },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "loading": "Loading…"
+  },
   "events-found": "Found",
   "events-active-filters": "Active filters",
   "events-clear-filters": "Clear all",

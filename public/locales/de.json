@@ -450,6 +450,11 @@
       "cta": "Musicals ansehen"
     }
   },
+  "pagination": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "loading": "Wird geladen…"
+  },
   "events-found": "Gefunden",
   "events-active-filters": "Aktive Filter",
   "events-clear-filters": "Alle löschen",

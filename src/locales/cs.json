@@ -450,6 +450,11 @@
       "cta": "Prohlédnout muzikály"
     }
   },
+  "pagination": {
+    "previous": "Zpět",
+    "next": "Další",
+    "loading": "Načítám…"
+  },
   "events-found": "Nalezeno",
   "events-active-filters": "Aktivní filtry",
   "events-clear-filters": "Vymazat vše",

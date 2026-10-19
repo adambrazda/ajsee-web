@@ -1,6 +1,7 @@
 import {
   resolveEventImageAnalysis
 } from './event-image-analysis.js';
+import { withSmsticketCountry } from '../shared/geo/smsticket-country.js';
 
 export const
   SMSTICKET_REQUEST_TIMEOUT_MS =
@@ -268,7 +269,7 @@ refreshSmsticketFallbackPayload(
           );
 
         return {
-          ...baseEvent,
+          ...withSmsticketCountry(baseEvent),
 
           ...(imagePresentation
             ? {
@@ -291,6 +292,8 @@ refreshSmsticketFallbackPayload(
       'SMS Ticket live sync failed; existing event data reused with current build-time enrichments.',
 
     fallbackRefreshedAt:
-      refreshedAt
+      refreshedAt,
+    lastSyncAttemptAt: refreshedAt,
+    lastSyncStatus: 'fallback'
   };
 }

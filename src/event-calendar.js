@@ -1,7 +1,7 @@
 const COUNTRY_TIMEZONES = {
   CZ: 'Europe/Prague', SK: 'Europe/Bratislava', AT: 'Europe/Vienna',
   DE: 'Europe/Berlin', PL: 'Europe/Warsaw', HU: 'Europe/Budapest',
-  GB: 'Europe/London', IE: 'Europe/Dublin'
+  GB: 'Europe/London', IE: 'Europe/Dublin', RS: 'Europe/Belgrade', EG: 'Africa/Cairo'
 };
 const dayFormatters = new Map();
 const clockFormatters = new Map();

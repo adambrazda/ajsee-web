@@ -538,9 +538,15 @@ export const handler = async (event) => {
 
     const localRange = ticketmasterCalendarRange(q.dateFrom, q.dateTo);
     if (localRange) url.searchParams.set('localStartEndDateTime', localRange);
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(q.localStartDateTime || '')) {
+      url.searchParams.set('localStartDateTime', q.localStartDateTime);
+    }
     // Preserve explicitly requested absolute-time filters for API consumers.
     if (q.startDateTime) url.searchParams.set('startDateTime', String(q.startDateTime));
     if (q.endDateTime) url.searchParams.set('endDateTime', String(q.endDateTime));
+    for (const key of ['includeTBA', 'includeTBD']) {
+      if (['yes', 'no', 'only'].includes(q[key])) url.searchParams.set(key, q[key]);
+    }
 
     if (q.segmentName) url.searchParams.set('segmentName', String(q.segmentName));
     if (q.classificationName) url.searchParams.set('classificationName', String(q.classificationName));
@@ -570,7 +576,7 @@ export const handler = async (event) => {
     if (!url.searchParams.has('size')) url.searchParams.set('size', '50');
 
     const finalUrl = url.toString();
-const cacheKey = makeCacheKey(finalUrl) + (q.paginationMode === 'cursor' ? '|cursor' : '');
+const cacheKey = makeCacheKey(finalUrl) + (q.paginationMode === 'cursor' ? '|cursor-v2' : '');
 
 // debug=1 uz nesmi automaticky vypinat cache.
 // Primy upstream test pouzij jen vedome pres forceUpstream=1.

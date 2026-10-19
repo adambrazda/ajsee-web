@@ -17,6 +17,7 @@
 import { canonForInputCity, guessCountryCodeFromCity } from '../city/canonical.js';
 import { withEventPageInfo, ticketmasterPageInfo } from '../event-pagination.js';
 import { withRequestDeadline } from '../provider-request.js';
+import { advanceTicketmasterStream, applyTicketmasterWindow, isTicketmasterPagingLimit } from '../ticketmaster-continuation.js';
 
 import {
   buildTicketmasterTaxonomy,
@@ -1603,7 +1604,8 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
   }
   // Visit deferred streams before advancing a busy stream again. Without this,
   // a per-batch request cap could starve every query after the first eight.
-  queries.sort((a, b) => (streams[a.streamKey]?.nextPage ?? 0) - (streams[b.streamKey]?.nextPage ?? 0));
+  queries.sort((a, b) => (streams[a.streamKey]?.pagesFetched ?? streams[a.streamKey]?.nextPage ?? 0) -
+    (streams[b.streamKey]?.pagesFetched ?? streams[b.streamKey]?.nextPage ?? 0));
   const deadline = Math.min(Date.now() + 6000, Number.isFinite(filters.providerDeadline) ? filters.providerDeadline : Infinity);
   let requests = 0;
   let interrupted = false;
@@ -1639,6 +1641,7 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
     const previous = previousStreams[streamKey];
     if (cursorMode && previous?.hasMore === false) continue;
     if (cursorMode) qs.set('page', String(previous?.nextPage ?? 0));
+    if (cursorMode) applyTicketmasterWindow(qs, previous);
     if (cursorMode && requests >= 8) break;
     const remainingMs = deadline - Date.now();
     if (remainingMs <= 0) { interrupted = true; break; }
@@ -1663,9 +1666,12 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       requests += 1;
       const data = await fetchJsonCached(url, Math.min(5000, remainingMs));
       const list = data?._embedded?.events || [];
-      if (cursorMode) streams[streamKey] = ticketmasterPageInfo(data, {
-        page: Number(qs.get('page')), size: Number(size), sort
-      });
+      if (cursorMode) {
+        streams[streamKey] = advanceTicketmasterStream(ticketmasterPageInfo(data, {
+          page: Number(qs.get('page')), size: Number(size), sort
+        }), previous, { size: Number(size), sort });
+        if (streams[streamKey].limited) interrupted = true;
+      }
 
       if (!Array.isArray(list) || !list.length) continue;
 
@@ -1683,6 +1689,10 @@ export async function fetchEvents({ locale = 'cs', filters = {} } = {}) {
       if (!discoverableRawList.length) continue;
       collectedRaw.push(...discoverableRawList);
     } catch (err) {
+      if (cursorMode && previous && isTicketmasterPagingLimit(err)) {
+        const recovered = advanceTicketmasterStream(previous, previous, { size: Number(size), sort, forceWindow: true });
+        if (!recovered.limited) { streams[streamKey] = recovered; continue; }
+      }
       if (err?.status === 429 || err?.rateLimited) {
         rateLimited = true;
         break outer;

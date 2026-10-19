@@ -1,4 +1,4 @@
-import { eventStartInstant } from './event-calendar.js';
+import { eventStartInstant, validCalendarDay } from './event-calendar.js';
 
 // Keep the legacy array API while carrying authoritative continuation separately.
 export function withEventPageInfo(events, pageInfo) {
@@ -22,12 +22,20 @@ export function ticketmasterPageInfo(data, { page, size, sort }) {
     dateAvailability: {
       startLocalDate: event?.dates?.start?.localDate || '',
       startLocalTime: event?.dates?.start?.localTime || '',
-      timezone: event?.dates?.timezone || event?._embedded?.venues?.[0]?.timezone || ''
+      timezone: event?.dates?.timezone || event?._embedded?.venues?.[0]?.timezone || '',
+      dateTBA: event?.dates?.start?.dateTBA, dateTBD: event?.dates?.start?.dateTBD
     }, location: { country: event?._embedded?.venues?.[0]?.country?.countryCode || '' }
   }))
     .filter(Number.isFinite);
+  const exactTimes = events.filter(event => !event?.dates?.start?.dateTBA && !event?.dates?.start?.dateTBD)
+    .map(event => Date.parse(event?.dates?.start?.dateTime || '')).filter(Number.isFinite);
+  const boundary = exactTimes.length ? (sort === 'date,desc' ? Math.min(...exactTimes) : Math.max(...exactTimes)) : null;
+  const localDays = events.filter(event => !event?.dates?.start?.dateTBA && !event?.dates?.start?.dateTBD)
+    .map(event => validCalendarDay(event?.dates?.start?.localDate)).filter(Boolean).sort();
   return {
     hasMore, nextPage: page + 1,
-    frontier: times.length ? (sort === 'date,desc' ? Math.min(...times) : Math.max(...times)) : null
+    frontier: times.length ? (sort === 'date,desc' ? Math.min(...times) : Math.max(...times)) : null,
+    boundaryDateTime: boundary == null ? null : new Date(boundary).toISOString().replace(/\.000Z$/, 'Z'),
+    boundaryLocalDate: localDays.length ? (sort === 'date,desc' ? localDays[0] : localDays.at(-1)) : null
   };
 }

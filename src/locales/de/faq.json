@@ -1,0 +1,101 @@
+{
+  "faq": {
+    "title": "Fragen? Hier finden Sie Antworten.",
+    "lead": "Das Wichtigste zu AJSEE, Veranstaltungssuche, Tickets und Unterkünften. Wählen Sie ein Thema oder geben Sie Ihre Frage ein.",
+    "seoTitle": "Häufige Fragen | AJSEE",
+    "seoDescription": "Wie funktioniert AJSEE AI, wo kaufen Sie Tickets und wer hilft bei einer Bestellung? Antworten zu AJSEE, London-Musicals, Unterkünften und Kooperationen.",
+    "searchLabel": "Wobei können wir helfen?",
+    "searchPlaceholder": "Antwort suchen…",
+    "searchHelp": "Auch Antworten werden durchsucht. Akzente sind nicht erforderlich.",
+    "clearSearch": "Suche löschen",
+    "topicsLabel": "Thema auswählen",
+    "allTopics": "Alle Fragen",
+    "resultsLabel": "Gefundene Antworten:",
+    "reset": "Filter zurücksetzen",
+    "emptyTitle": "Hier haben wir keine Antwort gefunden.",
+    "emptyText": "Versuchen Sie ein anderes Wort oder Thema. Wenn Sie nicht weiterkommen, schreiben Sie uns.",
+    "emptyReset": "Alle Fragen anzeigen",
+    "orderTitle": "Haben Sie schon Tickets?",
+    "orderText": "Bei Fragen zur Bestellung hilft der Verkäufer, der in Ihrer Bestätigung genannt ist.",
+    "orderLink": "Hilfe zur Bestellung",
+    "contactTitle": "Ihre Frage ist noch offen?",
+    "contactText": "Bei Fragen zu AJSEE helfen wir gerne. Bei Ticketbestellungen oder Unterkunftsbuchungen wenden Sie sich bitte direkt an den jeweiligen Verkäufer oder Unterkunftspartner.",
+    "contactButton": "AJSEE schreiben",
+    "partnerLink": "Mit AJSEE zusammenarbeiten",
+    "topics": {
+      "ajsee": "AJSEE und Veranstaltungssuche",
+      "tickets": "Tickets und Bestellungen",
+      "travel": "London und Unterkünfte",
+      "contact": "Kontakt und Kooperationen"
+    },
+    "links": {
+      "events": "Veranstaltungen entdecken",
+      "london": "Musicals entdecken",
+      "stays": "Unterkünfte finden",
+      "email": "info@ajsee.cz",
+      "partners": "Kooperationsmöglichkeiten"
+    },
+    "questions": {
+      "how": {
+        "q": "Wie funktioniert AJSEE?",
+        "a": "Auf AJSEE finden Sie Festivals, Theater, Konzerte und Sportveranstaltungen im In- und Ausland. Entdecken Sie das Angebot, wählen Sie eine Veranstaltung und folgen Sie dem Link zum jeweiligen Ticketverkäufer."
+      },
+      "ai": {
+        "q": "Was kann AJSEE AI?",
+        "a": "Beschreiben Sie mit eigenen Worten, was Sie suchen — zum Beispiel „Konzerte in Brno am Wochenende“. AJSEE AI stellt anhand Ihrer Anfrage die Suchfilter ein. Falls Angaben fehlen, fragt es nach. Die Ergebnisse stammen aus dem auf AJSEE verfügbaren Angebot."
+      },
+      "missing": {
+        "q": "Warum finde ich eine bestimmte Veranstaltung oder einen Termin nicht?",
+        "a": "Unsere Veranstaltungsdaten stammen von unseren Partnern. Einzelne Veranstaltungen oder Termine können fehlen. Passen Sie Datum oder Ort an. Sollte die Veranstaltung weiterhin fehlen, schreiben Sie uns — wir sehen es uns an."
+      },
+      "free": {
+        "q": "Ist AJSEE kostenlos?",
+        "a": "Ja, das Durchsuchen des Angebots und die Veranstaltungssuche auf AJSEE sind kostenlos. Sie bezahlen nur die Tickets oder anderen Leistungen, die Sie bei unseren Partnern bestellen."
+      },
+      "languages": {
+        "q": "Welche Sprachen unterstützt AJSEE?",
+        "a": "Die Website ist auf Tschechisch, Slowakisch, Englisch, Deutsch, Polnisch und Ungarisch verfügbar. Die Sprache ändern Sie im Menü. Auf den Verkaufsseiten unserer Partner können andere Sprachen angeboten werden."
+      },
+      "affiliate": {
+        "q": "Wie verdient AJSEE Geld?",
+        "a": "Bei manchen Käufen über unsere Partnerlinks können wir eine Provision erhalten. Damit finanzieren wir den Betrieb und die Weiterentwicklung von AJSEE."
+      },
+      "buy": {
+        "q": "Wo kaufe ich Tickets?",
+        "a": "Klicken Sie bei der gewünschten Veranstaltung auf „Tickets“. Auf der Verkaufsseite wählen Sie aus den verfügbaren Tickets und schließen Ihre Bestellung ab. Bei London-Musicals verlinken wir auf die Partner-Verkaufsseite AJSEE × TodayTix."
+      },
+      "price": {
+        "q": "Ist der Preis auf AJSEE der Endpreis?",
+        "a": "Preise können als „ab“-Preise angegeben sein, und das Angebot kann sich ändern. Prüfen Sie vor der Zahlung beim Verkäufer immer den aktuellen Preis, die Ticketverfügbarkeit und den Gesamtbetrag."
+      },
+      "delivery": {
+        "q": "Meine Tickets sind nicht angekommen. Was soll ich tun?",
+        "a": "Prüfen Sie Ihre Bestellbestätigung und den Spamordner. Falls Sie Ihre Tickets nicht finden, wenden Sie sich an den Verkäufer, der in der Kaufbestätigung genannt ist. Dieser verschickt die Tickets und bearbeitet die Bestellung."
+      },
+      "changes": {
+        "q": "Was tun bei einer Änderung oder Absage?",
+        "a": "Beachten Sie die Hinweise des Verkäufers oder Veranstalters. Für Bestelländerungen oder Fragen zur Ticketrückgabe wenden Sie sich an den Verkäufer in Ihrer Kaufbestätigung. Die Möglichkeiten hängen von der Veranstaltung und den Kaufbedingungen ab."
+      },
+      "london": {
+        "q": "Wo finde ich London-Musicals?",
+        "a": "Dafür gibt es eine eigene Seite. Entdecken Sie das Angebot und wählen Sie eine Vorstellung. Tickets kaufen Sie anschließend auf der Partner-Verkaufsseite AJSEE × TodayTix."
+      },
+      "stays": {
+        "q": "Finde ich über AJSEE auch Unterkünfte?",
+        "a": "Auf unserer Seite Unterkünfte finden Sie das Angebot unseres Partners TrustedStays. Aktuelle Reiseziele, Termine, Verfügbarkeit und Preise prüfen Sie direkt beim Partner."
+      },
+      "booking": {
+        "q": "Wer bearbeitet Unterkunftsbuchungen und Änderungen?",
+        "a": "Buchung, Zahlung und eventuelle Änderungen klären Sie direkt mit TrustedStays nach den Bedingungen Ihres gewählten Aufenthalts. AJSEE verlinkt auf das Angebot des Partners und ist nicht der Unterkunftsanbieter."
+      },
+      "feedback": {
+        "q": "Wie kann ich eine Veranstaltung vorschlagen oder einen Fehler melden?",
+        "a": "Schreiben Sie an info@ajsee.cz. Fügen Sie einen Link und eine kurze Beschreibung hinzu, was auf AJSEE fehlt oder nicht funktioniert, damit wir es prüfen können."
+      },
+      "partners": {
+        "q": "Wie werde ich Partner von AJSEE?",
+        "a": "Auf unserer Seite Für Partner finden Sie Kooperationsmöglichkeiten. Nutzen Sie das Formular oder schreiben Sie an partners@ajsee.cz und stellen Sie Ihr Projekt kurz vor."
+      }
+    }
+  }
+}

@@ -17,8 +17,8 @@
     "dev:netlify": "netlify dev",
     "dev:ntl": "netlify dev",
     "start": "npm run dev",
-    "prebuild": "npm run styles:guard && npm run blog:test && npm run contest:test && npm run ticketmaster:safety && npm run events:hero:test && npm run partners:test && npm run ai-search:test && npm run city-filters:test && npm run providers:coverage:test && npm run colosseumticket:test && npm run reviews:test && npm run smsticket:sync && npm run colosseumticket:sync && npm run colosseumticket:geography -- --summary && npm run event-cities:build && npm run home:featured:build && npm run home:featured:test && cpy src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run reviews:build && npm run review-details:build && npm run blog:build",
-    "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build && node scripts/build-localized-pages.cjs && node scripts/render-blog-listing.mjs && node scripts/build-blog-preview.mjs && npm run review-details:localize && node scripts/render-home-featured.mjs && node scripts/build-home-tips-preview.mjs && node scripts/build-ai-brand-preview.mjs && node scripts/generate-sitemap.cjs",
+    "prebuild": "npm run styles:guard && npm run blog:test && npm run faq:test && npm run contest:test && npm run ticketmaster:safety && npm run events:hero:test && npm run partners:test && npm run ai-search:test && npm run city-filters:test && npm run providers:coverage:test && npm run colosseumticket:test && npm run reviews:test && npm run smsticket:sync && npm run colosseumticket:sync && npm run colosseumticket:geography -- --summary && npm run event-cities:build && npm run home:featured:build && npm run home:featured:test && cpy src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run reviews:build && npm run review-details:build && npm run blog:build",
+    "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build && node scripts/build-localized-pages.cjs && node scripts/render-faq-schema.mjs && node scripts/build-faq-preview.mjs && node scripts/render-blog-listing.mjs && node scripts/build-blog-preview.mjs && npm run review-details:localize && node scripts/render-home-featured.mjs && node scripts/build-home-tips-preview.mjs && node scripts/build-ai-brand-preview.mjs && node scripts/generate-sitemap.cjs",
     "preview": "vite preview",
     "webpack:dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack serve --mode development",
     "webpack:build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack --mode production",
@@ -52,7 +52,8 @@
     "colosseumticket:test": "node --test --test-concurrency=1 tests/colosseumticket-adapter.test.mjs tests/colosseumticket-commercial-safety.test.mjs tests/colosseumticket-geography.test.mjs tests/colosseumticket-runtime.test.mjs tests/colosseumticket-sync-hardening.test.mjs tests/colosseumticket-sync.test.mjs tests/colosseumticket-taxonomy.test.mjs tests/colosseumticket-ui.test.mjs tests/event-city-subset-modal-description.test.mjs tests/city-radius-provider-completeness.test.mjs tests/geo-coordinates.test.mjs",
     "colosseumticket:geography": "node scripts/audit-colosseum-geography.mjs",
     "contest:test": "node --test tests/colosseum-contest.test.mjs",
-    "blog:test": "node --test tests/blog-listing.test.mjs"
+    "blog:test": "node --test tests/blog-listing.test.mjs",
+    "faq:test": "node --test tests/faq-page.test.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

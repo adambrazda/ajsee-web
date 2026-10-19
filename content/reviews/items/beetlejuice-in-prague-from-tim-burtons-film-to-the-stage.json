@@ -1,8 +1,8 @@
 {
   "slug": "beetlejuice-in-prague-from-tim-burtons-film-to-the-stage",
   "contentType": "review",
-  "status": "approved",
-  "published": false,
+  "status": "published",
+  "published": true,
   "featured": false,
   "category": "theatre",
   "showTitle": "Beetlejuice",
@@ -13,7 +13,7 @@
   "performanceDate": "2026-10-01",
   "eventDate": "",
   "reviewDate": "2026-10-13",
-  "publishedAt": "",
+  "publishedAt": "2026-10-19",
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://colosseumticket.cz/cs/akce/YN1Nj3tZQhKIUkzyjBBDlg-beetlejuice-muzikal-hdk-praha?language=cs-cz&locale=cs-cz",
@@ -128,5 +128,5 @@
       "coverAlt": "A Beetlejuice musical színpada a Hudební divadlo Karlínban az előadás kezdete előtt."
     }
   },
-  "internalNotes": "Source: original Beetlejuice review supplied by Oya Canli and provided by Adam Brazda.\nEnglish editorial master approved for web upload by Adam Brazda on 13 October 2026.\nCzech editorial master approved by Adam Brazda on 13 October 2026, including final wording changes for 'lehce mrazivý' and the daughter quote.\nDo not publish until Adam Brazda explicitly approves publication.\nPlanned publication: Monday 19 October 2026 (Europe/Prague). Do not publish earlier.\nTickets are sold through AJSEE partner ColosseumTicket. The review stores the clean seller URL; AJSEE adds the affiliate a_box server-side via colosseumOutbound.\nSix original Oya Canli photos were supplied in chat on 13 October 2026. Photo credit: Oya Canli. Five selected photos were optimized to AVIF and staged for the article: one cover and four gallery images; the backdrop-only image was omitted as redundant.\nSlovak editorial master approved by Adam Brazda on 13 October 2026.\nGerman editorial master approved by Adam Brazda on 13 October 2026.\nPolish editorial master approved by Adam Brazda on 13 October 2026, with Polish en-dash typography standardized.\nHungarian editorial master approved by Adam Brazda on 13 October 2026."
+  "internalNotes": "Source: original Beetlejuice review supplied by Oya Canli and provided by Adam Brazda.\nEnglish editorial master approved for web upload by Adam Brazda on 13 October 2026.\nCzech editorial master approved by Adam Brazda on 13 October 2026, including final wording changes for 'lehce mrazivý' and the daughter quote.\nDo not publish until Adam Brazda explicitly approves publication.\nPlanned publication: Monday 19 October 2026 (Europe/Prague). Do not publish earlier.\nTickets are sold through AJSEE partner ColosseumTicket. The review stores the clean seller URL; AJSEE adds the affiliate a_box server-side via colosseumOutbound.\nSix original Oya Canli photos were supplied in chat on 13 October 2026. Photo credit: Oya Canli. Five selected photos were optimized to AVIF and staged for the article: one cover and four gallery images; the backdrop-only image was omitted as redundant.\nSlovak editorial master approved by Adam Brazda on 13 October 2026.\nGerman editorial master approved by Adam Brazda on 13 October 2026.\nPolish editorial master approved by Adam Brazda on 13 October 2026, with Polish en-dash typography standardized.\nHungarian editorial master approved by Adam Brazda on 13 October 2026.\nPublished on 19 October 2026."
 }

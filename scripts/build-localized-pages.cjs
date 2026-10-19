@@ -326,7 +326,8 @@ function loadDict(lang, pageName) {
       )
     : {};
 
-  return deepMerge(base, page);
+  const contestPromo = readJson(path.join(ROOT, 'src', 'content', 'colosseum-contest-promo.json'), {})[lang] || {};
+  return deepMerge(deepMerge(base, page), { contestPromo });
 }
 
 function replaceAttr(tag, attrName, value) {

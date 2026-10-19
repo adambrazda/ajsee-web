@@ -384,6 +384,31 @@ const getInitialLang = () => {
     </div>
   </section>
   <script type="module" src="/src/home-hero.js"></script>
+  <section class="contest-promo" data-colosseum-contest data-contest-banner hidden aria-labelledby="home-contest-title">
+  <div class="home-container">
+    <div class="contest-promo-card">
+      <div class="contest-promo-copy">
+        <div class="contest-brands" aria-label="AJSEE × Colosseum Ticket">
+          <img class="contest-ajsee" src="/images/logo-ajsee-header.png" alt="AJSEE" width="40" height="35" loading="lazy">
+          <span aria-hidden="true">×</span>
+          <picture><source media="(prefers-color-scheme: dark)" srcset="/images/partners/colosseumticket-dark.svg"><img class="contest-colosseum" src="/images/partners/colosseumticket.svg" alt="Colosseum Ticket" width="145" height="30" loading="lazy"></picture>
+        </div>
+        <p data-i18n-key="contestPromo.eyebrow" class="contest-eyebrow" data-contest-copy="eyebrow">Slavíme nové partnerství</p>
+        <h2 class="contest-promo-title" id="home-contest-title" data-i18n-key="contestPromo.title" data-contest-copy="title">Vyhrajte 2 × 2 vstupenky</h2>
+        <p data-i18n-key="contestPromo.event" class="contest-event" data-contest-copy="event">Filmový orchestr Praha v Nové Spirále</p>
+        <p data-i18n-key="contestPromo.description" class="contest-description" data-contest-copy="description">Filmové melodie, živý orchestr a videomapping. Dva výherci, každý se svým doprovodem.</p>
+        <p data-i18n-key="contestPromo.date" class="contest-date" data-contest-copy="date">30. 5. 2027 · 19:00 · Praha</p>
+        <p class="contest-status" data-contest-status data-contest-copy="statusUpcoming" data-i18n-key="contestPromo.statusUpcoming">Začínáme 20. 10. 2026 v 19:00</p>
+        <div class="contest-actions">
+          <a class="contest-primary" href="/souteze/filmovy-orchestr-praha/#section-4" data-contest-primary data-contest-copy="primaryUpcoming" data-i18n-key="contestPromo.primaryUpcoming">Jak se zapojit</a>
+          <a class="contest-rules-link" href="/souteze/filmovy-orchestr-praha/" data-contest-rules data-contest-copy="rules" data-i18n-key="contestPromo.rules">Pravidla soutěže</a>
+        </div>
+      </div>
+      <figure class="contest-photo"><img src="/images/contests/filmovy-orchestr-praha.webp" alt="Filmový orchestr Praha - oficiální fotografie orchestru" data-i18n-alt="contestPromo.photoAlt" data-contest-photo width="1066" height="800" loading="lazy" decoding="async"></figure>
+    </div>
+  </div>
+</section>
+  <script type="module" src="/src/contest-promotion.js"></script>
   <section class="home-events" id="events" aria-labelledby="home-events-title">
     <div class="home-container">
       <div class="home-section-heading">

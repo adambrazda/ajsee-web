@@ -12,6 +12,7 @@
 @use '../partials/theme-event-shell';
 @use '../partials/cookie-consent';
 @use '../partials/home-premium';
+@use '../partials/contest-promo';
 
 html, body { overflow-x: hidden; overflow-y: auto; }
 .site-header { position: sticky; top: 0; z-index: 9999; }

@@ -215,6 +215,7 @@ export default defineConfig({
           microguides: resolve(__dirname, 'microguides/index.html'),
           'londynske-muzikaly': resolve(__dirname, 'londynske-muzikaly/index.html'),
           'londynske-muzikaly-soutez-instagram': resolve(__dirname, 'londynske-muzikaly/soutez-instagram/index.html'),
+          'colosseum-contest': resolve(__dirname, 'souteze/filmovy-orchestr-praha/index.html'),
           ...getMicroguideDetailInputs(),
         };
 

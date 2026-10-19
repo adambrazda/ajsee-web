@@ -124,7 +124,7 @@ test('build loader keeps all sources, sorts newest first, deduplicates guides an
   assert.equal(cards.filter((card) => card.type === 'microguide').length, 1);
   assert.equal(cards.find((card) => card.type === 'microguide').title, 'English guide');
   assert.equal(cards.find((card) => card.type === 'microguide').href, '/de/microguides/guide/');
-  assert.ok(cards.some((card) => card.type === 'article'));
+  assert.ok(!cards.some((card) => card.type === 'article'), 'Retired demo articles must not return');
   await assert.rejects(loadBlogCards('cs', async () => { throw new Error('Missing source'); }, { strict: true }), /Missing source/);
 });
 

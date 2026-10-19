@@ -950,6 +950,8 @@ export function initAiEventSearch({
     ></div>
   `;
 
+  form.querySelector('[data-ai-static-intro]')?.remove();
+
   form.prepend(
     root
   );

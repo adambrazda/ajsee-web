@@ -19,7 +19,8 @@
   --aj-footer-bg: #0c1921; --aj-footer-text: #bacdce; --aj-footer-copy: #bacdce;
   --aj-footer-border: #2a4148; --aj-footer-link: #6bddd0;
 }
-body[data-page="about"] {
+body[data-page="about"],
+body[data-page="author"] {
   @include about-light;
   background: var(--about-bg); color: var(--about-heading); font-family: 'Inter',system-ui,sans-serif;
   @media (prefers-color-scheme: dark) { @include about-dark; }

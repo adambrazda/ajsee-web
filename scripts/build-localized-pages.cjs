@@ -316,13 +316,13 @@ function getPageName(file, html) {
 
 function loadDict(lang, pageName) {
   const base =
-    readJson(path.join(ROOT, 'public', 'locales', `${lang}.json`), null) ||
-    readJson(path.join(ROOT, 'src', 'locales', `${lang}.json`), {});
+    readJson(path.join(ROOT, 'src', 'locales', `${lang}.json`), null) ||
+    readJson(path.join(ROOT, 'public', 'locales', `${lang}.json`), {});
 
   const page = pageName
     ? (
-        readJson(path.join(ROOT, 'public', 'locales', lang, `${pageName}.json`), null) ||
-        readJson(path.join(ROOT, 'src', 'locales', lang, `${pageName}.json`), {})
+        readJson(path.join(ROOT, 'src', 'locales', lang, `${pageName}.json`), null) ||
+        readJson(path.join(ROOT, 'public', 'locales', lang, `${pageName}.json`), {})
       )
     : {};
 

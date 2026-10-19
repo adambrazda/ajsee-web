@@ -3,15 +3,11 @@ const path = require('node:path');
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, 'dist');
-const PUBLIC_SITEMAP = path.join(ROOT, 'public', 'sitemap.xml');
 const DIST_SITEMAP = path.join(DIST, 'sitemap.xml');
 
 const ORIGIN = 'https://ajsee.cz';
 const LANG_PREFIX_RE = /^\/(en|de|sk|pl|hu)(?=\/|$)/i;
 
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 function walk(dir, out = []) {
   if (!fs.existsSync(dir)) return out;
@@ -119,26 +115,31 @@ function shouldInclude(url) {
   return true;
 }
 
-function readExistingLastmods() {
-  const map = new Map();
-
-  for (const file of [PUBLIC_SITEMAP, DIST_SITEMAP]) {
-    if (!fs.existsSync(file)) continue;
-
-    const xml = fs.readFileSync(file, 'utf8');
-    const blocks = xml.match(/<url>[\s\S]*?<\/url>/g) || [];
-
-    for (const block of blocks) {
-      const loc = block.match(/<loc>([\s\S]*?)<\/loc>/i)?.[1]?.trim();
-      const lastmod = block.match(/<lastmod>([\s\S]*?)<\/lastmod>/i)?.[1]?.trim();
-
-      if (loc && lastmod && !map.has(loc)) {
-        map.set(loc, lastmod);
-      }
-    }
+function readMeaningfulLastmods() {
+  const updates = JSON.parse(read(path.join(ROOT, 'content/seo-updates.json')));
+  const dates = new Map();
+  const set = (route, values) => {
+    const date = values.filter(Boolean).map(value => String(value).slice(0,10)).filter(value => /^\d{4}-\d{2}-\d{2}$/.test(value)).sort().at(-1);
+    if (date) dates.set(route, date);
+  };
+  for (const [route, date] of Object.entries(updates.pages || {})) set(route, [date]);
+  const guides = JSON.parse(read(path.join(ROOT,'content/microguides/index.json')));
+  for (const item of guides.items || guides) {
+    if(item.status === 'published') set('/microguides/' + item.slug, [item.updatedAt,item.publishedAt,updates.templates.microguides]);
   }
+  set('/microguides',[updates.templates.microguides]);
+  const reviewDirectory = path.join(ROOT,'content/reviews/items');
+  for(const file of fs.readdirSync(reviewDirectory).filter(name=>name.endsWith('.json'))) {
+    const item=JSON.parse(read(path.join(reviewDirectory,file)));
+    if(item.status==='published' && item.published === true) set('/reviews/' + item.slug,[item.updatedAt,item.publishedAt,item.reviewDate,updates.templates.reviews]);
+  }
+  return dates;
+}
 
-  return map;
+function meaningfulDate(url,dates) {
+  let route = canonicalPath(url).replace(LANG_PREFIX_RE,'').replace(/\/+$/,'') || '/';
+  if(['/london-musicals','/londynskie-musicale','/londoni-musicalek'].includes(route)) route='/londynske-muzikaly';
+  return dates.get(route);
 }
 
 function priorityFor(pathname) {
@@ -207,16 +208,14 @@ function escapeXml(value) {
 }
 
 function buildSitemap(urls, lastmods) {
-  const fallbackLastmod = todayISO();
-
   const body = urls.map((url) => {
     const pathname = canonicalPath(url);
-    const lastmod = lastmods.get(url) || fallbackLastmod;
+    const lastmod = meaningfulDate(url, lastmods);
 
     return [
       '  <url>',
       `    <loc>${escapeXml(url)}</loc>`,
-      `    <lastmod>${escapeXml(lastmod)}</lastmod>`,
+      ...(lastmod ? [`    <lastmod>${escapeXml(lastmod)}</lastmod>`] : []),
       `    <changefreq>${changefreqFor(pathname)}</changefreq>`,
       `    <priority>${priorityFor(pathname)}</priority>`,
       '  </url>'
@@ -237,7 +236,7 @@ function main() {
     throw new Error('dist neexistuje. Nejdřív spusť npm run build.');
   }
 
-  const lastmods = readExistingLastmods();
+  const lastmods = readMeaningfulLastmods();
   const urls = new Map();
 
   for (const file of walk(DIST)) {
@@ -257,13 +256,11 @@ function main() {
   const sortedUrls = [...urls.keys()].sort((a, b) => sortRank(a).localeCompare(sortRank(b)));
   const xml = buildSitemap(sortedUrls, lastmods);
 
-  const wrotePublic = writeIfChanged(PUBLIC_SITEMAP, xml);
   const wroteDist = writeIfChanged(DIST_SITEMAP, xml);
 
   console.log('AJSEE sitemap generated');
   console.log('============================================================');
   console.log(`URLs: ${sortedUrls.length}`);
-  console.log(`public/sitemap.xml: ${wrotePublic ? 'updated' : 'unchanged'}`);
   console.log(`dist/sitemap.xml: ${wroteDist ? 'updated' : 'unchanged'}`);
 }
 

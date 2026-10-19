@@ -513,5 +513,7 @@
   "home.partners.staysLabel": "Szállás partnerünktől",
   "home.contact.intro": "Kérdése van, ajánlana egy eseményt, vagy van ötlete, hogyan tehetnénk jobbá az AJSEE-t? Írjon nekünk.",
   "home.contact.partnerTitle": "Együttműködés az AJSEE-vel",
-  "home.contact.partnerText": "Rendezvényt szervez, vagy olyan szolgáltatást kínál, amely érdekelheti látogatóinkat? Ismerje meg az együttműködési lehetőségeket."
+  "home.contact.partnerText": "Rendezvényt szervez, vagy olyan szolgáltatást kínál, amely érdekelheti látogatóinkat? Ismerje meg az együttműködési lehetőségeket.",
+  "events-page-description": "Fesztiválok, színház, koncertek és sport egy helyen. Keress programot itthon vagy külföldön, majd vásárolj jegyet közvetlenül az értékesítőnél.",
+  "ai-search-static-intro": "Írd le saját szavaiddal, hová és mikor mennél. Az AJSEE AI a kérésed alapján beállítja az eseményszűrőket, és szükség esetén további részleteket kér."
 }

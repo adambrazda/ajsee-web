@@ -71,7 +71,8 @@
 <title data-i18n-key="events-page-title">Události a vstupenky na koncerty, festivaly a sport | AJSEE</title>
   <meta
     name="description"
-    content="Najdi koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE ti pomůže objevovat akce, vstupenky a možnosti cestování přehledně na jednom místě."
+    data-i18n-content="events-page-description"
+    content="Festivaly, divadlo, koncerty i sport na jednom místě. Najděte si akci doma nebo v zahraničí a pro vstupenky přejděte přímo k prodejci."
   />
 
   <meta name="robots" content="index, follow" />
@@ -85,9 +86,10 @@
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="cs_CZ" />
   <meta property="og:site_name" content="AJSEE" />
-  <meta property="og:title" content="Události a vstupenky na koncerty, festivaly a sport | AJSEE" />
+  <meta property="og:title" data-i18n-content="events-page-title" content="Události a vstupenky na koncerty, festivaly a sport | AJSEE" />
   <meta
     property="og:description"
+    data-i18n-content="events-page-description"
     content="Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa. AJSEE propojuje akce, vstupenky a cestovní možnosti přehledně na jednom místě."
   />
   <meta property="og:url" content="https://ajsee.cz/events" />
@@ -96,9 +98,10 @@
 
   <!-- Twitter / X Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Události a vstupenky na koncerty, festivaly a sport | AJSEE" />
+  <meta name="twitter:title" data-i18n-content="events-page-title" content="Události a vstupenky na koncerty, festivaly a sport | AJSEE" />
   <meta
     name="twitter:description"
+    data-i18n-content="events-page-description"
     content="Najdi koncerty, festivaly, sportovní události a další zážitky z celého světa. Přehledně, česky a bez zbytečných překážek."
   />
   <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
@@ -285,6 +288,8 @@
 
         <!-- FILTRY (trvale viditelné) -->
         <form id="events-filters-form" class="events-filters filter-dock" novalidate role="search">
+            <div class="ai-event-search" data-ai-static-intro><div class="ai-event-search__brand"><span class="ai-event-search__brand-name">AJSEE</span><span class="ai-event-search__badge">AI</span></div><p class="ai-event-search__helper" data-i18n-key="ai-search-static-intro">Napište vlastními slovy, kam a kdy chcete vyrazit. AJSEE AI z vašeho zadání nastaví filtry událostí a podle potřeby se doptá na podrobnosti.</p></div>
+
           <!-- Filter controls are injected from src/event-filters.js. -->
         </form>
 

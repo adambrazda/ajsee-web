@@ -11,11 +11,13 @@ import path from 'node:path';
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
 
-const blogSlugs = [
+const retiredSlugs = [
   'koncert-coldplay-praha-2025',
   'praha-shakespeare-divadlo-2025',
   'recenze-budapest-sziget-festival-2025',
 ];
+
+const reviewSlugs = ['mamma-mia-from-abba-to-the-west-end', 'phantom-of-the-opera-2026', '10-west-end-musicals-worth-travelling-to-london-for'];
 
 const microguideSlugs = [
   'fees-refund',
@@ -135,38 +137,12 @@ function checkMainPages() {
 }
 
 function checkStaticBlogLinks() {
-  const targets = [
-    { label: 'Home static blog links', file: 'index.html' },
-    { label: 'Blog index static blog links', file: 'blog.html' },
-  ];
-
-  for (const target of targets) {
-    const html = readDist(target.file);
-    if (!html) continue;
-
-    expectMatch(
-      target.label,
-      html,
-      /data-static-blog-list=["']true["']/i,
-      'has static blog fallback marker',
-    );
-
-    const articleCount = countMatches(html, /<article\s+class=["'][^"']*\bblog-card\b/gi);
-
-    if (articleCount >= 3) {
-      pass(target.label, `has at least 3 blog cards (${articleCount})`);
-    } else {
-      fail(target.label, `expected at least 3 blog cards, found ${articleCount}`);
-    }
-
-    for (const slug of blogSlugs) {
-      expectMatch(
-        target.label,
-        html,
-        new RegExp(`/blog/${escapeRegExp(slug)}/`, 'i'),
-        `links to /blog/${slug}/`,
-      );
-    }
+  for (const [file, marker, minimum] of [['index.html','homepage-blog-card',3],['blog.html','data-slug=',20]]) {
+    const html = readDist(file), label = 'Published editorial links: ' + file;
+    const count=html.split(marker).length-1;
+    if(count >= minimum)pass(label,'has current static editorial links');
+    else fail(label,'missing static editorial content');
+    for(const slug of retiredSlugs)expectNoMatch(label,html,new RegExp(slug),'does not link to retired '+slug);
   }
 }
 
@@ -184,20 +160,16 @@ function checkFaqContent() {
 }
 
 function checkBlogDetails() {
-  for (const slug of blogSlugs) {
-    const label = `Blog detail: ${slug}`;
-    const file = `blog/${slug}/index.html`;
-    const canonical = `https://ajsee.cz/blog/${slug}/`;
-
-    checkBaseSeo({ label, file, canonical });
-
+  for (const slug of reviewSlugs) {
+    const label = 'Published review: ' + slug, file = 'reviews/' + slug + '/index.html';
+    checkBaseSeo({ label, file, canonical: 'https://ajsee.cz/reviews/' + slug + '/' });
     const html = readDist(file);
-    if (!html) continue;
-
-    expectMatch(label, html, /property=["']og:type["']\s+content=["']article["']/i, 'has og:type article');
-    expectMatch(label, html, /name=["']twitter:card["']\s+content=["']summary_large_image["']/i, 'has Twitter summary_large_image');
-    expectMatch(label, html, /id=["']ajsee-blog-article-jsonld["']/i, 'has blog article JSON-LD id');
-    expectMatch(label, html, /"@type"\s*:\s*"BlogPosting"/i, 'has BlogPosting JSON-LD');
+    expectMatch(label,html,/id=["']ajsee-review-jsonld["']/,'has review schema');
+    expectMatch(label,html,/"@type"\s*:\s*"(?:Review|Article)"/,'has published editorial entity');
+  }
+  for(const slug of retiredSlugs) {
+    if(!existsSync(path.join(distDir,'blog',slug,'index.html')))pass('Retired articles',slug+' is removed');
+    else fail('Retired articles',slug+' is still published');
   }
 }
 
@@ -254,7 +226,7 @@ function checkSitemap() {
     'https://ajsee.cz/faq',
     'https://ajsee.cz/privacy-policy',
     'https://ajsee.cz/cookies-policy',
-    ...blogSlugs.map((slug) => `https://ajsee.cz/blog/${slug}/`),
+    ...reviewSlugs.map((slug) => `https://ajsee.cz/reviews/${slug}/`),
     'https://ajsee.cz/microguides/',
     ...microguideSlugs.map((slug) => `https://ajsee.cz/microguides/${slug}/`),
   ];

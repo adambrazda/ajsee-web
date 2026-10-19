@@ -1,0 +1,90 @@
+// Shared by the browser and static renderer: no untranslated first paint.
+export const BLOG_UI = {
+  cs: {
+    eyebrow: 'Blog AJSEE', headline: 'Příběhy, tipy a zážitky.',
+    intro: 'Recenze z hlediště, postřehy z cest i praktické rady. Čtěte o divadle, hudbě, festivalech a sportu — a najděte inspiraci pro svůj další zážitek.',
+    latest: 'Nejnovější článek', selection: 'Z vašeho výběru',
+    listTitle: 'Další čtení', filteredTitle: 'Vybrané články',
+    filtersLabel: 'Vyberte si čtení', topicLabel: 'Téma', allTopics: 'Všechna témata',
+    filters: { all: 'Vše', review: 'Recenze', preview: 'Preview', microguide: 'Praktické tipy' },
+    topics: { theatre: 'Divadlo', concert: 'Koncerty', festival: 'Festivaly', sport: 'Sport' },
+    badges: { review: 'Recenze', preview: 'Preview', microguide: 'Průvodce', article: 'Článek' },
+    readMore: 'Přečíst článek', readGuide: 'Otevřít průvodce',
+    emptyTitle: 'Tady zatím žádné čtení není.', emptyText: 'Zkuste jiné téma nebo si prohlédněte všechny články.', reset: 'Zobrazit vše',
+    ctaTitle: 'Teď už jen vyrazit.', ctaText: 'Najděte si akci, která stojí za návštěvu.', ctaLink: 'Prozkoumat události',
+    counts: ['článek', 'články', 'článků'],
+  },
+  en: {
+    eyebrow: 'AJSEE Blog', headline: 'Stories, tips and experiences.',
+    intro: 'Reviews from the audience, stories from our travels and practical advice. Explore theatre, music, festivals and sport — and find inspiration for your next experience.',
+    latest: 'The latest story', selection: 'From your selection', listTitle: 'More to read', filteredTitle: 'Your reading selection',
+    filtersLabel: 'Find something to read', topicLabel: 'Topic', allTopics: 'All topics',
+    filters: { all: 'All', review: 'Reviews', preview: 'Previews', microguide: 'Tips and guides' },
+    topics: { theatre: 'Theatre', concert: 'Concerts', festival: 'Festivals', sport: 'Sport' },
+    badges: { review: 'Review', preview: 'Preview', microguide: 'Guide', article: 'Article' },
+    readMore: 'Read the article', readGuide: 'Read the guide', emptyTitle: 'Nothing here just yet.',
+    emptyText: 'Try another topic or browse all our articles.', reset: 'Show all',
+    ctaTitle: 'Now, make it a day out.', ctaText: 'Find an event worth being there for.', ctaLink: 'Explore events',
+    counts: ['article', 'articles', 'articles'],
+  },
+  de: {
+    eyebrow: 'AJSEE Blog', headline: 'Geschichten, Tipps und Erlebnisse.',
+    intro: 'Rezensionen aus dem Publikum, Reisegeschichten und praktische Tipps. Entdecken Sie Theater, Musik, Festivals und Sport — und finden Sie Inspiration für Ihr nächstes Erlebnis.',
+    latest: 'Der neueste Artikel', selection: 'Aus Ihrer Auswahl', listTitle: 'Mehr zum Lesen', filteredTitle: 'Ihre Artikelauswahl',
+    filtersLabel: 'Lesestoff entdecken', topicLabel: 'Thema', allTopics: 'Alle Themen',
+    filters: { all: 'Alle', review: 'Rezensionen', preview: 'Vorschau', microguide: 'Tipps und Ratgeber' },
+    topics: { theatre: 'Theater', concert: 'Konzerte', festival: 'Festivals', sport: 'Sport' },
+    badges: { review: 'Rezension', preview: 'Vorschau', microguide: 'Ratgeber', article: 'Artikel' },
+    readMore: 'Artikel lesen', readGuide: 'Ratgeber lesen', emptyTitle: 'Hier gibt es noch nichts zu lesen.',
+    emptyText: 'Wählen Sie ein anderes Thema oder sehen Sie sich alle Artikel an.', reset: 'Alle anzeigen',
+    ctaTitle: 'Und jetzt: selbst erleben.', ctaText: 'Finden Sie eine Veranstaltung, die einen Besuch wert ist.', ctaLink: 'Veranstaltungen entdecken',
+    counts: ['Artikel', 'Artikel', 'Artikel'],
+  },
+  sk: {
+    eyebrow: 'Blog AJSEE', headline: 'Príbehy, tipy a zážitky.',
+    intro: 'Recenzie z hľadiska, postrehy z ciest aj praktické rady. Čítajte o divadle, hudbe, festivaloch a športe — a nájdite inšpiráciu pre svoj ďalší zážitok.',
+    latest: 'Najnovší článok', selection: 'Z vášho výberu', listTitle: 'Ďalšie čítanie', filteredTitle: 'Vybrané články',
+    filtersLabel: 'Vyberte si čítanie', topicLabel: 'Téma', allTopics: 'Všetky témy',
+    filters: { all: 'Všetko', review: 'Recenzie', preview: 'Preview', microguide: 'Praktické tipy' },
+    topics: { theatre: 'Divadlo', concert: 'Koncerty', festival: 'Festivaly', sport: 'Šport' },
+    badges: { review: 'Recenzia', preview: 'Preview', microguide: 'Sprievodca', article: 'Článok' },
+    readMore: 'Prečítať článok', readGuide: 'Otvoriť sprievodcu', emptyTitle: 'Tu zatiaľ žiadne čítanie nie je.',
+    emptyText: 'Skúste inú tému alebo si prezrite všetky články.', reset: 'Zobraziť všetko',
+    ctaTitle: 'Teraz už len vyraziť.', ctaText: 'Nájdite si podujatie, ktoré stojí za návštevu.', ctaLink: 'Preskúmať podujatia',
+    counts: ['článok', 'články', 'článkov'],
+  },
+  pl: {
+    eyebrow: 'Blog AJSEE', headline: 'Historie, wskazówki i wrażenia.',
+    intro: 'Recenzje z widowni, opowieści z podróży i praktyczne porady. Czytaj o teatrze, muzyce, festiwalach i sporcie — i znajdź inspirację na kolejne wyjście.',
+    latest: 'Najnowszy artykuł', selection: 'Z Twojego wyboru', listTitle: 'Więcej do czytania', filteredTitle: 'Wybrane artykuły',
+    filtersLabel: 'Wybierz coś do czytania', topicLabel: 'Temat', allTopics: 'Wszystkie tematy',
+    filters: { all: 'Wszystko', review: 'Recenzje', preview: 'Zapowiedzi', microguide: 'Porady i poradniki' },
+    topics: { theatre: 'Teatr', concert: 'Koncerty', festival: 'Festiwale', sport: 'Sport' },
+    badges: { review: 'Recenzja', preview: 'Zapowiedź', microguide: 'Poradnik', article: 'Artykuł' },
+    readMore: 'Przeczytaj artykuł', readGuide: 'Otwórz poradnik', emptyTitle: 'Na razie nic tu nie ma.',
+    emptyText: 'Wybierz inny temat lub przejrzyj wszystkie artykuły.', reset: 'Pokaż wszystko',
+    ctaTitle: 'Teraz czas się wybrać.', ctaText: 'Znajdź wydarzenie, na którym warto być.', ctaLink: 'Odkryj wydarzenia',
+    counts: ['artykuł', 'artykuły', 'artykułów'],
+  },
+  hu: {
+    eyebrow: 'AJSEE Blog', headline: 'Történetek, tippek és élmények.',
+    intro: 'Beszámolók a nézőtérről, úti történetek és gyakorlati tanácsok. Olvasson színházról, zenéről, fesztiválokról és sportról — és merítsen ihletet a következő élményéhez.',
+    latest: 'A legújabb cikk', selection: 'A választott cikkekből', listTitle: 'További olvasnivaló', filteredTitle: 'Válogatott cikkek',
+    filtersLabel: 'Válasszon olvasnivalót', topicLabel: 'Téma', allTopics: 'Minden téma',
+    filters: { all: 'Mind', review: 'Kritikák', preview: 'Előzetesek', microguide: 'Tippek és útmutatók' },
+    topics: { theatre: 'Színház', concert: 'Koncertek', festival: 'Fesztiválok', sport: 'Sport' },
+    badges: { review: 'Kritika', preview: 'Előzetes', microguide: 'Útmutató', article: 'Cikk' },
+    readMore: 'Cikk elolvasása', readGuide: 'Útmutató megnyitása', emptyTitle: 'Itt még nincs olvasnivaló.',
+    emptyText: 'Válasszon másik témát, vagy nézze meg az összes cikket.', reset: 'Összes megjelenítése',
+    ctaTitle: 'Most már csak indulni kell.', ctaText: 'Találjon egy eseményt, amelyet érdemes átélni.', ctaLink: 'Események felfedezése',
+    counts: ['cikk', 'cikk', 'cikk'],
+  },
+};
+
+export function blogCopy(lang) { return BLOG_UI[lang] || BLOG_UI.cs; }
+export function articleCount(count, lang) {
+  const copy = blogCopy(lang);
+  const rule = new Intl.PluralRules(lang).select(count);
+  const noun = copy.counts[rule === 'one' ? 0 : rule === 'few' ? 1 : 2];
+  return `${new Intl.NumberFormat(lang).format(count)} ${noun}`;
+}

@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-key="seo.contest.title">Pravidla soutěže | AJSEE × Colosseum Ticket</title>
+  <meta name="description" data-i18n-content="seo.contest.description" content="Oficiální pravidla soutěže o 2 × 2 vstupenky na Filmový orchestr Praha v Nové Spirále. Sledujte AJSEE a zapojte se na Instagramu.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#17343e">
+  <link rel="canonical" href="https://ajsee.cz/souteze/filmovy-orchestr-praha/">
+  <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AJSEE">
+  <meta property="og:locale" content="cs_CZ">
+  <meta property="og:title" data-i18n-content="seo.contest.title" content="Pravidla soutěže | AJSEE × Colosseum Ticket">
+  <meta property="og:description" data-i18n-content="seo.contest.description" content="Oficiální pravidla soutěže o 2 × 2 vstupenky na Filmový orchestr Praha v Nové Spirále. Sledujte AJSEE a zapojte se na Instagramu.">
+  <meta property="og:url" content="https://ajsee.cz/souteze/filmovy-orchestr-praha/">
+  <meta property="og:image" content="https://ajsee.cz/images/contests/filmovy-orchestr-praha.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" data-i18n-content="seo.contest.title" content="Pravidla soutěže | AJSEE × Colosseum Ticket">
+  <meta name="twitter:description" data-i18n-content="seo.contest.description" content="Oficiální pravidla soutěže o 2 × 2 vstupenky na Filmový orchestr Praha v Nové Spirále. Sledujte AJSEE a zapojte se na Instagramu.">
+  <meta name="twitter:image" content="https://ajsee.cz/images/contests/filmovy-orchestr-praha.webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+  <link rel="stylesheet" href="/src/styles/pages/colosseum-contest.scss">
+  <script type="module" src="/src/contest-entry.js"></script>
+</head>
+<body class="page-colosseum-contest" data-page="colosseum-contest">
+<header class="site-header">
+  <div class="header-inner">
+    <!-- Logo -->
+    <a href="/" class="logo-link" aria-label="Domů">
+      <img src="/images/logo-ajsee-header.png" alt="AJSEE Logo" class="logo" width="64" height="56" loading="eager" decoding="async" />
+    </a>
+
+    <!-- Hamburger menu (pouze mobil) -->
+    <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Navigace (hlavní menu) -->
+    <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
+      <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+      <ul>
+        <li><a href="/" data-i18n-key="nav-home" aria-current="page">Domů</a></li>
+        <li><a href="/events" data-i18n-key="nav-events">Události</a></li>
+        <li><a href="/accommodation" data-i18n-key="nav-accommodation">Ubytování</a></li>
+        <li><a href="/partners" data-i18n-key="nav-partners">Pro partnery</a></li>
+        <li><a href="/about" data-i18n-key="nav-about">O nás</a></li>
+        <li><a href="/blog" data-i18n-key="nav-blog">Blog</a></li>
+                <li><a href="/faq" data-i18n-key="nav-faq">FAQ</a></li>
+        <li><a href="#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+      </ul>
+
+      <!-- Jazykové přepínače v mobilním menu -->
+      <div class="language-switcher mobile-switcher" aria-label="Jazyk">
+        <details class="lang-dropdown" id="langDropdownMobile">
+          <summary class="lang-current" aria-label="Změnit jazyk">
+            <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+            <span class="lang-current-label">Čeština</span>
+            <span class="lang-caret" aria-hidden="true">▾</span>
+          </summary>
+
+          <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+            <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+              <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+            </button>
+            <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+              <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+            </button>
+            <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+              <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+            </button>
+            <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+              <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+            </button>
+            <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+              <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+            </button>
+            <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+              <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+            </button>
+          </div>
+        </details>
+      </div>
+    </nav>
+
+    <!-- Jazykové přepínače – desktop -->
+    <div class="language-switcher desktop-switcher" aria-label="Jazyk">
+      <details class="lang-dropdown" id="langDropdownDesktop">
+        <summary class="lang-current" aria-label="Změnit jazyk">
+          <img class="lang-current-flag" src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/>
+          <span class="lang-current-label">Čeština</span>
+          <span class="lang-caret" aria-hidden="true">▾</span>
+        </summary>
+
+        <div class="lang-menu" role="listbox" aria-label="Vyber jazyk">
+          <button class="lang-btn" type="button" data-lang="cs" aria-label="Čeština">
+            <img src="/images/flags/cz.svg" alt="Čeština" width="22" height="16"/> Čeština
+          </button>
+          <button class="lang-btn" type="button" data-lang="en" aria-label="English">
+            <img src="/images/flags/gb.svg" alt="English" width="22" height="16"/> English
+          </button>
+          <button class="lang-btn" type="button" data-lang="de" aria-label="Deutsch">
+            <img src="/images/flags/de.svg" alt="Deutsch" width="22" height="16"/> Deutsch
+          </button>
+          <button class="lang-btn" type="button" data-lang="sk" aria-label="Slovenčina">
+            <img src="/images/flags/sk.svg" alt="Slovenčina" width="22" height="16"/> Slovenčina
+          </button>
+          <button class="lang-btn" type="button" data-lang="pl" aria-label="Polski">
+            <img src="/images/flags/pl.svg" alt="Polski" width="22" height="16"/> Polski
+          </button>
+          <button class="lang-btn" type="button" data-lang="hu" aria-label="Magyar">
+            <img src="/images/flags/hu.svg" alt="Magyar" width="22" height="16"/> Magyar
+          </button>
+        </div>
+      </details>
+    </div>
+
+    <!-- Overlay pozadí menu -->
+    <div class="menu-overlay-bg" aria-hidden="true"></div>
+  </div>
+</header>
+<main>
+  <div class="contest-container contest-rules-hero">
+    <a data-i18n-key="contestRules.back" href="/" class="contest-back">← Zpět na úvodní stránku</a>
+    <h1 data-i18n-key="contestRules.title" class="contest-page-title">Pravidla instagramové soutěže AJSEE a Colosseum Ticket</h1>
+    <p data-i18n-key="contestRules.subtitle" class="contest-page-subtitle">O 2 × 2 vstupenky na Filmový orchestr Praha v Nové Spirále</p>
+    <p data-i18n-key="contestRules.intro" class="contest-lead">Soutěž pořádáme při příležitosti zahájení spolupráce AJSEE a Colosseum Ticket. Dva výherci získají každý dvě vstupenky na koncert Filmového orchestru Praha dne 30. května 2027 od 19:00 v Nové Spirále v Praze.</p>
+    <section class="contest-promo" data-colosseum-contest  aria-labelledby="contest-promo-title">
+  <div class="">
+    <div class="contest-promo-card">
+      <div class="contest-promo-copy">
+        <div class="contest-brands" aria-label="AJSEE × Colosseum Ticket">
+          <img class="contest-ajsee" src="/images/logo-ajsee-header.png" alt="AJSEE" width="40" height="35" loading="lazy">
+          <span aria-hidden="true">×</span>
+          <picture><source media="(prefers-color-scheme: dark)" srcset="/images/partners/colosseumticket-dark.svg"><img class="contest-colosseum" src="/images/partners/colosseumticket.svg" alt="Colosseum Ticket" width="145" height="30" loading="lazy"></picture>
+        </div>
+        <p data-i18n-key="contestPromo.eyebrow" class="contest-eyebrow" data-contest-copy="eyebrow">Slavíme nové partnerství</p>
+        <h2 class="contest-promo-title" id="contest-promo-title" data-i18n-key="contestPromo.title" data-contest-copy="title">Vyhrajte 2 × 2 vstupenky</h2>
+        <p data-i18n-key="contestPromo.event" class="contest-event" data-contest-copy="event">Filmový orchestr Praha v Nové Spirále</p>
+        <p data-i18n-key="contestPromo.description" class="contest-description" data-contest-copy="description">Filmové melodie, živý orchestr a videomapping. Dva výherci, každý se svým doprovodem.</p>
+        <p data-i18n-key="contestPromo.date" class="contest-date" data-contest-copy="date">30. 5. 2027 · 19:00 · Praha</p>
+        <p class="contest-status" data-contest-status data-contest-copy="statusUpcoming" data-i18n-key="contestPromo.statusUpcoming">Začínáme 20. 10. 2026 v 19:00</p>
+        <div class="contest-actions">
+          <a class="contest-primary" href="/souteze/filmovy-orchestr-praha/#section-4" data-contest-primary data-contest-copy="primaryUpcoming" data-i18n-key="contestPromo.primaryUpcoming">Jak se zapojit</a>
+          <a class="contest-rules-link" href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener noreferrer">Instagram @ajseeofficial ↗</a>
+        </div>
+      </div>
+      <figure class="contest-photo"><img src="/images/contests/filmovy-orchestr-praha.webp" alt="Filmový orchestr Praha - oficiální fotografie orchestru" data-i18n-alt="contestPromo.photoAlt" data-contest-photo width="1066" height="800" loading="lazy" decoding="async"></figure>
+    </div>
+  </div>
+</section>
+  </div>
+  <div class="contest-container contest-rules-grid">
+    <aside class="contest-toc"><details open>
+      <summary data-i18n-key="contestRules.contents">Obsah pravidel</summary>
+      <ol><li><a href="#section-1" data-i18n-key="contestRules.section1Toc">Pořadatel a partner soutěže</a></li>
+<li><a href="#section-2" data-i18n-key="contestRules.section2Toc">Doba a místo konání soutěže</a></li>
+<li><a href="#section-3" data-i18n-key="contestRules.section3Toc">Kdo se může zúčastnit</a></li>
+<li><a href="#section-4" data-i18n-key="contestRules.section4Toc">Jak se zapojit</a></li>
+<li><a href="#section-5" data-i18n-key="contestRules.section5Toc">Počet účastí a šance na výhru</a></li>
+<li><a href="#section-6" data-i18n-key="contestRules.section6Toc">Výhry</a></li>
+<li><a href="#section-7" data-i18n-key="contestRules.section7Toc">Losování a ověření výherců</a></li>
+<li><a href="#section-8" data-i18n-key="contestRules.section8Toc">Vyhlášení a předání výher</a></li>
+<li><a href="#section-9" data-i18n-key="contestRules.section9Toc">Poctivý průběh soutěže</a></li>
+<li><a href="#section-10" data-i18n-key="contestRules.section10Toc">Změny koncertu a řešení dotazů</a></li>
+<li><a href="#section-11" data-i18n-key="contestRules.section11Toc">Osobní údaje</a></li>
+<li><a href="#section-12" data-i18n-key="contestRules.section12Toc">Vztah k Instagramu</a></li>
+<li><a href="#section-13" data-i18n-key="contestRules.section13Toc">Závěrečná ustanovení</a></li></ol>
+    </details></aside>
+    <article class="contest-rules-content" aria-label="Oficiální pravidla soutěže" data-i18n-aria="contestRules.label">
+      <section class="contest-rule" id="section-1">
+  <h2 data-i18n-key="contestRules.section1Title">1. Pořadatel a partner soutěže</h2>
+  <div data-i18n-key="contestRules.section1Body"><p>Pořadatelem soutěže je <strong>AJSEE LTD</strong>, registrovaná v Anglii a Walesu pod číslem <strong>17105762</strong>, se sídlem <strong>71–75 Shelton Street, Covent Garden, London, WC2H 9JQ, United Kingdom</strong> (dále „pořadatel“).</p>
+<p>Kontaktní e-mail pro soutěž: <strong><a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a></strong>. Instagramový profil pořadatele: <strong>@ajseeofficial</strong>.</p>
+<p>Partnerem soutěže a poskytovatelem vstupenek je <strong>Perfect System, s.r.o.</strong>, IČO <strong>26480981</strong>, se sídlem <strong>Radlická 3301/68, 150 00 Praha 5</strong>, provozující značku <strong>Colosseum Ticket</strong> (dále „partner“). Partner zajistí rezervaci a vystavení výherních vstupenek; organizaci soutěže a komunikaci se soutěžícími zajišťuje AJSEE.</p></div>
+</section>
+<section class="contest-rule" id="section-2">
+  <h2 data-i18n-key="contestRules.section2Title">2. Doba a místo konání soutěže</h2>
+  <div data-i18n-key="contestRules.section2Body"><p>Soutěž probíhá na Instagramu pod hlavním soutěžním příspěvkem profilu <strong>@ajseeofficial</strong>, který výslovně oznamuje soutěž o <strong>2 × 2 vstupenky na Filmový orchestr Praha v Nové Spirále</strong>.</p>
+<ul><li><strong>Zahájení:</strong> úterý <strong>20. října 2026 v 19:00</strong>.</li><li><strong>Ukončení:</strong> neděle <strong>1. listopadu 2026 ve 23:59 včetně</strong>.</li><li><strong>Losování a vyhlášení:</strong> pondělí <strong>2. listopadu 2026</strong>; oznámení vylosovaných výherců v <strong>19:00</strong>.</li></ul>
+<p>Všechny časy jsou uvedeny podle místního času platného v České republice, tedy v časovém pásmu Europe/Prague.</p>
+<p>Do soutěže se započítávají pouze komentáře vložené v době jejího trvání pod uvedený hlavní příspěvek. Komentáře pod jinými příspěvky, soukromé zprávy ani reakce na Stories se do losování nezařazují.</p></div>
+</section>
+<section class="contest-rule" id="section-3">
+  <h2 data-i18n-key="contestRules.section3Title">3. Kdo se může zúčastnit</h2>
+  <div data-i18n-key="contestRules.section3Body"><p>Soutěže se může zúčastnit fyzická osoba, která při zapojení dosáhla věku <strong>18 let</strong>, používá vlastní osobní instagramový účet a splní podmínky těchto pravidel. Pro převzetí elektronických vstupenek musí být schopna poskytnout platnou e-mailovou adresu.</p>
+<p>Soutěže se nemohou zúčastnit osoby přímo zapojené do její přípravy nebo vyhodnocení ani členové jejich společné domácnosti.</p>
+<p>Účast je zdarma a není podmíněna nákupem vstupenek ani jiné služby. Veřejný instagramový profil není podmínkou účasti.</p></div>
+</section>
+<section class="contest-rule" id="section-4">
+  <h2 data-i18n-key="contestRules.section4Title">4. Jak se zapojit</h2>
+  <div data-i18n-key="contestRules.section4Body"><p>Soutěžící musí splnit všechny následující podmínky:</p>
+<ol><li><strong>Sledovat instagramový profil @ajseeofficial.</strong></li><li><strong>Pod hlavní soutěžní příspěvek vložit komentář, ve kterém označí pomocí @ osobní profil člověka, se kterým by na koncert chtěl vyrazit.</strong></li><li><strong>V témže komentáři napsat, který filmový soundtrack nebo filmovou melodii by chtěl slyšet naživo.</strong></li></ol>
+<p>Označení jiné osoby a odpověď musí být v jednom komentáři. Soutěžící nemůže jako doprovod označit sám sebe. Označená osoba se samotným označením nestává soutěžícím a nemusí profil AJSEE sledovat. Výherce může po dohodě zvolit jiný doprovod.</p>
+<p>Sledování profilu AJSEE je povinné při zapojení, při ukončení soutěže i při ověřování vylosovaného výherce před potvrzením výhry.</p>
+<p>Soutěžní komentář musí zůstat dostupný pořadateli do vyhodnocení. Pokud je komentář neúplný, může soutěžící před uzávěrkou vložit nový úplný komentář. Po uzávěrce již nelze chybějící podmínky účasti dodatečně splnit.</p>
+<p>Odpověď na otázku vyjadřuje osobní přání. Nehodnotí se její originalita ani shoda se skutečným programem koncertu. Uvedení skladby v soutěžním komentáři neznamená, že na koncertu zazní.</p>
+<p>Lajkování příspěvku, jeho sdílení ani sledování dalších profilů nejsou podmínkou účasti.</p></div>
+</section>
+<section class="contest-rule" id="section-5">
+  <h2 data-i18n-key="contestRules.section5Title">5. Počet účastí a šance na výhru</h2>
+  <div data-i18n-key="contestRules.section5Body"><p><strong>Každý člověk bude do losování zařazen pouze jednou</strong>, bez ohledu na počet vložených komentářů. Pro evidenci se použije jeho první komentář, který splňuje všechny podmínky.</p>
+<p>Více komentářů ani označení více osob nezvyšuje šanci na výhru. Jedna osoba se nesmí do soutěže zapojovat prostřednictvím více instagramových účtů.</p>
+<p>Každý platně zařazený soutěžící má při losování stejnou šanci. Jeden člověk může získat nejvýše jednu výhru.</p></div>
+</section>
+<section class="contest-rule" id="section-6">
+  <h2 data-i18n-key="contestRules.section6Title">6. Výhry</h2>
+  <div data-i18n-key="contestRules.section6Body"><p>Celkem budou uděleny <strong>dvě výhry</strong>. Každá obsahuje <strong>dvě vstupenky</strong> na tento koncert:</p>
+<ul><li><strong>Koncert:</strong> Filmový orchestr Praha v Nové Spirále.</li><li><strong>Datum a čas:</strong> <strong>30. května 2027 od 19:00</strong>.</li><li><strong>Místo:</strong> <strong>Nová Spirála, Praha</strong>.</li></ul>
+<p>Celkem tedy soutěžíme o čtyři vstupenky, rozdělené mezi dva výherce. Konkrétní místa a kategorii vstupenek určí partner a sdělí je výherci při potvrzení rezervace.</p>
+<p>Výhra zahrnuje pouze vstupenky. Dopravu, ubytování a další osobní náklady hradí výherce a jeho doprovod. Výhru nelze vyplatit v penězích ani na žádost výherce vyměnit za vstupenky na jinou akci. Pro využití vstupenek platí také návštěvní a vstupenkové podmínky koncertu.</p></div>
+</section>
+<section class="contest-rule" id="section-7">
+  <h2 data-i18n-key="contestRules.section7Title">7. Losování a ověření výherců</h2>
+  <div data-i18n-key="contestRules.section7Body"><p>Dne <strong>2. listopadu 2026</strong> pořadatel náhodně vylosuje <strong>dva různé výherce</strong> ze seznamu unikátních soutěžících, jejichž komentáře splňují podmínky. Současně může vylosovat náhradníky a zaznamenat jejich pořadí.</p>
+<p>Pořadatel ověří, zda vylosovaný soutěžící splňuje pravidla, zejména podmínku sledování <strong>@ajseeofficial</strong>, požadovaný věk a náležitosti komentáře. Při důvodné pochybnosti může vyžádat přiměřené doložení splnění podmínek.</p>
+<p>Pokud vylosovaný soutěžící podmínky nesplňuje, výhru odmítne nebo ji podle článku 8 nepřevezme, osloví pořadatel následujícího náhradníka. Pokud seznam náhradníků nestačí, provede další náhodné losování z ostatních platných účastníků.</p>
+<p>Pořadatel uchová záznam o losování pro doložení řádného průběhu soutěže. Odpověď na soundtrackovou otázku ani počet lajků komentáře nemají na výsledek vliv.</p>
+<p>Pokud bude platných soutěžících méně než dva, může být udělen pouze odpovídající počet výher. Nebude-li platný žádný soutěžící, losování neproběhne. Pořadatel tuto skutečnost oznámí stejným způsobem jako výsledky soutěže.</p></div>
+</section>
+<section class="contest-rule" id="section-8">
+  <h2 data-i18n-key="contestRules.section8Title">8. Vyhlášení a předání výher</h2>
+  <div data-i18n-key="contestRules.section8Body"><p>Instagramová uživatelská jména vylosovaných výherců budou oznámena <strong>2. listopadu 2026 v 19:00</strong> na profilu <strong>@ajseeofficial</strong>, ve Stories a v komentáři pod hlavním soutěžním příspěvkem. Výhra bude definitivně potvrzena po ověření podmínek.</p>
+<p>Pořadatel kontaktuje výherce soukromou zprávou z profilu <strong>@ajseeofficial</strong>. Výherce musí <strong>do pěti kalendářních dnů od odeslání této zprávy</strong> odpovědět, potvrdit převzetí výhry a poskytnout své jméno, příjmení a e-mailovou adresu pro rezervaci a doručení vstupenek.</p>
+<p>Pokud výherce v této lhůtě nereaguje nebo neposkytne údaje nezbytné pro předání výhry, bude osloven náhradník. Stejná lhůta platí pro každého osloveného náhradníka.</p>
+<p>Po potvrzení výhry předá pořadatel potřebné údaje rezervačnímu oddělení partnera. O potvrzení rezervace a způsobu doručení bude výherce informován e-mailem. Vstupenky budou předány elektronicky, nejpozději <strong>sedm kalendářních dnů před koncertem</strong>, pokud se výherce s pořadatelem výslovně nedohodne jinak.</p>
+<p>Za převzetí výhry se neplatí žádný poplatek. Výherce odpovídá za správnost poskytnuté e-mailové adresy a za součinnost potřebnou k předání vstupenek.</p></div>
+</section>
+<section class="contest-rule" id="section-9">
+  <h2 data-i18n-key="contestRules.section9Title">9. Poctivý průběh soutěže</h2>
+  <div data-i18n-key="contestRules.section9Body"><p>Do losování nebudou zařazeny komentáře, které nesplňují pravidla, byly vloženy mimo dobu soutěže nebo byly před vyhodnocením odstraněny.</p>
+<p>Pořadatel může vyloučit účast získanou podvodem, zneužitím více účtů jednou osobou, vydáváním se za jinou osobu nebo použitím automatizovaných účtů. Může také odstranit komentáře obsahující protiprávní obsah, výhrůžky nebo hrubé osobní útoky.</p>
+<p>Vyloučení musí vycházet z konkrétního porušení těchto pravidel. Na žádost soutěžícího pořadatel sdělí důvod vyloučení. Právo požádat o vysvětlení nebo uplatnit zákonná práva tím není omezeno.</p></div>
+</section>
+<section class="contest-rule" id="section-10">
+  <h2 data-i18n-key="contestRules.section10Title">10. Změny koncertu a řešení dotazů</h2>
+  <div data-i18n-key="contestRules.section10Body"><p>Případné změny programu, času nebo místa koncertu a případné zrušení koncertu se řeší podle podmínek jeho pořadatele a poskytovatele vstupenek. AJSEE bude ve spolupráci s partnerem informovat výherce o změnách, o nichž se dozví, a o dalším postupu. Tím nejsou omezena práva, která výherci přiznávají příslušné právní předpisy.</p>
+<p>Dotazy a podněty k průběhu soutěže lze poslat na <strong><a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a></strong>. Pořadatel je posoudí a odpoví bez zbytečného odkladu.</p></div>
+</section>
+<section class="contest-rule" id="section-11">
+  <h2 data-i18n-key="contestRules.section11Title">11. Osobní údaje</h2>
+  <div data-i18n-key="contestRules.section11Body"><p>Správcem osobních údajů zpracovávaných pro organizaci této soutěže je <strong>AJSEE LTD</strong>, identifikovaná v článku 1. Kontakt pro žádosti týkající se osobních údajů: <strong><a href="mailto:adam@ajsee.cz">adam@ajsee.cz</a></strong>.</p>
+<p>Pořadatel zpracovává instagramová uživatelská jména, obsah soutěžních komentářů, údaje o splnění podmínek a záznam o losování. U výherců navíc zpracovává jméno, příjmení, e-mailovou adresu a komunikaci potřebnou k předání výhry.</p>
+<p>Údaje potřebné k účasti a předání výhry zpracovává za účelem plnění soutěžních podmínek podle čl. 6 odst. 1 písm. b) GDPR. Ověření poctivého průběhu, doložení losování a ochrana právních nároků vycházejí z oprávněného zájmu podle čl. 6 odst. 1 písm. f) GDPR. Na stejném základě pořadatel pro transparentní oznámení výsledku zveřejní pouze instagramová uživatelská jména výherců, nikoli jejich e-mailové adresy ani jiná soukromá kontaktní data.</p>
+<p>Údaj o označeném doprovodu používá pořadatel pouze jako součást komentáře k ověření podmínek, na základě oprávněného zájmu na řádné administraci soutěže. Samotným označením tuto osobu nezařazuje do losování ani ji nepřihlašuje k marketingové komunikaci.</p>
+<p>Jméno, příjmení a e-mail výherce předá pořadatel partnerovi <strong>Perfect System, s.r.o.</strong>, výhradně pro rezervaci, vystavení a doručení vstupenek a související komunikaci. Partner pro své návazné zpracování postupuje podle svých zásad ochrany osobních údajů: <a href="https://colosseum.eu/gdpr">https://colosseum.eu/gdpr</a>. Přístup k údajům mohou mít také smluvní poskytovatelé služeb nezbytných pro komunikaci a bezpečné uložení, v odpovídajícím rozsahu a za příslušných podmínek ochrany údajů.</p>
+<p>AJSEE LTD sídlí ve Spojeném království. Předávání osobních údajů z Evropského hospodářského prostoru do Spojeného království se opírá o platné rozhodnutí Evropské komise o odpovídající ochraně. Instagram zpracovává údaje také samostatně podle zásad společnosti Meta, včetně pravidel pro mezinárodní předávání.</p>
+<p>Interní evidenci nevyhrávajících účastníků pořadatel vymaže nebo anonymizuje nejpozději <strong>tři měsíce po vyhlášení výherců</strong>. Údaje výherců potřebné k předání a řešení výhry uchová nejdéle <strong>šest měsíců po konání koncertu</strong>. Delší uchování je možné pouze v nezbytném rozsahu při konkrétním právním sporu nebo zákonné povinnosti. Zveřejněná oznámení s uživatelskými jmény výherců pořadatel odstraní nebo upraví nejpozději šest měsíců po vyhlášení. Soutěžící mohou své komentáře spravovat prostřednictvím Instagramu; odstranění komentáře před vyhodnocením ovlivní účast podle těchto pravidel.</p>
+<p>Soutěžící mají za zákonných podmínek právo na přístup k údajům, jejich opravu, výmaz, omezení zpracování a přenositelnost. Proti zpracování založenému na oprávněném zájmu mohou vznést námitku. Mohou také podat stížnost příslušnému dozorovému úřadu, například Úřadu pro ochranu osobních údajů v České republice nebo britskému Information Commissioner’s Office.</p>
+<p>Poskytnutí údajů nezbytných pro účast a předání výhry je podmínkou vyřízení účasti či výhry; bez nich nelze příslušný krok provést. Soutěžící může svou účast ukončit zprávou pořadateli. Losování může proběhnout pomocí softwarového náhodného výběru; splnění podmínek a potvrzení výhry ověřuje pořadatel. Osobní údaje se v této soutěži nepoužívají k profilování.</p>
+<p><strong>Účast v soutěži ani sledování instagramového profilu nejsou souhlasem se zasíláním e-mailových obchodních sdělení.</strong> Další informace o zpracování údajů AJSEE jsou uvedeny na <a href="https://ajsee.cz/privacy-policy">https://ajsee.cz/privacy-policy</a>.</p></div>
+</section>
+<section class="contest-rule" id="section-12">
+  <h2 data-i18n-key="contestRules.section12Title">12. Vztah k Instagramu</h2>
+  <div data-i18n-key="contestRules.section12Body"><p>Soutěž <strong>není sponzorována, podporována ani spravována Instagramem a není s ním spojena</strong>. Instagram není pořadatelem ani poskytovatelem výher.</p>
+<p>Zapojením do soutěže každý soutěžící v rozsahu dovoleném příslušnými právními předpisy zprošťuje Instagram odpovědnosti za organizaci a průběh této soutěže a předání výher. Toto ustanovení neomezuje práva, kterých se podle zákona nelze vzdát.</p></div>
+</section>
+<section class="contest-rule" id="section-13">
+  <h2 data-i18n-key="contestRules.section13Title">13. Závěrečná ustanovení</h2>
+  <div data-i18n-key="contestRules.section13Body"><p>Zapojením do soutěže soutěžící potvrzuje, že se seznámil s těmito pravidly a splňuje podmínky účasti. Pravidla jsou během soutěže dostupná prostřednictvím odkazu v BIO profilu <strong>@ajseeofficial</strong>.</p>
+<p>Pořadatel může pravidla upravit nebo soutěž přerušit pouze ze závažných a objektivních důvodů, například při zásadním technickém problému, vyšší moci nebo nutnosti zajistit poctivý průběh. Změnu, její důvod a dopad oznámí na profilu AJSEE a v pravidlech. Změna nesmí zpětně znevýhodnit již platné účasti ani sloužit k libovolnému odmítnutí slíbených výher.</p>
+<p>Soutěž se řídí těmito pravidly a příslušnými právními předpisy. Žádné ustanovení neomezuje zákonná práva soutěžících ani jejich možnost obrátit se na příslušný orgán nebo soud.</p>
+<p>Tato soutěž je samostatná. Zapojení do jiné soutěže AJSEE, včetně soutěže o londýnské muzikály, nezakládá účast v této soutěži. Každá soutěž má vlastní příspěvek, výhry a podmínky.</p></div>
+</section>
+      <p data-i18n-key="contestRules.prepared" class="contest-prepared">Znění pravidel připravené dne 15. října 2026.</p>
+    </article>
+  </div>
+</main>
+<footer class="site-footer">
+  <div class="footer-social">
+    <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener" aria-label="Instagram">
+      <img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy" />
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61565404319940" target="_blank" rel="noopener" aria-label="Facebook">
+      <img src="/images/icons/facebook.svg" alt="Facebook" loading="lazy" />
+    </a>
+    <a href="https://x.com/ajseeofficial" target="_blank" rel="noopener" aria-label="X">
+      <img src="/images/icons/twitter.svg" alt="X" loading="lazy" />
+    </a>
+    <a href="https://www.linkedin.com/company/ajsee" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <img src="/images/icons/linkedin.svg" alt="LinkedIn" loading="lazy" />
+    </a>
+  </div>
+
+  <div class="footer-meta">
+    <p class="footer-copy" data-i18n-key="footer-copyright">© 2026 AJSEE®. Všechna práva vyhrazena.</p>
+
+    <nav class="footer-legal" aria-label="Právní odkazy">
+      <a
+        href="/privacy-policy"
+        class="footer-legal-link"
+        data-i18n-key="footer-privacy-policy"
+        data-lang-link
+      >
+        Zásady ochrany osobních údajů
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <a
+        href="/cookies-policy"
+        class="footer-legal-link"
+        data-i18n-key="footer-cookies-policy"
+        data-lang-link
+      >
+        Zásady cookies
+      </a>
+
+      <span class="footer-legal-separator" aria-hidden="true">•</span>
+
+      <button
+        type="button"
+        class="footer-legal-button"
+        data-open-cookie-settings
+        data-i18n-key="footer-cookie-settings"
+      >
+        Nastavení cookies
+      </button>
+    </nav>
+
+    <p class="footer-company" data-i18n-key="footer-company-info">
+      AJSEE® provozuje společnost AJSEE LTD, registrovaná v Anglii a Walesu pod číslem 17105762. Registrované sídlo: 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.
+    </p>
+
+    <p class="footer-contact">
+      <span data-i18n-key="footer-contact-label">Kontakt:</span>
+      <a href="mailto:info@ajsee.cz">info@ajsee.cz</a>
+    </p>
+  </div>
+</footer>
+</body>
+</html>

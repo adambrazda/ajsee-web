@@ -1,0 +1,101 @@
+{
+  "faq": {
+    "title": "Na čo sa nás pýtate.",
+    "lead": "Všetko dôležité o AJSEE, hľadaní podujatí, vstupenkách a ubytovaní. Vyberte si tému alebo napíšte, čo vás zaujíma.",
+    "seoTitle": "Časté otázky | AJSEE",
+    "seoDescription": "Ako funguje AJSEE AI, kde kúpiť vstupenky a kto pomôže s objednávkou? Odpovede o AJSEE, londýnskych muzikáloch, ubytovaní a spolupráci.",
+    "searchLabel": "S čím potrebujete poradiť?",
+    "searchPlaceholder": "Hľadať odpoveď…",
+    "searchHelp": "Hľadá sa aj v odpovediach. Môžete písať bez diakritiky.",
+    "clearSearch": "Vymazať hľadanie",
+    "topicsLabel": "Vyberte tému",
+    "allTopics": "Všetky otázky",
+    "resultsLabel": "Počet odpovedí:",
+    "reset": "Zrušiť filtre",
+    "emptyTitle": "Tu sme odpoveď nenašli.",
+    "emptyText": "Skúste iné slovo alebo tému. Ak si stále neviete rady, napíšte nám.",
+    "emptyReset": "Zobraziť všetky otázky",
+    "orderTitle": "Už máte vstupenky?",
+    "orderText": "S objednávkou vám pomôže predajca uvedený v potvrdení nákupu.",
+    "orderLink": "Pomoc s objednávkou",
+    "contactTitle": "Nenašli ste odpoveď?",
+    "contactText": "S otázkami o AJSEE vám radi pomôžeme. Objednávky vstupeniek a rezervácie, prosím, riešte priamo s príslušným predajcom alebo ubytovacím partnerom.",
+    "contactButton": "Napísať AJSEE",
+    "partnerLink": "Spolupráca s AJSEE",
+    "topics": {
+      "ajsee": "AJSEE a hľadanie podujatí",
+      "tickets": "Vstupenky a objednávky",
+      "travel": "Londýn a ubytovanie",
+      "contact": "Kontakt a spolupráca"
+    },
+    "links": {
+      "events": "Preskúmať podujatia",
+      "london": "Prezrieť muzikály",
+      "stays": "Prejsť na ubytovanie",
+      "email": "info@ajsee.cz",
+      "partners": "Možnosti spolupráce"
+    },
+    "questions": {
+      "how": {
+        "q": "Ako AJSEE funguje?",
+        "a": "Na AJSEE nájdete festivaly, divadelné predstavenia, koncerty aj športové podujatia doma a v zahraničí. Prezriete si ponuku, vyberiete podujatie a pre vstupenky prejdete k príslušnému predajcovi."
+      },
+      "ai": {
+        "q": "Čo dokáže AJSEE AI?",
+        "a": "Napíšte vlastnými slovami, čo hľadáte — napríklad „Koncerty v Brne cez víkend“. AJSEE AI podľa zadania nastaví filtre vyhľadávania. Ak potrebuje niečo upresniť, opýta sa. Výsledky vychádzajú z ponuky dostupnej na AJSEE."
+      },
+      "missing": {
+        "q": "Prečo nemôžem nájsť konkrétne podujatie alebo termín?",
+        "a": "Zobrazujeme ponuku, ktorú nám poskytujú naši partneri. Konkrétne podujatie alebo niektorý termín v nej môže chýbať. Skúste upraviť dátum či miesto hľadania. Ak podujatie stále chýba, napíšte nám — pozrieme sa na to."
+      },
+      "free": {
+        "q": "Je používanie AJSEE zadarmo?",
+        "a": "Áno, prezeranie ponuky a hľadanie podujatí na AJSEE je zadarmo. Platíte až za vstupenky alebo iné služby, ktoré si objednáte u našich partnerov."
+      },
+      "languages": {
+        "q": "V akých jazykoch AJSEE funguje?",
+        "a": "Web je dostupný v češtine, slovenčine, angličtine, nemčine, poľštine a maďarčine. Jazyk zmeníte v menu. Partnerské predajné stránky môžu mať vlastnú ponuku jazykov."
+      },
+      "affiliate": {
+        "q": "Ako AJSEE zarába?",
+        "a": "Z niektorých nákupov cez naše partnerské odkazy môžeme získať províziu. Pomáha nám to prevádzkovať a ďalej rozvíjať AJSEE."
+      },
+      "buy": {
+        "q": "Kde si kúpim vstupenky?",
+        "a": "Pri vybranom podujatí kliknite na „Vstupenky“. Otvorí sa predajná stránka, kde si vyberiete dostupné vstupenky a dokončíte objednávku. Pri londýnskych muzikáloch ide o partnerskú stránku AJSEE × TodayTix."
+      },
+      "price": {
+        "q": "Je cena na AJSEE konečná?",
+        "a": "Cena môže byť uvedená ako „od“ a ponuka sa môže medzitým zmeniť. Aktuálnu cenu, dostupnosť vstupeniek a konečnú sumu vždy skontrolujte u predajcu pred zaplatením."
+      },
+      "delivery": {
+        "q": "Neprišli mi vstupenky. Čo mám robiť?",
+        "a": "Skontrolujte potvrdenie objednávky a priečinok so spamom. Ak vstupenky nenájdete, obráťte sa na predajcu uvedeného v potvrdení nákupu. Vstupenky posiela a objednávku vybavuje predajca, u ktorého ste nákup dokončili."
+      },
+      "changes": {
+        "q": "Ako riešiť zmenu alebo zrušenie podujatia?",
+        "a": "Riaďte sa pokynmi predajcu alebo organizátora. Ak potrebujete upraviť objednávku alebo riešiť vrátenie vstupeniek, obráťte sa na predajcu uvedeného v potvrdení nákupu. Možnosti sa líšia podľa podujatia a podmienok nákupu."
+      },
+      "london": {
+        "q": "Kde nájdem muzikály v Londýne?",
+        "a": "Majú u nás samostatnú stránku. Prezrite si ponuku a vyberte predstavenie. Pre vstupenky potom prejdete na partnerskú predajnú stránku AJSEE × TodayTix."
+      },
+      "stays": {
+        "q": "Nájdem u vás aj ubytovanie?",
+        "a": "Na stránke Ubytovanie nájdete ponuku nášho partnera TrustedStays. Aktuálne destinácie, termíny, dostupnosť a ceny si overíte priamo u partnera."
+      },
+      "booking": {
+        "q": "Kto rieši rezerváciu a zmeny ubytovania?",
+        "a": "Rezerváciu, platbu aj prípadné zmeny riešite priamo s TrustedStays podľa podmienok vybraného pobytu. AJSEE vás na ponuku partnera odkazuje; nie je poskytovateľom ubytovania."
+      },
+      "feedback": {
+        "q": "Ako vám navrhnem podujatie alebo nahlásim chybu?",
+        "a": "Napíšte nám na info@ajsee.cz. Pripojte odkaz a stručne opíšte, čo vám na AJSEE chýba alebo nefunguje, aby sme vedeli, na čo sa pozrieť."
+      },
+      "partners": {
+        "q": "Ako sa môžem stať partnerom AJSEE?",
+        "a": "Možnosti spolupráce nájdete na stránke Pre partnerov. Ozvite sa cez formulár alebo na partners@ajsee.cz a pripojte pár viet o svojom projekte."
+      }
+    }
+  }
+}

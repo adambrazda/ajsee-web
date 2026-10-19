@@ -1,0 +1,101 @@
+{
+  "faq": {
+    "title": "Questions? Start here.",
+    "lead": "What you need to know about AJSEE, finding events, tickets and accommodation. Choose a topic or type your question.",
+    "seoTitle": "Frequently asked questions | AJSEE",
+    "seoDescription": "How does AJSEE AI work, where do you buy tickets and who can help with an order? Answers about AJSEE, London musicals, accommodation and partnerships.",
+    "searchLabel": "What can we help you with?",
+    "searchPlaceholder": "Search for an answer…",
+    "searchHelp": "Answers are searched too. Accents are optional.",
+    "clearSearch": "Clear search",
+    "topicsLabel": "Choose a topic",
+    "allTopics": "All questions",
+    "resultsLabel": "Answers found:",
+    "reset": "Clear filters",
+    "emptyTitle": "We couldn't find an answer here.",
+    "emptyText": "Try another word or topic. If you're still unsure, get in touch.",
+    "emptyReset": "Show all questions",
+    "orderTitle": "Already have tickets?",
+    "orderText": "For help with an order, contact the seller named in your confirmation.",
+    "orderLink": "Help with an order",
+    "contactTitle": "Still have a question?",
+    "contactText": "We're happy to help with AJSEE. For ticket orders or accommodation bookings, please contact the relevant seller or accommodation partner directly.",
+    "contactButton": "Email AJSEE",
+    "partnerLink": "Work with AJSEE",
+    "topics": {
+      "ajsee": "AJSEE and finding events",
+      "tickets": "Tickets and orders",
+      "travel": "London and accommodation",
+      "contact": "Contact and partnerships"
+    },
+    "links": {
+      "events": "Explore events",
+      "london": "Explore musicals",
+      "stays": "Find accommodation",
+      "email": "info@ajsee.cz",
+      "partners": "Partnership options"
+    },
+    "questions": {
+      "how": {
+        "q": "How does AJSEE work?",
+        "a": "Find festivals, theatre, concerts and sport at home and abroad. Browse the listings, choose an event and follow the link to the relevant seller to buy tickets."
+      },
+      "ai": {
+        "q": "What does AJSEE AI do?",
+        "a": "Describe what you're looking for in your own words — for example, “Concerts in Brno this weekend”. AJSEE AI uses your request to set the event search filters. If it needs more detail, it asks a follow-up question. Results come from the listings available on AJSEE."
+      },
+      "missing": {
+        "q": "Why can't I find a particular event or date?",
+        "a": "Our listings come from our partners. Some events or performance dates may not be included. Try adjusting the date or location. If the event is still missing, let us know and we'll take a look."
+      },
+      "free": {
+        "q": "Is AJSEE free to use?",
+        "a": "Yes, browsing and searching for events on AJSEE is free. You only pay for tickets or other services you order from our partners."
+      },
+      "languages": {
+        "q": "Which languages does AJSEE support?",
+        "a": "The website is available in Czech, Slovak, English, German, Polish and Hungarian. Change the language in the menu. Our partners' sales pages may offer a different selection of languages."
+      },
+      "affiliate": {
+        "q": "How does AJSEE earn money?",
+        "a": "We may earn a commission on some purchases made through our partner links. This helps us run AJSEE and keep developing it."
+      },
+      "buy": {
+        "q": "Where do I buy tickets?",
+        "a": "Select “Tickets” on an event. You'll go to the seller's page to choose from the available tickets and complete your order. For London musicals, we link to the AJSEE × TodayTix partner sales page."
+      },
+      "price": {
+        "q": "Is the price on AJSEE the final price?",
+        "a": "A price may be shown as “from”, and availability can change. Always check the current price, ticket availability and final total with the seller before paying."
+      },
+      "delivery": {
+        "q": "My tickets haven't arrived. What should I do?",
+        "a": "Check your order confirmation and spam folder. If you still can't find your tickets, contact the seller named in your confirmation. The seller you bought from sends the tickets and handles the order."
+      },
+      "changes": {
+        "q": "What if an event changes or is cancelled?",
+        "a": "Follow the seller's or organiser's instructions. To change an order or ask about returning tickets, contact the seller named in your purchase confirmation. Options depend on the event and the terms of your purchase."
+      },
+      "london": {
+        "q": "Where can I find London musicals?",
+        "a": "We have a dedicated page for them. Browse the shows and choose a production. To buy tickets, follow the link to the AJSEE × TodayTix partner sales page."
+      },
+      "stays": {
+        "q": "Can I find accommodation through AJSEE?",
+        "a": "Our Accommodation page links to our partner TrustedStays. Check current destinations, dates, availability and prices directly with the partner."
+      },
+      "booking": {
+        "q": "Who handles accommodation bookings and changes?",
+        "a": "Bookings, payments and any changes are handled directly with TrustedStays under the terms of your chosen stay. AJSEE links to the partner's listings; it is not the accommodation provider."
+      },
+      "feedback": {
+        "q": "How can I suggest an event or report a problem?",
+        "a": "Email info@ajsee.cz. Include a link and a short description of what's missing or not working on AJSEE so we know what to look into."
+      },
+      "partners": {
+        "q": "How can I become an AJSEE partner?",
+        "a": "Visit our For partners page for partnership options. Use the form or email partners@ajsee.cz with a few words about your project."
+      }
+    }
+  }
+}

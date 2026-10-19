@@ -6,6 +6,8 @@
 // Zachovává navigaci, jazyk, cookie banner a runtime styly bez events/filter logiky.
 
 import './identity-init.js';
+import './styles/pages/faq-page.scss';
+import './faq.js';
 
 import {
   applyTranslations,
@@ -81,7 +83,7 @@ async function bootFaqEntry() {
   try {
     await applyTranslations(currentLang);
   } catch {
-    // FAQ texty má jako fallback i src/faq.js, takže i18n nesmí stránku blokovat.
+    // All answers are present in the static HTML; i18n must not block the page.
   }
 
   try {

@@ -1,0 +1,101 @@
+{
+  "faq": {
+    "title": "Kérdése van? Itt a válasz.",
+    "lead": "A legfontosabb tudnivalók az AJSEE-ről, az eseménykeresésről, a jegyekről és a szállásokról. Válasszon témát, vagy írja be a kérdését.",
+    "seoTitle": "Gyakori kérdések | AJSEE",
+    "seoDescription": "Hogyan működik az AJSEE AI, hol vásárolhat jegyet, és ki segít a rendeléssel? Válaszok az AJSEE-ről, londoni musicalekről, szállásokról és együttműködésről.",
+    "searchLabel": "Miben segíthetünk?",
+    "searchPlaceholder": "Válasz keresése…",
+    "searchHelp": "A válaszokban is keresünk. Ékezetek nélkül is írhat.",
+    "clearSearch": "Keresés törlése",
+    "topicsLabel": "Téma kiválasztása",
+    "allTopics": "Összes kérdés",
+    "resultsLabel": "Találatok száma:",
+    "reset": "Szűrők törlése",
+    "emptyTitle": "Erre itt nem találtunk választ.",
+    "emptyText": "Próbáljon másik szót vagy témát. Ha továbbra is segítségre van szüksége, írjon nekünk.",
+    "emptyReset": "Összes kérdés megjelenítése",
+    "orderTitle": "Már van jegye?",
+    "orderText": "A rendeléssel kapcsolatban a visszaigazolásban megnevezett értékesítő segít.",
+    "orderLink": "Segítség a rendeléshez",
+    "contactTitle": "Nem találta a választ?",
+    "contactText": "Az AJSEE-vel kapcsolatos kérdésekben szívesen segítünk. Jegyrendelés vagy szállásfoglalás ügyében kérjük, forduljon közvetlenül az érintett értékesítőhöz vagy szálláspartnerhez.",
+    "contactButton": "Írjon az AJSEE-nek",
+    "partnerLink": "Együttműködés az AJSEE-vel",
+    "topics": {
+      "ajsee": "AJSEE és eseménykeresés",
+      "tickets": "Jegyek és rendelések",
+      "travel": "London és szállások",
+      "contact": "Kapcsolat és együttműködés"
+    },
+    "links": {
+      "events": "Események felfedezése",
+      "london": "Musicalek megtekintése",
+      "stays": "Szállás keresése",
+      "email": "info@ajsee.cz",
+      "partners": "Együttműködési lehetőségek"
+    },
+    "questions": {
+      "how": {
+        "q": "Hogyan működik az AJSEE?",
+        "a": "Az AJSEE-n fesztiválokat, színházi előadásokat, koncerteket és sporteseményeket találhat otthon és külföldön. Böngésszen a kínálatban, válasszon eseményt, majd a jegyvásárláshoz lépjen tovább az adott értékesítőhöz."
+      },
+      "ai": {
+        "q": "Mire képes az AJSEE AI?",
+        "a": "Írja le saját szavaival, mit keres — például „Koncertek Brnóban a hétvégén”. Az AJSEE AI a kérés alapján beállítja az eseménykeresés szűrőit. Ha pontosításra van szüksége, visszakérdez. A találatok az AJSEE-n elérhető kínálatból származnak."
+      },
+      "missing": {
+        "q": "Miért nem találok egy adott eseményt vagy időpontot?",
+        "a": "A partnereink által átadott kínálatot jelenítjük meg. Egyes események vagy időpontok hiányozhatnak belőle. Próbálja módosítani a dátumot vagy a helyszínt. Ha továbbra sem találja az eseményt, írjon nekünk — utánanézünk."
+      },
+      "free": {
+        "q": "Ingyenes az AJSEE használata?",
+        "a": "Igen, az AJSEE kínálatának böngészése és az eseménykeresés ingyenes. Csak a partnereinknél megrendelt jegyekért vagy más szolgáltatásokért kell fizetnie."
+      },
+      "languages": {
+        "q": "Milyen nyelveken érhető el az AJSEE?",
+        "a": "A weboldal cseh, szlovák, angol, német, lengyel és magyar nyelven érhető el. A nyelvet a menüben változtathatja meg. A partnerek értékesítési oldalain más nyelvek lehetnek elérhetők."
+      },
+      "affiliate": {
+        "q": "Miből származik az AJSEE bevétele?",
+        "a": "A partnerlinkjeinken keresztül végzett egyes vásárlások után jutalékot kaphatunk. Ez segíti az AJSEE működtetését és további fejlesztését."
+      },
+      "buy": {
+        "q": "Hol vásárolhatok jegyet?",
+        "a": "A kiválasztott eseménynél kattintson a „Jegyek” gombra. Az értékesítő oldalán választhat az elérhető jegyek közül, és befejezheti a rendelést. Londoni musicaleknél az AJSEE × TodayTix partneroldalra irányítjuk."
+      },
+      "price": {
+        "q": "Az AJSEE-n látható ár a végleges ár?",
+        "a": "Az ár induló árként is szerepelhet, és a kínálat időközben változhat. Fizetés előtt mindig ellenőrizze az értékesítőnél az aktuális árat, a jegyek elérhetőségét és a végösszeget."
+      },
+      "delivery": {
+        "q": "Nem érkeztek meg a jegyeim. Mit tegyek?",
+        "a": "Ellenőrizze a rendelés visszaigazolását és a levélszemét mappát. Ha nem találja a jegyeket, forduljon a vásárlási visszaigazolásban megnevezett értékesítőhöz. A jegyeket az az értékesítő küldi el, és a rendelést is ő kezeli, akinél vásárolt."
+      },
+      "changes": {
+        "q": "Mi a teendő, ha egy esemény megváltozik vagy elmarad?",
+        "a": "Kövesse az értékesítő vagy a szervező tájékoztatását. A rendelés módosításával vagy a jegyek visszaváltásával kapcsolatban forduljon a vásárlási visszaigazolásban megnevezett értékesítőhöz. A lehetőségek az eseménytől és a vásárlás feltételeitől függnek."
+      },
+      "london": {
+        "q": "Hol találom a londoni musicaleket?",
+        "a": "Külön oldalon gyűjtöttük össze őket. Nézze meg a kínálatot és válasszon előadást. A jegyeket ezután az AJSEE × TodayTix partneroldalon vásárolhatja meg."
+      },
+      "stays": {
+        "q": "Szállást is találhatok az AJSEE-n?",
+        "a": "A Szállás oldalon partnerünk, a TrustedStays kínálatát találja. Az aktuális úti célokat, időpontokat, elérhetőséget és árakat közvetlenül a partnernél ellenőrizheti."
+      },
+      "booking": {
+        "q": "Ki kezeli a szállásfoglalást és a módosításokat?",
+        "a": "A foglalást, a fizetést és az esetleges módosításokat közvetlenül a TrustedStays szolgáltatóval intézheti, a kiválasztott tartózkodás feltételei szerint. Az AJSEE a partner kínálatára hivatkozik, nem a szállás szolgáltatója."
+      },
+      "feedback": {
+        "q": "Hogyan ajánlhatok eseményt vagy jelezhetek hibát?",
+        "a": "Írjon az info@ajsee.cz címre. Mellékeljen egy linket és rövid leírást arról, mi hiányzik vagy nem működik az AJSEE-n, hogy tudjuk, mit vizsgáljunk meg."
+      },
+      "partners": {
+        "q": "Hogyan lehetek az AJSEE partnere?",
+        "a": "Az együttműködési lehetőségeket a Partnereknek oldalon találja. Használja az űrlapot, vagy írjon a partners@ajsee.cz címre, és mutassa be röviden a projektjét."
+      }
+    }
+  }
+}

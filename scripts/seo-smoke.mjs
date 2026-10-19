@@ -176,12 +176,11 @@ function checkFaqContent() {
   if (!html) return;
 
   expectMatch(label, html, /"@type"\s*:\s*"FAQPage"/i, 'has FAQPage JSON-LD');
-  expectMatch(label, html, /Co je AJSEE\?/i, 'has visible question: Co je AJSEE?');
-  expectMatch(label, html, /faq-answer-1/i, 'has faq-answer-1');
-  expectMatch(label, html, /aria-controls=["']faq-answer-1["']/i, 'has aria-controls for answer 1');
-  expectMatch(label, html, /aria-controls=["']faq-answer-2["']/i, 'has aria-controls for answer 2');
-  expectMatch(label, html, /aria-controls=["']faq-answer-3["']/i, 'has aria-controls for answer 3');
-  expectMatch(label, html, /aria-controls=["']faq-answer-4["']/i, 'has aria-controls for answer 4');
+  expectMatch(label, html, /Jak AJSEE funguje\?/i, 'has visible question: Jak AJSEE funguje?');
+  expectMatch(label, html, /<details\b[^>]*\bdata-faq-item/i, 'uses native, no-JS disclosures');
+  expectMatch(label, html, /<summary\b[^>]*class=["']faq-question["']/i, 'has native question controls');
+  expectMatch(label, html, /id=["']faq-delivery["']/i, 'has a linkable order-help answer');
+  expectMatch(label, html, /data-faq-query/i, 'has progressive FAQ search');
 }
 
 function checkBlogDetails() {

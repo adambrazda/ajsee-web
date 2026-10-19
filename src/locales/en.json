@@ -513,5 +513,7 @@
   "home.partners.staysLabel": "Our accommodation partner",
   "home.contact.intro": "Have a question, an event to suggest or an idea for improving AJSEE? We'd love to hear from you.",
   "home.contact.partnerTitle": "Work with AJSEE",
-  "home.contact.partnerText": "Organising an event or offering a service our visitors might enjoy? Explore the ways we can work together."
+  "home.contact.partnerText": "Organising an event or offering a service our visitors might enjoy? Explore the ways we can work together.",
+  "events-page-description": "Festivals, theatre, concerts and sport in one place. Find events at home and abroad, then follow the link to the seller for tickets.",
+  "ai-search-static-intro": "Describe where and when you would like to go in your own words. AJSEE AI turns your request into event filters and asks for details when needed."
 }

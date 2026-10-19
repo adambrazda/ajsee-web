@@ -108,6 +108,10 @@ async function bootAboutEntry() {
   window.addEventListener('ajsee:lang-changed', (event) => {
     const nextLang = normalizeLang(event?.detail?.lang || getCurrentLang());
 
+    if (document.body.dataset.page === 'author' && nextLang !== currentLang) {
+      window.location.assign((nextLang === 'cs' ? '' : '/' + nextLang) + '/authors/oya-canli/');
+      return;
+    }
     syncLang(nextLang);
 
     try {

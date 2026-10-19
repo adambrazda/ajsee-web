@@ -513,5 +513,7 @@
   "home.partners.staysLabel": "Noclegi od naszego partnera",
   "home.contact.intro": "Masz pytanie, chcesz polecić wydarzenie albo podsunąć pomysł na ulepszenie AJSEE? Napisz do nas.",
   "home.contact.partnerTitle": "Współpraca z AJSEE",
-  "home.contact.partnerText": "Organizujesz wydarzenia lub oferujesz usługę, która może zainteresować naszych odwiedzających? Sprawdź możliwości współpracy."
+  "home.contact.partnerText": "Organizujesz wydarzenia lub oferujesz usługę, która może zainteresować naszych odwiedzających? Sprawdź możliwości współpracy.",
+  "events-page-description": "Festiwale, teatr, koncerty i sport w jednym miejscu. Znajdź wydarzenie w kraju lub za granicą i przejdź do sprzedawcy po bilety.",
+  "ai-search-static-intro": "Opisz własnymi słowami, gdzie i kiedy chcesz się wybrać. AJSEE AI ustawi filtry wydarzeń na podstawie Twojego zapytania i w razie potrzeby poprosi o szczegóły."
 }

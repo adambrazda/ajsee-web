@@ -306,7 +306,8 @@
       background: #071022;
       box-shadow: -24px 0 70px rgba(0, 0, 0, 0.48);
       opacity: 0;
-      transform: translateX(100%);
+      // Visibility and opacity hide the closed panel without widening the page.
+      transform: translateX(0);
       transition:
         transform 220ms ease,
         opacity 220ms ease,

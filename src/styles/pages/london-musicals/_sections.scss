@@ -1042,3 +1042,15 @@
   }
 }
 /* AJSEE_LONDON_FINAL_SECTIONS_V31_END */
+
+.page-london-musicals-todaytix {
+  .tt-editorial-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px; }
+  .tt-editorial-card { padding:26px;border:1px solid var(--border-muted);border-radius:var(--radius-lg);background:var(--bg-card); }
+  .tt-editorial-card h3 { font-family:var(--font-body);font-size:1.15rem;line-height:1.5;margin-bottom:16px; }
+  .tt-editorial-card p { color:var(--text-secondary);line-height:1.7;margin-bottom:22px; }
+  .tt-editorial-card h3 a { color:var(--text-primary); }
+  .tt-editorial-link,.tt-editorial-guides a { color:var(--brand-gold-soft);text-decoration:underline;text-underline-offset:.2em; }
+  .tt-editorial-guides { margin-top:28px;text-align:center; }
+  .tt-editorial a:focus-visible { outline:3px solid var(--brand-gold);outline-offset:5px; }
+  @media(max-width:760px) { .tt-editorial-grid { grid-template-columns:1fr; } }
+}

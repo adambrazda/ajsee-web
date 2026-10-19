@@ -369,7 +369,9 @@ const getInitialLang = () => {
         <h1 class="home-title" id="home-title"><span data-i18n-key="home.hero.start">Kam vyrazíte</span> <span data-i18n-key="home.hero.end" class="home-title-accent">příště?</span></h1>
         <p class="home-intro"><span data-i18n-key="home.hero.lead1">Festivaly, divadlo, koncerty i sport.</span> <span data-i18n-key="home.hero.lead2">Objevte akce doma i v zahraničí.</span></p>
         <div class="home-search home-hero-search">
-          <form id="events-filters-form" class="events-filters filter-dock" novalidate role="search"></form>
+          <form id="events-filters-form" class="events-filters filter-dock" novalidate role="search">
+            <div class="ai-event-search" data-ai-static-intro><div class="ai-event-search__brand"><span class="ai-event-search__brand-name">AJSEE</span><span class="ai-event-search__badge">AI</span></div><p class="ai-event-search__helper" data-i18n-key="ai-search-static-intro">Napište vlastními slovy, kam a kdy chcete vyrazit. AJSEE AI z vašeho zadání nastaví filtry událostí a podle potřeby se doptá na podrobnosti.</p></div>
+          </form>
         </div>
         <a class="home-text-link home-hero-all" href="/events/"><span data-i18n-key="home.allEvents">Prohlédnout všechny události</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
@@ -445,7 +447,7 @@ const getInitialLang = () => {
   </section>
   <section class="home-about" id="about">
     <div class="home-container home-about-grid">
-      <div><h2 data-i18n-key="home.about.title">O AJSEE</h2><div class="home-team-photos"><img src="/images/team/adam.png" alt="Adam Brázda" width="96" height="96" loading="lazy"><img src="/images/team/jan.png" alt="Jan Oujezdský" width="96" height="96" loading="lazy"></div></div>
+      <div><h2 data-i18n-key="home.about.title">O AJSEE</h2><div class="home-team-photos"><img src="/images/team/adam-384.webp" srcset="/images/team/adam-192.webp 192w, /images/team/adam-384.webp 384w, /images/team/adam-768.webp 768w" sizes="(max-width: 640px) 104px, 120px" alt="Adam Brázda" width="96" height="96" loading="lazy"><img src="/images/team/jan-384.webp" srcset="/images/team/jan-192.webp 192w, /images/team/jan-384.webp 384w, /images/team/jan-768.webp 768w" sizes="(max-width: 640px) 104px, 120px" alt="Jan Oujezdský" width="96" height="96" loading="lazy"></div></div>
       <div><p data-i18n-key="home.about.text">Za AJSEE stojí Adam a Jan. Společně s našimi autory sdílíme recenze, zkušenosti a tipy, kam vyrazit.</p><p data-i18n-key="home.about.story">Nápad na AJSEE vznikl na podzim 2024 při posezení u piva. Ještě ten večer jsme vymysleli název AJSEE a návrh loga.</p><a class="home-text-link" href="/about/"><span data-i18n-key="home.about.cta">Přečíst náš příběh</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
     </div>
   </section>

@@ -470,7 +470,8 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
 
   const author = {
     '@type': 'Person',
-    name: review.author || 'AJSEE'
+    name: review.author || 'AJSEE',
+    ...(review.author === 'Oya Canli' ? { '@id': SITE_ORIGIN + '/authors/oya-canli/#person', url: SITE_ORIGIN + (lang === 'cs' ? '' : '/' + lang) + '/authors/oya-canli/' } : {})
   };
 
   const publisher = {
@@ -769,7 +770,9 @@ function buildMetaRow(
 
   if (review.author) {
     parts.push(
-      `<span>${escapeHtml(review.author)}</span>`
+      review.author === 'Oya Canli'
+        ? `<a rel="author" href="${lang === 'cs' ? '' : '/' + lang}/authors/oya-canli/">${escapeHtml(review.author)}</a>`
+        : `<span>${escapeHtml(review.author)}</span>`
     );
   }
 

@@ -1150,6 +1150,8 @@ function setBusy(v) {
     );
 
     if (busy) {
+      // Static cards are a no-JS fallback, never results of an active search.
+      list.querySelector('[data-events-static]')?.remove();
       renderEventsLoadingPlaceholder(
         list
       );

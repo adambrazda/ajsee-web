@@ -1,5 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'node:url';
+import { MICROGUIDE_LABELS } from '../src/microguide-copy.js';
 
 const ROOT = process.cwd();
 
@@ -477,7 +479,7 @@ function buildJsonLd(data, langCode, slug, ts = 0) {
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Micro-guides',
+            name: MICROGUIDE_LABELS[normalizeLang(langCode)].indexHeading,
             item: `${SITE_ORIGIN}/microguides/`
           },
           {
@@ -585,6 +587,7 @@ function buildStaticMain(data, langCode, slug) {
   const steps = Array.isArray(data.steps) ? data.steps : [];
   const readingMinutes = Number(data.readingMinutes || 5);
   const currentLang = normalizeLang(langCode);
+  const labels = MICROGUIDE_LABELS[currentLang];
   const blogHref = localizedRoute('/blog/', currentLang);
   const comingSoonHref = localizedRoute('/coming-soon/', currentLang);
 
@@ -616,17 +619,17 @@ function buildStaticMain(data, langCode, slug) {
   <main class="mg" id="mgRoot" data-mg-root>
     ${GENERATED_MARKER}
     <nav class="mg-breadcrumb" aria-label="Breadcrumb">
-      <a href="${escapeAttr(blogHref)}" data-i18n="mg.backToBlog">Zpět na blog</a>
+      <a href="${escapeAttr(blogHref)}" data-i18n="mg.backToBlog">${escapeHtml(labels.backToBlog)}</a>
       <span aria-hidden="true">/</span>
-      <span data-i18n="mg.breadcrumb">AJSEE vysvětluje</span>
+      <span data-i18n="mg.breadcrumb">${escapeHtml(labels.breadcrumb)}</span>
     </nav>
 
     <article class="mg-article" itemscope itemtype="https://schema.org/Article">
       <header class="mg-hero">
         <div class="mg-hero-text">
-          <p class="mg-kicker">AJSEE vysvětluje</p>
+          <p class="mg-kicker">${escapeHtml(labels.breadcrumb)}</p>
           <h1 class="mg-title" itemprop="headline">${escapeHtml(data.title || slug)}</h1>
-          <p class="mg-meta"><span>${readingMinutes} min čtení</span></p>
+          <p class="mg-meta"><span>${readingMinutes} ${escapeHtml(labels.readTime)}</span></p>
           <div class="mg-actions"></div>
         </div>
 
@@ -646,14 +649,14 @@ function buildStaticMain(data, langCode, slug) {
 
         <footer class="mg-footer-cta">
           ${data.ctaQuestion ? `<p>${escapeHtml(data.ctaQuestion)}</p>` : ''}
-          <a class="ib-cta" href="${escapeAttr(comingSoonHref)}">Chci na čekací listinu</a>
+          <a class="ib-cta" href="${escapeAttr(comingSoonHref)}">${escapeHtml(labels.waitlist)}</a>
         </footer>
       </div>
 
       <nav class="mg-mobile-nav" aria-label="Micro-guide navigation">
-        <button class="mg-prev" type="button">Předchozí</button>
+        <button class="mg-prev" type="button">${escapeHtml(labels.prev)}</button>
         <div class="mg-dots"></div>
-        <button class="mg-next" type="button">Další</button>
+        <button class="mg-next" type="button">${escapeHtml(labels.next)}</button>
       </nav>
     </article>
 
@@ -845,7 +848,8 @@ async function run() {
   console.log(`Micro-guides index generated (${finalIndex.length} items, sorted desc).`);
 }
 
-run().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+export { applyStaticSeoToTemplate, buildStaticMain, replaceMain };
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  run().catch((e) => { console.error(e); process.exit(1); });
+}

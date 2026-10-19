@@ -513,5 +513,7 @@
   "home.partners.staysLabel": "Ubytovanie od nášho partnera",
   "home.contact.intro": "Máte otázku, tip na podujatie alebo nápad, čo na AJSEE vylepšiť? Napíšte nám.",
   "home.contact.partnerTitle": "Spolupráca s AJSEE",
-  "home.contact.partnerText": "Organizujete podujatia alebo ponúkate službu, ktorá by našich návštevníkov mohla zaujať? Pozrite si možnosti spolupráce."
+  "home.contact.partnerText": "Organizujete podujatia alebo ponúkate službu, ktorá by našich návštevníkov mohla zaujať? Pozrite si možnosti spolupráce.",
+  "events-page-description": "Festivaly, divadlo, koncerty aj šport na jednom mieste. Nájdite si podujatie doma alebo v zahraničí a vstupenky si kúpte priamo u predajcu.",
+  "ai-search-static-intro": "Napíšte vlastnými slovami, kam a kedy chcete vyraziť. AJSEE AI z vášho zadania nastaví filtre podujatí a podľa potreby sa opýta na podrobnosti."
 }

@@ -2,8 +2,9 @@
 @mixin blog-light {
   color-scheme: light;
   --blog-bg: #fafbf8; --blog-surface: #fff; --blog-soft: #f0f5f2;
-  --blog-heading: #14303e; --blog-text: #506571; --blog-muted: #667a82;
+  --blog-heading: #14303e; --blog-text: #506571; --blog-muted: #5c7079;
   --blog-line: #dbe5e3; --blog-accent: #087c7b; --blog-accent-soft: #e5f5f0;
+  --blog-badge-text: #087674;
   --blog-button: #153b47; --blog-button-text: #fff; --blog-button-hover: #245461;
   --blog-shadow: 0 14px 34px rgba(20,48,62,.07);
   --aj-footer-bg: #fafbf8; --aj-footer-text: #506571; --aj-footer-copy: #506571;
@@ -14,6 +15,7 @@
   --blog-bg: #0c1921; --blog-surface: #122630; --blog-soft: #10232c;
   --blog-heading: #eef6f4; --blog-text: #bacdce; --blog-muted: #a9c0c2;
   --blog-line: #2a4148; --blog-accent: #6bddd0; --blog-accent-soft: #123b3e;
+  --blog-badge-text: #6bddd0;
   --blog-button: #6bddd0; --blog-button-text: #102f37; --blog-button-hover: #8be9de;
   --blog-shadow: 0 14px 34px rgba(0,0,0,.15);
   --aj-footer-bg: #0c1921; --aj-footer-text: #bacdce; --aj-footer-copy: #bacdce;
@@ -69,7 +71,7 @@ body[data-page="blog"] {
   .blog-card-body { display: flex; flex-direction: column; min-width: 0; }
   .blog-feature .blog-card-body { padding: clamp(28px,3.4vw,46px); }
   .blog-card-kicker { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; color: var(--blog-muted); font-size: .69rem; line-height: 1.6; }
-  .blog-card-badge { display: inline-block; padding: 4px 9px; border-radius: 6px; background: var(--blog-accent-soft); color: var(--blog-accent); font-size: .66rem; font-weight: 650; }
+  .blog-card-badge { display: inline-block; padding: 4px 9px; border-radius: 6px; background: var(--blog-accent-soft); color: var(--blog-badge-text); font-size: .66rem; font-weight: 650; }
   .blog-feature .blog-card-title { margin: 18px 0 15px; font-size: clamp(1.55rem,2.4vw,2.15rem); line-height: 1.35; text-wrap: pretty; }
   .blog-card-lead { color: var(--blog-text); font-size: .9rem; line-height: 1.8; }
   .blog-feature .blog-card-lead { font-size: .94rem; }

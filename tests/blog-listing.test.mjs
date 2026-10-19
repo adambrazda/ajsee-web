@@ -14,6 +14,23 @@ const fixture = (slug, overrides = {}) => ({
   ...overrides,
 });
 
+test('small labels and badges meet normal-text contrast in both themes', async () => {
+  const css = await fs.readFile(new URL('../src/styles/partials/_blog-premium.scss', import.meta.url), 'utf8');
+  const luminance = (hex) => {
+    const channels = hex.match(/[\da-f]{2}/gi).map((x) => parseInt(x, 16) / 255)
+      .map((x) => x <= .04045 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4);
+    return channels[0] * .2126 + channels[1] * .7152 + channels[2] * .0722;
+  };
+  for (const theme of ['light', 'dark']) {
+    const block = css.match(new RegExp(`@mixin blog-${theme} \\{([\\s\\S]*?)\\}`))[1];
+    const color = (token) => luminance(block.match(new RegExp(`--blog-${token}: #([a-f\\d]{6})`))[1]);
+    for (const [fg, bg] of [['muted', 'bg'], ['muted', 'soft'], ['badge-text', 'accent-soft'], ['text', 'soft']]) {
+      const a = color(fg), b = color(bg);
+      assert.ok((Math.max(a, b) + .05) / (Math.min(a, b) + .05) >= 4.5, `${theme}: ${fg} on ${bg}`);
+    }
+  }
+});
+
 test('publication gate never confuses a future-event preview with an unpublished draft', () => {
   const cards = reviewCards({ items: [
     fixture('live'), fixture('future', { contentType: 'preview' }),

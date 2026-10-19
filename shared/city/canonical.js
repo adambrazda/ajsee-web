@@ -92,7 +92,7 @@ export const SUPPORTED_COUNTRY_CODES = new Set([
   'GB', 'IE',
   'FR', 'NL', 'BE',
   'IT', 'ES',
-  'DK', 'SE', 'FI', 'NO'
+  'DK', 'SE', 'FI', 'NO', 'RS', 'EG'
 ]);
 
 const COUNTRY_ALIASES = Object.create(null);
@@ -128,6 +128,8 @@ addCountryAliases('DK', ['DK', 'Denmark', 'Dánsko', 'Dansko', 'Danmark', 'Däne
 addCountryAliases('SE', ['SE', 'Sweden', 'Švédsko', 'Svedsko', 'Sverige', 'Schweden']);
 addCountryAliases('FI', ['FI', 'Finland', 'Finsko', 'Fínsko', 'Suomi', 'Finnland']);
 addCountryAliases('NO', ['NO', 'Norway', 'Norsko', 'Nórsko', 'Norge', 'Norwegen']);
+addCountryAliases('RS', ['RS', 'Serbia', 'Srbsko', 'Srbija', 'Serbien']);
+addCountryAliases('EG', ['EG', 'Egypt', 'Egypten', 'Ägypten', 'Egipt', 'Egyiptom']);
 
 export function countryCodeFromInput(input) {
   const raw = String(input || '').trim();

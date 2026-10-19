@@ -5,11 +5,14 @@ import { buildEventCityCatalog } from '../shared/city/event-city-catalog.js';
 
 export async function buildEventCities({ dataDir = path.resolve('public/data') } = {}) {
   const sources = [];
+  const providerCountries = {};
   for (const name of ['smsticket', 'colosseumticket']) {
     try {
       const payload = JSON.parse(await readFile(path.join(dataDir, `${name}-events.json`), 'utf8'));
       if (!Array.isArray(payload.events)) throw new Error(`${name}: invalid events payload`);
       sources.push({ events: payload.events, marketCountryCode: 'CZ' });
+      providerCountries[name] = [...new Set(payload.events.map(event =>
+        String(event.location?.country || event.venue?.country || 'CZ').toUpperCase()))].sort();
     } catch (error) {
       // Colosseum is not synchronized by predev. Its absence there is expected.
       if (error.code !== 'ENOENT') throw error;
@@ -18,7 +21,7 @@ export async function buildEventCities({ dataDir = path.resolve('public/data') }
   if (!sources.length) throw new Error('Cannot build city catalog without any partner feed');
   const items = buildEventCityCatalog(sources);
   await mkdir(dataDir, { recursive: true });
-  await writeFile(path.join(dataDir, 'event-cities.json'), JSON.stringify({ version: 1, items }) + '\n');
+  await writeFile(path.join(dataDir, 'event-cities.json'), JSON.stringify({ version: 2, items, providerCountries }) + '\n');
   console.log(`[event cities] ${items.length} cities from ${sources.length} partner feeds`);
   return items;
 }

@@ -5,12 +5,14 @@
 // a uloží do /public/data/smsticket-events.json.
 // ---------------------------------------------------------
 
-import { XMLParser } from 'fast-xml-parser';
+import { XMLParser, XMLValidator } from 'fast-xml-parser';
 import { withProviderDateRange } from '../src/provider-event-dates.js';
 import { isLocalEventDateAvailable } from '../src/event-calendar.js';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile, rename, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { smsticketCountryCode } from '../shared/geo/smsticket-country.js';
 
 import {
   resolveEventImageAnalysis
@@ -28,7 +30,6 @@ const IMAGE_ANALYSIS_FILE =
   path.resolve(
     'data/event-image-analysis/smsticket.json'
   );
-const OUT_DIR = path.dirname(OUT_FILE);
 const AFFILIATE_PARAM = 'a_box=d4n78jv6';
 
 // AJSEE_SMSTICKET_CITY_SUBSETS_v1
@@ -180,7 +181,7 @@ function isFutureOrActive(event) {
   const startDate = text(event?.dates?.start_date);
   const bookingEndDate = text(event?.dates?.booking_end_date);
   const dated = withProviderDateRange({
-    date: startDate, title: text(event?.name), country: 'CZ', bookingEndsAt: bookingEndDate,
+    date: startDate, title: text(event?.name), country: smsticketCountryCode(event), bookingEndsAt: bookingEndDate,
     types: getTypes(event), description: stripHtml(decodeHtmlEntities(String(event.description || '')))
   }, { endLocalDate: text(event?.dates?.end_date) });
   return isLocalEventDateAvailable(dated, new Date(), { allowBooking: true });
@@ -246,6 +247,7 @@ function normalizeEvent(
   imageAnalysisCache = {}
 ) {
   const sourceId = text(event?.id);
+  const country = smsticketCountryCode(event);
   const title = text(event?.name);
   const rawDescription = decodeHtmlEntities(String(event?.description || '').trim());
   const descriptionText = truncateText(stripHtml(rawDescription));
@@ -328,11 +330,11 @@ function normalizeEvent(
     tickets: bookingUrl,
     rawUrl: rawBookingUrl,
 
-    country: 'CZ',
+    country,
 
     location: {
       city,
-      country: 'CZ',
+      country,
       lat: latitude,
       lon: longitude,
       latitude,
@@ -342,11 +344,11 @@ function normalizeEvent(
     venue: {
       name: venueName,
       city,
-      country: 'CZ',
+      country,
       address: {
         city,
         street,
-        country: 'CZ'
+        country
       },
       location: {
         lat: latitude,
@@ -553,12 +555,14 @@ function createSubsetPayload(payload, definition, events) {
 async function writeSmsticketPayloads(
   payload,
   {
-    logLabel = 'synced'
+    logLabel = 'synced',
+    outputFile = OUT_FILE
   } = {}
 ) {
-  await mkdir(OUT_DIR, { recursive: true });
+  const outputDir = path.dirname(outputFile);
+  await mkdir(outputDir, { recursive: true });
 
-  await writeFile(OUT_FILE, JSON.stringify(payload, null, 2), 'utf8');
+  await atomicWriteJson(outputFile, payload);
 
   console.log(
     '[smsticket] ' +
@@ -566,15 +570,15 @@ async function writeSmsticketPayloads(
     ' ' +
     payload.events.length +
     ' events -> ' +
-    OUT_FILE
+    outputFile
   );
 
   for (const definition of CITY_SUBSETS) {
     const subsetEvents = payload.events.filter((event) => matchesSubsetCity(event, definition));
-    const subsetFile = path.join(OUT_DIR, 'smsticket-events-' + definition.slug + '.json');
+    const subsetFile = path.join(outputDir, 'smsticket-events-' + definition.slug + '.json');
     const subsetPayload = createSubsetPayload(payload, definition, subsetEvents);
 
-    await writeFile(subsetFile, JSON.stringify(subsetPayload, null, 2), 'utf8');
+    await atomicWriteJson(subsetFile, subsetPayload);
 
     console.log(
       '[smsticket] city subset ' +
@@ -586,25 +590,81 @@ async function writeSmsticketPayloads(
     );
   }
 }
-async function readExistingFallback() {
-  if (!existsSync(OUT_FILE)) return null;
+async function atomicWriteJson(file, payload) {
+  const temporary = file + '.tmp-' + process.pid;
+  try {
+    await writeFile(temporary, JSON.stringify(payload, null, 2), 'utf8');
+    await rename(temporary, file);
+  } finally {
+    await rm(temporary, { force: true });
+  }
+}
+
+async function readExistingFallback(outputFile = OUT_FILE) {
+  if (!existsSync(outputFile)) return null;
 
   try {
-    const raw = await readFile(OUT_FILE, 'utf8');
-    return JSON.parse(raw);
+    const raw = await readFile(outputFile, 'utf8');
+    const payload = JSON.parse(raw);
+    return Array.isArray(payload?.events) && payload.events.length > 0 ? payload : null;
   } catch {
     return null;
   }
 }
 
-async function main() {
-  const startedAt = new Date().toISOString();
+export function parseSmsticketXml(xml) {
+  if (typeof xml !== 'string' || Buffer.byteLength(xml) > 30 * 1024 * 1024 ||
+      /<!\s*(?:DOCTYPE|ENTITY)\b/i.test(xml)) throw new Error('Invalid SMS Ticket XML document');
+  const validity = XMLValidator.validate(xml);
+  if (validity !== true) throw new Error('Malformed SMS Ticket XML');
+  const parsed = new XMLParser({
+    ignoreAttributes: false, attributeNamePrefix: '@_', textNodeName: '#text',
+    trimValues: true, parseTagValue: false, parseAttributeValue: false,
+    stopNodes: ['*.description']
+  }).parse(xml);
+  if (!parsed?.events || typeof parsed.events !== 'object') throw new Error('Missing SMS Ticket events root');
+  const events = toArray(parsed.events.event);
+  if (!events.length) throw new Error('Empty SMS Ticket feed');
+  return events;
+}
+
+export function buildSmsticketPayload(xml, {
+  existingPayload, imageAnalysisCache = {}, syncedAt = new Date().toISOString(),
+  minimumEvents = 100, allowLargeDrop = false
+} = {}) {
+  const rawEvents = parseSmsticketXml(xml);
+  const nonTest = rawEvents.filter(event => !isTestEvent(event));
+  const available = nonTest.filter(isFutureOrActive);
+  const normalized = available.map(event => normalizeEvent(event, imageAnalysisCache));
+  const events = normalized.filter(event => event.sourceId && event.title?.cs && event.url && event.datetime)
+    .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
+  if (events.length < Math.max(1, minimumEvents)) throw new Error('SMS Ticket feed has too few valid events: ' + events.length);
+  if (new Set(events.map(event => event.sourceId)).size !== events.length) throw new Error('Duplicate SMS Ticket event IDs');
+  const previous = existingPayload?.events?.length || 0;
+  if (!allowLargeDrop && previous >= minimumEvents && events.length < Math.floor(previous * 0.5)) {
+    throw new Error('SMS Ticket event count dropped from ' + previous + ' to ' + events.length);
+  }
+  return { source: 'smsticket', sourceUrl: SMSTICKET_API_URL, syncedAt,
+    lastSyncAttemptAt: syncedAt, lastSyncStatus: 'ok', count: events.length, events,
+    stats: { rawEvents: rawEvents.length, excludedTests: rawEvents.length - nonTest.length,
+      expiredOrUndated: nonTest.length - available.length, rejected: normalized.length - events.length,
+      accepted: events.length }
+  };
+}
+
+export async function runSmsticketSync({
+  outputFile = OUT_FILE, fetchImpl = globalThis.fetch,
+  startedAt = new Date().toISOString(), minimumEvents = 100,
+  allowLargeDrop = process.env.SMSTICKET_ALLOW_COUNT_DROP === '1'
+} = {}) {
+  const existing = await readExistingFallback(outputFile);
 
   try {
     const xml =
       await fetchSmsticketXml(
         SMSTICKET_API_URL,
         {
+          fetchImpl,
           onRetry({
             attempt,
             maxAttempts,
@@ -626,48 +686,15 @@ async function main() {
         }
       );
 
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      attributeNamePrefix: '@_',
-      textNodeName: '#text',
-      trimValues: true,
-      parseTagValue: false,
-      parseAttributeValue: false,
-      stopNodes: ['*.description']
-    });
-
-    const parsed = parser.parse(xml);
-    const rawEvents = toArray(parsed?.events?.event);
-
     const imageAnalysisCache =
       await readSmsticketImageAnalysisCache();
 
-    const events = rawEvents
-      .filter((event) => !isTestEvent(event))
-      .filter(isFutureOrActive)
-      .map(
-        (event) =>
-          normalizeEvent(
-            event,
-            imageAnalysisCache
-          )
-      )
-      .filter((event) => event.sourceId && event.title?.cs && event.url && event.datetime)
-      .sort((a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime());
-
-    const payload = {
-      source: 'smsticket',
-      sourceUrl: SMSTICKET_API_URL,
-      syncedAt: startedAt,
-      count: events.length,
-      events
-    };
-
-    await writeSmsticketPayloads(payload);
+    const payload = buildSmsticketPayload(xml, { existingPayload: existing, imageAnalysisCache,
+      syncedAt: startedAt, minimumEvents, allowLargeDrop });
+    await writeSmsticketPayloads(payload, { outputFile });
+    return payload;
   } catch (error) {
     console.warn(`[smsticket] sync failed: ${error?.message || error}`);
-
-    const existing = await readExistingFallback();
 
     if (existing) {
       const imageAnalysisCache =
@@ -684,7 +711,8 @@ async function main() {
         refreshedFallback,
         {
           logLabel:
-            'refreshed cached'
+            'refreshed cached',
+          outputFile
         }
       );
 
@@ -692,25 +720,14 @@ async function main() {
         '[smsticket] keeping existing cached event data with current build-time enrichments'
       );
 
-      return;
+      return refreshedFallback;
     }
 
-    await mkdir(OUT_DIR, { recursive: true });
-    await writeFile(
-      OUT_FILE,
-      JSON.stringify({
-        source: 'smsticket',
-        sourceUrl: SMSTICKET_API_URL,
-        syncedAt: startedAt,
-        count: 0,
-        events: [],
-        warning: 'Initial sync failed; empty fallback created.'
-      }, null, 2),
-      'utf8'
-    );
-
-    console.warn('[smsticket] empty fallback created');
+    // A first-time failure cannot manufacture a fresh, successful empty feed.
+    throw error;
   }
 }
 
-await main();
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  await runSmsticketSync();
+}

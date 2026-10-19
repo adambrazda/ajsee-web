@@ -29,7 +29,7 @@ import { fetchEvents as fetchSmsticketEvents } from '../adapters/smsticket.js';
 import { fetchEvents as fetchColosseumTicketEvents } from '../adapters/colosseumticket.js';
 import { fetchEvents as fetchSeatPlanEvents } from '../adapters/seatplan.js';
 import { canonForInputCity, guessCountryCodeFromCity, matchesCityIdentity } from '../city/canonical.js';
-import { loadEventCityCatalog, countryCodeForEventCity } from '../city/eventCityCatalog.js';
+import { loadEventCityCatalog, countryCodeForEventCity, providerCoversCountry } from '../city/eventCityCatalog.js';
 import { matchesEventDiscoveryFilters } from '../taxonomy/event-filtering.js';
 import { hasAiRelevance, isSoftDiscovery, providerSearchFilters, rankEventsByRelevance, ticketmasterDiscoveryKeywords } from '../search/event-relevance.js';
 import { matchesKeywordPrefix } from '../search/keyword-match.js';
@@ -811,13 +811,23 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     if (!isRateLimitError(error)) console.warn(`[eventsApi] ${provider} unavailable:`, error);
     return [];
   });
-  const localCountry = String(localProviderFilters.cityCountryCode || localProviderFilters.countryCode || '').toUpperCase();
   const localCity = String([filters.city, filters.cityLabel, filters.location].filter(Boolean).join(' ')).toLowerCase();
-  const skipSms = localCity.includes('london') || localCity.includes('west end') ||
-    (localCountry && !['CZ', 'SK'].includes(localCountry));
+  const localCountry = String(localProviderFilters.cityCountryCode || localProviderFilters.countryCode || '').toUpperCase();
+  // The SMS Ticket feed also contains foreign venues. Its adapter applies the
+  // selected country to real event locations; seller nationality is no gate.
+  const skipSms = localCity.includes('london') || localCity.includes('west end');
   const [ticketmaster, smsticket, colosseumticket, seatplan] = await Promise.all([
     runProvider('ticketmaster', () => fetchTicketmasterEvents({ locale: loc, filters: ticketmasterFilters })),
-    skipSms ? [] : runProvider('smsticket', () => fetchSmsticketEvents({ locale: loc, filters: localProviderFilters })),
+    skipSms ? [] : runProvider('smsticket', async () => {
+      // The small feed index avoids downloading the full SMS snapshot for a
+      // market it demonstrably does not cover. Missing/old metadata falls
+      // back to checking actual events, never to a guessed exclusion.
+      if (localCountry && localCountry !== 'CZ' && !hasNearMeFilter) {
+        await loadEventCityCatalog();
+        if (providerCoversCountry('smsticket', localCountry) === false) return [];
+      }
+      return fetchSmsticketEvents({ locale: loc, filters: localProviderFilters });
+    }),
     ENABLE_COLOSSEUMTICKET ? runProvider('colosseumticket', () => fetchColosseumTicketEvents({ locale: loc, filters: localProviderFilters })) : [],
     ENABLE_SEATPLAN ? runProvider('seatplan', () => fetchSeatPlanEvents({ locale: loc, filters: localProviderFilters })) : []
   ]);

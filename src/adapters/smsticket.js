@@ -14,6 +14,7 @@ import { isLocalEventDateAvailable, matchesEventDateRange } from '../event-calen
 import { withProviderDateRange } from '../provider-event-dates.js';
 import { fetchProviderJson } from '../provider-request.js';
 import { distanceKm as haversineKm, eventCoordinates } from '../../shared/geo/coordinates.js';
+import { withSmsticketCountry } from '../../shared/geo/smsticket-country.js';
 
 import {
   buildSmsticketTaxonomy,
@@ -195,15 +196,6 @@ export function isSmsticketEventAvailable(ev = {}, now = new Date()) {
 function hasNearMe(filters = {}) {
   return filters.nearMeLat != null && filters.nearMeLon != null;
 }
-
-function shouldSkipForCountry(filters = {}) {
-  const countryCode = String(filters.countryCode || '').trim().toUpperCase();
-  const hasCity = Boolean(String(filters.city || '').trim());
-
-  // smsticket feed je CZ zdroj.
-  return countryCode && countryCode !== 'CZ' && !hasCity && !hasNearMe(filters);
-}
-
 
 const CITY_ALIAS_GROUPS = [
   // UI / Ticketmaster canonical value vs. Czech smsticket feed value
@@ -798,7 +790,6 @@ function pageSlice(events, filters = {}) {
 
 export async function fetchEvents({ filters = {} } = {}) {
   if (filters.includeSmsticket === false) return [];
-  if (shouldSkipForCountry(filters)) return [];
 
   const events = await loadSmsticketData(filters);
 
@@ -812,6 +803,7 @@ export async function fetchEvents({ filters = {} } = {}) {
   const keyword = filters.keyword || '';
   const dateFrom = filters.dateFrom ?? filters.from ?? '';
   const dateTo = filters.dateTo ?? filters.to ?? '';
+  const country = hasNearMe(filters) ? '' : String(filters.cityCountryCode || filters.countryCode || '').toUpperCase();
 
   const selectedCityTokens = city ? cityAliasTokens(city) : [];
   const eventCityTokenCache = new Map();
@@ -819,7 +811,8 @@ export async function fetchEvents({ filters = {} } = {}) {
   const candidates = [];
 
   for (const sourceEvent of events) {
-    const ev = withProviderDateRange(sourceEvent);
+    const ev = withProviderDateRange(withSmsticketCountry(sourceEvent));
+    if (country && ev.location?.country && ev.location.country !== country) continue;
     if (!isSmsticketEventAvailable(ev)) continue;
 
     if (

@@ -109,6 +109,50 @@ function addLanguageTracking(value = '', lang = DEFAULT_LANG) {
   }
 }
 
+function isColosseumTicketDestination(rawUrl = '') {
+  try {
+    const parsed = new URL(String(rawUrl || '').trim());
+    const host = String(parsed.hostname || '').toLowerCase().replace(/^www\./, '');
+
+    return (
+      parsed.protocol === 'https:' &&
+      host === 'colosseumticket.cz'
+    );
+  } catch {
+    return false;
+  }
+}
+
+function buildTicketOutboundUrl(rawUrl = '', lang = DEFAULT_LANG) {
+  const clean = String(rawUrl || '').trim();
+
+  if (!clean) {
+    return '';
+  }
+
+  if (isColosseumTicketDestination(clean)) {
+    const destination = new URL(clean);
+
+    // Never store the affiliate identifier in review content or static HTML.
+    // colosseumOutbound adds COLOSSEUMTICKET_A_BOX server-side at click time.
+    destination.searchParams.delete('a_box');
+
+    const outbound = new URL(
+      '/.netlify/functions/colosseumOutbound',
+      SITE_ORIGIN
+    );
+
+    outbound.searchParams.set('to', destination.toString());
+    outbound.searchParams.set('source', 'review');
+    outbound.searchParams.set('placement', 'review_cta');
+    outbound.searchParams.set('lang', normalizeLang(lang));
+
+    return `${outbound.pathname}${outbound.search}`;
+  }
+
+  return addLanguageTracking(clean, lang);
+}
+
 function normalizeSlug(value = '') {
   return String(value)
     .trim()
@@ -961,7 +1005,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
       lang
     );
   const ctaText = translation.ctaText || 'Check tickets';
-  const ticketUrl = addLanguageTracking(
+  const ticketUrl = buildTicketOutboundUrl(
     translation.ticketUrl || review.ticketUrl || '',
     lang
   );

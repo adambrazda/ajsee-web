@@ -69,6 +69,7 @@ for(const lang of LANGS){
         assert.equal(doc.querySelector('meta[name="description"]').content,dictionary['events-page-description']);
         assert.equal(doc.querySelector('meta[property="og:description"]').content,dictionary['events-page-description']);
         assert.ok(doc.querySelector('[data-ai-static-intro]').textContent.includes('AJSEE'));
+        assert.equal(clean(doc.querySelector('[data-ai-static-intro] .ai-event-search__helper').textContent),clean(dictionary['ai-search-static-intro']));
         assert.ok(doc.querySelectorAll('[data-events-static] .event-card').length>0);
       }
       dom.window.close();

@@ -63,7 +63,14 @@ for(const lang of LANGS){
       }));
       if(route==='blog')assert.equal(JSON.parse(doc.getElementById('blog-initial-data').textContent).cards.length,published.length+guides.length);
       if(route==='faq')assert.equal(doc.querySelectorAll('[data-faq-item]').length,15);
-      if(route==='events'){assert.ok(doc.querySelector('[data-ai-static-intro]').textContent.includes('AJSEE'));assert.ok(doc.querySelectorAll('[data-events-static] .event-card').length>0);}
+      if(route==='events'){
+        const dictionary=JSON.parse(fs.readFileSync('src/locales/'+lang+'.json','utf8'));
+        assert.equal(doc.querySelectorAll('meta[name="description"]').length,1);
+        assert.equal(doc.querySelector('meta[name="description"]').content,dictionary['events-page-description']);
+        assert.equal(doc.querySelector('meta[property="og:description"]').content,dictionary['events-page-description']);
+        assert.ok(doc.querySelector('[data-ai-static-intro]').textContent.includes('AJSEE'));
+        assert.ok(doc.querySelectorAll('[data-events-static] .event-card').length>0);
+      }
       dom.window.close();
     }
     const home=load(prefix(lang)+'index.html');assert.ok(home.window.document.querySelector('[data-ai-static-intro]').textContent.includes('AJSEE'));home.window.close();
@@ -103,4 +110,9 @@ test('responsive portraits reduce bytes and preserve original sources',()=>{
     const original=fs.statSync('public/images/team/'+name+'.png').size;
     for(const width of [192,384,768])assert.ok(fs.statSync('public/images/team/'+name+'-'+width+'.webp').size<original/5);
   }
+});
+
+test('unknown or retired blog slugs cannot fall through to a successful generic detail rewrite',()=>{
+  const redirects=fs.readFileSync('public/_redirects','utf8');
+  assert.ok(!/^\/blog\/:slug\/?\s+\/blog-detail\s+200\b/m.test(redirects));
 });

@@ -207,9 +207,8 @@
 /about.html              /about                  301!
 /blog.html               /blog                   301!
 /blog-detail.html        /blog-detail            301!
-# Blog article pretty URLs
-/blog/:slug/             /blog-detail            200
-/blog/:slug              /blog-detail            200
+# Published blog articles have real static URLs. Unknown or retired slugs must
+# return 404, not the generic blog-detail template with a successful 200 status.
 /faq.html                /faq                    301!
 /thank-you.html          /thank-you              301!
 /privacy-policy.html     /privacy-policy         301!

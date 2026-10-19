@@ -214,114 +214,66 @@
   </div>
 </header>
 
-<main id="blog">
-  <!-- BLOG HERO -->
+<main id="blog" class="blog-main">
   <section class="blog-hero" aria-labelledby="blog-page-title">
-    <div class="container">
-      <h1 id="blog-page-title" data-i18n-key="blog-headline">Blog o zážitcích</h1>
-      <p class="blog-lead" data-i18n-key="blog-lead">Čti tipy, průvodce a recenze pro koncerty, festivaly, sportovní události a cestování za zážitky.</p>
+    <div class="blog-container blog-hero-inner">
+      <div>
+        <p class="blog-eyebrow" data-blog-copy="eyebrow">Blog AJSEE</p>
+        <h1 id="blog-page-title" data-blog-copy="headline">Příběhy, tipy a zážitky.</h1>
+      </div>
+      <p class="blog-intro" data-blog-copy="intro">Recenze z hlediště, postřehy z cest i praktické rady. Čtěte o divadle, hudbě, festivalech a sportu — a najděte inspiraci pro svůj další zážitek.</p>
     </div>
   </section>
 
-  <!-- BLOG FILTERS -->
-  <section class="blog-filters" aria-label="Filtr článků">
-    <div class="container">
-      <div class="filter-categories" role="list" aria-label="Kategorie blogu">
-        <button type="button" data-category="all" class="active" data-i18n-key="blog-filter-all">Vše</button>
-        <button type="button" data-category="concert" data-i18n-key="blog-filter-concert">Koncerty</button>
-        <button type="button" data-category="theatre" data-i18n-key="blog-filter-theatre">Divadlo</button>
-        <button type="button" data-category="festival" data-i18n-key="blog-filter-festival">Festivaly</button>
-        <button type="button" data-category="sport" data-i18n-key="blog-filter-sport">Sport</button>
-        <button type="button" data-category="tip" data-i18n-key="blog-filter-tip">Tipy</button>
-        <button type="button" data-category="review" data-i18n-key="blog-filter-review">Recenze</button>
+  <section class="blog-reading" id="blog-reading" aria-labelledby="blog-filters-title">
+    <div class="blog-container">
+      <div class="blog-toolbar">
+        <div class="blog-filter-main">
+          <h2 id="blog-filters-title" data-blog-copy="filtersLabel">Vyberte si čtení</h2>
+          <div class="blog-type-filters" role="group" aria-label="Vyberte si čtení" data-blog-filters>
+            <button type="button" data-blog-type="all" aria-pressed="true">Vše</button>
+            <button type="button" data-blog-type="review" aria-pressed="false">Recenze</button>
+            <button type="button" data-blog-type="preview" aria-pressed="false">Preview</button>
+            <button type="button" data-blog-type="microguide" aria-pressed="false">Tipy a průvodci</button>
+          </div>
+        </div>
+        <div class="blog-topic-filter">
+          <label for="blog-topic" data-blog-copy="topicLabel">Téma</label>
+          <div class="blog-select-wrap">
+            <select id="blog-topic" data-blog-topic>
+              <option value="all">Všechna témata</option>
+              <option value="theatre">Divadlo</option>
+              <option value="concert">Koncerty</option>
+              <option value="festival">Festivaly</option>
+              <option value="sport">Sport</option>
+            </select>
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="blog-results-bar">
+        <p class="blog-results-count" role="status" aria-live="polite" aria-atomic="true" data-blog-count></p>
+        <button type="button" class="blog-reset" data-blog-reset-filters data-blog-copy="reset" hidden>Zobrazit vše</button>
       </div>
     </div>
+
+    <section class="blog-feature-section blog-container" aria-labelledby="blog-feature-title" data-blog-feature-section>
+      <h2 class="blog-section-label" id="blog-feature-title" data-blog-feature-label>Nejnovější článek</h2>
+      <div data-blog-feature></div>
+    </section>
+
+    <section class="blog-list blog-container" aria-labelledby="blog-list-title" data-blog-list-section>
+      <h2 id="blog-list-title" data-blog-copy="listTitle">Další čtení</h2>
+      <div class="blog-cards" data-blog-grid></div>
+    </section>
   </section>
 
-  <!-- BLOG ARTICLES LIST -->
-  <section class="blog-list" aria-labelledby="blog-list-title">
-    <div class="container">
-      <h2 id="blog-list-title" class="sr-only" data-i18n-key="blog-list-title">Blog o zážitcích</h2>
-
-<div class="blog-cards" aria-live="polite" data-static-blog-list="true">
-  <article class="blog-card" data-type="article" data-category="festival">
-    <div class="card-media">
-      <img
-        src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=480&q=70"
-        alt="Sziget Festival Budapešť"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-
-    <div class="blog-card-body">
-      <p class="blog-card-meta">
-        <time datetime="2025-08-17">17. 8. 2025</time> · Festivaly
-      </p>
-      <h3 class="blog-card-title">
-        Recenze: Sziget Festival Budapešť – Týden hudby a svobody
-      </h3>
-      <div class="blog-card-lead">
-        Největší festival střední Evropy přivezl světové hvězdy i nezapomenutelnou atmosféru. Jaké jsou naše dojmy z letošního ročníku?
+  <section class="blog-outro" aria-labelledby="blog-outro-title">
+    <div class="blog-container">
+      <div class="blog-outro-inner">
+        <div><h2 id="blog-outro-title" data-blog-copy="ctaTitle">Teď už jen vyrazit.</h2><p data-blog-copy="ctaText">Najděte si akci, která stojí za návštěvu.</p></div>
+        <a class="blog-button" href="/events/"><span data-blog-copy="ctaLink">Prozkoumat události</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
-      <div class="blog-card-actions">
-        <a class="blog-readmore" href="/blog/recenze-budapest-sziget-festival-2025/">Číst dál</a>
-      </div>
-    </div>
-  </article>
-
-  <article class="blog-card" data-type="article" data-category="theatre">
-    <div class="card-media">
-      <img
-        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=480&q=70"
-        alt="Letní shakespearovské slavnosti v Praze"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-
-    <div class="blog-card-body">
-      <p class="blog-card-meta">
-        <time datetime="2025-07-20">20. 7. 2025</time> · Divadlo
-      </p>
-      <h3 class="blog-card-title">
-        Tip: Letní shakespearovské slavnosti v Praze
-      </h3>
-      <div class="blog-card-lead">
-        Divadlo pod širým nebem, atmosféra Hradčan a slavné hry v originálním podání. Proč si nenechat ujít letošní festival?
-      </div>
-      <div class="blog-card-actions">
-        <a class="blog-readmore" href="/blog/praha-shakespeare-divadlo-2025/">Číst dál</a>
-      </div>
-    </div>
-  </article>
-
-  <article class="blog-card" data-type="article" data-category="concert">
-    <div class="card-media">
-      <img
-        src="https://images.unsplash.com/photo-1465101162946-4377e57745c3?auto=format&fit=crop&w=480&q=70"
-        alt="Coldplay v Praze"
-        loading="lazy"
-        decoding="async"
-      />
-    </div>
-
-    <div class="blog-card-body">
-      <p class="blog-card-meta">
-        <time datetime="2025-06-11">11. 6. 2025</time> · Koncerty
-      </p>
-      <h3 class="blog-card-title">
-        Recenze: Coldplay v Praze – hudební zážitek roku
-      </h3>
-      <div class="blog-card-lead">
-        Unikátní show Coldplay poprvé v Praze. Jaké byly největší momenty a pro koho by koncert doporučil náš redaktor?
-      </div>
-      <div class="blog-card-actions">
-        <a class="blog-readmore" href="/blog/koncert-coldplay-praha-2025/">Číst dál</a>
-      </div>
-    </div>
-  </article>
-</div>
     </div>
   </section>
 </main>

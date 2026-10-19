@@ -717,7 +717,7 @@ test(
         path.join(
           ROOT,
           'src',
-          'blog.js'
+          'blog-content.js'
         ),
         'utf8'
       );
@@ -879,7 +879,7 @@ test(
         path.join(
           ROOT,
           'src',
-          'blog.js'
+          'blog-content.js'
         ),
         'utf8'
       );

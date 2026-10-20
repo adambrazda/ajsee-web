@@ -1,7 +1,4 @@
-const CONSENT_KEY = 'ajsee_cookie_consent_v1';
-
-const GA4_MEASUREMENT_ID = 'G-K0ZS0D9JLK';
-const GTM_ID = 'GTM-T5NZVSSW';
+import { CONSENT_KEY, GA4_MEASUREMENT_ID, GTM_ID } from './analytics-config.js';
 
 const ANALYTICS_READY_EVENT = 'ajsee_analytics_ready';
 
@@ -86,7 +83,7 @@ function hasConsentDecision() {
 
 function hasAnalyticsConsent() {
   const consent = readConsent();
-  return !!consent?.analytics;
+  return consent?.analytics === true;
 }
 
 function ensureDataLayerAndGtag() {
@@ -199,9 +196,8 @@ function sendGA4ReadyEvent() {
   });
 }
 
-function configureGA4() {
+function ensureGA4Configured() {
   const gtag = ensureDataLayerAndGtag();
-
   if (!ga4Configured) {
     gtag('js', new Date());
 
@@ -215,7 +211,10 @@ function configureGA4() {
 
     ga4Configured = true;
   }
+}
 
+function configureGA4() {
+  ensureGA4Configured();
   sendGA4PageView();
   sendGA4ReadyEvent();
 
@@ -243,7 +242,11 @@ function loadGA4Direct() {
     return Promise.resolve(false);
   }
 
+  if (!hasAnalyticsConsent()) return Promise.resolve(false);
+  window[`ga-disable-${GA4_MEASUREMENT_ID}`] = false;
   setGoogleConsentGranted();
+  // Queue config before any click can arrive while the remote script loads.
+  ensureGA4Configured();
 
   if (ga4ScriptLoaded) {
     configureGA4();
@@ -276,7 +279,7 @@ function loadGA4Direct() {
   )
     .then(() => {
       ga4ScriptLoaded = true;
-
+      if (!hasAnalyticsConsent()) return false;
       configureGA4();
 
       writeDebug({
@@ -311,6 +314,7 @@ function loadGA4Direct() {
  * Základní GA4 měření teď ale řešíme přímo přes loadGA4Direct().
  */
 function loadGTM() {
+  if (!hasAnalyticsConsent()) return Promise.resolve(false);
   if (gtmLoaded) return Promise.resolve(true);
 
   if (!isProdHttps()) {
@@ -357,7 +361,7 @@ function loadGTM() {
   return loadScript(src, `ajsee-gtm-${GTM_ID}`, `googletagmanager.com/gtm.js?id=${GTM_ID}`)
     .then(() => {
       gtmLoaded = true;
-
+      if (!hasAnalyticsConsent()) return false;
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         event: 'ajsee_consent_analytics_granted',
@@ -405,12 +409,23 @@ function applyConsent(consent) {
   });
 
   if (!consent.analytics) {
+    window[`ga-disable-${GA4_MEASUREMENT_ID}`] = true;
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        analytics_storage: 'denied', ad_storage: 'denied',
+        ad_user_data: 'denied', ad_personalization: 'denied'
+      });
+    }
+    if (window.__ajsee) delete window.__ajsee.lastPartnerClick;
+    try {
+      sessionStorage.removeItem('ajsee:lastPartnerClick');
+      sessionStorage.removeItem('ajsee:lastLondonMusicalsEvent');
+    } catch { /* storage may be unavailable */ }
     return Promise.resolve(false);
   }
 
-  // Analytics consent granted:
-  // 1) keep direct GA4 measurement currently used by AJSEE,
-  // 2) also load GTM container so GTM tags/triggers such as partner_click can run.
+  // Direct GA4 owns page views and ajsee_partner_click. GTM remains available for
+  // other tags; partner clicks no longer also emit a GTM custom-event object.
   return Promise.allSettled([
     loadGA4Direct(),
     loadGTM(),
@@ -418,10 +433,11 @@ function applyConsent(consent) {
     const directGa4Loaded = results[0]?.status === 'fulfilled' && results[0]?.value === true;
     const gtmContainerLoaded = results[1]?.status === 'fulfilled' && results[1]?.value === true;
 
+    const stillAllowed = hasAnalyticsConsent();
     writeDebug({
-      analyticsConsent: true,
+      analyticsConsent: stillAllowed,
       analyticsRequested: true,
-      analyticsLoaded: directGa4Loaded,
+      analyticsLoaded: stillAllowed && directGa4Loaded,
       gtmRequested: true,
       gtmLoaded: gtmContainerLoaded,
       source: 'apply-consent-ga4-plus-gtm',
@@ -429,7 +445,7 @@ function applyConsent(consent) {
       measurementId: GA4_MEASUREMENT_ID,
     });
 
-    return directGa4Loaded || gtmContainerLoaded;
+    return stillAllowed && (directGa4Loaded || gtmContainerLoaded);
   });
 }
 

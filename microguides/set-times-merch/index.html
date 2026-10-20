@@ -145,33 +145,7 @@
     })();
   </script>
 
-  <!-- GA4 pouze na HTTPS/produkci -->
-  <script>
-    (function () {
-      var isProdHttps =
-        location.protocol === 'https:' &&
-        !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
-
-      if (!isProdHttps) return;
-
-      var script = document.createElement('script');
-      script.async = true;
-      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
-      script.onload = function () {
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag(){ dataLayer.push(arguments); }
-
-        window.gtag = gtag;
-        gtag('js', new Date());
-        gtag('config', 'G-K0ZS0D9JLK', {
-          page_path: location.pathname + location.search
-        });
-      };
-
-      document.head.appendChild(script);
-    })();
-  </script>
+  <!-- Analytics is loaded by identity-init.js after consent. -->
 
   <script type="module" src="/src/microguides-entry.js"></script>
 </head>

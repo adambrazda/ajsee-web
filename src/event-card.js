@@ -1,3 +1,4 @@
+import { trackPartnerOutboundLink } from './partner-outbound.js';
 import { renderEventCommerce, ensureEventCommerceStyles, eventInventoryState, eventStockLabel } from './event-commerce.js';
 import { EVENT_TICKET_ARROW } from './event-ticket-ui.js';
 import { formatEventVenueLine } from './event-location.js';
@@ -611,230 +612,27 @@ export function renderSharedEventCard({
  */
 const partnerClickBound = new WeakSet();
 
-export function trackSharedEventPartnerClick(
-  link,
-  {
-    win = globalThis.window,
-    doc = globalThis.document
-  } = {}
-) {
-  if (!link || !win || !doc) return;
-
-  const cleanText = value =>
-    String(value || '')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-  const getUrlHost = value => {
-    try {
-      return new URL(
-        value,
-        win.location.origin
-      ).hostname;
-    } catch {
-      return '';
-    }
-  };
-
-  const getLang = () =>
-    cleanText(
-      doc.documentElement?.getAttribute('lang')
-    )
-      .slice(0, 2)
-      .toLowerCase() || 'cs';
-
-  const partner =
-    cleanText(link.dataset.partner);
-
-  const eventId =
-    cleanText(link.dataset.eventId);
-
-  const eventName =
-    cleanText(link.dataset.eventTitle);
-
-  const city =
-    cleanText(link.dataset.eventCity);
-
-  const clickedHref =
-    cleanText(
-      link.href ||
-      link.getAttribute('href')
-    );
-
-  const outboundUrl =
-    cleanText(link.dataset.outboundUrl) ||
-    clickedHref;
-
-  const placement =
-    cleanText(link.dataset.placement) ||
-    'event_card';
-
-  let routeCity = '';
-  let routeCountryCode = '';
-
-  try {
-    const params =
-      new URLSearchParams(
-        win.location.search
-      );
-
-    routeCity =
-      cleanText(
-        params.get('city')
-      );
-
-    routeCountryCode =
-      cleanText(
-        params.get('cityCc') ||
-        params.get('country') ||
-        params.get('countryCode')
-      ).toUpperCase();
-  } catch {
-    /* noop */
-  }
-
-  if (!partner && !outboundUrl) return;
-
-  const payload = {
-    event: 'partner_click',
-
-    partner,
-    event_id: eventId,
-    event_name: eventName,
-    city,
-    outbound_url: outboundUrl,
-    placement,
-    page_path:
-      win.location.pathname +
-      win.location.search,
-    ts: new Date().toISOString(),
-
-    event_title: eventName,
-    event_city: city || routeCity,
-    event_provider: partner,
-    destination_url: outboundUrl,
-    destination_host:
-      getUrlHost(outboundUrl),
-    clicked_href: clickedHref,
-    clicked_host:
-      getUrlHost(clickedHref),
-    route_city: routeCity,
-    route_country_code:
-      routeCountryCode,
-    page_location:
-      win.location.href,
-    language: getLang(),
-    link_text:
-      cleanText(link.textContent)
-  };
-
-  try {
-    win.dataLayer =
-      win.dataLayer || [];
-
-    win.dataLayer.push(payload);
-  } catch {
-    /* noop */
-  }
-
-  try {
-    win.__ajsee =
-      win.__ajsee || {};
-
-    win.__ajsee.lastPartnerClick =
-      payload;
-  } catch {
-    /* noop */
-  }
-
-  try {
-    win.sessionStorage?.setItem(
-      'ajsee:lastPartnerClick',
-      JSON.stringify(payload)
-    );
-  } catch {
-    /* noop */
-  }
-
-  try {
-    win.console?.info?.(
-      '[AJSEE partner_click]',
-      payload
-    );
-  } catch {
-    /* noop */
-  }
-
-  return payload;
+export function trackSharedEventPartnerClick(link, options = {}) {
+  return trackPartnerOutboundLink(link, { placement: 'event_card', ...options });
 }
 
-export function wireSharedEventCardAnalytics(
-  root = globalThis.document
-) {
-  const links =
-    root?.querySelectorAll?.(
-      '.js-partner-click'
-    ) || [];
-
+export function wireSharedEventCardAnalytics(root = globalThis.document) {
+  const links = root?.querySelectorAll?.('.js-partner-click') || [];
   for (const link of links) {
-    if (partnerClickBound.has(link)) {
-      continue;
-    }
-
+    if (partnerClickBound.has(link)) continue;
     partnerClickBound.add(link);
-
-    let tracked = false;
-
-    const trackOnce = () => {
+    const trackLearningClickout = activation => {
       if (link.getAttribute('aria-disabled') === 'true') return;
-      if (tracked) return;
-
-      tracked = true;
-
-      trackSharedEventPartnerClick(
-        link
-      );
+      trackSharedEventPartnerClick(link, { activation });
+      void recordAiSearchPartnerClickout({
+        eventRef: link.dataset.eventId,
+        provider: link.dataset.partner,
+        resultPosition: link.dataset.resultPosition,
+        placement: link.dataset.placement || 'event_card'
+      });
     };
-
-    const trackLearningClickout =
-      () => {
-        if (link.getAttribute('aria-disabled') === 'true') return;
-        void recordAiSearchPartnerClickout({
-          eventRef:
-            link.dataset.eventId,
-
-          provider:
-            link.dataset.partner,
-
-          resultPosition:
-            link.dataset.resultPosition,
-
-          placement:
-            link.dataset.placement ||
-            'event_card'
-        });
-      };
-
-    /*
-     * Existing rich analytics keeps pointerdown fallback.
-     * Learning records only a completed click so a cancelled
-     * pointer gesture cannot become a false conversion.
-     */
-    link.addEventListener(
-      'pointerdown',
-      trackOnce,
-      { passive: true }
-    );
-
-    link.addEventListener(
-      'click',
-      trackOnce
-    );
-
-    link.addEventListener(
-      'click',
-      trackLearningClickout
-    );
+    // Each completed activation counts; touching/scrolling is not a clickout.
+    link.addEventListener('click', trackLearningClickout);
   }
 }
 export function ensureSharedEventGridStyles(

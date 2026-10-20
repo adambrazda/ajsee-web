@@ -137,32 +137,6 @@ function initLangDropdown() {
   );
 }
 
-function initCtaTracking() {
-  const links = Array.from(document.querySelectorAll('a[data-trustedstays-outbound]'));
-  if (!links.length) return;
-
-  links.forEach((a) => {
-    const source = (() => {
-      if (a.dataset.trackSource) return a.dataset.trackSource;
-      if (a.id === 'trustedstaysCta') return 'hero_primary';
-      if (a.closest('#support')) return 'support';
-      if (a.closest('#final')) return 'final';
-      return 'accommodation_page';
-    })();
-
-    a.addEventListener('click', () => {
-      try {
-        if (window.gtag) {
-          window.gtag('event', 'click_accommodation_trustedstays', {
-            source,
-            href: a.getAttribute('href') || a.href,
-          });
-        }
-      } catch {}
-    });
-  });
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
   const lang = detectLang();
 
@@ -173,7 +147,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   initLangDropdown();
 
   // 3) tracking
-  initCtaTracking();
 
   // 4) až teď překlady
   await applyTranslations(lang);

@@ -1,8 +1,11 @@
+import { initPartnerOutboundTracking } from './partner-outbound.js';
 // src/identity-init.js
 import {
   readConsent,
   applyConsent,
 } from './utils/consent.js';
+
+initPartnerOutboundTracking();
 
 /* ---------------------------------------------------------
    AJSEE – Global consent / analytics bootstrap

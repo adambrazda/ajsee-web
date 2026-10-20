@@ -159,24 +159,7 @@
     window.__impact = window.__impact || { param: 'irclickid', value: '<SET_YOUR_CLICK_ID>' };
   </script>
 
-  <!-- Google tag – pouze na HTTPS/produkci -->
-  <script>
-    (function(){
-      const isProdHttps = location.protocol === 'https:' && !/localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(location.hostname);
-      if (!isProdHttps) return;
-      const s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-K0ZS0D9JLK';
-      s.onload = function(){
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){ dataLayer.push(arguments); }
-        window.gtag = gtag;
-        gtag('js', new Date());
-        gtag('config', 'G-K0ZS0D9JLK');
-      };
-      document.head.appendChild(s);
-    })();
-  </script>
+  <!-- Analytics is loaded by identity-init.js after consent. -->
 
   <!-- i18n fallback – jen když hlavní engine ještě nedodal překlady -->
   <script>

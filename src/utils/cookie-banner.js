@@ -302,9 +302,12 @@ function closeModal() {
 }
 
 function saveConsent(consent) {
+  const previousConsent = readConsent();
   const finalConsent = writeConsent(consent);
   applyConsent(finalConsent);
   removeBannerUi();
+  // Remove already loaded analytics tags after consent is withdrawn.
+  if (previousConsent?.analytics && !finalConsent.analytics) window.location.reload();
 }
 
 function openCookieSettings(lang = null) {

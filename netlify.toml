@@ -65,6 +65,12 @@
 
 # ------------ HEADERS ------------
 
+# Review surfaces must stay out of search engines, including their HTML frames.
+[[headers]]
+  for = "/previews/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # CORS pro Functions + no-store
 [[headers]]
   for = "/.netlify/functions/*"

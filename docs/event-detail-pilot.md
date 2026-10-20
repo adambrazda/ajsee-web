@@ -2,8 +2,9 @@
 
 Stav k 20. říjnu 2026: konkrétní návrh čtyř stránek, nikoli již publikované
 detaily. Výběr kombinuje muzikál, koncert, festival a sport. Všechny čtyři akce
-jsou v aktuálních veřejných datech AJSEE; termíny byly porovnány i se stránkami
-prodejců. Samotné tlačítko pro nákup nedokládá volná konkrétní sedadla.
+mají ověřený termín na stránce prodejce. Tři jsou v kontrolovaných aktuálních
+datech AJSEE; krumlovský festival byl v uloženém starším feedu, ale v novém
+snapshotu chybí. Samotné tlačítko pro nákup nedokládá volná konkrétní sedadla.
 
 | Akce | Vybraný termín, místní čas | Místo | Záznam feedu |
 | --- | --- | --- | --- |
@@ -27,8 +28,34 @@ prodejců. Samotné tlačítko pro nákup nedokládá volná konkrétní sedadla
 
 Podklad SMS Ticket byl načten z produkčního snapshotu s časem synchronizace
 `2026-10-20T13:09:32.500Z` (3 170 záznamů). ColosseumTicket má v kontrolovaném
-produkčním snapshotu 2 276 záznamů. Počty označují obsah konkrétních snapshotů,
-nikoli úplnou nabídku všech partnerů.
+produkčním snapshotu 2 276 záznamů. Festival `smsticket-68785` ve snapshotu
+SMS z 20. října chybí, přestože veřejná stránka smsticket potvrzuje datum,
+cenu 980 Kč a prodej. Identita vychází ze staršího uloženého záznamu z
+18. května; plakát a ostatní údaje byly znovu porovnány s prodejcem.
+Příčina absence v aktuálním feedu není zatím prokázaná. Počty označují obsah
+konkrétních snapshotů, nikoli úplnou nabídku všech partnerů.
+
+## Náhled před zveřejněním
+
+`npm run build` vytváří náhled pouze v Netlify deploy-preview nebo při
+`EVENT_DETAIL_PREVIEW=1`. Ovládání na `/previews/event-details/` umožňuje
+vybrat jednu ze čtyř akcí, monitor / notebook / mobil a light / dark režim.
+Český obsah je statický v prvním HTML. Náhled používá společnou navigaci,
+patičku, souhlas s cookies i měření `ajsee_partner_click` s umístěním
+`event_detail`. Samotná kontrola odkazů nespouští skutečné prokliky do GA4.
+
+Stránky i přehled mají `noindex,nofollow` a hlavičku `X-Robots-Tag`; do
+sitemap nepatří. Běžný produkční build tyto soubory vůbec nevytváří a výpis
+událostí se nemění. Finální URL `/udalosti/.../` zůstávají návrhem.
+
+Datový podklad je explicitní soubor `content/event-detail-pilot.json`, který
+rozlišuje konkrétní termín, doklad ověření a současnou přítomnost ve feedu.
+Jedno vynechání ve feedu nemaže detail a nemění stav na zrušeno. Stránka
+po uplynutí kalendářního dne při novém sestavení odstraní nákupní CTA;
+zrušení nebo odložení vyžaduje výslovnou změnu doloženého stavu. Před ostrým
+nasazením je nutné doplnit provozní aktualizaci těchto údajů a znovu ověřit
+ceny. Náhled uvádí datum ověření ceny a nevystavuje zmrazený podklad jako
+aktuální `Offer` ani jako `InStock` v JSON-LD.
 
 ## Podoba a text
 

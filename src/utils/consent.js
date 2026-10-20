@@ -182,11 +182,10 @@ function sendGA4ReadyEvent() {
   const gtag = ensureDataLayerAndGtag();
 
   gtag('event', ANALYTICS_READY_EVENT, {
-    source: 'consent_js_direct_ga4',
+    analytics_init_source: 'consent_js_direct_ga4',
     page_title: document.title,
     page_location: location.href,
     page_path: location.pathname + location.search,
-    debug_mode: true,
     send_to: GA4_MEASUREMENT_ID,
   });
 

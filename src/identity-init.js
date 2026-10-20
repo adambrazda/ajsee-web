@@ -1,4 +1,5 @@
 import { initPartnerOutboundTracking } from './partner-outbound.js';
+import { initCookieBanner, syncCookieBannerLanguage } from './utils/cookie-banner.js';
 // src/identity-init.js
 import {
   readConsent,
@@ -6,6 +7,17 @@ import {
 } from './utils/consent.js';
 
 initPartnerOutboundTracking();
+
+// Standalone entries (London, accommodation, policies) share the same consent UI.
+// Bind it here so a direct arrival can make or change a consent decision too.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => initCookieBanner(), { once: true });
+} else {
+  initCookieBanner();
+}
+window.addEventListener('ajsee:lang-changed', (event) => {
+  syncCookieBannerLanguage(event.detail?.lang);
+});
 
 /* ---------------------------------------------------------
    AJSEE – Global consent / analytics bootstrap

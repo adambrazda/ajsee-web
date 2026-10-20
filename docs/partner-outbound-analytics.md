@@ -89,9 +89,13 @@ property `492103490`, web stream `11312537950`.
   event`, and `GA4 - partner_click`. The ten pre-existing changes in Default
   Workspace were not published with it.
 - Existing event-scoped dimensions already include `partner`, `placement`,
-  `event_title`, and `destination_host`. Five additional event dimensions were
-  registered: `source_page_path`, `page_type`, `page_language`, `product_type`,
-  and `content_slug`. New definitions do not backfill historical reports.
+  `event_title`, and `destination_host`. Four additional event dimensions were
+  verified in the saved list: `source_page_path`, `page_type`, `product_type`,
+  and `content_slug`. Registration of `page_language` was attempted but not
+  confirmed: GA4 subsequently returned component errors and a “Missing
+  permissions” dialog. Do not describe the language dimension as configured
+  until it appears in the saved list. New definitions do not backfill
+  historical reports.
 - The diagnostic ready event uses `analytics_init_source`, never `source`,
   and does not mark ordinary visitors with `debug_mode`. The old diagnostic
   value had appeared in acquisition reports; the change does not rewrite
@@ -107,3 +111,10 @@ secondary volume metric. Report overall users directly, never by summing
 partner or page rows. Internal promotions and `partner_info` are excluded.
 The first complete Monday–Sunday week after this setup is 26 October–1
 November 2026; process the result after GA4's reporting delay.
+
+The exploration “AJSEE – prokliky k partnerům” was created with Total users,
+Event count, a Monday–Sunday last-week range, the exact event-name filter,
+and `product_type` matching `^(tickets|accommodation)$`. Partner and source
+page tabs were saved. Remaining placement/language/content views and an
+independent reopen check are pending the GA4 access error; this is a draft,
+not a fully verified finished dashboard.

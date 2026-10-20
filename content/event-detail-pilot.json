@@ -6,7 +6,7 @@
     {
       "id": "colosseumticket-5470841-4205829",
       "partner": "colosseumticket",
-      "tickets": "https://colosseumticket.cz/cs/akce/5470841-jesus-christ-superstar?a_box=yhvyrwgu",
+      "tickets": "/.netlify/functions/colosseumOutbound?to=https%3A%2F%2Fcolosseumticket.cz%2Fcs%2Fakce%2F5470841-jesus-christ-superstar&source=event_detail&placement=event_detail&lang=cs",
       "title": "Jesus Christ Superstar",
       "venue": {
         "name": "Divadlo Jiřího Myrona",

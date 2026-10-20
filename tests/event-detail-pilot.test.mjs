@@ -8,10 +8,32 @@ import { JSDOM } from 'jsdom';
 import { validatePilot, renderEventDetail, buildEventSchema, eventState, PREVIEW_ROOT } from '../scripts/event-detail-pilot.mjs';
 import { initPartnerOutboundTracking } from '../src/partner-outbound.js';
 import { CONSENT_KEY } from '../src/utils/analytics-config.js';
+import { handler as colosseumOutbound } from '../netlify/functions/colosseumOutbound.js';
 
 const pilot = JSON.parse(fs.readFileSync(new URL('../content/event-detail-pilot.json', import.meta.url)));
 const now = new Date('2026-10-20T13:00:00Z');
 const events = validatePilot(pilot.events);
+
+test('Colosseum resolves to the verified production and adds its configured affiliate identity on the server', async () => {
+  const event = events.find(e => e.partner === 'colosseumticket');
+  const link = new URL(event.tickets, 'https://ajsee.cz');
+  const destination = link.searchParams.get('to');
+  assert.equal(destination, event.evidence.sellerUrl);
+  assert.equal(new URL(destination).searchParams.has('a_box'), false);
+  const previous = process.env.COLOSSEUMTICKET_A_BOX;
+  try {
+    process.env.COLOSSEUMTICKET_A_BOX = 'pilot-test-box';
+    const response = await colosseumOutbound({ httpMethod: 'GET', queryStringParameters: Object.fromEntries(link.searchParams) });
+    assert.equal(response.statusCode, 302);
+    const target = new URL(response.headers.Location);
+    assert.equal(target.searchParams.get('a_box'), 'pilot-test-box');
+    target.searchParams.delete('a_box');
+    assert.equal(target.href, destination);
+  } finally {
+    if (previous === undefined) delete process.env.COLOSSEUMTICKET_A_BOX;
+    else process.env.COLOSSEUMTICKET_A_BOX = previous;
+  }
+});
 
 for (const event of events) {
   test(`${event.id}: HTML and schema share the verified occurrence and original affiliate URL`, () => {

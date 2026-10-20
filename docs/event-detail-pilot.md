@@ -43,6 +43,9 @@ vybrat jednu ze čtyř akcí, monitor / notebook / mobil a light / dark režim.
 Český obsah je statický v prvním HTML. Náhled používá společnou navigaci,
 patičku, souhlas s cookies i měření `ajsee_partner_click` s umístěním
 `event_detail`. Samotná kontrola odkazů nespouští skutečné prokliky do GA4.
+ColosseumTicket používá stávající `colosseumOutbound`, který přidává
+partnerský identifikátor ze serverového nastavení až při přechodu k prodejci.
+Nákupní cíl zůstává stejný; identifikátor není uložený v podkladech pilotu.
 
 Stránky i přehled mají `noindex,nofollow` a hlavičku `X-Robots-Tag`; do
 sitemap nepatří. Běžný produkční build tyto soubory vůbec nevytváří a výpis

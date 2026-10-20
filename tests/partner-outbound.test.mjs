@@ -154,6 +154,25 @@ test('UK and France accommodation CTAs keep separate placements and survive DOM 
   dom.window.close();
 });
 
+test('Colosseum server links measure reviews with consent and retain the actual redirect untouched', () => {
+  const destination = 'https://colosseumticket.cz/cs/akce/verified-production';
+  const href = '/.netlify/functions/colosseumOutbound?to=' + encodeURIComponent(destination) + '&placement=review_cta';
+  const { win, doc, commands, dom } = fixture({ path: '/reviews/verified-show/', page: 'blog-detail', markup: `
+    <article data-review-slug="verified-show"><h1>Verified show</h1><div class="review-cta"><a href="${href}">Vstupenky</a></div></article>` });
+  const link = doc.querySelector('a');
+  activate(win, link);
+  assert.equal(commands.length, 1);
+  assert.equal(commands[0][2].partner, 'colosseumticket');
+  assert.equal(commands[0][2].content_slug, 'verified-show');
+  assert.equal(commands[0][2].placement, 'review_cta');
+  assert.equal(commands[0][2].destination_host, 'colosseumticket.cz');
+  assert.equal(link.getAttribute('href'), href);
+  link.href = '/.netlify/functions/colosseumOutbound?to=https%3A%2F%2Funrelated.example%2F';
+  activate(win, link);
+  assert.equal(commands.length, 1, 'Rejected destinations are not counted as a valid partner click.');
+  dom.window.close();
+});
+
 test('Ticketmaster redirect reports the seller, retains Impact input and omits search text or coordinates', () => {
   const to = 'https://www.ticketmaster.cz/event/123456?irclickid=affiliate&note=private';
   const href = 'https://ajsee.cz/.netlify/functions/tmOutbound?to=' + encodeURIComponent(to) + '&placement=event_card&source_page=home_page';

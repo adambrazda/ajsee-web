@@ -29,9 +29,10 @@ export function validatePilot(events) {
     const ticket = new URL(event.tickets, ORIGIN);
     if (event.partner === 'ticketmaster') {
       if (ticket.origin !== ORIGIN || ticket.pathname !== '/.netlify/functions/tmOutbound' || !ticket.searchParams.get('to') || !ticket.searchParams.get('eid')) throw new Error('Ticketmaster must retain its existing outbound function and event identity');
-    } else if (ticket.protocol !== 'https:' || !ticket.searchParams.get('a_box') || !{
-      colosseumticket: ['colosseumticket.cz'], smsticket: ['www.smsticket.cz', 'smsticket.cz']
-    }[event.partner].includes(ticket.hostname)) throw new Error('Invalid partner destination or missing affiliate parameter');
+    } else if (event.partner === 'colosseumticket') {
+      const destination = new URL(ticket.searchParams.get('to'));
+      if (ticket.origin !== ORIGIN || ticket.pathname !== '/.netlify/functions/colosseumOutbound' || destination.protocol !== 'https:' || destination.hostname !== 'colosseumticket.cz' || destination.searchParams.has('a_box')) throw new Error('Colosseum affiliate identity must be added server-side');
+    } else if (ticket.protocol !== 'https:' || !ticket.searchParams.get('a_box') || !['www.smsticket.cz', 'smsticket.cz'].includes(ticket.hostname)) throw new Error('Invalid partner destination or missing affiliate parameter');
     if (event.price && (!(event.price.minimum > 0) || event.price.currency !== 'CZK' || !/^\d{4}-\d{2}-\d{2}$/.test(event.price.checkedAt))) throw new Error('Price needs a positive verified amount, currency and date');
     for (const related of event.related || []) if (!/^\/(?:reviews|microguides)\/[a-z0-9-]+\/$/.test(related.url)) throw new Error('Related link must be an existing editorial route');
   }

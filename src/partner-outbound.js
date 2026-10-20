@@ -61,13 +61,16 @@ export function buildPartnerOutboundPayload(link, {
 
   const isTicketmasterRedirect = clicked.origin === win.location.origin &&
     /^\/(?:\.netlify\/functions\/tmOutbound|api\/tmOutbound)\/?$/.test(clicked.pathname);
-  if (clicked.origin === win.location.origin && !isTicketmasterRedirect) return null;
+  const isColosseumRedirect = clicked.origin === win.location.origin &&
+    /^\/(?:\.netlify\/functions\/colosseumOutbound|api\/colosseumOutbound)\/?$/.test(clicked.pathname);
+  if (clicked.origin === win.location.origin && !isTicketmasterRedirect && !isColosseumRedirect) return null;
 
-  const destination = isTicketmasterRedirect
+  const destination = isTicketmasterRedirect || isColosseumRedirect
     ? parseUrl(clicked.searchParams.get('to'), win.location.origin)
     : clicked;
   if (!destination) return null;
-  const partner = isTicketmasterRedirect ? 'ticketmaster'
+  if (isColosseumRedirect && providerForUrl(destination) !== 'colosseumticket') return null;
+  const partner = isTicketmasterRedirect ? 'ticketmaster' : isColosseumRedirect ? 'colosseumticket'
     : providerForUrl(destination) || partnerName(link.dataset.partner);
   if (!partner) return null;
 

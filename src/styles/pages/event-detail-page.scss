@@ -45,7 +45,9 @@
   --aj-footer-link: #6bddd0;
 }
 
-html { min-height: 100%; height: auto; }
+// The shared mobile menu sits outside the viewport while closed.
+// Clip its off-canvas box without creating another scrolling container.
+html { min-height: 100%; height: auto; overflow-x: hidden; overflow-x: clip; }
 body[data-page="event-detail"] {
   @include detail-light;
   @media (prefers-color-scheme: dark) { @include detail-dark; }

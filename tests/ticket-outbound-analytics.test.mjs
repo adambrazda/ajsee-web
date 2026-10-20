@@ -22,95 +22,14 @@ const eventModalSource = fs.readFileSync(
   'utf8'
 );
 
-test(
-  'event card exposes event identity and explicit analytics placement',
-  () => {
-    assert.match(
-      sharedCardSource,
-      /data-event-id="\$\{safeModalId\}"/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /data-placement="event_card"/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /const eventId =\s*cleanText\(\s*link\.dataset\.eventId\s*\);/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /const placement =\s*cleanText\(\s*link\.dataset\.placement\s*\)\s*\|\|\s*'event_card';/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /event_id:\s*eventId/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /\bplacement,/
-    );
-  }
-);
-
-test(
-  'event modal exposes event id in partner_click contract',
-  () => {
-    assert.match(
-      eventModalSource,
-      /const eventId =\s*modalTrackingText\(\s*link\.dataset\.eventId\s*\);/
-    );
-
-    assert.match(
-      eventModalSource,
-      /event_id:\s*eventId,/
-    );
-
-    const assignments =
-      eventModalSource.match(
-        /dataset\.eventId\s*=/g
-      ) || [];
-
-    assert.ok(
-      assignments.length >= 2,
-      'Primary CTA and ticket-option CTA must expose event id.'
-    );
-  }
-);
-
-test(
-  'event card guards pointerdown plus click against duplicate tracking',
-  () => {
-    assert.match(
-      sharedCardSource,
-      /const partnerClickBound = new WeakSet\(\)/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /let tracked = false/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /if \(tracked\) return;/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /link\.addEventListener\(\s*'pointerdown',\s*trackOnce,\s*\{\s*passive:\s*true\s*\}\s*\)/
-    );
-
-    assert.match(
-      sharedCardSource,
-      /link\.addEventListener\(\s*'click',\s*trackOnce\s*\)/
-    );
-  }
-);
+test('cards and modals expose event identity and use the shared outbound transport', () => {
+  assert.match(sharedCardSource, /data-event-id="\$\{safeModalId\}"/);
+  assert.match(sharedCardSource, /data-placement="event_card"/);
+  assert.match(sharedCardSource, /trackPartnerOutboundLink/);
+  assert.match(eventModalSource, /trackPartnerOutboundLink/);
+  assert.ok((eventModalSource.match(/dataset\.eventId\s*=/g) || []).length >= 2,
+    'Primary CTA and ticket-option CTA must expose event id.');
+});
 
 test(
   'Ticketmaster outbound attribution remains event_card',

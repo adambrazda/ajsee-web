@@ -312,7 +312,7 @@ test(
 
     assert.match(
       modalSource,
-      /trackModalPartnerClickFromLink/
+      /trackPartnerOutboundLink/
     );
 
     assert.match(
@@ -320,25 +320,9 @@ test(
       /bindModalPartnerClickTracking/
     );
 
-    assert.match(
-      modalSource,
-      /const placement\s*=/
-    );
-
-    assert.match(
-      modalSource,
-      /\r?\n\s*placement,\r?\n/
-    );
-
-    assert.match(
-      modalSource,
-      /ticket_currency/
-    );
-
-    assert.match(
-      modalSource,
-      /ticket_option_index/
-    );
+    assert.match(modalSource, /placement: 'event_modal'/);
+    assert.match(modalSource, /dataset\.ticketCurrency/);
+    assert.match(modalSource, /dataset\.ticketOptionIndex/);
 
     assert.match(
       modalSource,

@@ -1,3 +1,4 @@
+import { trackPartnerOutboundLink } from './partner-outbound.js';
 // /src/main.js
 // ---------------------------------------------------------
 // AJSEE – Events UI, i18n & filters (sjednocení s homepage)
@@ -3592,70 +3593,6 @@ function injectProviderBadgeStyles() {
   `);
 }
 
-function trackPartnerClickFromLink(link) {
-  if (!link) return;
-
-  const partner = String(link.dataset.partner || '').trim();
-  const eventName = String(link.dataset.eventTitle || '').trim();
-  const city = String(link.dataset.eventCity || '').trim();
-  const outboundUrl = String(link.href || link.dataset.outboundUrl || '').trim();
-
-  if (!partner && !outboundUrl) return;
-
-  const payload = {
-    event: 'partner_click',
-    partner,
-    event_name: eventName,
-    city,
-    outbound_url: outboundUrl,
-    placement: 'event_card',
-    page_path: window.location.pathname,
-    ts: new Date().toISOString()
-  };
-
-  try {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(payload);
-  } catch {
-    /* noop */
-  }
-
-  try {
-    window.__ajsee = window.__ajsee || {};
-    window.__ajsee.lastPartnerClick = payload;
-  } catch {
-    /* noop */
-  }
-
-  try {
-    sessionStorage.setItem('ajsee:lastPartnerClick', JSON.stringify(payload));
-  } catch {
-    /* noop */
-  }
-
-  try {
-    console.info('[AJSEE partner_click]', payload);
-  } catch {
-    /* noop */
-  }
-}
-
-function mapLangToTm(lang) {
-  const map = { cs: 'cs-cz', sk: 'sk-sk', pl: 'pl-pl', de: 'de-de', hu: 'hu-hu', en: 'en-gb' };
-  return map[(lang || 'en').slice(0, 2)] || 'en-gb';
-}
-
-function safeUrl(raw) {
-  try {
-    const u = new URL(raw, location.href);
-    if (/^https?:/i.test(u.protocol)) return u.toString();
-  } catch {
-    /* noop */
-  }
-
-  return '#';
-}
-
 function withOutboundTracking(rawUrl, { sourcePage = 'events_page', placement = 'event_card' } = {}) {
   try {
     const u = new URL(rawUrl, location.href);
@@ -3890,7 +3827,7 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
               >
                 ${detailLabel}
               </button>
-              <a href="${ticketsHref}" class="btn-event ticket js-partner-click" target="_blank" rel="noopener noreferrer" data-partner="${esc(provider)}" data-event-title="${eventTitleAttr}" data-event-city="${eventCityAttr}" data-outbound-url="${ticketsHref}">
+              <a href="${ticketsHref}" class="btn-event ticket js-partner-click" target="_blank" rel="noopener noreferrer" data-partner="${esc(provider)}" data-event-id="${esc(modalId)}" data-event-title="${eventTitleAttr}" data-event-city="${eventCityAttr}" data-outbound-url="${ticketsHref}">
                 ${ticketLabel}
               </a>
             </div>
@@ -3917,16 +3854,9 @@ async function renderEvents(locale = 'cs', filters = currentFilters) {
 
 
     qsa('.js-partner-click', list).forEach(link => {
-      let tracked = false;
-
-      const trackOnce = () => {
-        if (tracked) return;
-        tracked = true;
-        trackPartnerClickFromLink(link);
-      };
-
-      link.addEventListener('pointerdown', trackOnce, { passive: true });
-      link.addEventListener('click', trackOnce);
+      link.addEventListener('click', activation => {
+        trackPartnerOutboundLink(link, { activation, placement: 'event_card' });
+      });
     });
 
     announce(`${t('events-found', 'Nalezeno') || 'Nalezeno'} ${out.length}`);

@@ -286,6 +286,11 @@ function resetRuntimeState() {
   window.__ajseeCloseEventModal?.();
 
   window.dataLayer = [];
+  window.localStorage.setItem('ajsee_cookie_consent_v1', JSON.stringify({ analytics: true }));
+  window.gtag = function (command, event, parameters) {
+    assert.equal(command, 'event');
+    window.dataLayer.push({ event, ...parameters });
+  };
   window.__ajsee = {};
 
   sessionStorage.clear();
@@ -737,7 +742,7 @@ test(
 
     assert.equal(
       payload.event,
-      'partner_click'
+      'ajsee_partner_click'
     );
 
     assert.equal(
@@ -762,35 +767,13 @@ test(
 
     assert.equal(
       payload.page_path,
-      '/events?city=Loket&cityCc=CZ'
+      '/events'
     );
 
-    assert.equal(
-      payload.route_city,
-      'Loket'
-    );
-
-    assert.equal(
-      payload.route_country_code,
-      'CZ'
-    );
-
-    const storedPayload =
-      JSON.parse(
-        sessionStorage.getItem(
-          'ajsee:lastPartnerClick'
-        )
-      );
-
-    assert.equal(
-      storedPayload.event,
-      'partner_click'
-    );
-
-    assert.equal(
-      storedPayload.placement,
-      'event_modal'
-    );
+    assert.equal(payload.page_language, 'cs');
+    assert.equal(payload.send_to, 'G-K0ZS0D9JLK');
+    assert.equal(sessionStorage.getItem('ajsee:lastPartnerClick'), null,
+      'Rich click payload must not be persisted in storage.');
   }
 );
 
@@ -853,7 +836,7 @@ test(
 
     assert.equal(
       payload.event,
-      'partner_click'
+      'ajsee_partner_click'
     );
 
     assert.equal(
@@ -893,8 +876,8 @@ test(
 
     assert.equal(
       window.__ajsee
-        .lastPartnerClick,
-      payload
+        .lastPartnerClick.event_id,
+      payload.partner_event_id
     );
   }
 );
@@ -1054,7 +1037,7 @@ test(
 
     assert.equal(
       payload.event,
-      'partner_click'
+      'ajsee_partner_click'
     );
 
     assert.equal(

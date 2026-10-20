@@ -77,125 +77,8 @@ function syncYear() {
 }
 
 
-/* AJSEE_LONDON_MUSICALS_TRACKING_V1
-   Track TodayTix partner purchase clicks and key London musicals funnel actions. */
 function cleanTrackingText(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
-}
-
-function getTrackingLang() {
-  return cleanTrackingText(document.documentElement.getAttribute('lang'))
-    .slice(0, 2)
-    .toLowerCase() || normLang(detectLang());
-}
-
-function getUrlHost(value) {
-  try {
-    return new URL(value, window.location.origin).hostname;
-  } catch {
-    return '';
-  }
-}
-
-function pushAnalyticsEvent(payload) {
-  const eventPayload = {
-    ...payload,
-    page_path: window.location.pathname + window.location.search,
-    page_location: window.location.href,
-    language: getTrackingLang(),
-    ts: new Date().toISOString()
-  };
-
-  try {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(eventPayload);
-  } catch {
-    /* noop */
-  }
-
-  try {
-    window.__ajsee = window.__ajsee || {};
-    window.__ajsee.lastLondonMusicalsEvent = eventPayload;
-  } catch {
-    /* noop */
-  }
-
-  try {
-    sessionStorage.setItem('ajsee:lastLondonMusicalsEvent', JSON.stringify(eventPayload));
-  } catch {
-    /* noop */
-  }
-
-  try {
-    console.info('[AJSEE London musicals tracking]', eventPayload);
-  } catch {
-    /* noop */
-  }
-}
-
-function trackLondonMusicalsPartnerClick(link) {
-  if (!link) return;
-
-  const partner = cleanTrackingText(link.dataset.partner || 'todaytix');
-  const eventTitle = cleanTrackingText(link.dataset.eventTitle || link.closest('.lm-card')?.querySelector('h3')?.textContent);
-  const eventCity = cleanTrackingText(link.dataset.eventCity || 'London');
-  const clickedHref = cleanTrackingText(link.href || link.getAttribute('href'));
-  const outboundUrl = cleanTrackingText(link.dataset.outboundUrl) || clickedHref;
-  const placement = cleanTrackingText(link.dataset.placement || 'london_musicals_card');
-
-  if (!partner && !outboundUrl) return;
-
-  pushAnalyticsEvent({
-    event: 'partner_click',
-
-    partner,
-    event_name: eventTitle,
-    city: eventCity,
-    outbound_url: outboundUrl,
-    placement,
-
-    event_title: eventTitle,
-    event_city: eventCity,
-    event_provider: partner,
-    destination_url: outboundUrl,
-    destination_host: getUrlHost(outboundUrl),
-    clicked_href: clickedHref,
-    clicked_host: getUrlHost(clickedHref),
-    route_city: 'London',
-    route_country_code: 'GB',
-    link_text: cleanTrackingText(link.textContent)
-  });
-}
-
-function initLondonMusicalsTracking() {
-  if (window.__ajseeLondonMusicalsTrackingInit) return;
-  window.__ajseeLondonMusicalsTrackingInit = true;
-
-  document.addEventListener('click', (event) => {
-    const target = event.target instanceof Element ? event.target : null;
-    if (!target) return;
-
-    const partnerLink = target.closest('.js-lm-partner-click');
-    if (partnerLink) {
-      trackLondonMusicalsPartnerClick(partnerLink);
-      return;
-    }
-
-  }, true);
-}
-
-function trackTrustedStaysClicks() {
-  document.querySelectorAll('a[href*="trustedstays.co.uk/book-a-home"]').forEach((link) => {
-    link.addEventListener('click', () => {
-      try {
-        window.gtag?.('event', 'trustedstays_london_musicals_banner_click', {
-          href: link.href
-        });
-      } catch {
-        // noop
-      }
-    });
-  });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -206,8 +89,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   syncYear();
   localizeLanguageButtons(lang);
   syncPurchaseLinks(lang);
-  initLondonMusicalsTracking();
-  trackTrustedStaysClicks();
 
 
 });

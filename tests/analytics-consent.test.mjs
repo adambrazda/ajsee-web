@@ -51,6 +51,10 @@ test('configuration precedes a fast click during script loading and repeated boo
     assert.equal(win.dataLayer.filter(c => c[0] === 'event' && c[1] === 'page_view').length, 1);
     assert.equal(win.dataLayer.filter(c => c[0] === 'event' && c[1] === 'ajsee_partner_click').length, 1);
     assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_partner_click').length, 0);
+    const ready = win.dataLayer.find(c => c[0] === 'event' && c[1] === 'ajsee_analytics_ready')[2];
+    assert.equal(ready.analytics_init_source, 'consent_js_direct_ga4');
+    assert.equal(Object.hasOwn(ready, 'source'), false, 'Diagnostic metadata must not override acquisition source.');
+    assert.equal(Object.hasOwn(ready, 'debug_mode'), false, 'Ordinary visitors must not be flagged as debug traffic.');
   });
 });
 

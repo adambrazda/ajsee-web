@@ -114,21 +114,21 @@ let initialized = false;
 
 function normalizeLang(value) {
   const lang = String(value || '').trim().toLowerCase();
-  return COOKIE_BANNER_FALLBACKS[lang] ? lang : 'cs';
+  return COOKIE_BANNER_FALLBACKS[lang] ? lang : null;
 }
 
 function getActiveLang(preferredLang = null) {
   const explicit = normalizeLang(preferredLang);
   if (explicit) return explicit;
 
-  const htmlLang = normalizeLang(document.documentElement.getAttribute('lang'));
-  if (htmlLang) return htmlLang;
-
   try {
     const url = new URL(window.location.href);
     const fromUrl = normalizeLang(url.searchParams.get('lang'));
     if (fromUrl) return fromUrl;
   } catch {}
+
+  const htmlLang = normalizeLang(document.documentElement.getAttribute('lang'));
+  if (htmlLang) return htmlLang;
 
   return 'cs';
 }
@@ -391,7 +391,7 @@ function bindGlobalListeners() {
   });
 }
 
-function initCookieBanner({ lang = 'cs' } = {}) {
+function initCookieBanner({ lang = null } = {}) {
   bindGlobalListeners();
   initialized = true;
 

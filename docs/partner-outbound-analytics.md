@@ -15,11 +15,10 @@ Source HTML templates must not independently load GA4.
 
 Send one `gtag('event', 'ajsee_partner_click', parameters)` command, targeted at the
 stream in `src/utils/analytics-config.js`. **Do not additionally push a plain
-`{event: 'partner_click'}` object.** The published GTM container still has a
-legacy custom-event trigger that would send a second event with fewer fields.
-GTM can react to legacy `partner_click` gtag commands as well, so the new
-canonical name is deliberately `ajsee_partner_click`. GTM is retained for
-compatibility with other tags.
+`{event: 'partner_click'}` object.** The legacy GTM custom-event trigger can
+send a second event with fewer fields. Its tag was paused in published GTM
+version 6 on 20 October 2026; keep the canonical name `ajsee_partner_click`
+independent of that old configuration. GTM is retained for compatibility.
 
 GA4 configuration is queued before the script finishes loading, so a fast
 click cannot precede configuration. The click handler never rewrites the
@@ -76,8 +75,35 @@ Run `npm run analytics:test` and the existing modal / ticket / affiliate tests.
 The analytics suite is part of `prebuild`. Verify a live event in GA4 Realtime
 after deployment; an intercepted test request is not proof of GA4 ingestion.
 
-On 20 October 2026, the public GTM container `GTM-T5NZVSSW` used
+Before the account cleanup on 20 October 2026, GTM container `GTM-T5NZVSSW` used
 `G-KOZS0D9JLK` (letter O) for its base/test tags but `G-K0ZS0D9JLK` (zero) for
-its partner-click tag. The application uses the latter. Check the actual
-stream in GA4 before correcting the separate GTM configuration; this code
-change does not edit the account or publish the GTM container.
+its partner-click tag. The application uses the latter, verified against GA4
+property `492103490`, web stream `11312537950`.
+
+## Verified account configuration, 20 October 2026
+
+- One controlled TodayTix hero click at 12:54:52 UTC appeared in GA4 Realtime
+  as one `ajsee_partner_click`, with `partner=todaytix`. This is live ingestion
+  evidence, separate from the intercepted local transport tests.
+- GTM version 6 pauses only `AJSEE - GA4 - Google tag`, `AJSEE - GA4 - Test
+  event`, and `GA4 - partner_click`. The ten pre-existing changes in Default
+  Workspace were not published with it.
+- Existing event-scoped dimensions already include `partner`, `placement`,
+  `event_title`, and `destination_host`. Five additional event dimensions were
+  registered: `source_page_path`, `page_type`, `page_language`, `product_type`,
+  and `content_slug`. New definitions do not backfill historical reports.
+- The diagnostic ready event uses `analytics_init_source`, never `source`,
+  and does not mark ordinary visitors with `debug_mode`. The old diagnostic
+  value had appeared in acquisition reports; the change does not rewrite
+  that historical attribution.
+- Consent UI is bootstrapped by the shared identity entry, including direct
+  arrivals on London and accommodation pages. London includes the shared
+  consent styles. An absent preferred language must not force Czech before
+  URL or document language is checked.
+
+The primary weekly KPI is **total users** who generated `ajsee_partner_click`
+with `product_type` equal to `tickets` or `accommodation`. Event count is the
+secondary volume metric. Report overall users directly, never by summing
+partner or page rows. Internal promotions and `partner_info` are excluded.
+The first complete Monday–Sunday week after this setup is 26 October–1
+November 2026; process the result after GA4's reporting delay.

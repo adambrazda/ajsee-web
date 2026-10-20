@@ -22,7 +22,7 @@
     "preview": "vite preview",
     "webpack:dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack serve --mode development",
     "webpack:build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack --mode production",
-    "analytics:test": "node --test --test-concurrency=1 tests/partner-outbound.test.mjs tests/analytics-consent.test.mjs tests/ticket-outbound-analytics.test.mjs",
+    "analytics:test": "node --test --test-concurrency=1 tests/partner-outbound.test.mjs tests/analytics-consent.test.mjs tests/cookie-bootstrap.test.mjs tests/ticket-outbound-analytics.test.mjs",
     "ai-search:test": "node scripts/test-ai-search.mjs",
     "city-filters:test": "node scripts/test-city-filters.mjs",
     "providers:coverage:test": "node --test --test-concurrency=1 tests/smsticket-country-coverage.test.mjs tests/smsticket-sync-hardening.test.mjs tests/ticketmaster-deep-pagination.test.mjs",

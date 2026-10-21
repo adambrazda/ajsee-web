@@ -44,6 +44,16 @@ export function resolveEvent(event, snapshot, now = new Date()) {
   return result;
 }
 
+export function pageCacheSeconds(event, now = new Date()) {
+  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Prague', dateStyle: 'short' }).format(now);
+  const tomorrow = new Date(Date.parse(today + 'T12:00:00Z') + 86400000).toISOString().slice(0, 10);
+  const midnight = Date.parse(localDateTime(tomorrow + 'T00:00:00'));
+  const priceExpiry = event.price?.observedAt ? Date.parse(event.price.observedAt) + PRICE_TTL_MS : Infinity;
+  // A cached response must never extend a price's lifetime or retain yesterday's
+  // purchase CTA after the Prague calendar day has ended.
+  return Math.max(0, Math.min(300, Math.floor((Math.min(midnight, priceExpiry) - +now) / 1000)));
+}
+
 export function advanceOccurrence(event, previous, record, observedAt) {
   const baseline = previous?.id === event.id && previous?.partner === event.partner && localDateTime(previous.startDate)
     ? previous : { id: event.id, partner: event.partner, startDate: event.startDate, status: event.status,

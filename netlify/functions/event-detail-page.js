@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import pilot from '../../content/event-detail-pilot.json' with { type: 'json' };
 import { renderEventPage } from '../../shared/event-details/page.js';
-import { LANGUAGES, detailPath } from '../../shared/event-details/state.js';
+import { LANGUAGES, detailPath, resolveEvent, pageCacheSeconds } from '../../shared/event-details/state.js';
 
 const assets = new Map();
 async function readAsset(name) {
@@ -25,10 +25,12 @@ export function createEventDetailPage({ getStoreFn = getStore, loadAsset = readA
         const saved = await getStoreFn({ name: 'event-details-v1', consistency: 'strong' }).get('current', { type: 'json' });
         if (saved?.version === 1 && Date.parse(saved.generatedAt) > Date.parse(snapshot.generatedAt)) snapshot = saved;
       } catch { /* The build snapshot still renders complete HTML. */ }
-      const html = renderEventPage(shell, event, snapshot, { lang, now: now() });
+      const current = now();
+      const html = renderEventPage(shell, event, snapshot, { lang, now: current });
+      const cacheSeconds = pageCacheSeconds(resolveEvent(event, snapshot, current), current);
       return new Response(request.method === 'HEAD' ? null : html, { headers: {
         'Content-Type': 'text/html; charset=utf-8', 'Content-Language': lang,
-        'Cache-Control': 'public, max-age=0, must-revalidate', 'Netlify-CDN-Cache-Control': 'public, durable, max-age=300',
+        'Cache-Control': 'public, max-age=0, must-revalidate', 'Netlify-CDN-Cache-Control': cacheSeconds ? `public, durable, max-age=${cacheSeconds}` : 'no-store',
         'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin',
         'X-Frame-Options': 'SAMEORIGIN', 'Permissions-Policy': 'geolocation=(), microphone=(), camera=()'
       } });

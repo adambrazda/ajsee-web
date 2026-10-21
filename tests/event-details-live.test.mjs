@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
 import pilot from '../content/event-detail-pilot.json' with { type: 'json' };
 import COPY from '../content/event-detail-copy.json' with { type: 'json' };
-import { advanceOccurrence, resolveEvent, localDateTime, PRICE_TTL_MS, LANGUAGES, detailPath } from '../shared/event-details/state.js';
+import { advanceOccurrence, resolveEvent, localDateTime, PRICE_TTL_MS, LANGUAGES, detailPath, pageCacheSeconds } from '../shared/event-details/state.js';
 import { renderEventPage } from '../shared/event-details/page.js';
 import { collectEventDetails } from '../shared/event-details/sources.js';
 import { createEventDetailPage } from '../netlify/functions/event-detail-page.js';
@@ -44,6 +44,14 @@ test('price expiry applies at request time and an empty new price cannot revive 
   assert.equal(advanceOccurrence(event,null,record(event,{price:{min:0,currency:'CZK'}}),now.toISOString()).price,null);
   assert.equal(resolveEvent(event,{version:1,events:[{...saved.events[0],lastVerifiedAt:'2099-01-01T00:00:00Z'}]},now).price,null);
   assert.equal(resolveEvent(event,saved,now).tickets,event.tickets);
+});
+
+test('CDN caching cannot extend the verified price or a past event into the next calendar day', () => {
+  const current = resolveEvent(event, snapshot(), now);
+  assert.equal(pageCacheSeconds(current, now), 300);
+  assert.equal(pageCacheSeconds(current, new Date(+now + PRICE_TTL_MS - 2000)), 2);
+  assert.equal(pageCacheSeconds({ ...current, price: null }, new Date('2026-12-13T23:59:58+01:00')), 2);
+  assert.equal(pageCacheSeconds({ ...current, price: null }, new Date('2027-03-28T23:59:58+02:00')), 2);
 });
 
 for(const lang of LANGUAGES) test(`${lang}: HTML, metadata, language links and schema describe the same fresh occurrence`, () => {

@@ -1,3 +1,4 @@
+import { eventDetailHref } from './event-detail-routes.js';
 import { trackPartnerOutboundLink } from './partner-outbound.js';
 import { renderEventCommerce, ensureEventCommerceStyles, eventInventoryState, eventStockLabel } from './event-commerce.js';
 import { EVENT_TICKET_ARROW } from './event-ticket-ui.js';
@@ -498,6 +499,11 @@ export function renderSharedEventCard({
   const safeImagePosition =
     `${imagePresentation.x}% ${imagePresentation.y}%`;
 
+  const detailHref = eventDetailHref(event, locale);
+  const detailTag = detailHref ? 'a' : 'button';
+  const detailAttributes = detailHref ? `href="${escapeHtml(detailHref)}"` : 'type="button"';
+  const detailClass = detailHref ? '' : ' js-event-detail';
+
   const safeModalId =
     escapeHtml(modalId);
 
@@ -555,15 +561,15 @@ export function renderSharedEventCard({
           decoding="async"
           onerror="this.onerror=null;this.src='${safeFallbackImage}';"
         />
-        <button type="button" class="event-image-action js-event-detail"
+        <${detailTag} ${detailAttributes} class="event-image-action${detailClass}"
           data-event-id="${safeModalId}" data-result-position="${safeResultPosition}"
-          aria-label="${safeTitleAttr || escapeHtml(detailLabelHtml) || 'Detail'}"></button>
+          aria-label="${safeTitleAttr || escapeHtml(detailLabelHtml) || 'Detail'}"></${detailTag}>
         ${soldOut ? `<span class="event-sold-badge" title="${soldOutLabel}">${soldOutLabel}</span>` : ''}
       </div>
 
       <div class="event-content">
-        <h3 class="event-title"><button type="button" class="event-title-action js-event-detail"
-          data-event-id="${safeModalId}" data-result-position="${safeResultPosition}">${titleHtml}</button></h3>
+        <h3 class="event-title"><${detailTag} ${detailAttributes} class="event-title-action${detailClass}"
+          data-event-id="${safeModalId}" data-result-position="${safeResultPosition}">${titleHtml}</${detailTag}></h3>
 
         <p class="event-date">${dateHtml}</p>
 

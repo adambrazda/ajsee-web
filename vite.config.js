@@ -225,6 +225,9 @@ export default defineConfig({
         addGeneratedBlogDetails(inputs);
         addGeneratedReviewDetails(inputs);
 
+        // Detail entry bundles shared consent, navigation and responsive styles.
+        addIfExists(inputs, 'event-detail-preview', resolve(__dirname, 'templates/event-detail-preview.html'));
+
 
 
         return inputs;

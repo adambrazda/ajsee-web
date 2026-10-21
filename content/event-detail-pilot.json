@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "mode": "published",
+  "verifiedAt": "2026-10-20",
+  "events": [
+    {
+      "id": "colosseumticket-5470841-4205829",
+      "partner": "colosseumticket",
+      "tickets": "/.netlify/functions/colosseumOutbound?to=https%3A%2F%2Fcolosseumticket.cz%2Fcs%2Fakce%2F5470841-jesus-christ-superstar&source=event_detail&placement=event_detail&lang=cs",
+      "title": "Jesus Christ Superstar",
+      "venue": {
+        "name": "Divadlo Jiřího Myrona",
+        "city": "Ostrava",
+        "country": "CZ",
+        "street": "Čs. legií 148"
+      },
+      "image": {
+        "url": "https://www.datocms-assets.com/31357/1642423315-jesus-christ-superstar-muzikal-divadlo-ndm-ostrava-vstupenky-1-colosseumticket.jpg",
+        "fit": "cover",
+        "credit": "Podklad: ColosseumTicket",
+        "alt": "Scéna z ostravské inscenace Jesus Christ Superstar"
+      },
+      "verifiedAt": "2026-10-20",
+      "evidence": {
+        "sellerUrl": "https://colosseumticket.cz/cs/akce/5470841-jesus-christ-superstar",
+        "inCurrentFeed": true
+      },
+      "slug": "jesus-christ-superstar-ostrava-2026-12-13",
+      "subtitle": "Národní divadlo moravskoslezské",
+      "category": "Muzikál",
+      "startDate": "2026-12-13T16:00:00+01:00",
+      "introduction": "Rocková opera Tima Rice a Andrewa Lloyda Webbera v Ostravě. Vyrazte do Divadla Jiřího Myrona.",
+      "paragraphs": [
+        "Pašijový příběh, rocková hudba a ostravský muzikálový soubor. Jesus Christ Superstar uvádí Národní divadlo moravskoslezské v Divadle Jiřího Myrona.",
+        "Hudbu složil Andrew Lloyd Webber, libreto napsal Tim Rice. České přebásnění je dílem Michaela Prostějovského a inscenaci režíroval Jiří Nekvasil."
+      ],
+      "practical": "Obsazení konkrétní reprízy a další podrobnosti si před návštěvou ověřte u divadla nebo prodejce.",
+      "termNote": "U partnera vyberte neděli 13. prosince 2026 v 16:00. Odkaz otevře nabídku všech termínů tohoto titulu.",
+      "price": {
+        "minimum": 680,
+        "currency": "CZK",
+        "checkedAt": "2026-10-20"
+      },
+      "organizer": "Národní divadlo moravskoslezské",
+      "status": "scheduled",
+      "related": [
+        {
+          "label": "Z našeho blogu",
+          "title": "Jesus Christ Superstar v Londýně",
+          "description": "Recenze londýnské inscenace od Oyi Canli. Jiná scéna, jiná podoba stejného díla.",
+          "url": "/reviews/jesus-christ-superstar-london-2026/",
+          "cta": "Přečíst recenzi"
+        },
+        {
+          "label": "Praktický průvodce",
+          "title": "Jak se vyznat ve vstupenkách",
+          "description": "Na co se zaměřit při výběru prodejce a před dokončením nákupu.",
+          "url": "/microguides/fees-refund/",
+          "cta": "Otevřít průvodce"
+        }
+      ]
+    },
+    {
+      "id": "ticketmaster-Z698xZu0Z16vow_8_9",
+      "partner": "ticketmaster",
+      "tickets": "/.netlify/functions/tmOutbound?to=https%3A%2F%2Fticketmaster.evyy.net%2Fc%2F7218577%2F2038768%2F23901%3Fu%3Dhttps%253A%252F%252Fwww.ticketmaster.cz%252Fevent%252Fkorn-vstupenky%252F1472650657%26utm_medium%3Daffiliate&eid=Z698xZu0Z16vow_8_9&cc=CZ",
+      "title": "KoRn",
+      "venue": {
+        "name": "O2 arena",
+        "city": "Praha 9",
+        "country": "CZ"
+      },
+      "image": {
+        "url": "https://s1.ticketm.net/dam/a/ba2/047fbc18-8746-4556-b17b-f03d08efeba2_RETINA_PORTRAIT_3_2.jpg",
+        "fit": "cover",
+        "credit": "Podklad: Ticketmaster",
+        "alt": "Kapela KoRn – oficiální fotografie k pražskému koncertu"
+      },
+      "verifiedAt": "2026-10-20",
+      "evidence": {
+        "sellerUrl": "https://www.ticketmaster.cz/event/korn-vstupenky/1472650657",
+        "inCurrentFeed": true
+      },
+      "slug": "korn-praha-2026-11-16",
+      "category": "Koncert",
+      "subtitle": "EURO TOUR 2026",
+      "startDate": "2026-11-16T19:30:00+01:00",
+      "introduction": "KoRn míří do pražské O2 areny. Spolu s nimi vystoupí také Architects a Pixel Grip.",
+      "paragraphs": [
+        "Večer pro fanoušky tvrdé hudby v pražské O2 areně. KoRn zde vystoupí v rámci EURO TOUR 2026.",
+        "Jako speciální hosté jsou ohlášeni Architects a Pixel Grip. Rozpis jednotlivých vystoupení a čas otevření haly si před cestou ověřte u pořadatele."
+      ],
+      "practical": "Před návštěvou si ověřte pravidla vstupu do O2 areny. Čas začátku koncertu se může lišit od času otevření haly.",
+      "price": null,
+      "status": "scheduled",
+      "related": [
+        {
+          "label": "Praktický průvodce",
+          "title": "Vstup do haly bez zbytečného zdržení",
+          "description": "Co si předem ověřit o bezpečnostní kontrole a zavazadlech. Rozhodují vždy pravidla konkrétního místa.",
+          "url": "/microguides/stadium-entry/",
+          "cta": "Otevřít průvodce"
+        },
+        {
+          "label": "Praktický průvodce",
+          "title": "Načasujte si koncertní večer",
+          "description": "Pár tipů k příchodu, přestávkám a nákupu merche.",
+          "url": "/microguides/set-times-merch/",
+          "cta": "Přečíst tipy"
+        }
+      ]
+    },
+    {
+      "id": "smsticket-68785",
+      "partner": "smsticket",
+      "tickets": "https://www.smsticket.cz/vstupenky/68785-folk-a-country-festival-na-krumlovskem-zamku-zamecka-jizdarna-cesky-krumlov-nezmari-hop-trop-spiritual-kvartet?a_box=d4n78jv6",
+      "title": "Folk a country festival na krumlovském zámku",
+      "venue": {
+        "name": "Zámecká jízdárna",
+        "city": "Český Krumlov",
+        "country": "CZ",
+        "street": "K Zámecké zahradě"
+      },
+      "image": {
+        "url": "https://www.smsticket.cz/cdn/events/2026/68785/315-cf2b0d2dd3444a2e87d78aa07498a9c4.jpg",
+        "fit": "contain",
+        "credit": "Podklad: smsticket",
+        "alt": "Oficiální plakát Folk a country festivalu na krumlovském zámku"
+      },
+      "verifiedAt": "2026-10-20",
+      "evidence": {
+        "sellerUrl": "https://www.smsticket.cz/vstupenky/68785-folk-a-country-festival-na-krumlovskem-zamku-zamecka-jizdarna-cesky-krumlov-nezmari-hop-trop-spiritual-kvartet",
+        "inCurrentFeed": false,
+        "lastSeenInStoredFeed": "2026-05-18",
+        "note": "Chybí ve snapshotu 2026-10-20T13:09:32.500Z. Termín, plakát, místo a cenu znovu potvrzuje veřejná stránka prodejce 20. října 2026. Nejde o důkaz zrušení."
+      },
+      "slug": "folk-country-cesky-krumlov-2027-04-24",
+      "category": "Festival",
+      "startDate": "2027-04-24T14:00:00+02:00",
+      "introduction": "Za folkem a country do Českého Krumlova. V Zámecké jízdárně se představí mimo jiné Nezmaři, Hop Trop a Spirituál kvartet.",
+      "paragraphs": [
+        "Druhý ročník festivalu propojí velkou scénu v sále Zámecké jízdárny s menší scénou ve stanu.",
+        "Vedle Nezmarů, Hop Tropu a Spirituál kvartetu jsou ohlášeni Michal Tučný revival, Liam Stayner and Hissboys, KaPyBaRa a DixiCK."
+      ],
+      "practical": "Podrobný časový rozpis jednotlivých kapel si před cestou ověřte u pořadatele. Uvedený čas patří začátku festivalu.",
+      "price": {
+        "minimum": 980,
+        "currency": "CZK",
+        "checkedAt": "2026-10-20"
+      },
+      "organizer": "KROPEAK s.r.o.",
+      "status": "scheduled",
+      "related": [
+        {
+          "label": "Praktický průvodce",
+          "title": "Načasujte si festivalový den",
+          "description": "Tipy k příchodu, přestávkám a merchi, které se mohou hodit i na menším festivalu.",
+          "url": "/microguides/set-times-merch/",
+          "cta": "Přečíst tipy"
+        },
+        {
+          "label": "Praktický průvodce",
+          "title": "Před nákupem vstupenky",
+          "description": "Zkontrolujte si výslednou cenu i podmínky prodejce, ať víte, co kupujete.",
+          "url": "/microguides/fees-refund/",
+          "cta": "Otevřít průvodce"
+        }
+      ]
+    },
+    {
+      "id": "smsticket-76162",
+      "partner": "smsticket",
+      "tickets": "https://www.smsticket.cz/vstupenky/76162-tohle-je-box-galavecer-profesionalniho-boxu-sono-centrum-brno?a_box=d4n78jv6",
+      "title": "TOHLE JE BOX",
+      "venue": {
+        "name": "Sono Centrum",
+        "city": "Brno",
+        "country": "CZ",
+        "street": "Veveří 113"
+      },
+      "image": {
+        "url": "https://www.smsticket.cz/cdn/events/2026/76162/315-df54ed28ba82439bbdf24270a7e685ab.jpg",
+        "fit": "contain",
+        "credit": "Podklad: smsticket",
+        "alt": "Oficiální plakát galavečera TOHLE JE BOX v Brně"
+      },
+      "verifiedAt": "2026-10-20",
+      "evidence": {
+        "sellerUrl": "https://www.smsticket.cz/vstupenky/76162-tohle-je-box-galavecer-profesionalniho-boxu-sono-centrum-brno",
+        "inCurrentFeed": true
+      },
+      "slug": "tohle-je-box-brno-2026-11-21",
+      "subtitle": "Galavečer profesionálního boxu",
+      "category": "Sport",
+      "startDate": "2026-11-21T18:00:00+01:00",
+      "introduction": "Profesionální box v brněnském SONO. Galavečer TOHLE JE BOX přiváží do Brna večer profesionálních zápasů.",
+      "paragraphs": [
+        "TOHLE JE BOX přiváží do Brna večer profesionálních zápasů. Série je spojená s bývalým mistrem světa a Evropy Lukášem Konečným, který dnes působí jako trenér a promotér.",
+        "V nabídce jsou různé kategorie vstupenek včetně VIP balíčků. Jejich umístění a obsah si porovnáte přímo u prodejce."
+      ],
+      "practical": "Konkrétní zápasovou kartu a pokyny k příchodu si před návštěvou ověřte u pořadatele.",
+      "price": {
+        "minimum": 390,
+        "currency": "CZK",
+        "checkedAt": "2026-10-20"
+      },
+      "organizer": "CZECH BOXING MANAGEMENT s.r.o.",
+      "status": "scheduled",
+      "related": [
+        {
+          "label": "Praktický průvodce",
+          "title": "Co si ověřit před vstupem do haly",
+          "description": "Zavazadla a bezpečnostní kontrola mají na každém místě svá pravidla.",
+          "url": "/microguides/stadium-entry/",
+          "cta": "Otevřít průvodce"
+        },
+        {
+          "label": "Praktický průvodce",
+          "title": "Jak se vyznat ve vstupenkách",
+          "description": "Porovnejte kategorie a výslednou cenu před dokončením nákupu.",
+          "url": "/microguides/fees-refund/",
+          "cta": "Přečíst tipy"
+        }
+      ]
+    }
+  ],
+  "publishedAt": "2026-10-21"
+}

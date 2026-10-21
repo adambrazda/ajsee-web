@@ -107,6 +107,8 @@ const BLOG_READMORE_LABELS = {
 };
 
 const SKIPPED_HTML_FILES = new Set([
+  // This bundling input is a Czech-only review template, not a translated page.
+  'templates/event-detail-preview.html',
   'test-ticketmaster.html',
   'ticketmaster-test.html',
   'admin/index.html',

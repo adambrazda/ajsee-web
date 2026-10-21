@@ -1,0 +1,560 @@
+{
+  "cs": {
+    "labels": {
+      "events": "Události",
+      "skip": "Přejít na obsah",
+      "breadcrumbs": "Drobečková navigace",
+      "plan": "Naplánujte si návštěvu",
+      "facts": "Informace o termínu",
+      "when": "Kdy",
+      "where": "Kde",
+      "from": "Od {price}",
+      "unknownPrice": "Cenu ověříte u prodejce",
+      "priceChecked": "Cena podle nabídky z {date}.",
+      "tickets": "Vstupenky u {partner}",
+      "purchaseNote": "Aktuální nabídku si prohlédnete a vstupenky koupíte přímo u {partner}.",
+      "affiliateNote": "Při nákupu přes náš odkaz může AJSEE získat provizi.",
+      "about": "O představení",
+      "expect": "Na co se těšit",
+      "practical": "Než vyrazíte",
+      "related": "Mohlo by se vám hodit",
+      "allEvents": "Všechny události",
+      "explore": "Prozkoumat další události",
+      "past": "Tento termín už je v minulosti. Další akce najdete v našem přehledu událostí.",
+      "cancelled": "Tato akce byla zrušena. Informace ke vstupenkám poskytne prodejce.",
+      "postponed": "Akce byla odložena. Nový termín zatím není potvrzen.",
+      "rescheduled": "Nový termín. Původně: {date}.",
+      "termNote": "U partnera vyberte {date} v {time}. Odkaz otevře nabídku všech termínů tohoto titulu.",
+      "source": "Podklad: {partner}",
+      "languages": "Jazyk stránky",
+      "read": "Přečíst více",
+      "fromBlog": "Z našeho blogu",
+      "guide": "Praktický průvodce",
+      "mainMenu": "Hlavní menu",
+      "legalLinks": "Právní odkazy",
+      "openMenu": "Otevřít menu",
+      "closeMenu": "Zavřít menu"
+    },
+    "events": {
+      "colosseumticket-5470841-4205829": {
+        "category": "Muzikál",
+        "subtitle": "Národní divadlo moravskoslezské",
+        "introduction": "Rocková opera Tima Rice a Andrewa Lloyda Webbera v Ostravě. Vyrazte do Divadla Jiřího Myrona.",
+        "p1": "Pašijový příběh, rocková hudba a ostravský muzikálový soubor. Jesus Christ Superstar uvádí Národní divadlo moravskoslezské v Divadle Jiřího Myrona.",
+        "p2": "Hudbu složil Andrew Lloyd Webber, libreto napsal Tim Rice. České přebásnění je dílem Michaela Prostějovského a inscenaci režíroval Jiří Nekvasil.",
+        "practical": "Obsazení konkrétní reprízy a další podrobnosti si před návštěvou ověřte u divadla nebo prodejce.",
+        "imageAlt": "Scéna z ostravské inscenace Jesus Christ Superstar"
+      },
+      "ticketmaster-Z698xZu0Z16vow_8_9": {
+        "category": "Koncert",
+        "subtitle": "EURO TOUR 2026",
+        "introduction": "KoRn míří do pražské O2 areny. Spolu s nimi vystoupí také Architects a Pixel Grip.",
+        "p1": "Večer pro fanoušky tvrdé hudby v pražské O2 areně. KoRn zde vystoupí v rámci EURO TOUR 2026.",
+        "p2": "Jako speciální hosté jsou ohlášeni Architects a Pixel Grip. Rozpis jednotlivých vystoupení a čas otevření haly si před cestou ověřte u pořadatele.",
+        "practical": "Před návštěvou si ověřte pravidla vstupu do O2 areny. Čas začátku koncertu se může lišit od času otevření haly.",
+        "imageAlt": "Kapela KoRn – oficiální fotografie k pražskému koncertu"
+      },
+      "smsticket-68785": {
+        "category": "Festival",
+        "subtitle": "",
+        "introduction": "Za folkem a country do Českého Krumlova. V Zámecké jízdárně se představí mimo jiné Nezmaři, Hop Trop a Spirituál kvartet.",
+        "p1": "Druhý ročník festivalu propojí velkou scénu v sále Zámecké jízdárny s menší scénou ve stanu.",
+        "p2": "Vedle Nezmarů, Hop Tropu a Spirituál kvartetu jsou ohlášeni Michal Tučný revival, Liam Stayner and Hissboys, KaPyBaRa a DixiCK.",
+        "practical": "Podrobný časový rozpis jednotlivých kapel si před cestou ověřte u pořadatele. Uvedený čas patří začátku festivalu.",
+        "imageAlt": "Oficiální plakát Folk a country festivalu na krumlovském zámku"
+      },
+      "smsticket-76162": {
+        "category": "Sport",
+        "subtitle": "Galavečer profesionálního boxu",
+        "introduction": "Profesionální box v brněnském SONO. Galavečer TOHLE JE BOX přiváží do Brna večer profesionálních zápasů.",
+        "p1": "TOHLE JE BOX přiváží do Brna večer profesionálních zápasů. Série je spojená s bývalým mistrem světa a Evropy Lukášem Konečným, který dnes působí jako trenér a promotér.",
+        "p2": "V nabídce jsou různé kategorie vstupenek včetně VIP balíčků. Jejich umístění a obsah si porovnáte přímo u prodejce.",
+        "practical": "Konkrétní zápasovou kartu a pokyny k příchodu si před návštěvou ověřte u pořadatele.",
+        "imageAlt": "Oficiální plakát galavečera TOHLE JE BOX v Brně"
+      }
+    },
+    "related": {
+      "jesus-christ-superstar-london-2026": {
+        "title": "Jesus Christ Superstar v Londýně",
+        "description": "Naše recenze jiné inscenace stejného díla."
+      },
+      "fees-refund": {
+        "title": "Jak se vyznat ve vstupenkách",
+        "description": "Co si ověřit před nákupem vstupenek."
+      },
+      "stadium-entry": {
+        "title": "Vstup do haly bez zbytečného zdržení",
+        "description": "Ověřte si pravidla konkrétního místa."
+      },
+      "set-times-merch": {
+        "title": "Naplánujte si svůj večer",
+        "description": "Tipy k příchodu, přestávkám a merchi."
+      }
+    }
+  },
+  "en": {
+    "labels": {
+      "events": "Events",
+      "skip": "Skip to content",
+      "breadcrumbs": "Breadcrumb navigation",
+      "plan": "Plan your visit",
+      "facts": "Date and venue",
+      "when": "When",
+      "where": "Where",
+      "from": "From {price}",
+      "unknownPrice": "Check the price with the seller",
+      "priceChecked": "Price listed on {date}.",
+      "tickets": "Tickets at {partner}",
+      "purchaseNote": "View the current offer and complete your ticket purchase directly with {partner}.",
+      "affiliateNote": "AJSEE may earn a commission when you book through our link.",
+      "about": "About the production",
+      "expect": "What to expect",
+      "practical": "Before you go",
+      "related": "You may also find useful",
+      "allEvents": "All events",
+      "explore": "Explore other events",
+      "past": "This date has passed. Find more events in our listings.",
+      "cancelled": "This event has been cancelled. Contact the seller for ticket information.",
+      "postponed": "This event has been postponed. A new date has not yet been confirmed.",
+      "rescheduled": "New date. Previously: {date}.",
+      "termNote": "Select {date} at {time} with the seller. The link opens all dates for this production.",
+      "source": "Source: {partner}",
+      "languages": "Page language",
+      "read": "Read more",
+      "fromBlog": "From our blog",
+      "guide": "Practical guide",
+      "mainMenu": "Main navigation",
+      "legalLinks": "Legal links",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
+    },
+    "events": {
+      "colosseumticket-5470841-4205829": {
+        "category": "Musical",
+        "subtitle": "Národní divadlo moravskoslezské",
+        "introduction": "Tim Rice and Andrew Lloyd Webber’s rock opera in Ostrava. Plan a visit to Divadlo Jiřího Myrona.",
+        "p1": "The Passion story, rock music and Ostrava’s musical theatre company. Jesus Christ Superstar is presented by the National Moravian-Silesian Theatre at Divadlo Jiřího Myrona.",
+        "p2": "Andrew Lloyd Webber composed the music and Tim Rice wrote the lyrics. The Czech translation is by Michael Prostějovský, and the production was directed by Jiří Nekvasil.",
+        "practical": "Check the cast for your chosen performance and other details with the theatre or ticket seller before your visit.",
+        "imageAlt": "A scene from the Ostrava production of Jesus Christ Superstar"
+      },
+      "ticketmaster-Z698xZu0Z16vow_8_9": {
+        "category": "Concert",
+        "subtitle": "EURO TOUR 2026",
+        "introduction": "KoRn are coming to Prague’s O2 arena, joined by Architects and Pixel Grip.",
+        "p1": "An evening for fans of heavy music at Prague’s O2 arena. KoRn will perform as part of their EURO TOUR 2026.",
+        "p2": "Architects and Pixel Grip are announced as special guests. Check the running order and door opening time with the organiser before travelling.",
+        "practical": "Check the O2 arena’s admission rules before your visit. The concert start time may differ from the time the doors open.",
+        "imageAlt": "KoRn – official photograph for the Prague concert"
+      },
+      "smsticket-68785": {
+        "category": "Festival",
+        "subtitle": "",
+        "introduction": "Head to Český Krumlov for folk and country music. Nezmaři, Hop Trop and Spirituál kvartet are among the acts announced at Zámecká jízdárna.",
+        "p1": "The festival’s second edition combines a main stage in the riding hall with a smaller stage in a marquee.",
+        "p2": "Alongside Nezmaři, Hop Trop and Spirituál kvartet, the announced line-up includes Michal Tučný revival, Liam Stayner and Hissboys, KaPyBaRa and DixiCK.",
+        "practical": "Check the detailed running order with the organiser before travelling. The listed time is the festival’s start time.",
+        "imageAlt": "Official poster for the folk and country festival in Český Krumlov"
+      },
+      "smsticket-76162": {
+        "category": "Sport",
+        "subtitle": "Professional boxing gala",
+        "introduction": "Professional boxing at Brno’s SONO. TOHLE JE BOX brings an evening of professional bouts to the city.",
+        "p1": "TOHLE JE BOX brings professional boxing to Brno. The series is associated with former world and European champion Lukáš Konečný, who now works as a coach and promoter.",
+        "p2": "Several ticket categories, including VIP packages, are listed. Compare their locations and contents directly with the seller.",
+        "practical": "Check the confirmed fight card and arrival information with the organiser before your visit.",
+        "imageAlt": "Official poster for the TOHLE JE BOX gala in Brno"
+      }
+    },
+    "related": {
+      "jesus-christ-superstar-london-2026": {
+        "title": "Jesus Christ Superstar in London",
+        "description": "Our review of a different production of the same work."
+      },
+      "fees-refund": {
+        "title": "Making sense of tickets",
+        "description": "What to check before buying tickets."
+      },
+      "stadium-entry": {
+        "title": "A smoother arrival at the venue",
+        "description": "Check the rules of your chosen venue."
+      },
+      "set-times-merch": {
+        "title": "Plan your evening",
+        "description": "Tips on arrival, breaks and merchandise."
+      }
+    }
+  },
+  "de": {
+    "labels": {
+      "events": "Veranstaltungen",
+      "skip": "Zum Inhalt springen",
+      "breadcrumbs": "Brotkrumennavigation",
+      "plan": "Planen Sie Ihren Besuch",
+      "facts": "Termin und Veranstaltungsort",
+      "when": "Wann",
+      "where": "Wo",
+      "from": "Ab {price}",
+      "unknownPrice": "Den Preis erfahren Sie beim Anbieter",
+      "priceChecked": "Preis laut Angebot vom {date}.",
+      "tickets": "Tickets bei {partner}",
+      "purchaseNote": "Das aktuelle Angebot und den Ticketkauf finden Sie direkt bei {partner}.",
+      "affiliateNote": "Bei einem Kauf über unseren Link kann AJSEE eine Provision erhalten.",
+      "about": "Über die Inszenierung",
+      "expect": "Das erwartet Sie",
+      "practical": "Vor Ihrem Besuch",
+      "related": "Das könnte hilfreich sein",
+      "allEvents": "Alle Veranstaltungen",
+      "explore": "Weitere Veranstaltungen entdecken",
+      "past": "Dieser Termin liegt in der Vergangenheit. Weitere Veranstaltungen finden Sie in unserer Übersicht.",
+      "cancelled": "Diese Veranstaltung wurde abgesagt. Informationen zu Ihren Tickets erhalten Sie beim Anbieter.",
+      "postponed": "Diese Veranstaltung wurde verschoben. Ein neuer Termin ist noch nicht bestätigt.",
+      "rescheduled": "Neuer Termin. Ursprünglich: {date}.",
+      "termNote": "Wählen Sie beim Anbieter den {date} um {time} aus. Der Link öffnet alle Termine dieser Inszenierung.",
+      "source": "Quelle: {partner}",
+      "languages": "Sprache der Seite",
+      "read": "Mehr lesen",
+      "fromBlog": "Aus unserem Blog",
+      "guide": "Praktischer Ratgeber",
+      "mainMenu": "Hauptnavigation",
+      "legalLinks": "Rechtliche Informationen",
+      "openMenu": "Menü öffnen",
+      "closeMenu": "Menü schließen"
+    },
+    "events": {
+      "colosseumticket-5470841-4205829": {
+        "category": "Musical",
+        "subtitle": "Národní divadlo moravskoslezské",
+        "introduction": "Die Rockoper von Tim Rice und Andrew Lloyd Webber in Ostrava. Besuchen Sie das Divadlo Jiřího Myrona.",
+        "p1": "Die Passionsgeschichte, Rockmusik und das Musicalensemble aus Ostrava. Das Nationaltheater Mährisch-Schlesien zeigt Jesus Christ Superstar im Divadlo Jiřího Myrona.",
+        "p2": "Die Musik stammt von Andrew Lloyd Webber, die Texte von Tim Rice. Die tschechische Übertragung schuf Michael Prostějovský; Regie führte Jiří Nekvasil.",
+        "practical": "Prüfen Sie die Besetzung Ihres gewählten Termins und weitere Einzelheiten vor dem Besuch beim Theater oder Ticketanbieter.",
+        "imageAlt": "Szene aus der Inszenierung von Jesus Christ Superstar in Ostrava"
+      },
+      "ticketmaster-Z698xZu0Z16vow_8_9": {
+        "category": "Konzert",
+        "subtitle": "EURO TOUR 2026",
+        "introduction": "KoRn kommen in die Prager O2 arena. Mit dabei sind Architects und Pixel Grip.",
+        "p1": "Ein Abend für Fans harter Musik in der Prager O2 arena. KoRn treten im Rahmen ihrer EURO TOUR 2026 auf.",
+        "p2": "Als Special Guests sind Architects und Pixel Grip angekündigt. Informieren Sie sich vor der Anreise beim Veranstalter über die Spielreihenfolge und den Einlass.",
+        "practical": "Prüfen Sie vor dem Besuch die Einlassregeln der O2 arena. Konzertbeginn und Einlasszeit können voneinander abweichen.",
+        "imageAlt": "KoRn – offizielles Foto zum Konzert in Prag"
+      },
+      "smsticket-68785": {
+        "category": "Festival",
+        "subtitle": "",
+        "introduction": "Folk und Country in Český Krumlov: In der Zámecká jízdárna sind unter anderem Nezmaři, Hop Trop und Spirituál kvartet angekündigt.",
+        "p1": "Die zweite Ausgabe des Festivals verbindet eine große Bühne im Saal der Schlossreithalle mit einer kleineren Bühne im Zelt.",
+        "p2": "Neben Nezmaři, Hop Trop und Spirituál kvartet sind Michal Tučný revival, Liam Stayner and Hissboys, KaPyBaRa und DixiCK angekündigt.",
+        "practical": "Prüfen Sie den genauen Spielplan vor der Anreise beim Veranstalter. Die angegebene Uhrzeit bezeichnet den Festivalbeginn.",
+        "imageAlt": "Offizielles Plakat des Folk- und Countryfestivals in Český Krumlov"
+      },
+      "smsticket-76162": {
+        "category": "Sport",
+        "subtitle": "Profi-Boxgala",
+        "introduction": "Profiboxen im SONO in Brno. TOHLE JE BOX bringt einen Abend mit Profikämpfen in die Stadt.",
+        "p1": "TOHLE JE BOX präsentiert Profiboxen in Brno. Die Reihe ist mit dem früheren Welt- und Europameister Lukáš Konečný verbunden, der heute als Trainer und Promoter arbeitet.",
+        "p2": "Es werden verschiedene Ticketkategorien einschließlich VIP-Paketen angeboten. Vergleichen Sie Plätze und Leistungen direkt beim Anbieter.",
+        "practical": "Prüfen Sie vor dem Besuch die bestätigten Kämpfe und Hinweise zur Ankunft beim Veranstalter.",
+        "imageAlt": "Offizielles Plakat der Boxgala TOHLE JE BOX in Brno"
+      }
+    },
+    "related": {
+      "jesus-christ-superstar-london-2026": {
+        "title": "Jesus Christ Superstar in London",
+        "description": "Unsere Rezension einer anderen Inszenierung desselben Werks."
+      },
+      "fees-refund": {
+        "title": "Tickets richtig vergleichen",
+        "description": "Was Sie vor dem Ticketkauf prüfen sollten."
+      },
+      "stadium-entry": {
+        "title": "Entspannt zur Veranstaltung",
+        "description": "Prüfen Sie die Regeln des jeweiligen Veranstaltungsorts."
+      },
+      "set-times-merch": {
+        "title": "Planen Sie Ihren Abend",
+        "description": "Tipps zu Ankunft, Pausen und Merchandise."
+      }
+    }
+  },
+  "sk": {
+    "labels": {
+      "events": "Podujatia",
+      "skip": "Prejsť na obsah",
+      "breadcrumbs": "Drobčeková navigácia",
+      "plan": "Naplánujte si návštevu",
+      "facts": "Informácie o termíne",
+      "when": "Kedy",
+      "where": "Kde",
+      "from": "Od {price}",
+      "unknownPrice": "Cenu overíte u predajcu",
+      "priceChecked": "Cena podľa ponuky z {date}.",
+      "tickets": "Vstupenky u {partner}",
+      "purchaseNote": "Aktuálnu ponuku si pozriete a vstupenky kúpite priamo u {partner}.",
+      "affiliateNote": "Pri nákupe cez náš odkaz môže AJSEE získať províziu.",
+      "about": "O predstavení",
+      "expect": "Na čo sa tešiť",
+      "practical": "Než vyrazíte",
+      "related": "Mohlo by sa vám hodiť",
+      "allEvents": "Všetky podujatia",
+      "explore": "Preskúmať ďalšie podujatia",
+      "past": "Tento termín je už v minulosti. Ďalšie akcie nájdete v našom prehľade podujatí.",
+      "cancelled": "Toto podujatie bolo zrušené. Informácie k vstupenkám poskytne predajca.",
+      "postponed": "Podujatie bolo odložené. Nový termín zatiaľ nie je potvrdený.",
+      "rescheduled": "Nový termín. Pôvodne: {date}.",
+      "termNote": "U predajcu vyberte {date} o {time}. Odkaz otvorí ponuku všetkých termínov tohto titulu.",
+      "source": "Podklad: {partner}",
+      "languages": "Jazyk stránky",
+      "read": "Prečítať viac",
+      "fromBlog": "Z nášho blogu",
+      "guide": "Praktický sprievodca",
+      "mainMenu": "Hlavné menu",
+      "legalLinks": "Právne odkazy",
+      "openMenu": "Otvoriť menu",
+      "closeMenu": "Zavrieť menu"
+    },
+    "events": {
+      "colosseumticket-5470841-4205829": {
+        "category": "Muzikál",
+        "subtitle": "Národní divadlo moravskoslezské",
+        "introduction": "Rocková opera Tima Ricea a Andrewa Lloyda Webbera v Ostrave. Vyrazte do Divadla Jiřího Myrona.",
+        "p1": "Pašiový príbeh, rocková hudba a ostravský muzikálový súbor. Jesus Christ Superstar uvádza Národní divadlo moravskoslezské v Divadle Jiřího Myrona.",
+        "p2": "Hudbu zložil Andrew Lloyd Webber, libreto napísal Tim Rice. České prebásnenie je dielom Michaela Prostějovského a inscenáciu režíroval Jiří Nekvasil.",
+        "practical": "Obsadenie konkrétnej reprízy a ďalšie podrobnosti si pred návštevou overte u divadla alebo predajcu.",
+        "imageAlt": "Scéna z ostravskej inscenácie Jesus Christ Superstar"
+      },
+      "ticketmaster-Z698xZu0Z16vow_8_9": {
+        "category": "Koncert",
+        "subtitle": "EURO TOUR 2026",
+        "introduction": "KoRn mieria do pražskej O2 areny. Spolu s nimi vystúpia aj Architects a Pixel Grip.",
+        "p1": "Večer pre fanúšikov tvrdej hudby v pražskej O2 arene. KoRn tu vystúpia v rámci EURO TOUR 2026.",
+        "p2": "Ako špeciálni hostia sú ohlásení Architects a Pixel Grip. Poradie vystúpení a čas otvorenia haly si pred cestou overte u usporiadateľa.",
+        "practical": "Pred návštevou si overte pravidlá vstupu do O2 areny. Čas začiatku koncertu sa môže líšiť od času otvorenia haly.",
+        "imageAlt": "KoRn – oficiálna fotografia k pražskému koncertu"
+      },
+      "smsticket-68785": {
+        "category": "Festival",
+        "subtitle": "",
+        "introduction": "Za folkom a country do Českého Krumlova. V Zámeckej jízdárne sa predstavia okrem iných Nezmaři, Hop Trop a Spirituál kvartet.",
+        "p1": "Druhý ročník festivalu prepojí veľkú scénu v sále Zámeckej jízdárny s menšou scénou v stane.",
+        "p2": "Okrem Nezmarov, Hop Tropu a Spirituál kvartetu sú ohlásení Michal Tučný revival, Liam Stayner and Hissboys, KaPyBaRa a DixiCK.",
+        "practical": "Podrobný časový rozpis kapiel si pred cestou overte u usporiadateľa. Uvedený čas patrí začiatku festivalu.",
+        "imageAlt": "Oficiálny plagát folk a country festivalu v Českom Krumlove"
+      },
+      "smsticket-76162": {
+        "category": "Šport",
+        "subtitle": "Galavečer profesionálneho boxu",
+        "introduction": "Profesionálny box v brnianskom SONO. TOHLE JE BOX prináša do Brna večer profesionálnych zápasov.",
+        "p1": "TOHLE JE BOX prináša do Brna profesionálny box. Séria je spojená s bývalým majstrom sveta a Európy Lukášom Konečným, ktorý dnes pôsobí ako tréner a promotér.",
+        "p2": "V ponuke sú rôzne kategórie vstupeniek vrátane VIP balíčkov. Ich umiestnenie a obsah si porovnáte priamo u predajcu.",
+        "practical": "Konkrétnu zápasovú kartu a pokyny k príchodu si pred návštevou overte u usporiadateľa.",
+        "imageAlt": "Oficiálny plagát galavečera TOHLE JE BOX v Brne"
+      }
+    },
+    "related": {
+      "jesus-christ-superstar-london-2026": {
+        "title": "Jesus Christ Superstar v Londýne",
+        "description": "Naša recenzia inej inscenácie rovnakého diela."
+      },
+      "fees-refund": {
+        "title": "Ako sa vyznať vo vstupenkách",
+        "description": "Čo si overiť pred nákupom vstupeniek."
+      },
+      "stadium-entry": {
+        "title": "Vstup do haly bez zbytočného zdržania",
+        "description": "Overte si pravidlá konkrétneho miesta."
+      },
+      "set-times-merch": {
+        "title": "Naplánujte si svoj večer",
+        "description": "Tipy k príchodu, prestávkam a merchu."
+      }
+    }
+  },
+  "pl": {
+    "labels": {
+      "events": "Wydarzenia",
+      "skip": "Przejdź do treści",
+      "breadcrumbs": "Nawigacja okruszkowa",
+      "plan": "Zaplanuj wizytę",
+      "facts": "Termin i miejsce",
+      "when": "Kiedy",
+      "where": "Gdzie",
+      "from": "Od {price}",
+      "unknownPrice": "Sprawdź cenę u sprzedawcy",
+      "priceChecked": "Cena według oferty z {date}.",
+      "tickets": "Bilety w {partner}",
+      "purchaseNote": "Sprawdź aktualną ofertę i kup bilety bezpośrednio w {partner}.",
+      "affiliateNote": "Kupując przez nasz link, możesz wesprzeć AJSEE prowizją od sprzedaży.",
+      "about": "O spektaklu",
+      "expect": "Czego się spodziewać",
+      "practical": "Zanim wyruszysz",
+      "related": "To może się przydać",
+      "allEvents": "Wszystkie wydarzenia",
+      "explore": "Odkryj inne wydarzenia",
+      "past": "Ten termin już minął. Inne wydarzenia znajdziesz w naszym zestawieniu.",
+      "cancelled": "To wydarzenie zostało odwołane. Informacje o biletach uzyskasz u sprzedawcy.",
+      "postponed": "Wydarzenie zostało przełożone. Nowy termin nie został jeszcze potwierdzony.",
+      "rescheduled": "Nowy termin. Poprzednio: {date}.",
+      "termNote": "U sprzedawcy wybierz {date}, godz. {time}. Link otwiera wszystkie terminy tego spektaklu.",
+      "source": "Źródło: {partner}",
+      "languages": "Język strony",
+      "read": "Czytaj więcej",
+      "fromBlog": "Z naszego bloga",
+      "guide": "Praktyczny poradnik",
+      "mainMenu": "Nawigacja główna",
+      "legalLinks": "Informacje prawne",
+      "openMenu": "Otwórz menu",
+      "closeMenu": "Zamknij menu"
+    },
+    "events": {
+      "colosseumticket-5470841-4205829": {
+        "category": "Musical",
+        "subtitle": "Národní divadlo moravskoslezské",
+        "introduction": "Rock opera Tima Rice’a i Andrew Lloyda Webbera w Ostrawie. Zaplanuj wizytę w Divadlo Jiřího Myrona.",
+        "p1": "Historia pasyjna, rockowa muzyka i ostrawski zespół musicalowy. Narodowy Teatr Morawsko-Śląski wystawia Jesus Christ Superstar w Divadlo Jiřího Myrona.",
+        "p2": "Muzykę skomponował Andrew Lloyd Webber, a teksty napisał Tim Rice. Czeski przekład przygotował Michael Prostějovský, a spektakl wyreżyserował Jiří Nekvasil.",
+        "practical": "Przed wizytą sprawdź obsadę wybranego spektaklu i pozostałe szczegóły w teatrze lub u sprzedawcy biletów.",
+        "imageAlt": "Scena z ostrawskiej inscenizacji Jesus Christ Superstar"
+      },
+      "ticketmaster-Z698xZu0Z16vow_8_9": {
+        "category": "Koncert",
+        "subtitle": "EURO TOUR 2026",
+        "introduction": "KoRn zagrają w praskiej O2 arenie. Towarzyszyć im będą Architects i Pixel Grip.",
+        "p1": "Wieczór dla fanów ciężkiej muzyki w praskiej O2 arenie. KoRn wystąpią w ramach EURO TOUR 2026.",
+        "p2": "Jako goście specjalni zapowiedziani są Architects i Pixel Grip. Przed wyjazdem sprawdź u organizatora kolejność występów i godzinę otwarcia hali.",
+        "practical": "Przed wizytą sprawdź zasady wstępu do O2 areny. Godzina rozpoczęcia koncertu może różnić się od godziny otwarcia drzwi.",
+        "imageAlt": "KoRn – oficjalne zdjęcie promujące koncert w Pradze"
+      },
+      "smsticket-68785": {
+        "category": "Festiwal",
+        "subtitle": "",
+        "introduction": "Folk i country w Českým Krumlovie. W Zámeckiej jízdárni wystąpią między innymi Nezmaři, Hop Trop i Spirituál kvartet.",
+        "p1": "Druga edycja festiwalu połączy dużą scenę w sali zamkowej ujeżdżalni z mniejszą sceną w namiocie.",
+        "p2": "Oprócz Nezmaři, Hop Trop i Spirituál kvartet zapowiedziano Michal Tučný revival, Liam Stayner and Hissboys, KaPyBaRa i DixiCK.",
+        "practical": "Przed podróżą sprawdź szczegółowy harmonogram u organizatora. Podana godzina oznacza początek festiwalu.",
+        "imageAlt": "Oficjalny plakat festiwalu folk i country w Českým Krumlovie"
+      },
+      "smsticket-76162": {
+        "category": "Sport",
+        "subtitle": "Gala boksu zawodowego",
+        "introduction": "Boks zawodowy w brneńskim SONO. TOHLE JE BOX zaprasza na wieczór profesjonalnych walk.",
+        "p1": "TOHLE JE BOX prezentuje boks zawodowy w Brnie. Cykl związany jest z byłym mistrzem świata i Europy Lukášem Konečnym, który obecnie pracuje jako trener i promotor.",
+        "p2": "Dostępne są różne kategorie biletów, w tym pakiety VIP. Ich lokalizację i zawartość porównasz bezpośrednio u sprzedawcy.",
+        "practical": "Przed wizytą sprawdź potwierdzoną kartę walk oraz informacje dotyczące przyjazdu u organizatora.",
+        "imageAlt": "Oficjalny plakat gali TOHLE JE BOX w Brnie"
+      }
+    },
+    "related": {
+      "jesus-christ-superstar-london-2026": {
+        "title": "Jesus Christ Superstar w Londynie",
+        "description": "Nasza recenzja innej inscenizacji tego samego dzieła."
+      },
+      "fees-refund": {
+        "title": "Jak porównać bilety",
+        "description": "Co sprawdzić przed zakupem biletów."
+      },
+      "stadium-entry": {
+        "title": "Sprawne wejście na wydarzenie",
+        "description": "Sprawdź zasady obowiązujące w danym obiekcie."
+      },
+      "set-times-merch": {
+        "title": "Zaplanuj swój wieczór",
+        "description": "Wskazówki dotyczące przyjazdu, przerw i gadżetów."
+      }
+    }
+  },
+  "hu": {
+    "labels": {
+      "events": "Események",
+      "skip": "Ugrás a tartalomhoz",
+      "breadcrumbs": "Morzsamenü",
+      "plan": "Tervezze meg látogatását",
+      "facts": "Időpont és helyszín",
+      "when": "Mikor",
+      "where": "Hol",
+      "from": "{price}-tól",
+      "unknownPrice": "Az árat a jegyértékesítőnél ellenőrizheti",
+      "priceChecked": "A(z) {date} napján feltüntetett ár.",
+      "tickets": "Jegyek: {partner}",
+      "purchaseNote": "Az aktuális kínálatot közvetlenül a(z) {partner} oldalán tekintheti meg, és ott vásárolhat jegyet.",
+      "affiliateNote": "A linkünkön keresztül történő vásárlás után az AJSEE jutalékot kaphat.",
+      "about": "Az előadásról",
+      "expect": "Mire számíthat",
+      "practical": "Indulás előtt",
+      "related": "Ez is hasznos lehet",
+      "allEvents": "Összes esemény",
+      "explore": "További események felfedezése",
+      "past": "Ez az időpont már elmúlt. További eseményeket találhat kínálatunkban.",
+      "cancelled": "Ezt az eseményt törölték. A jegyekkel kapcsolatban a jegyértékesítő ad tájékoztatást.",
+      "postponed": "Az eseményt elhalasztották. Az új időpontot még nem erősítették meg.",
+      "rescheduled": "Új időpont. Korábban: {date}.",
+      "termNote": "A jegyértékesítőnél válassza ezt az időpontot: {date}, {time}. A link az előadás összes időpontját megnyitja.",
+      "source": "Forrás: {partner}",
+      "languages": "Az oldal nyelve",
+      "read": "Tovább olvasom",
+      "fromBlog": "Blogunkból",
+      "guide": "Gyakorlati útmutató",
+      "mainMenu": "Főmenü",
+      "legalLinks": "Jogi hivatkozások",
+      "openMenu": "Menü megnyitása",
+      "closeMenu": "Menü bezárása"
+    },
+    "events": {
+      "colosseumticket-5470841-4205829": {
+        "category": "Musical",
+        "subtitle": "Národní divadlo moravskoslezské",
+        "introduction": "Tim Rice és Andrew Lloyd Webber rockoperája Ostravában. Tervezzen látogatást a Divadlo Jiřího Myrona színházba.",
+        "p1": "A passió története, rockzene és az ostravai musicaltársulat. A Morva-Sziléziai Nemzeti Színház a Divadlo Jiřího Myrona színpadán mutatja be a Jesus Christ Superstar című művet.",
+        "p2": "A zenét Andrew Lloyd Webber, a dalszövegeket Tim Rice írta. A cseh fordítás Michael Prostějovský munkája, az előadást Jiří Nekvasil rendezte.",
+        "practical": "Látogatása előtt ellenőrizze a kiválasztott előadás szereposztását és a további részleteket a színháznál vagy a jegyértékesítőnél.",
+        "imageAlt": "Jelenet a Jesus Christ Superstar ostravai előadásából"
+      },
+      "ticketmaster-Z698xZu0Z16vow_8_9": {
+        "category": "Koncert",
+        "subtitle": "EURO TOUR 2026",
+        "introduction": "A KoRn a prágai O2 arenába érkezik. Velük lép fel az Architects és a Pixel Grip is.",
+        "p1": "Egy este a kemény zene rajongóinak a prágai O2 arenában. A KoRn az EURO TOUR 2026 keretében lép fel.",
+        "p2": "Különleges vendégként az Architects és a Pixel Grip szerepel a programban. Indulás előtt ellenőrizze a fellépések sorrendjét és a kapunyitás idejét a szervezőnél.",
+        "practical": "Látogatása előtt ellenőrizze az O2 arena belépési szabályait. A koncert kezdete és a kapunyitás időpontja eltérhet.",
+        "imageAlt": "KoRn – a prágai koncert hivatalos promóciós fotója"
+      },
+      "smsticket-68785": {
+        "category": "Fesztivál",
+        "subtitle": "",
+        "introduction": "Folk és country Český Krumlovban. A Zámecká jízdárna fellépői között szerepel a Nezmaři, a Hop Trop és a Spirituál kvartet.",
+        "p1": "A fesztivál második alkalommal kapcsolja össze a kastély lovardájának nagy színpadát egy kisebb, sátorban felállított színpaddal.",
+        "p2": "A Nezmaři, a Hop Trop és a Spirituál kvartet mellett a Michal Tučný revival, a Liam Stayner and Hissboys, a KaPyBaRa és a DixiCK is szerepel a meghirdetett programban.",
+        "practical": "Indulás előtt ellenőrizze a részletes programot a szervezőnél. A feltüntetett időpont a fesztivál kezdetét jelöli.",
+        "imageAlt": "A Český Krumlov-i folk- és countryfesztivál hivatalos plakátja"
+      },
+      "smsticket-76162": {
+        "category": "Sport",
+        "subtitle": "Profi ökölvívógála",
+        "introduction": "Profi ökölvívás a brnói SONO-ban. A TOHLE JE BOX egy hivatásos mérkőzésekkel teli estét hoz a városba.",
+        "p1": "A TOHLE JE BOX profi ökölvívást hoz Brnóba. A sorozat a korábbi világ- és Európa-bajnok Lukáš Konečný nevéhez kötődik, aki ma edzőként és promóterként dolgozik.",
+        "p2": "Több jegykategória, köztük VIP-csomagok is szerepelnek a kínálatban. Helyüket és tartalmukat közvetlenül a jegyértékesítőnél hasonlíthatja össze.",
+        "practical": "Látogatása előtt ellenőrizze a végleges párosításokat és az érkezési tudnivalókat a szervezőnél.",
+        "imageAlt": "A brnói TOHLE JE BOX gála hivatalos plakátja"
+      }
+    },
+    "related": {
+      "jesus-christ-superstar-london-2026": {
+        "title": "Jesus Christ Superstar Londonban",
+        "description": "Beszámolónk ugyanazon mű egy másik előadásáról."
+      },
+      "fees-refund": {
+        "title": "Eligazodás a jegyek között",
+        "description": "Mit érdemes ellenőrizni jegyvásárlás előtt?"
+      },
+      "stadium-entry": {
+        "title": "Gördülékeny belépés a helyszínre",
+        "description": "Ellenőrizze a kiválasztott helyszín szabályait."
+      },
+      "set-times-merch": {
+        "title": "Tervezze meg az estét",
+        "description": "Tippek az érkezéshez, szünetekhez és ajándéktárgyakhoz."
+      }
+    }
+  }
+}

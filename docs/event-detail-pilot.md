@@ -1,90 +1,106 @@
-# AJSEE: pilot samostatných stránek akcí
+# AJSEE: čtyři samostatné detaily akcí
 
-Stav k 20. říjnu 2026: konkrétní návrh čtyř stránek, nikoli již publikované
-detaily. Výběr kombinuje muzikál, koncert, festival a sport. Všechny čtyři akce
-jsou v aktuálních veřejných datech AJSEE; termíny byly porovnány i se stránkami
-prodejců. Samotné tlačítko pro nákup nedokládá volná konkrétní sedadla.
+Pilot má 24 stránek: čtyři konkrétní termíny v češtině, slovenštině,
+angličtině, němčině, polštině a maďarštině. Kanonická adresa má tvar
+`/udalosti/<slug>/`, překlady přidávají jazykový prefix. ID termínu ani
+adresa se při přesunu akce nemění. Seznam pilotu není žebříček prodejnosti.
 
-| Akce | Vybraný termín, místní čas | Místo | Záznam feedu |
-| --- | --- | --- | --- |
-| Jesus Christ Superstar (NDM) | 13. 12. 2026, 16:00 | Divadlo Jiřího Myrona, Ostrava | `colosseumticket-5470841-4205829` |
-| KoRn | 16. 11. 2026, 19:30 | O2 arena, Praha | `ticketmaster-Z698xZu0Z16vow_8_9` |
-| Folk a country festival na krumlovském zámku | 24. 4. 2027, 14:00 | Zámecká jízdárna, Český Krumlov | `smsticket-68785` |
-| TOHLE JE BOX – Galavečer profesionálního boxu | 21. 11. 2026, 18:00 | Sono Centrum, Brno | `smsticket-76162` |
+| Akce | ID konkrétního termínu | Slug |
+| --- | --- | --- |
+| Jesus Christ Superstar (NDM), Ostrava | `colosseumticket-5470841-4205829` | `jesus-christ-superstar-ostrava-2026-12-13` |
+| KoRn, Praha | `ticketmaster-Z698xZu0Z16vow_8_9` | `korn-praha-2026-11-16` |
+| Folk a country festival, Český Krumlov | `smsticket-68785` | `folk-country-cesky-krumlov-2027-04-24` |
+| TOHLE JE BOX, Brno | `smsticket-76162` | `tohle-je-box-brno-2026-11-21` |
 
-## Podklady a ověření
+## Obsah a navigace
 
-- [Jesus Christ Superstar u ColosseumTicket](https://colosseumticket.cz/cs/akce/5470841-jesus-christ-superstar)
-  uvádí prosincový termín i místo. Feed nese celé ID konkrétní reprízy;
-  partnerský odkaz míří na výběr termínu daného titulu.
-- [KoRn u Ticketmaster](https://www.ticketmaster.cz/event/korn-vstupenky/1472650657)
-  potvrzuje 16. listopadu v 19:30 a O2 arenu. Nákup zachová stávající serverový
-  přechod `tmOutbound` a Impact.
-- [Folk a country festival u smsticket](https://www.smsticket.cz/vstupenky/68785-folk-a-country-festival-na-krumlovskem-zamku-zamecka-jizdarna-cesky-krumlov-nezmari-hop-trop-spiritual-kvartet)
-  uvádí 24. dubna 2027 ve 14:00 a Zámeckou jízdárnu.
-- [TOHLE JE BOX u smsticket](https://www.smsticket.cz/vstupenky/76162-tohle-je-box-galavecer-profesionalniho-boxu-sono-centrum-brno)
-  potvrzuje 21. listopadu 2026 v 18:00 a Sono Centrum.
+`content/event-detail-pilot.json` určuje identitu, původní redakční obsah,
+obrázky, ověřené nákupní odkazy a původní termín. `content/event-detail-copy.json`
+obsahuje skutečné překlady všech textů, stavů, popisků, alternativních textů
+obrázků a souvisejících článků. V názvech účinkujících a míst se zachovávají
+vlastní jména. Překlad stránky netvrdí, že představení probíhá v tomto jazyce.
 
-Podklad SMS Ticket byl načten z produkčního snapshotu s časem synchronizace
-`2026-10-20T13:09:32.500Z` (3 170 záznamů). ColosseumTicket má v kontrolovaném
-produkčním snapshotu 2 276 záznamů. Počty označují obsah konkrétních snapshotů,
-nikoli úplnou nabídku všech partnerů.
+Každý detail obsahuje název, úvod, fotografii/plakát, datum, místo, cenu pouze
+při čerstvém podkladu, tlačítko partnera, praktické informace a související
+čtení. Na mobilu jsou vstupenky pod obrázkem před delším textem. Stránky
+používají společnou navigaci, patičku, oba barevné režimy a ovládání souhlasů.
+Přepínač jazyků vede vždy na stejný konkrétní termín.
 
-## Podoba a text
+Odkazy na detaily jsou v prvním HTML homepage i Událostí ve všech šesti
+jazycích. Titulek a obrázek karty otevřou detail jen při přesné shodě jednoho
+ze čtyř ID; další repríza stejného titulu dál otevírá původní modal. Tlačítko
+Vstupenky na kartě nadále vede přímo k partnerovi.
 
-Zachovat současné písmo, barvy, hlavičku, patičku a light/dark režim AJSEE.
-Každý detail začne názvem akce, krátkým původním úvodem, datem a místem.
-Vedle hlavního obrázku bude na desktopu kompaktní blok vstupenek; na mobilu
-se přesune pod hlavní informace. Cena se zobrazí jen z platného podkladu,
-jinak „Cenu ověříte u prodejce“. CTA pojmenuje partnera, například
-„Vstupenky u ColosseumTicket“. U odkazu bude srozumitelně uvedeno, že výběr
-míst a nákup dokončí návštěvník u partnera.
+## Aktuální data a chování při výpadku
 
-Návrhy krátkých úvodů:
+`shared/event-details/sources.js` používá existující normalizaci veřejných
+feedů smsticket a ColosseumTicket. Ticketmaster ověřuje konkrétní ID přes
+Discovery API; bez klíče při lokálním sestavení používá existující proxy a
+přesnou shodu výsledného ID. Nikdy nevybere podobně pojmenovanou jinou akci.
 
-- **Jesus Christ Superstar:** Rocková opera Tima Rice a Andrewa Lloyda
-  Webbera se vrací na scénu Divadla Jiřího Myrona. Prosincovou reprízu
-  v Ostravě si můžete naplánovat na neděli 13. prosince od 16:00.
-- **KoRn:** KoRn míří do pražské O2 areny. Koncert začne v pondělí
-  16. listopadu v 19:30.
-- **Folk a country festival:** Za folkem a country do Českého Krumlova.
-  V sobotu 24. dubna 2027 se v Zámecké jízdárně představí mimo jiné Nezmaři,
-  Hop Trop a Spirituál kvartet.
-- **TOHLE JE BOX:** Profesionální box v brněnském SONO. Galavečer TOHLE JE BOX
-  začne v sobotu 21. listopadu v 18:00.
+- Sestavení vytvoří výchozí snapshot z právě synchronizovaných feedů.
+- `event-detail-refresh` jej v produkci obnovuje v 00:15, 06:15, 12:15
+  a 18:15 UTC; jde o čtyři spuštění denně, nikoli o pevné pražské hodiny.
+- Jednotliví partneři se obnovují nezávisle. Neúplný, poškozený, příliš malý
+  nebo zastaralý feed se nepovažuje za nové ověření.
+- Snapshot je v Netlify Blobs `event-details-v1`, klíč `current`. Náhled
+  neprovádí pravidelné zápisy; plánované funkce běží až v produkci.
+- Návštěva stránky nepoptává katalog partnera. Server přečte snapshot a
+  vygeneruje úplné HTML; při výpadku Blobs použije snapshot ze sestavení.
+- Cena platí nejvýše 24 hodin od skutečného ověření. Tato lhůta se kontroluje
+  při každém vykreslení, i když pravidelná obnova selhává. Poté se cena a
+  cenová nabídka v JSON-LD odstraní; zůstane odkaz na nabídku prodejce.
+- Nula ani chybějící cena nejsou důkazem vstupu zdarma. Nezobrazují se jako
+  nulová cena. Změna ceny se nikdy nepřenáší z jiného termínu stejného titulu.
+- Vynechání ID z feedu zachová stránku a poslední doložený termín; neznamená
+  zrušení, vyprodání ani odložení. Původní cena po 24 hodinách propadne.
+- Pouze výslovný stav poskytovatele změní akci na zrušenou či odloženou.
+  Ticketmaster `offsale` se nevydává za vyprodání. Po změně data zůstává
+  původní datum v `previousStartDate` a viditelném upozornění na přesun.
+- Při nejednoznačném lokálním čase během změny letního času se datum bez
+  výslovného UTC offsetu nepřepíše. Časy patří zóně Europe/Prague.
+- Po uplynutí kalendářního dne v Praze zůstává užitečná stránka s označením
+  minulého termínu; nákupní CTA se nezobrazuje. Konec představení se neodhaduje.
 
-Další obsah tvoří stručné představení programu, ověřená adresa, dostupné
-praktické informace a související články AJSEE. Neopisovat celý partnerský
-popis ani nedoplňovat neověřené obsazení, délku nebo dopravní informace.
+Při přípravě 21. října 2026 feed potvrzoval termín a cenu Jesus Christ
+Superstar. U boxu uváděl 0 Kč, což se správně změnilo na neznámou cenu.
+Krumlovský festival ve feedu chyběl, ačkoliv jeho prodejní stránka byla
+20. října ověřena jako aktivní. Chybějící feed tak nezrušil jeho detail.
 
-## Technický rozsah
+## Renderování, SEO a měření
 
-1. Každý vybraný termín dostane stálou URL, která přežije aktualizaci feedu.
-   Návrh: `/udalosti/korn-praha-2026-11-16/`; nejde zatím o existující URL.
-2. Název, datum, místo a hlavní text budou čitelné v prvním HTML i bez
-   JavaScriptu. Karty a modal mohou odkazovat na tentýž detail.
-3. Strukturovaná data `Event` popíší konkrétní termín a skutečné místo,
-   s časovou zónou `Europe/Prague`. Cena a dostupnost nabídky se uvedou jen,
-   pokud jsou aktuálně doložené. Partner není automaticky pořadatel.
-4. Jeden zdroj pravdy propojí feed, viditelný obsah a JSON-LD. Chybějící
-   událost v novém neúplném feedu sama neznamená zrušenou nebo vyprodanou akci.
-5. Přesunutí či zrušení aktualizuje stránku a stav události. Po skončení
-   detail zůstane s jasným označením a užitečným dalším obsahem; nepřesměrovat
-   automaticky každý starý termín na nesouvisející nabídku.
-6. Zachovat přesné partnerské URL a affiliate parametry. Proklik použije
-   společné měření `ajsee_partner_click`, nové umístění `event_detail` a celé
-   `partner_event_id`. Bez souhlasu se analytika nespustí.
-7. Před zveřejněním ověřit vlastní canonical, odkazy, obrázky, stavové kódy,
-   JSON-LD, mobil a oba barevné režimy. Do sitemap patří až zveřejněné detaily;
-   jazykové alternativy až po skutečném překladu.
+`build-event-details.mjs` vytváří 24 statických stránek a sedm souborů v
+`dist/event-detail-assets/`: šest lokalizovaných HTML šablon a výchozí data.
+`event-detail-page` má vlastní cesty pro detaily a používá stejné vykreslení
+jako build. Soubory pro server jsou výslovně zahrnuté do balíčku funkce.
 
-Oporou pro schéma jsou [pokyny Google pro události](https://developers.google.com/search/docs/appearance/structured-data/event)
-a [typ Event na Schema.org](https://schema.org/Event). Nasazení validního
-schématu nezaručuje indexaci ani konkrétní podobu výsledku v Googlu či AI.
+Obsah, metadata, vlastní canonical, sedm jazykových alternativ a JSON-LD
+jsou v první odpovědi serveru bez JavaScriptu. `Event` a viditelné údaje
+používají stejný termín, místo a čerstvou cenu. `Offer` neobsahuje vymyšlené
+`InStock`, konec akce, bezplatné vstupné ani prodejce vydávaného za pořadatele.
+Sitemap obsahuje 24 nových stránek, celkem 222 adres; staré odstraněné články
+se do ní nevracejí. Neznámé slugs vracejí skutečnou 404.
 
-## Vyhodnocení pilotu
+Původní `/previews/event-details/` dál slouží jako neindexovaný český návrh.
+Produkční data a všechny překlady se ověřují na skutečných `/udalosti/`
+cestách náhledu nasazení. Náhled designu se nepřidává do sitemap.
 
-Po zveřejnění porovnat indexaci, relevantní dotazy a zobrazení v Search
-Console a počet uživatelů přecházejících k partnerům v GA4. Výsledky posuzovat
-pro jednotlivé stránky a před konáním akce; chybějící zobrazení po několika
-dnech není důvod automaticky vyrábět stovky dalších detailů.
+Prokliky vyžadují souhlas s analytikou a používají `ajsee_partner_click`,
+`placement=event_detail`, přesné `partner_event_id` a jazyk stránky. Samotný
+přechod na interní detail se nezapočítává jako proklik k partnerovi.
+Ticketmaster zachovává `tmOutbound`/Impact; ColosseumTicket přidává svůj
+identifikátor stávajícím serverovým přechodem, smsticket původním `a_box`.
+Při vizuálních kontrolách se nákupní odkazy neaktivují.
+
+## Ověření a vyhodnocení
+
+Cílené testy pokrývají obnovu, výpadky, chybějící ID, přesuny a DST, propadnutí
+ceny při vykreslení, soulad HTML/schema ve všech šesti jazycích, serverové
+GET/HEAD/404/405, zachování partnerských odkazů a selektivní navigaci karet.
+Kontroly sestaveného výstupu ověřují všech 24 stránek a sitemapu. Balení
+Netlify funkcí ověřuje přítomnost všech serverových podkladů.
+
+Po nasazení porovnávat indexaci a relevantní dotazy v Search Console a
+počet uživatelů přecházejících z detailů k partnerům v GA4. Proklik není
+potvrzený prodej ani provize; uživatele nelze sčítat z jednotlivých řádků.
+Několik dní bez zobrazení není důvod vyrábět stovky dalších stránek.

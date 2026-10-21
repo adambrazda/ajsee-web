@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import { JSDOM } from 'jsdom';
 import pilot from '../content/event-detail-pilot.json' with { type: 'json' };
 import COPY from '../content/event-detail-copy.json' with { type: 'json' };
-import { advanceOccurrence, resolveEvent, localDateTime, PRICE_TTL_MS, LANGUAGES, detailPath, pageCacheSeconds } from '../shared/event-details/state.js';
+import { advanceOccurrence, resolveEvent, localDateTime, PRICE_TTL_MS, LANGUAGES, detailPath, pageCacheSeconds, mergeEventSnapshots } from '../shared/event-details/state.js';
 import { renderEventPage } from '../shared/event-details/page.js';
 import { collectEventDetails } from '../shared/event-details/sources.js';
 import { createEventDetailPage } from '../netlify/functions/event-detail-page.js';
@@ -52,6 +52,16 @@ test('CDN caching cannot extend the verified price or a past event into the next
   assert.equal(pageCacheSeconds(current, new Date(+now + PRICE_TTL_MS - 2000)), 2);
   assert.equal(pageCacheSeconds({ ...current, price: null }, new Date('2026-12-13T23:59:58+01:00')), 2);
   assert.equal(pageCacheSeconds({ ...current, price: null }, new Date('2027-03-28T23:59:58+02:00')), 2);
+});
+
+test('a later partial refresh cannot roll a fresh build occurrence back to an older retained price or date', () => {
+  const seed=snapshot();
+  const saved={...snapshot(),generatedAt:'2026-10-21T11:00:00Z',events:[{...snapshot().events[0],startDate:'2026-12-12T16:00:00+01:00',lastVerifiedAt:'2026-10-21T06:00:00Z',price:{minimum:500,currency:'CZK',observedAt:'2026-10-21T06:00:00Z'}}]};
+  const merged=mergeEventSnapshots(seed,saved,pilot.events,now);
+  assert.equal(resolveEvent(event,merged,now).startDate,event.startDate);
+  assert.equal(resolveEvent(event,merged,now).price.minimum,720);
+  saved.events[0]={...saved.events[0],lastVerifiedAt:'2026-10-21T10:01:00Z',status:'cancelled'};
+  assert.equal(resolveEvent(event,mergeEventSnapshots(seed,saved,pilot.events,now),now).status,'cancelled');
 });
 
 for(const lang of LANGUAGES) test(`${lang}: HTML, metadata, language links and schema describe the same fresh occurrence`, () => {

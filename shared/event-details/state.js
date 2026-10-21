@@ -44,6 +44,20 @@ export function resolveEvent(event, snapshot, now = new Date()) {
   return result;
 }
 
+export function mergeEventSnapshots(seed, saved, events, now = new Date()) {
+  // A newer refresh can contain an older retained record for a failed provider.
+  // Compare each occurrence's verification time, never just the job timestamp.
+  return { version: 1, generatedAt: seed.generatedAt,
+    events: events.map(event => {
+      const candidates = [seed, saved].flatMap(snapshot => snapshot?.version === 1 && Array.isArray(snapshot.events)
+        ? snapshot.events.filter(row => row.id === event.id && row.partner === event.partner) : []);
+      return candidates.filter(row => localDateTime(row.startDate) && ['scheduled', 'rescheduled', 'cancelled', 'postponed'].includes(row.status)
+        && (row.status !== 'rescheduled' || localDateTime(row.previousStartDate))
+        && Number.isFinite(Date.parse(row.lastVerifiedAt || '')) && Date.parse(row.lastVerifiedAt) <= +now + 5 * 60 * 1000)
+        .sort((left, right) => Date.parse(right.lastVerifiedAt) - Date.parse(left.lastVerifiedAt))[0];
+    }).filter(Boolean) };
+}
+
 export function pageCacheSeconds(event, now = new Date()) {
   const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Prague', dateStyle: 'short' }).format(now);
   const tomorrow = new Date(Date.parse(today + 'T12:00:00Z') + 86400000).toISOString().slice(0, 10);

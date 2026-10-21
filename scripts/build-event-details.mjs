@@ -25,7 +25,12 @@ for (const lang of LANGUAGES) {
   header.querySelectorAll('.language-switcher').forEach(node => node.remove());
   header.querySelectorAll('[aria-current]').forEach(node => node.removeAttribute('aria-current'));
   header.querySelector('[data-i18n-key="nav-events"]').setAttribute('aria-current', 'page');
-  const footer = page.window.document.querySelector('.site-footer').outerHTML;
+  header.querySelector('.main-nav').setAttribute('aria-label', COPY[lang].labels.mainMenu);
+  header.querySelector('.hamburger-btn')?.setAttribute('aria-label', COPY[lang].labels.openMenu);
+  header.querySelector('.menu-close')?.setAttribute('aria-label', COPY[lang].labels.closeMenu);
+  const footerNode = page.window.document.querySelector('.site-footer');
+  footerNode.querySelector('nav')?.setAttribute('aria-label', COPY[lang].labels.legalLinks);
+  const footer = footerNode.outerHTML;
   doc.documentElement.lang = lang;
   doc.querySelectorAll('title, meta[name="robots"], meta[name="description"], link[rel="canonical"], link[hreflang], script[type="application/ld+json"]').forEach(node => node.remove());
   doc.head.insertAdjacentHTML('beforeend', HEAD_TOKEN);

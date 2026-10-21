@@ -29,7 +29,11 @@
       "languages": "Jazyk stránky",
       "read": "Přečíst více",
       "fromBlog": "Z našeho blogu",
-      "guide": "Praktický průvodce"
+      "guide": "Praktický průvodce",
+      "mainMenu": "Hlavní menu",
+      "legalLinks": "Právní odkazy",
+      "openMenu": "Otevřít menu",
+      "closeMenu": "Zavřít menu"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -118,7 +122,11 @@
       "languages": "Page language",
       "read": "Read more",
       "fromBlog": "From our blog",
-      "guide": "Practical guide"
+      "guide": "Practical guide",
+      "mainMenu": "Main navigation",
+      "legalLinks": "Legal links",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -207,7 +215,11 @@
       "languages": "Sprache der Seite",
       "read": "Mehr lesen",
       "fromBlog": "Aus unserem Blog",
-      "guide": "Praktischer Ratgeber"
+      "guide": "Praktischer Ratgeber",
+      "mainMenu": "Hauptnavigation",
+      "legalLinks": "Rechtliche Informationen",
+      "openMenu": "Menü öffnen",
+      "closeMenu": "Menü schließen"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -296,7 +308,11 @@
       "languages": "Jazyk stránky",
       "read": "Prečítať viac",
       "fromBlog": "Z nášho blogu",
-      "guide": "Praktický sprievodca"
+      "guide": "Praktický sprievodca",
+      "mainMenu": "Hlavné menu",
+      "legalLinks": "Právne odkazy",
+      "openMenu": "Otvoriť menu",
+      "closeMenu": "Zavrieť menu"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -385,7 +401,11 @@
       "languages": "Język strony",
       "read": "Czytaj więcej",
       "fromBlog": "Z naszego bloga",
-      "guide": "Praktyczny poradnik"
+      "guide": "Praktyczny poradnik",
+      "mainMenu": "Nawigacja główna",
+      "legalLinks": "Informacje prawne",
+      "openMenu": "Otwórz menu",
+      "closeMenu": "Zamknij menu"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -474,7 +494,11 @@
       "languages": "Az oldal nyelve",
       "read": "Tovább olvasom",
       "fromBlog": "Blogunkból",
-      "guide": "Gyakorlati útmutató"
+      "guide": "Gyakorlati útmutató",
+      "mainMenu": "Főmenü",
+      "legalLinks": "Jogi hivatkozások",
+      "openMenu": "Menü megnyitása",
+      "closeMenu": "Menü bezárása"
     },
     "events": {
       "colosseumticket-5470841-4205829": {

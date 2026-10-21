@@ -91,11 +91,11 @@ property `492103490`, web stream `11312537950`.
 - Existing event-scoped dimensions already include `partner`, `placement`,
   `event_title`, and `destination_host`. Four additional event dimensions were
   verified in the saved list: `source_page_path`, `page_type`, `product_type`,
-  and `content_slug`. Registration of `page_language` was attempted but not
-  confirmed: GA4 subsequently returned component errors and a “Missing
-  permissions” dialog. Do not describe the language dimension as configured
-  until it appears in the saved list. New definitions do not backfill
-  historical reports.
+  and `content_slug`. The initial attempt to verify `page_language` was blocked
+  by component and permission errors. On 21 October the saved exploration
+  included the dimension “AJSEE jazyk stránky” and its table returned page
+  language values. This confirms the reporting dimension is usable; new
+  definitions do not backfill historical reports.
 - The diagnostic ready event uses `analytics_init_source`, never `source`,
   and does not mark ordinary visitors with `debug_mode`. The old diagnostic
   value had appeared in acquisition reports; the change does not rewrite
@@ -115,6 +115,31 @@ November 2026; process the result after GA4's reporting delay.
 The exploration “AJSEE – prokliky k partnerům” was created with Total users,
 Event count, a Monday–Sunday last-week range, the exact event-name filter,
 and `product_type` matching `^(tickets|accommodation)$`. Partner and source
-page tabs were saved. Remaining placement/language/content views and an
-independent reopen check are pending the GA4 access error; this is a draft,
-not a fully verified finished dashboard.
+page tabs were saved. Access recovered on 21 October and all six saved views
+were inspected. Reloading the exploration confirmed that the Monday–Sunday
+range, dimensions and refinements below persist.
+
+## Verified exploration, 21 October 2026
+
+| View | Row dimension | Additional scope |
+| --- | --- | --- |
+| Partneři | `partner` | Tickets and accommodation |
+| Stránky | `source_page_path` | Tickets and accommodation |
+| Umístění | `placement` | Tickets and accommodation |
+| Jazyky | `page_language` | Tickets and accommodation |
+| Události | `event_title` | `product_type` matches `^tickets$` |
+| Články | `content_slug` | `page_type` exactly matches `blog-detail` |
+
+Every view uses Total users and Event count and requires Event name exactly
+`ajsee_partner_click`. Other views retain the purchase-intent product filter
+`^(tickets|accommodation)$`. The articles view intentionally excludes empty
+article rows created by clicks from listings or London landing pages; an
+empty table is valid until a click from an article has been processed.
+
+The last-seven-days range was used temporarily to confirm processed data by
+partner, page, placement, language and event title. It includes a known
+controlled test click and must not be described as purely organic activity
+or sales. The final saved range remains the last complete Monday–Sunday
+week. Before the first complete measurement week, a zero in that saved range
+can simply refer to a period before the new event was deployed. Totals are
+distinct users within the selected scope; never sum the user counts of rows.

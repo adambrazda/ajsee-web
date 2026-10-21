@@ -133,6 +133,8 @@ function readMeaningfulLastmods() {
     const item=JSON.parse(read(path.join(reviewDirectory,file)));
     if(item.status==='published' && item.published === true) set('/reviews/' + item.slug,[item.updatedAt,item.publishedAt,item.reviewDate,updates.templates.reviews]);
   }
+  const details = JSON.parse(read(path.join(ROOT,'content/event-detail-pilot.json')));
+  for (const item of details.events) set('/udalosti/' + item.slug, [details.publishedAt, item.verifiedAt]);
   return dates;
 }
 

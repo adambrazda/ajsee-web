@@ -1,0 +1,12 @@
+.event-detail-links {
+  width: min(1160px, calc(100% - 40px));
+  margin: 44px auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--aj-event-border, rgba(100, 130, 140, .25));
+  color: inherit;
+  h2 { font-size: clamp(1.1rem, 2vw, 1.35rem); margin-bottom: 16px; }
+  ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 28px; }
+  a { color: inherit; text-decoration: underline; text-underline-offset: 4px; line-height: 1.6; }
+  a:focus-visible { outline: 3px solid #159eac; outline-offset: 5px; }
+}
+.event-title-action[href] { color: inherit; text-decoration: none; }

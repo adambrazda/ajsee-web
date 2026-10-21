@@ -20,6 +20,9 @@
   node_bundler = "esbuild"
 
 
+[functions."event-detail-page"]
+  included_files = ["dist/event-detail-assets/*"]
+
 # ------------ Edge Functions ------------
 # 1) JSON endpoint pro NearMe fallback (context.geo → JSON)
 # Specifická cesta musí být první.

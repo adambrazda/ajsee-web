@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "mode": "preview",
+  "mode": "published",
   "verifiedAt": "2026-10-20",
   "events": [
     {
@@ -29,9 +29,9 @@
       "subtitle": "Národní divadlo moravskoslezské",
       "category": "Muzikál",
       "startDate": "2026-12-13T16:00:00+01:00",
-      "introduction": "Rocková opera Tima Rice a Andrewa Lloyda Webbera v Ostravě. Vyrazte na prosincovou reprízu do Divadla Jiřího Myrona.",
+      "introduction": "Rocková opera Tima Rice a Andrewa Lloyda Webbera v Ostravě. Vyrazte do Divadla Jiřího Myrona.",
       "paragraphs": [
-        "Pašijový příběh, rocková hudba a ostravský muzikálový soubor. Jesus Christ Superstar v nastudování Národního divadla moravskoslezského můžete vidět v neděli 13. prosince od 16:00.",
+        "Pašijový příběh, rocková hudba a ostravský muzikálový soubor. Jesus Christ Superstar uvádí Národní divadlo moravskoslezské v Divadle Jiřího Myrona.",
         "Hudbu složil Andrew Lloyd Webber, libreto napsal Tim Rice. České přebásnění je dílem Michaela Prostějovského a inscenaci režíroval Jiří Nekvasil."
       ],
       "practical": "Obsazení konkrétní reprízy a další podrobnosti si před návštěvou ověřte u divadla nebo prodejce.",
@@ -85,9 +85,9 @@
       "category": "Koncert",
       "subtitle": "EURO TOUR 2026",
       "startDate": "2026-11-16T19:30:00+01:00",
-      "introduction": "KoRn míří do pražské O2 areny. V pondělí 16. listopadu s nimi vystoupí také Architects a Pixel Grip.",
+      "introduction": "KoRn míří do pražské O2 areny. Spolu s nimi vystoupí také Architects a Pixel Grip.",
       "paragraphs": [
-        "Večer pro fanoušky tvrdé hudby v pražské O2 areně. KoRn zde vystoupí v rámci EURO TOUR 2026; začátek koncertu je uveden na 19:30.",
+        "Večer pro fanoušky tvrdé hudby v pražské O2 areně. KoRn zde vystoupí v rámci EURO TOUR 2026.",
         "Jako speciální hosté jsou ohlášeni Architects a Pixel Grip. Rozpis jednotlivých vystoupení a čas otevření haly si před cestou ověřte u pořadatele."
       ],
       "practical": "Před návštěvou si ověřte pravidla vstupu do O2 areny. Čas začátku koncertu se může lišit od času otevření haly.",
@@ -137,9 +137,9 @@
       "slug": "folk-country-cesky-krumlov-2027-04-24",
       "category": "Festival",
       "startDate": "2027-04-24T14:00:00+02:00",
-      "introduction": "Za folkem a country do Českého Krumlova. V sobotu 24. dubna 2027 se v Zámecké jízdárně představí mimo jiné Nezmaři, Hop Trop a Spirituál kvartet.",
+      "introduction": "Za folkem a country do Českého Krumlova. V Zámecké jízdárně se představí mimo jiné Nezmaři, Hop Trop a Spirituál kvartet.",
       "paragraphs": [
-        "Druhý ročník festivalu propojí velkou scénu v sále Zámecké jízdárny s menší scénou ve stanu. Program začíná ve 14:00.",
+        "Druhý ročník festivalu propojí velkou scénu v sále Zámecké jízdárny s menší scénou ve stanu.",
         "Vedle Nezmarů, Hop Tropu a Spirituál kvartetu jsou ohlášeni Michal Tučný revival, Liam Stayner and Hissboys, KaPyBaRa a DixiCK."
       ],
       "practical": "Podrobný časový rozpis jednotlivých kapel si před cestou ověřte u pořadatele. Uvedený čas patří začátku festivalu.",
@@ -193,7 +193,7 @@
       "subtitle": "Galavečer profesionálního boxu",
       "category": "Sport",
       "startDate": "2026-11-21T18:00:00+01:00",
-      "introduction": "Profesionální box v brněnském SONO. Galavečer TOHLE JE BOX začne v sobotu 21. listopadu v 18:00.",
+      "introduction": "Profesionální box v brněnském SONO. Galavečer TOHLE JE BOX přiváží do Brna večer profesionálních zápasů.",
       "paragraphs": [
         "TOHLE JE BOX přiváží do Brna večer profesionálních zápasů. Série je spojená s bývalým mistrem světa a Evropy Lukášem Konečným, který dnes působí jako trenér a promotér.",
         "V nabídce jsou různé kategorie vstupenek včetně VIP balíčků. Jejich umístění a obsah si porovnáte přímo u prodejce."
@@ -223,5 +223,6 @@
         }
       ]
     }
-  ]
+  ],
+  "publishedAt": "2026-10-21"
 }

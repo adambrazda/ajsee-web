@@ -225,10 +225,8 @@ export default defineConfig({
         addGeneratedBlogDetails(inputs);
         addGeneratedReviewDetails(inputs);
 
-        // Review-only event pilot; never a public route until approved.
-        if (process.env.CONTEXT === 'deploy-preview' || process.env.EVENT_DETAIL_PREVIEW === '1') {
-          addIfExists(inputs, 'event-detail-preview', resolve(__dirname, 'templates/event-detail-preview.html'));
-        }
+        // Detail entry bundles shared consent, navigation and responsive styles.
+        addIfExists(inputs, 'event-detail-preview', resolve(__dirname, 'templates/event-detail-preview.html'));
 
 
 

@@ -135,10 +135,10 @@ test('production mode skips the preview builder without creating files or requir
 });
 
 if (process.env.EVENT_DETAIL_BUILT === '1') {
-  test('built preview has eight complete noindex frames and never enters the 198-URL sitemap', () => {
+  test('built preview has eight complete noindex frames and never enters the public sitemap', () => {
     const sitemap = fs.readFileSync('dist/sitemap.xml', 'utf8');
-    assert.doesNotMatch(sitemap, /\/previews\/|\/udalosti\//);
-    assert.equal((sitemap.match(/<loc>/g) || []).length, 198);
+    assert.doesNotMatch(sitemap, /\/previews\//);
+    assert.equal((sitemap.match(/<loc>/g) || []).length, 222);
     const template = new JSDOM(fs.readFileSync('dist/templates/event-detail-preview.html', 'utf8'));
     assert.match(template.window.document.querySelector('meta[name="robots"]').content, /noindex/);
     template.window.close();

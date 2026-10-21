@@ -1,5 +1,7 @@
+import COPY from '../content/event-detail-copy.json' with { type: 'json' };
+import { detailPath, localeCode, freshTimestamp } from '../shared/event-details/state.js';
 // Explicit, reviewable occurrences survive a missing or incomplete feed refresh.
-// Feed absence is never a cancellation signal. Publishing is a separate step.
+// Feed absence is never a cancellation signal. Public pages share this renderer.
 const ORIGIN = 'https://ajsee.cz';
 export const PREVIEW_ROOT = '/previews/event-details';
 export const PARTNERS = {
@@ -45,14 +47,24 @@ export function eventState(event, now = new Date()) {
   return today > event.startDate.slice(0, 10) ? 'past' : event.status;
 }
 
-export function buildEventSchema(event) {
-  const url = ORIGIN + '/udalosti/' + event.slug + '/';
+export function localizeEvent(event, lang = 'cs') {
+  const copy = COPY[lang] || COPY.cs, translated = copy.events[event.id];
+  if (!translated) throw new Error('Missing translated event copy');
+  return { ...event, ...translated, introduction: lang === 'cs' ? event.introduction : translated.introduction, paragraphs: lang === 'cs' ? event.paragraphs : [translated.p1, translated.p2], image: { ...event.image, alt: translated.imageAlt },
+    related: (event.related || []).map(item => ({ ...item, ...copy.related[item.url.split('/').filter(Boolean).at(-1)],
+      label: item.url.startsWith('/reviews/') ? copy.labels.fromBlog : copy.labels.guide, cta: copy.labels.read,
+      url: (lang === 'cs' ? '' : '/' + lang) + item.url })) };
+}
+
+export function buildEventSchema(event, { lang = 'cs', publicPage = false, now = new Date() } = {}) {
+  event = localizeEvent(event, lang);
+  const url = ORIGIN + detailPath(event.slug, lang);
   const schema = {
     '@context': 'https://schema.org', '@type': 'Event', '@id': url + '#event',
     name: [event.title, event.subtitle].filter(Boolean).join(' – '), description: event.introduction,
     startDate: event.startDate, eventStatus: 'https://schema.org/' + STATUS[event.status],
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    inLanguage: 'cs', url, image: [event.image.url],
+    url, image: [event.image.url],
     location: { '@type': 'Place', name: event.venue.name, address: {
       '@type': 'PostalAddress', addressLocality: event.venue.city, addressCountry: event.venue.country,
       ...(event.venue.street ? { streetAddress: event.venue.street } : {})
@@ -62,6 +74,9 @@ export function buildEventSchema(event) {
   };
   // Frozen review data is not an up-to-date offer. No invented endDate,
   // InStock, free entry or seller-as-organizer in the public schema.
+  if (publicPage && ['scheduled', 'rescheduled'].includes(eventState(event, now)) && event.price?.minimum > 0 && freshTimestamp(event.price.observedAt, now)) {
+    schema.offers = { '@type': 'Offer', url: new URL(event.tickets, ORIGIN).href, price: event.price.minimum, priceCurrency: event.price.currency };
+  }
   return schema;
 }
 
@@ -73,43 +88,45 @@ const icons = {
   location: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>'
 };
 const icon = name => `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${icons[name]}</svg>`;
-const dateText = iso => new Intl.DateTimeFormat('cs-CZ', { timeZone: 'Europe/Prague', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso));
-const dayText = iso => new Intl.DateTimeFormat('cs-CZ', { timeZone: 'Europe/Prague', weekday: 'long', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)).replace(' ', ' · ');
-const dateOnlyText = date => dateText(date + 'T12:00:00+01:00');
+export const dateText = (iso, lang = 'cs') => new Intl.DateTimeFormat(localeCode(lang), { timeZone: 'Europe/Prague', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso));
+const timeText = (iso, lang) => new Intl.DateTimeFormat(localeCode(lang), { timeZone: 'Europe/Prague', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(iso));
+const dayText = (iso, lang) => new Intl.DateTimeFormat(localeCode(lang), { timeZone: 'Europe/Prague', weekday: 'long' }).format(new Date(iso)) + ' · ' + timeText(iso, lang);
+const dateOnlyText = (date, lang) => dateText(date + 'T12:00:00Z', lang);
 
-export function renderEventDetail(event, { now = new Date() } = {}) {
-  const e = escapeHtml, text = czechText, partner = PARTNERS[event.partner];
+export function renderEventDetail(event, { now = new Date(), lang = 'cs' } = {}) {
+  event = localizeEvent(event, lang);
+  const e = escapeHtml, text = lang === 'cs' ? czechText : escapeHtml, partner = PARTNERS[event.partner];
+  const labels = (COPY[lang] || COPY.cs).labels;
+  const t = (key, values = {}) => Object.entries(values).reduce((value, [name, replacement]) => value.replaceAll('{' + name + '}', replacement), labels[key]);
+  const eventsHref = lang === 'cs' ? '/events' : '/' + lang + '/events/';
   const state = eventState(event, now);
   const purchasable = ['scheduled', 'rescheduled'].includes(state);
-  const stateCopy = {
-    past: 'Tento termín už je v minulosti. Další akce najdete v našem přehledu událostí.',
-    cancelled: 'Tato akce byla zrušena. Informace ke vstupenkám poskytne prodejce.',
-    postponed: 'Akce byla odložena. Nový termín zatím není potvrzen.'
-  }[state];
-  const price = event.price ? `Od ${new Intl.NumberFormat('cs-CZ').format(event.price.minimum)} Kč` : 'Cenu ověříte u prodejce';
-  return `<a class="skip-link" href="#main">Přejít na obsah</a>
+  const stateCopy = ['past', 'cancelled', 'postponed'].includes(state) ? t(state) : state === 'rescheduled' ? t('rescheduled', { date: dateText(event.previousStartDate, lang) }) : '';
+  const price = event.price ? t('from', { price: new Intl.NumberFormat(localeCode(lang), { style: 'currency', currency: event.price.currency, minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(event.price.minimum) }) : t('unknownPrice');
+  const termNote = event.termNote ? t('termNote', { date: dateText(event.startDate, lang), time: timeText(event.startDate, lang) }) : '';
+  return `<a class="skip-link" href="#main">${text(t('skip'))}</a>
   <main id="main" class="detail-main"><div class="detail-container">
-    <nav class="detail-breadcrumbs" aria-label="Drobečková navigace"><a href="/">AJSEE</a>${icon('chevron')}<a href="/events">Události</a>${icon('chevron')}<span aria-current="page">${text(event.category)}</span></nav>
+    <nav class="detail-breadcrumbs" aria-label="${e(t('breadcrumbs'))}"><a href="${lang === 'cs' ? '/' : '/' + lang + '/'}">AJSEE</a>${icon('chevron')}<a href="${eventsHref}">${text(t('events'))}</a>${icon('chevron')}<span aria-current="page">${text(event.category)}</span></nav>
     <header class="detail-heading"><p class="detail-eyebrow">${text(event.category)}<span aria-hidden="true">·</span>${text(event.venue.city)}</p>
       <h1 class="detail-title">${text(event.title)}${event.subtitle ? `<span class="detail-subtitle">${text(event.subtitle)}</span>` : ''}</h1>
       <p class="detail-lead">${text(event.introduction)}</p>
     </header>
     ${stateCopy ? `<p class="detail-status" role="status">${text(stateCopy)}</p>` : ''}
     <div class="detail-layout">
-        <figure class="detail-artwork"><div class="detail-image-wrap"><img class="detail-image${event.image.fit === 'cover' ? ' detail-image--photo' : ''}" src="${e(event.image.url)}" alt="${e(event.image.alt)}" width="1200" height="800" decoding="async" loading="eager" fetchpriority="high"></div><figcaption>${text(event.image.credit)}</figcaption></figure>
-      <aside class="detail-panel" aria-labelledby="ticket-heading"><h2 id="ticket-heading">${purchasable ? 'Naplánujte si návštěvu' : 'Informace o termínu'}</h2>
-        <dl class="detail-facts"><div class="detail-fact">${icon('calendar')}<div><dt>Kdy</dt><dd><time datetime="${e(event.startDate)}">${text(dateText(event.startDate))}<span>${text(dayText(event.startDate))}</span></time></dd></div></div>
-          <div class="detail-fact">${icon('location')}<div><dt>Kde</dt><dd>${text(event.venue.name)}<span>${text([event.venue.street, event.venue.city].filter(Boolean).join(', '))}</span></dd></div></div></dl>
-        <div class="detail-ticket">${purchasable ? `<p class="detail-price${event.price ? '' : ' detail-price--unknown'}">${text(price)}</p>${event.price ? `<p class="detail-price-note">Cena podle nabídky z ${text(dateOnlyText(event.price.checkedAt))}.</p>` : ''}
-          <a class="detail-cta" href="${e(event.tickets)}" target="_blank" rel="sponsored noopener noreferrer" data-placement="event_detail" data-partner="${e(event.partner)}" data-event-id="${e(event.id)}" data-event-title="${e(event.title)}" data-event-city="${e(event.venue.city)}"><span>Vstupenky u ${text(partner)}</span>${icon('external')}</a>
-          <p class="detail-purchase-note">Aktuální nabídku si prohlédnete a vstupenky koupíte přímo u ${text(partner)}.</p>${event.termNote ? `<p class="detail-term-note">${text(event.termNote)}</p>` : ''}
-          <p class="detail-affiliate-note">Při nákupu přes náš odkaz může AJSEE získat provizi.</p>` : `<a class="detail-text-link" href="/events">Prozkoumat další události${icon('arrow')}</a>`}</div>
+        <figure class="detail-artwork"><div class="detail-image-wrap"><img class="detail-image${event.image.fit === 'cover' ? ' detail-image--photo' : ''}" src="${e(event.image.url)}" alt="${e(event.image.alt)}" width="1200" height="800" decoding="async" loading="eager" fetchpriority="high"></div><figcaption>${text(t('source', { partner }))}</figcaption></figure>
+      <aside class="detail-panel" aria-labelledby="ticket-heading"><h2 id="ticket-heading">${text(t(purchasable ? 'plan' : 'facts'))}</h2>
+        <dl class="detail-facts"><div class="detail-fact">${icon('calendar')}<div><dt>${text(t('when'))}</dt><dd><time datetime="${e(event.startDate)}">${text(dateText(event.startDate, lang))}<span>${text(dayText(event.startDate, lang))}</span></time></dd></div></div>
+          <div class="detail-fact">${icon('location')}<div><dt>${text(t('where'))}</dt><dd>${text(event.venue.name)}<span>${text([event.venue.street, event.venue.city].filter(Boolean).join(', '))}</span></dd></div></div></dl>
+        <div class="detail-ticket">${purchasable ? `<p class="detail-price${event.price ? '' : ' detail-price--unknown'}">${text(price)}</p>${event.price ? `<p class="detail-price-note">${text(t('priceChecked', { date: dateOnlyText(event.price.checkedAt, lang) }))}</p>` : ''}
+          <a class="detail-cta" href="${e(event.tickets)}" target="_blank" rel="sponsored noopener noreferrer" data-placement="event_detail" data-partner="${e(event.partner)}" data-event-id="${e(event.id)}" data-event-title="${e(event.title)}" data-event-city="${e(event.venue.city)}"><span>${text(t('tickets', { partner }))}</span>${icon('external')}</a>
+          <p class="detail-purchase-note">${text(t('purchaseNote', { partner }))}</p>${termNote ? `<p class="detail-term-note">${text(termNote)}</p>` : ''}
+          <p class="detail-affiliate-note">${text(t('affiliateNote'))}</p>` : `<a class="detail-text-link" href="${eventsHref}">${text(t('explore'))}${icon('arrow')}</a>`}</div>
       </aside>
-      <section class="detail-editorial" aria-labelledby="about-event"><h2 id="about-event">${event.category === 'Muzikál' ? 'O představení' : 'Na co se těšit'}</h2>${event.paragraphs.map(p => `<p>${text(p)}</p>`).join('')}
-        <details class="detail-info"><summary>Než vyrazíte</summary><p>${text(event.practical)}</p></details>
+      <section class="detail-editorial" aria-labelledby="about-event"><h2 id="about-event">${text(t(event.id.startsWith('colosseumticket-') ? 'about' : 'expect'))}</h2>${event.paragraphs.map(p => `<p>${text(p)}</p>`).join('')}
+        <details class="detail-info"><summary>${text(t('practical'))}</summary><p>${text(event.practical)}</p></details>
       </section>
     </div>
-    <section class="detail-related" aria-labelledby="related-title"><div class="detail-related-heading"><h2 id="related-title">Mohlo by se vám hodit</h2><a class="detail-text-link" href="/events">Všechny události${icon('arrow')}</a></div>
+    <section class="detail-related" aria-labelledby="related-title"><div class="detail-related-heading"><h2 id="related-title">${text(t('related'))}</h2><a class="detail-text-link" href="${eventsHref}">${text(t('allEvents'))}${icon('arrow')}</a></div>
       <div class="detail-related-grid">${(event.related || []).map(item => `<article class="detail-related-card"><span>${text(item.label)}</span><h3>${text(item.title)}</h3><p>${text(item.description)}</p><a class="detail-text-link" href="${e(item.url)}">${text(item.cta)}${icon('arrow')}</a></article>`).join('')}</div>
     </section>
   </div></main>`;

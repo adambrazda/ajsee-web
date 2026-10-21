@@ -1,8 +1,8 @@
 import './identity-init.js';
 import { initNav } from './nav-core.js';
 
-// The pilot has real Czech copy only. Do not advertise untranslated routes.
-initNav({ lang: 'cs' });
+// Shared navigation and consent also work on direct, localized detail visits.
+initNav({ lang: document.documentElement.lang || 'cs' });
 document.querySelectorAll('.main-nav a[aria-current]').forEach(link => link.removeAttribute('aria-current'));
 document.querySelector('.main-nav a[data-i18n-key="nav-events"]')?.setAttribute('aria-current', 'page');
 

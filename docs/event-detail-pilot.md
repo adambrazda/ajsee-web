@@ -112,6 +112,25 @@ Oporou pro schéma jsou [pokyny Google pro události](https://developers.google.
 a [typ Event na Schema.org](https://schema.org/Event). Nasazení validního
 schématu nezaručuje indexaci ani konkrétní podobu výsledku v Googlu či AI.
 
+## Kontrola náhledu, 21. října 2026
+
+Zveřejněný náhled PR #239 byl zkontrolován ve skutečném prohlížeči po
+obnovení přístupu. Ověřeny byly všechny čtyři akce, načtení fotografií
+a plakátů, čitelnost dlouhých názvů i nákupních bloků. Kontrola zahrnula
+šířky 390, 1280 a 1440 px a světlý i tmavý režim na reprezentativních
+kombinacích; nejde o tvrzení o samostatném testu všech 24 kombinací.
+
+Na mobilu se obsah vejde do 390px viewportu a vstupenky následují po
+obrázku. Navigace byla otevřena klávesnicí a zavřena klávesou Escape;
+zavřený panel je skrytý. CSS náhledu ořezává jeho neviditelný přesah mimo
+viewport. KoRn správně nezobrazuje nedoloženou cenu. Konkrétní termín
+Jesus Christ Superstar zůstává uvedený u CTA, které otevírá všechny reprízy.
+
+Tato kontrola nezveřejňuje ostré detaily. Před produkčním rozšířením zbývá
+odsouhlasit podobu, obnovit údaje o cenách a doplnit provozní aktualizaci
+termínů a stavů. Affiliate odkazy nebyly při vizuální kontrole aktivovány;
+kontrola tak nevytvořila další testovací prokliky v analytice.
+
 ## Vyhodnocení pilotu
 
 Po zveřejnění porovnat indexaci, relevantní dotazy a zobrazení v Search

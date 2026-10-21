@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import pilot from '../../content/event-detail-pilot.json' with { type: 'json' };
 import { renderEventPage } from '../../shared/event-details/page.js';
-import { LANGUAGES, detailPath, resolveEvent, pageCacheSeconds } from '../../shared/event-details/state.js';
+import { LANGUAGES, detailPath, resolveEvent, pageCacheSeconds, mergeEventSnapshots } from '../../shared/event-details/state.js';
 
 const assets = new Map();
 async function readAsset(name) {
@@ -20,12 +20,13 @@ export function createEventDetailPage({ getStoreFn = getStore, loadAsset = readA
     if (!new URL(request.url).pathname.endsWith('/')) return Response.redirect(new URL(detailPath(event.slug, lang), request.url), 301);
     try {
       const [shell, seedText] = await Promise.all([loadAsset(lang + '.txt'), loadAsset('seed.json')]);
-      let snapshot = JSON.parse(seedText);
+      const current = now();
+      const seed = JSON.parse(seedText);
+      let snapshot = seed;
       try {
         const saved = await getStoreFn({ name: 'event-details-v1', consistency: 'strong' }).get('current', { type: 'json' });
-        if (saved?.version === 1 && Date.parse(saved.generatedAt) > Date.parse(snapshot.generatedAt)) snapshot = saved;
+        snapshot = mergeEventSnapshots(seed, saved, pilot.events, current);
       } catch { /* The build snapshot still renders complete HTML. */ }
-      const current = now();
       const html = renderEventPage(shell, event, snapshot, { lang, now: current });
       const cacheSeconds = pageCacheSeconds(resolveEvent(event, snapshot, current), current);
       return new Response(request.method === 'HEAD' ? null : html, { headers: {

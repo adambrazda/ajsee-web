@@ -386,7 +386,7 @@ const getInitialLang = () => {
     </div>
   </section>
   <script type="module" src="/src/home-hero.js"></script>
-  <section class="contest-promo" data-colosseum-contest data-contest-banner hidden aria-labelledby="home-contest-title">
+  <section class="contest-promo" data-colosseum-contest data-contest-banner data-contest-ends-at="2026-11-02T00:00:00+01:00" hidden aria-labelledby="home-contest-title">
   <div class="home-container">
     <div class="contest-promo-card">
       <div class="contest-promo-copy">
@@ -410,6 +410,15 @@ const getInitialLang = () => {
     </div>
   </div>
 </section>
+  <script data-contest-first-paint>
+    {
+      const banner = document.currentScript.previousElementSibling;
+      const endsAt = Date.parse(banner?.dataset.contestEndsAt || '');
+      if (banner?.hasAttribute('data-contest-banner') && Number.isFinite(endsAt)) {
+        banner.hidden = Date.now() >= endsAt;
+      }
+    }
+  </script>
   <script type="module" src="/src/contest-promotion.js"></script>
   <section class="home-events" id="events" aria-labelledby="home-events-title">
     <div class="home-container">

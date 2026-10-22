@@ -17,6 +17,40 @@ test('the competition uses Prague time across the October daylight-saving change
   assert.equal(getContestState('2027-05-30T19:00:00+02:00'), 'ended');
 });
 
+test('the banner has its scheduled visibility while HTML is still being parsed', () => {
+  const source = new JSDOM(read('index.html'));
+  const bootstrap = source.window.document.querySelector('script[data-contest-first-paint]');
+  const banner = bootstrap.previousElementSibling;
+  assert.ok(banner.matches('[data-contest-banner]'));
+  assert.equal(banner.dataset.contestEndsAt, CONTEST.end);
+  assert.equal(bootstrap.hasAttribute('type'), false, 'The initial visibility must not wait for a deferred module.');
+  assert.ok(bootstrap.compareDocumentPosition(source.window.document.querySelector('#events')) & 4,
+    'Visibility must be resolved before the next section is parsed.');
+  const markup = banner.outerHTML + bootstrap.outerHTML;
+  source.window.close();
+
+  for (const [now, hidden] of [
+    ['2026-10-19T13:00:00+02:00', false],
+    [CONTEST.start, false],
+    ['2026-11-01T23:59:59.999+01:00', false],
+    [CONTEST.end, true],
+    ['2027-05-30T19:00:00+02:00', true],
+  ]) {
+    const dom = new JSDOM(`${markup}<script>window.contestAtParse = { hidden: document.querySelector('[data-contest-banner]').hidden, readyState: document.readyState };</script>`, {
+      runScripts: 'dangerously',
+      beforeParse(window) { window.Date.now = () => Date.parse(now); },
+    });
+    assert.equal(dom.window.contestAtParse.readyState, 'loading');
+    assert.equal(dom.window.contestAtParse.hidden, hidden, now);
+    dom.window.close();
+  }
+
+  const invalid = new JSDOM(markup.replace(CONTEST.end, 'invalid-date'), { runScripts: 'dangerously' });
+  assert.equal(invalid.window.document.querySelector('[data-contest-banner]').hidden, true,
+    'An invalid deadline must not reveal an expired promotion.');
+  invalid.window.close();
+});
+
 for (const lang of langs) {
   test(`${lang}: the banner links to local rules before opening, Instagram when open, and hides when closed`, () => {
     const dom = new JSDOM(read('index.html'), { url: `https://ajsee.cz${lang === 'cs' ? '/' : `/${lang}/`}` });

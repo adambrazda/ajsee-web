@@ -29,13 +29,14 @@ test('Sweeney Todd is staged as a valid unpublished review', () => {
   assert.equal(item.eventDate || '', '');
 });
 
-test('Sweeney Todd currently exposes only the approved English and Czech review masters', () => {
+test('Sweeney Todd currently exposes the approved English, Czech and Slovak review masters', () => {
   const item = readItem();
 
   assert.ok(item.translations.en?.body);
   assert.ok(item.translations.cs?.body);
+  assert.ok(item.translations.sk?.body);
 
-  for (const language of ['sk', 'pl', 'hu', 'de']) {
+  for (const language of ['pl', 'hu', 'de']) {
     assert.deepEqual(
       item.translations[language],
       {},
@@ -47,7 +48,7 @@ test('Sweeney Todd currently exposes only the approved English and Czech review 
 test('Sweeney Todd provides localized cover alt text for the staged review masters', () => {
   const item = readItem();
 
-  for (const language of ['en', 'cs']) {
+  for (const language of ['en', 'cs', 'sk']) {
     assert.equal(
       typeof item.translations[language].coverAlt,
       'string',
@@ -61,6 +62,7 @@ test('Sweeney Todd provides localized cover alt text for the staged review maste
 
   assert.match(item.translations.cs.coverAlt, /Státní opery/);
   assert.match(item.translations.en.coverAlt, /State Opera/);
+  assert.match(item.translations.sk.coverAlt, /Štátnej opery/);
 });
 
 test('review detail builder prefers localized cover alt text', () => {
@@ -79,7 +81,7 @@ test('review detail builder prefers localized cover alt text', () => {
 test('Sweeney Todd uses the AJSEE ColosseumTicket sales path', () => {
   const item = readItem();
 
-  for (const language of ['en', 'cs']) {
+  for (const language of ['en', 'cs', 'sk']) {
     assert.match(
       item.translations[language].ticketUrl,
       /^https:\/\/colosseumticket\.cz\/cs\/akce\//
@@ -130,7 +132,7 @@ test('approved English and Czech review masters are present', () => {
 test('English and Czech SEO descriptions remain within a safe snippet length', () => {
   const item = readItem();
 
-  for (const language of ['en', 'cs']) {
+  for (const language of ['en', 'cs', 'sk']) {
     const description = item.translations[language].seoDescription;
 
     assert.ok(

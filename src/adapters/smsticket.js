@@ -15,6 +15,7 @@ import { withProviderDateRange } from '../provider-event-dates.js';
 import { fetchProviderJson } from '../provider-request.js';
 import { distanceKm as haversineKm, eventCoordinates } from '../../shared/geo/coordinates.js';
 import { withSmsticketCountry } from '../../shared/geo/smsticket-country.js';
+import { createEventTaxonomyCache } from '../event-taxonomy-cache.js';
 
 import {
   buildSmsticketTaxonomy,
@@ -41,6 +42,7 @@ const CITY_DATA_URLS = [
 
 const dataCache = new Map();
 const dataPromiseCache = new Map();
+const withCachedTaxonomy = createEventTaxonomyCache(buildSmsticketTaxonomy);
 
 function getFilterCityText(filters = {}) {
   return String([
@@ -828,8 +830,9 @@ export async function fetchEvents({ filters = {} } = {}) {
 
     const normalizedEvent =
       withSmsticketImagePresentation(
-        withSmsticketTaxonomy(
-          ev
+        withCachedTaxonomy(
+          ev,
+          sourceEvent
         )
       );
 

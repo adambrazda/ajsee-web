@@ -35,8 +35,8 @@ test('city radius uses full local feeds, includes nearby towns, and discloses un
     assert.equal(result.hasMore, false);
     assert.equal(result.incomplete, false, 'missing geography differs from a failed HTTP source');
     assert.deepEqual(result.geographyCoverage.colosseumticket, { located: 2, missing: 1 });
-    assert.ok(requests.includes('/data/smsticket-events.json'));
-    assert.ok(requests.includes('/data/colosseumticket-events.json'));
+    assert.ok(requests.includes('/data/smsticket-events.compact.json'));
+    assert.ok(requests.includes('/data/colosseumticket-events.compact.json'));
     assert.ok(!requests.some(url => /(?:smsticket|colosseumticket)-events-praha/.test(url)));
     assert.ok(result.events.every(event => event.tickets.includes('a_box=kept')));
     assert.equal((await session.load(40)).geographyLimited, true);

@@ -1164,6 +1164,11 @@ export function ensureSharedEventFiltersMarkup(
       .ajseeSharedEventFilters ===
     'v1'
   ) {
+    if (form.dataset.ajseePrerenderedFilters === 'v1') {
+      // Recompute the existing URL/viewport-dependent disclosure state once.
+      delete form.dataset.ajseeFilterDetailsExpanded;
+      delete form.dataset.ajseePrerenderedFilters;
+    }
     initSharedEventFilterDisclosure(
       form,
       doc,

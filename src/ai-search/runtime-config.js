@@ -115,6 +115,23 @@ export function resolveAiSearchClientConfig({
   };
 }
 
+// Runs while parsing the built form, before the following banner is painted.
+// Serialize only visibility, never a key. Host rules are shared with runtime.
+export function getAiSearchFirstPaintScript({ enabled = '', sitekey = '' } = {}) {
+  const productionEnabled = resolveAiSearchClientConfig({ hostname: 'ajsee.cz', enabled, sitekey }).enabled;
+  return `{
+    const form = document.currentScript.previousElementSibling;
+    const hostname = location.hostname.trim().toLowerCase();
+    const enabled = (${JSON.stringify([...PRODUCTION_HOSTS])}.includes(hostname) && ${productionEnabled}) || /${DEPLOY_PREVIEW_HOST_RE.source}/i.test(hostname);
+    const template = form?.querySelector('[data-ai-first-paint-template]');
+    const fallback = form?.querySelector('[data-ai-static-intro]');
+    if (enabled && template && fallback) {
+      fallback.replaceWith(template.content.firstElementChild.cloneNode(true));
+    }
+    template?.remove();
+  }`;
+}
+
 function pad2(value) {
   return String(value)
     .padStart(2, '0');

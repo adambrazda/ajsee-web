@@ -1,3 +1,4 @@
+import { getAiEventSearchMarkup } from '../src/ai-search/ui-markup.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
@@ -43,7 +44,7 @@ test(
     );
 
     assert.match(
-      controller,
+      getAiEventSearchMarkup(),
       /role="group"/
     );
 
@@ -225,12 +226,12 @@ test(
   'clarification question is rendered before its quick actions',
   () => {
     const statusIndex =
-      controller.indexOf(
+      getAiEventSearchMarkup().indexOf(
         'class="ai-event-search__status"'
       );
 
     const actionsIndex =
-      controller.indexOf(
+      getAiEventSearchMarkup().indexOf(
         'class="ai-event-search__clarification-actions"'
       );
 

@@ -20,6 +20,9 @@ import { fetchProviderJson } from '../provider-request.js';
 import { withColosseumGeography } from '../../shared/geo/colosseum-geography.js';
 import { eventCoordinates, distanceKm } from '../../shared/geo/coordinates.js';
 import { withEventPageInfo } from '../event-pagination.js';
+import { createEventTaxonomyCache } from '../event-taxonomy-cache.js';
+
+const withCachedTaxonomy = createEventTaxonomyCache(buildColosseumTicketTaxonomy);
 
 
 const DEFAULT_DATA_URL =
@@ -742,8 +745,9 @@ export async function fetchEvents({
     }
 
     const normalized =
-      withColosseumTicketTaxonomy(
-        event
+      withCachedTaxonomy(
+        event,
+        sourceEvent
       );
 
     if (

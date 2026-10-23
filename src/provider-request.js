@@ -1,3 +1,10 @@
+import { unpackEventFeed } from '../shared/event-feed.js';
+
+const COMPACT_FEEDS = new Map([
+  ['/data/smsticket-events.json', '/data/smsticket-events.compact.json'],
+  ['/data/colosseumticket-events.json', '/data/colosseumticket-events.compact.json']
+]);
+
 // Bound the complete operation, including response-body reading. An abort alone
 // is insufficient when a transport fails to settle its promise.
 export async function withRequestDeadline(operation, timeoutMs = 5000) {
@@ -20,10 +27,17 @@ export async function withRequestDeadline(operation, timeoutMs = 5000) {
 
 export function fetchProviderJson(url) {
   return withRequestDeadline(async signal => {
-    const response = await fetch(url, { cache: 'default', signal });
-    if (!response.ok) throw new Error(`Provider response ${response.status}`);
-    const payload = await response.json();
-    if (!Array.isArray(payload?.events)) throw new Error('Invalid provider feed');
-    return payload.events;
+    const read = async input => {
+      const response = await fetch(input, { cache: 'default', signal });
+      if (!response.ok) throw new Error(`Provider response ${response.status}`);
+      return unpackEventFeed(await response.json()).events;
+    };
+    const compact = COMPACT_FEEDS.get(url);
+    if (compact) {
+      try { return await read(compact); }
+      catch (error) { if (signal.aborted) throw error; }
+    }
+    // A missing/invalid compact artifact must not hide the original inventory.
+    return read(url);
   });
 }

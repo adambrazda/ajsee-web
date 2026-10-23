@@ -19,7 +19,7 @@ test('unavailable static feeds are partial, retryable, and not cached as empty i
     assert.equal(first.pageInfo.interrupted, true);
     broken = false;
     const second = await fetchEvents(query);
-    assert.equal(feedRequests, 4, 'both failed feeds must be requested again');
+    assert.equal(feedRequests, 6, 'each failed compact/original pair is retried using its compact feed');
     assert.equal(second.length, 0);
     assert.equal(second.pageInfo.interrupted, false, 'a successfully loaded empty feed is a complete result');
     assert.deepEqual(second.pageInfo.failedProviders, []);

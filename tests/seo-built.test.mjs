@@ -4,6 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { JSDOM } from 'jsdom';
+import { AI_SEARCH_COPY } from '../src/ai-search/copy.js';
+import sharp from 'sharp';
+import { ensureSharedEventFiltersMarkup } from '../src/event-filters.js';
 import { MICROGUIDE_LABELS } from '../src/microguide-copy.js';
 import { finalizeSeoHtml, localizedSeoPath, SOCIALS } from '../scripts/finalize-seo.mjs';
 import { buildStaticMain } from '../scripts/build-mg.mjs';
@@ -16,6 +19,43 @@ const jsons=doc=>[...doc.querySelectorAll('script[type="application/ld+json"]')]
 function walk(value,visit){if(!value||typeof value!=='object')return;visit(value);Object.values(value).forEach(item=>walk(item,visit));}
 const guides=JSON.parse(fs.readFileSync('content/microguides/index.json','utf8')).items.filter(item=>item.status==='published');
 const published=fs.readdirSync('content/reviews/items').filter(file=>file.endsWith('.json')).map(file=>JSON.parse(fs.readFileSync('content/reviews/items/'+file,'utf8'))).filter(item=>item.status==='published'&&item.published===true);
+
+test('built search shells survive initialization and reserve the interactive controls in every language',()=>{
+  for(const lang of LANGS) for(const route of lang==='cs'?['index.html','events.html','events/index.html']:['index.html','events/index.html']) {
+    const dom=load(prefix(lang)+route),doc=dom.window.document;
+    const form=doc.getElementById('events-filters-form');
+    const pending=form.querySelector('[data-ai-static-intro]');
+    const query=pending.querySelector('#ai-event-search-query');
+    assert.ok(pending.hasAttribute('inert'));
+    assert.equal(pending.querySelector('[data-ai-search-label]').textContent,AI_SEARCH_COPY[lang].label);
+    assert.equal(query.placeholder,AI_SEARCH_COPY[lang].placeholder);
+    assert.equal(pending.querySelector('[data-ai-search-submit]').textContent,AI_SEARCH_COPY[lang].submit);
+    assert.equal(doc.querySelectorAll('#filter-city').length,1);
+    assert.equal(doc.querySelectorAll('#chipToday').length,1);
+    ensureSharedEventFiltersMarkup(doc);
+    assert.equal(form.querySelector('[data-ai-static-intro]'),pending);
+    assert.equal(form.querySelector('#ai-event-search-query'),query);
+    dom.window.close();
+  }
+});
+
+test('published review covers reserve their actual image dimensions in all translations',async()=>{
+  for(const review of published) {
+    if(!review.cover?.startsWith('/'))continue;
+    const metadata=await sharp(path.join('public',review.cover)).metadata();
+    const dimensions=metadata.autoOrient||metadata;
+    for(const lang of LANGS) {
+      if(!review.translations?.[lang])continue;
+      const dom=load(prefix(lang)+'reviews/'+review.slug+'/index.html');
+      const image=dom.window.document.querySelector('.review-cover');
+      assert.equal(image.getAttribute('width'),String(dimensions.width),review.slug);
+      assert.equal(image.getAttribute('height'),String(dimensions.height),review.slug);
+      assert.equal(image.style.getPropertyValue('--review-cover-width'),dimensions.width+'px');
+      assert.equal(image.style.getPropertyValue('--review-cover-ratio'),`${dimensions.width} / ${dimensions.height}`);
+      dom.window.close();
+    }
+  }
+});
 
 test('localized SEO never forks the global Organization identity or partner links',()=>{
   assert.equal(localizedSeoPath(ORIGIN+'/blog/','cs'),ORIGIN+'/blog');
@@ -69,7 +109,7 @@ for(const lang of LANGS){
         assert.equal(doc.querySelector('meta[name="description"]').content,dictionary['events-page-description']);
         assert.equal(doc.querySelector('meta[property="og:description"]').content,dictionary['events-page-description']);
         assert.ok(doc.querySelector('[data-ai-static-intro]').textContent.includes('AJSEE'));
-        assert.equal(clean(doc.querySelector('[data-ai-static-intro] .ai-event-search__helper').textContent),clean(dictionary['ai-search-static-intro']));
+        assert.equal(clean(doc.querySelector('[data-ai-static-intro] .ai-event-search__helper').textContent),clean(AI_SEARCH_COPY[lang].helper));
         assert.ok(doc.querySelectorAll('[data-events-static] .event-card').length>0);
       }
       dom.window.close();

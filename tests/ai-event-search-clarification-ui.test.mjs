@@ -1,3 +1,5 @@
+import { renderAiSearchIdleMarkup } from '../src/ai-search/idle-markup.js';
+import { AI_SEARCH_COPY } from '../src/ai-search/copy.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
@@ -226,13 +228,18 @@ test(
   () => {
     const statusIndex =
       controller.indexOf(
-        'class="ai-event-search__status"'
+        '${renderAiSearchIdleMarkup('
       );
 
     const actionsIndex =
       controller.indexOf(
         'class="ai-event-search__clarification-actions"'
       );
+
+    assert.match(
+      renderAiSearchIdleMarkup({ copy: AI_SEARCH_COPY.cs, brandMark: '' }),
+      /class="ai-event-search__status"/
+    );
 
     assert.ok(
       statusIndex >= 0

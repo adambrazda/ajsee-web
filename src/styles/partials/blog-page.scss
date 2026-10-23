@@ -179,6 +179,20 @@
   margin-bottom: 0;
 }
 
+// Reserve the cover's final size before its bytes arrive. Match the existing
+// natural-size image and height limits, including small and portrait covers.
+.review-cover-figure .review-cover[width][height] {
+  --review-cover-max-height: 560px;
+  width: min(100%, var(--review-cover-width), calc(var(--review-cover-max-height) * var(--review-cover-ratio)));
+  aspect-ratio: var(--review-cover-ratio);
+}
+
+@media (max-width: 600px) {
+  .review-cover-figure .review-cover[width][height] {
+    --review-cover-max-height: 360px;
+  }
+}
+
 .review-cover-credit {
   margin-top: 0.45rem;
   padding: 0 0.15rem;

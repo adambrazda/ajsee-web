@@ -647,7 +647,7 @@ function buildHeadSeo(review, translation, lang = DEFAULT_LANG) {
   return `
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeAttr(description)}" />
-  <meta name="robots" content="${PREVIEW_MODE ? 'noindex, nofollow' : 'index, follow'}" />
+  <meta name="robots" content="${PREVIEW_MODE && !isPublishedReview(review) ? 'noindex, nofollow' : 'index, follow'}" />
   <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
 ${alternateLinks}
 

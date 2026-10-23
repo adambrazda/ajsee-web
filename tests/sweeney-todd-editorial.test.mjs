@@ -162,5 +162,5 @@ test('Sweeney Todd photo descriptions are localized in all six languages', () =>
 test('review deploy previews are noindex while production stays indexable', () => {
   const builder = fs.readFileSync(builderPath, 'utf8');
 
-  assert.match(builder, /PREVIEW_MODE \? 'noindex, nofollow' : 'index, follow'/);
+  assert.match(builder, /PREVIEW_MODE && !isPublishedReview\(review\) \? 'noindex, nofollow' : 'index, follow'/);
 });

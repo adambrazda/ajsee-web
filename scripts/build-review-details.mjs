@@ -647,7 +647,7 @@ function buildHeadSeo(review, translation, lang = DEFAULT_LANG) {
   return `
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeAttr(description)}" />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content="${PREVIEW_MODE ? 'noindex, nofollow' : 'index, follow'}" />
   <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
 ${alternateLinks}
 
@@ -836,7 +836,7 @@ const REVIEW_GALLERY_LABELS = {
   hu: 'Fotógaléria'
 };
 
-function buildReviewGalleryHtml(gallery, lang = DEFAULT_LANG) {
+function buildReviewGalleryHtml(gallery, lang = DEFAULT_LANG, localizedAlts = []) {
   const images = Array.isArray(gallery)
     ? gallery.filter((item) => item && item.image)
     : [];
@@ -850,9 +850,9 @@ function buildReviewGalleryHtml(gallery, lang = DEFAULT_LANG) {
     REVIEW_GALLERY_LABELS[DEFAULT_LANG];
 
   const itemsHtml = images
-    .map((item) => {
+    .map((item, index) => {
       const image = String(item.image || '').trim();
-      const alt = String(item.alt || '').trim();
+      const alt = String(localizedAlts?.[index] || item.alt || '').trim();
       const credit = localizeCoverCredit(item.credit, lang);
 
       return `
@@ -993,7 +993,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG, coverD
     review,
     translation
   );
-  const galleryHtml = buildReviewGalleryHtml(review.gallery, lang);
+  const galleryHtml = buildReviewGalleryHtml(review.gallery, lang, translation.galleryAlts);
   const cover = review.cover || '';
   const coverAlt = translation.coverAlt || review.coverAlt || title;
   const coverCredit = localizeCoverCredit(review.coverCredit, lang);

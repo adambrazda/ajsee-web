@@ -19,6 +19,16 @@ const jsons=doc=>[...doc.querySelectorAll('script[type="application/ld+json"]')]
 function walk(value,visit){if(!value||typeof value!=='object')return;visit(value);Object.values(value).forEach(item=>walk(item,visit));}
 const guides=JSON.parse(fs.readFileSync('content/microguides/index.json','utf8')).items.filter(item=>item.status==='published');
 const published=fs.readdirSync('content/reviews/items').filter(file=>file.endsWith('.json')).map(file=>JSON.parse(fs.readFileSync('content/reviews/items/'+file,'utf8'))).filter(item=>item.status==='published'&&item.published===true);
+// Deploy Previews intentionally expose staged reviews in the static blog index.
+// Production must never contain these preview-only entries.
+const previewMode=process.env.REVIEW_PREVIEW==='1';
+const builtReviews=JSON.parse(fs.readFileSync('public/content/reviews/index.json','utf8')).items;
+const privateReviews=builtReviews.filter(item=>item.previewOnly===true);
+for(const item of builtReviews){
+  const isPublished=item.status==='published'&&item.published===true;
+  assert.ok(isPublished||(previewMode&&item.previewOnly===true),`Unpublished review leaked into a public build: ${item.slug}`);
+}
+if(!previewMode)assert.equal(privateReviews.length,0,'Production index contains preview-only reviews');
 
 test('built search shells survive initialization and reserve the interactive controls in every language',()=>{
   for(const lang of LANGS) for(const route of lang==='cs'?['index.html','events.html','events/index.html']:['index.html','events/index.html']) {
@@ -101,7 +111,11 @@ for(const lang of LANGS){
           if(typeof item.item==='string'&&item.item.startsWith(ORIGIN))assert.ok(lang==='cs'||new URL(item.item).pathname.startsWith('/'+lang+'/'),item.item);
         }
       }));
-      if(route==='blog')assert.equal(JSON.parse(doc.getElementById('blog-initial-data').textContent).cards.length,published.length+guides.length);
+      if(route==='blog'){
+        const cards=JSON.parse(doc.getElementById('blog-initial-data').textContent).cards;
+        assert.equal(cards.length,published.length+guides.length+privateReviews.length);
+        for(const review of privateReviews)assert.ok(cards.some(card=>card.slug===review.slug),`Missing preview card: ${review.slug}`);
+      }
       if(route==='faq')assert.equal(doc.querySelectorAll('[data-faq-item]').length,15);
       if(route==='events'){
         const dictionary=JSON.parse(fs.readFileSync('src/locales/'+lang+'.json','utf8'));

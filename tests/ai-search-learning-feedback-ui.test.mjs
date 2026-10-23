@@ -1,3 +1,4 @@
+import { getAiEventSearchMarkup } from '../src/ai-search/ui-markup.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
@@ -94,7 +95,7 @@ test(
   'feedback UI appears only after a successful applied search and is hidden for a new search',
   () => {
     assert.match(
-      controller,
+      getAiEventSearchMarkup(),
       /data-ai-search-feedback[\s\S]*?hidden/
     );
 
@@ -124,17 +125,17 @@ test(
   'feedback buttons map only to the privacy-safe V1B2 values and remain changeable',
   () => {
     assert.match(
-      controller,
+      getAiEventSearchMarkup(),
       /data-ai-search-feedback-value="helpful"/
     );
 
     assert.match(
-      controller,
+      getAiEventSearchMarkup(),
       /data-ai-search-feedback-value="not_helpful"/
     );
 
     assert.match(
-      controller,
+      getAiEventSearchMarkup(),
       /aria-pressed="false"/
     );
 
@@ -169,7 +170,7 @@ test(
   'feedback UI is compact, accessible and does not use important overrides',
   () => {
     assert.match(
-      controller,
+      getAiEventSearchMarkup(),
       /role="group"[\s\S]*?aria-labelledby="ai-event-search-feedback-question"/
     );
 

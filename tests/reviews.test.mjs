@@ -851,7 +851,7 @@ test(
       getPopulatedLanguages(
         sweeney.review
       ).sort(),
-      ['cs', 'de', 'en', 'pl', 'sk']
+      [...REQUIRED_LANGUAGES].sort()
     );
   }
 );

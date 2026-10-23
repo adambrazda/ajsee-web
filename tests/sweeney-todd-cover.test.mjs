@@ -15,24 +15,20 @@ const expectedCover =
   "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-prague-2026-cover.webp";
 
 test(
-  "Sweeney Todd remains a published theatre preview",
+  "Sweeney Todd is staged as an unpublished review",
   () => {
-    assert.equal(item.contentType, "preview");
-    assert.equal(item.status, "published");
-    assert.equal(item.published, true);
-
-    assert.match(
-      item.publishedAt,
-      /^\d{4}-\d{2}-\d{2}T/
-    );
-
+    assert.equal(item.contentType, "review");
+    assert.equal(item.status, "approved");
+    assert.equal(item.published, false);
+    assert.equal(item.publishedAt, "");
+    assert.equal(item.performanceDate, "2026-10-03");
     assert.equal(item.featured, false);
     assert.equal(item.rating, null);
   }
 );
 
 test(
-  "Sweeney Todd has the approved cover metadata",
+  "Sweeney Todd temporarily keeps the previous cover until review photography is staged",
   () => {
     assert.equal(item.cover, expectedCover);
 
@@ -61,7 +57,7 @@ test(
 );
 
 test(
-  "Sweeney Todd cover is a valid local WebP asset",
+  "Sweeney Todd temporary cover remains a valid local WebP asset",
   async () => {
     const coverUrl = new URL(
       `../public${expectedCover}`,
@@ -92,26 +88,21 @@ test(
 );
 
 test(
-  "Sweeney Todd records the visual source",
+  "Sweeney Todd records the review transition and incoming Oya Canli photography",
   () => {
     assert.match(
       item.internalNotes,
-      /Oya Canli/
+      /converts the existing published Sweeney Todd preview into a new review/i
     );
 
     assert.match(
       item.internalNotes,
-      /National Theatre Prague/
+      /Oya Canli photography was supplied/i
     );
 
     assert.match(
       item.internalNotes,
-      /narodni-divadlo\.cz/
-    );
-
-    assert.match(
-      item.internalNotes,
-      /gallery is intentionally empty/
+      /Do not publish/i
     );
   }
 );

@@ -1184,9 +1184,9 @@ body.ajsee-filter-sheet-open {
 
 
   html body:is([data-page="home"], [data-page="events"])
-  form#events-filters-form.events-filters.filter-dock[
-    data-ajsee-filter-details-expanded="false"
-  ]
+  form#events-filters-form.events-filters.filter-dock:not([
+    data-ajsee-filter-details-expanded="true"
+  ])
   .filters-fieldset {
     display: none;
   }

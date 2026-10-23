@@ -1,3 +1,4 @@
+import { readReviewCoverDimensions, coverDimensionsAttributes } from './review-image-dimensions.mjs';
 import { localizeCoverCredit } from './review-cover-credit.mjs';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
@@ -985,7 +986,7 @@ function buildReviewBodyHtml(
     .join('\n');
 }
 
-function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
+function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG, coverDimensions = null) {
   const title = translation.title || review.showTitle || review.slug;
   const subtitle = translation.subtitle || '';
   const bodyHtml = buildReviewBodyHtml(
@@ -1028,7 +1029,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
             ${
               cover
                 ? `<figure class="review-cover-figure">
-                    <img class="blog-image review-cover" src="${escapeAttr(cover)}" alt="${escapeAttr(coverAlt)}" loading="eager" decoding="async">
+                    <img class="blog-image review-cover" src="${escapeAttr(cover)}" alt="${escapeAttr(coverAlt)}"${coverDimensionsAttributes(coverDimensions)} loading="eager" decoding="async">
                     ${coverCredit ? `<figcaption class="review-cover-credit">${escapeHtml(coverCredit)}</figcaption>` : ''}
                   </figure>`
                 : ''
@@ -1050,8 +1051,8 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG) {
 `;
 }
 
-function injectReviewArticle(template, review, translation, lang = DEFAULT_LANG) {
-  const articleHtml = buildReviewArticleHtml(review, translation, lang);
+function injectReviewArticle(template, review, translation, lang = DEFAULT_LANG, coverDimensions = null) {
+  const articleHtml = buildReviewArticleHtml(review, translation, lang, coverDimensions);
 
   return template.replace(
     /<article\b(?=[^>]*\bid=["']blogArticle["'])[^>]*>[\s\S]*?<\/article>/i,
@@ -1161,6 +1162,7 @@ async function writeReviewDetail(review, template) {
     return 0;
   }
 
+  const coverDimensions = await readReviewCoverDimensions(review.cover);
   const availableLanguages =
     getAvailableTranslationLangs(review);
 
@@ -1199,7 +1201,8 @@ async function writeReviewDetail(review, template) {
       html,
       review,
       translation,
-      lang
+      lang,
+      coverDimensions
     );
 
     html = patchTemplateForReviews(
@@ -1280,6 +1283,7 @@ async function writeLocalizedDistReview(review) {
     return 0;
   }
 
+  const coverDimensions = await readReviewCoverDimensions(review.cover);
   const availableLanguages =
     new Set(getAvailableTranslationLangs(review));
 
@@ -1334,7 +1338,8 @@ async function writeLocalizedDistReview(review) {
       html,
       review,
       translation,
-      lang
+      lang,
+      coverDimensions
     );
 
     html = patchTemplateForReviews(

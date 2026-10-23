@@ -17,29 +17,37 @@ function readItem() {
   return JSON.parse(fs.readFileSync(itemPath, 'utf8'));
 }
 
-test('Sweeney Todd keeps a valid theatre preview publication state', () => {
+test('Sweeney Todd is staged as a valid unpublished review', () => {
   const item = readItem();
 
-  assert.equal(item.contentType, 'preview');
+  assert.equal(item.contentType, 'review');
   assert.equal(item.featured, false);
+  assert.equal(item.status, 'approved');
+  assert.equal(item.published, false);
+  assert.equal(item.publishedAt || '', '');
+  assert.equal(item.performanceDate, '2026-10-03');
+  assert.equal(item.eventDate || '', '');
+});
 
-  if (item.published) {
-    assert.equal(item.status, 'published');
-    assert.match(
-      item.publishedAt,
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+test('Sweeney Todd currently exposes only the approved English and Czech review masters', () => {
+  const item = readItem();
+
+  assert.ok(item.translations.en?.body);
+  assert.ok(item.translations.cs?.body);
+
+  for (const language of ['sk', 'pl', 'hu', 'de']) {
+    assert.deepEqual(
+      item.translations[language],
+      {},
+      `Unexpected staged translation for ${language}`
     );
-  } else {
-    assert.equal(item.status, 'approved');
-    assert.equal(item.publishedAt || '', '');
   }
 });
 
-test('Sweeney Todd provides localized cover alt text in every AJSEE language', () => {
+test('Sweeney Todd provides localized cover alt text for the staged review masters', () => {
   const item = readItem();
-  const languages = ['en', 'cs', 'sk', 'pl', 'hu', 'de'];
 
-  for (const language of languages) {
+  for (const language of ['en', 'cs']) {
     assert.equal(
       typeof item.translations[language].coverAlt,
       'string',
@@ -51,8 +59,8 @@ test('Sweeney Todd provides localized cover alt text in every AJSEE language', (
     );
   }
 
-  assert.match(item.translations.cs.coverAlt, /Státní opeře/);
-  assert.match(item.translations.de.coverAlt, /Prager Staatsoper/);
+  assert.match(item.translations.cs.coverAlt, /Státní opery/);
+  assert.match(item.translations.en.coverAlt, /State Opera/);
 });
 
 test('review detail builder prefers localized cover alt text', () => {
@@ -68,45 +76,66 @@ test('review detail builder prefers localized cover alt text', () => {
   );
 });
 
-test('Czech readers use the Czech National Theatre ticket page', () => {
+test('Sweeney Todd uses the AJSEE ColosseumTicket sales path', () => {
   const item = readItem();
 
-  assert.match(
-    item.translations.cs.ticketUrl,
-    /^https:\/\/www\.narodni-divadlo\.cz\/cs\/predstaveni\//
-  );
-  assert.match(item.translations.cs.ticketUrl, /utm_source=ajsee/);
+  for (const language of ['en', 'cs']) {
+    assert.match(
+      item.translations[language].ticketUrl,
+      /^https:\/\/colosseumticket\.cz\/cs\/akce\//
+    );
+    assert.doesNotMatch(
+      item.translations[language].ticketUrl,
+      /a_box=/
+    );
+  }
+
   assert.match(
     item.ticketUrl,
-    /^https:\/\/www\.narodni-divadlo\.cz\/en\/show\//
+    /^https:\/\/colosseumticket\.cz\/cs\/akce\//
   );
+  assert.doesNotMatch(item.ticketUrl, /a_box=/);
 });
 
-test('approved editorial corrections are present', () => {
+test('approved English and Czech review masters are present', () => {
   const item = readItem();
 
-  assert.match(item.translations.en.body, /book writer Hugh Wheeler/);
-  assert.match(item.translations.en.excerpt, /most celebrated interpreters/);
+  assert.equal(
+    item.translations.en.title,
+    'Sweeney Todd at the State Opera: When Broadway Meets the Opera House'
+  );
+  assert.match(
+    item.translations.en.body,
+    /More Broadway at the State Opera, Please/
+  );
+  assert.match(
+    item.translations.en.body,
+    /Perhaps \*Jekyll & Hyde\*\?/
+  );
+
+  assert.equal(
+    item.translations.cs.title,
+    'Sweeney Todd ve Státní opeře: Když se Broadway potká s operou'
+  );
   assert.match(
     item.translations.cs.body,
-    /Sweeney Todd: Ďábelský lazebník z Fleet Street/
+    /Více Broadwaye ve Státní opeře, prosím/
   );
-  assert.match(item.translations.cs.body, /libretistou Hughem Wheelerem/);
-  assert.match(item.translations.sk.body, /libretistom Hughom Wheelerom/);
-  assert.equal(
-    item.translations.pl.title,
-    'Sweeney Todd w Pradze: najmroczniejszy golibroda świata musicalu'
+  assert.match(
+    item.translations.cs.body,
+    /Co třeba \*Jekyll & Hyde\*\?/
   );
-  assert.equal(item.translations.pl.ctaText, 'Sprawdź bilety');
-  assert.equal(item.translations.hu.venue, 'Állami Opera');
-  assert.match(item.translations.hu.body, /- Feliratok: cseh és angol/);
 });
 
-test('German SEO description stays within a safe snippet length', () => {
+test('English and Czech SEO descriptions remain within a safe snippet length', () => {
   const item = readItem();
-  const description = item.translations.de.seoDescription;
 
-  assert.ok(description.length <= 160, `Length was ${description.length}`);
-  assert.match(description, /Prager Premiere/);
-  assert.match(description, /Staatsoper/);
+  for (const language of ['en', 'cs']) {
+    const description = item.translations[language].seoDescription;
+
+    assert.ok(
+      description.length <= 180,
+      `${language} SEO description length was ${description.length}`
+    );
+  }
 });

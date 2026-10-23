@@ -53,7 +53,7 @@
     "colosseumticket:test": "node --test --test-concurrency=1 tests/colosseumticket-adapter.test.mjs tests/colosseumticket-commercial-safety.test.mjs tests/colosseumticket-geography.test.mjs tests/colosseumticket-runtime.test.mjs tests/colosseumticket-sync-hardening.test.mjs tests/colosseumticket-sync.test.mjs tests/colosseumticket-taxonomy.test.mjs tests/colosseumticket-ui.test.mjs tests/event-city-subset-modal-description.test.mjs tests/city-radius-provider-completeness.test.mjs tests/geo-coordinates.test.mjs",
     "colosseumticket:geography": "node scripts/audit-colosseum-geography.mjs",
     "contest:test": "node --test tests/colosseum-contest.test.mjs",
-    "blog:test": "node --test tests/blog-listing.test.mjs",
+    "blog:test": "node --test tests/blog-listing.test.mjs tests/seo-static-blog.test.mjs",
     "faq:test": "node --test tests/faq-page.test.mjs",
     "team:images": "node scripts/build-team-images.mjs",
     "seo:verify": "node --test tests/seo-built.test.mjs",

@@ -7,6 +7,8 @@
 
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { loadBlogCards } from '../src/blog-content.js';
+import { checkStaticBlogCards } from './seo-static-blog.mjs';
 
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
@@ -136,13 +138,33 @@ function checkMainPages() {
   pages.forEach(checkBaseSeo);
 }
 
-function checkStaticBlogLinks() {
-  for (const [file, marker, minimum] of [['index.html','homepage-blog-card',3],['blog.html','data-slug=',20]]) {
-    const html = readDist(file), label = 'Published editorial links: ' + file;
-    const count=html.split(marker).length-1;
-    if(count >= minimum)pass(label,'has current static editorial links');
-    else fail(label,'missing static editorial content');
-    for(const slug of retiredSlugs)expectNoMatch(label,html,new RegExp(slug),'does not link to retired '+slug);
+async function checkStaticBlogLinks() {
+  const readGeneratedJson = async (url) =>
+    JSON.parse(readFileSync(path.join(root, 'public', url.replace(/^\\/+/, '')), 'utf8'));
+  const expectedBlogCards = await loadBlogCards('cs', readGeneratedJson, { strict: true });
+
+  for (const file of ['index.html', 'blog.html']) {
+    const html = readDist(file);
+    const label = 'Published editorial links: ' + file;
+
+    if (file === 'blog.html') {
+      const check = checkStaticBlogCards(html, expectedBlogCards);
+      if (check.ok) {
+        pass(label, `all ${check.expectedCount} expected static articles are rendered`);
+      } else {
+        fail(label, `expected ${check.expectedCount} articles, found ${check.renderedCount}; ` +
+          `missing: ${check.missing.join(', ') || 'none'}; ` +
+          `unexpected: ${check.unexpected.join(', ') || 'none'}`);
+      }
+    } else {
+      const count = html.split('homepage-blog-card').length - 1;
+      if (count >= 3) pass(label, 'has current static editorial links');
+      else fail(label, 'missing static editorial content');
+    }
+
+    for (const slug of retiredSlugs) {
+      expectNoMatch(label, html, new RegExp(slug), 'does not link to retired ' + slug);
+    }
   }
 }
 
@@ -272,7 +294,7 @@ if (!existsSync(distDir)) {
 }
 
 checkMainPages();
-checkStaticBlogLinks();
+await checkStaticBlogLinks();
 checkFaqContent();
 checkBlogDetails();
 checkMicroguides();

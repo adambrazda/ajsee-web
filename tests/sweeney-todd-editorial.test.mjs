@@ -29,14 +29,15 @@ test('Sweeney Todd is staged as a valid unpublished review', () => {
   assert.equal(item.eventDate || '', '');
 });
 
-test('Sweeney Todd currently exposes the approved English, Czech and Slovak review masters', () => {
+test('Sweeney Todd currently exposes the approved English, Czech, Slovak and German review masters', () => {
   const item = readItem();
 
   assert.ok(item.translations.en?.body);
   assert.ok(item.translations.cs?.body);
   assert.ok(item.translations.sk?.body);
+  assert.ok(item.translations.de?.body);
 
-  for (const language of ['pl', 'hu', 'de']) {
+  for (const language of ['pl', 'hu']) {
     assert.deepEqual(
       item.translations[language],
       {},
@@ -48,7 +49,7 @@ test('Sweeney Todd currently exposes the approved English, Czech and Slovak revi
 test('Sweeney Todd provides localized cover alt text for the staged review masters', () => {
   const item = readItem();
 
-  for (const language of ['en', 'cs', 'sk']) {
+  for (const language of ['en', 'cs', 'sk', 'de']) {
     assert.equal(
       typeof item.translations[language].coverAlt,
       'string',
@@ -63,6 +64,7 @@ test('Sweeney Todd provides localized cover alt text for the staged review maste
   assert.match(item.translations.cs.coverAlt, /Státní opery/);
   assert.match(item.translations.en.coverAlt, /State Opera/);
   assert.match(item.translations.sk.coverAlt, /Štátnej opery/);
+  assert.match(item.translations.de.coverAlt, /Prager Staatsoper/);
 });
 
 test('review detail builder prefers localized cover alt text', () => {
@@ -81,7 +83,7 @@ test('review detail builder prefers localized cover alt text', () => {
 test('Sweeney Todd uses the AJSEE ColosseumTicket sales path', () => {
   const item = readItem();
 
-  for (const language of ['en', 'cs', 'sk']) {
+  for (const language of ['en', 'cs', 'sk', 'de']) {
     assert.match(
       item.translations[language].ticketUrl,
       /^https:\/\/colosseumticket\.cz\/cs\/akce\//
@@ -132,7 +134,7 @@ test('approved English and Czech review masters are present', () => {
 test('English and Czech SEO descriptions remain within a safe snippet length', () => {
   const item = readItem();
 
-  for (const language of ['en', 'cs', 'sk']) {
+  for (const language of ['en', 'cs', 'sk', 'de']) {
     const description = item.translations[language].seoDescription;
 
     assert.ok(

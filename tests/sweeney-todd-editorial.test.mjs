@@ -139,3 +139,28 @@ test('English and Czech SEO descriptions remain within a safe snippet length', (
     );
   }
 });
+
+test('Sweeney Todd photo descriptions are localized in all six languages', () => {
+  const item = readItem();
+  const galleryLength = item.gallery.length;
+
+  assert.equal(galleryLength, 5);
+
+  for (const lang of ['en', 'cs', 'sk', 'de', 'pl', 'hu']) {
+    const alts = item.translations[lang].galleryAlts;
+
+    assert.equal(alts.length, galleryLength, `Wrong gallery count for ${lang}`);
+    assert.ok(alts.every((alt) => typeof alt === 'string' && alt.trim().length >= 40));
+  }
+
+  const builder = fs.readFileSync(builderPath, 'utf8');
+
+  assert.match(builder, /localizedAlts\?\.\[index\] \|\| item\.alt/);
+  assert.match(builder, /buildReviewGalleryHtml\(review\.gallery, lang, translation\.galleryAlts\)/);
+});
+
+test('review deploy previews are noindex while production stays indexable', () => {
+  const builder = fs.readFileSync(builderPath, 'utf8');
+
+  assert.match(builder, /PREVIEW_MODE \? 'noindex, nofollow' : 'index, follow'/);
+});

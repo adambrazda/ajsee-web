@@ -140,7 +140,7 @@ function checkMainPages() {
 
 async function checkStaticBlogLinks() {
   const readGeneratedJson = async (url) =>
-    JSON.parse(readFileSync(path.join(root, 'public', url.replace(/^\\/+/, '')), 'utf8'));
+    JSON.parse(readFileSync(path.join(root, 'public', (url.startsWith('/') ? url.slice(1) : url)), 'utf8'));
   const expectedBlogCards = await loadBlogCards('cs', readGeneratedJson, { strict: true });
 
   for (const file of ['index.html', 'blog.html']) {

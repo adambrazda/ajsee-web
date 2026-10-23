@@ -834,19 +834,24 @@ test(
 
     assert.ok(
       sweeney,
-      'Sweeney Todd preview source record is missing.'
+      'Sweeney Todd source record is missing.'
     );
 
     assert.equal(
       sweeney.review.contentType,
-      'preview'
+      'review'
+    );
+
+    assert.equal(
+      sweeney.review.performanceDate,
+      '2026-10-03'
     );
 
     assert.deepEqual(
       getPopulatedLanguages(
         sweeney.review
       ).sort(),
-      [...REQUIRED_LANGUAGES].sort()
+      ['cs', 'en']
     );
   }
 );

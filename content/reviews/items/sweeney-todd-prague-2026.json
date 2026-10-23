@@ -17,10 +17,36 @@
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://colosseumticket.cz/cs/akce/eC0flE7oQl6a48QDQzlk-Q-sweeney-todd-dabelsky-lazebnik-z-fleet-street",
-  "cover": "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-prague-2026-cover.webp",
-  "coverAlt": "Stylised meat pie with a finger protruding from it and a trail of blood, visual for Sweeney Todd at the State Opera in Prague.",
-  "coverCredit": "Visual source: National Theatre Prague",
-  "gallery": [],
+  "cover": "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-state-opera-cover.avif",
+  "coverAlt": "The cast of Sweeney Todd taking their bows on stage at Prague’s State Opera, with the orchestra visible in the pit.",
+  "coverCredit": "Photo: Oya Canli",
+  "gallery": [
+    {
+      "image": "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-state-opera-interior.avif",
+      "alt": "The ornate auditorium and ceiling of Prague’s State Opera before Sweeney Todd.",
+      "credit": "Photo: Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-state-opera-curtain-call.avif",
+      "alt": "The cast of Sweeney Todd taking their bows on stage at Prague’s State Opera.",
+      "credit": "Photo: Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-state-opera-orchestra.avif",
+      "alt": "The Sweeney Todd cast on stage with the State Opera Orchestra visible in the pit.",
+      "credit": "Photo: Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-state-opera-oya-canli.avif",
+      "alt": "Oya Canli in the auditorium of Prague’s State Opera during her visit to Sweeney Todd.",
+      "credit": "Photo: Oya Canli"
+    },
+    {
+      "image": "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-state-opera-poster.avif",
+      "alt": "A Sweeney Todd poster at Prague’s State Opera for the 2026 production.",
+      "credit": "Photo: Oya Canli"
+    }
+  ],
   "translations": {
     "en": {
       "title": "Sweeney Todd at the State Opera: When Broadway Meets the Opera House",
@@ -101,5 +127,5 @@
       "coverAlt": "Das Ensemble von Sweeney Todd beim Schlussapplaus auf der Bühne der Prager Staatsoper, mit dem Orchester sichtbar im Orchestergraben."
     }
   },
-  "internalNotes": "Promoted from review submission: sweeney-todd\nOriginal submission status: ready_for_adam_review\nPromoted at: 2026-08-03T13:29:42.704Z\nContent classified as a theatre preview because the production had not yet premiered or been attended.\nFinal English version approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nCzech translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nSlovak translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nPolish translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nHungarian translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nGerman translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nCover visual supplied by Oya Canli after promotion.\nVisual source: National Theatre Prague.\nSource page: https://www.narodni-divadlo.cz/cs/predstaveni/sweeney-todd-FKs5ZFQLR7OymXxxNyxW1A\nOnly one visual was supplied; the gallery is intentionally empty.\nOriginal contributor notes: You can find the original article here: https://docs.google.com/document/d/137w4hF8Hc_n-Cd7kVZB7eQ_FHz06yi5sHDDnPrGPTrA/edit?tab=t.39bbf6hknmdk\nUnfortunately there is an error when I am trying to upload a photo. I couldn`t fix it.\nThis branch converts the existing published Sweeney Todd preview into a new review while preserving the canonical slug.\nEnglish review master approved by Adam Brázda on 23 October 2026.\nCzech review master approved by Adam Brázda on 23 October 2026.\nPerformance attended: 3 October 2026.\nDo not publish until Adam Brázda explicitly approves publication.\nThe review uses the clean ColosseumTicket seller URL; AJSEE affiliate attribution is added server-side via colosseumOutbound.\nNew Oya Canli photography was supplied on 23 October 2026 and will replace the old preview cover in a later staging step.\nSlovak review master approved by Adam Brázda on 23 October 2026.\nGerman review master approved by Adam Brázda on 23 October 2026.\nPolish review master approved by Adam Brázda on 23 October 2026.\nHungarian review master approved by Adam Brázda on 23 October 2026."
+  "internalNotes": "Promoted from review submission: sweeney-todd\nOriginal submission status: ready_for_adam_review\nPromoted at: 2026-08-03T13:29:42.704Z\nContent classified as a theatre preview because the production had not yet premiered or been attended.\nFinal English version approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nCzech translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nSlovak translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nPolish translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nHungarian translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nGerman translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nCover visual supplied by Oya Canli after promotion.\nVisual source: National Theatre Prague.\nSource page: https://www.narodni-divadlo.cz/cs/predstaveni/sweeney-todd-FKs5ZFQLR7OymXxxNyxW1A\nOnly one visual was supplied; the gallery is intentionally empty.\nOriginal contributor notes: You can find the original article here: https://docs.google.com/document/d/137w4hF8Hc_n-Cd7kVZB7eQ_FHz06yi5sHDDnPrGPTrA/edit?tab=t.39bbf6hknmdk\nUnfortunately there is an error when I am trying to upload a photo. I couldn`t fix it.\nThis branch converts the existing published Sweeney Todd preview into a new review while preserving the canonical slug.\nEnglish review master approved by Adam Brázda on 23 October 2026.\nCzech review master approved by Adam Brázda on 23 October 2026.\nPerformance attended: 3 October 2026.\nDo not publish until Adam Brázda explicitly approves publication.\nThe review uses the clean ColosseumTicket seller URL; AJSEE affiliate attribution is added server-side via colosseumOutbound.\nNew Oya Canli photography was supplied on 23 October 2026 and will replace the old preview cover in a later staging step.\nSlovak review master approved by Adam Brázda on 23 October 2026.\nGerman review master approved by Adam Brázda on 23 October 2026.\nPolish review master approved by Adam Brázda on 23 October 2026.\nHungarian review master approved by Adam Brázda on 23 October 2026.\nReview cover and five-photo gallery replaced with Oya Canli original photography on 23 October 2026."
 }

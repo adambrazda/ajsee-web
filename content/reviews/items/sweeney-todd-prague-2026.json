@@ -59,7 +59,14 @@
       "seoDescription": "Oya Canli reviews Sweeney Todd at Prague’s State Opera, where Sondheim meets operatic voices, a full orchestra, live visuals and spectacular staging.",
       "venue": "State Opera",
       "city": "Prague",
-      "coverAlt": "The cast of Sweeney Todd taking their bows on stage at Prague’s State Opera, with the orchestra visible in the pit."
+      "coverAlt": "The cast of Sweeney Todd taking their bows on stage at Prague’s State Opera, with the orchestra visible in the pit.",
+      "galleryAlts": [
+        "The ornate auditorium and ceiling of Prague’s State Opera before Sweeney Todd.",
+        "The cast of Sweeney Todd taking their bows on stage at Prague’s State Opera.",
+        "The Sweeney Todd cast on stage with the State Opera Orchestra visible in the pit.",
+        "Oya Canli in the auditorium of Prague’s State Opera during her visit to Sweeney Todd.",
+        "A Sweeney Todd poster at Prague’s State Opera for the 2026 production."
+      ]
     },
     "cs": {
       "title": "Sweeney Todd ve Státní opeře: Když se Broadway potká s operou",
@@ -72,7 +79,14 @@
       "seoDescription": "Oya Canli hodnotí Sweeneyho Todda ve Státní opeře, kde se Sondheim setkává s operními hlasy, velkým orchestrem, živými vizuály a monumentální scénou.",
       "venue": "Státní opera",
       "city": "Praha",
-      "coverAlt": "Obsazení muzikálu Sweeney Todd při děkovačce na jevišti pražské Státní opery s orchestrem viditelným v orchestřišti."
+      "coverAlt": "Obsazení muzikálu Sweeney Todd při děkovačce na jevišti pražské Státní opery s orchestrem viditelným v orchestřišti.",
+      "galleryAlts": [
+        "Zdobené hlediště a malovaný strop pražské Státní opery před představením Sweeney Todd.",
+        "Účinkující muzikálu Sweeney Todd při děkovačce na jevišti pražské Státní opery.",
+        "Soubor Sweeney Todd na jevišti a orchestr Státní opery v orchestřišti.",
+        "Oya Canli v hledišti pražské Státní opery během návštěvy představení Sweeney Todd.",
+        "Plakát inscenace Sweeney Todd ve Státní opeře v Praze v roce 2026."
+      ]
     },
     "sk": {
       "title": "Sweeney Todd v Štátnej opere: Keď sa Broadway stretne s operou",
@@ -85,7 +99,14 @@
       "seoDescription": "Oya Canli hodnotí Sweeneyho Todda v Štátnej opere, kde sa Sondheim stretáva s opernými hlasmi, veľkým orchestrom, živými vizuálmi a monumentálnou scénou.",
       "venue": "Štátna opera",
       "city": "Praha",
-      "coverAlt": "Obsadenie muzikálu Sweeney Todd počas klaňačky na javisku pražskej Štátnej opery s orchestrom viditeľným v orchestrisku."
+      "coverAlt": "Obsadenie muzikálu Sweeney Todd počas klaňačky na javisku pražskej Štátnej opery s orchestrom viditeľným v orchestrisku.",
+      "galleryAlts": [
+        "Zdobené hľadisko a maľovaný strop pražskej Štátnej opery pred predstavením Sweeney Todd.",
+        "Účinkujúci muzikálu Sweeney Todd počas klaňačky na javisku pražskej Štátnej opery.",
+        "Súbor Sweeney Todd na javisku a orchester Štátnej opery v orchestrisku.",
+        "Oya Canli v hľadisku pražskej Štátnej opery počas návštevy predstavenia Sweeney Todd.",
+        "Plagát inscenácie Sweeney Todd v Štátnej opere v Prahe v roku 2026."
+      ]
     },
     "pl": {
       "title": "Sweeney Todd w Operze Państwowej: Gdy Broadway spotyka operę",
@@ -98,7 +119,14 @@
       "seoDescription": "Oya Canli recenzuje Sweeneya Todda w praskiej Operze Państwowej, gdzie Sondheim spotyka operowe głosy, dużą orkiestrę, wizualizacje na żywo i monumentalną scenę.",
       "venue": "Opera Państwowa",
       "city": "Praga",
-      "coverAlt": "Obsada musicalu Sweeney Todd podczas ukłonów na scenie praskiej Opery Państwowej, z orkiestrą widoczną w kanale orkiestrowym."
+      "coverAlt": "Obsada musicalu Sweeney Todd podczas ukłonów na scenie praskiej Opery Państwowej, z orkiestrą widoczną w kanale orkiestrowym.",
+      "galleryAlts": [
+        "Bogato zdobiona widownia i sufit praskiej Opery Państwowej przed spektaklem Sweeney Todd.",
+        "Obsada musicalu Sweeney Todd podczas ukłonów na scenie praskiej Opery Państwowej.",
+        "Artyści Sweeney Todd na scenie, a przed nimi orkiestra Opery Państwowej w kanale orkiestrowym.",
+        "Oya Canli na widowni praskiej Opery Państwowej podczas wizyty na spektaklu Sweeney Todd.",
+        "Plakat inscenizacji Sweeney Todd w Operze Państwowej w Pradze w 2026 roku."
+      ]
     },
     "hu": {
       "title": "Sweeney Todd az Állami Operában: Amikor Broadway találkozik az operával",
@@ -111,7 +139,14 @@
       "seoDescription": "Oya Canli a prágai Állami Opera Sweeney Todd előadásáról ír, ahol Sondheim operai hangokkal, nagyzenekarral, élő vizuális világgal és monumentális színpaddal találkozik.",
       "venue": "Állami Opera",
       "city": "Prága",
-      "coverAlt": "A Sweeney Todd szereplői a prágai Állami Opera színpadán a meghajlás során, az árokban látható zenekarral."
+      "coverAlt": "A Sweeney Todd szereplői a prágai Állami Opera színpadán a meghajlás során, az árokban látható zenekarral.",
+      "galleryAlts": [
+        "A prágai Állami Opera díszes nézőtere és mennyezete a Sweeney Todd előadása előtt.",
+        "A Sweeney Todd szereplőgárdája a prágai Állami Opera színpadán, a meghajlás közben.",
+        "A Sweeney Todd szereplői a színpadon, előttük az Állami Opera zenekara a zenekari árokban.",
+        "Oya Canli a prágai Állami Opera nézőterén, a Sweeney Todd előadása alkalmával.",
+        "A Sweeney Todd 2026-os prágai állami operaházi előadásának plakátja."
+      ]
     },
     "de": {
       "title": "Sweeney Todd an der Staatsoper: Wenn Broadway auf Oper trifft",
@@ -124,7 +159,14 @@
       "seoDescription": "Oya Canli rezensiert Sweeney Todd an der Prager Staatsoper, wo Sondheim auf Opernstimmen, großes Orchester, Live-Visuals und monumentale Bühne trifft.",
       "venue": "Staatsoper",
       "city": "Prag",
-      "coverAlt": "Das Ensemble von Sweeney Todd beim Schlussapplaus auf der Bühne der Prager Staatsoper, mit dem Orchester sichtbar im Orchestergraben."
+      "coverAlt": "Das Ensemble von Sweeney Todd beim Schlussapplaus auf der Bühne der Prager Staatsoper, mit dem Orchester sichtbar im Orchestergraben.",
+      "galleryAlts": [
+        "Der prachtvolle Zuschauerraum und die Decke der Prager Staatsoper vor Sweeney Todd.",
+        "Das Ensemble von Sweeney Todd beim Schlussapplaus auf der Bühne der Prager Staatsoper.",
+        "Das Ensemble von Sweeney Todd auf der Bühne, davor das Orchester der Staatsoper im Orchestergraben.",
+        "Oya Canli im Zuschauerraum der Prager Staatsoper bei ihrem Besuch von Sweeney Todd.",
+        "Ein Plakat zur Inszenierung von Sweeney Todd an der Prager Staatsoper im Jahr 2026."
+      ]
     }
   },
   "internalNotes": "Promoted from review submission: sweeney-todd\nOriginal submission status: ready_for_adam_review\nPromoted at: 2026-08-03T13:29:42.704Z\nContent classified as a theatre preview because the production had not yet premiered or been attended.\nFinal English version approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nCzech translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nSlovak translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nPolish translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nHungarian translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nGerman translation approved by Adam Brázda on behalf of AJSEE on 3 August 2026.\nCover visual supplied by Oya Canli after promotion.\nVisual source: National Theatre Prague.\nSource page: https://www.narodni-divadlo.cz/cs/predstaveni/sweeney-todd-FKs5ZFQLR7OymXxxNyxW1A\nOnly one visual was supplied; the gallery is intentionally empty.\nOriginal contributor notes: You can find the original article here: https://docs.google.com/document/d/137w4hF8Hc_n-Cd7kVZB7eQ_FHz06yi5sHDDnPrGPTrA/edit?tab=t.39bbf6hknmdk\nUnfortunately there is an error when I am trying to upload a photo. I couldn`t fix it.\nThis branch converts the existing published Sweeney Todd preview into a new review while preserving the canonical slug.\nEnglish review master approved by Adam Brázda on 23 October 2026.\nCzech review master approved by Adam Brázda on 23 October 2026.\nPerformance attended: 3 October 2026.\nDo not publish until Adam Brázda explicitly approves publication.\nThe review uses the clean ColosseumTicket seller URL; AJSEE affiliate attribution is added server-side via colosseumOutbound.\nNew Oya Canli photography was supplied on 23 October 2026 and will replace the old preview cover in a later staging step.\nSlovak review master approved by Adam Brázda on 23 October 2026.\nGerman review master approved by Adam Brázda on 23 October 2026.\nPolish review master approved by Adam Brázda on 23 October 2026.\nHungarian review master approved by Adam Brázda on 23 October 2026.\nReview cover and five-photo gallery replaced with Oya Canli original photography on 23 October 2026."

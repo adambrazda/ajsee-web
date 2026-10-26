@@ -142,6 +142,12 @@
   [headers.values]
     Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
 
+# Optimalizované redakční fotografie jsou po sestavení hostované přímo AJSEE.
+[[headers]]
+  for = "/uploads/reviews/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
 # Základní security hlavičky
 [[headers]]
   for = "/*"

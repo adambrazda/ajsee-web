@@ -17,7 +17,7 @@
     "dev:netlify": "netlify dev",
     "dev:ntl": "netlify dev",
     "start": "npm run dev",
-    "prebuild": "npm run event-feeds:test && npm run analytics:test && npm run event-details:test && npm run styles:guard && npm run blog:test && npm run faq:test && npm run contest:test && npm run ticketmaster:safety && npm run events:hero:test && npm run partners:test && npm run ai-search:test && npm run city-filters:test && npm run providers:coverage:test && npm run colosseumticket:test && npm run reviews:test && npm run smsticket:sync && npm run colosseumticket:sync && npm run event-feeds:build && npm run colosseumticket:geography -- --summary && npm run event-cities:build && npm run home:featured:build && npm run home:featured:test && cpy src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run reviews:build && npm run review-details:build && npm run blog:build",
+    "prebuild": "npm run phantom-40:images && npm run event-feeds:test && npm run analytics:test && npm run event-details:test && npm run styles:guard && npm run blog:test && npm run faq:test && npm run contest:test && npm run ticketmaster:safety && npm run events:hero:test && npm run partners:test && npm run ai-search:test && npm run city-filters:test && npm run providers:coverage:test && npm run colosseumticket:test && npm run reviews:test && npm run smsticket:sync && npm run colosseumticket:sync && npm run event-feeds:build && npm run colosseumticket:geography -- --summary && npm run event-cities:build && npm run home:featured:build && npm run home:featured:test && cpy src/locales/*.json public/locales --parents && npm run svgo:mg && npm run mg:build && npm run mg:copy-json && npm run reviews:build && npm run review-details:build && npm run blog:build",
     "build": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api vite build && node scripts/build-localized-pages.cjs && node scripts/render-search-shells.mjs && node scripts/render-localized-microguides.mjs && node scripts/render-faq-schema.mjs && node scripts/build-faq-preview.mjs && node scripts/render-blog-listing.mjs && node scripts/build-blog-preview.mjs && npm run review-details:localize && node scripts/render-home-featured.mjs && node scripts/build-editorial-links.mjs && node scripts/build-home-tips-preview.mjs && node scripts/build-ai-brand-preview.mjs && node scripts/build-event-detail-preview.mjs && node scripts/build-event-details.mjs && node scripts/finalize-seo.mjs && node scripts/generate-sitemap.cjs && npm run seo:smoke && npm run seo:verify",
     "preview": "vite preview",
     "webpack:dev": "cross-env SASS_SILENCE_DEPRECATIONS=legacy-js-api webpack serve --mode development",
@@ -59,7 +59,8 @@
     "seo:verify": "node --test tests/seo-built.test.mjs",
     "event-details:test": "node --test tests/event-detail-pilot.test.mjs tests/event-details-live.test.mjs",
     "event-feeds:build": "node scripts/build-event-feeds.mjs",
-    "event-feeds:test": "node --test --test-concurrency=1 tests/event-feed.test.mjs tests/event-taxonomy-cache.test.mjs tests/provider-request.test.mjs tests/static-provider-recovery.test.mjs"
+    "event-feeds:test": "node --test --test-concurrency=1 tests/event-feed.test.mjs tests/event-taxonomy-cache.test.mjs tests/provider-request.test.mjs tests/static-provider-recovery.test.mjs",
+    "phantom-40:images": "node scripts/build-phantom-40-images.mjs"
   },
   "devDependencies": {
     "@squoosh/cli": "^0.7.1",

@@ -795,10 +795,17 @@ test(
       assert.ok(
         [
           'review',
-          'preview'
+          'preview',
+          'article'
         ].includes(contentType),
         `Review ${fileName} has unsupported content type "${contentType}".`
       );
+
+      if (contentType === 'article') {
+        assert.equal(review.rating, null, `Article ${fileName} must not claim a review rating.`);
+        assert.equal(String(review.performanceDate || '').trim(), '',
+          `Article ${fileName} must not claim an attended performance.`);
+      }
 
       if (contentType === 'preview') {
         assert.equal(

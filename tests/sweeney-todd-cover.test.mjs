@@ -23,12 +23,12 @@ const expectedGallery = [
 ];
 
 test(
-  "Sweeney Todd remains a safely unpublished review",
+  "Sweeney Todd remains safely published with a valid editorial date",
   () => {
     assert.equal(item.contentType, "review");
-    assert.equal(item.status, "approved");
-    assert.equal(item.published, false);
-    assert.equal(item.publishedAt, "");
+    assert.equal(item.status, "published");
+    assert.equal(item.published, true);
+    assert.equal(item.publishedAt, "2026-10-26");
     assert.equal(item.performanceDate, "2026-10-03");
     assert.equal(item.featured, false);
     assert.equal(item.rating, null);
@@ -112,7 +112,7 @@ test(
 );
 
 test(
-  "Sweeney Todd records the photography transition",
+  "Sweeney Todd records the original photography and explicit release approval",
   () => {
     assert.match(
       item.internalNotes,
@@ -126,7 +126,7 @@ test(
 
     assert.match(
       item.internalNotes,
-      /Do not publish/i
+      /Publication approved by Adam Brázda for 26 October 2026/i
     );
   }
 );

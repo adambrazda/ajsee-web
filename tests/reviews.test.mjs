@@ -78,6 +78,20 @@ function toPublicFilePath(webPath) {
   );
 }
 
+// Explicitly approved remote editorial image providers. Everything else must be a local asset.
+function isTrustedRemoteReviewImage(value) {
+  try {
+    const url = new URL(String(value || ''));
+    return (
+      url.protocol === 'https:' &&
+      ['images.ctfassets.net', 'd3s3zh7icgjwgd.cloudfront.net'].includes(url.hostname) &&
+      url.pathname.toLowerCase().match(/\\.(?:jpg|jpeg|png|webp)$/) !== null
+    );
+  } catch {
+    return false;
+  }
+}
+
 async function readReviewFiles() {
   const fileNames =
     (await fs.readdir(
@@ -350,13 +364,20 @@ test(
       }
 
       if (hasText(review.cover)) {
-        const coverPath =
-          toPublicFilePath(review.cover);
-
-        await assert.doesNotReject(
-          fs.access(coverPath),
-          `${label} cover image does not exist: ${review.cover}`
-        );
+        if (isTrustedRemoteReviewImage(review.cover)) {
+          const { width, height } = review.remoteCoverDimensions || {};
+          assert.ok(
+            Number.isInteger(width) && width > 0 &&
+            Number.isInteger(height) && height > 0,
+            `${label} remote cover must declare intrinsic dimensions to prevent CLS.`
+          );
+        } else {
+          const coverPath = toPublicFilePath(review.cover);
+          await assert.doesNotReject(
+            fs.access(coverPath),
+            `${label} cover image does not exist: ${review.cover}`
+          );
+        }
       }
 
       if (review.gallery !== undefined) {
@@ -398,12 +419,14 @@ test(
 
           galleryPaths.add(imagePath);
 
-          await assert.doesNotReject(
-            fs.access(
-              toPublicFilePath(imagePath)
-            ),
-            `${label} gallery image does not exist: ${imagePath}`
-          );
+          if (!isTrustedRemoteReviewImage(imagePath)) {
+            await assert.doesNotReject(
+              fs.access(
+                toPublicFilePath(imagePath)
+              ),
+              `${label} gallery image does not exist: ${imagePath}`
+            );
+          }
         }
       }
     }

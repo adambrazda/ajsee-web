@@ -269,7 +269,7 @@ export function initReviewEngagement() {
 
   const text = TEXT[language] || TEXT.cs;
   const isPreview =
-    article.dataset.reviewContentType === 'preview';
+    ['preview', 'article'].includes(article.dataset.reviewContentType);
   const headingText = isPreview
     ? text.previewHeading
     : text.heading;

@@ -3,11 +3,17 @@ import sharp from 'sharp';
 
 const cache = new Map();
 
-export async function readReviewCoverDimensions(cover, publicRoot = path.resolve('public')) {
+export async function readReviewCoverDimensions(cover, publicRoot = path.resolve('public'), remoteDimensions = null) {
   if (!cover) return null;
   const url = new URL(cover, 'https://ajsee.cz');
   // This is a build-time local asset check; never request remote editorial URLs.
-  if (url.origin !== 'https://ajsee.cz') return null;
+  if (url.origin !== 'https://ajsee.cz') {
+    const width = Number(remoteDimensions?.width);
+    const height = Number(remoteDimensions?.height);
+    return Number.isInteger(width) && Number.isInteger(height) && width > 0 && height > 0
+      ? { width, height }
+      : null;
+  }
   const file = path.resolve(publicRoot, '.' + decodeURIComponent(url.pathname));
   if (!file.startsWith(publicRoot + path.sep)) return null;
   if (!cache.has(file)) {

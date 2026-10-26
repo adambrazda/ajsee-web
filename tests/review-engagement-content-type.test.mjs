@@ -72,13 +72,10 @@ function renderPanel(language, contentType) {
   };
 }
 
-test('review detail builder exposes the normalized content type', () => {
+test('review detail builder exposes the normalized article content type', () => {
   const source = fs.readFileSync(builderPath, 'utf8');
-
-  assert.match(
-    source,
-    /data-review-content-type="\$\{escapeAttr\(review\.contentType === 'preview' \? 'preview' : 'review'\)\}"/
-  );
+  assert.match(source, /data-review-content-type=/);
+  assert.match(source, /escapeAttr\(normalizeReviewContentType\(review\)\)/);
 });
 
 test('theatre previews use localized article sharing copy', () => {
@@ -92,6 +89,15 @@ test('theatre previews use localized article sharing copy', () => {
       `${language} description`
     );
 
+    result.dom.window.close();
+  }
+});
+
+test('editorial articles use localized article sharing copy', () => {
+  for (const [language, labels] of Object.entries(expected)) {
+    const result = renderPanel(language, 'article');
+    assert.equal(result.heading, labels.preview[0], `${language} article heading`);
+    assert.equal(result.description, labels.preview[1], `${language} article description`);
     result.dom.window.close();
   }
 });

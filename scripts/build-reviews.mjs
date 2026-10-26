@@ -29,9 +29,8 @@ function safeSlug(value = '') {
 }
 
 function normalizeReviewContentType(value = '') {
-  return String(value || '').trim().toLowerCase() === 'preview'
-    ? 'preview'
-    : 'review';
+  const type = String(value || '').trim().toLowerCase();
+  return ['review', 'preview', 'article'].includes(type) ? type : 'review';
 }
 
 function hasContent(block) {

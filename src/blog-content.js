@@ -23,7 +23,8 @@ export function reviewCards(payload, lang) {
   }).map((item) => {
     const resolved = [...new Set([lang, 'en', 'cs'])].find((code) => item.translations?.[code]?.title) || lang;
     const data = item.translations?.[resolved] || {};
-    const contentType = item.contentType === 'preview' || item.type === 'preview' ? 'preview' : 'review';
+    const sourceType = item.contentType || item.type;
+    const contentType = ['review', 'preview', 'article'].includes(sourceType) ? sourceType : 'review';
     const date = item.publishedAt || item.reviewDate || item.sortDate || '';
     return {
       type: contentType, slug: item.slug, category: item.category || 'theatre',

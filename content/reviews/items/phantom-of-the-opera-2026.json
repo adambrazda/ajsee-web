@@ -91,5 +91,8 @@
   "rating": 4,
   "category": "theatre",
   "performanceDate": "2026-05-19T19:30:00+01:00",
-  "productionTitle": "The Phantom of the Opera"
+  "productionTitle": "The Phantom of the Opera",
+  "relatedSlugs": [
+    "phantom-of-the-opera-40th-anniversary-reunion"
+  ]
 }

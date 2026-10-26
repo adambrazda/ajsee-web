@@ -1,5 +1,6 @@
 import { readReviewCoverDimensions, coverDimensionsAttributes } from './review-image-dimensions.mjs';
 import { localizeCoverCredit } from './review-cover-credit.mjs';
+import { buildRelatedReadingHtml } from './review-related-reading.mjs';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
@@ -8,6 +9,7 @@ const SITE_ORIGIN = 'https://ajsee.cz';
 const DEFAULT_LANG = 'cs';
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const REVIEW_VIDEO_MARKER = '[[review-video]]';
+let REVIEW_BY_SLUG = new Map();
 
 const REVIEW_BACK_LABELS = {
   cs: 'Zpět na Blog & Recenze',
@@ -21,26 +23,32 @@ const REVIEW_BACK_LABELS = {
 const REVIEW_CONTENT_TYPE_LABELS = {
   cs: {
     review: 'Recenze',
+    article: 'Článek',
     preview: 'Divadelní preview'
   },
   en: {
     review: 'Review',
+    article: 'Article',
     preview: 'Theatre preview'
   },
   de: {
     review: 'Rezension',
+    article: 'Artikel',
     preview: 'Theatervorschau'
   },
   sk: {
     review: 'Recenzia',
+    article: 'Článok',
     preview: 'Divadelné preview'
   },
   pl: {
     review: 'Recenzja',
+    article: 'Artykuł',
     preview: 'Zapowiedź teatralna'
   },
   hu: {
     review: 'Kritika',
+    article: 'Cikk',
     preview: 'Színházi előzetes'
   }
 };
@@ -168,13 +176,8 @@ function normalizeLang(value = '') {
 }
 
 function normalizeReviewContentType(review = {}) {
-  return String(
-    review?.contentType ||
-    review?.type ||
-    ''
-  ).trim().toLowerCase() === 'preview'
-    ? 'preview'
-    : 'review';
+  const type = String(review?.contentType || review?.type || '').trim().toLowerCase();
+  return ['review', 'preview', 'article'].includes(type) ? type : 'review';
 }
 
 function isPreviewContent(review = {}) {
@@ -531,7 +534,7 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
   };
 
   const primaryEntity =
-    contentType === 'preview'
+    (contentType === 'preview' || contentType === 'article')
       ? {
           '@type': 'Article',
           '@id': `${canonicalUrl}#article`,
@@ -556,7 +559,9 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
             undefined,
           author,
           publisher,
-          about: event
+          about: contentType === 'preview'
+            ? event
+            : { '@type': 'CreativeWork', name: review.showTitle || title }
         }
       : {
           '@type': 'Review',
@@ -994,6 +999,10 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG, coverD
     translation
   );
   const galleryHtml = buildReviewGalleryHtml(review.gallery, lang, translation.galleryAlts);
+  const relatedReadingHtml = buildRelatedReadingHtml(review, lang, REVIEW_BY_SLUG, {
+    previewMode: PREVIEW_MODE,
+    deployPreview: NETLIFY_DEPLOY_PREVIEW
+  });
   const cover = review.cover || '';
   const coverAlt = translation.coverAlt || review.coverAlt || title;
   const coverCredit = localizeCoverCredit(review.coverCredit, lang);
@@ -1015,7 +1024,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG, coverD
   );
 
   return `
-        <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}" data-review-content-type="${escapeAttr(review.contentType === 'preview' ? 'preview' : 'review')}">
+        <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}" data-review-content-type="${escapeAttr(normalizeReviewContentType(review))}">
           <header class="review-detail-hero">
             <div class="review-meta-header">
               <span class="card-badge review-content-type-badge">${escapeHtml(contentTypeLabel)}</span>
@@ -1041,6 +1050,8 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG, coverD
           </div>
 
           ${galleryHtml}
+
+          ${relatedReadingHtml}
 
           ${
             ticketUrl
@@ -1411,6 +1422,17 @@ async function writeLocalizedDistReview(review) {
   return written;
 }
 
+async function loadSourceReviews() {
+  const files = (await fs.readdir(REVIEWS_INPUT_DIR).catch(() => []))
+    .filter(file => file.endsWith('.json'))
+    .sort();
+  const reviews = await Promise.all(
+    files.map(file => readJson(path.join(REVIEWS_INPUT_DIR, file)))
+  );
+  REVIEW_BY_SLUG = new Map(reviews.map(item => [normalizeSlug(item.slug), item]));
+  return reviews;
+}
+
 async function runLocalizedDist() {
   if (!(await fileExists(DIST_DIR))) {
     throw new Error(
@@ -1418,21 +1440,10 @@ async function runLocalizedDist() {
     );
   }
 
-  const files = await fs
-    .readdir(REVIEWS_INPUT_DIR)
-    .catch(() => []);
-
+  const reviews = await loadSourceReviews();
   let count = 0;
 
-  for (
-    const file of files
-      .filter((item) => item.endsWith('.json'))
-      .sort()
-  ) {
-    const review = await readJson(
-      path.join(REVIEWS_INPUT_DIR, file)
-    );
-
+  for (const review of reviews) {
     count += await writeLocalizedDistReview(review);
   }
 
@@ -1443,19 +1454,14 @@ async function runLocalizedDist() {
 
 async function run() {
   const template = await fs.readFile(TEMPLATE_PATH, 'utf8');
-  const files = await fs.readdir(REVIEWS_INPUT_DIR).catch(() => []);
+  const reviews = await loadSourceReviews();
 
   await cleanGeneratedReviewsDir();
 
   let count = 0;
 
-  for (const file of files.filter((item) => item.endsWith('.json')).sort()) {
-    const review = await readJson(path.join(REVIEWS_INPUT_DIR, file));
-
-    count += await writeReviewDetail(
-      review,
-      template
-    );
+  for (const review of reviews) {
+    count += await writeReviewDetail(review, template);
   }
 
   console.log(`${PREVIEW_MODE ? 'Local review preview pages' : 'Static review detail pages'} generated (${count} items).`);

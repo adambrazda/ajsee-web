@@ -203,10 +203,9 @@ function publicationBranchName(
 function pullRequestTitle(
   review
 ) {
-  const label =
-    review.contentType === 'preview'
-      ? 'preview'
-      : 'review';
+  const label = ['preview', 'article'].includes(review.contentType)
+    ? review.contentType
+    : 'review';
 
   return (
     `Publish ${review.showTitle || review.slug} ${label}`
@@ -229,7 +228,7 @@ function pullRequestBody({
   return [
     '## Summary',
     '',
-    `Publishes the approved AJSEE ${review.contentType === 'preview' ? 'theatre preview' : 'review'}.`,
+    `Publishes the approved AJSEE ${review.contentType === 'preview' ? 'theatre preview' : review.contentType === 'article' ? 'editorial article' : 'review'}.`,
     '',
     '## Publication change',
     '',

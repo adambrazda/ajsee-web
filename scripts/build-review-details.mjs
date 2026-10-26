@@ -1162,7 +1162,7 @@ async function writeReviewDetail(review, template) {
     return 0;
   }
 
-  const coverDimensions = await readReviewCoverDimensions(review.cover, undefined, review.remoteCoverDimensions);
+  const coverDimensions = await readReviewCoverDimensions(review.cover);
   const availableLanguages =
     getAvailableTranslationLangs(review);
 
@@ -1283,7 +1283,7 @@ async function writeLocalizedDistReview(review) {
     return 0;
   }
 
-  const coverDimensions = await readReviewCoverDimensions(review.cover, undefined, review.remoteCoverDimensions);
+  const coverDimensions = await readReviewCoverDimensions(review.cover);
   const availableLanguages =
     new Set(getAvailableTranslationLangs(review));
 

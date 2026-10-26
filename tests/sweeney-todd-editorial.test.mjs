@@ -17,14 +17,14 @@ function readItem() {
   return JSON.parse(fs.readFileSync(itemPath, 'utf8'));
 }
 
-test('Sweeney Todd is staged as a valid unpublished review', () => {
+test('Sweeney Todd is published on 26 October 2026 with a valid review state', () => {
   const item = readItem();
 
   assert.equal(item.contentType, 'review');
   assert.equal(item.featured, false);
-  assert.equal(item.status, 'approved');
-  assert.equal(item.published, false);
-  assert.equal(item.publishedAt || '', '');
+  assert.equal(item.status, 'published');
+  assert.equal(item.published, true);
+  assert.equal(item.publishedAt, '2026-10-26');
   assert.equal(item.performanceDate, '2026-10-03');
   assert.equal(item.eventDate || '', '');
 });
@@ -40,7 +40,7 @@ test('Sweeney Todd exposes all six approved review masters', () => {
   assert.ok(item.translations.hu?.body);
 });
 
-test('Sweeney Todd provides localized cover alt text for the staged review masters', () => {
+test('Sweeney Todd provides localized cover alt text for every published language', () => {
   const item = readItem();
 
   for (const language of ['en', 'cs', 'sk', 'de', 'pl', 'hu']) {

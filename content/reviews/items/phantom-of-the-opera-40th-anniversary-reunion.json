@@ -17,10 +17,21 @@
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.tixculture.com/london/shows/308-the-phantom-of-the-opera?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals",
-  "cover": "/uploads/reviews/phantom-of-the-opera-2026/phantom-of-the-opera-mask-rose-todaytix.webp",
-  "coverAlt": "The Phantom of the Opera’s iconic white half-mask with a red rose against a dark background.",
-  "coverCredit": "Photo: TodayTix",
-  "gallery": [],
+  "cover": "https://d3s3zh7icgjwgd.cloudfront.net/AcuCustom/Sitename/DAM/377/processed-AD12776F-972C-4978-B539-532B3E9C0689_LargeLandscape.jpg",
+  "coverAlt": "Sarah Brightman and Michael Crawford reunited on stage at His Majesty’s Theatre for the 40th anniversary gala of The Phantom of the Opera, 9 October 2026.",
+  "coverCredit": "Photo: Matthew Hemley / The Stage",
+  "gallery": [
+    {
+      "image": "https://images.ctfassets.net/6pezt69ih962/U5yuRPNyY53550aPMsMYt/5b030be068a24ba46fc7fa8539c3f1cc/4ac8bf8a-a39d-4506-bd8e-1e0812e1f20c.jpg?fm=webp&h=1000&q=80",
+      "alt": "Jordan Donica as the Phantom and Beatrice Penny-Touré as Christine Daaé on the gondola set in the 2026 anniversary production at His Majesty’s Theatre.",
+      "credit": "Photo: Johan Persson"
+    },
+    {
+      "image": "https://images.ctfassets.net/6pezt69ih962/19Tv0cSgkpOgnuop5v9U9x/445f53e03c2f84f0d04924c26ee24c9a/0c4e04b7-cec9-4790-ab25-bb333d015ef0.jpg?fm=webp&h=1000&q=80",
+      "alt": "Jordan Donica and Beatrice Penny-Touré portraying the Phantom and Christine in the 2026 anniversary production of The Phantom of the Opera.",
+      "credit": "Photo: Johan Persson"
+    }
+  ],
   "translations": {
     "en": {
       "title": "The Phantom of the Opera at 40: The Reunion That Brought Its History Full Circle",
@@ -31,9 +42,13 @@
       "ticketUrl": "https://ajsee.tixculture.com/london/shows/308-the-phantom-of-the-opera?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals",
       "seoTitle": "Phantom of the Opera at 40: Crawford & Brightman Return | AJSEE",
       "seoDescription": "Michael Crawford and Sarah Brightman reunite for The Phantom of the Opera’s 40th anniversary in London. Oya Canli reflects on its legacy and the 2027 cinema release.",
-      "coverAlt": "The Phantom of the Opera’s iconic white half-mask with a red rose against a dark background.",
+      "coverAlt": "Sarah Brightman and Michael Crawford on stage together at the Phantom of the Opera 40th-anniversary gala in London on 9 October 2026.",
       "venue": "His Majesty’s Theatre",
-      "city": "London"
+      "city": "London",
+      "galleryAlts": [
+        "Jordan Donica as the Phantom and Beatrice Penny-Touré as Christine in the gondola scene of the 2026 anniversary production.",
+        "Jordan Donica as the Phantom and Beatrice Penny-Touré as Christine in the 2026 anniversary production."
+      ]
     },
     "cs": {
       "title": "Fantom opery slaví 40 let: Návrat, který propojil minulost se současností",
@@ -44,9 +59,13 @@
       "ticketUrl": "https://ajsee.tixculture.com/london/shows/308-the-phantom-of-the-opera?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals",
       "seoTitle": "Fantom opery slaví 40 let: Historický návrat hvězd | AJSEE",
       "seoDescription": "Michael Crawford a Sarah Brightman se vrátili na jeviště při oslavách 40 let Fantoma opery. Oya Canli vzpomíná na kouzlo muzikálu a jeho slavné interprety.",
-      "coverAlt": "Ikonická bílá polomaska Fantoma opery a červená růže na tmavém pozadí.",
+      "coverAlt": "Sarah Brightman a Michael Crawford společně na jevišti při galavečeru k 40. výročí Fantoma opery v Londýně 9. října 2026.",
       "venue": "His Majesty’s Theatre",
-      "city": "Londýn"
+      "city": "Londýn",
+      "galleryAlts": [
+        "Jordan Donica jako Fantom a Beatrice Penny-Touré jako Christine ve scéně na gondole v jubilejní inscenaci roku 2026.",
+        "Jordan Donica jako Fantom a Beatrice Penny-Touré jako Christine v jubilejní inscenaci roku 2026."
+      ]
     },
     "sk": {
       "title": "Fantóm opery oslavuje 40 rokov: Návrat, ktorý spojil minulosť so súčasnosťou",
@@ -57,9 +76,13 @@
       "ticketUrl": "https://ajsee.tixculture.com/london/shows/308-the-phantom-of-the-opera?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals",
       "seoTitle": "Fantóm opery oslavuje 40 rokov: Návrat hviezd | AJSEE",
       "seoDescription": "Michael Crawford a Sarah Brightman sa vrátili na javisko pri oslavách 40 rokov Fantóma opery. Oya Canli pripomína jeho kúzlo, hudbu a legendárnych interpretov.",
-      "coverAlt": "Ikonická biela polomaska Fantóma opery a červená ruža na tmavom pozadí.",
+      "coverAlt": "Sarah Brightman a Michael Crawford spoločne na javisku na galavečere k 40. výročiu Fantóma opery v Londýne 9. októbra 2026.",
       "venue": "His Majesty’s Theatre",
-      "city": "Londýn"
+      "city": "Londýn",
+      "galleryAlts": [
+        "Jordan Donica ako Fantóm a Beatrice Penny-Touré ako Christine na gondole v jubilejnej inscenácii z roku 2026.",
+        "Jordan Donica ako Fantóm a Beatrice Penny-Touré ako Christine v jubilejnej inscenácii z roku 2026."
+      ]
     },
     "de": {
       "title": "Das Phantom der Oper feiert 40 Jahre: Ein Wiedersehen, das den Kreis schließt",
@@ -70,9 +93,13 @@
       "ticketUrl": "https://ajsee.tixculture.com/london/shows/308-the-phantom-of-the-opera?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals",
       "seoTitle": "Das Phantom der Oper: 40 Jahre und ein großes Wiedersehen | AJSEE",
       "seoDescription": "Michael Crawford und Sarah Brightman kehren zum 40. Jubiläum von Das Phantom der Oper zurück. Oya Canli blickt auf das Musical und seine Geschichte.",
-      "coverAlt": "Die ikonische weiße Halbmaske des Phantoms der Oper und eine rote Rose vor dunklem Hintergrund.",
+      "coverAlt": "Sarah Brightman und Michael Crawford gemeinsam auf der Bühne bei der Jubiläumsgala zum 40-jährigen Bestehen von Das Phantom der Oper in London am 9. Oktober 2026.",
       "venue": "His Majesty’s Theatre",
-      "city": "London"
+      "city": "London",
+      "galleryAlts": [
+        "Jordan Donica als Phantom und Beatrice Penny-Touré als Christine in der Gondelszene der Jubiläumsproduktion 2026.",
+        "Jordan Donica als Phantom und Beatrice Penny-Touré als Christine in der Jubiläumsproduktion 2026."
+      ]
     },
     "pl": {
       "title": "Upiór w operze świętuje 40-lecie: Powrót, który zamknął krąg historii",
@@ -83,9 +110,13 @@
       "ticketUrl": "https://ajsee.tixculture.com/london/shows/308-the-phantom-of-the-opera?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals",
       "seoTitle": "Upiór w operze: 40 lat i historyczny powrót gwiazd | AJSEE",
       "seoDescription": "Michael Crawford i Sarah Brightman powrócili na scenę z okazji 40-lecia Upiora w operze. Oya Canli wspomina legendarny musical i jubileusz w Londynie.",
-      "coverAlt": "Kultowa biała półmaska Upiora w operze i czerwona róża na ciemnym tle.",
+      "coverAlt": "Sarah Brightman i Michael Crawford razem na scenie podczas gali z okazji 40-lecia Upiora w operze w Londynie 9 października 2026 roku.",
       "venue": "His Majesty’s Theatre",
-      "city": "Londyn"
+      "city": "Londyn",
+      "galleryAlts": [
+        "Jordan Donica jako Upiór i Beatrice Penny-Touré jako Christine w scenie w gondoli w jubileuszowej inscenizacji z 2026 roku.",
+        "Jordan Donica jako Upiór i Beatrice Penny-Touré jako Christine w jubileuszowej inscenizacji z 2026 roku."
+      ]
     },
     "hu": {
       "title": "Az Operaház Fantomja 40 éves: A találkozás, amellyel bezárult a kör",
@@ -96,10 +127,14 @@
       "ticketUrl": "https://ajsee.tixculture.com/london/shows/308-the-phantom-of-the-opera?utm_source=ajsee&utm_medium=referral&utm_campaign=london_musicals",
       "seoTitle": "Az Operaház Fantomja 40 éves: Crawford és Brightman visszatér | AJSEE",
       "seoDescription": "Michael Crawford és Sarah Brightman újra együtt a színpadon Az Operaház Fantomja 40. évfordulóján. Oya Canli a londoni gáláról és a musical örökségéről.",
-      "coverAlt": "Az Operaház Fantomjának ikonikus fehér félmaszkja és egy vörös rózsa sötét háttér előtt.",
+      "coverAlt": "Sarah Brightman és Michael Crawford együtt a színpadon Az Operaház Fantomja 40. évfordulós londoni gáláján, 2026. október 9-én.",
       "venue": "His Majesty’s Theatre",
-      "city": "London"
+      "city": "London",
+      "galleryAlts": [
+        "Jordan Donica a Fantom és Beatrice Penny-Touré Christine szerepében a 2026-os jubileumi produkció gondolajelenetében.",
+        "Jordan Donica a Fantom és Beatrice Penny-Touré Christine szerepében a 2026-os jubileumi produkcióban."
+      ]
     }
   },
-  "internalNotes": "EDITORIAL FEATURE: 40th-anniversary retrospective, NOT a firsthand review of 9 October 2026 gala. Article-type 'review' represents the current AJSEE Blog CMS supported schema; rating and performanceDate intentionally empty.\nThe English master and Czech translation were explicitly approved by Adam Brázda on 26 October 2026. The Slovak version was also explicitly approved by Adam Brázda on 26 October 2026, including the final stage-visual wording and correct date 9 October 2026. German translation explicitly approved by Adam Brázda on 26 October 2026, including the Sierra Boggess wording 'Ich hatte im August das große Vergnügen'. Polish and Hungarian translations were both individually approved by Adam Brázda on 26 October 2026. Polish includes the approved Sierra Boggess wording: \"Ogromnie się cieszyłam, że w sierpniu mogłam zobaczyć Sierrę na żywo.\" Hungarian uses the correct date 2026. október 9-én. All six languages EN/CZ/SK/DE/PL/HU are approved. The article must remain unpublished until separately authorized.\nKeep status='approved', published=false, publishedAt='' until a separate explicit publication instruction.\nTemporarily reuse the existing AJSEE TodayTix credited Phantom visual from the July 2026 review. Replace only with correctly licensed new anniversary imagery if and when explicitly approved. No new third-party media is claimed.\nColosseumTicket is not used here; link targets AJSEE's existing approved TodayTix/Encore white-label title path.\nRelated earlier published review: phantom-of-the-opera-2026. Plan internal crosslink at publication without modifying the separately approved article text unless reviewed."
+  "internalNotes": "EDITORIAL FEATURE: 40th-anniversary retrospective, NOT a firsthand review of 9 October 2026 gala. Article-type 'review' represents the current AJSEE Blog CMS supported schema; rating and performanceDate intentionally empty.\nThe English master and Czech translation were explicitly approved by Adam Brázda on 26 October 2026. The Slovak version was also explicitly approved by Adam Brázda on 26 October 2026, including the final stage-visual wording and correct date 9 October 2026. German translation explicitly approved by Adam Brázda on 26 October 2026, including the Sierra Boggess wording 'Ich hatte im August das große Vergnügen'. Polish and Hungarian translations were both individually approved by Adam Brázda on 26 October 2026. Polish includes the approved Sierra Boggess wording: \"Ogromnie się cieszyłam, że w sierpniu mogłam zobaczyć Sierrę na żywo.\" Hungarian uses the correct date 2026. október 9-én. All six languages EN/CZ/SK/DE/PL/HU are approved. The article must remain unpublished until separately authorized.\nKeep status='approved', published=false, publishedAt='' until a separate explicit publication instruction.\nImage staging, 26 Oct 2026: User reports that TodayTix has confirmed permission to use anniversary-related editorial images with original source attribution. Hero: actual 9 Oct 2026 gala reunion photographed by Matthew Hemley, originally on The Stage (source: https://www.thestage.co.uk/opinion/five-takeaways-from-phantoms-40th-gala-celebrations-matthew-hemley). Gallery: 2026 anniversary cast production imagery distributed via TodayTix (source: https://www.todaytix.com/london/shows/308-the-phantom-of-the-opera; photographer Johan Persson). Credits accurately distinguish photographer and sources. Exact TodayTix authorization for the third-party The Stage photograph has not been independently examined; reconfirm its scope before public publishing. Images are remotely hosted previews; obtain approved local optimized masters before publication to avoid third-party hotlink dependency. Main article remains unpublished.\nColosseumTicket is not used here; link targets AJSEE's existing approved TodayTix/Encore white-label title path.\nRelated earlier published review: phantom-of-the-opera-2026. Plan internal crosslink at publication without modifying the separately approved article text unless reviewed."
 }

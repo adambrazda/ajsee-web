@@ -85,7 +85,7 @@ function isTrustedRemoteReviewImage(value) {
     return (
       url.protocol === 'https:' &&
       ['images.ctfassets.net', 'd3s3zh7icgjwgd.cloudfront.net'].includes(url.hostname) &&
-      url.pathname.toLowerCase().match(/\\.(?:jpg|jpeg|png|webp)$/) !== null
+      url.pathname.toLowerCase().match(/\.(?:jpg|jpeg|png|webp)$/) !== null
     );
   } catch {
     return false;

@@ -45,6 +45,19 @@ test('publication gate never confuses a future-event preview with an unpublished
   assert.equal(cards[0].title, 'Title live');
 });
 
+test('anniversary editorial articles remain distinct from performance reviews', () => {
+  const cards = reviewCards({ items: [
+    fixture('feature', { contentType: 'article' }),
+    fixture('review'),
+    fixture('private-article', { contentType: 'article', status: 'approved', published: false })
+  ] }, 'cs');
+  assert.deepEqual(cards.map(item => item.slug), ['feature', 'review']);
+  assert.equal(cards[0].type, 'article');
+  assert.equal(cards[1].type, 'review');
+  assert.equal(filterBlogCards(cards, 'review').length, 1);
+  assert.equal(filterBlogCards(cards, 'all').length, 2);
+});
+
 test('topic filters include reviews and guides, not only legacy articles', () => {
   const cards = [
     { type: 'review', category: 'theatre' }, { type: 'preview', category: 'theatre' },

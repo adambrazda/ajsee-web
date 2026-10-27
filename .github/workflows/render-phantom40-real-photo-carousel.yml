@@ -6,6 +6,7 @@ on:
       - creative/phantom40-original-photo-carousel
     paths:
       - .github/workflows/render-phantom40-real-photo-carousel.yml
+      - creative/phantom40/build_original_photo_carousel.py
   workflow_dispatch:
 
 permissions:

@@ -165,8 +165,8 @@ def main():
         "FROM CHRISTINE TO CARLOTTA.",
         "Od Christine ke Carlottě.",
         "PHOTO: JOHAN PERSSON",
-        "OYA VIDĚLA SIERRU NAŽIVO V SRPNU 2026.",
-        "OYA SAW SIERRA PERFORM IN AUGUST 2026.")
+        "OYA SAW SIERRA PERFORM IN AUGUST 2026.",
+        "OYA VIDĚLA SIERRU NAŽIVO V SRPNU 2026.")
     create(5,"phantom-40th-donica-penny-toure-production.webp","detail",
         "COMING MONDAY  /  V PONDĚLÍ",["THE STORY","CONTINUES."],
         "FULL ARTICLE MONDAY, 2 NOVEMBER",

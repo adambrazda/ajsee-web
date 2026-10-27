@@ -64,11 +64,11 @@ def photography(image_path, style):
     photo=Image.open(image_path).convert("RGB")
     board=Image.new("RGB",(W,H),BG)
     if style=="wide":
-        region=cover(photo,W,750*S,.5,.46); board.paste(region,(0,100*S))
+        region=cover(photo,W,736*S,.5,.46); board.paste(region,(0,114*S))
     elif style=="portrait":
-        region=cover(photo,W,750*S,.5,.08);board.paste(region,(0,100*S))
+        region=cover(photo,W,736*S,.5,.08);board.paste(region,(0,114*S))
     elif style=="detail":
-        region=cover(photo,W,750*S,.51,.43);board.paste(region,(0,100*S))
+        region=cover(photo,W,736*S,.51,.43);board.paste(region,(0,114*S))
     # Vertical fade is only a gradient overlay, not any photographic synthesis.
     fade=Image.new("RGBA",(W,H),(0,0,0,0))
     px=fade.load()

@@ -66,9 +66,9 @@ def photography(image_path, style):
     if style=="wide":
         region=cover(photo,W,750*S,.5,.46); board.paste(region,(0,100*S))
     elif style=="portrait":
-        region=cover(photo,W,810*S,.5,.19);board.paste(region,(0,74*S))
+        region=cover(photo,W,750*S,.5,.08);board.paste(region,(0,100*S))
     elif style=="detail":
-        region=cover(photo,W,795*S,.51,.43);board.paste(region,(0,88*S))
+        region=cover(photo,W,750*S,.51,.43);board.paste(region,(0,100*S))
     # Vertical fade is only a gradient overlay, not any photographic synthesis.
     fade=Image.new("RGBA",(W,H),(0,0,0,0))
     px=fade.load()
@@ -161,11 +161,12 @@ def main():
         "2026 WEST END ANNIVERSARY PRODUCTION")
     sierra=SOURCE/"phantom-40th-sierra-boggess-carlotta.jpg"
     create(4,str(sierra),"portrait",
-        "SIERRA BOGGESS  /  CARLOTTA",["A NEW ROLE.","A FULL CIRCLE."],
+        "SIERRA BOGGESS  /  CARLOTTA",["A MEANINGFUL","RETURN."],
         "FROM CHRISTINE TO CARLOTTA.",
         "Od Christine ke Carlottě.",
         "PHOTO: JOHAN PERSSON",
-        "OYA CANLI SAW HER LIVE IN AUGUST 2026.")
+        "OYA VIDĚLA SIERRU NAŽIVO V SRPNU 2026.",
+        "OYA SAW SIERRA PERFORM IN AUGUST 2026.")
     create(5,"phantom-40th-donica-penny-toure-production.webp","detail",
         "COMING MONDAY  /  V PONDĚLÍ",["THE STORY","CONTINUES."],
         "FULL ARTICLE MONDAY, 2 NOVEMBER",

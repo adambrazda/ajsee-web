@@ -28,6 +28,23 @@ export function finalizeSeoHtml(html) {
   const lang=LANGS.includes(doc.documentElement.lang)?doc.documentElement.lang:'cs';
   const canonical=doc.querySelector('link[rel="canonical"]')?.href;
   if(!canonical||!canonical.startsWith(ORIGIN)||doc.querySelector('meta[name="robots"]')?.content.includes('noindex')) { dom.window.close();return html; }
+  // Language alternatives must be discoverable without running the dropdown JS.
+  // Use the page's own hreflang mapping, including translated London route names.
+  for(const button of doc.querySelectorAll('.language-switcher button.lang-btn[data-lang]')) {
+    const targetLang=button.dataset.lang;
+    if(!LANGS.includes(targetLang))continue;
+    const alternate=doc.querySelector(`link[rel="alternate"][hreflang="${targetLang}"]`);
+    if(!alternate)continue;
+    const target=new URL(alternate.getAttribute('href'),ORIGIN);
+    if(target.origin!==ORIGIN)continue;
+    const link=doc.createElement('a');
+    for(const attr of button.attributes)if(attr.name!=='type')link.setAttribute(attr.name,attr.value);
+    link.setAttribute('href',target.pathname+target.search+target.hash);
+    link.setAttribute('hreflang',targetLang);
+    link.setAttribute('lang',targetLang);
+    link.innerHTML=button.innerHTML;
+    button.replaceWith(link);
+  }
   const h1=doc.querySelector('main h1,h1')?.textContent.trim()||doc.title;
   const description=doc.querySelector('meta[name="description"]')?.content||'';
   meta(doc,'meta[property="og:locale"]',LOCALES[lang]);

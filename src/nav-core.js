@@ -206,7 +206,7 @@ function activateNavLink() {
     return null;
   };
 
-  qsa('.main-nav a, [data-lang-link]').forEach((link) => {
+  qsa('.main-nav > ul a, [data-lang-link]').forEach((link) => {
     const href = link.getAttribute('href') || '';
     const key = keyForLink(href);
     const isCurrent = key ? !!state[key]() : false;
@@ -233,7 +233,7 @@ function normalizeFaqInNav(lang) {
   const nav = qs('.main-nav');
   if (!nav) return;
 
-  const faqLinks = Array.from(nav.querySelectorAll('a')).filter((a) =>
+  const faqLinks = Array.from(nav.querySelectorAll(':scope > ul a')).filter((a) =>
     isFaqHref(a.getAttribute('href') || '')
   );
 
@@ -250,7 +250,7 @@ function normalizeFaqInNav(lang) {
     (a.closest('li') || a).remove();
   });
 
-  const contact = Array.from(nav.querySelectorAll('a')).find((a) =>
+  const contact = Array.from(nav.querySelectorAll(':scope > ul a')).find((a) =>
     isContactHref(a.getAttribute('href') || '') ||
     String(a.getAttribute('href') || '').toLowerCase().includes('#contact')
   );
@@ -273,7 +273,7 @@ function normalizeFaqInNav(lang) {
 function updateMenuLinksWithLang(lang) {
   const l = normalizeLang(lang) || 'cs';
 
-  qsa('.main-nav a').forEach((link) => {
+  qsa('.main-nav > ul a').forEach((link) => {
     let href = link.getAttribute('href') || '';
 
     if (!href) return;

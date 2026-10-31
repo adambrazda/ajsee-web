@@ -621,7 +621,7 @@ function buildStaticMain(data, langCode, slug) {
     <nav class="mg-breadcrumb" aria-label="Breadcrumb">
       <a href="${escapeAttr(blogHref)}" data-i18n="mg.backToBlog">${escapeHtml(labels.backToBlog)}</a>
       <span aria-hidden="true">/</span>
-      <span data-i18n="mg.breadcrumb">${escapeHtml(labels.breadcrumb)}</span>
+      <a href="${escapeAttr(localizedRoute('/microguides/', currentLang))}" data-i18n="mg.breadcrumb">${escapeHtml(labels.breadcrumb)}</a>
     </nav>
 
     <article class="mg-article" itemscope itemtype="https://schema.org/Article">

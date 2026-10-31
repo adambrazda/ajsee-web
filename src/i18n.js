@@ -198,6 +198,8 @@ export function patchInternalLinksWithLang(lang) {
   const l = normalizeLang(lang) || 'cs';
 
   document.querySelectorAll('a[href]').forEach(a => {
+    // Explicit language choices keep their own target, not the current locale.
+    if (a.matches('.lang-btn[data-lang]')) return;
     const raw = a.getAttribute('href');
     if (!raw) return;
 

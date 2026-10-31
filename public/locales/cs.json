@@ -258,10 +258,19 @@
     "lead": "Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.",
     "back": "Zpět na AJSEE.cz"
   },
+  "events-buying": {
+    "title": "Jak funguje nákup přes AJSEE?",
+    "body": "Na AJSEE si vyberete koncert, divadlo, festival nebo sportovní akci. U každé události najdete jejího prodejce. Tlačítkem „Vstupenky“ přejdete na jeho web, kde dokončíte nákup i platbu. Vstupenky vám vystaví prodejce.",
+    "conditions": "V nabídce najdete akce od partnerů smsticket, Ticketmaster a Colosseum Ticket. Dostupnost, konečnou cenu a podmínky nákupu si vždy ověřte u uvedeného prodejce.",
+    "linksLabel": "Informace k nákupu vstupenek",
+    "partners": "Naši partneři",
+    "faq": "Otázky k nákupu",
+    "guide": "Jak vybrat důvěryhodného prodejce"
+  },
   "event-demo": {
-    "ariaLabel": "Informace o ubytování s TrustedStays pro vybrané akce v UK.",
-    "title": "Nově i ubytování s TrustedStays",
-    "body": "Plánuješ cestu za zážitky do UK? U vybraných akcí tě propojíme s ubytováním přes TrustedStays.",
+    "ariaLabel": "Ubytování s TrustedStays ve Spojeném království a Francii.",
+    "title": "Ubytování s TrustedStays",
+    "body": "Plánujete cestu za zážitky? Prohlédněte si nabídku ubytování našeho partnera ve Spojeném království a Francii.",
     "cta": "Najít ubytování"
   },
   "mg.backToBlog": "Zpět na blog",
@@ -481,10 +490,10 @@
   "home.events.title": "Naše tipy, kam vyrazit",
   "home.events.intro": "Akce, které stojí za pozornost.",
   "home.events.results": "Výsledky hledání",
-  "home.london.title": "Muzikály v\u00a0Londýně",
+  "home.london.title": "Muzikály v Londýně",
   "home.london.text": "Zažijte atmosféru West Endu. Vyberte si muzikál a najděte vstupenky na svůj termín.",
   "home.london.cta": "Prohlédnout muzikály",
-  "home.stay.title": "Ubytování k\u00a0vašemu výletu",
+  "home.stay.title": "Ubytování k vašemu výletu",
   "home.stay.text": "Apartmány od TrustedStays ve Spojeném království a Francii. Najděte si místo, kde se budete cítit dobře.",
   "home.stay.cta": "Najít ubytování",
   "home.editorial.title": "Naše recenze a tipy",
@@ -513,5 +522,7 @@
   "home.partners.staysLabel": "Ubytování od našeho partnera",
   "home.contact.intro": "Máte otázku, tip na akci nebo nápad, co na AJSEE vylepšit? Napište nám.",
   "home.contact.partnerTitle": "Spolupráce s AJSEE",
-  "home.contact.partnerText": "Pořádáte akce nebo nabízíte službu, která by naše návštěvníky mohla zaujmout? Podívejte se na možnosti spolupráce."
+  "home.contact.partnerText": "Pořádáte akce nebo nabízíte službu, která by naše návštěvníky mohla zaujmout? Podívejte se na možnosti spolupráce.",
+  "events-page-description": "Festivaly, divadlo, koncerty i sport na jednom místě. Najděte si akci doma nebo v zahraničí a pro vstupenky přejděte přímo k prodejci.",
+  "ai-search-static-intro": "Napište vlastními slovy, kam a kdy chcete vyrazit. AJSEE AI z vašeho zadání nastaví filtry událostí a podle potřeby se doptá na podrobnosti."
 }

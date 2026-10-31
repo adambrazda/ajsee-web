@@ -11,7 +11,9 @@ export const MICROGUIDE_LABELS = {
     noGuides: 'Zatím tu nejsou žádné publikované mikroprůvodce.',
     readTime: 'min čtení',
     openGuide: 'Otevřít průvodce',
-    waitlist: 'Chci na čekací listinu',
+    nextStep: 'Kam vyrazíš příště?',
+    browseEvents: 'Prohlédnout události',
+    browseLondon: 'Prohlédnout muzikály v Londýně',
     prev: 'Předchozí',
     next: 'Další',
     notFoundTitle: 'Mikroprůvodce se nepodařilo načíst',
@@ -29,7 +31,9 @@ export const MICROGUIDE_LABELS = {
     noGuides: 'There are no published micro-guides yet.',
     readTime: 'min read',
     openGuide: 'Open guide',
-    waitlist: 'Join the waitlist',
+    nextStep: 'Where will you go next?',
+    browseEvents: 'Browse events',
+    browseLondon: 'Browse London musicals',
     prev: 'Previous',
     next: 'Next',
     notFoundTitle: 'The micro-guide could not be loaded',
@@ -47,7 +51,9 @@ export const MICROGUIDE_LABELS = {
     noGuides: 'Noch keine veröffentlichten Micro-Guides.',
     readTime: 'Min. Lesezeit',
     openGuide: 'Guide öffnen',
-    waitlist: 'Zur Warteliste',
+    nextStep: 'Wohin geht es als Nächstes?',
+    browseEvents: 'Veranstaltungen entdecken',
+    browseLondon: 'Musicals in London entdecken',
     prev: 'Zurück',
     next: 'Weiter',
     notFoundTitle: 'Der Micro-Guide konnte nicht geladen werden',
@@ -65,7 +71,9 @@ export const MICROGUIDE_LABELS = {
     noGuides: 'Zatiaľ tu nie sú žiadne publikované mikropríručky.',
     readTime: 'min čítania',
     openGuide: 'Otvoriť príručku',
-    waitlist: 'Chcem na čakaciu listinu',
+    nextStep: 'Kam vyrazíš nabudúce?',
+    browseEvents: 'Pozrieť podujatia',
+    browseLondon: 'Pozrieť muzikály v Londýne',
     prev: 'Predchádzajúce',
     next: 'Ďalej',
     notFoundTitle: 'Mikropríručku sa nepodarilo načítať',
@@ -83,7 +91,9 @@ export const MICROGUIDE_LABELS = {
     noGuides: 'Nie ma jeszcze opublikowanych mikroprzewodników.',
     readTime: 'min czytania',
     openGuide: 'Otwórz przewodnik',
-    waitlist: 'Dołącz do listy oczekujących',
+    nextStep: 'Gdzie wybierzesz się następnym razem?',
+    browseEvents: 'Przeglądaj wydarzenia',
+    browseLondon: 'Przeglądaj musicale w Londynie',
     prev: 'Poprzedni',
     next: 'Następny',
     notFoundTitle: 'Nie udało się załadować mikroprzewodnika',
@@ -101,7 +111,9 @@ export const MICROGUIDE_LABELS = {
     noGuides: 'Még nincsenek publikált mikroútmutatók.',
     readTime: 'perc olvasás',
     openGuide: 'Útmutató megnyitása',
-    waitlist: 'Feliratkozom a várólistára',
+    nextStep: 'Hová indulsz legközelebb?',
+    browseEvents: 'Események böngészése',
+    browseLondon: 'Londoni musicalek böngészése',
     prev: 'Előző',
     next: 'Következő',
     notFoundTitle: 'A mikroútmutató nem tölthető be',
@@ -109,3 +121,25 @@ export const MICROGUIDE_LABELS = {
     backToGuides: 'Vissza a mikroútmutatókhoz'
   }
 };
+
+// London theatre is sold through its dedicated partner page, outside the event feed.
+const LONDON_MUSICAL_ROUTES = {
+  cs: '/londynske-muzikaly/',
+  en: '/en/london-musicals/',
+  de: '/de/london-musicals/',
+  sk: '/sk/londynske-muzikaly/',
+  pl: '/pl/londynskie-musicale/',
+  hu: '/hu/londoni-musicalek/'
+};
+
+export function getMicroguideCta(slug, lang = 'cs') {
+  const language = Object.hasOwn(MICROGUIDE_LABELS, lang) ? lang : 'cs';
+  const copy = MICROGUIDE_LABELS[language];
+  if (slug === 'theatre-last-minute') {
+    return { href: LONDON_MUSICAL_ROUTES[language], text: copy.browseLondon };
+  }
+  return {
+    href: (language === 'cs' ? '' : '/' + language) + '/events/',
+    text: copy.browseEvents
+  };
+}

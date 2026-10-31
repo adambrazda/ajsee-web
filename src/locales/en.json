@@ -258,10 +258,19 @@
     "lead": "Please confirm your subscription in the email (double opt-in). We’ll send launch and partner updates soon.",
     "back": "Back to AJSEE.cz"
   },
+  "events-buying": {
+    "title": "How does buying tickets through AJSEE work?",
+    "body": "Choose a concert, theatre performance, festival or sports event on AJSEE. Each listing names the ticket seller. Select “Tickets” to continue to their website, where you complete your purchase and payment. The seller issues your tickets.",
+    "conditions": "Our listings include events from our partners smsticket, Ticketmaster and Colosseum Ticket. Always check availability, the final price and purchase terms with the named seller.",
+    "linksLabel": "Information about buying tickets",
+    "partners": "Our partners",
+    "faq": "Ticket purchase questions",
+    "guide": "How to choose a trusted ticket seller"
+  },
   "event-demo": {
-    "ariaLabel": "Information about accommodation with TrustedStays for selected UK events.",
-    "title": "New: accommodation with TrustedStays",
-    "body": "Planning a trip to the UK for a live experience? For selected events, we can connect you with accommodation through TrustedStays.",
+    "ariaLabel": "Accommodation with TrustedStays in the United Kingdom and France.",
+    "title": "Accommodation with TrustedStays",
+    "body": "Planning a trip for a live event? Browse accommodation from our partner in the United Kingdom and France.",
     "cta": "Find accommodation"
   },
   "mg.backToBlog": "Back to blog",

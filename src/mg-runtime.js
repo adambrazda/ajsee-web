@@ -1,4 +1,4 @@
-﻿import { MICROGUIDE_LABELS } from './microguide-copy.js';
+﻿import { MICROGUIDE_LABELS, getMicroguideCta } from './microguide-copy.js';
 import { renderSharePanel } from './mg-share.js';
 import { renderRelatedMicroguides } from './mg-related.js';
 import { initializeArticleComments } from './article-comments.js';
@@ -913,6 +913,7 @@ async function renderDetail(root, slug) {
 
   const data = loaded.data;
   const resolvedSlug = data.slug || slug;
+  const cta = getMicroguideCta(resolvedSlug, lang);
   const resolvedLang = loaded.resolvedLang || lang;
   const title = `${data.title || resolvedSlug} | AJSEE`;
   const desc = data.summary || 'AJSEE vysvětluje: praktické mikroprůvodce.';
@@ -1000,8 +1001,8 @@ async function renderDetail(root, slug) {
         `).join('')}
 
         <footer class="mg-footer-cta">
-          ${data.ctaQuestion ? `<p>${escapeHtml(data.ctaQuestion)}</p>` : ''}
-          <a class="ib-cta" href="${withLang('/coming-soon')}">${escapeHtml(label('waitlist'))}</a>
+          <p>${escapeHtml(label('nextStep'))}</p>
+          <a class="ib-cta" href="${escapeHtml(cta.href)}">${escapeHtml(cta.text)}</a>
         </footer>
       </div>
 

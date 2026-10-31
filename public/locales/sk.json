@@ -258,10 +258,19 @@
     "lead": "Potvrď, prosím, prihlásenie v e-maile (double opt-in). Čoskoro pošleme novinky o spustení a partneroch.",
     "back": "Späť na AJSEE.cz"
   },
+  "events-buying": {
+    "title": "Ako funguje nákup cez AJSEE?",
+    "body": "Na AJSEE si vyberiete koncert, divadlo, festival alebo športové podujatie. Pri každej udalosti nájdete jej predajcu. Tlačidlom „Vstupenky“ prejdete na jeho web, kde dokončíte nákup aj platbu. Vstupenky vám vystaví predajca.",
+    "conditions": "V ponuke nájdete podujatia od partnerov smsticket, Ticketmaster a Colosseum Ticket. Dostupnosť, konečnú cenu a podmienky nákupu si vždy overte u uvedeného predajcu.",
+    "linksLabel": "Informácie o nákupe vstupeniek",
+    "partners": "Naši partneri",
+    "faq": "Otázky k nákupu",
+    "guide": "Ako si vybrať dôveryhodného predajcu"
+  },
   "event-demo": {
-    "ariaLabel": "Informácia o ubytovaní s TrustedStays pre vybrané podujatia v UK.",
-    "title": "Po novom aj ubytovanie s TrustedStays",
-    "body": "Plánuješ cestu do UK za zážitkami? Pri vybraných podujatiach ťa prepojíme s ubytovaním cez TrustedStays.",
+    "ariaLabel": "Ubytovanie s TrustedStays v Spojenom kráľovstve a vo Francúzsku.",
+    "title": "Ubytovanie s TrustedStays",
+    "body": "Plánujete cestu za zážitkami? Pozrite si ponuku ubytovania nášho partnera v Spojenom kráľovstve a vo Francúzsku.",
     "cta": "Nájsť ubytovanie"
   },
   "mg.backToBlog": "Späť na blog",
@@ -513,5 +522,7 @@
   "home.partners.staysLabel": "Ubytovanie od nášho partnera",
   "home.contact.intro": "Máte otázku, tip na podujatie alebo nápad, čo na AJSEE vylepšiť? Napíšte nám.",
   "home.contact.partnerTitle": "Spolupráca s AJSEE",
-  "home.contact.partnerText": "Organizujete podujatia alebo ponúkate službu, ktorá by našich návštevníkov mohla zaujať? Pozrite si možnosti spolupráce."
+  "home.contact.partnerText": "Organizujete podujatia alebo ponúkate službu, ktorá by našich návštevníkov mohla zaujať? Pozrite si možnosti spolupráce.",
+  "events-page-description": "Festivaly, divadlo, koncerty aj šport na jednom mieste. Nájdite si podujatie doma alebo v zahraničí a vstupenky si kúpte priamo u predajcu.",
+  "ai-search-static-intro": "Napíšte vlastnými slovami, kam a kedy chcete vyraziť. AJSEE AI z vášho zadania nastaví filtre podujatí a podľa potreby sa opýta na podrobnosti."
 }

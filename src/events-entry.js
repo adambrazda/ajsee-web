@@ -5708,14 +5708,16 @@ function updateHomeCtasWithLang() {
   const demoCta = document.getElementById('demoBadgeCta');
   if (demoCta) {
     try {
-      const u = new URL(demoCta.getAttribute('href') || demoCta.href || '/coming-soon', location.origin);
-      demoCta.href = ajseeLocalizeInternalHref(u.pathname + u.search + u.hash, lang);
+      demoCta.href = ajseeLocalizeInternalHref('/accommodation/', lang);
     } catch {
       /* noop */
     }
 
     wireOnce(demoCta, 'click', () => {
-      if (window.gtag) window.gtag('event', 'click_demo_badge', { source: 'home_demo_pill', lang });
+      if (window.gtag) window.gtag('event', 'click_accommodation', {
+        source: 'events_trustedstays_banner',
+        lang: (currentLang || getUILang() || 'cs').toLowerCase()
+      });
     }, 'demo-gtag');
   }
 }

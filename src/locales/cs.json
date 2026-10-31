@@ -258,10 +258,19 @@
     "lead": "Potvrď prosím přihlášení v e-mailu (double opt-in). Brzy pošleme novinky o spuštění a partnerech.",
     "back": "Zpět na AJSEE.cz"
   },
+  "events-buying": {
+    "title": "Jak funguje nákup přes AJSEE?",
+    "body": "Na AJSEE si vyberete koncert, divadlo, festival nebo sportovní akci. U každé události najdete jejího prodejce. Tlačítkem „Vstupenky“ přejdete na jeho web, kde dokončíte nákup i platbu. Vstupenky vám vystaví prodejce.",
+    "conditions": "V nabídce najdete akce od partnerů smsticket, Ticketmaster a Colosseum Ticket. Dostupnost, konečnou cenu a podmínky nákupu si vždy ověřte u uvedeného prodejce.",
+    "linksLabel": "Informace k nákupu vstupenek",
+    "partners": "Naši partneři",
+    "faq": "Otázky k nákupu",
+    "guide": "Jak vybrat důvěryhodného prodejce"
+  },
   "event-demo": {
-    "ariaLabel": "Informace o ubytování s TrustedStays pro vybrané akce v UK.",
-    "title": "Nově i ubytování s TrustedStays",
-    "body": "Plánuješ cestu za zážitky do UK? U vybraných akcí tě propojíme s ubytováním přes TrustedStays.",
+    "ariaLabel": "Ubytování s TrustedStays ve Spojeném království a Francii.",
+    "title": "Ubytování s TrustedStays",
+    "body": "Plánujete cestu za zážitky? Prohlédněte si nabídku ubytování našeho partnera ve Spojeném království a Francii.",
     "cta": "Najít ubytování"
   },
   "mg.backToBlog": "Zpět na blog",

@@ -93,6 +93,12 @@ for(const lang of LANGS){
       const description=doc.querySelector('meta[name="description"]').content;
       assert.ok(description.length>30 && data.summary.startsWith(description.replace(/…$/,'')),guide.slug);
       assert.ok(clean(doc.querySelector('main').textContent).includes(MICROGUIDE_LABELS[lang].backToBlog));
+      const cta=doc.querySelector('.mg-footer-cta a');
+      const londonRoutes={cs:'/londynske-muzikaly/',en:'/en/london-musicals/',de:'/de/london-musicals/',sk:'/sk/londynske-muzikaly/',pl:'/pl/londynskie-musicale/',hu:'/hu/londoni-musicalek/'};
+      const expectedCta=guide.slug==='theatre-last-minute'?londonRoutes[lang]:(lang==='cs'?'/events':'/'+lang+'/events/');
+      assert.equal(cta.getAttribute('href'),expectedCta,guide.slug+': the next step must open the relevant live offer');
+      assert.ok(clean(cta.textContent).length>0);
+      assert.equal(doc.querySelectorAll('main a[href*="coming-soon"]').length,0,guide.slug);
       assert.ok(doc.title.includes(data.title));
       let article;jsons(doc).forEach(value=>walk(value,node=>{if(node['@type']==='Article')article=node;}));
       assert.equal(article.inLanguage,lang);assert.equal(article.datePublished,guide.publishedAt);
@@ -119,6 +125,12 @@ for(const lang of LANGS){
       if(route==='faq')assert.equal(doc.querySelectorAll('[data-faq-item]').length,15);
       if(route==='events'){
         const dictionary=JSON.parse(fs.readFileSync('src/locales/'+lang+'.json','utf8'));
+        assert.equal(doc.querySelector('#demoBadgeCta').getAttribute('href'),lang==='cs'?'/accommodation':'/'+lang+'/accommodation/');
+        assert.equal(clean(doc.querySelector('#demoBadge .ib-text span').textContent),dictionary['event-demo'].body);
+        assert.equal(clean(doc.querySelector('.events-benefits h2').textContent),dictionary['events-buying'].title);
+        assert.equal(clean(doc.querySelector('.events-buying-copy').textContent),dictionary['events-buying'].body);
+        const buyingLinks=[...doc.querySelectorAll('.events-buying-links a')].map(a=>a.getAttribute('href'));
+        assert.deepEqual(buyingLinks,lang==='cs'?['/partners','/faq','/microguides/fees-refund/']:['/'+lang+'/partners/','/'+lang+'/faq/','/'+lang+'/microguides/fees-refund/']);
         assert.equal(doc.querySelectorAll('meta[name="description"]').length,1);
         assert.equal(doc.querySelector('meta[name="description"]').content,dictionary['events-page-description']);
         assert.equal(doc.querySelector('meta[property="og:description"]').content,dictionary['events-page-description']);

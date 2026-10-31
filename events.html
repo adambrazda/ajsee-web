@@ -296,14 +296,14 @@
           <!-- Filter controls are injected from src/event-filters.js. -->
         </form>
 
-        <div class="event-demo-badge" id="demoBadge" role="note" aria-live="polite" aria-label="Informace o ubytování s TrustedStays pro vybrané akce v UK." data-i18n-aria="event-demo.ariaLabel" title="Informace o ubytování s TrustedStays pro vybrané akce v UK.">
+        <div class="event-demo-badge" id="demoBadge" role="note" aria-label="Ubytování s TrustedStays ve Spojeném království a Francii." data-i18n-aria="event-demo.ariaLabel">
           <span class="ib-icon" aria-hidden="true">✨</span>
           <p class="ib-text">
-            <strong data-i18n-key="event-demo.title">Nově i ubytování s TrustedStays</strong>
-            <span data-i18n-key="event-demo.body">Plánuješ cestu za zážitky do UK? U vybraných akcí tě propojíme s ubytováním přes TrustedStays.</span>
+            <strong data-i18n-key="event-demo.title">Ubytování s TrustedStays</strong>
+            <span data-i18n-key="event-demo.body">Plánujete cestu za zážitky? Prohlédněte si nabídku ubytování našeho partnera ve Spojeném království a Francii.</span>
           </p>
           <a class="ib-cta" id="demoBadgeCta"
-             href="/coming-soon?utm_source=site&utm_medium=demo_badge&utm_campaign=waitlist"
+             href="/accommodation/"
              data-i18n-key="event-demo.cta">Najít ubytování</a>
         </div>
 
@@ -319,7 +319,9 @@
 
     <section class="events-benefits why-us-section" aria-labelledby="events-benefits-title">
       <div class="container">
-        <h3 id="events-benefits-title" data-i18n-key="events-benefits-title">Proč s námi?</h3>
+        <h2 id="events-benefits-title" data-i18n-key="events-buying.title">Jak funguje nákup přes AJSEE?</h2>
+        <p class="events-buying-copy" data-i18n-key="events-buying.body">Na AJSEE si vyberete koncert, divadlo, festival nebo sportovní akci. U každé události najdete jejího prodejce. Tlačítkem „Vstupenky“ přejdete na jeho web, kde dokončíte nákup i platbu. Vstupenky vám vystaví prodejce.</p>
+        <p class="events-buying-copy" data-i18n-key="events-buying.conditions">V nabídce najdete akce od partnerů smsticket, Ticketmaster a Colosseum Ticket. Dostupnost, konečnou cenu a podmínky nákupu si vždy ověřte u uvedeného prodejce.</p>
         <div class="benefits-list" role="list">
           <div class="benefit" role="listitem">
             <span class="benefit-icon" aria-hidden="true">🎫</span>
@@ -334,6 +336,11 @@
             <span data-i18n-key="events-benefit-3">Pečlivě vybírané akce a zážitky</span>
           </div>
         </div>
+        <nav class="events-buying-links" aria-label="Informace k nákupu vstupenek" data-i18n-aria="events-buying.linksLabel">
+          <a href="/partners/" data-i18n-key="events-buying.partners">Naši partneři</a>
+          <a href="/faq/" data-i18n-key="events-buying.faq">Otázky k nákupu</a>
+          <a href="/microguides/fees-refund/" data-i18n-key="events-buying.guide">Jak vybrat důvěryhodného prodejce</a>
+        </nav>
       </div>
     </section>
 
@@ -446,45 +453,6 @@
     </p>
   </div>
 </footer>
-
-  <!-- Demo badge CTA (propaguje lang do URL + GA event) -->
-  <script>
-    (function(){
-      const cta = document.getElementById('demoBadgeCta');
-      const root = document.getElementById('demoBadge');
-      if (!cta) return;
-
-      const qs = new URLSearchParams(location.search);
-      const lang = (qs.get('lang') || document.documentElement.lang || 'cs').toLowerCase();
-      if (['cs','en','de','sk','pl','hu'].includes(lang)) {
-        try {
-          const url = new URL(cta.href, location.origin);
-          url.searchParams.set('lang', lang);
-          cta.href = url.toString();
-        } catch {}
-      }
-
-      cta.addEventListener('click', function(){
-        if (window.gtag) window.gtag('event','click_waitlist', { source: 'events_demo_badge' });
-      });
-
-      // aria label, až když budou překlady
-      if (root) {
-        const start = Date.now();
-        const id = setInterval(() => {
-          if (window.translations || Date.now() - start > 1500) {
-            clearInterval(id);
-            try {
-              const path = 'event-demo.ariaLabel'.split('.');
-              let val = window.translations;
-              for (const k of path) val = val && typeof val === 'object' ? val[k] : undefined;
-              if (typeof val === 'string' && val.trim()) root.setAttribute('aria-label', val);
-            } catch(e) {}
-          }
-        }, 50);
-      }
-    })();
-  </script>
 
 </body>
 </html>

@@ -258,10 +258,19 @@
     "lead": "Bitte bestätige deine Anmeldung in der E-Mail (Double-Opt-In). Wir senden bald Updates zum Start und zu Partnern.",
     "back": "Zurück zu AJSEE.cz"
   },
+  "events-buying": {
+    "title": "Wie funktioniert der Ticketkauf über AJSEE?",
+    "body": "Auf AJSEE wählen Sie ein Konzert, eine Theateraufführung, ein Festival oder eine Sportveranstaltung aus. Bei jeder Veranstaltung ist der Ticketanbieter angegeben. Über „Tickets“ gelangen Sie auf dessen Website, wo Sie den Kauf und die Zahlung abschließen. Ihre Tickets erhalten Sie vom Anbieter.",
+    "conditions": "Unser Angebot umfasst Veranstaltungen unserer Partner smsticket, Ticketmaster und Colosseum Ticket. Prüfen Sie Verfügbarkeit, Endpreis und Kaufbedingungen immer beim angegebenen Anbieter.",
+    "linksLabel": "Informationen zum Ticketkauf",
+    "partners": "Unsere Partner",
+    "faq": "Fragen zum Ticketkauf",
+    "guide": "So erkennen Sie einen vertrauenswürdigen Ticketanbieter"
+  },
   "event-demo": {
-    "ariaLabel": "Informationen zu Unterkünften mit TrustedStays für ausgewählte Events in Großbritannien.",
-    "title": "Neu: Unterkünfte mit TrustedStays",
-    "body": "Planst du eine Reise nach Großbritannien für ein Live-Erlebnis? Bei ausgewählten Events verbinden wir dich mit Unterkünften über TrustedStays.",
+    "ariaLabel": "Unterkünfte mit TrustedStays im Vereinigten Königreich und in Frankreich.",
+    "title": "Unterkünfte mit TrustedStays",
+    "body": "Planen Sie eine Reise zu einer Veranstaltung? Entdecken Sie die Unterkünfte unseres Partners im Vereinigten Königreich und in Frankreich.",
     "cta": "Unterkunft finden"
   },
   "mg.backToBlog": "Zurück zum Blog",
@@ -513,5 +522,7 @@
   "home.partners.staysLabel": "Unterkünfte von unserem Partner",
   "home.contact.intro": "Haben Sie eine Frage, einen Veranstaltungstipp oder eine Idee, wie wir AJSEE verbessern können? Schreiben Sie uns.",
   "home.contact.partnerTitle": "Mit AJSEE zusammenarbeiten",
-  "home.contact.partnerText": "Sie veranstalten Events oder bieten etwas an, das unsere Besucher interessieren könnte? Entdecken Sie die Möglichkeiten einer Zusammenarbeit."
+  "home.contact.partnerText": "Sie veranstalten Events oder bieten etwas an, das unsere Besucher interessieren könnte? Entdecken Sie die Möglichkeiten einer Zusammenarbeit.",
+  "events-page-description": "Festivals, Theater, Konzerte und Sport an einem Ort. Entdecken Sie Veranstaltungen im In- und Ausland und kaufen Sie Tickets direkt beim Anbieter.",
+  "ai-search-static-intro": "Beschreiben Sie in eigenen Worten, wohin und wann Sie ausgehen möchten. AJSEE AI setzt passende Veranstaltungsfilter und fragt bei Bedarf nach."
 }

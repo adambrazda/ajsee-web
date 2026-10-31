@@ -136,18 +136,51 @@
 }
 
 /* -----------------------------
-   VÝHODY („Proč s námi?“) – sladěno s aktuálním markupem
+   NÁKUP VSTUPENEK A VÝHODY
 ----------------------------- */
 .events-benefits {
   background: linear-gradient(110deg, #f8fbfe 75%, #fff 100%);
   padding: 3rem 1.3rem 2.5rem;
 
-  h3 {
+  h2 {
     font-size: 1.2rem;
     font-weight: 800;
     color: #003366;
     margin-bottom: 1.8rem;
     text-align: center;
+  }
+
+  .events-buying-copy {
+    max-width: 70ch;
+    margin: 0 auto 1rem;
+    color: var(--aj-text);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .events-buying-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem 1.5rem;
+    margin-top: 1.5rem;
+
+    a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      color: var(--aj-text-strong);
+      text-decoration: underline;
+      text-underline-offset: .2em;
+      font-weight: 600;
+
+      &:hover { text-decoration-thickness: 2px; }
+      &:focus-visible {
+        outline: 3px solid var(--aj-focus);
+        outline-offset: 4px;
+        border-radius: .25rem;
+      }
+    }
   }
 
   .benefits-list{

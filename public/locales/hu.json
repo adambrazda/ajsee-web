@@ -258,10 +258,19 @@
     "lead": "Kérjük, erősítsd meg a feliratkozást az e-mailben (double opt-in). Hamarosan híreket küldünk az indulásról és partnerekről.",
     "back": "Vissza az AJSEE.cz oldalra"
   },
+  "events-buying": {
+    "title": "Hogyan működik a jegyvásárlás az AJSEE-n keresztül?",
+    "body": "Az AJSEE-n koncertet, színházi előadást, fesztivált vagy sporteseményt választhatsz. Minden eseménynél feltüntetjük a jegyértékesítőt. A „Jegyek” gombbal az ő weboldalára lépsz tovább, ahol befejezheted a vásárlást és a fizetést. A jegyeket az értékesítőtől kapod meg.",
+    "conditions": "Kínálatunkban a smsticket, a Ticketmaster és a Colosseum Ticket partnereink eseményei is megtalálhatók. Az elérhetőséget, a végső árat és a vásárlási feltételeket mindig az adott értékesítőnél ellenőrizd.",
+    "linksLabel": "Tudnivalók a jegyvásárlásról",
+    "partners": "Partnereink",
+    "faq": "Kérdések a jegyvásárlásról",
+    "guide": "Hogyan válassz megbízható jegyértékesítőt?"
+  },
   "event-demo": {
-    "ariaLabel": "Információk a TrustedStays szállásairól kiválasztott egyesült királyságbeli eseményekhez.",
-    "title": "Most már szállással is a TrustedStays révén",
-    "body": "Brit élményútra készülsz? Kiválasztott eseményeknél szállással is összekapcsolunk a TrustedStays-en keresztül.",
+    "ariaLabel": "Szállások a TrustedStays kínálatában az Egyesült Királyságban és Franciaországban.",
+    "title": "Szállások a TrustedStays kínálatában",
+    "body": "Egy eseményre utazol? Fedezd fel partnerünk szálláskínálatát az Egyesült Királyságban és Franciaországban.",
     "cta": "Szállás keresése"
   },
   "mg.backToBlog": "Vissza a blogra",
@@ -513,5 +522,7 @@
   "home.partners.staysLabel": "Szállás partnerünktől",
   "home.contact.intro": "Kérdése van, ajánlana egy eseményt, vagy van ötlete, hogyan tehetnénk jobbá az AJSEE-t? Írjon nekünk.",
   "home.contact.partnerTitle": "Együttműködés az AJSEE-vel",
-  "home.contact.partnerText": "Rendezvényt szervez, vagy olyan szolgáltatást kínál, amely érdekelheti látogatóinkat? Ismerje meg az együttműködési lehetőségeket."
+  "home.contact.partnerText": "Rendezvényt szervez, vagy olyan szolgáltatást kínál, amely érdekelheti látogatóinkat? Ismerje meg az együttműködési lehetőségeket.",
+  "events-page-description": "Fesztiválok, színház, koncertek és sport egy helyen. Keress programot itthon vagy külföldön, majd vásárolj jegyet közvetlenül az értékesítőnél.",
+  "ai-search-static-intro": "Írd le saját szavaiddal, hová és mikor mennél. Az AJSEE AI a kérésed alapján beállítja az eseményszűrőket, és szükség esetén további részleteket kér."
 }

@@ -258,10 +258,19 @@
     "lead": "Potwierdź proszę zapis w e-mailu (double opt-in). Wkrótce wyślemy informacje o starcie i partnerach.",
     "back": "Wróć do AJSEE.cz"
   },
+  "events-buying": {
+    "title": "Jak działa zakup biletów przez AJSEE?",
+    "body": "Na AJSEE wybierzesz koncert, spektakl, festiwal lub wydarzenie sportowe. Przy każdym wydarzeniu znajdziesz nazwę sprzedawcy biletów. Przycisk „Bilety” przeniesie Cię na jego stronę, gdzie sfinalizujesz zakup i płatność. Bilety otrzymasz od sprzedawcy.",
+    "conditions": "W naszej ofercie znajdziesz wydarzenia od partnerów smsticket, Ticketmaster i Colosseum Ticket. Dostępność, ostateczną cenę i warunki zakupu zawsze sprawdzaj u wskazanego sprzedawcy.",
+    "linksLabel": "Informacje o zakupie biletów",
+    "partners": "Nasi partnerzy",
+    "faq": "Pytania o zakup biletów",
+    "guide": "Jak wybrać zaufanego sprzedawcę biletów"
+  },
   "event-demo": {
-    "ariaLabel": "Informacja o noclegach z TrustedStays dla wybranych wydarzeń w Wielkiej Brytanii.",
-    "title": "Teraz także noclegi z TrustedStays",
-    "body": "Planujesz wyjazd do Wielkiej Brytanii na wyjątkowe wydarzenie? Przy wybranych wydarzeniach połączymy Cię z noclegiem przez TrustedStays.",
+    "ariaLabel": "Noclegi z TrustedStays w Wielkiej Brytanii i Francji.",
+    "title": "Noclegi z TrustedStays",
+    "body": "Planujesz wyjazd na wydarzenie? Sprawdź ofertę noclegów naszego partnera w Wielkiej Brytanii i Francji.",
     "cta": "Znajdź nocleg"
   },
   "mg.backToBlog": "Wróć do bloga",

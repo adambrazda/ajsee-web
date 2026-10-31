@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'node:url';
-import { MICROGUIDE_LABELS } from '../src/microguide-copy.js';
+import { MICROGUIDE_LABELS, getMicroguideCta } from '../src/microguide-copy.js';
 
 const ROOT = process.cwd();
 
@@ -589,7 +589,7 @@ function buildStaticMain(data, langCode, slug) {
   const currentLang = normalizeLang(langCode);
   const labels = MICROGUIDE_LABELS[currentLang];
   const blogHref = localizedRoute('/blog/', currentLang);
-  const comingSoonHref = localizedRoute('/coming-soon/', currentLang);
+  const cta = getMicroguideCta(slug, currentLang);
 
   const progressItems = steps
     .map((step) => `
@@ -648,8 +648,8 @@ function buildStaticMain(data, langCode, slug) {
         ${sectionItems}
 
         <footer class="mg-footer-cta">
-          ${data.ctaQuestion ? `<p>${escapeHtml(data.ctaQuestion)}</p>` : ''}
-          <a class="ib-cta" href="${escapeAttr(comingSoonHref)}">${escapeHtml(labels.waitlist)}</a>
+          <p>${escapeHtml(labels.nextStep)}</p>
+          <a class="ib-cta" href="${escapeAttr(cta.href)}">${escapeHtml(cta.text)}</a>
         </footer>
       </div>
 

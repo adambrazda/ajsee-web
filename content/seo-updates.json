@@ -1,7 +1,7 @@
 {
   "pages": {
     "/": "2026-10-19",
-    "/events": "2026-10-19",
+    "/events": "2026-10-31",
     "/accommodation": "2026-10-19",
     "/partners": "2026-10-19",
     "/about": "2026-10-19",
@@ -14,7 +14,7 @@
     "/authors/oya-canli": "2026-10-19"
   },
   "templates": {
-    "microguides": "2026-10-19",
+    "microguides": "2026-10-31",
     "reviews": "2026-10-19"
   }
 }

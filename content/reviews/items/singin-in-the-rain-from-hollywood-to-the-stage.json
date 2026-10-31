@@ -1,6 +1,6 @@
 {
   "slug": "singin-in-the-rain-from-hollywood-to-the-stage",
-  "contentType": "review",
+  "contentType": "article",
   "status": "published",
   "published": true,
   "featured": false,
@@ -14,6 +14,7 @@
   "eventDate": "2027-06-02",
   "reviewDate": "2026-10-09",
   "publishedAt": "2026-10-12",
+  "updatedAt": "2026-10-31",
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.tixculture.com/london/shows/22731-singin--in-the-rain",

@@ -8,6 +8,7 @@ import { AI_SEARCH_COPY } from '../src/ai-search/copy.js';
 import sharp from 'sharp';
 import { ensureSharedEventFiltersMarkup } from '../src/event-filters.js';
 import { MICROGUIDE_LABELS } from '../src/microguide-copy.js';
+import { BLOG_UI } from '../src/blog-ui.js';
 import { finalizeSeoHtml, localizedSeoPath, SOCIALS } from '../scripts/finalize-seo.mjs';
 import { buildStaticMain } from '../scripts/build-mg.mjs';
 const LANGS=['cs','en','de','sk','pl','hu'],ORIGIN='https://ajsee.cz';
@@ -64,6 +65,41 @@ test('published review covers reserve their actual image dimensions in all trans
       assert.equal(image.style.getPropertyValue('--review-cover-ratio'),`${dimensions.width} / ${dimensions.height}`);
       dom.window.close();
     }
+  }
+});
+
+test('editorial features and undated production reviews never invent an Event',()=>{
+  for(const slug of ['mamma-mia-from-abba-to-the-west-end','10-west-end-musicals-worth-travelling-to-london-for',
+    'why-west-end-changed-how-i-experience-live-theatre','sunset-boulevard-the-hollywood-classic-that-became-a-musical',
+    'singin-in-the-rain-from-hollywood-to-the-stage']) {
+    assert.equal(published.find(item=>item.slug===slug).contentType,'article',slug);
+  }
+  for(const item of published) for(const lang of LANGS) {
+    const dom=load(prefix(lang)+'reviews/'+item.slug+'/index.html'),doc=dom.window.document;
+    const entities=[];
+    jsons(doc).forEach(value=>walk(value,node=>{
+      if(node['@type']==='Review'||node['@type']==='Article')entities.push(node);
+      if(node['@type']==='Event')assert.ok(Number.isFinite(Date.parse(node.startDate)),item.slug+': Event requires a supplied date');
+    }));
+    assert.equal(entities.length,1,item.slug);
+    const entity=entities[0],type=item.contentType||'review';
+    assert.equal(doc.querySelector('.review-detail').dataset.reviewContentType,type);
+    if(type!=='preview')assert.equal(doc.querySelector('.review-content-type-badge').textContent.trim(),BLOG_UI[lang].badges[type]);
+    assert.equal(entity.dateModified,item.updatedAt||item.publishedAt||item.reviewDate);
+    const suppliedDate=item.eventDate||item.performanceDate;
+    if(type==='article'||(type==='review'&&!suppliedDate)) {
+      assert.equal(entity['@type'],'Article');
+      assert.equal(entity.about['@type'],'CreativeWork');
+      assert.equal(entity.itemReviewed,undefined);
+      assert.equal(entity.reviewRating,undefined);
+    } else {
+      const subject=type==='preview'?entity.about:entity.itemReviewed;
+      assert.equal(entity['@type'],type==='preview'?'Article':'Review');
+      assert.equal(subject['@type'],suppliedDate?'Event':'CreativeWork');
+      assert.equal(subject.name,type==='preview'?item.showTitle||item.productionTitle:item.productionTitle||item.showTitle);
+      assert.equal(subject.startDate,suppliedDate||undefined);
+    }
+    dom.window.close();
   }
 });
 

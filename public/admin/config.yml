@@ -182,8 +182,9 @@ collections:
         options:
           - { label: "Review", value: "review" }
           - { label: "Theatre preview", value: "preview" }
+          - { label: "Article", value: "article" }
         default: "review"
-        hint: "Use Theatre preview for an article written before the production has been seen."
+        hint: "Use Review for first-hand production reviews, Theatre preview for a forthcoming production, and Article for guides, features and personal essays."
 
       - label: "Featured review"
         name: "featured"

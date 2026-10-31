@@ -55,6 +55,7 @@ test('anniversary editorial articles remain distinct from performance reviews', 
   assert.equal(cards[0].type, 'article');
   assert.equal(cards[1].type, 'review');
   assert.equal(filterBlogCards(cards, 'review').length, 1);
+  assert.equal(filterBlogCards(cards, 'article').length, 1);
   assert.equal(filterBlogCards(cards, 'all').length, 2);
 });
 
@@ -150,6 +151,7 @@ test('initial static HTML includes current localized content, not stale placehol
     assert.equal(doc.querySelectorAll('article').length, 2);
     assert.equal(doc.querySelector('.blog-feature .blog-card-title').textContent.replace(/\u00a0/g, ' '), cards[0].title);
     assert.equal(doc.querySelector('[data-blog-topic] option').textContent, BLOG_UI[lang].allTopics);
+    assert.equal(doc.querySelector('[data-blog-type="article"]').textContent, BLOG_UI[lang].filters.article);
     assert.equal(JSON.parse(doc.getElementById('blog-initial-data').textContent).lang, lang);
     assert.equal(doc.querySelector('.footer-contact a').getAttribute('href'), 'mailto:info@ajsee.cz');
     assert.ok(doc.querySelector('.footer-copy').textContent.includes('2026'));
@@ -159,7 +161,7 @@ test('initial static HTML includes current localized content, not stale placehol
 
 test('runtime reuses embedded cards and keeps empty states and reset filters functional', async () => {
   const html = await fs.readFile(new URL('../blog.html', import.meta.url), 'utf8');
-  const cards = reviewCards([fixture('runtime-one'), fixture('runtime-two', { contentType: 'preview' })], 'cs');
+  const cards = reviewCards([fixture('runtime-one'), fixture('runtime-two', { contentType: 'preview' }), fixture('runtime-feature', { contentType: 'article' })], 'cs');
   const dom = new JSDOM(renderStaticBlogPage(html, cards, 'cs'), { url: 'https://ajsee.cz/blog/', pretendToBeVisual: true });
   const saved = {};
   for (const [key, value] of Object.entries({ window: dom.window, document: dom.window.document, CustomEvent: dom.window.CustomEvent,
@@ -173,8 +175,12 @@ test('runtime reuses embedded cards and keeps empty states and reset filters fun
     await import(`../src/blog.js?test=${Date.now()}`);
     await initial;
     const doc = dom.window.document;
-    assert.equal(doc.querySelectorAll('article').length, 2);
-    let next = rendered(); doc.querySelector('[data-blog-type="preview"]').click(); await next;
+    assert.equal(doc.querySelectorAll('article').length, 3);
+    let next = rendered(); doc.querySelector('[data-blog-type="article"]').click(); await next;
+    assert.equal(doc.querySelectorAll('article').length, 1);
+    assert.equal(doc.querySelector('article').dataset.type, 'article');
+    assert.equal(doc.querySelector('[data-blog-type="article"]').getAttribute('aria-pressed'), 'true');
+    next = rendered(); doc.querySelector('[data-blog-type="preview"]').click(); await next;
     assert.equal(doc.querySelectorAll('article').length, 1);
     assert.equal(doc.querySelector('article').dataset.type, 'preview');
     assert.equal(doc.querySelector('[data-blog-list-section]').hidden, true);
@@ -184,7 +190,7 @@ test('runtime reuses embedded cards and keeps empty states and reset filters fun
     assert.equal(doc.querySelector('[data-blog-feature-section]').hidden, true);
     assert.ok(doc.querySelector('[data-blog-reset]'));
     next = rendered(); doc.querySelector('[data-blog-reset]').click(); await next;
-    assert.equal(doc.querySelectorAll('article').length, 2);
+    assert.equal(doc.querySelectorAll('article').length, 3);
     assert.equal(select.value, 'all');
   } finally {
     dom.window.close();

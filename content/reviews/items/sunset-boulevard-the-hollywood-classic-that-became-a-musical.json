@@ -1,6 +1,6 @@
 {
     "slug":  "sunset-boulevard-the-hollywood-classic-that-became-a-musical",
-    "contentType":  "review",
+    "contentType":  "article",
     "status":  "published",
     "published":  true,
     "featured":  false,
@@ -14,6 +14,7 @@
     "eventDate":  "",
     "reviewDate":  "2026-09-18T11:05:42.636Z",
     "publishedAt":  "2026-09-21T06:30:38.855Z",
+    "updatedAt": "2026-10-31",
     "author":  "Oya Canli",
     "rating":  null,
     "ticketUrl":  "",

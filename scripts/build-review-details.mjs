@@ -488,7 +488,7 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
     }
   };
 
-    const eventVenue =
+  const eventVenue =
     translation.venue ||
     review.venue ||
     '';
@@ -503,12 +503,14 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
     review.country ||
     '';
 
-  const event = {
+  const subjectName = review.showTitle || review.productionTitle || title;
+  const subjectDate = String(review.eventDate || review.performanceDate || '').trim();
+  const hasEventDate = Number.isFinite(Date.parse(subjectDate));
+  // A review can describe a production even when its attended date was not
+  // supplied. Keep that review without inventing a dated performance.
+  const subject = hasEventDate ? {
     '@type': 'Event',
-    name:
-      review.productionTitle ||
-      review.showTitle ||
-      title,
+    name: contentType === 'preview' ? subjectName : review.productionTitle || subjectName,
     location:
       eventVenue ||
       eventCity
@@ -527,14 +529,17 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
               undefined
           }
         : undefined,
-    startDate:
-      review.eventDate ||
-      review.performanceDate ||
-      undefined
+    startDate: subjectDate
+  } : {
+    '@type': 'CreativeWork',
+    name: subjectName
   };
 
   const primaryEntity =
-    (contentType === 'preview' || contentType === 'article')
+    // Undated first-hand reviews remain reviews in the UI. Their structured
+    // data describes the article about the work, without an unsupported
+    // CreativeWork review snippet or an invented Event date.
+    (contentType === 'preview' || contentType === 'article' || !hasEventDate)
       ? {
           '@type': 'Article',
           '@id': `${canonicalUrl}#article`,
@@ -548,6 +553,7 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
             review.reviewDate ||
             undefined,
           dateModified:
+            review.updatedAt ||
             review.publishedAt ||
             review.reviewDate ||
             undefined,
@@ -560,7 +566,7 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
           author,
           publisher,
           about: contentType === 'preview'
-            ? event
+            ? subject
             : { '@type': 'CreativeWork', name: review.showTitle || title }
         }
       : {
@@ -576,6 +582,7 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
             review.reviewDate ||
             undefined,
           dateModified:
+            review.updatedAt ||
             review.publishedAt ||
             review.reviewDate ||
             undefined,
@@ -587,7 +594,7 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
             undefined,
           author,
           publisher,
-          itemReviewed: event,
+          itemReviewed: subject,
           reviewRating:
             typeof review.rating === 'number'
               ? {

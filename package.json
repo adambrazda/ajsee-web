@@ -56,7 +56,7 @@
     "blog:test": "node --test tests/blog-listing.test.mjs tests/seo-static-blog.test.mjs",
     "faq:test": "node --test tests/faq-page.test.mjs",
     "team:images": "node scripts/build-team-images.mjs",
-    "seo:verify": "node --test tests/seo-built.test.mjs",
+    "seo:verify": "node --test tests/seo-built.test.mjs tests/crawl-discovery.test.mjs",
     "event-details:test": "node --test tests/event-detail-pilot.test.mjs tests/event-details-live.test.mjs",
     "event-feeds:build": "node scripts/build-event-feeds.mjs",
     "event-feeds:test": "node --test --test-concurrency=1 tests/event-feed.test.mjs tests/event-taxonomy-cache.test.mjs tests/provider-request.test.mjs tests/static-provider-recovery.test.mjs",

@@ -140,7 +140,7 @@
 
   ul > li{ position: relative; z-index: 1; }
 
-  a{
+  > ul a{
     position: relative; /* stable anchor */
     height: var(--item-h);
     display: inline-flex;
@@ -172,8 +172,8 @@
   }
 
   /* ✅ active: underline only (desktop) */
-  a.active,
-  a[aria-current="page"]{
+  > ul a.active,
+  > ul a[aria-current="page"]{
     background: transparent;
     color: var(--nav-active);
     font-weight: 740;
@@ -359,6 +359,7 @@
 .lang-dropdown[open] .lang-menu{ display: flex; }
 
 .lang-btn{
+  text-decoration: none;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -504,7 +505,7 @@
 
   .site-header .main-nav ul::before{ content: none; }
 
-  .site-header .main-nav a{
+  .site-header .main-nav > ul a{
     width: 100%;
     justify-content: flex-start;
     border-radius: 14px;
@@ -514,18 +515,18 @@
   }
 
   /* ✅ active on mobile = pill only; also kills any legacy underline/pseudo line */
-  .site-header .main-nav a.active,
-  .site-header .main-nav a[aria-current="page"]{
+  .site-header .main-nav > ul a.active,
+  .site-header .main-nav > ul a[aria-current="page"]{
     text-decoration: none;
     background: rgba(255,255,255,0.28);
     color: var(--nav-active);
     font-weight: 760;
   }
 
-  .site-header .main-nav a.active::after,
-  .site-header .main-nav a[aria-current="page"]::after,
-  .site-header .main-nav a.active::before,
-  .site-header .main-nav a[aria-current="page"]::before{
+  .site-header .main-nav > ul a.active::after,
+  .site-header .main-nav > ul a[aria-current="page"]::after,
+  .site-header .main-nav > ul a.active::before,
+  .site-header .main-nav > ul a[aria-current="page"]::before{
     content: none;
     display: none;
   }
@@ -564,7 +565,7 @@
 
 /* forced colors */
 @media (forced-colors: active){
-  .main-nav a[aria-current="page"]{
+  .main-nav > ul a[aria-current="page"]{
     outline: 2px solid SelectedItem;
     background: Canvas;
     box-shadow: none;
@@ -609,18 +610,18 @@
     box-shadow: -24px 0 60px rgba(0, 0, 0, 0.42);
   }
 
-  .site-header .main-nav a {
+  .site-header .main-nav > ul a {
     color: var(--aj-text);
   }
 
-  .site-header .main-nav a:hover,
-  .site-header .main-nav a:focus-visible {
+  .site-header .main-nav > ul a:hover,
+  .site-header .main-nav > ul a:focus-visible {
     color: var(--aj-text-strong);
     background: var(--aj-surface-hover);
   }
 
-  .site-header .main-nav a[aria-current="page"],
-  .site-header .main-nav a.active {
+  .site-header .main-nav > ul a[aria-current="page"],
+  .site-header .main-nav > ul a.active {
     color: #72c5ff;
   }
 

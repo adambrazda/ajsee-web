@@ -6,6 +6,8 @@ export const CONTEST = Object.freeze({
   // Exclusive boundary: all of 1 November at 23:59 is included (after the DST change).
   end: '2026-11-02T00:00:00+01:00',
   announcement: '2026-11-02T19:00:00+01:00',
+  // Keep the closed competition and rules visible through Friday in Prague.
+  bannerUntil: '2026-11-07T00:00:00+01:00',
 });
 
 export function getContestState(now = Date.now()) {
@@ -23,7 +25,16 @@ export function renderContest(root, copy, { now = Date.now(), lang = 'cs' } = {}
   const state = getContestState(now);
   const suffix = state[0].toUpperCase() + state.slice(1);
   root.dataset.contestState = state;
-  if (root.hasAttribute('data-contest-banner')) root.hidden = state === 'ended';
+  if (root.hasAttribute('data-contest-banner')) {
+    const timestamp = Number(new Date(now));
+    root.hidden = !Number.isFinite(timestamp) || timestamp >= Date.parse(CONTEST.bannerUntil);
+  }
+
+  root.querySelectorAll('[data-contest-copy="title"], [data-contest-copy="titleEnded"]').forEach(node => {
+    const key = state === 'ended' ? 'titleEnded' : 'title';
+    node.dataset.contestCopy = key;
+    node.setAttribute('data-i18n-key', `contestPromo.${key}`);
+  });
 
   root.querySelectorAll('[data-contest-status]').forEach(node => {
     node.dataset.contestCopy = `status${suffix}`;
@@ -32,7 +43,8 @@ export function renderContest(root, copy, { now = Date.now(), lang = 'cs' } = {}
   root.querySelectorAll('[data-contest-primary]').forEach(link => {
     link.dataset.contestCopy = `primary${suffix}`;
     link.setAttribute('data-i18n-key', `contestPromo.primary${suffix}`);
-    link.href = state === 'active' ? CONTEST.instagram : `${contestPath(lang)}#section-4`;
+    link.href = state === 'active' ? CONTEST.instagram
+      : `${contestPath(lang)}#section-${state === 'ended' ? '1' : '4'}`;
     if (state === 'active') {
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
@@ -41,7 +53,10 @@ export function renderContest(root, copy, { now = Date.now(), lang = 'cs' } = {}
       link.removeAttribute('rel');
     }
   });
-  root.querySelectorAll('[data-contest-rules]').forEach(link => { link.href = contestPath(lang); });
+  root.querySelectorAll('[data-contest-rules]').forEach(link => {
+    link.href = contestPath(lang);
+    link.hidden = root.hasAttribute('data-contest-banner') && state === 'ended';
+  });
   root.querySelectorAll('[data-contest-copy]').forEach(node => {
     const value = copy[node.dataset.contestCopy];
     if (typeof value === 'string') node.textContent = value;

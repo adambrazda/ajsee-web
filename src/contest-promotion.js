@@ -10,7 +10,7 @@ function refreshContest() {
     renderContest(root, dictionary, { lang: copy[lang] ? lang : 'cs' });
   });
   const now = Date.now();
-  const next = [CONTEST.start, CONTEST.end].map(Date.parse).find(boundary => boundary > now);
+  const next = [CONTEST.start, CONTEST.end, CONTEST.bannerUntil].map(Date.parse).find(boundary => boundary > now);
   if (next) timer = window.setTimeout(refreshContest, Math.min(next - now + 50, 2147483647));
 }
 

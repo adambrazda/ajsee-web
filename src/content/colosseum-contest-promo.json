@@ -2,6 +2,7 @@
   "cs": {
     "eyebrow": "Slavíme nové partnerství",
     "title": "Vyhrajte 2 × 2 vstupenky",
+    "titleEnded": "Soutěž o 2 × 2 vstupenky",
     "event": "Filmový orchestr Praha v Nové Spirále",
     "description": "Filmové melodie, živý orchestr a videomapping. Dva výherci, každý se svým doprovodem.",
     "date": "30. 5. 2027 · 19:00 · Praha",
@@ -17,6 +18,7 @@
   "en": {
     "eyebrow": "Celebrating a new partnership",
     "title": "Win 2 pairs of tickets",
+    "titleEnded": "Competition for 2 pairs of tickets",
     "event": "Filmový orchestr Praha at Nová Spirála",
     "description": "Film soundtracks, a live orchestra and video mapping. Two winners, each with a guest.",
     "date": "30 May 2027 · 19:00 · Prague",
@@ -32,6 +34,7 @@
   "de": {
     "eyebrow": "Wir feiern eine neue Partnerschaft",
     "title": "2 × 2 Tickets gewinnen",
+    "titleEnded": "Gewinnspiel um 2 × 2 Tickets",
     "event": "Filmový orchestr Praha in der Nová Spirála",
     "description": "Filmmusik, ein Live-Orchester und Videomapping. Zwei Gewinner mit je einer Begleitperson.",
     "date": "30. Mai 2027 · 19:00 · Prag",
@@ -47,6 +50,7 @@
   "sk": {
     "eyebrow": "Oslavujeme nové partnerstvo",
     "title": "Vyhrajte 2 × 2 vstupenky",
+    "titleEnded": "Súťaž o 2 × 2 vstupenky",
     "event": "Filmový orchestr Praha v Novej Spirále",
     "description": "Filmové melódie, živý orchester a videomapping. Dvaja výhercovia, každý so svojím sprievodom.",
     "date": "30. 5. 2027 · 19:00 · Praha",
@@ -62,6 +66,7 @@
   "pl": {
     "eyebrow": "Świętujemy nowe partnerstwo",
     "title": "Wygraj 2 × 2 bilety",
+    "titleEnded": "Konkurs o 2 × 2 bilety",
     "event": "Filmový orchestr Praha w Nová Spirála",
     "description": "Muzyka filmowa, orkiestra na żywo i videomapping. Dwóch zwycięzców, każdy z osobą towarzyszącą.",
     "date": "30 maja 2027 · 19:00 · Praga",
@@ -77,6 +82,7 @@
   "hu": {
     "eyebrow": "Új partnerségünket ünnepeljük",
     "title": "Nyerjen 2 × 2 belépőjegyet!",
+    "titleEnded": "Nyereményjáték 2 × 2 belépőjegyért",
     "event": "Filmový orchestr Praha a Nová Spirála színpadán",
     "description": "Filmzenék, élő zenekar és videomapping. Két nyertes, fejenként egy kísérővel.",
     "date": "2027. május 30. · 19:00 · Prága",

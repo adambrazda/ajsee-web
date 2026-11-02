@@ -8,11 +8,11 @@ const PHOTO_DIRECTORY = '/uploads/reviews/phantom-of-the-opera-40th-anniversary-
 const ARTICLE = path.resolve('content/reviews/items/phantom-of-the-opera-40th-anniversary-reunion.json');
 const LANGUAGES = ['en', 'cs', 'sk', 'de', 'pl', 'hu'];
 
-test('Phantom 40th uses only optimized, committed AJSEE media and remains unpublished', async () => {
+test('Published Phantom 40th uses only optimized, committed AJSEE media', async () => {
   const article = JSON.parse(await readFile(ARTICLE, 'utf8'));
-  assert.equal(article.status, 'approved');
-  assert.equal(article.published, false);
-  assert.equal(article.publishedAt, '');
+  assert.equal(article.status, 'published');
+  assert.equal(article.published, true);
+  assert.ok(Number.isFinite(Date.parse(article.publishedAt)));
   assert.equal(article.featured, false);
   assert.equal(article.coverCredit, 'Photo: Matthew Hemley / The Stage');
   assert.equal(article.gallery.length, 2);

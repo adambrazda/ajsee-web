@@ -22,7 +22,7 @@ test('the banner has its scheduled visibility while HTML is still being parsed',
   const bootstrap = source.window.document.querySelector('script[data-contest-first-paint]');
   const banner = bootstrap.previousElementSibling;
   assert.ok(banner.matches('[data-contest-banner]'));
-  assert.equal(banner.dataset.contestEndsAt, CONTEST.end);
+    assert.equal(banner.dataset.contestVisibleUntil, CONTEST.bannerUntil);
   assert.equal(bootstrap.hasAttribute('type'), false, 'The initial visibility must not wait for a deferred module.');
   assert.ok(bootstrap.compareDocumentPosition(source.window.document.querySelector('#events')) & 4,
     'Visibility must be resolved before the next section is parsed.');
@@ -33,7 +33,9 @@ test('the banner has its scheduled visibility while HTML is still being parsed',
     ['2026-10-19T13:00:00+02:00', false],
     [CONTEST.start, false],
     ['2026-11-01T23:59:59.999+01:00', false],
-    [CONTEST.end, true],
+    [CONTEST.end, false],
+    ['2026-11-06T23:59:59.999+01:00', false],
+    ['2026-11-07T00:00:00+01:00', true],
     ['2027-05-30T19:00:00+02:00', true],
   ]) {
     const dom = new JSDOM(`${markup}<script>window.contestAtParse = { hidden: document.querySelector('[data-contest-banner]').hidden, readyState: document.readyState };</script>`, {
@@ -45,14 +47,14 @@ test('the banner has its scheduled visibility while HTML is still being parsed',
     dom.window.close();
   }
 
-  const invalid = new JSDOM(markup.replace(CONTEST.end, 'invalid-date'), { runScripts: 'dangerously' });
+  const invalid = new JSDOM(markup.replace(CONTEST.bannerUntil, 'invalid-date'), { runScripts: 'dangerously' });
   assert.equal(invalid.window.document.querySelector('[data-contest-banner]').hidden, true,
     'An invalid deadline must not reveal an expired promotion.');
   invalid.window.close();
 });
 
 for (const lang of langs) {
-  test(`${lang}: the banner links to local rules before opening, Instagram when open, and hides when closed`, () => {
+  test(`${lang}: the closed competition keeps its rules through Friday without reopening entries`, () => {
     const dom = new JSDOM(read('index.html'), { url: `https://ajsee.cz${lang === 'cs' ? '/' : `/${lang}/`}` });
     const banner = dom.window.document.querySelector('[data-contest-banner]');
     assert.equal(banner.hidden, true, 'No stale promotion should be shown without JavaScript.');
@@ -64,12 +66,28 @@ for (const lang of langs) {
     assert.equal(banner.querySelector('[data-contest-primary]').href, CONTEST.instagram);
     assert.equal(banner.querySelector('[data-contest-primary]').target, '_blank');
     assert.equal(banner.querySelector('[data-contest-status]').textContent, promo[lang].statusActive);
+    assert.equal(banner.querySelector('.contest-promo-title').textContent, promo[lang].title);
     assert.equal(new URL(banner.querySelector('[data-contest-rules]').href).pathname, contestPath(lang));
+    assert.equal(banner.querySelector('[data-contest-rules]').hidden, false);
     renderContest(banner, promo[lang], { lang, now: CONTEST.end });
+    assert.equal(getContestState(CONTEST.end), 'ended');
+    assert.equal(banner.hidden, false);
+    assert.equal(banner.querySelector('.contest-promo-title').textContent, promo[lang].titleEnded);
+    assert.equal(banner.querySelector('[data-contest-status]').textContent, promo[lang].statusEnded);
+    assert.equal(banner.querySelector('[data-contest-primary]').textContent, promo[lang].primaryEnded);
+    assert.equal(new URL(banner.querySelector('[data-contest-primary]').href).pathname, contestPath(lang));
+    assert.equal(new URL(banner.querySelector('[data-contest-primary]').href).hash, '#section-1');
+    assert.equal(banner.querySelector('[data-contest-primary]').hasAttribute('target'), false);
+    assert.equal(banner.querySelector('[data-contest-rules]').hidden, true, 'The closed banner has one rules button.');
+    renderContest(banner, promo[lang], { lang, now: '2026-11-06T23:59:59.999+01:00' });
+    assert.equal(banner.hidden, false);
+    renderContest(banner, promo[lang], { lang, now: '2026-11-07T00:00:00+01:00' });
     assert.equal(banner.hidden, true);
     // Restoring an old tab must also restore its correct links and state.
     renderContest(banner, promo[lang], { lang, now: '2026-10-19T13:00:00+02:00' });
     assert.equal(banner.querySelector('[data-contest-primary]').hasAttribute('target'), false);
+    assert.equal(banner.querySelector('.contest-promo-title').textContent, promo[lang].title);
+    assert.equal(banner.querySelector('[data-contest-rules]').hidden, false);
     dom.window.close();
   });
 
@@ -108,4 +126,19 @@ test('the rules remain readable without JavaScript and have an in-page table of 
   assert.match(doc.querySelector('.contest-rules-content').textContent, /sedm kalendářních dnů/);
   assert.equal(doc.querySelector('form'), null, 'Entries belong on Instagram.');
   dom.window.close();
+});
+
+test('the rules page remains available after the homepage banner retires', () => {
+  for (const lang of langs) {
+    const dom = new JSDOM(read('souteze/filmovy-orchestr-praha/index.html'), {
+      url: `https://ajsee.cz${contestPath(lang)}`,
+    });
+    const root = dom.window.document.querySelector('[data-colosseum-contest]');
+    renderContest(root, promo[lang], { lang, now: '2026-11-07T00:00:00+01:00' });
+    assert.equal(root.hidden, false);
+    assert.equal(root.dataset.contestState, 'ended');
+    assert.equal(root.querySelector('.contest-promo-title').textContent, promo[lang].titleEnded);
+    assert.equal(dom.window.document.querySelectorAll('.contest-rule').length, 13);
+    dom.window.close();
+  }
 });

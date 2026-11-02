@@ -386,7 +386,7 @@ const getInitialLang = () => {
     </div>
   </section>
   <script type="module" src="/src/home-hero.js"></script>
-  <section class="contest-promo" data-colosseum-contest data-contest-banner data-contest-ends-at="2026-11-02T00:00:00+01:00" hidden aria-labelledby="home-contest-title">
+  <section class="contest-promo" data-colosseum-contest data-contest-banner data-contest-visible-until="2026-11-07T00:00:00+01:00" hidden aria-labelledby="home-contest-title">
   <div class="home-container">
     <div class="contest-promo-card">
       <div class="contest-promo-copy">
@@ -396,14 +396,14 @@ const getInitialLang = () => {
           <picture><source media="(prefers-color-scheme: dark)" srcset="/images/partners/colosseumticket-dark.svg"><img class="contest-colosseum" src="/images/partners/colosseumticket.svg" alt="Colosseum Ticket" width="145" height="30" loading="lazy"></picture>
         </div>
         <p data-i18n-key="contestPromo.eyebrow" class="contest-eyebrow" data-contest-copy="eyebrow">Slavíme nové partnerství</p>
-        <h2 class="contest-promo-title" id="home-contest-title" data-i18n-key="contestPromo.title" data-contest-copy="title">Vyhrajte 2 × 2 vstupenky</h2>
+        <h2 class="contest-promo-title" id="home-contest-title" data-i18n-key="contestPromo.titleEnded" data-contest-copy="titleEnded">Soutěž o 2 × 2 vstupenky</h2>
         <p data-i18n-key="contestPromo.event" class="contest-event" data-contest-copy="event">Filmový orchestr Praha v Nové Spirále</p>
         <p data-i18n-key="contestPromo.description" class="contest-description" data-contest-copy="description">Filmové melodie, živý orchestr a videomapping. Dva výherci, každý se svým doprovodem.</p>
         <p data-i18n-key="contestPromo.date" class="contest-date" data-contest-copy="date">30. 5. 2027 · 19:00 · Praha</p>
-        <p class="contest-status" data-contest-status data-contest-copy="statusUpcoming" data-i18n-key="contestPromo.statusUpcoming">Začínáme 20. 10. 2026 v 19:00</p>
+        <p class="contest-status" data-contest-status data-contest-copy="statusEnded" data-i18n-key="contestPromo.statusEnded">Soutěž byla ukončena</p>
         <div class="contest-actions">
-          <a class="contest-primary" href="/souteze/filmovy-orchestr-praha/#section-4" data-contest-primary data-contest-copy="primaryUpcoming" data-i18n-key="contestPromo.primaryUpcoming">Jak se zapojit</a>
-          <a class="contest-rules-link" href="/souteze/filmovy-orchestr-praha/" data-contest-rules data-contest-copy="rules" data-i18n-key="contestPromo.rules">Pravidla soutěže</a>
+          <a class="contest-primary" href="/souteze/filmovy-orchestr-praha/#section-1" data-contest-primary data-contest-copy="primaryEnded" data-i18n-key="contestPromo.primaryEnded">Pravidla soutěže</a>
+          <a class="contest-rules-link" href="/souteze/filmovy-orchestr-praha/" data-contest-rules data-contest-copy="rules" data-i18n-key="contestPromo.rules" hidden>Pravidla soutěže</a>
         </div>
       </div>
       <figure class="contest-photo"><img src="/images/contests/filmovy-orchestr-praha.webp" alt="Filmový orchestr Praha - oficiální fotografie orchestru" data-i18n-alt="contestPromo.photoAlt" data-contest-photo width="1066" height="800" loading="lazy" decoding="async"></figure>
@@ -413,9 +413,9 @@ const getInitialLang = () => {
   <script data-contest-first-paint>
     {
       const banner = document.currentScript.previousElementSibling;
-      const endsAt = Date.parse(banner?.dataset.contestEndsAt || '');
-      if (banner?.hasAttribute('data-contest-banner') && Number.isFinite(endsAt)) {
-        banner.hidden = Date.now() >= endsAt;
+      const visibleUntil = Date.parse(banner?.dataset.contestVisibleUntil || '');
+      if (banner?.hasAttribute('data-contest-banner') && Number.isFinite(visibleUntil)) {
+        banner.hidden = Date.now() >= visibleUntil;
       }
     }
   </script>

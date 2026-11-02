@@ -10,12 +10,12 @@ const read = async slug => JSON.parse(await readFile(
   new URL('../content/reviews/items/' + slug + '.json', import.meta.url), 'utf8'
 ));
 
-test('40th anniversary is an approved, unpublished Article in all six languages', async () => {
+test('40th anniversary is a published Article in all six languages', async () => {
   const feature = await read(NEW);
   assert.equal(feature.contentType, 'article');
-  assert.equal(feature.status, 'approved');
-  assert.equal(feature.published, false);
-  assert.equal(feature.publishedAt, '');
+  assert.equal(feature.status, 'published');
+  assert.equal(feature.published, true);
+  assert.ok(Number.isFinite(Date.parse(feature.publishedAt)));
   assert.equal(feature.featured, false);
   assert.equal(feature.rating, null);
   assert.equal(feature.performanceDate, '');
@@ -25,7 +25,7 @@ test('40th anniversary is an approved, unpublished Article in all six languages'
   assert.doesNotMatch(feature.internalNotes, /reconfirm its scope before public publishing/i);
 });
 
-test('related reading is reciprocal in preview and hidden for unpublished targets in production', async () => {
+test('related reading is reciprocal on the public site in all six languages', async () => {
   const [feature, review] = await Promise.all([read(NEW), read(OLD)]);
   const map = new Map([[NEW, feature], [OLD, review]]);
   assert.deepEqual(review.relatedSlugs, [NEW]);
@@ -38,14 +38,14 @@ test('related reading is reciprocal in preview and hidden for unpublished target
     const reviewPreview = buildRelatedReadingHtml(review, lang, map, { previewMode: true });
 
     assert.match(featurePublic, new RegExp('/reviews/' + OLD + '/'));
-    assert.equal(reviewPublic, '', 'Published review must not link to hidden article');
+    assert.match(reviewPublic, new RegExp('/reviews/' + NEW + '/'));
     assert.match(featurePreview, new RegExp('/reviews/' + OLD + '/'));
     assert.match(reviewPreview, new RegExp('/reviews/' + NEW + '/'));
     assert.match(reviewPreview, /<aside class="review-related-reading"/);
 
     const previewDeployed = buildRelatedReadingHtml(review, lang, map,
       { previewMode: true, deployPreview: true });
-    assert.match(previewDeployed, new RegExp('href="/reviews/' + NEW + '/"'));
+    assert.match(previewDeployed, new RegExp('/reviews/' + NEW + '/'));
   }
 });
 

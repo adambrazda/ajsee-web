@@ -12,7 +12,7 @@ export async function buildEventCities({ dataDir = path.resolve('public/data') }
       if (!Array.isArray(payload.events)) throw new Error(`${name}: invalid events payload`);
       sources.push({ events: payload.events, marketCountryCode: 'CZ' });
       providerCountries[name] = [...new Set(payload.events.map(event =>
-        String(event.location?.country || event.venue?.country || 'CZ').toUpperCase()))].sort();
+        String(event.location?.country || event.venue?.country || (event.sourceMarket === 'SK' ? '' : 'CZ')).toUpperCase()).filter(Boolean))].sort();
     } catch (error) {
       // Colosseum is not synchronized by predev. Its absence there is expected.
       if (error.code !== 'ENOENT') throw error;

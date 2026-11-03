@@ -5898,13 +5898,13 @@ if (!G.flags.mainDomReadyBound) {
     const fromCard = String(card?.dataset?.eventProvider || '').trim().toLowerCase();
     if (fromCard) return fromCard;
 
-    const link = card?.querySelector?.('.js-partner-click, a[href*="smsticket.cz"], a[href*="ticketmaster"], a[href*="colosseumticket.cz"]');
+    const link = card?.querySelector?.('.js-partner-click, a[href*="smsticket.cz"], a[href*="ticketmaster"], a[href*="colosseumticket.cz"], a[href*="colosseumticket.sk"]');
     const fromLink = String(link?.dataset?.partner || '').trim().toLowerCase();
     const href = String(link?.getAttribute?.('href') || '').toLowerCase();
 
     if (fromLink.includes('smsticket') || href.includes('smsticket.cz')) return 'smsticket';
     if (fromLink.includes('ticketmaster') || href.includes('ticketmaster')) return 'ticketmaster';
-    if (fromLink.includes('colosseum') || href.includes('colosseumticket.cz')) return 'colosseumticket';
+    if (fromLink.includes('colosseum') || (href.includes('colosseumticket.cz') || href.includes('colosseumticket.sk'))) return 'colosseumticket';
 
     return '';
   }

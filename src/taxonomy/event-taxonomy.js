@@ -887,7 +887,7 @@ export function buildTicketmasterTaxonomy(
 }
 
 const COLOSSEUM_TYPE_PATTERN =
-  /(Prohlídky|Pro děti|Muzikál|Festival|Divadlo|Hudba|Ostatní|Kino)/g;
+  /(Prohlídky|Prehliadky|Pro děti|Pre deti|Muzikál|Festival|Divadlo|Hudba|Ostatní|Ostatné|Kino)/g;
 
 export function tokenizeColosseumTicketType(
   value = ''
@@ -964,13 +964,17 @@ export function buildColosseumTicketTaxonomy(
             rawType
           );
 
+  const normalizedCategories = rawCategories.map(category => ({
+    'Pre deti': 'Pro děti', 'Ostatné': 'Ostatní', 'Prehliadky': 'Prohlídky'
+  })[category] || category);
+
   const eventTypes = [];
   const genres = [];
   const audiences = [];
   const domains = [];
 
   if (
-    rawCategories.includes(
+    normalizedCategories.includes(
       'Festival'
     )
   ) {
@@ -980,10 +984,10 @@ export function buildColosseumTicketTaxonomy(
   }
 
   if (
-    rawCategories.includes(
+    normalizedCategories.includes(
       'Divadlo'
     ) ||
-    rawCategories.includes(
+    normalizedCategories.includes(
       'Muzikál'
     )
   ) {
@@ -997,7 +1001,7 @@ export function buildColosseumTicketTaxonomy(
   }
 
   if (
-    rawCategories.includes(
+    normalizedCategories.includes(
       'Hudba'
     )
   ) {
@@ -1011,7 +1015,7 @@ export function buildColosseumTicketTaxonomy(
   }
 
   if (
-    rawCategories.includes(
+    normalizedCategories.includes(
       'Prohlídky'
     )
   ) {
@@ -1025,7 +1029,7 @@ export function buildColosseumTicketTaxonomy(
   }
 
   if (
-    rawCategories.includes(
+    normalizedCategories.includes(
       'Kino'
     )
   ) {
@@ -1039,7 +1043,7 @@ export function buildColosseumTicketTaxonomy(
   }
 
   if (
-    rawCategories.includes(
+    normalizedCategories.includes(
       'Muzikál'
     )
   ) {
@@ -1049,7 +1053,7 @@ export function buildColosseumTicketTaxonomy(
   }
 
   if (
-    rawCategories.includes(
+    normalizedCategories.includes(
       'Pro děti'
     )
   ) {

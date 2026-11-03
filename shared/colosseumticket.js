@@ -3,15 +3,15 @@ export const COLOSSEUMTICKET_MARKETS = Object.freeze({
   CZ: Object.freeze({
     feedUrl: 'https://colosseumticket.cz/api/export/affiliate.xml',
     locale: 'cs',
-    affiliateEnv: 'COLOSSEUMTICKET_A_BOX',
-    affiliateBox: ''
+    affiliateEnv: 'COLOSSEUMTICKET_A_BOX'
   }),
   SK: Object.freeze({
     feedUrl: 'https://colosseumticket.sk/api/export/affiliate.xml',
     locale: 'sk',
     affiliateEnv: 'COLOSSEUMTICKET_SK_A_BOX',
-    // Public partner identifier supplied by AJSEE for the Slovak seller.
-    affiliateBox: 'yhvyrwgu'
+    // AJSEE's supplied Slovak partner ID matches the existing Czech setting
+    // (verified 2026-11-03). Keep values in server configuration, not source.
+    fallbackAffiliateEnv: 'COLOSSEUMTICKET_A_BOX'
   })
 });
 
@@ -25,5 +25,6 @@ export function colosseumMarketForHost(hostname = '') {
 export function colosseumAffiliateBox(market, environment = {}) {
   const definition = COLOSSEUMTICKET_MARKETS[market];
   if (!definition) return '';
-  return String(environment[definition.affiliateEnv] || definition.affiliateBox).trim();
+  return String(environment[definition.affiliateEnv] ||
+    (definition.fallbackAffiliateEnv ? environment[definition.fallbackAffiliateEnv] : '') || '').trim();
 }

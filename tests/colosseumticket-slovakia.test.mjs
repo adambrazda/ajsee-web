@@ -83,9 +83,11 @@ test('Both seller hosts are allowed and lookalike/unsafe destinations remain rej
   }
 });
 
-test('Slovak outbound redirect uses the supplied Slovak affiliate, never the Czech environment or visitor value', async () => {
+test('Slovak outbound redirect uses its server override or the confirmed shared partner setting, never a visitor value', async () => {
   const previous = process.env.COLOSSEUMTICKET_A_BOX;
+  const previousSk = process.env.COLOSSEUMTICKET_SK_A_BOX;
   process.env.COLOSSEUMTICKET_A_BOX = 'czech-configured-box';
+  process.env.COLOSSEUMTICKET_SK_A_BOX = 'slovak-configured-box';
   try {
     for (const host of ['colosseumticket.sk', 'www.colosseumticket.sk']) {
       const response = await outbound({ httpMethod: 'GET', queryStringParameters: {
@@ -93,15 +95,20 @@ test('Slovak outbound redirect uses the supplied Slovak affiliate, never the Cze
       const url = new URL(response.headers.Location);
       assert.equal(response.statusCode, 302);
       assert.equal(url.searchParams.get('term'), '123');
-      assert.deepEqual(url.searchParams.getAll('a_box'), ['yhvyrwgu']);
+      assert.deepEqual(url.searchParams.getAll('a_box'), ['slovak-configured-box']);
     }
     const cz = await outbound({ httpMethod: 'GET', queryStringParameters: { to: 'https://colosseumticket.cz/cs/show' } });
     assert.equal(new URL(cz.headers.Location).searchParams.get('a_box'), 'czech-configured-box');
+    delete process.env.COLOSSEUMTICKET_SK_A_BOX;
+    const shared = await outbound({ httpMethod: 'GET', queryStringParameters: { to: 'https://colosseumticket.sk/sk/show' } });
+    assert.equal(new URL(shared.headers.Location).searchParams.get('a_box'), 'czech-configured-box');
     const unsafe = await outbound({ httpMethod: 'GET', queryStringParameters: { to: 'https://colosseumticket.sk.evil.test/' } });
     assert.equal(unsafe.headers.Location, 'https://colosseumticket.cz/');
   } finally {
     if (previous === undefined) delete process.env.COLOSSEUMTICKET_A_BOX;
     else process.env.COLOSSEUMTICKET_A_BOX = previous;
+    if (previousSk === undefined) delete process.env.COLOSSEUMTICKET_SK_A_BOX;
+    else process.env.COLOSSEUMTICKET_SK_A_BOX = previousSk;
   }
 });
 
@@ -128,7 +135,7 @@ test('Slovak cities enter the shared city catalog and country/category filters i
 });
 
 test('Slovak ticket links emit the same consent-controlled partner analytics payload', () => {
-  const dom = new JSDOM('<html lang="sk"><body data-page="events"><a href="https://colosseumticket.sk/sk/show?a_box=yhvyrwgu">Vstupenky</a></body></html>', { url: 'https://ajsee.cz/sk/events' });
+  const dom = new JSDOM('<html lang="sk"><body data-page="events"><a href="https://colosseumticket.sk/sk/show?a_box=sk-public-test-box">Vstupenky</a></body></html>', { url: 'https://ajsee.cz/sk/events' });
   const event = buildPartnerOutboundPayload(dom.window.document.querySelector('a'));
   assert.equal(event.partner, 'colosseumticket');
   assert.equal(event.destination_host, 'colosseumticket.sk');

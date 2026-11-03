@@ -5,10 +5,12 @@ The production prebuild synchronizes both official affiliate exports:
 - CZ: https://colosseumticket.cz/api/export/affiliate.xml
 - SK: https://colosseumticket.sk/api/export/affiliate.xml
 
-The Slovak partner URL supplied by AJSEE is
-https://colosseumticket.sk/sk?a_box=yhvyrwgu. Its public `a_box` is the Slovak
-default in `shared/colosseumticket.js`; `COLOSSEUMTICKET_SK_A_BOX` can override it.
-The Czech seller keeps its existing `COLOSSEUMTICKET_A_BOX` environment setting.
+The Slovak partner URL supplied by AJSEE points to https://colosseumticket.sk/sk.
+Its `a_box` matches the value already configured in `COLOSSEUMTICKET_A_BOX`
+(verified against the live Czech feed on 2026-11-03), so both markets can use the
+existing server setting. `COLOSSEUMTICKET_SK_A_BOX` provides a Slovak-only override
+if the provider later separates the identifiers. Partner values stay in server
+configuration and generated ticket feeds rather than source or client bundles.
 The outbound function selects configuration by the destination host and replaces
 all visitor-provided affiliate values. HTTPS, hostname, credential and port
 validation applies to both storefronts. Ticketmaster routing is unchanged.

@@ -125,7 +125,7 @@ function isColosseumTicketDestination(rawUrl = '') {
 
     return (
       parsed.protocol === 'https:' &&
-      host === 'colosseumticket.cz'
+      ['colosseumticket.cz', 'colosseumticket.sk'].includes(host)
     );
   } catch {
     return false;

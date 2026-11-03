@@ -613,6 +613,7 @@ function eventSearchText(ev = {}, loc = 'en') {
     ev?.title?.[loc] ??
     ev?.title?.cs ??
     ev?.title?.en ??
+    ev?.title?.sk ??
     ev?.title ??
     ev?.name ??
     '';
@@ -621,6 +622,7 @@ function eventSearchText(ev = {}, loc = 'en') {
     ev?.description?.[loc] ??
     ev?.description?.cs ??
     ev?.description?.en ??
+    ev?.description?.sk ??
     ev?.description ??
     ev?.descriptionText ??
     '';
@@ -899,7 +901,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   const seen = new Set();
 
   all = all.filter((ev, idx) => {
-    const titleAny = ev.title?.[loc] ?? ev.title?.cs ?? ev.title?.en ?? ev.title ?? '';
+    const titleAny = ev.title?.[loc] ?? ev.title?.cs ?? ev.title?.en ?? ev.title?.sk ?? ev.title ?? '';
     const titleStr = typeof titleAny === 'string' ? titleAny : (titleAny?.toString?.() ?? '');
     const cityHint = ev?.location?.city || ev?.venue?.city || '';
     const timeKey = tsLocalMidday(ev.datetime || ev.date) || idx;

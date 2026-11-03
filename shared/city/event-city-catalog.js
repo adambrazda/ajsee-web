@@ -12,7 +12,7 @@ export function buildEventCityCatalog(sources = []) {
     for (const event of events) {
       const raw = String(event?.location?.city || event?.venue?.city || '').trim();
       const countryCode = String(event?.location?.country || event?.venue?.country ||
-        marketCountryCode).trim().toUpperCase();
+        (event?.sourceMarket === 'SK' ? '' : marketCountryCode)).trim().toUpperCase();
       if (!raw || !/^[A-Z]{2}$/.test(countryCode)) continue;
       const canonical = canonForInputCity(raw) || raw;
       const id = `${key(canonical)}|${countryCode}`;

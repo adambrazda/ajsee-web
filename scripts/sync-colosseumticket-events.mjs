@@ -1,6 +1,8 @@
 import { XMLParser } from 'fast-xml-parser';
 import { withProviderDateRange } from '../src/provider-event-dates.js';
 import { withColosseumGeography } from '../shared/geo/colosseum-geography.js';
+import { COLOSSEUMTICKET_MARKETS, colosseumMarketForHost, colosseumAffiliateBox } from '../shared/colosseumticket.js';
+import { colosseumSlovakCityCountry } from '../shared/geo/colosseum-sk-venue-locations.js';
 import {
   mkdir,
   readFile,
@@ -18,7 +20,7 @@ import {
 } from 'node:url';
 
 export const COLOSSEUMTICKET_FEED_URL =
-  'https://colosseumticket.cz/api/export/affiliate.xml';
+  COLOSSEUMTICKET_MARKETS.CZ.feedUrl;
 
 export const COLOSSEUMTICKET_FETCH_TIMEOUT_MS =
   20_000;
@@ -269,7 +271,9 @@ export function assertColosseumPayloadSanity(
   payload,
   existingPayload = null,
   {
-    allowLargeDrop = false
+    allowLargeDrop = false,
+    minimumOccurrences = COLOSSEUMTICKET_MIN_OCCURRENCES,
+    minimumParentEvents = COLOSSEUMTICKET_MIN_PARENT_EVENTS
   } = {}
 ) {
   const events =
@@ -299,7 +303,7 @@ export function assertColosseumPayloadSanity(
 
   if (
     occurrenceCount <
-    COLOSSEUMTICKET_MIN_OCCURRENCES
+    minimumOccurrences
   ) {
     throw new Error(
       `ColosseumTicket sanity check rejected only ${occurrenceCount} occurrences.`
@@ -317,7 +321,7 @@ export function assertColosseumPayloadSanity(
 
   if (
     parentEvents <
-    COLOSSEUMTICKET_MIN_PARENT_EVENTS
+    minimumParentEvents
   ) {
     throw new Error(
       `ColosseumTicket sanity check rejected only ${parentEvents} parent events.`
@@ -355,7 +359,7 @@ export function assertColosseumPayloadSanity(
   if (
     !allowLargeDrop &&
     existingCount >=
-      COLOSSEUMTICKET_MIN_OCCURRENCES
+      minimumOccurrences
   ) {
     const minimumExpected =
       Math.floor(
@@ -474,7 +478,7 @@ export function parseColosseumPrice(value) {
 
   const range =
     raw.match(
-      /^\s*([\d\s]+(?:[,.]\d+)?)\s*-\s*([\d\s]+(?:[,.]\d+)?)\s*Kč\s*$/i
+      /^\s*([\d\s]+(?:[,.]\d+)?)\s*[-–]\s*([\d\s]+(?:[,.]\d+)?)\s*(Kč|CZK|€|EUR)\s*$/i
     );
 
   if (range) {
@@ -488,13 +492,13 @@ export function parseColosseumPrice(value) {
         parsePriceNumber(
           range[2]
         ),
-      currency: 'CZK'
+      currency: /^(€|EUR)$/i.test(range[3]) ? 'EUR' : 'CZK'
     };
   }
 
   const single =
     raw.match(
-      /^\s*([\d\s]+(?:[,.]\d+)?)\s*Kč\s*$/i
+      /^\s*([\d\s]+(?:[,.]\d+)?)\s*(Kč|CZK|€|EUR)\s*$/i
     );
 
   if (single) {
@@ -507,7 +511,7 @@ export function parseColosseumPrice(value) {
       raw,
       min: amount,
       max: amount,
-      currency: 'CZK'
+      currency: /^(€|EUR)$/i.test(single[2]) ? 'EUR' : 'CZK'
     };
   }
 
@@ -834,13 +838,6 @@ function normalizeSeatsStatus(value) {
 }
 
 
-const COLOSSEUMTICKET_PURCHASE_HOSTS =
-  new Set([
-    'colosseumticket.cz',
-    'www.colosseumticket.cz'
-  ]);
-
-
 export function normalizeColosseumAffiliateBox(
   value
 ) {
@@ -980,9 +977,7 @@ export function normalizeColosseumPurchaseUrl(
       );
 
   if (
-    !COLOSSEUMTICKET_PURCHASE_HOSTS.has(
-      hostname
-    )
+    !colosseumMarketForHost(hostname)
   ) {
     return {
       url:
@@ -1304,7 +1299,7 @@ function normalizeOccurrence(
 
   const event = {
     id:
-      `colosseumticket-${providerEventId}-${providerOccurrenceId}`,
+      `colosseumticket-${options.market === 'SK' ? 'sk-' : ''}${providerEventId}-${providerOccurrenceId}`,
 
     partner:
       'colosseumticket',
@@ -1315,20 +1310,22 @@ function normalizeOccurrence(
     sourceName:
       'ColosseumTicket',
 
+    ...(options.market ? { sourceMarket: options.market } : {}),
+
     sourceId,
 
     providerEventId,
     providerOccurrenceId,
 
     title: {
-      cs:
+      [options.locale || 'cs']:
         title
     },
 
     description:
       description
         ? {
-            cs:
+            [options.locale || 'cs']:
               description
           }
         : {},
@@ -1344,7 +1341,9 @@ function normalizeOccurrence(
      * Only reviewed venue evidence may add canonical geography metadata.
      */
     location: {
-      city
+      city,
+      ...(options.market === 'SK' && colosseumSlovakCityCountry(city)
+        ? { country: colosseumSlovakCityCountry(city) } : {})
     },
 
     venue: {
@@ -2085,7 +2084,8 @@ export async function writeColosseumJsonAtomically(
 
 
 async function writePayloads(
-  payload
+  payload,
+  marketPayloads = []
 ) {
   await mkdir(
     OUT_DIR,
@@ -2099,6 +2099,10 @@ async function writePayloads(
    * currently usable cache file.
    */
   const outputs = [
+    ...marketPayloads.map(marketPayload => ({
+      filePath: path.join(OUT_DIR, `colosseumticket-events-${marketPayload.market.toLowerCase()}.json`),
+      payload: marketPayload
+    })),
     {
       filePath:
         OUT_FILE,
@@ -2190,10 +2194,10 @@ async function writePayloads(
   }
 }
 
-async function readExistingPayload() {
+async function readExistingPayload(filePath = OUT_FILE) {
   if (
     !existsSync(
-      OUT_FILE
+      filePath
     )
   ) {
     return null;
@@ -2202,7 +2206,7 @@ async function readExistingPayload() {
   try {
     return JSON.parse(
       await readFile(
-        OUT_FILE,
+        filePath,
         'utf8'
       )
     );
@@ -2211,11 +2215,10 @@ async function readExistingPayload() {
   }
 }
 
-async function readFeedSource() {
+async function readFeedSource(market = 'CZ') {
   const localFile =
     text(
-      process.env
-        .COLOSSEUMTICKET_FEED_FILE
+      process.env[market === 'CZ' ? 'COLOSSEUMTICKET_FEED_FILE' : 'COLOSSEUMTICKET_SK_FEED_FILE']
     );
 
   if (localFile) {
@@ -2261,7 +2264,7 @@ async function readFeedSource() {
 
   const feedUrl =
     assertColosseumHttpsFeedUrl(
-      COLOSSEUMTICKET_FEED_URL
+      COLOSSEUMTICKET_MARKETS[market].feedUrl
     );
 
   const controller =
@@ -2355,119 +2358,93 @@ export async function runColosseumSync() {
   const existingBeforeSync =
     await readExistingPayload();
 
-  try {
-    const source =
-      await readFeedSource();
-
-    const rawEvents =
-      parseColosseumXml(
-        source.xml
-      );
-
-    const affiliateBoxForSync =
-      requireColosseumAffiliateBox(
-        process.env.COLOSSEUMTICKET_A_BOX
-      );
-
-    const normalized =
-      normalizeColosseumFeed(
-        rawEvents,
-        {
-          affiliateBox:
-            affiliateBoxForSync
-        }
-      );
-
-    if (
-      normalized.events.length ===
-      0
-    ) {
-      throw new Error(
-        'ColosseumTicket normalization produced zero occurrences.'
-      );
+  const allowLargeDrop = String(process.env.COLOSSEUMTICKET_ALLOW_COUNT_DROP || '').trim() === '1';
+  // Validate each market separately. A healthy large Czech feed must never
+  // conceal an empty/broken Slovak export, or erase its last usable snapshot.
+  const results = await Promise.allSettled(Object.entries(COLOSSEUMTICKET_MARKETS).map(async ([market, definition]) => {
+    const existingFile = path.join(OUT_DIR, `colosseumticket-events-${market.toLowerCase()}.json`);
+    let existing = await readExistingPayload(existingFile);
+    if (!existing && existingBeforeSync?.events?.length) {
+      const events = existingBeforeSync.events.filter(event => (event.sourceMarket || 'CZ') === market);
+      if (events.length) existing = { ...existingBeforeSync, market, count: events.length, events,
+        stats: { ...existingBeforeSync.stats, occurrences: events.length,
+          parentEvents: new Set(events.map(event => event.providerEventId)).size } };
     }
-
-    const payload = {
-      source:
-        'colosseumticket',
-
-      sourceUrl:
-        source.mode ===
-        'remote'
-          ? COLOSSEUMTICKET_FEED_URL
-          : '',
-
-      generatedAt:
-        startedAt,
-
-      count:
-        normalized.events.length,
-
-      stats:
-        normalized.stats,
-
-      events:
-        normalized.events
-    };
-
-    const allowLargeDrop =
-      String(
-        process.env
-          .COLOSSEUMTICKET_ALLOW_COUNT_DROP ||
-        ''
-      )
-        .trim() ===
-      '1';
-
-    const sanity =
-      assertColosseumPayloadSanity(
-        payload,
-        existingBeforeSync,
-        {
-          allowLargeDrop
-        }
-      );
-
-    console.log(
-      `[colosseumticket] sanity: ${sanity.occurrenceCount} occurrences, ${sanity.parentEvents} parents, previous ${sanity.existingCount || 0}`
-    );
-
-    if (allowLargeDrop) {
-      console.warn(
-        '[colosseumticket] count-drop protection overridden by COLOSSEUMTICKET_ALLOW_COUNT_DROP=1'
-      );
-    }
-
-    await writePayloads(
-      payload
-    );
-
-    return payload;
-  } catch (error) {
-    console.warn(
-      `[colosseumticket] sync failed: ${error?.message || error}`
-    );
-
-    const existing =
-      existingBeforeSync ||
-      await readExistingPayload();
-
-    if (
-      existing &&
-      Array.isArray(
-        existing.events
-      ) &&
-      existing.events.length
-    ) {
-      console.warn(
-        `[colosseumticket] keeping existing cached data (${existing.events.length} occurrences)`
-      );
-
+    try {
+      const source = await readFeedSource(market);
+      const normalized = normalizeColosseumFeed(parseColosseumXml(source.xml), {
+        market, locale: definition.locale,
+        affiliateBox: requireColosseumAffiliateBox(colosseumAffiliateBox(market, process.env))
+      });
+      const payload = { source: 'colosseumticket', market,
+        sourceUrl: source.mode === 'remote' ? definition.feedUrl : '', generatedAt: startedAt,
+        count: normalized.events.length, stats: normalized.stats, events: normalized.events };
+      const sanity = assertColosseumPayloadSanity(payload, existing, {
+        allowLargeDrop,
+        minimumOccurrences: market === 'CZ' ? COLOSSEUMTICKET_MIN_OCCURRENCES : 10,
+        minimumParentEvents: market === 'CZ' ? COLOSSEUMTICKET_MIN_PARENT_EVENTS : 10
+      });
+      if (market === 'SK') {
+        const slovakLocations = candidate => {
+          const events = (candidate?.events || []).filter(event => event.location?.country === 'SK');
+          return { events, count: events.length, stats: { occurrences: events.length,
+            parentEvents: new Set(events.map(event => event.providerEventId)).size } };
+        };
+        // Czech cross-listings must not conceal the loss of Slovak inventory.
+        assertColosseumPayloadSanity(slovakLocations(payload), slovakLocations(existing), {
+          allowLargeDrop, minimumOccurrences: 1, minimumParentEvents: 1
+        });
+      }
+      console.log(`[colosseumticket:${market}] ${sanity.occurrenceCount} occurrences, ${sanity.parentEvents} parents, previous ${sanity.existingCount}`);
+      return payload;
+    } catch (error) {
+      if (!existing?.events?.length) throw new Error(`ColosseumTicket ${market} sync failed: ${error.message}`, { cause: error });
+      console.warn(`[colosseumticket:${market}] ${error.message}; keeping ${existing.events.length} cached occurrences`);
       return existing;
     }
+  }));
+  const failure = results.find(result => result.status === 'rejected');
+  if (failure) throw failure.reason;
+  const marketPayloads = results.map(result => result.value);
+  const payload = mergeColosseumMarketPayloads(marketPayloads, startedAt);
+  if (allowLargeDrop) console.warn('[colosseumticket] count-drop protection overridden by COLOSSEUMTICKET_ALLOW_COUNT_DROP=1');
+  await writePayloads(payload, marketPayloads);
+  return payload;
+}
 
-    throw error;
+export function mergeColosseumMarketPayloads(payloads, generatedAt = new Date().toISOString()) {
+  const unique = new Map();
+  let duplicateMarketOccurrences = 0;
+  // Prefer the established Czech identity and URL for cross-listed Czech shows.
+  const ordered = [...payloads].sort((a, b) => (a.market === 'CZ' ? 0 : 1) - (b.market === 'CZ' ? 0 : 1));
+  for (const payload of ordered) {
+    for (const event of payload.events) {
+      // Term IDs alone are not globally unique across Colosseum installations.
+      // The two exports abbreviate the same street differently. Match the term,
+      // time, city and named venue, retaining the established venue address.
+      const key = [event.providerOccurrenceId, event.datetime, event.location?.city,
+        event.venue?.name].map(fold).join('|');
+      const existing = unique.get(key);
+      if (existing && existing.sourceMarket !== event.sourceMarket) {
+        duplicateMarketOccurrences++;
+        unique.set(key, { ...existing,
+          title: { ...event.title, ...existing.title },
+          description: { ...event.description, ...existing.description } });
+      } else {
+        // Canonical IDs also distinguish same-market terms at identical venues.
+        unique.set(existing ? `${key}|${event.id}` : key, event);
+      }
+    }
   }
+  const events = [...unique.values()].sort((a, b) => a.datetime.localeCompare(b.datetime) || a.id.localeCompare(b.id));
+  if (new Set(events.map(event => event.id)).size !== events.length) throw new Error('Duplicate merged ColosseumTicket event id');
+  return { source: 'colosseumticket', sourceUrl: COLOSSEUMTICKET_FEED_URL,
+    sourceUrls: ordered.map(payload => COLOSSEUMTICKET_MARKETS[payload.market].feedUrl), generatedAt,
+    count: events.length,
+    markets: Object.fromEntries(ordered.map(({ events, ...metadata }) => [metadata.market, metadata])),
+    stats: { parentEvents: ordered.reduce((sum, payload) => sum + payload.stats.parentEvents, 0),
+      occurrences: events.length, duplicateMarketOccurrences },
+    events };
 }
 
 function isMainModule() {

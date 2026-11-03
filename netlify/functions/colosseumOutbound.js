@@ -1,3 +1,5 @@
+import { colosseumMarketForHost, colosseumAffiliateBox } from '../../shared/colosseumticket.js';
+
 const FALLBACK_URL = 'https://colosseumticket.cz/';
 
 function json(statusCode, data) {
@@ -44,7 +46,7 @@ function sanitizeDestination(rawUrl = '') {
     return '';
   }
 
-  if (normalizeHost(parsed.hostname) !== 'colosseumticket.cz') {
+  if (!colosseumMarketForHost(normalizeHost(parsed.hostname))) {
     return '';
   }
 
@@ -62,10 +64,8 @@ function sanitizeDestination(rawUrl = '') {
   return parsed.toString();
 }
 
-function getAffiliateBox() {
-  const value = String(
-    process.env.COLOSSEUMTICKET_A_BOX || ''
-  ).trim();
+function getAffiliateBox(market) {
+  const value = colosseumAffiliateBox(market, process.env);
 
   return /^[A-Za-z0-9_-]+$/.test(value)
     ? value
@@ -85,7 +85,7 @@ export const handler = async (event) => {
   }
 
   const target = new URL(destination);
-  const affiliateBox = getAffiliateBox();
+  const affiliateBox = getAffiliateBox(colosseumMarketForHost(target.hostname));
 
   if (affiliateBox) {
     target.searchParams.set('a_box', affiliateBox);

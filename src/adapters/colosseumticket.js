@@ -20,6 +20,7 @@ import { fetchProviderJson } from '../provider-request.js';
 import { withColosseumGeography } from '../../shared/geo/colosseum-geography.js';
 import { eventCoordinates, distanceKm } from '../../shared/geo/coordinates.js';
 import { withEventPageInfo } from '../event-pagination.js';
+import { COLOSSEUMTICKET_MARKETS } from '../../shared/colosseumticket.js';
 
 
 const DEFAULT_DATA_URL =
@@ -388,10 +389,12 @@ function hasNearMe(
  *
  * This is deliberately NOT canonical event metadata:
  * the ColosseumTicket XML currently provides no country field.
- * AJSEE currently exposes this provider only for the CZ market.
+ * Seller scope is separate from verified event geography.
  */
 export const COLOSSEUMTICKET_MARKET_COUNTRY_CODE =
   'CZ';
+
+export const COLOSSEUMTICKET_MARKET_COUNTRY_CODES = Object.keys(COLOSSEUMTICKET_MARKETS);
 
 
 function shouldSkipCountry(
@@ -408,8 +411,7 @@ function shouldSkipCountry(
 
   return Boolean(
     countryCode &&
-    countryCode !==
-      COLOSSEUMTICKET_MARKET_COUNTRY_CODE
+    !COLOSSEUMTICKET_MARKET_COUNTRY_CODES.includes(countryCode)
   );
 }
 
@@ -661,11 +663,11 @@ export async function fetchEvents({
   }
 
   /*
-   * AJSEE currently scopes this provider integration to CZ.
+   * Skip unsupported markets before requesting the provider feed.
    * This gate is independent of canonical event country data.
    */
   if (
-    shouldSkipCountry(
+    !hasNearMe(filters) && shouldSkipCountry(
       filters
     )
   ) {
@@ -678,6 +680,7 @@ export async function fetchEvents({
     );
 
   const geo = hasNearMe(filters);
+  const country = geo ? '' : text(filters.cityCountryCode || filters.cityCc || filters.countryCode || filters.country || '').toUpperCase();
   const city = geo ? '' :
     text(
       filters.city ||
@@ -723,6 +726,9 @@ export async function fetchEvents({
     sourceEvents
   ) {
     const event = withProviderDateRange(withColosseumGeography(sourceEvent));
+    const eventCountry = text(event.location?.country || event.venue?.country ||
+      (event.sourceMarket === 'SK' ? '' : 'CZ')).toUpperCase();
+    if (country && country !== eventCountry) continue;
     if (
       !isColosseumTicketEventCurrent(
         event

@@ -6985,7 +6985,7 @@ if (!G.flags.mainDomReadyBound) {
     const links =
       Array.from(
         document.querySelectorAll(
-          'a[href*="colosseumticket.cz"]'
+          'a[href*="colosseumticket.cz"], a[href*="colosseumticket.sk"]'
         )
       )
         .filter(

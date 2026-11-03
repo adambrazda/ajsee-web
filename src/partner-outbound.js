@@ -27,7 +27,7 @@ function providerForUrl(url) {
   const host = url?.hostname.toLowerCase() || '';
   if (host === 'ajsee.tixculture.com') return 'todaytix';
   if (/(^|\.)trustedstays\.co\.uk$/.test(host)) return 'trustedstays';
-  if (/(^|\.)colosseumticket\.cz$/.test(host)) return 'colosseumticket';
+  if (/(^|\.)colosseumticket\.(cz|sk)$/.test(host)) return 'colosseumticket';
   if (/(^|\.)smsticket\.cz$/.test(host)) return 'smsticket';
   if (/(^|\.)(ticketmaster\.[a-z.]+|ticketweb\.[a-z.]+|universe\.com)$/.test(host)) return 'ticketmaster';
   return '';

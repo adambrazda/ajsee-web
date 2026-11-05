@@ -17,10 +17,26 @@
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.cz/events",
-  "cover": "",
-  "coverAlt": "",
-  "coverCredit": "",
-  "gallery": [],
+  "cover": "/uploads/reviews/my-fair-lady-70-years-musical-legend/my-fair-lady-2026-eliza-ensemble.webp",
+  "coverAlt": "Claire Lyon as Eliza Doolittle with the ensemble in Opera Australia's 2026 production of My Fair Lady in Sydney.",
+  "coverCredit": "Photo: Jeff Busby / Opera Australia",
+  "gallery": [
+    {
+      "image": "/uploads/reviews/my-fair-lady-70-years-musical-legend/my-fair-lady-2026-eliza-solo.webp",
+      "alt": "Claire Lyon as Eliza Doolittle on stage in Opera Australia's 2026 My Fair Lady.",
+      "credit": "Photo: Jeff Busby / Opera Australia"
+    },
+    {
+      "image": "/uploads/reviews/my-fair-lady-70-years-musical-legend/my-fair-lady-2026-eliza-higgins.webp",
+      "alt": "Claire Lyon as Eliza Doolittle with Nathaniel Parker as Professor Henry Higgins in My Fair Lady (2026).",
+      "credit": "Photo: Jeff Busby / Opera Australia"
+    },
+    {
+      "image": "/uploads/reviews/my-fair-lady-70-years-musical-legend/my-fair-lady-2026-ensemble.webp",
+      "alt": "Performers in the ensemble of Opera Australia's 2026 production of My Fair Lady.",
+      "credit": "Photo: Jeff Busby / Opera Australia"
+    }
+  ],
   "translations": {
     "en": {
       "title": "My Fair Lady at 70: From a Cockney Flower Girl to a Musical Legend",
@@ -31,9 +47,14 @@
       "ticketUrl": "https://ajsee.cz/events",
       "seoTitle": "My Fair Lady at 70: Eliza Doolittle’s Legacy | AJSEE",
       "seoDescription": "From Julie Andrews and Audrey Hepburn to its 2026 revivals, Oya Canli explores why My Fair Lady and Eliza Doolittle still resonate 70 years after Broadway.",
-      "coverAlt": "",
+      "coverAlt": "Claire Lyon as Eliza Doolittle with the ensemble on stage in My Fair Lady, Sydney 2026.",
       "city": "",
-      "country": ""
+      "country": "",
+      "galleryAlts": [
+        "Claire Lyon as Eliza Doolittle on stage in My Fair Lady, Sydney 2026.",
+        "Claire Lyon as Eliza and Nathaniel Parker as Henry Higgins in My Fair Lady, 2026.",
+        "The ensemble performing in Opera Australia's My Fair Lady, Sydney 2026."
+      ]
     },
     "cs": {
       "title": "My Fair Lady slaví 70 let: Od londýnské pouliční květinářky k muzikálové legendě",
@@ -44,9 +65,14 @@
       "ticketUrl": "https://ajsee.cz/events",
       "seoTitle": "My Fair Lady slaví 70 let: Příběh Elizy Doolittle | AJSEE",
       "seoDescription": "Sedmdesát let My Fair Lady. Oya Canli připomíná Julii Andrews, Audrey Hepburn, slavné písně i to, proč příběh Elizy Doolittle oslovuje diváky dodnes.",
-      "coverAlt": "",
+      "coverAlt": "Claire Lyon jako Eliza Doolittle s ansámblem muzikálu My Fair Lady v Sydney v roce 2026.",
       "city": "",
-      "country": ""
+      "country": "",
+      "galleryAlts": [
+        "Claire Lyon v roli Elizy Doolittle na scéně My Fair Lady v Sydney v roce 2026.",
+        "Claire Lyon jako Eliza a Nathaniel Parker jako profesor Henry Higgins v My Fair Lady, Sydney 2026.",
+        "Soubor muzikálu My Fair Lady na jevišti v Sydney v roce 2026."
+      ]
     },
     "sk": {
       "title": "My Fair Lady oslavuje 70 rokov: Od londýnskej pouličnej predavačky kvetov k muzikálovej legende",
@@ -57,9 +83,14 @@
       "ticketUrl": "https://ajsee.cz/events",
       "seoTitle": "My Fair Lady oslavuje 70 rokov: Príbeh Elizy Doolittle | AJSEE",
       "seoDescription": "My Fair Lady oslavuje 70 rokov. Oya Canli približuje Julie Andrews, Audrey Hepburn, slávne piesne aj príbeh Elizy Doolittle, ktorý stále oslovuje publikum.",
-      "coverAlt": "",
+      "coverAlt": "Claire Lyon ako Eliza Doolittle so súborom muzikálu My Fair Lady v Sydney v roku 2026.",
       "city": "",
-      "country": ""
+      "country": "",
+      "galleryAlts": [
+        "Claire Lyon v úlohe Elizy Doolittle na javisku My Fair Lady v Sydney v roku 2026.",
+        "Claire Lyon ako Eliza a Nathaniel Parker ako profesor Henry Higgins v My Fair Lady, Sydney 2026.",
+        "Súbor muzikálu My Fair Lady na javisku v Sydney v roku 2026."
+      ]
     },
     "de": {
       "title": "My Fair Lady wird 70: Vom Londoner Blumenmädchen zur Musicallegende",
@@ -70,9 +101,14 @@
       "ticketUrl": "https://ajsee.cz/events",
       "seoTitle": "70 Jahre My Fair Lady: Eliza Doolittles Geschichte | AJSEE",
       "seoDescription": "70 Jahre My Fair Lady: Oya Canli blickt auf Julie Andrews, Audrey Hepburn, unvergessliche Musik und Eliza Doolittles zeitlose Geschichte zurück.",
-      "coverAlt": "",
+      "coverAlt": "Claire Lyon als Eliza Doolittle mit dem Ensemble von My Fair Lady in Sydney 2026.",
       "city": "",
-      "country": ""
+      "country": "",
+      "galleryAlts": [
+        "Claire Lyon als Eliza Doolittle auf der Bühne von My Fair Lady, Sydney 2026.",
+        "Claire Lyon als Eliza und Nathaniel Parker als Professor Henry Higgins in My Fair Lady, Sydney 2026.",
+        "Das Ensemble der Produktion My Fair Lady von Opera Australia in Sydney 2026."
+      ]
     },
     "pl": {
       "title": "My Fair Lady świętuje 70 lat: Od londyńskiej kwiaciarki do legendy musicalu",
@@ -83,9 +119,14 @@
       "ticketUrl": "https://ajsee.cz/events",
       "seoTitle": "My Fair Lady ma 70 lat: Historia Elizy Doolittle | AJSEE",
       "seoDescription": "My Fair Lady świętuje 70 lat. Oya Canli przypomina Julie Andrews, Audrey Hepburn, słynne piosenki i ponadczasową historię Elizy Doolittle.",
-      "coverAlt": "",
+      "coverAlt": "Claire Lyon jako Eliza Doolittle z zespołem musicalu My Fair Lady w Sydney w 2026 roku.",
       "city": "",
-      "country": ""
+      "country": "",
+      "galleryAlts": [
+        "Claire Lyon w roli Elizy Doolittle na scenie My Fair Lady w Sydney w 2026 roku.",
+        "Claire Lyon jako Eliza i Nathaniel Parker jako profesor Henry Higgins w My Fair Lady, Sydney 2026.",
+        "Zespół musicalu My Fair Lady na scenie w Sydney w 2026 roku."
+      ]
     },
     "hu": {
       "title": "70 éves a My Fair Lady: A londoni virágáruslánytól a musicallegendáig",
@@ -96,11 +137,16 @@
       "ticketUrl": "https://ajsee.cz/events",
       "seoTitle": "70 éves a My Fair Lady: Eliza Doolittle öröksége | AJSEE",
       "seoDescription": "A My Fair Lady 70 éves. Oya Canli felidézi Julie Andrews és Audrey Hepburn alakítását, a híres dalokat és Eliza Doolittle ma is aktuális történetét.",
-      "coverAlt": "",
+      "coverAlt": "Claire Lyon Eliza Doolittle szerepében a My Fair Lady együttesével Sydneyben, 2026-ban.",
       "city": "",
-      "country": ""
+      "country": "",
+      "galleryAlts": [
+        "Claire Lyon Eliza Doolittle szerepében a My Fair Lady sydney-i színpadán, 2026-ban.",
+        "Claire Lyon mint Eliza és Nathaniel Parker mint Henry Higgins professzor a My Fair Lady 2026-os előadásában.",
+        "Az Opera Australia My Fair Lady című musicaljének szereplői a színpadon, Sydney, 2026."
+      ]
     }
   },
-  "internalNotes": "EDITORIAL: My Fair Lady 70-year anniversary feature, not an eyewitness performance review. EN master individually approved by AJSEE editor on 5 November 2026, then Czech translation individually approved without changes. Slovak translation individually approved by AJSEE editor on 5 November 2026. German translation individually approved by AJSEE editor on 5 November 2026. Polish translation individually approved by AJSEE editor on 5 November 2026. Hungarian translation individually approved by AJSEE editor on 5 November 2026. All six locales approved; final photography and explicit authorization to publish are still pending. NEVER publish before all six languages and final photography are approved, and user explicitly authorizes release. No photos were supplied by Oya; do not substitute unofficial show photos or invent source credits. Placeholder empty cover intentionally used for unpublished preview. General CTA points to verified AJSEE events listing, not a specific show. Do not alter the approved EN/CZ article prose. Historic and contemporary performance facts reflect the approved English master.",
+  "internalNotes": "EDITORIAL: My Fair Lady 70-year anniversary feature, not an eyewitness performance review. EN master individually approved by AJSEE editor on 5 November 2026, then Czech translation individually approved without changes. Slovak translation individually approved by AJSEE editor on 5 November 2026. German translation individually approved by AJSEE editor on 5 November 2026. Polish translation individually approved by AJSEE editor on 5 November 2026. Hungarian translation individually approved by AJSEE editor on 5 November 2026. All six locales approved; four approved-source official Opera Australia 2026 images are staged locally, all with photographer credits and six-locale alt text; explicit authorization to publish is still pending. NEVER publish before user explicitly authorizes release, even though all six languages and draft media are now prepared. AJSEE editor confirmed rights to use the photos on 5 November 2026. Four genuine Opera Australia Flickr photos downloaded and committed in source + optimized format; Jeff Busby credited. Photos are from Sydney 2026, not the 1956 Broadway premiere or 1964 film. The original camera masters are not guaranteed; archived JPGs are the highest successfully fetched source-size variant. Do not imply Oya attended Sydney. General CTA points to verified AJSEE events listing, not a specific show. Do not alter the approved EN/CZ article prose. Historic and contemporary performance facts reflect the approved English master.",
   "relatedSlugs": []
 }

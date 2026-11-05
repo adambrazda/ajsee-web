@@ -21,7 +21,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq fonts-liberation fonts-dejavu-core
-      - name: Render seven 1080 x 1350 PNG editorial slides
+      - name: Render seven 1080 x 1350 JPG editorial slides
         run: node scripts/render-my-fair-lady-ig.mjs
       - name: Check exports
         run: |
@@ -31,6 +31,7 @@ jobs:
         run: |
           git config user.name "AJSEE carousel renderer"
           git config user.email "actions@users.noreply.github.com"
-          git add assets/social/my-fair-lady-70-years-ig/*.png
+          zip -j -q -9 assets/social/my-fair-lady-70-years-ig/my-fair-lady-70-carousel.zip assets/social/my-fair-lady-70-years-ig/*.jpg
+          git add assets/social/my-fair-lady-70-years-ig/*.jpg assets/social/my-fair-lady-70-years-ig/*.zip
           git diff --cached --quiet || git commit -m "Render seven Czech My Fair Lady IG carousel panels"
           git push origin HEAD:editorial/my-fair-lady-ig-carousel-20261105

@@ -103,17 +103,19 @@ await render(5,'vlastni-hlas',photograph('solo')+rect(0,0,W,H,'url(#shademore)')
  txt(76,1138,'vlastní hlas.',63,{weight:700})+
  credit
 );
-// Slide 6: clearly labelled contemporaneous Sydney photo
-await render(6,'jubilejni-rok',photograph('duo')+rect(0,0,W,H,'url(#shade)')+
- base(6)+txt(76,331,'70 LET. A PŘÍBĚH',72,{weight:700})+
- txt(76,411,'ŽIJE DÁL.',91,{weight:700})+
- rule(76,453,165)+
- txt(76,820,'SYDNEY',46,{font:'sans',weight:700,spacing:4,fill:colors.gold})+
- txt(76,883,'16.–31. 10. 2026',38,{weight:700})+
- txt(76,940,'Inscenace vycházející z režie Julie Andrews.',28,{italic:true})+
- rect(76,970,930,1,'#d6b27d')+
- txt(76,1033,'PITLOCHRY, SKOTSKO',36,{font:'sans',weight:700,spacing:2,fill:colors.gold})+
- txt(76,1095,'21. 11.–31. 12. 2026',36,{weight:700})+
+// Slide 6: timeline and authentic 2026 cast photo kept separate from title and venue labels
+await render(6,'jubilejni-rok',bg+
+ base(6)+
+ txt(76,361,'2026',150,{weight:700,fill:colors.gold})+
+ txt(76,446,'PŘÍBĚH ŽIJE DÁL.',67,{weight:700})+
+ rule(76,475,210)+
+ '<image x="75" y="517" width="930" height="459" href="'+photos.duo+'" preserveAspectRatio="xMidYMin slice"/>'+
+ rect(75,517,930,459,'none','stroke="#d6b27d" stroke-width="1" opacity=".55"')+
+ txt(992,1009,'NA FOTOGRAFII: SYDNEY 2026',16,{font:'sans',anchor:'end',spacing:1.5,fill:colors.muted})+
+ txt(76,1073,'SYDNEY',37,{font:'sans',weight:700,spacing:2,fill:colors.gold})+
+ txt(76,1123,'16.–31. 10. 2026',33,{weight:700})+
+ txt(550,1073,'PITLOCHRY',37,{font:'sans',weight:700,spacing:2,fill:colors.gold})+
+ txt(550,1123,'21. 11.–31. 12. 2026',32,{weight:700})+
  credit
 );
 // Slide 7: CTA, quiet closing, photo under tint

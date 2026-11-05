@@ -1,0 +1,38 @@
+name: Render bilingual My Fair Lady AJSEE carousel
+on:
+  push:
+    branches: [editorial/my-fair-lady-ig-bilingual-20261105]
+    paths: ['.github/workflows/my-fair-lady-ig-bilingual.yml']
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install Czech language fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-liberation fonts-dejavu-core
+      - name: Render individual 4:5 slides
+        run: node scripts/render-my-fair-lady-ig-bilingual.mjs
+      - name: Verify export and prepare ZIP
+        run: |
+          test "$(find assets/social/my-fair-lady-70-years-ig-bilingual -maxdepth 1 -name '*.jpg' | wc -l)" -eq 7
+          file assets/social/my-fair-lady-70-years-ig-bilingual/*.jpg
+          cd assets/social/my-fair-lady-70-years-ig-bilingual
+          zip -q -9 my-fair-lady-70-cz-en.zip *.jpg
+      - name: Commit rendered JPGs and ZIP
+        run: |
+          git config user.name "AJSEE carousel renderer"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/social/my-fair-lady-70-years-ig-bilingual/
+          git diff --cached --quiet || git commit -m "Render bilingual My Fair Lady 70 Instagram carousel JPGs"
+          git push origin HEAD:editorial/my-fair-lady-ig-bilingual-20261105

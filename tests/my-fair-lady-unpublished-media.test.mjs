@@ -31,7 +31,7 @@ test('My Fair Lady staged editorial has the four approved Opera Australia images
     const local=path.resolve('public','.'+img);
     const metadata=await sharp(local).metadata();
     assert.equal(metadata.format,'webp');
-    assert.ok(metadata.width>=700 && metadata.height>=450,'Photo too small: '+img);
+    assert.ok(Math.max(metadata.width,metadata.height)>=1000 && Math.min(metadata.width,metadata.height)>=650,'Photo too small: '+img);
     assert.ok((await stat(local)).size<300*1024,'Photo too heavy: '+img);
   }
   for(const [lang,content] of Object.entries(data.translations)){

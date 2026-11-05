@@ -1,8 +1,8 @@
-name: Render approved My Fair Lady 70 Instagram carousel
+name: Render My Fair Lady 70 Instagram carousel
 on:
   push:
     branches: [editorial/my-fair-lady-ig-carousel-20261105]
-    paths: ['.github/workflows/my-fair-lady-ig-render.yml']
+    paths: ['.github/workflows/my-fair-lady-ig-render.yml', 'scripts/render-my-fair-lady-ig.mjs']
 permissions:
   contents: write
 jobs:
@@ -25,8 +25,8 @@ jobs:
         run: node scripts/render-my-fair-lady-ig.mjs
       - name: Check exports
         run: |
-          test "$(find assets/social/my-fair-lady-70-years-ig -maxdepth 1 -name '*.png' | wc -l)" -eq 7
-          file assets/social/my-fair-lady-70-years-ig/*.png
+          test "$(find assets/social/my-fair-lady-70-years-ig -maxdepth 1 -name '*.jpg' | wc -l)" -eq 7
+          file assets/social/my-fair-lady-70-years-ig/*.jpg
       - name: Commit media assets to branch
         run: |
           git config user.name "AJSEE carousel renderer"

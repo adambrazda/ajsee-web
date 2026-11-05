@@ -3,13 +3,13 @@
 **Article:** `content/reviews/items/my-fair-lady-70-years-musical-legend.json`  
 **Author:** Oya Canli  
 **Prepared:** 2026-11-05  
-**Status:** source shortlist only — image binaries have NOT been downloaded or committed, article remains unpublished.
+**Status:** four verified official production photos downloaded, saved as source JPEGs and optimized WebPs, and staged in article content; **article remains unpublished**.
 
 ## Rights / publishing guardrails
 
 The AJSEE editor confirmed on 2026-11-05 that permission to use photographs has been obtained. Archive sources still list some files as "All rights reserved"; editorial confirmation is not a public licence. Retain the original written permission, including its scope (website/social media, attribution, cropping/derivatives, and storage) in the internal rights archive.
 
-**Do not mark the article published or create public `cover` / `gallery` URLs until original approved image files are received, converted to optimized locally hosted WebP, and tested.** No third-party hotlinking.
+**Do not mark the article published until explicit AJSEE editorial authorization.** Four source JPEGs and optimized, self-hosted WebP files are now committed, and `cover` / `gallery` are staged in the unpublished article with six-language alt text. No third-party hotlinking. The source JPGs are downloadable Flickr variants, not verified original camera masters.
 
 ## Primary source: Opera Australia — Sydney Opera House, 2026
 
@@ -32,6 +32,19 @@ The 2026 production is **directed by Karen Johnson Mortimer**, based on the **20
 - **OA-02**: “Claire Lyon jako Eliza Doolittle, My Fair Lady (Sydney, 2026). Foto: Jeff Busby / Opera Australia.” Alt CS: “Claire Lyon v roli Elizy Doolittle na jevišti v inscenaci My Fair Lady z roku 2026.”
 - **OA-03**: “Claire Lyon a Nathaniel Parker jako Eliza Doolittle a Henry Higgins, Sydney 2026. Foto: Jeff Busby / Opera Australia.” Alt CS: “Claire Lyon a Nathaniel Parker v rolích Elizy a profesora Higginse v Sydney.”
 - **OA-04**: “Soubor My Fair Lady, Sydney 2026. Foto: Jeff Busby / Opera Australia.” Alt CS: “Členové souboru muzikálu My Fair Lady na scéně v Sydney v roce 2026.”
+
+## Saved media files — committed in AJSEE
+
+The following are real image binaries (not remote URLs), staged with PR #267:
+
+| Official image | Source JPEG for IG design | WebP for website |
+| --- | --- | --- |
+| OA-01 | `assets/editorial/my-fair-lady-70-years-musical-legend/eliza-ensemble-jeff-busby.jpg` | `public/uploads/reviews/my-fair-lady-70-years-musical-legend/my-fair-lady-2026-eliza-ensemble.webp` |
+| OA-02 | `assets/editorial/my-fair-lady-70-years-musical-legend/eliza-solo-jeff-busby.jpg` | `public/uploads/reviews/my-fair-lady-70-years-musical-legend/my-fair-lady-2026-eliza-solo.webp` |
+| OA-03 | `assets/editorial/my-fair-lady-70-years-musical-legend/eliza-higgins-jeff-busby.jpg` | `public/uploads/reviews/my-fair-lady-70-years-musical-legend/my-fair-lady-2026-eliza-higgins.webp` |
+| OA-04 | `assets/editorial/my-fair-lady-70-years-musical-legend/ensemble-jeff-busby.jpg` | `public/uploads/reviews/my-fair-lady-70-years-musical-legend/my-fair-lady-2026-ensemble.webp` |
+
+Current planned web cover: OA-01. The gallery contains OA-02, OA-03 and OA-04. Every image is credited `Photo: Jeff Busby / Opera Australia`. These image files are reusable as production-photo inputs for later IG carousel artwork, but the final designed carousel slides have **not** been created.
 
 ## Archive / contextual visual options
 
@@ -58,9 +71,9 @@ Photo credit for all used production images must be visible in post caption or s
 
 ## Technical delivery checklist
 
-- Obtain original JPEG/TIFF/PNG files and written photo usage record; download only from rights-cleared original sources.
-- Optimize self-hosted web media to WebP/AVIF; target at least 900 px wide and < 300 KiB for web gallery assets where visually feasible, using responsive `srcset` if supported.
-- Keep uncropped source files for art direction; derive separate 4:5 Instagram images, verify safe zones and legibility.
-- Store web images in `public/uploads/reviews/my-fair-lady-70-years-musical-legend/`.
-- Set `cover`, `coverAlt`, `coverCredit`, `gallery` and all six translations' localized alt descriptions only after binary assets exist and are available at AJSEE URLs.
+- [x] Source JPEG download of the four official 2026 stage photos; [ ] retain the full written usage-permission record in the AJSEE private rights archive.
+- [x] Optimized self-hosted WebP gallery photos, all under 300 KiB; [ ] check responsive rendition and available source resolution on final preview.
+- [x] Keep uncropped JPEG image sources for art direction; [ ] derive separate 4:5 Instagram carousel slides and verify safe zones and legibility.
+- [x] Store web images in `public/uploads/reviews/my-fair-lady-70-years-musical-legend/`.
+- [x] Stage `cover`, `coverAlt`, `coverCredit`, `gallery` and all six translations' localized alt descriptions in the unpublished article.
 - Review previews, CWV image loading, captions and credits before any explicit publication authorization.

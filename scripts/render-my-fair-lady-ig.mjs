@@ -31,10 +31,10 @@ const base=(i)=>txt(76,178,'AJSEE EDITORIAL',23,{font:'sans',weight:600,spacing:
 const defs='<defs><linearGradient id="navy" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#0d1128"/><stop offset=".56" stop-color="#22172f"/><stop offset="1" stop-color="#0a1827"/></linearGradient><linearGradient id="shade" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#0b1023" stop-opacity=".68"/><stop offset=".25" stop-color="#0b1023" stop-opacity=".12"/><stop offset=".57" stop-color="#101329" stop-opacity=".54"/><stop offset=".79" stop-color="#0e1021" stop-opacity=".94"/><stop offset="1" stop-color="#0d0f20" stop-opacity="1"/></linearGradient><linearGradient id="shademore" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#0e152c" stop-opacity=".87"/><stop offset=".38" stop-color="#10172e" stop-opacity=".40"/><stop offset=".7" stop-color="#11162c" stop-opacity=".88"/><stop offset="1" stop-color="#0e1229" stop-opacity="1"/></linearGradient><linearGradient id="horizontal" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#10142a" stop-opacity=".98"/><stop offset=".67" stop-color="#10142a" stop-opacity=".64"/><stop offset="1" stop-color="#10142a" stop-opacity=".22"/></linearGradient></defs>';
 const render=async (number,name,body)=>{
  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">'+defs+body+'</svg>';
- const bytes=await sharp(Buffer.from(svg)).png({compressionLevel:9}).toBuffer();
+ const bytes=await sharp(Buffer.from(svg)).jpeg({quality:88,mozjpeg:true}).toBuffer();
  const info=await sharp(bytes).metadata();
  if(info.width!==W||info.height!==H)throw new Error('Bad canvas');
- await fs.writeFile(path.join(OUT,String(number).padStart(2,'0')+'-'+name+'.png'),bytes);
+ await fs.writeFile(path.join(OUT,String(number).padStart(2,'0')+'-'+name+'.jpg'),bytes);
  console.log(name+' '+Math.round(bytes.length/1024)+' KiB');
 };
 // Slide 1: optional true-photo alternative to the previously approved AI cover

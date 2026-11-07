@@ -91,3 +91,76 @@ test('regular page bootstrap and language changes keep a single working consent 
     assert.equal(doc.querySelectorAll('#cookie-preferences').length, 1);
   } finally { dom.window.close(); }
 });
+
+for (const [lang, title] of Object.entries(titles)) {
+  test(`${lang}: late bootstrap preserves the banner and an open, unsaved preference`, async () => {
+    const dom = await page('accommodation.html', lang);
+    try {
+      const win = dom.window;
+      const doc = win.document;
+      const banner = doc.querySelector('#cookie-banner');
+      const description = doc.querySelector('#cookie-banner-desc');
+      const modal = doc.querySelector('#cookie-preferences');
+      const observer = new win.MutationObserver(() => {});
+      observer.observe(doc.body, { childList: true, subtree: true, characterData: true });
+
+      win.testInitCookieBanner({ lang });
+      win.dispatchEvent(new win.CustomEvent('ajsee:lang-changed', { detail: { lang } }));
+      assert.equal(doc.querySelector('#cookie-banner'), banner);
+      assert.equal(doc.querySelector('#cookie-banner-desc'), description);
+      assert.equal(observer.takeRecords().length, 0, 'unchanged copy must not rebuild or rewrite the UI');
+      observer.disconnect();
+      assert.equal(doc.querySelector('#cookie-banner-title').textContent, title);
+
+      banner.querySelector('[data-action="settings"]').click();
+      const toggle = doc.querySelector('#cookie-analytics-toggle');
+      toggle.click();
+      toggle.focus();
+
+      win.testInitCookieBanner({ lang });
+      const nextLang = lang === 'en' ? 'cs' : 'en';
+      win.dispatchEvent(new win.CustomEvent('ajsee:lang-changed', { detail: { lang: nextLang } }));
+      win.testInitCookieBanner({ lang: nextLang });
+
+      assert.equal(doc.querySelector('#cookie-preferences'), modal);
+      assert.equal(doc.querySelector('#cookie-analytics-toggle'), toggle);
+      assert.equal(modal.classList.contains('is-hidden'), false);
+      assert.equal(banner.hidden, true);
+      assert.equal(toggle.checked, true);
+      assert.equal(doc.activeElement, toggle);
+      assert.equal(doc.querySelector('#cookie-banner-title').textContent, titles[nextLang]);
+      assert.equal(new URL(banner.querySelector('a').href).searchParams.get('lang'), nextLang === 'cs' ? null : nextLang);
+      assert.equal(doc.querySelectorAll('script[src*="googletagmanager.com"]').length, 0);
+
+      modal.querySelector('[data-action="save"]').click();
+      assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).analytics, true);
+      assert.equal(doc.querySelector('#cookie-banner'), null);
+      assert.equal(doc.querySelector('#cookie-preferences'), null);
+    } finally { dom.window.close(); }
+  });
+}
+
+test('late translated copy updates in place without losing an unsaved preference or focus', async () => {
+  const dom = await page('accommodation.html', 'cs');
+  try {
+    const win = dom.window;
+    const doc = win.document;
+    const banner = doc.querySelector('#cookie-banner');
+    const description = doc.querySelector('#cookie-banner-desc');
+    banner.querySelector('[data-action="settings"]').click();
+    const toggle = doc.querySelector('#cookie-analytics-toggle');
+    toggle.click();
+    toggle.focus();
+    win.translations = { 'cookie-banner': { desc: 'Aktualizované vysvětlení z načteného překladu.' } };
+
+    win.testInitCookieBanner({ lang: 'cs' });
+
+    assert.equal(doc.querySelector('#cookie-banner'), banner);
+    assert.equal(doc.querySelector('#cookie-banner-desc'), description);
+    assert.equal(description.textContent, win.translations['cookie-banner'].desc);
+    assert.equal(doc.querySelector('#cookie-preferences').classList.contains('is-hidden'), false);
+    assert.equal(toggle.checked, true);
+    assert.equal(doc.activeElement, toggle);
+    assert.equal(doc.querySelectorAll('script[src*="googletagmanager.com"]').length, 0);
+  } finally { dom.window.close(); }
+});

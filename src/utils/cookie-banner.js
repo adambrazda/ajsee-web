@@ -172,16 +172,16 @@ function createBanner(lang) {
   wrapper.className = 'cookie-banner';
   wrapper.innerHTML = `
     <div class="cookie-banner__card" role="dialog" aria-labelledby="cookie-banner-title" aria-describedby="cookie-banner-desc" aria-modal="false">
-      <h2 id="cookie-banner-title">${getText('title', lang)}</h2>
-      <p id="cookie-banner-desc">${getText('desc', lang)}</p>
+      <h2 id="cookie-banner-title" data-cookie-text="title">${getText('title', lang)}</h2>
+      <p id="cookie-banner-desc" data-cookie-text="desc">${getText('desc', lang)}</p>
       <div class="cookie-banner__links">
-        <a href="${buildLangHref('/privacy-policy', lang)}" data-lang-link>${getText('privacy', lang)}</a>
-        <a href="${buildLangHref('/cookies-policy', lang)}" data-lang-link>${getText('cookies', lang)}</a>
+        <a href="${buildLangHref('/privacy-policy', lang)}" data-lang-link data-cookie-policy="/privacy-policy" data-cookie-text="privacy">${getText('privacy', lang)}</a>
+        <a href="${buildLangHref('/cookies-policy', lang)}" data-lang-link data-cookie-policy="/cookies-policy" data-cookie-text="cookies">${getText('cookies', lang)}</a>
       </div>
       <div class="cookie-banner__actions">
-        <button type="button" class="btn btn-secondary" data-action="reject">${getText('reject', lang)}</button>
-        <button type="button" class="btn btn-secondary" data-action="settings">${getText('settings', lang)}</button>
-        <button type="button" class="btn btn-primary" data-action="accept-all">${getText('acceptAll', lang)}</button>
+        <button type="button" class="btn btn-secondary" data-action="reject" data-cookie-text="reject">${getText('reject', lang)}</button>
+        <button type="button" class="btn btn-secondary" data-action="settings" data-cookie-text="settings">${getText('settings', lang)}</button>
+        <button type="button" class="btn btn-primary" data-action="accept-all" data-cookie-text="acceptAll">${getText('acceptAll', lang)}</button>
       </div>
     </div>
   `;
@@ -195,36 +195,36 @@ function createModal(lang) {
   modal.innerHTML = `
     <div class="cookie-modal__backdrop" data-close="true"></div>
     <div class="cookie-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="cookie-modal-title">
-      <h2 id="cookie-modal-title">${getText('modalTitle', lang)}</h2>
+      <h2 id="cookie-modal-title" data-cookie-text="modalTitle">${getText('modalTitle', lang)}</h2>
 
       <div class="cookie-modal__section">
         <div>
-          <strong>${getText('necessaryTitle', lang)}</strong>
-          <p>${getText('necessaryText', lang)}</p>
+          <strong data-cookie-text="necessaryTitle">${getText('necessaryTitle', lang)}</strong>
+          <p data-cookie-text="necessaryText">${getText('necessaryText', lang)}</p>
         </div>
         <label class="switch">
           <input type="checkbox" checked disabled />
           <span class="switch__ui" aria-hidden="true"></span>
-          <span class="switch__label">${getText('alwaysActive', lang)}</span>
+          <span class="switch__label" data-cookie-text="alwaysActive">${getText('alwaysActive', lang)}</span>
         </label>
       </div>
 
       <div class="cookie-modal__section">
         <div>
-          <strong>${getText('analyticsTitle', lang)}</strong>
-          <p>${getText('analyticsText', lang)}</p>
+          <strong data-cookie-text="analyticsTitle">${getText('analyticsTitle', lang)}</strong>
+          <p data-cookie-text="analyticsText">${getText('analyticsText', lang)}</p>
         </div>
         <label class="switch">
           <input type="checkbox" id="cookie-analytics-toggle" />
           <span class="switch__ui" aria-hidden="true"></span>
-          <span class="switch__label">${getText('allowAnalytics', lang)}</span>
+          <span class="switch__label" data-cookie-text="allowAnalytics">${getText('allowAnalytics', lang)}</span>
         </label>
       </div>
 
       <div class="cookie-modal__actions">
-        <button type="button" class="btn btn-secondary" data-action="reject">${getText('reject', lang)}</button>
-        <button type="button" class="btn btn-primary" data-action="save">${getText('save', lang)}</button>
-        <button type="button" class="btn btn-primary" data-action="accept-all">${getText('acceptAll', lang)}</button>
+        <button type="button" class="btn btn-secondary" data-action="reject" data-cookie-text="reject">${getText('reject', lang)}</button>
+        <button type="button" class="btn btn-primary" data-action="save" data-cookie-text="save">${getText('save', lang)}</button>
+        <button type="button" class="btn btn-primary" data-action="accept-all" data-cookie-text="acceptAll">${getText('acceptAll', lang)}</button>
       </div>
     </div>
   `;
@@ -236,34 +236,44 @@ function removeBannerUi() {
   document.getElementById('cookie-preferences')?.remove();
 }
 
-function mountUi(lang, { force = false, openPreferences = false, keepState = false, hideBanner = false } = {}) {
+function updateUiCopy(root, lang) {
+  for (const element of root.querySelectorAll('[data-cookie-text]')) {
+    const value = getText(element.dataset.cookieText, lang);
+    if (element.textContent !== value) element.textContent = value;
+  }
+
+  for (const link of root.querySelectorAll('[data-cookie-policy]')) {
+    const href = buildLangHref(link.dataset.cookiePolicy, lang);
+    if (link.getAttribute('href') !== href) link.setAttribute('href', href);
+  }
+}
+
+function mountUi(lang, { force = false, openPreferences = false, hideBanner = false } = {}) {
   if (!force && readConsent()) return;
 
   const resolvedLang = getActiveLang(lang);
+  const existingBanner = document.getElementById('cookie-banner');
   const existingModal = document.getElementById('cookie-preferences');
-  const modalWasOpen = keepState ? !!(existingModal && !existingModal.classList.contains('is-hidden')) : false;
-  const previousAnalyticsValue =
-    document.getElementById('cookie-analytics-toggle')?.checked ??
-    !!readConsent()?.analytics;
+  const banner = existingBanner || createBanner(resolvedLang);
+  const modal = existingModal || createModal(resolvedLang);
 
-  removeBannerUi();
+  // Translation readiness can initialize this UI more than once. Keep its
+  // elements and pending choice; only changed copy needs a text update.
+  updateUiCopy(banner, resolvedLang);
+  updateUiCopy(modal, resolvedLang);
 
-  const banner = createBanner(resolvedLang);
-  const modal = createModal(resolvedLang);
-
-  if (hideBanner || modalWasOpen || openPreferences) {
+  if (hideBanner || openPreferences || !modal.classList.contains('is-hidden')) {
     banner.hidden = true;
   }
 
-  document.body.appendChild(banner);
-  document.body.appendChild(modal);
-
-  const analyticsToggle = document.getElementById('cookie-analytics-toggle');
-  if (analyticsToggle) {
-    analyticsToggle.checked = !!previousAnalyticsValue;
+  if (!existingBanner) document.body.appendChild(banner);
+  if (!existingModal) {
+    const analyticsToggle = modal.querySelector('#cookie-analytics-toggle');
+    if (analyticsToggle) analyticsToggle.checked = !!readConsent()?.analytics;
+    document.body.appendChild(modal);
   }
 
-  if (modalWasOpen || openPreferences) {
+  if (openPreferences) {
     modal.classList.remove('is-hidden');
   }
 }
@@ -336,7 +346,6 @@ function syncCookieBannerLanguage(lang = null) {
 
   mountUi(getActiveLang(lang), {
     force: true,
-    keepState: true,
   });
 }
 

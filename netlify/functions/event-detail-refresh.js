@@ -10,7 +10,20 @@ export function createEventDetailRefresh({ getStoreFn = getStore, collect = coll
     // Each provider advances independently; failed/missing records retain their
     // last known term. Their price expires at read time, even during an outage.
     await store.setJSON('current', snapshot);
-    console.log('[event details] scheduled refresh completed');
+    // Keep diagnostics limited to operational metadata; never log upstream URLs
+    // or credentials used to collect the provider data.
+    const summary = {
+      generatedAt: snapshot.generatedAt,
+      sources: Object.entries(snapshot.sources || {}).map(([provider, source]) => ({
+        provider, state: source.state,
+        count: Number.isFinite(source.count) ? source.count : null,
+        observedAt: source.observedAt || null
+      })),
+      events: snapshot.events.map(({ id, partner, sourceState, lastVerifiedAt }) => ({
+        id, partner, sourceState, lastVerifiedAt
+      }))
+    };
+    console.log('[event details] scheduled refresh completed', JSON.stringify(summary));
   };
 }
 export default createEventDetailRefresh();

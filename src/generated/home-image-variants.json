@@ -1,0 +1,590 @@
+{
+  "/images/accommodation/trustedstays-home-original.jpg": {
+    "width": 458,
+    "height": 348,
+    "originalBytes": 212239,
+    "variants": [
+      {
+        "src": "/images/home-cards/9dd1378824ec-320.webp",
+        "width": 320,
+        "height": 243,
+        "bytes": 14670
+      },
+      {
+        "src": "/images/home-cards/9dd1378824ec-458.webp",
+        "width": 458,
+        "height": 348,
+        "bytes": 25526
+      }
+    ]
+  },
+  "/images/london-musicals-todaytix-hero-1440.webp": {
+    "width": 1440,
+    "height": 960,
+    "originalBytes": 141916,
+    "variants": [
+      {
+        "src": "/images/home-cards/8fdf120ca837-320.webp",
+        "width": 320,
+        "height": 213,
+        "bytes": 8682
+      },
+      {
+        "src": "/images/home-cards/8fdf120ca837-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 26048
+      },
+      {
+        "src": "/images/home-cards/8fdf120ca837-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 49486
+      }
+    ]
+  },
+  "/images/london-musicals-todaytix-hero-960.webp": {
+    "width": 960,
+    "height": 640,
+    "originalBytes": 71864,
+    "variants": [
+      {
+        "src": "/images/home-cards/fb006bb03ef5-320.webp",
+        "width": 320,
+        "height": 213,
+        "bytes": 8768
+      },
+      {
+        "src": "/images/home-cards/fb006bb03ef5-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 24710
+      },
+      {
+        "src": "/images/home-cards/fb006bb03ef5-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 54170
+      }
+    ]
+  },
+  "/images/microguides/seating-map/cover.webp": {
+    "width": 1062,
+    "height": 720,
+    "originalBytes": 702784,
+    "variants": [
+      {
+        "src": "/images/home-cards/64690d8104f1-320.webp",
+        "width": 320,
+        "height": 217,
+        "bytes": 14376
+      },
+      {
+        "src": "/images/home-cards/64690d8104f1-640.webp",
+        "width": 640,
+        "height": 434,
+        "bytes": 37320
+      },
+      {
+        "src": "/images/home-cards/64690d8104f1-960.webp",
+        "width": 960,
+        "height": 651,
+        "bytes": 60352
+      }
+    ]
+  },
+  "/uploads/cover-03.webp": {
+    "width": 1600,
+    "height": 900,
+    "originalBytes": 236730,
+    "variants": [
+      {
+        "src": "/images/home-cards/ed0a2f157b5b-320.webp",
+        "width": 320,
+        "height": 180,
+        "bytes": 13396
+      },
+      {
+        "src": "/images/home-cards/ed0a2f157b5b-640.webp",
+        "width": 640,
+        "height": 360,
+        "bytes": 32392
+      },
+      {
+        "src": "/images/home-cards/ed0a2f157b5b-960.webp",
+        "width": 960,
+        "height": 540,
+        "bytes": 50704
+      }
+    ]
+  },
+  "/uploads/cover-04.webp": {
+    "width": 1600,
+    "height": 900,
+    "originalBytes": 438696,
+    "variants": [
+      {
+        "src": "/images/home-cards/116dbad49607-320.webp",
+        "width": 320,
+        "height": 180,
+        "bytes": 12154
+      },
+      {
+        "src": "/images/home-cards/116dbad49607-640.webp",
+        "width": 640,
+        "height": 360,
+        "bytes": 41758
+      },
+      {
+        "src": "/images/home-cards/116dbad49607-960.webp",
+        "width": 960,
+        "height": 540,
+        "bytes": 84718
+      }
+    ]
+  },
+  "/uploads/cover-05.webp": {
+    "width": 1600,
+    "height": 900,
+    "originalBytes": 301298,
+    "variants": [
+      {
+        "src": "/images/home-cards/78c0a386fbf7-320.webp",
+        "width": 320,
+        "height": 180,
+        "bytes": 7900
+      },
+      {
+        "src": "/images/home-cards/78c0a386fbf7-640.webp",
+        "width": 640,
+        "height": 360,
+        "bytes": 24722
+      },
+      {
+        "src": "/images/home-cards/78c0a386fbf7-960.webp",
+        "width": 960,
+        "height": 540,
+        "bytes": 56030
+      }
+    ]
+  },
+  "/uploads/cover-06.jpg": {
+    "width": 1600,
+    "height": 900,
+    "originalBytes": 372645,
+    "variants": [
+      {
+        "src": "/images/home-cards/563c1c5e2c57-320.webp",
+        "width": 320,
+        "height": 180,
+        "bytes": 5744
+      },
+      {
+        "src": "/images/home-cards/563c1c5e2c57-640.webp",
+        "width": 640,
+        "height": 360,
+        "bytes": 15990
+      },
+      {
+        "src": "/images/home-cards/563c1c5e2c57-960.webp",
+        "width": 960,
+        "height": 540,
+        "bytes": 26774
+      }
+    ]
+  },
+  "/uploads/cover.webp": {
+    "width": 1062,
+    "height": 720,
+    "originalBytes": 702784,
+    "variants": [
+      {
+        "src": "/images/home-cards/bcba7a6c92c5-320.webp",
+        "width": 320,
+        "height": 217,
+        "bytes": 14376
+      },
+      {
+        "src": "/images/home-cards/bcba7a6c92c5-640.webp",
+        "width": 640,
+        "height": 434,
+        "bytes": 37320
+      },
+      {
+        "src": "/images/home-cards/bcba7a6c92c5-960.webp",
+        "width": 960,
+        "height": 651,
+        "bytes": 60352
+      }
+    ]
+  },
+  "/uploads/fees-refund-cover.webp": {
+    "width": 1280,
+    "height": 720,
+    "originalBytes": 87190,
+    "variants": [
+      {
+        "src": "/images/home-cards/5ad0407f6878-320.webp",
+        "width": 320,
+        "height": 180,
+        "bytes": 8998
+      },
+      {
+        "src": "/images/home-cards/5ad0407f6878-640.webp",
+        "width": 640,
+        "height": 360,
+        "bytes": 22726
+      },
+      {
+        "src": "/images/home-cards/5ad0407f6878-960.webp",
+        "width": 960,
+        "height": 540,
+        "bytes": 38622
+      }
+    ]
+  },
+  "/uploads/reviews/beetlejuice-in-prague-from-tim-burtons-film-to-the-stage/beetlejuice-prague-cover.avif": {
+    "width": 1200,
+    "height": 900,
+    "originalBytes": 50167,
+    "variants": [
+      {
+        "src": "/images/home-cards/6e8ca5c54652-320.webp",
+        "width": 320,
+        "height": 240,
+        "bytes": 17904
+      },
+      {
+        "src": "/images/home-cards/6e8ca5c54652-640.webp",
+        "width": 640,
+        "height": 480,
+        "bytes": 55040
+      },
+      {
+        "src": "/images/home-cards/6e8ca5c54652-960.webp",
+        "width": 960,
+        "height": 720,
+        "bytes": 97932
+      }
+    ]
+  },
+  "/uploads/reviews/chicago-the-musical-uk-tour-2027/chicago-paul-coltas-08.webp": {
+    "width": 1600,
+    "height": 900,
+    "originalBytes": 197086,
+    "variants": [
+      {
+        "src": "/images/home-cards/340c2de6b3ee-320.webp",
+        "width": 320,
+        "height": 180,
+        "bytes": 9008
+      },
+      {
+        "src": "/images/home-cards/340c2de6b3ee-640.webp",
+        "width": 640,
+        "height": 360,
+        "bytes": 24972
+      },
+      {
+        "src": "/images/home-cards/340c2de6b3ee-960.webp",
+        "width": 960,
+        "height": 540,
+        "bytes": 43654
+      }
+    ]
+  },
+  "/uploads/reviews/evita-from-madonna-to-rachel-zegler/evita-2025-cover.webp": {
+    "width": 1536,
+    "height": 1024,
+    "originalBytes": 217484,
+    "variants": [
+      {
+        "src": "/images/home-cards/8d37bd2d0122-320.webp",
+        "width": 320,
+        "height": 213,
+        "bytes": 19746
+      },
+      {
+        "src": "/images/home-cards/8d37bd2d0122-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 55072
+      },
+      {
+        "src": "/images/home-cards/8d37bd2d0122-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 94528
+      }
+    ]
+  },
+  "/uploads/reviews/grease-the-immersive-movie-musical-london-2026/grease-immersive-autoshop.webp": {
+    "width": 1600,
+    "height": 1200,
+    "originalBytes": 221916,
+    "variants": [
+      {
+        "src": "/images/home-cards/3c7ebc80f81f-320.webp",
+        "width": 320,
+        "height": 240,
+        "bytes": 17648
+      },
+      {
+        "src": "/images/home-cards/3c7ebc80f81f-640.webp",
+        "width": 640,
+        "height": 480,
+        "bytes": 53690
+      },
+      {
+        "src": "/images/home-cards/3c7ebc80f81f-960.webp",
+        "width": 960,
+        "height": 720,
+        "bytes": 94426
+      }
+    ]
+  },
+  "/uploads/reviews/jesus-christ-superstar-london-2026/jesus-christ-superstar-standing-ovation-oya-canli.jpg": {
+    "width": 1600,
+    "height": 837,
+    "originalBytes": 166401,
+    "variants": [
+      {
+        "src": "/images/home-cards/2e7b13d59089-320.webp",
+        "width": 320,
+        "height": 167,
+        "bytes": 11866
+      },
+      {
+        "src": "/images/home-cards/2e7b13d59089-640.webp",
+        "width": 640,
+        "height": 335,
+        "bytes": 35452
+      },
+      {
+        "src": "/images/home-cards/2e7b13d59089-960.webp",
+        "width": 960,
+        "height": 502,
+        "bytes": 64696
+      }
+    ]
+  },
+  "/uploads/reviews/les-miserables-arena-spectacular-royal-albert-hall-2026/les-miserables-curtain-call-cover.webp": {
+    "width": 1600,
+    "height": 837,
+    "originalBytes": 179396,
+    "variants": [
+      {
+        "src": "/images/home-cards/2af93f8a81e0-320.webp",
+        "width": 320,
+        "height": 167,
+        "bytes": 14282
+      },
+      {
+        "src": "/images/home-cards/2af93f8a81e0-640.webp",
+        "width": 640,
+        "height": 335,
+        "bytes": 42764
+      },
+      {
+        "src": "/images/home-cards/2af93f8a81e0-960.webp",
+        "width": 960,
+        "height": 502,
+        "bytes": 76142
+      }
+    ]
+  },
+  "/uploads/reviews/mamma-mia-from-abba-to-the-west-end/mamma-mia-west-end-cover.webp": {
+    "width": 1400,
+    "height": 934,
+    "originalBytes": 152562,
+    "variants": [
+      {
+        "src": "/images/home-cards/d43c194ad37f-320.webp",
+        "width": 320,
+        "height": 213,
+        "bytes": 12560
+      },
+      {
+        "src": "/images/home-cards/d43c194ad37f-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 38870
+      },
+      {
+        "src": "/images/home-cards/d43c194ad37f-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 78234
+      }
+    ]
+  },
+  "/uploads/reviews/notre-dame-de-paris-poland-2027/notre-dame-de-paris-poland-2027-cover.webp": {
+    "width": 2048,
+    "height": 1152,
+    "originalBytes": 243290,
+    "variants": [
+      {
+        "src": "/images/home-cards/bb83f5252659-320.webp",
+        "width": 320,
+        "height": 180,
+        "bytes": 9516
+      },
+      {
+        "src": "/images/home-cards/bb83f5252659-640.webp",
+        "width": 640,
+        "height": 360,
+        "bytes": 30064
+      },
+      {
+        "src": "/images/home-cards/bb83f5252659-960.webp",
+        "width": 960,
+        "height": 540,
+        "bytes": 57292
+      }
+    ]
+  },
+  "/uploads/reviews/phantom-of-the-opera-2026/phantom-of-the-opera-mask-rose-todaytix.webp": {
+    "width": 1080,
+    "height": 1320,
+    "originalBytes": 129074,
+    "variants": [
+      {
+        "src": "/images/home-cards/6a14acac7a0c-320.webp",
+        "width": 320,
+        "height": 391,
+        "bytes": 6258
+      },
+      {
+        "src": "/images/home-cards/6a14acac7a0c-640.webp",
+        "width": 640,
+        "height": 782,
+        "bytes": 23522
+      },
+      {
+        "src": "/images/home-cards/6a14acac7a0c-960.webp",
+        "width": 960,
+        "height": 1173,
+        "bytes": 44294
+      }
+    ]
+  },
+  "/uploads/reviews/phantom-of-the-opera-40th-anniversary-reunion/phantom-40th-crawford-brightman-gala.webp": {
+    "width": 1200,
+    "height": 780,
+    "originalBytes": 57634,
+    "variants": [
+      {
+        "src": "/images/home-cards/8d041c61cae7-320.webp",
+        "width": 320,
+        "height": 208,
+        "bytes": 8152
+      },
+      {
+        "src": "/images/home-cards/8d041c61cae7-640.webp",
+        "width": 640,
+        "height": 416,
+        "bytes": 20900
+      },
+      {
+        "src": "/images/home-cards/8d041c61cae7-960.webp",
+        "width": 960,
+        "height": 624,
+        "bytes": 33784
+      }
+    ]
+  },
+  "/uploads/reviews/singin-in-the-rain-from-hollywood-to-the-stage/singin-in-the-rain-cover.avif": {
+    "width": 1000,
+    "height": 750,
+    "originalBytes": 35244,
+    "variants": [
+      {
+        "src": "/images/home-cards/c3e768dc45cd-320.webp",
+        "width": 320,
+        "height": 240,
+        "bytes": 23296
+      },
+      {
+        "src": "/images/home-cards/c3e768dc45cd-640.webp",
+        "width": 640,
+        "height": 480,
+        "bytes": 73144
+      },
+      {
+        "src": "/images/home-cards/c3e768dc45cd-960.webp",
+        "width": 960,
+        "height": 720,
+        "bytes": 122008
+      }
+    ]
+  },
+  "/uploads/reviews/sunset-boulevard-the-hollywood-classic-that-became-a-musical/sunset-boulevard-marc-brenner-cover.webp": {
+    "width": 1800,
+    "height": 1200,
+    "originalBytes": 116352,
+    "variants": [
+      {
+        "src": "/images/home-cards/0d15bcae2051-320.webp",
+        "width": 320,
+        "height": 213,
+        "bytes": 4316
+      },
+      {
+        "src": "/images/home-cards/0d15bcae2051-640.webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 10128
+      },
+      {
+        "src": "/images/home-cards/0d15bcae2051-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 17928
+      }
+    ]
+  },
+  "/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-state-opera-cover.avif": {
+    "width": 1800,
+    "height": 1350,
+    "originalBytes": 145450,
+    "variants": [
+      {
+        "src": "/images/home-cards/3a00f89c67b9-320.webp",
+        "width": 320,
+        "height": 240,
+        "bytes": 17590
+      },
+      {
+        "src": "/images/home-cards/3a00f89c67b9-640.webp",
+        "width": 640,
+        "height": 480,
+        "bytes": 56896
+      },
+      {
+        "src": "/images/home-cards/3a00f89c67b9-960.webp",
+        "width": 960,
+        "height": 720,
+        "bytes": 112876
+      }
+    ]
+  },
+  "/uploads/reviews/why-west-end-changed-how-i-experience-live-theatre/oya-canli-west-end-sondheim-theatre.webp": {
+    "width": 593,
+    "height": 748,
+    "originalBytes": 84992,
+    "variants": [
+      {
+        "src": "/images/home-cards/615f140d9ca9-320.webp",
+        "width": 320,
+        "height": 404,
+        "bytes": 24212
+      },
+      {
+        "src": "/images/home-cards/615f140d9ca9-593.webp",
+        "width": 593,
+        "height": 748,
+        "bytes": 61948
+      }
+    ]
+  }
+}

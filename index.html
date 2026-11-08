@@ -167,6 +167,8 @@
   </script>
 
   <!-- Vite vstup -->
+  <!-- Consent must not wait for the dynamically imported homepage application. -->
+  <script type="module" src="/src/identity-init.js"></script>
   <script type="module">
   let homeAppPromise = null;
 

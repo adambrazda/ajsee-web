@@ -3,6 +3,8 @@
 // ==============================
 @use '../globals' as *;
 
+$footer-link: #087c7b;
+
 .site-footer {
   text-align: center;
   padding: 2rem 1rem;
@@ -75,7 +77,7 @@
 }
 
 .footer-legal-link {
-  color: var(--aj-footer-link, #{$brand-blue});
+  color: var(--aj-footer-link, #{$footer-link});
   text-decoration: none;
   transition: color 0.2s ease, opacity 0.2s ease;
 
@@ -85,7 +87,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid $brand-blue;
+    outline: 2px solid var(--aj-footer-link, #{$footer-link});
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -105,7 +107,7 @@
   font-size: 0.9rem;
 
   a {
-    color: var(--aj-footer-link, #{$brand-blue});
+    color: var(--aj-footer-link, #{$footer-link});
     text-decoration: none;
 
     &:hover,
@@ -114,7 +116,7 @@
     }
 
     &:focus-visible {
-      outline: 2px solid $brand-blue;
+      outline: 2px solid var(--aj-footer-link, #{$footer-link});
       outline-offset: 2px;
       border-radius: 4px;
     }
@@ -184,7 +186,7 @@
 
 .footer-legal-link,
 .footer-legal-button {
-  color: var(--aj-footer-link, #{$brand-blue});
+  color: var(--aj-footer-link, #{$footer-link});
   font: inherit;
   line-height: 1.6;
   text-decoration: none;

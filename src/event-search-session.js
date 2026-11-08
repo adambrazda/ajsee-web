@@ -1,3 +1,4 @@
+import { sortEventsByTime } from './event-time-sort.js';
 import { filterEventPriceBatch } from './event-price-filtering.js';
 import { hasActivePriceFilter } from './event-price.js';
 import { filterCurrentEventBatch } from './event-availability.js';
@@ -56,11 +57,7 @@ export function createEventSearchSession({ locale = 'cs', filters = {}, fetchBat
       return orderedCache;
     }
     const latest = searchFilters.sort === 'latest';
-    orderedCache = events.sort((a, b) => {
-      const ta = eventTime(a), tb = eventTime(b);
-      if (ta === Infinity || tb === Infinity) return ta === tb ? 0 : ta === Infinity ? 1 : -1;
-      return latest ? tb - ta : ta - tb;
-    });
+    orderedCache = sortEventsByTime(events, eventTime, latest);
     return orderedCache;
   }
 

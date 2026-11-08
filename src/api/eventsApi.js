@@ -1,3 +1,4 @@
+import { sortEventsByTime } from '../event-time-sort.js';
 import {
   isCityRadiusPlace
 } from '../event-place-runtime.js';
@@ -901,14 +902,15 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
   const seen = new Set();
 
   all = all.filter((ev, idx) => {
-    const titleAny = ev.title?.[loc] ?? ev.title?.cs ?? ev.title?.en ?? ev.title?.sk ?? ev.title ?? '';
-    const titleStr = typeof titleAny === 'string' ? titleAny : (titleAny?.toString?.() ?? '');
-    const cityHint = ev?.location?.city || ev?.venue?.city || '';
-    const timeKey = tsLocalMidday(ev.datetime || ev.date) || idx;
+    let id = ev.id;
+    if (!id) {
+      const titleAny = ev.title?.[loc] ?? ev.title?.cs ?? ev.title?.en ?? ev.title?.sk ?? ev.title ?? '';
+      const titleStr = typeof titleAny === 'string' ? titleAny : (titleAny?.toString?.() ?? '');
+      const cityHint = ev?.location?.city || ev?.venue?.city || '';
+      const timeKey = tsLocalMidday(ev.datetime || ev.date) || idx;
 
-    const id =
-      ev.id ||
-      `${ev.partner || 'x'}-${timeKey}-${(cityHint || '').toLowerCase()}-${titleStr.slice(0, 50)}`;
+      id = `${ev.partner || 'x'}-${timeKey}-${(cityHint || '').toLowerCase()}-${titleStr.slice(0, 50)}`;
+    }
 
     if (seen.has(id)) return false;
 
@@ -1003,16 +1005,7 @@ export async function fetchEvents({ locale, filters = {} } = {}) {
     all = all.filter((ev) => matchesEventDateRange(ev, dateFrom, dateTo));
   }
 
-  all.sort((a, b) => {
-    const da = tsLocalMidday(a.datetime || a.date);
-    const db = tsLocalMidday(b.datetime || b.date);
-
-    if (!Number.isFinite(da) && !Number.isFinite(db)) return 0;
-    if (!Number.isFinite(da)) return 1;
-    if (!Number.isFinite(db)) return -1;
-
-    return sort === 'latest' ? db - da : da - db;
-  });
+  all = sortEventsByTime(all, event => tsLocalMidday(event.datetime || event.date), sort === 'latest');
 
   if (hasAiRelevance(filters)) {
     return result(rankEventsByRelevance(all, filters));

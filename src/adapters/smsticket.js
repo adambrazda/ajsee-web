@@ -1,3 +1,4 @@
+import { sortEventsByTime } from '../event-time-sort.js';
 // /src/adapters/smsticket.js
 // ---------------------------------------------------------
 // AJSEE – smsticket adapter
@@ -765,16 +766,7 @@ export function withSmsticketImagePresentation(
 }
 
 function sortEvents(events, sort = 'nearest') {
-  return [...events].sort((a, b) => {
-    const da = getDateMs(a?.datetime || a?.date);
-    const db = getDateMs(b?.datetime || b?.date);
-
-    if (!Number.isFinite(da) && !Number.isFinite(db)) return 0;
-    if (!Number.isFinite(da)) return 1;
-    if (!Number.isFinite(db)) return -1;
-
-    return sort === 'latest' ? db - da : da - db;
-  });
+  return sortEventsByTime([...events], event => getDateMs(event?.datetime || event?.date), sort === 'latest');
 }
 
 function pageSlice(events, filters = {}) {
@@ -811,11 +803,12 @@ export async function fetchEvents({ filters = {} } = {}) {
   const eventCityTokenCache = new Map();
 
   const candidates = [];
+  const now = new Date();
 
   for (const sourceEvent of events) {
     const ev = withProviderDateRange(withSmsticketCountry(sourceEvent));
     if (country && ev.location?.country && ev.location.country !== country) continue;
-    if (!isSmsticketEventAvailable(ev)) continue;
+    if (!isSmsticketEventAvailable(ev, now)) continue;
 
     if (
       selectedCityTokens.length &&

@@ -25,7 +25,7 @@ const titles = {
 
 async function page(template, lang, consent = null) {
   const html = fs.readFileSync(new URL('../' + template, import.meta.url), 'utf8');
-  const path = template === 'accommodation.html' ? '/accommodation/' : '/londynske-muzikaly/';
+  const path = template === 'index.html' ? '/' : template === 'accommodation.html' ? '/accommodation/' : '/londynske-muzikaly/';
   const dom = new JSDOM(html, { url: `https://ajsee.cz${path}?lang=${lang}`, runScripts: 'outside-only' });
   if (consent !== null) dom.window.localStorage.setItem(CONSENT_KEY, JSON.stringify({ analytics: consent }));
   dom.window.eval(script);
@@ -35,7 +35,7 @@ async function page(template, lang, consent = null) {
   return dom;
 }
 
-for (const template of ['londynske-muzikaly/index.html', 'accommodation.html']) {
+for (const template of ['index.html', 'londynske-muzikaly/index.html', 'accommodation.html']) {
   for (const [lang, title] of Object.entries(titles)) {
     test(`${template}: direct arrival in ${lang} can reject, reopen and accept analytics`, async () => {
       const dom = await page(template, lang);

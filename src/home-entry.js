@@ -1,4 +1,5 @@
 import { isHomeDiscovery } from './home-discovery.js';
+import { homeImageAttributes } from './home-images.js';
 import { loadHomeFeaturedSnapshot, renderHomeFeaturedMarkup } from './home-featured.js';
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
 import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from './event-search-listing.js';
@@ -1486,11 +1487,8 @@ if (slug) {
     const title = esc(pickLocalized(article.title || article.name || article.heading, lang) || '');
     const excerpt = esc(pickLocalized(article.excerpt || article.perex || article.summary || article.description, lang) || '');
     const rawImage = article.image || article.cover || article.hero || article.thumb || '/images/fallbacks/concert0.jpg';
-    const img = esc(
-      typeof optimizeCardImageUrl === 'function'
-        ? optimizeCardImageUrl(rawImage)
-        : rawImage
-    );
+    const imageAttributes = Object.entries(homeImageAttributes(rawImage))
+      .map(([name, value]) => `${name}="${esc(String(value))}"`).join(' ');
     const imageAlt = esc(article.coverAlt || title);
     const href = esc(itemHref(article));
     const ctaLabel = isGuide
@@ -1501,7 +1499,7 @@ if (slug) {
 
     return [
       '<a class="homepage-blog-card blog-card" data-type="', cardType, '" href="', href, '" aria-label="', title, '">',
-        '<img src="', img, '" alt="', imageAlt, '" loading="lazy" decoding="async" />',
+        '<img ', imageAttributes, ' alt="', imageAlt, '" loading="lazy" decoding="async" />',
         '<div class="blog-card-content">',
           '<h3>', title, '</h3>',
           excerpt ? '<p>' + excerpt + '</p>' : '',

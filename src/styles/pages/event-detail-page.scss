@@ -80,8 +80,8 @@ body[data-page="event-detail"] {
   .detail-panel { grid-area: ticket; padding: 28px; border: 1px solid var(--detail-line); border-radius: 22px; background: var(--detail-surface); box-shadow: var(--detail-shadow); }
   .detail-panel h2 { font-family: 'Plus Jakarta Sans','Inter',system-ui,sans-serif; font-size: 1.25rem; line-height: 1.45; font-weight: 700; letter-spacing: -.01em; }
   .detail-facts { margin-top: 23px; display: grid; gap: 22px; }
-  .detail-fact { display: grid; grid-template-columns: 23px minmax(0,1fr); gap: 12px; }
-  .detail-fact > svg { width: 21px; height: 21px; color: var(--detail-accent); margin-top: 3px; }
+  .detail-fact { position: relative; min-width: 0; padding-inline-start: 35px; }
+  .detail-fact dt > svg { position: absolute; inset-inline-start: 0; top: 3px; width: 21px; height: 21px; color: var(--detail-accent); }
   .detail-fact dt { font-size: .72rem; font-weight: 500; color: var(--detail-text); margin-bottom: 4px; }
   .detail-fact dd { margin: 0; font-size: .94rem; font-weight: 600; line-height: 1.65; }
   .detail-fact dd span { display: block; font-size: .85rem; font-weight: 400; color: var(--detail-text); }

@@ -1,3 +1,4 @@
+import { sortEventsByTime } from '../event-time-sort.js';
 import {
   canonForInputCity
 } from '../city/canonical.js';
@@ -543,60 +544,8 @@ export function withColosseumTicketTaxonomy(
 }
 
 
-function sortEvents(
-  events,
-  sort = 'nearest'
-) {
-  return [
-    ...events
-  ].sort(
-    (left, right) => {
-      const leftMs =
-        dateMs(
-          left?.datetime ||
-          left?.date
-        );
-
-      const rightMs =
-        dateMs(
-          right?.datetime ||
-          right?.date
-        );
-
-      if (
-        !Number.isFinite(
-          leftMs
-        ) &&
-        !Number.isFinite(
-          rightMs
-        )
-      ) {
-        return 0;
-      }
-
-      if (
-        !Number.isFinite(
-          leftMs
-        )
-      ) {
-        return 1;
-      }
-
-      if (
-        !Number.isFinite(
-          rightMs
-        )
-      ) {
-        return -1;
-      }
-
-      return (
-        sort === 'latest'
-          ? rightMs - leftMs
-          : leftMs - rightMs
-      );
-    }
-  );
+function sortEvents(events, sort = 'nearest') {
+  return sortEventsByTime([...events], event => dateMs(event?.datetime || event?.date), sort === 'latest');
 }
 
 
@@ -720,6 +669,7 @@ export async function fetchEvents({
 
   const candidates = [];
   const coverage = { located: 0, missing: 0 };
+  const now = new Date();
 
   for (
     const sourceEvent of
@@ -731,7 +681,7 @@ export async function fetchEvents({
     if (country && country !== eventCountry) continue;
     if (
       !isColosseumTicketEventCurrent(
-        event
+        event, now
       )
     ) {
       continue;

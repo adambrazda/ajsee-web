@@ -6,6 +6,9 @@ const COUNTRY_TIMEZONES = {
 const dayFormatters = new Map();
 const clockFormatters = new Map();
 const instantCache = new WeakMap();
+// A batch shares its reference clock; each venue zone needs one day conversion.
+// Keep Date mutations observable and let completed batches be garbage collected.
+const dateInputDays = new WeakMap();
 
 export function validCalendarDay(value = '') {
   const raw = String(value || '').trim();
@@ -34,6 +37,10 @@ export function eventTimezone(event = {}) {
 
 export function calendarDay(value, timezone = 'UTC') {
   if (!value) return '';
+  if (value instanceof Date) {
+    const cached = dateInputDays.get(value);
+    if (cached?.time === value.getTime() && cached.days.has(timezone)) return cached.days.get(timezone);
+  }
   const raw = String(value).trim();
   if (!(value instanceof Date)) {
     if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return validCalendarDay(raw);
@@ -44,6 +51,7 @@ export function calendarDay(value, timezone = 'UTC') {
   }
   const date = value instanceof Date ? value : new Date(value);
   if (!Number.isFinite(date.getTime())) return '';
+  let day;
   try {
     let formatter = dayFormatters.get(timezone);
     if (!formatter) {
@@ -53,8 +61,17 @@ export function calendarDay(value, timezone = 'UTC') {
     }
     const parts = formatter.formatToParts(date);
     const get = type => parts.find(part => part.type === type)?.value;
-    return `${get('year')}-${get('month')}-${get('day')}`;
-  } catch { return date.toISOString().slice(0, 10); }
+    day = `${get('year')}-${get('month')}-${get('day')}`;
+  } catch { day = date.toISOString().slice(0, 10); }
+  if (value instanceof Date) {
+    let cached = dateInputDays.get(value);
+    if (cached?.time !== value.getTime()) {
+      cached = { time: value.getTime(), days: new Map() };
+      dateInputDays.set(value, cached);
+    }
+    if (cached.days.size < 64) cached.days.set(timezone, day);
+  }
+  return day;
 }
 
 export function eventDateBounds(event = {}) {

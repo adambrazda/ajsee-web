@@ -1,8 +1,8 @@
 {
   "slug": "my-fair-lady-70-years-musical-legend",
   "contentType": "article",
-  "status": "approved",
-  "published": false,
+  "status": "published",
+  "published": true,
   "featured": false,
   "category": "theatre",
   "showTitle": "My Fair Lady",
@@ -13,7 +13,7 @@
   "performanceDate": "",
   "eventDate": "",
   "reviewDate": "2026-11-05",
-  "publishedAt": "",
+  "publishedAt": "2026-11-09T06:05:00.000Z",
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.cz/events",
@@ -147,6 +147,7 @@
       ]
     }
   },
-  "internalNotes": "EDITORIAL: My Fair Lady 70-year anniversary feature, not an eyewitness performance review. EN master individually approved by AJSEE editor on 5 November 2026, then Czech translation individually approved without changes. Slovak translation individually approved by AJSEE editor on 5 November 2026. German translation individually approved by AJSEE editor on 5 November 2026. Polish translation individually approved by AJSEE editor on 5 November 2026. Hungarian translation individually approved by AJSEE editor on 5 November 2026. All six locales approved; four approved-source official Opera Australia 2026 images are staged locally, all with photographer credits and six-locale alt text; explicit authorization to publish is still pending. NEVER publish before user explicitly authorizes release, even though all six languages and draft media are now prepared. AJSEE editor confirmed rights to use the photos on 5 November 2026. Four genuine Opera Australia Flickr photos downloaded and committed in source + optimized format; Jeff Busby credited. Photos are from Sydney 2026, not the 1956 Broadway premiere or 1964 film. The original camera masters are not guaranteed; archived JPGs are the highest successfully fetched source-size variant. Do not imply Oya attended Sydney. General CTA points to verified AJSEE events listing, not a specific show. Do not alter the approved EN/CZ article prose. Historic and contemporary performance facts reflect the approved English master.",
-  "relatedSlugs": []
+  "internalNotes": "EDITORIAL: My Fair Lady 70-year anniversary feature, not an eyewitness performance review. EN master individually approved by AJSEE editor on 5 November 2026, then Czech translation individually approved without changes. Slovak translation individually approved by AJSEE editor on 5 November 2026. German translation individually approved by AJSEE editor on 5 November 2026. Polish translation individually approved by AJSEE editor on 5 November 2026. Hungarian translation individually approved by AJSEE editor on 5 November 2026. All six locales approved; four approved-source official Opera Australia 2026 images are staged locally, all with photographer credits and six-locale alt text; explicit authorization to publish is still pending. NEVER publish before user explicitly authorizes release, even though all six languages and draft media are now prepared. AJSEE editor confirmed rights to use the photos on 5 November 2026. Four genuine Opera Australia Flickr photos downloaded and committed in source + optimized format; Jeff Busby credited. Photos are from Sydney 2026, not the 1956 Broadway premiere or 1964 film. The original camera masters are not guaranteed; archived JPGs are the highest successfully fetched source-size variant. Do not imply Oya attended Sydney. General CTA points to verified AJSEE events listing, not a specific show. Do not alter the approved EN/CZ article prose. Historic and contemporary performance facts reflect the approved English master.\nPublication explicitly authorized by Adam Brazda on 9 November 2026. Published in all six approved locales (EN, CS, SK, DE, PL, HU). Approved article prose and image credits left unchanged.",
+  "relatedSlugs": [],
+  "updatedAt": "2026-11-09"
 }

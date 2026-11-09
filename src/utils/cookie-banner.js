@@ -2,6 +2,7 @@
   readConsent,
   writeConsent,
   applyConsent,
+  initializeConsentMode,
 } from './consent.js';
 
 const COOKIE_BANNER_FALLBACKS = {
@@ -439,6 +440,10 @@ function bindGlobalListeners() {
 }
 
 function initCookieBanner({ lang = null } = {}) {
+  // Consent defaults must exist before any optional Google tag can load.
+  // Calling this from the visible consent bootstrap also makes the ordering
+  // explicit for standalone pages and resilient to future bundle splitting.
+  initializeConsentMode();
   bindGlobalListeners();
   initialized = true;
 

@@ -44,6 +44,19 @@ for (const template of ['index.html', 'londynske-muzikaly/index.html', 'accommod
         const doc = win.document;
         assert.equal(doc.querySelector('#cookie-banner-title').textContent, title);
         assert.equal(doc.querySelectorAll('script[src*="googletagmanager.com"]').length, 0);
+        const consentDefaults = Array.from(win.dataLayer || []).filter((entry) =>
+          entry?.[0] === 'consent' && entry?.[1] === 'default'
+        );
+        assert.equal(consentDefaults.length, 1);
+        assert.deepEqual(
+          { ...consentDefaults[0][2] },
+          {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+          }
+        );
         doc.querySelector('#cookie-banner [data-action="reject"]').click();
         assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).analytics, false);
         assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).marketing, false);
@@ -85,6 +98,12 @@ test('regular page bootstrap and language changes keep a single working consent 
     const doc = win.document;
     win.testInitCookieBanner({ lang: 'cs' });
     win.testInitCookieBanner({ lang: 'cs' });
+    assert.equal(
+      Array.from(win.dataLayer || []).filter((entry) =>
+        entry?.[0] === 'consent' && entry?.[1] === 'default'
+      ).length,
+      1
+    );
     assert.equal(doc.querySelectorAll('#cookie-banner').length, 1);
     assert.equal(doc.querySelectorAll('#cookie-preferences').length, 1);
     doc.querySelector('[data-open-cookie-settings]').click();

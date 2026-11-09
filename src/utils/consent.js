@@ -143,6 +143,10 @@ function ensureGoogleConsentDefaults() {
   gtag('consent', 'default', googleConsentSettings(defaultConsent));
 }
 
+function initializeConsentMode() {
+  ensureGoogleConsentDefaults();
+}
+
 function getExistingScriptByContains(partialSrc) {
   return Array.from(document.scripts || []).find((script) =>
     String(script.src || '').includes(partialSrc)
@@ -494,6 +498,7 @@ export {
   hasConsentDecision,
   hasAnalyticsConsent,
   hasMarketingConsent,
+  initializeConsentMode,
   applyConsent,
   loadGTM,
   loadGA4Direct,

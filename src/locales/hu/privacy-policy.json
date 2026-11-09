@@ -13,7 +13,7 @@
       "title": "Adatvédelmi tájékoztató",
       "lead": "Ezen az oldalon információt találsz arról, hogy az AJSEE milyen személyes adatokat kezelhet, miért kezeli azokat, mennyi ideig őrzi meg őket, és milyen jogaid vannak.",
       "updatedLabel": "Utolsó frissítés:",
-      "updatedDate": "2026. május 1."
+      "updatedDate": "2026. november 9."
     },
     "toc": {
       "title": "Tartalom",
@@ -92,6 +92,11 @@
           "title": "Jogi kötelezettségek és igények védelme",
           "text": "A releváns nyilvántartásokat megőrizhetjük vagy felhasználhatjuk, ha ez jogi kötelezettségek teljesítéséhez, nyilvántartás vezetéséhez, jogaink védelméhez vagy jogi igények érvényesítéséhez szükséges.",
           "basis": "jogi kötelezettség és jogos érdek."
+        },
+        "8": {
+          "title": "Hirdetési kampányok mérése",
+          "text": "Ha hirdetési kampányokat indítunk, és marketing-hozzájárulást adsz, a Google Ads és a Google Tag Manager segítségével mérhetjük azok teljesítményét és az azt követő konverziókat.",
+          "basis": "hozzájárulás."
         }
       },
       "p1": "Nem értékesítjük a személyes adataidat."
@@ -107,7 +112,8 @@
         "2": "a süti-preferenciák, a nyelv és a regionális beállítások megjegyzésére szolgáló technológiák;",
         "3": "Google Tag Manager a tagek és integrációk kezelésére az aktuális konfiguráció és a hozzájárulási állapot szerint;",
         "4": "Google Analytics, ha engedélyezve van, az összesített webhasználat megértésére és a szolgáltatás fejlesztésére;",
-        "5": "partneri vagy attribúciós tracking paraméterek, amikor az AJSEE-ről kiválasztott harmadik felek oldalaira lépsz át."
+        "5": "partneri vagy attribúciós tracking paraméterek, amikor az AJSEE-ről kiválasztott harmadik felek oldalaira lépsz át.",
+        "6": "Google Ads, ha a marketing-hozzájárulás külön engedélyezve van, a hirdetési kampányok és konverziók mérésére;"
       },
       "p2": "Az opcionális sütiket a süti-bannerben, a weboldal láblécében található hivatkozáson vagy a böngésződ beállításaiban kezelheted. Egyes sütik letiltása hatással lehet bizonyos nem alapvető funkciókra vagy mérési lehetőségekre. További információt a <a href=\"/cookies-policy\" data-lang-link>Cookie-szabályzatban</a> találsz."
     },

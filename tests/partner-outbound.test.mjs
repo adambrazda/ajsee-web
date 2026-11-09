@@ -14,7 +14,9 @@ function fixture({ path = '/events', lang = 'cs', page = 'events', markup = '', 
     url: 'https://ajsee.cz' + path
   });
   const win = dom.window;
-  if (consent !== null) win.localStorage.setItem(CONSENT_KEY, JSON.stringify({ analytics: consent }));
+  if (consent !== null) win.localStorage.setItem(CONSENT_KEY, JSON.stringify(
+    typeof consent === 'object' ? consent : { analytics: consent }
+  ));
   const commands = [];
   win.gtag = (...args) => commands.push(args);
   initPartnerOutboundTracking(win.document);
@@ -69,6 +71,17 @@ test('middle click is measured; right click and cancelled touch are not', () => 
   assert.equal(commands.length, 0);
   activate(win, link, { type: 'auxclick', button: 1 });
   assert.equal(commands.length, 1);
+  dom.window.close();
+});
+
+test('marketing consent emits a separate GTM conversion event without a duplicate GA4 hit', () => {
+  const { win, doc, commands, dom } = fixture({ markup: cardMarkup(), consent: { analytics: false, marketing: true } });
+  activate(win, doc.querySelector('a'));
+  assert.equal(commands.length, 0);
+  const conversion = win.dataLayer.find(item => item?.event === 'ajsee_partner_click_gtm');
+  assert.equal(conversion.analytics_event_name, 'ajsee_partner_click');
+  assert.equal(conversion.partner, 'colosseumticket');
+  assert.equal(conversion.event_id, 'colosseumticket-elisabeth-2027');
   dom.window.close();
 });
 

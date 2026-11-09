@@ -13,7 +13,7 @@
       "title": "Zásady ochrany osobných údajov",
       "lead": "Na tejto stránke nájdeš informácie o tom, aké osobné údaje môže AJSEE spracúvať, prečo ich spracúva, ako dlho ich uchováva a aké máš práva.",
       "updatedLabel": "Naposledy aktualizované:",
-      "updatedDate": "1. mája 2026"
+      "updatedDate": "9. novembra 2026"
     },
     "toc": {
       "title": "Obsah",
@@ -92,6 +92,11 @@
           "title": "Plnenie právnych povinností a ochrana nárokov",
           "text": "Relevantné záznamy môžeme uchovávať alebo používať tam, kde je to nevyhnutné na splnenie právnych povinností, vedenie evidencie, ochranu našich práv alebo obranu právnych nárokov.",
           "basis": "právna povinnosť a oprávnený záujem."
+        },
+        "8": {
+          "title": "Meranie reklamných kampaní",
+          "text": "Ak spustíme reklamné kampane a udelíš marketingový súhlas, môžeme merať ich výkon a následné konverzie prostredníctvom Google Ads a Google Tag Managera.",
+          "basis": "súhlas."
         }
       },
       "p1": "Tvoje osobné údaje nepredávame."
@@ -107,7 +112,8 @@
         "2": "technológie na zapamätanie cookie preferencií, jazyka a regionálneho nastavenia;",
         "3": "Google Tag Manager na správu tagov a integrácií v závislosti od aktuálnej konfigurácie a stavu súhlasu;",
         "4": "Google Analytics, ak je povolená, na pochopenie agregovaného používania webu a jeho zlepšovanie;",
-        "5": "partnerské alebo atribučné tracking parametre pri prechode z AJSEE na vybrané tretie strany."
+        "5": "partnerské alebo atribučné tracking parametre pri prechode z AJSEE na vybrané tretie strany.",
+        "6": "Google Ads, ak je samostatne povolený marketingový súhlas, na meranie reklamných kampaní a konverzií;"
       },
       "p2": "Voliteľné cookies môžeš spravovať prostredníctvom cookie banneru, odkazu v pätičke webu alebo nastavení svojho prehliadača. Vypnutie niektorých cookies môže ovplyvniť určité neesenciálne funkcie alebo možnosti merania. Viac informácií nájdeš v našich <a href=\"/cookies-policy\" data-lang-link>Zásadách používania cookies</a>."
     },

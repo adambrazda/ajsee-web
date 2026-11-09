@@ -13,7 +13,7 @@
       "title": "Polityka cookies",
       "lead": "Na tej stronie znajdziesz informacje o tym, w jaki sposób AJSEE wykorzystuje pliki cookies i podobne technologie, które są niezbędne do działania strony, które są opcjonalne oraz jak możesz zarządzać swoimi preferencjami.",
       "updatedLabel": "Ostatnia aktualizacja:",
-      "updatedDate": "1 maja 2026"
+      "updatedDate": "9 listopada 2026"
     },
     "toc": {
       "title": "Spis treści",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. Jak wykorzystujemy cookies",
-      "p1": "AJSEE wykorzystuje niektóre technologie po to, aby strona działała prawidłowo i bezpiecznie oraz aby mogła zapamiętać podstawowe wybory, takie jak język, region lub ustawienia cookies. Inne technologie wykorzystujemy wyłącznie wtedy, gdy wyrazisz na to zgodę, na przykład do analityki lub pomiaru skuteczności treści.",
+      "p1": "AJSEE wykorzystuje niektóre technologie po to, aby strona działała prawidłowo i bezpiecznie oraz aby mogła zapamiętać podstawowe wybory, takie jak język, region lub ustawienia cookies. Inne technologie wykorzystujemy wyłącznie za Twoją zgodą, na przykład do analityki lub pomiaru skuteczności treści albo kampanii reklamowych.",
       "p2": "Nie wszystkie cookies służą temu samemu celowi. Niektóre są niezbędne do technicznego działania strony, inne pomagają nam zrozumieć, jak użytkownicy korzystają ze strony, a jeszcze inne mogą wiązać się z przejściem na strony partnerów lub z pomiarem parametrów atrybucyjnych."
     },
     "types": {
@@ -54,6 +54,10 @@
         "4": {
           "title": "Partnerskie / atrybucyjne",
           "text": "W niektórych przypadkach podczas przejścia z AJSEE na stronę partnera mogą być używane parametry referral lub atrybucyjne, które pomagają ocenić, czy wizyta pochodziła z AJSEE."
+        },
+        "5": {
+          "title": "Marketingowe",
+          "text": "Te technologie mogą mierzyć skuteczność kampanii reklamowych i konwersje, na przykład przez Google Ads. Używamy ich tylko wtedy, gdy włączysz je oddzielnie."
         }
       }
     },
@@ -80,6 +84,10 @@
         "5": {
           "label": "Parametry partnerskie / referral",
           "text": "Parametry lub mechanizmy pomiarowe związane z przejściem na strony partnerów, na przykład w ramach współpracy afiliacyjnej lub referral."
+        },
+        "6": {
+          "label": "Google Ads",
+          "text": "Po uruchomieniu kampanii reklamowych może służyć do pomiaru ich skuteczności i konwersji. Pamięć reklamową i powiązane przetwarzanie włączymy dopiero po zgodzie marketingowej."
         }
       },
       "p2": "Konkretne nazwy, cele i okresy przechowywania mogą z czasem się zmieniać w zależności od rozwoju technicznego strony, wykorzystywanych integracji lub aktualizacji partnerów. Jeśli nastąpi istotna zmiana, odpowiednio zaktualizujemy tę stronę."

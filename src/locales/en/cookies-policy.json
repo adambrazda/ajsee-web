@@ -13,7 +13,7 @@
       "title": "Cookies Policy",
       "lead": "On this page, you can find information about how AJSEE uses cookies and similar technologies, which are necessary for the website to function, which are optional, and how you can manage your preferences.",
       "updatedLabel": "Last updated:",
-      "updatedDate": "1 May 2026"
+      "updatedDate": "9 November 2026"
     },
     "toc": {
       "title": "Contents",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. How we use cookies",
-      "p1": "AJSEE uses certain technologies so that the website functions properly and securely, and so that it can remember basic choices such as language, region or cookie settings. We only use other technologies if you give your consent, for example for analytics or measuring content performance.",
+      "p1": "AJSEE uses certain technologies so that the website functions properly and securely, and so that it can remember basic choices such as language, region or cookie settings. We only use other technologies if you give your consent, for example for analytics, measuring content performance or advertising campaigns.",
       "p2": "Not all cookies serve the same purpose. Some are necessary for the technical operation of the website, others help us understand how people use the website, and some may relate to visits to partner websites or the measurement of attribution parameters."
     },
     "types": {
@@ -54,6 +54,10 @@
         "4": {
           "title": "Partner / attribution",
           "text": "In some cases, referral or attribution parameters may be used when you move from AJSEE to a partner website in order to help assess whether the visit came from AJSEE."
+        },
+        "5": {
+          "title": "Marketing",
+          "text": "These technologies may measure advertising campaign performance and conversions, for example through Google Ads. We use them only if you enable them separately."
         }
       }
     },
@@ -80,6 +84,10 @@
         "5": {
           "label": "Partner / referral parameters",
           "text": "Parameters or measurement mechanisms related to transitions to partner websites, for example as part of affiliate or referral cooperation."
+        },
+        "6": {
+          "label": "Google Ads",
+          "text": "When advertising campaigns are launched, it may be used to measure their performance and conversions. We enable advertising storage and related processing only after marketing consent."
         }
       },
       "p2": "Specific names, purposes, and retention periods may change over time depending on the technical development of the website, the integrations used, or partner updates. If a material change occurs, we will update this page accordingly."

@@ -30,7 +30,12 @@ test('rejecting or missing consent loads no Google scripts, including manual loa
     assert.equal(await module.loadGA4Direct(), false);
     assert.equal(await module.loadGTM(), false);
     assert.equal(win.document.scripts.length, 0);
-    assert.equal(win.gtag, undefined);
+    assert.equal(typeof win.gtag, 'function');
+    const consentDefault = win.dataLayer.find(command => command[0] === 'consent' && command[1] === 'default');
+    assert.deepEqual(consentDefault[2], {
+      analytics_storage: 'denied', ad_storage: 'denied',
+      ad_user_data: 'denied', ad_personalization: 'denied'
+    });
   });
 });
 
@@ -72,9 +77,24 @@ test('withdrawal disables GA4, stops clickouts and prevents pending loaders from
     for (const script of win.document.scripts) script.onload();
     await pending;
     assert.equal(win.dataLayer.filter(c => c[0] === 'event').length, 0);
-    assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_consent_analytics_granted').length, 0);
+    assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_consent_updated').length, 0);
     assert.equal(win.sessionStorage.length, 0);
     assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).analytics, false);
+  });
+});
+
+test('marketing-only consent grants advertising modes, keeps analytics denied and loads only GTM', async () => {
+  await environment(async (module, win) => {
+    const pending = module.applyConsent(module.writeConsent({ analytics: false, marketing: true }));
+    assert.equal(win.document.scripts.length, 1);
+    assert.match(win.document.scripts[0].src, /gtm\.js/);
+    const update = [...win.dataLayer].reverse().find(command => command[0] === 'consent' && command[1] === 'update');
+    assert.equal(update[2].analytics_storage, 'denied');
+    assert.equal(update[2].ad_storage, 'granted');
+    assert.equal(update[2].ad_user_data, 'granted');
+    assert.equal(update[2].ad_personalization, 'granted');
+    win.document.scripts[0].onload();
+    assert.equal(await pending, true);
   });
 });
 

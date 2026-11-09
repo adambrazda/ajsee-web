@@ -462,9 +462,9 @@ function applyConsent(consent) {
     writeDebug({
       analyticsConsent: analyticsAllowed,
       marketingConsent: hasMarketingConsent(),
-      analyticsRequested: true,
+      analyticsRequested: !!consent.analytics,
       analyticsLoaded: analyticsAllowed && directGa4Loaded,
-      gtmRequested: true,
+      gtmRequested: !!(consent.analytics || consent.marketing),
       gtmLoaded: gtmContainerLoaded,
       source: 'apply-consent-ga4-plus-gtm',
       gtmId: GTM_ID,

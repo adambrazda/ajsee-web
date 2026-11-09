@@ -5,11 +5,15 @@ const boundDocuments = new WeakSet();
 const LANGUAGES = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const text = value => String(value || '').replace(/\s+/g, ' ').trim();
 
-function analyticsAllowed(win) {
+function trackingConsent(win) {
   try {
-    return JSON.parse(win.localStorage.getItem(CONSENT_KEY))?.analytics === true;
+    const consent = JSON.parse(win.localStorage.getItem(CONSENT_KEY));
+    return {
+      analytics: consent?.analytics === true,
+      marketing: consent?.marketing === true,
+    };
   } catch {
-    return false;
+    return { analytics: false, marketing: false };
   }
 }
 
@@ -124,7 +128,9 @@ export function buildPartnerOutboundPayload(link, {
 
 export function trackPartnerOutboundLink(link, options = {}) {
   const win = options.win || link?.ownerDocument?.defaultView || globalThis.window;
-  if (!win || !analyticsAllowed(win)) return null;
+  if (!win) return null;
+  const consent = trackingConsent(win);
+  if (!consent.analytics && !consent.marketing) return null;
   const activation = options.activation;
   if (activation && (activation.type === 'auxclick' ? activation.button !== 1 : activation.button > 0)) return null;
   if (activation && trackedActivations.has(activation)) return null;
@@ -133,15 +139,24 @@ export function trackPartnerOutboundLink(link, options = {}) {
 
   try {
     win.dataLayer = win.dataLayer || [];
-    if (typeof win.gtag !== 'function') {
-      win.gtag = function () { win.dataLayer.push(arguments); };
+    if (consent.analytics) {
+      if (typeof win.gtag !== 'function') {
+        win.gtag = function () { win.dataLayer.push(arguments); };
+      }
+      // Direct GA4 remains the single owner of the analytics event.
+      const { event, event_id, language, ...parameters } = payload;
+      win.gtag('event', event, { ...parameters, partner_event_id: event_id, send_to: GA4_MEASUREMENT_ID });
     }
-    // The published GTM trigger listens for legacy partner_click and can also
-    // react to gtag event commands. Use a separate name to avoid duplicate hits.
-    // event_id and language are reserved Google fields. Keep AJSEE's identity
-    // and page locale in explicit custom parameters, without overriding them.
-    const { event, event_id, language, ...parameters } = payload;
-    win.gtag('event', event, { ...parameters, partner_event_id: event_id, send_to: GA4_MEASUREMENT_ID });
+    if (consent.marketing) {
+      // A distinct event avoids duplicating the direct GA4 hit and gives GTM a
+      // deterministic trigger for future consent-gated Google Ads conversions.
+      const { event, ...parameters } = payload;
+      win.dataLayer.push({
+        ...parameters,
+        event: 'ajsee_partner_click_gtm',
+        analytics_event_name: event,
+      });
+    }
     if (activation) trackedActivations.add(activation);
     win.__ajsee = win.__ajsee || {};
     win.__ajsee.lastPartnerClick = payload;

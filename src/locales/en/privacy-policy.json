@@ -13,7 +13,7 @@
       "title": "Privacy Policy",
       "lead": "On this page, you can find information about what personal data AJSEE may process, why we process it, how long we keep it, and what rights you have.",
       "updatedLabel": "Last updated:",
-      "updatedDate": "1 May 2026"
+      "updatedDate": "9 November 2026"
     },
     "toc": {
       "title": "Contents",
@@ -92,6 +92,11 @@
           "title": "Legal obligations and protection of claims",
           "text": "We may retain or use relevant records where necessary to comply with legal obligations, keep records, protect our rights or defend legal claims.",
           "basis": "legal obligation and legitimate interests."
+        },
+        "8": {
+          "title": "Advertising campaign measurement",
+          "text": "If we launch advertising campaigns and you give marketing consent, we may measure their performance and subsequent conversions through Google Ads and Google Tag Manager.",
+          "basis": "consent."
         }
       },
       "p1": "We do not sell your personal data."
@@ -107,7 +112,8 @@
         "2": "technologies used to remember cookie preferences, language and regional settings;",
         "3": "Google Tag Manager for managing tags and integrations depending on the current configuration and consent status;",
         "4": "Google Analytics, where enabled, to understand aggregated website usage and improve the service;",
-        "5": "partner or attribution tracking parameters when you move from AJSEE to selected third parties."
+        "5": "partner or attribution tracking parameters when you move from AJSEE to selected third parties.",
+        "6": "Google Ads, where marketing consent is enabled separately, to measure advertising campaigns and conversions;"
       },
       "p2": "You can manage optional cookies through the cookie banner, the link in the website footer, or your browser settings. Disabling some cookies may affect certain non-essential functions or measurement capabilities. You can find more information in our <a href=\"/cookies-policy\" data-lang-link>Cookies Policy</a>."
     },

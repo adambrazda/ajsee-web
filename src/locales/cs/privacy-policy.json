@@ -13,7 +13,7 @@
       "title": "Zásady ochrany osobních údajů",
       "lead": "Na této stránce najdeš informace o tom, jaké osobní údaje může AJSEE zpracovávat, proč je zpracovává, jak dlouho je uchovává a jaká máš práva.",
       "updatedLabel": "Naposledy aktualizováno:",
-      "updatedDate": "1. května 2026"
+      "updatedDate": "9. listopadu 2026"
     },
     "toc": {
       "title": "Obsah",
@@ -92,6 +92,11 @@
           "title": "Plnění právních povinností a ochrana nároků",
           "text": "Relevantní záznamy můžeme uchovávat nebo používat tam, kde je to nutné pro splnění právních povinností, vedení evidence, ochranu našich práv nebo obranu právních nároků.",
           "basis": "právní povinnost a oprávněný zájem."
+        },
+        "8": {
+          "title": "Měření reklamních kampaní",
+          "text": "Pokud spustíme reklamní kampaně a udělíš marketingový souhlas, můžeme měřit jejich výkon a návazné konverze prostřednictvím Google Ads a Google Tag Manageru.",
+          "basis": "souhlas."
         }
       },
       "p1": "Tvoje osobní údaje neprodáváme."
@@ -107,7 +112,8 @@
         "2": "technologie pro zapamatování cookie preferencí, jazyka a regionálního nastavení;",
         "3": "Google Tag Manager pro správu tagů a integrací závislých na aktuální konfiguraci a souhlasu;",
         "4": "Google Analytics, pokud je povolena, pro pochopení agregovaného používání webu a jeho zlepšování;",
-        "5": "partnerské nebo atribuční tracking parametry při přechodu na vybrané třetí strany z AJSEE."
+        "5": "partnerské nebo atribuční tracking parametry při přechodu na vybrané třetí strany z AJSEE.",
+        "6": "Google Ads, pokud je samostatně povolen marketingový souhlas, pro měření reklamních kampaní a konverzí;"
       },
       "p2": "Volitelné cookies můžeš spravovat prostřednictvím cookie banneru, odkazu v patičce webu nebo nastavení svého prohlížeče. Vypnutí některých cookies může ovlivnit určité neesenciální funkce nebo možnosti měření. Více informací najdeš v <a href=\"/cookies-policy\" data-lang-link>Zásadách cookies</a>."
     },

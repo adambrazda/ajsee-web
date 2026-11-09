@@ -37,7 +37,7 @@ async function page(template, lang, consent = null) {
 
 for (const template of ['index.html', 'londynske-muzikaly/index.html', 'accommodation.html']) {
   for (const [lang, title] of Object.entries(titles)) {
-    test(`${template}: direct arrival in ${lang} can reject, reopen and accept analytics`, async () => {
+    test(`${template}: direct arrival in ${lang} can reject, reopen and choose analytics independently`, async () => {
       const dom = await page(template, lang);
       try {
         const win = dom.window;
@@ -46,15 +46,20 @@ for (const template of ['index.html', 'londynske-muzikaly/index.html', 'accommod
         assert.equal(doc.querySelectorAll('script[src*="googletagmanager.com"]').length, 0);
         doc.querySelector('#cookie-banner [data-action="reject"]').click();
         assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).analytics, false);
+        assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).marketing, false);
         assert.equal(doc.querySelector('#cookie-banner'), null);
         doc.querySelector('[data-open-cookie-settings]').click();
         assert.equal(doc.querySelector('#cookie-preferences').classList.contains('is-hidden'), false);
         assert.equal(doc.querySelector('#cookie-analytics-toggle').checked, false);
+        assert.equal(doc.querySelector('#cookie-marketing-toggle').checked, false);
         doc.querySelector('#cookie-analytics-toggle').click();
         doc.querySelector('#cookie-preferences [data-action="save"]').click();
         assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).analytics, true);
+        assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).marketing, false);
         assert.equal(doc.querySelector('#cookie-preferences'), null);
         assert.equal(doc.querySelectorAll('script[src*="googletagmanager.com"]').length, 2);
+        for (const script of doc.querySelectorAll('script[src*="googletagmanager.com"]')) script.onload?.();
+        await new Promise(resolve => win.setTimeout(resolve, 0));
       } finally { dom.window.close(); }
     });
   }
@@ -68,6 +73,7 @@ test('returning visitor can reopen preferences without showing the banner or ena
     doc.querySelector('[data-open-cookie-settings]').click();
     assert.equal(doc.querySelector('#cookie-modal-title').textContent, 'Cookie settings');
     assert.equal(doc.querySelector('#cookie-analytics-toggle').checked, false);
+    assert.equal(doc.querySelector('#cookie-marketing-toggle').checked, false);
     assert.equal(doc.querySelectorAll('script[src*="googletagmanager.com"]').length, 0);
   } finally { dom.window.close(); }
 });

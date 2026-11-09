@@ -311,7 +311,7 @@
   "footer-cookies-policy": "Cookie-szabályzat",
   "cookie-banner": {
     "title": "Sütiket használunk",
-    "desc": "A weboldal működéséhez szükséges sütiket használunk, és hozzájárulásoddal analitikai sütiket is, amelyek segítenek mérni a forgalmat és fejleszteni az AJSEE.cz oldalt.",
+    "desc": "A működéshez szükséges sütiket, hozzájárulásoddal pedig analitikai és marketing sütiket használunk a forgalom és kampányok mérésére, valamint az AJSEE.cz fejlesztésére.",
     "privacy": "Adatvédelmi tájékoztató",
     "cookies": "Cookie-szabályzat",
     "reject": "Elutasítás",
@@ -324,6 +324,9 @@
     "analyticsTitle": "Analitikai sütik",
     "analyticsText": "Segítenek mérni a forgalmat és fejleszteni a weboldalt a Google Analytics segítségével.",
     "allowAnalytics": "Analitika engedélyezése",
+    "marketingTitle": "Marketing sütik",
+    "marketingText": "Lehetővé teszik a kampányok és hirdetések, köztük a Google Ads mérését. Csak a hozzájárulásoddal használjuk őket.",
+    "allowMarketing": "Marketing engedélyezése",
     "save": "Beállítások mentése"
   },
   "footer-cookie-settings": "Süti-beállítások",

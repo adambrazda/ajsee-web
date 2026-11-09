@@ -311,7 +311,7 @@
   "footer-cookies-policy": "Zásady cookies",
   "cookie-banner": {
     "title": "Používáme cookies",
-    "desc": "Používáme nezbytné cookies pro fungování webu a se souhlasem také analytické cookies, které nám pomáhají měřit návštěvnost a zlepšovat AJSEE.cz.",
+    "desc": "Používáme nezbytné cookies pro fungování webu a se souhlasem také analytické a marketingové cookies pro měření návštěvnosti, kampaní a zlepšování AJSEE.cz.",
     "privacy": "Zásady ochrany osobních údajů",
     "cookies": "Zásady používání cookies",
     "reject": "Odmítnout",
@@ -324,6 +324,9 @@
     "analyticsTitle": "Analytické cookies",
     "analyticsText": "Pomáhají nám měřit návštěvnost a zlepšovat web pomocí Google Analytics.",
     "allowAnalytics": "Povolit analytiku",
+    "marketingTitle": "Marketingové cookies",
+    "marketingText": "Umožňují měřit kampaně a reklamy, včetně Google Ads. Použijeme je pouze s tvým souhlasem.",
+    "allowMarketing": "Povolit marketing",
     "save": "Uložit nastavení"
   },
   "footer-cookie-settings": "Nastavení cookies",

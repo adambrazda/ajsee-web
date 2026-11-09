@@ -13,7 +13,7 @@
       "title": "Cookie-szabályzat",
       "lead": "Ezen az oldalon információkat találsz arról, hogyan használ az AJSEE sütiket és hasonló technológiákat, melyek szükségesek a weboldal működéséhez, melyek opcionálisak, és hogyan kezelheted a beállításaidat.",
       "updatedLabel": "Utolsó frissítés:",
-      "updatedDate": "2026. május 1."
+      "updatedDate": "2026. november 9."
     },
     "toc": {
       "title": "Tartalom",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. Hogyan használjuk a sütiket",
-      "p1": "Az AJSEE bizonyos technológiákat azért használ, hogy a weboldal megfelelően és biztonságosan működjön, valamint hogy megjegyezze az alapvető választásokat, például a nyelvet, a régiót vagy a süti-beállításokat. Más technológiákat csak akkor használunk, ha ehhez hozzájárulsz, például analitikai célokra vagy a tartalom teljesítményének mérésére.",
+      "p1": "Az AJSEE bizonyos technológiákat azért használ, hogy a weboldal megfelelően és biztonságosan működjön, valamint hogy megjegyezze az alapvető választásokat, például a nyelvet, a régiót vagy a süti-beállításokat. Más technológiákat csak a hozzájárulásoddal használunk, például analitikai célokra, illetve a tartalom vagy a hirdetési kampányok teljesítményének mérésére.",
       "p2": "Nem minden süti szolgálja ugyanazt a célt. Egyesek a weboldal technikai működéséhez szükségesek, mások segítenek megérteni, hogyan használják az emberek a weboldalt, és egyesek a partneroldalakra történő átlépéssel vagy az attribúciós paraméterek mérésével kapcsolatosak lehetnek."
     },
     "types": {
@@ -54,6 +54,10 @@
         "4": {
           "title": "Partner / attribúció",
           "text": "Bizonyos esetekben referral vagy attribúciós paraméterek használhatók, amikor az AJSEE-ről egy partner weboldalára lépsz át, annak értékelésére, hogy a látogatás az AJSEE-ről érkezett-e."
+        },
+        "5": {
+          "title": "Marketing",
+          "text": "Ezek a technológiák mérhetik a hirdetési kampányok teljesítményét és a konverziókat, például a Google Ads segítségével. Csak akkor használjuk őket, ha külön engedélyezed."
         }
       }
     },
@@ -80,6 +84,10 @@
         "5": {
           "label": "Partner / referral paraméterek",
           "text": "A partneroldalakra történő átlépéssel kapcsolatos paraméterek vagy mérési mechanizmusok, például affiliate vagy referral együttműködések keretében."
+        },
+        "6": {
+          "label": "Google Ads",
+          "text": "Hirdetési kampányok indításakor a teljesítményük és a konverziók mérésére használható. A hirdetési tárolást és a kapcsolódó adatkezelést csak marketing-hozzájárulás után engedélyezzük."
         }
       },
       "p2": "A konkrét nevek, célok és megőrzési idők idővel változhatnak a weboldal technikai fejlődésétől, a használt integrációktól vagy a partnerek frissítéseitől függően. Ha lényeges változás történik, ezt az oldalt ennek megfelelően frissítjük."

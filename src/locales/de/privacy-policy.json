@@ -13,7 +13,7 @@
       "title": "Datenschutzerklärung",
       "lead": "Auf dieser Seite findest du Informationen dazu, welche personenbezogenen Daten AJSEE verarbeiten kann, warum wir sie verarbeiten, wie lange wir sie speichern und welche Rechte du hast.",
       "updatedLabel": "Zuletzt aktualisiert:",
-      "updatedDate": "1. Mai 2026"
+      "updatedDate": "9. November 2026"
     },
     "toc": {
       "title": "Inhalt",
@@ -92,6 +92,11 @@
           "title": "Rechtliche Pflichten und Schutz von Ansprüchen",
           "text": "Wir können relevante Unterlagen aufbewahren oder nutzen, wenn dies erforderlich ist, um rechtliche Pflichten zu erfüllen, Aufzeichnungen zu führen, unsere Rechte zu schützen oder Rechtsansprüche zu verteidigen.",
           "basis": "rechtliche Verpflichtung und berechtigte Interessen."
+        },
+        "8": {
+          "title": "Messung von Werbekampagnen",
+          "text": "Wenn wir Werbekampagnen starten und du deine Marketing-Einwilligung gibst, können wir deren Leistung und nachfolgende Conversions über Google Ads und Google Tag Manager messen.",
+          "basis": "Einwilligung."
         }
       },
       "p1": "Wir verkaufen deine personenbezogenen Daten nicht."
@@ -107,7 +112,8 @@
         "2": "Technologien zum Speichern von Cookie-Präferenzen, Sprache und regionalen Einstellungen;",
         "3": "Google Tag Manager zur Verwaltung von Tags und Integrationen abhängig von aktueller Konfiguration und Einwilligung;",
         "4": "Google Analytics, sofern aktiviert, um die aggregierte Nutzung der Website zu verstehen und den Service zu verbessern;",
-        "5": "Partner- oder Attributions-Tracking-Parameter beim Wechsel von AJSEE zu ausgewählten Dritten."
+        "5": "Partner- oder Attributions-Tracking-Parameter beim Wechsel von AJSEE zu ausgewählten Dritten.",
+        "6": "Google Ads, sofern die Marketing-Einwilligung separat erteilt wurde, zur Messung von Werbekampagnen und Conversions;"
       },
       "p2": "Optionale Cookies kannst du über den Cookie-Banner, den Link in der Fußzeile der Website oder die Einstellungen deines Browsers verwalten. Das Deaktivieren bestimmter Cookies kann einige nicht wesentliche Funktionen oder Messmöglichkeiten beeinträchtigen. Weitere Informationen findest du in unserer <a href=\"/cookies-policy\" data-lang-link>Cookie-Richtlinie</a>."
     },

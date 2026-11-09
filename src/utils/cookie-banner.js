@@ -7,7 +7,7 @@
 const COOKIE_BANNER_FALLBACKS = {
   cs: {
     title: 'Používáme cookies',
-    desc: 'Používáme nezbytné cookies pro fungování webu a se souhlasem také analytické cookies, které nám pomáhají měřit návštěvnost a zlepšovat AJSEE.cz.',
+    desc: 'Používáme nezbytné cookies pro fungování webu a se souhlasem také analytické a marketingové cookies pro měření návštěvnosti, kampaní a zlepšování AJSEE.cz.',
     privacy: 'Zásady ochrany osobních údajů',
     cookies: 'Zásady používání cookies',
     reject: 'Odmítnout',
@@ -20,11 +20,14 @@ const COOKIE_BANNER_FALLBACKS = {
     analyticsTitle: 'Analytické cookies',
     analyticsText: 'Pomáhají nám měřit návštěvnost a zlepšovat web pomocí Google Analytics.',
     allowAnalytics: 'Povolit analytiku',
+    marketingTitle: 'Marketingové cookies',
+    marketingText: 'Umožňují měřit kampaně a reklamy, včetně Google Ads. Použijeme je pouze s tvým souhlasem.',
+    allowMarketing: 'Povolit marketing',
     save: 'Uložit nastavení',
   },
   en: {
     title: 'We use cookies',
-    desc: 'We use necessary cookies for the website to function and, with your consent, also analytics cookies that help us measure traffic and improve AJSEE.cz.',
+    desc: 'We use necessary cookies for the website to function and, with your consent, analytics and marketing cookies to measure traffic, campaigns and improve AJSEE.cz.',
     privacy: 'Privacy Policy',
     cookies: 'Cookies Policy',
     reject: 'Reject',
@@ -37,11 +40,14 @@ const COOKIE_BANNER_FALLBACKS = {
     analyticsTitle: 'Analytics cookies',
     analyticsText: 'They help us measure traffic and improve the website using Google Analytics.',
     allowAnalytics: 'Allow analytics',
+    marketingTitle: 'Marketing cookies',
+    marketingText: 'Enable campaign and advertising measurement, including Google Ads. We use them only with your consent.',
+    allowMarketing: 'Allow marketing',
     save: 'Save settings',
   },
   de: {
     title: 'Wir verwenden Cookies',
-    desc: 'Wir verwenden notwendige Cookies für den Betrieb der Website und mit Ihrer Einwilligung auch analytische Cookies, die uns helfen, den Traffic zu messen und AJSEE.cz zu verbessern.',
+    desc: 'Wir verwenden notwendige Cookies und mit Ihrer Einwilligung Analyse- und Marketing-Cookies, um Traffic und Kampagnen zu messen und AJSEE.cz zu verbessern.',
     privacy: 'Datenschutzerklärung',
     cookies: 'Cookie-Richtlinie',
     reject: 'Ablehnen',
@@ -54,11 +60,14 @@ const COOKIE_BANNER_FALLBACKS = {
     analyticsTitle: 'Analytische Cookies',
     analyticsText: 'Sie helfen uns, den Traffic zu messen und die Website mit Google Analytics zu verbessern.',
     allowAnalytics: 'Analyse erlauben',
+    marketingTitle: 'Marketing-Cookies',
+    marketingText: 'Ermöglichen die Messung von Kampagnen und Werbung, einschließlich Google Ads. Wir verwenden sie nur mit deiner Einwilligung.',
+    allowMarketing: 'Marketing erlauben',
     save: 'Einstellungen speichern',
   },
   sk: {
     title: 'Používame cookies',
-    desc: 'Používame nevyhnutné cookies pre fungovanie webu a so súhlasom aj analytické cookies, ktoré nám pomáhajú merať návštevnosť a zlepšovať AJSEE.cz.',
+    desc: 'Používame nevyhnutné cookies a so súhlasom aj analytické a marketingové cookies na meranie návštevnosti, kampaní a zlepšovanie AJSEE.cz.',
     privacy: 'Zásady ochrany osobných údajov',
     cookies: 'Zásady používania cookies',
     reject: 'Odmietnuť',
@@ -71,11 +80,14 @@ const COOKIE_BANNER_FALLBACKS = {
     analyticsTitle: 'Analytické cookies',
     analyticsText: 'Pomáhajú nám merať návštevnosť a zlepšovať web pomocou Google Analytics.',
     allowAnalytics: 'Povoliť analytiku',
+    marketingTitle: 'Marketingové cookies',
+    marketingText: 'Umožňujú merať kampane a reklamy vrátane Google Ads. Použijeme ich iba s tvojím súhlasom.',
+    allowMarketing: 'Povoliť marketing',
     save: 'Uložiť nastavenia',
   },
   pl: {
     title: 'Używamy plików cookies',
-    desc: 'Używamy niezbędnych plików cookies do działania strony oraz, za Twoją zgodą, także analitycznych cookies, które pomagają nam mierzyć ruch i ulepszać AJSEE.cz.',
+    desc: 'Używamy niezbędnych plików cookies, a za Twoją zgodą także analitycznych i marketingowych do pomiaru ruchu, kampanii i ulepszania AJSEE.cz.',
     privacy: 'Polityka prywatności',
     cookies: 'Polityka cookies',
     reject: 'Odrzuć',
@@ -88,11 +100,14 @@ const COOKIE_BANNER_FALLBACKS = {
     analyticsTitle: 'Analityczne cookies',
     analyticsText: 'Pomagają nam mierzyć ruch i ulepszać stronę za pomocą Google Analytics.',
     allowAnalytics: 'Włącz analitykę',
+    marketingTitle: 'Marketingowe pliki cookies',
+    marketingText: 'Umożliwiają pomiar kampanii i reklam, w tym Google Ads. Używamy ich wyłącznie za Twoją zgodą.',
+    allowMarketing: 'Włącz marketing',
     save: 'Zapisz ustawienia',
   },
   hu: {
     title: 'Sütiket használunk',
-    desc: 'A weboldal működéséhez szükséges sütiket használunk, és hozzájárulásoddal analitikai sütiket is, amelyek segítenek mérni a forgalmat és fejleszteni az AJSEE.cz oldalt.',
+    desc: 'A működéshez szükséges sütiket, hozzájárulásoddal pedig analitikai és marketing sütiket használunk a forgalom és kampányok mérésére, valamint az AJSEE.cz fejlesztésére.',
     privacy: 'Adatvédelmi tájékoztató',
     cookies: 'Cookie-szabályzat',
     reject: 'Elutasítás',
@@ -105,6 +120,9 @@ const COOKIE_BANNER_FALLBACKS = {
     analyticsTitle: 'Analitikai sütik',
     analyticsText: 'Segítenek mérni a forgalmat és fejleszteni a weboldalt a Google Analytics segítségével.',
     allowAnalytics: 'Analitika engedélyezése',
+    marketingTitle: 'Marketing sütik',
+    marketingText: 'Lehetővé teszik a kampányok és hirdetések, köztük a Google Ads mérését. Csak a hozzájárulásoddal használjuk őket.',
+    allowMarketing: 'Marketing engedélyezése',
     save: 'Beállítások mentése',
   },
 };
@@ -221,6 +239,18 @@ function createModal(lang) {
         </label>
       </div>
 
+      <div class="cookie-modal__section">
+        <div>
+          <strong data-cookie-text="marketingTitle">${getText('marketingTitle', lang)}</strong>
+          <p data-cookie-text="marketingText">${getText('marketingText', lang)}</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="cookie-marketing-toggle" />
+          <span class="switch__ui" aria-hidden="true"></span>
+          <span class="switch__label" data-cookie-text="allowMarketing">${getText('allowMarketing', lang)}</span>
+        </label>
+      </div>
+
       <div class="cookie-modal__actions">
         <button type="button" class="btn btn-secondary" data-action="reject" data-cookie-text="reject">${getText('reject', lang)}</button>
         <button type="button" class="btn btn-primary" data-action="save" data-cookie-text="save">${getText('save', lang)}</button>
@@ -270,6 +300,8 @@ function mountUi(lang, { force = false, openPreferences = false, hideBanner = fa
   if (!existingModal) {
     const analyticsToggle = modal.querySelector('#cookie-analytics-toggle');
     if (analyticsToggle) analyticsToggle.checked = !!readConsent()?.analytics;
+    const marketingToggle = modal.querySelector('#cookie-marketing-toggle');
+    if (marketingToggle) marketingToggle.checked = !!readConsent()?.marketing;
     document.body.appendChild(modal);
   }
 
@@ -283,9 +315,13 @@ function openModal() {
   const banner = document.getElementById('cookie-banner');
   const consent = readConsent();
   const analyticsToggle = document.getElementById('cookie-analytics-toggle');
+  const marketingToggle = document.getElementById('cookie-marketing-toggle');
 
   if (analyticsToggle) {
     analyticsToggle.checked = !!consent?.analytics;
+  }
+  if (marketingToggle) {
+    marketingToggle.checked = !!consent?.marketing;
   }
 
   if (banner) {
@@ -317,7 +353,8 @@ function saveConsent(consent) {
   applyConsent(finalConsent);
   removeBannerUi();
   // Remove already loaded analytics tags after consent is withdrawn.
-  if (previousConsent?.analytics && !finalConsent.analytics) window.location.reload();
+  if ((previousConsent?.analytics && !finalConsent.analytics) ||
+      (previousConsent?.marketing && !finalConsent.marketing)) window.location.reload();
 }
 
 function openCookieSettings(lang = null) {
@@ -364,12 +401,12 @@ function bindGlobalListeners() {
     }
 
     if (target.closest('#cookie-banner [data-action="accept-all"]')) {
-      saveConsent({ analytics: true });
+      saveConsent({ analytics: true, marketing: true });
       return;
     }
 
     if (target.closest('#cookie-banner [data-action="reject"]')) {
-      saveConsent({ analytics: false });
+      saveConsent({ analytics: false, marketing: false });
       return;
     }
 
@@ -384,18 +421,19 @@ function bindGlobalListeners() {
     }
 
     if (target.closest('#cookie-preferences [data-action="accept-all"]')) {
-      saveConsent({ analytics: true });
+      saveConsent({ analytics: true, marketing: true });
       return;
     }
 
     if (target.closest('#cookie-preferences [data-action="reject"]')) {
-      saveConsent({ analytics: false });
+      saveConsent({ analytics: false, marketing: false });
       return;
     }
 
     if (target.closest('#cookie-preferences [data-action="save"]')) {
       const analytics = document.getElementById('cookie-analytics-toggle')?.checked;
-      saveConsent({ analytics: !!analytics });
+      const marketing = document.getElementById('cookie-marketing-toggle')?.checked;
+      saveConsent({ analytics: !!analytics, marketing: !!marketing });
     }
   });
 }

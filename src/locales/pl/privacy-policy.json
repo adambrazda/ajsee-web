@@ -13,7 +13,7 @@
       "title": "Polityka prywatności",
       "lead": "Na tej stronie znajdziesz informacje o tym, jakie dane osobowe AJSEE może przetwarzać, dlaczego je przetwarzamy, jak długo je przechowujemy oraz jakie masz prawa.",
       "updatedLabel": "Ostatnia aktualizacja:",
-      "updatedDate": "1 maja 2026"
+      "updatedDate": "9 listopada 2026"
     },
     "toc": {
       "title": "Spis treści",
@@ -92,6 +92,11 @@
           "title": "Obowiązki prawne i ochrona roszczeń",
           "text": "Możemy przechowywać lub wykorzystywać odpowiednie zapisy, gdy jest to konieczne do wypełnienia obowiązków prawnych, prowadzenia dokumentacji, ochrony naszych praw lub obrony przed roszczeniami.",
           "basis": "obowiązek prawny oraz uzasadniony interes."
+        },
+        "8": {
+          "title": "Pomiar kampanii reklamowych",
+          "text": "Jeśli uruchomimy kampanie reklamowe i udzielisz zgody marketingowej, możemy mierzyć ich skuteczność i późniejsze konwersje za pomocą Google Ads i Google Tag Managera.",
+          "basis": "zgoda."
         }
       },
       "p1": "Nie sprzedajemy Twoich danych osobowych."
@@ -107,7 +112,8 @@
         "2": "technologie służące do zapamiętywania preferencji cookie, języka i ustawień regionalnych;",
         "3": "Google Tag Manager do zarządzania tagami i integracjami w zależności od aktualnej konfiguracji oraz statusu zgody;",
         "4": "Google Analytics, jeśli jest włączone, do zrozumienia zagregowanego sposobu korzystania ze strony i ulepszania usługi;",
-        "5": "partnerskie lub atrybucyjne parametry śledzące przy przejściu z AJSEE do wybranych stron trzecich."
+        "5": "partnerskie lub atrybucyjne parametry śledzące przy przejściu z AJSEE do wybranych stron trzecich.",
+        "6": "Google Ads, jeśli zgoda marketingowa została włączona oddzielnie, do pomiaru kampanii reklamowych i konwersji;"
       },
       "p2": "Opcjonalnymi plikami cookie możesz zarządzać za pomocą banera cookie, linku w stopce strony lub ustawień przeglądarki. Wyłączenie niektórych plików cookie może wpłynąć na niektóre funkcje nieistotne dla podstawowego działania strony lub możliwości pomiarowe. Więcej informacji znajdziesz w naszej <a href=\"/cookies-policy\" data-lang-link>Polityce cookies</a>."
     },

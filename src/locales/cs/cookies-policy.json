@@ -13,7 +13,7 @@
       "title": "Zásady cookies",
       "lead": "Na této stránce najdeš informace o tom, jak AJSEE používá cookies a podobné technologie, které jsou nezbytné pro fungování webu, které jsou volitelné a jak můžeš spravovat své preference.",
       "updatedLabel": "Naposledy aktualizováno:",
-      "updatedDate": "1. května 2026"
+      "updatedDate": "9. listopadu 2026"
     },
     "toc": {
       "title": "Obsah",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. Jak cookies používáme",
-      "p1": "AJSEE používá některé technologie proto, aby web fungoval správně, bezpečně a aby si zapamatoval základní volby, například jazyk, region nebo nastavení cookies. Další technologie používáme pouze tehdy, pokud k tomu udělíš souhlas, například pro analytiku nebo měření výkonu obsahu.",
+      "p1": "AJSEE používá některé technologie proto, aby web fungoval správně, bezpečně a aby si zapamatoval základní volby, například jazyk, region nebo nastavení cookies. Další technologie používáme pouze tehdy, pokud k tomu udělíš souhlas, například pro analytiku, měření výkonu obsahu nebo reklamních kampaní.",
       "p2": "Ne všechny cookies mají stejný účel. Některé jsou nezbytné pro technický provoz, jiné pomáhají pochopit, jak lidé web používají, a některé mohou souviset s přechodem na partnerské stránky nebo s měřením atribučních parametrů."
     },
     "types": {
@@ -54,6 +54,10 @@
         "4": {
           "title": "Partnerské / atribuční",
           "text": "V některých případech mohou být při přechodu z AJSEE na partnerský web použity referral nebo atribuční parametry, které pomáhají vyhodnotit, zda návštěva přišla z AJSEE."
+        },
+        "5": {
+          "title": "Marketingové",
+          "text": "Tyto technologie mohou měřit výkon reklamních kampaní a konverze, například prostřednictvím Google Ads. Používáme je pouze tehdy, pokud je samostatně povolíš."
         }
       }
     },
@@ -80,6 +84,10 @@
         "5": {
           "label": "Partnerské / referral parametry",
           "text": "Parametry nebo měřicí mechanismy související s přechodem na partnerské weby, například v rámci affiliate nebo referral spolupráce."
+        },
+        "6": {
+          "label": "Google Ads",
+          "text": "Při spuštění reklamních kampaní může sloužit k měření jejich výkonu a konverzí. Reklamní úložiště a související zpracování povolíme pouze po marketingovém souhlasu."
         }
       },
       "p2": "Konkrétní názvy, účely a retenční doby se mohou v čase měnit podle technického vývoje webu, použitých integrací nebo aktualizace partnerů. Pokud dojde k podstatné změně, tuto stránku odpovídajícím způsobem aktualizujeme."

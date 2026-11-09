@@ -40,6 +40,7 @@ window.addEventListener('ajsee:lang-changed', (event) => {
       hostname: window.location.hostname,
       consent,
       analyticsAllowed: !!consent?.analytics,
+      marketingAllowed: !!consent?.marketing,
       checkedAt: new Date().toISOString(),
     };
 

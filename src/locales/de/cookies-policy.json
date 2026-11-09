@@ -13,7 +13,7 @@
       "title": "Cookie-Richtlinie",
       "lead": "Auf dieser Seite findest du Informationen dazu, wie AJSEE Cookies und ähnliche Technologien verwendet, welche für das Funktionieren der Website notwendig sind, welche optional sind und wie du deine Einstellungen verwalten kannst.",
       "updatedLabel": "Zuletzt aktualisiert:",
-      "updatedDate": "1. Mai 2026"
+      "updatedDate": "9. November 2026"
     },
     "toc": {
       "title": "Inhalt",
@@ -33,7 +33,7 @@
     },
     "how": {
       "title": "2. Wie wir Cookies verwenden",
-      "p1": "AJSEE verwendet bestimmte Technologien, damit die Website ordnungsgemäß und sicher funktioniert und grundlegende Auswahlmöglichkeiten wie Sprache, Region oder Cookie-Einstellungen gespeichert werden können. Andere Technologien verwenden wir nur, wenn du deine Einwilligung gibst, zum Beispiel für Analysen oder zur Messung der Performance von Inhalten.",
+      "p1": "AJSEE verwendet bestimmte Technologien, damit die Website ordnungsgemäß und sicher funktioniert und grundlegende Auswahlmöglichkeiten wie Sprache, Region oder Cookie-Einstellungen gespeichert werden können. Andere Technologien verwenden wir nur mit deiner Einwilligung, zum Beispiel für Analysen oder zur Messung der Performance von Inhalten oder Werbekampagnen.",
       "p2": "Nicht alle Cookies dienen demselben Zweck. Einige sind für den technischen Betrieb der Website notwendig, andere helfen uns zu verstehen, wie Menschen die Website nutzen, und manche können mit dem Wechsel auf Partner-Websites oder mit der Messung von Attributionsparametern zusammenhängen."
     },
     "types": {
@@ -54,6 +54,10 @@
         "4": {
           "title": "Partner / Attribution",
           "text": "In einigen Fällen können beim Wechsel von AJSEE zu einer Partner-Website Referral- oder Attributionsparameter verwendet werden, um auszuwerten, ob der Besuch von AJSEE kam."
+        },
+        "5": {
+          "title": "Marketing",
+          "text": "Diese Technologien können die Leistung von Werbekampagnen und Conversions messen, zum Beispiel über Google Ads. Wir verwenden sie nur, wenn du sie separat erlaubst."
         }
       }
     },
@@ -80,6 +84,10 @@
         "5": {
           "label": "Partner- / Referral-Parameter",
           "text": "Parameter oder Messmechanismen im Zusammenhang mit dem Wechsel auf Partner-Websites, zum Beispiel im Rahmen von Affiliate- oder Referral-Kooperationen."
+        },
+        "6": {
+          "label": "Google Ads",
+          "text": "Beim Start von Werbekampagnen kann Google Ads deren Leistung und Conversions messen. Werbespeicherung und zugehörige Verarbeitung aktivieren wir nur nach deiner Marketing-Einwilligung."
         }
       },
       "p2": "Konkrete Namen, Zwecke und Speicherdauern können sich im Laufe der Zeit je nach technischer Weiterentwicklung der Website, verwendeten Integrationen oder Aktualisierungen bei Partnern ändern. Wenn es zu einer wesentlichen Änderung kommt, aktualisieren wir diese Seite entsprechend."

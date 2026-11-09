@@ -311,7 +311,7 @@
   "footer-cookies-policy": "Polityka cookies",
   "cookie-banner": {
     "title": "Używamy plików cookies",
-    "desc": "Używamy niezbędnych plików cookies do działania strony oraz, za Twoją zgodą, także analitycznych cookies, które pomagają nam mierzyć ruch i ulepszać AJSEE.cz.",
+    "desc": "Używamy niezbędnych plików cookies, a za Twoją zgodą także analitycznych i marketingowych do pomiaru ruchu, kampanii i ulepszania AJSEE.cz.",
     "privacy": "Polityka prywatności",
     "cookies": "Polityka cookies",
     "reject": "Odrzuć",
@@ -324,6 +324,9 @@
     "analyticsTitle": "Analityczne cookies",
     "analyticsText": "Pomagają nam mierzyć ruch i ulepszać stronę za pomocą Google Analytics.",
     "allowAnalytics": "Włącz analitykę",
+    "marketingTitle": "Marketingowe pliki cookies",
+    "marketingText": "Umożliwiają pomiar kampanii i reklam, w tym Google Ads. Używamy ich wyłącznie za Twoją zgodą.",
+    "allowMarketing": "Włącz marketing",
     "save": "Zapisz ustawienia"
   },
   "footer-cookie-settings": "Ustawienia cookies",

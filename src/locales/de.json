@@ -311,7 +311,7 @@
   "footer-cookies-policy": "Cookie-Richtlinie",
   "cookie-banner": {
     "title": "Wir verwenden Cookies",
-    "desc": "Wir verwenden notwendige Cookies für den Betrieb der Website und mit deiner Einwilligung auch analytische Cookies, die uns helfen, den Traffic zu messen und AJSEE.cz zu verbessern.",
+    "desc": "Wir verwenden notwendige Cookies und mit deiner Einwilligung Analyse- und Marketing-Cookies, um Traffic und Kampagnen zu messen und AJSEE.cz zu verbessern.",
     "privacy": "Datenschutzerklärung",
     "cookies": "Cookie-Richtlinie",
     "reject": "Ablehnen",
@@ -324,6 +324,9 @@
     "analyticsTitle": "Analytische Cookies",
     "analyticsText": "Sie helfen uns, den Traffic zu messen und die Website mit Google Analytics zu verbessern.",
     "allowAnalytics": "Analyse erlauben",
+    "marketingTitle": "Marketing-Cookies",
+    "marketingText": "Ermöglichen die Messung von Kampagnen und Werbung, einschließlich Google Ads. Wir verwenden sie nur mit deiner Einwilligung.",
+    "allowMarketing": "Marketing erlauben",
     "save": "Einstellungen speichern"
   },
   "footer-cookie-settings": "Cookie-Einstellungen",

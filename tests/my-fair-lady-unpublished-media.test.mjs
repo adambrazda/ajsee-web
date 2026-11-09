@@ -10,11 +10,12 @@ const sourceBase=path.resolve('assets/editorial',slug);
 const languages=['en','cs','sk','de','pl','hu'];
 const names=['eliza-ensemble','eliza-solo','eliza-higgins','ensemble'];
 
-test('My Fair Lady staged editorial has the four approved Opera Australia images, but remains unpublished', async () => {
+test('Published My Fair Lady editorial retains the four approved Opera Australia images and all six locales', async () => {
   const data=JSON.parse(await readFile(path.resolve('content/reviews/items',slug+'.json'),'utf8'));
-  assert.equal(data.published,false);
+  assert.equal(data.status,'published');
+  assert.equal(data.published,true);
+  assert.ok(Number.isFinite(Date.parse(data.publishedAt)));
   assert.equal(data.featured,false);
-  assert.equal(data.publishedAt,'');
   assert.equal(data.cover,base+'my-fair-lady-2026-eliza-ensemble.webp');
   assert.equal(data.coverCredit,'Photo: Jeff Busby / Opera Australia');
   assert.equal(data.gallery.length,3);

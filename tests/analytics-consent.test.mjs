@@ -53,6 +53,7 @@ test('configuration precedes a fast click during script loading and repeated boo
     await pending;
     await module.applyConsent(module.readConsent());
     assert.equal(win.document.scripts.length, 2);
+    assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_consent_updated').length, 1);
     assert.equal(win.dataLayer.filter(c => c[0] === 'event' && c[1] === 'page_view').length, 1);
     assert.equal(win.dataLayer.filter(c => c[0] === 'event' && c[1] === 'ajsee_partner_click').length, 1);
     assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_partner_click').length, 0);
@@ -70,14 +71,13 @@ test('withdrawal disables GA4, stops clickouts and prevents pending loaders from
     win.sessionStorage.setItem('ajsee:lastLondonMusicalsEvent', 'legacy');
     await module.applyConsent(module.writeConsent({ analytics: false }));
     assert.equal(win['ga-disable-' + GA4_MEASUREMENT_ID], true);
-    const last = win.dataLayer.at(-1);
-    assert.deepEqual([...last].slice(0, 2), ['consent', 'update']);
-    assert.equal(last[2].analytics_storage, 'denied');
+    const update = win.dataLayer.findLast(c => c[0] === 'consent' && c[1] === 'update');
+    assert.equal(update[2].analytics_storage, 'denied');
     trackPartnerOutboundLink(win.document.querySelector('a'));
     for (const script of win.document.scripts) script.onload();
     await pending;
     assert.equal(win.dataLayer.filter(c => c[0] === 'event').length, 0);
-    assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_consent_updated').length, 0);
+    assert.deepEqual(win.dataLayer.filter(c => c?.event === 'ajsee_consent_updated').map(c => c.analytics_consent), ['granted', 'denied']);
     assert.equal(win.sessionStorage.length, 0);
     assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).analytics, false);
   });
@@ -92,9 +92,61 @@ test('marketing-only consent grants advertising modes, keeps analytics denied an
     assert.equal(update[2].analytics_storage, 'denied');
     assert.equal(update[2].ad_storage, 'granted');
     assert.equal(update[2].ad_user_data, 'granted');
-    assert.equal(update[2].ad_personalization, 'granted');
+    assert.equal(update[2].ad_personalization, 'denied');
+    const bootstrap = win.dataLayer.findIndex(c => c?.event === 'gtm.js');
+    const notice = win.dataLayer.findIndex(c => c?.event === 'ajsee_consent_updated');
+    assert.ok(bootstrap >= 0 && notice > bootstrap);
+    assert.ok(bootstrap > win.dataLayer.indexOf(update));
+    assert.equal(win.dataLayer[notice].marketing_consent, 'granted');
+    trackPartnerOutboundLink(win.document.querySelector('a'));
+    assert.ok(win.dataLayer.findIndex(c => c?.event === 'ajsee_partner_click_gtm') > notice);
     win.document.scripts[0].onload();
     assert.equal(await pending, true);
+  });
+});
+
+test('marketing can be added and withdrawn while the existing GTM container is active', async () => {
+  await environment(async (module, win) => {
+    const initial = module.applyConsent(module.writeConsent({ analytics: true }));
+    const repeat = module.applyConsent(module.readConsent());
+    assert.equal(win.document.scripts.length, 2);
+    assert.equal(win.dataLayer.filter(c => c?.event === 'gtm.js').length, 1);
+    assert.equal(win.__AJSEE_CONSENT_DEBUG__.gtmLoaded ?? false, false);
+    for (const script of win.document.scripts) script.onload();
+    await Promise.all([initial, repeat]);
+
+    const added = module.applyConsent(module.writeConsent({ analytics: true, marketing: true }));
+    trackPartnerOutboundLink(win.document.querySelector('a'));
+    const update = win.dataLayer.findIndex(c => c[0] === 'consent' && c[1] === 'update' && c[2]?.ad_storage === 'granted');
+    const notice = win.dataLayer.findIndex(c => c?.event === 'ajsee_consent_updated' && c.marketing_consent === 'granted');
+    assert.ok(update >= 0 && notice > update);
+    assert.ok(win.dataLayer.findIndex(c => c?.event === 'ajsee_partner_click_gtm') > notice);
+    await added;
+
+    await module.applyConsent(module.writeConsent({ analytics: true, marketing: false }));
+    trackPartnerOutboundLink(win.document.querySelector('a'));
+    assert.equal(win.document.scripts.length, 2);
+    assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_partner_click_gtm').length, 1);
+    assert.equal(win.dataLayer.filter(c => c[0] === 'event' && c[1] === 'ajsee_partner_click').length, 2);
+    assert.deepEqual(win.dataLayer.filter(c => c?.event === 'ajsee_consent_updated').map(c => c.marketing_consent), ['denied', 'granted', 'denied']);
+  });
+});
+
+test('GTM can retry a failed download without queuing a second bootstrap or consent notice', async () => {
+  await environment(async (module, win) => {
+    const firstAttempt = module.applyConsent(module.writeConsent({ marketing: true }));
+    const failedScript = win.document.scripts[0];
+    failedScript.onerror();
+    assert.equal(await firstAttempt, false);
+    assert.equal(win.document.scripts.length, 0);
+
+    const secondAttempt = module.applyConsent(module.readConsent());
+    assert.equal(win.document.scripts.length, 1);
+    assert.notEqual(win.document.scripts[0], failedScript);
+    assert.equal(win.dataLayer.filter(c => c?.event === 'gtm.js').length, 1);
+    assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_consent_updated').length, 1);
+    win.document.scripts[0].onload();
+    assert.equal(await secondAttempt, true);
   });
 });
 

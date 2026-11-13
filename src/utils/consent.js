@@ -14,6 +14,8 @@ let ga4ScriptLoadingPromise = null;
 let ga4Configured = false;
 let ga4PageViewSentFor = '';
 let gtmLoaded = false;
+let gtmLoadingPromise = null;
+let lastGtmConsent = null;
 
 function isProdHttps() {
   return (
@@ -118,7 +120,8 @@ function googleConsentSettings(consent = readConsent()) {
     analytics_storage: analyticsGranted ? 'granted' : 'denied',
     ad_storage: marketingGranted ? 'granted' : 'denied',
     ad_user_data: marketingGranted ? 'granted' : 'denied',
-    ad_personalization: marketingGranted ? 'granted' : 'denied',
+    // The banner offers campaign measurement only.
+    ad_personalization: 'denied',
   };
 }
 
@@ -178,7 +181,10 @@ function loadScript(src, id, containsCheck) {
     script.src = src;
 
     script.onload = () => resolve(script);
-    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    script.onerror = () => {
+      script.remove();
+      reject(new Error(`Failed to load script: ${src}`));
+    };
 
     document.head.appendChild(script);
   });
@@ -335,13 +341,24 @@ function loadGA4Direct() {
   return ga4ScriptLoadingPromise;
 }
 
-/**
- * GTM loader necháváme kvůli kompatibilitě a budoucím marketingovým tagům.
- * Základní GA4 měření teď ale řešíme přímo přes loadGA4Direct().
- */
+function queueGtmConsentUpdate() {
+  const { analytics_storage, ad_storage } = googleConsentSettings();
+  if (lastGtmConsent?.analytics_consent === analytics_storage &&
+      lastGtmConsent?.marketing_consent === ad_storage) return;
+
+  lastGtmConsent = {
+    event: 'ajsee_consent_updated',
+    analytics_consent: analytics_storage,
+    marketing_consent: ad_storage,
+  };
+  window.dataLayer.push(lastGtmConsent);
+}
+
 function loadGTM() {
-  if (!hasOptionalConsent()) return Promise.resolve(false);
-  if (gtmLoaded) return Promise.resolve(true);
+  if (!hasOptionalConsent()) {
+    if (lastGtmConsent) queueGtmConsentUpdate();
+    return Promise.resolve(false);
+  }
 
   if (!isProdHttps()) {
     writeDebug({
@@ -354,10 +371,16 @@ function loadGTM() {
     return Promise.resolve(false);
   }
 
+  if (gtmLoaded || gtmLoadingPromise) {
+    queueGtmConsentUpdate();
+    return gtmLoadingPromise || Promise.resolve(true);
+  }
+
   const existingScript = getExistingScriptByContains(`googletagmanager.com/gtm.js?id=${GTM_ID}`);
 
   if (existingScript) {
     gtmLoaded = true;
+    queueGtmConsentUpdate();
 
     writeDebug({
       gtmRequested: true,
@@ -369,11 +392,11 @@ function loadGTM() {
     return Promise.resolve(true);
   }
 
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: 'gtm.js',
-    'gtm.start': Date.now(),
-  });
+  if (!lastGtmConsent) {
+    window.dataLayer.push({ event: 'gtm.js', 'gtm.start': Date.now() });
+  }
+  // Queue the trigger before the next interaction, even while GTM downloads.
+  queueGtmConsentUpdate();
 
   const src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_ID)}`;
 
@@ -384,16 +407,9 @@ function loadGTM() {
     gtmId: GTM_ID,
   });
 
-  return loadScript(src, `ajsee-gtm-${GTM_ID}`, `googletagmanager.com/gtm.js?id=${GTM_ID}`)
+  gtmLoadingPromise = loadScript(src, `ajsee-gtm-${GTM_ID}`, `googletagmanager.com/gtm.js?id=${GTM_ID}`)
     .then(() => {
       gtmLoaded = true;
-      if (!hasOptionalConsent()) return false;
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: 'ajsee_consent_updated',
-        analytics_consent: hasAnalyticsConsent() ? 'granted' : 'denied',
-        marketing_consent: hasMarketingConsent() ? 'granted' : 'denied',
-      });
 
       writeDebug({
         gtmRequested: true,
@@ -403,7 +419,7 @@ function loadGTM() {
         gtmId: GTM_ID,
       });
 
-      return true;
+      return hasOptionalConsent();
     })
     .catch((error) => {
       gtmLoaded = false;
@@ -418,7 +434,12 @@ function loadGTM() {
       });
 
       return false;
+    })
+    .finally(() => {
+      gtmLoadingPromise = null;
     });
+
+  return gtmLoadingPromise;
 }
 
 function applyConsent(consent) {
@@ -452,7 +473,7 @@ function applyConsent(consent) {
 
   const loaders = [
     consent.analytics ? loadGA4Direct() : Promise.resolve(false),
-    (consent.analytics || consent.marketing) ? loadGTM() : Promise.resolve(false),
+    loadGTM(),
   ];
 
   // Direct GA4 owns analytics page views. GTM is available for consent-gated
@@ -462,14 +483,15 @@ function applyConsent(consent) {
     const gtmContainerLoaded = results[1]?.status === 'fulfilled' && results[1]?.value === true;
 
     const analyticsAllowed = hasAnalyticsConsent();
-    const optionalAllowed = analyticsAllowed || hasMarketingConsent();
+    const marketingAllowed = hasMarketingConsent();
+    const optionalAllowed = analyticsAllowed || marketingAllowed;
     writeDebug({
       analyticsConsent: analyticsAllowed,
-      marketingConsent: hasMarketingConsent(),
-      analyticsRequested: !!consent.analytics,
+      marketingConsent: marketingAllowed,
+      analyticsRequested: analyticsAllowed,
       analyticsLoaded: analyticsAllowed && directGa4Loaded,
-      gtmRequested: !!(consent.analytics || consent.marketing),
-      gtmLoaded: gtmContainerLoaded,
+      gtmRequested: optionalAllowed,
+      gtmLoaded: optionalAllowed && gtmContainerLoaded,
       source: 'apply-consent-ga4-plus-gtm',
       gtmId: GTM_ID,
       measurementId: GA4_MEASUREMENT_ID,

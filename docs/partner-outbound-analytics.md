@@ -88,17 +88,21 @@ this action as the only Google Ads source for the same clickout. A GA4
 import for that click would count as a second Ads action.
 
 In GTM container `GTM-T5NZVSSW`, start from the published version in a separate
-workspace. Add a Data Layer Variable for `product_type` and one Google Ads
-Conversion Tracking tag. Give it a Custom Event trigger for exactly
-`ajsee_partner_click_gtm` with the variable equal to `tickets`. Require
-`ad_storage` and `ad_user_data` in the tag's additional consent settings.
-The live GA4 event keeps its direct transport.
+workspace. Add a Data Layer Variable for `product_type` and a DOM Element
+variable with CSS selector `html` and attribute `data-ajsee-marketing-consent`.
+The DOM variable reads the latest choice even if GTM processes a message
+queued before the user changed it. Give the Google Ads Conversion Tracking
+tag a Custom Event trigger for exactly `ajsee_partner_click_gtm`, with
+`product_type` equal to `tickets` and the DOM variable equal to `granted`.
+Require `ad_storage` and `ad_user_data` in the tag's additional consent
+settings. The live GA4 event keeps its direct transport.
 
 For ad click attribution, check whether an Ads destination tag already runs on
 the relevant landing pages after marketing consent. If it does, reuse it. If
 it doesn't, configure a Conversion Linker with the Custom Event trigger
 `ajsee_consent_updated`, the Data Layer Variable `marketing_consent` equal to
-`granted`, and the `ad_storage` additional consent check. This covers the
+`granted`, the DOM variable equal to `granted`, and the `ad_storage`
+additional consent check. This covers the
 landing page when marketing is already allowed or is granted later on the
 same page. Scope both tags to the production AJSEE host. Use GTM Preview on
 that host before publishing and inspect the unpublished workspace diff for
@@ -111,9 +115,9 @@ unrelated changes.
 | Marketing only | 0 | 1 |
 | Both | 1 | 1 |
 
-In Preview, also verify the switch from analytics-only to both on the same
-page and verify that accommodation and partner profiles trigger zero Ads
-tags. Preview shows which tags run. Google Ads diagnostics separately verify
+In Preview, verify the switch from analytics-only to both on the same page,
+withdrawal while GTM is loading, and zero Ads tags for accommodation or
+partner profiles. Preview shows which tags run. Google Ads diagnostics verify
 whether the action is receiving data. Partner reports are the source for
 confirmed orders and commission.
 

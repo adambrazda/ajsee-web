@@ -139,10 +139,18 @@ function setGoogleConsent(consent = readConsent(), command = 'update') {
   });
 }
 
+function setCurrentMarketingConsent(consent) {
+  // GTM can read this value when evaluating an event queued before it loaded.
+  document.documentElement.setAttribute(
+    'data-ajsee-marketing-consent', consent?.marketing === true ? 'granted' : 'denied'
+  );
+}
+
 function ensureGoogleConsentDefaults() {
   const gtag = ensureDataLayerAndGtag();
   if (window.__AJSEE_GOOGLE_CONSENT_DEFAULTS__) return;
   window.__AJSEE_GOOGLE_CONSENT_DEFAULTS__ = true;
+  setCurrentMarketingConsent(defaultConsent);
   gtag('consent', 'default', googleConsentSettings(defaultConsent));
 }
 
@@ -460,6 +468,7 @@ function applyConsent(consent) {
     marketingConsent: !!consent.marketing,
   });
 
+  setCurrentMarketingConsent(consent);
   setGoogleConsent(consent);
 
   if (!consent.analytics) {

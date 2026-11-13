@@ -6,7 +6,7 @@ Card and modal bindings use the same function and pass the activation event,
 so one activation cannot be counted by both listeners. Pointer gestures do
 not count. A second completed click does count.
 
-The event requires a current explicit analytics consent. Rejected clicks are
+The GA4 event requires a current explicit analytics consent. Rejected clicks are
 not queued or persisted. Withdrawing consent in the cookie settings disables
 measurement and reloads the page to remove previously loaded Google scripts.
 Source HTML templates must not independently load GA4.
@@ -18,7 +18,15 @@ stream in `src/utils/analytics-config.js`. **Do not additionally push a plain
 `{event: 'partner_click'}` object.** The legacy GTM custom-event trigger can
 send a second event with fewer fields. Its tag was paused in published GTM
 version 6 on 20 October 2026; keep the canonical name `ajsee_partner_click`
-independent of that old configuration. GTM is retained for compatibility.
+independent of that old configuration.
+
+With marketing consent, the same handler pushes `ajsee_partner_click_gtm` for
+the Google Ads tag. Both paths share the click deduplication guard. Once GTM has
+been requested, `ajsee_consent_updated` follows each change to the analytics or
+marketing choice. The website queues it after the Google consent update and
+before the next click, including during the first GTM load. Marketing consent
+grants `ad_storage` and `ad_user_data` for campaign measurement.
+`ad_personalization` stays denied.
 
 GA4 configuration is queued before the script finishes loading, so a fast
 click cannot precede configuration. The click handler never rewrites the
@@ -68,6 +76,50 @@ clickout is not a confirmed order or commission.
 
 The AI search learning funnel remains separate and receives only its existing
 privacy-safe event reference, provider, result position and placement.
+
+## Google Ads configuration for ticket clickouts
+
+In the AJSEE Google Ads account, use one manual website conversion action for
+`AJSEE – proklik na vstupenky`. Choose **Outbound click**, **Secondary** for
+reporting, **One** per ad interaction, and **Don't use a value**. Leave it out
+of custom goals used for bidding. Get the account's Conversion ID and the
+action's Conversion Label from **Tag setup → Use Google Tag Manager**. Use
+this action as the only Google Ads source for the same clickout. A GA4
+import for that click would count as a second Ads action.
+
+In GTM container `GTM-T5NZVSSW`, start from the published version in a separate
+workspace. Add a Data Layer Variable for `product_type` and a DOM Element
+variable with CSS selector `html` and attribute `data-ajsee-marketing-consent`.
+The DOM variable reads the latest choice even if GTM processes a message
+queued before the user changed it. Give the Google Ads Conversion Tracking
+tag a Custom Event trigger for exactly `ajsee_partner_click_gtm`, with
+`product_type` equal to `tickets` and the DOM variable equal to `granted`.
+Require `ad_storage` and `ad_user_data` in the tag's additional consent
+settings. The live GA4 event keeps its direct transport.
+
+For ad click attribution, check whether an Ads destination tag already runs on
+the relevant landing pages after marketing consent. If it does, reuse it. If
+it doesn't, configure a Conversion Linker with the Custom Event trigger
+`ajsee_consent_updated`, the Data Layer Variable `marketing_consent` equal to
+`granted`, the DOM variable equal to `granted`, and the `ad_storage`
+additional consent check. This covers the
+landing page when marketing is already allowed or is granted later on the
+same page. Scope both tags to the production AJSEE host. Use GTM Preview on
+that host before publishing and inspect the unpublished workspace diff for
+unrelated changes.
+
+| Consent choice | GA4 partner event | Ads tag on a ticket click |
+| --- | --- | --- |
+| Neither | 0 | 0 |
+| Analytics only | 1 | 0 |
+| Marketing only | 0 | 1 |
+| Both | 1 | 1 |
+
+In Preview, verify the switch from analytics-only to both on the same page,
+withdrawal while GTM is loading, and zero Ads tags for accommodation or
+partner profiles. Preview shows which tags run. Google Ads diagnostics verify
+whether the action is receiving data. Partner reports are the source for
+confirmed orders and commission.
 
 ## Checks
 

@@ -109,6 +109,8 @@ test('marketing-only consent enables campaign measurement and loads only GTM', a
 
 test('marketing can be added and withdrawn while the existing GTM container is active', async () => {
   await environment(async (module, win) => {
+    const readyNotifications = [];
+    win.addEventListener('ajsee:analytics-ready', (event) => readyNotifications.push(event.detail));
     const initial = module.applyConsent(module.writeConsent({ analytics: true }));
     const repeat = module.applyConsent(module.readConsent());
     assert.equal(win.document.scripts.length, 2);
@@ -132,6 +134,11 @@ test('marketing can be added and withdrawn while the existing GTM container is a
     assert.equal(win.document.scripts.length, 2);
     assert.equal(win.dataLayer.filter(c => c?.event === 'ajsee_partner_click_gtm').length, 1);
     assert.equal(win.dataLayer.filter(c => c[0] === 'event' && c[1] === 'ajsee_partner_click').length, 2);
+    assert.equal(win.dataLayer.filter(c => c[0] === 'event' && c[1] === 'page_view').length, 1);
+    assert.equal(win.dataLayer.filter(c => c[0] === 'event' && c[1] === 'ajsee_analytics_ready').length, 1);
+    assert.deepEqual(readyNotifications, [
+      { measurementId: GA4_MEASUREMENT_ID, eventName: 'ajsee_analytics_ready' },
+    ]);
     assert.deepEqual(win.dataLayer.filter(c => c?.event === 'ajsee_consent_updated').map(c => c.marketing_consent), ['denied', 'granted', 'denied']);
   });
 });

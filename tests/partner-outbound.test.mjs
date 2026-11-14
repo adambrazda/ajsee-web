@@ -74,14 +74,11 @@ test('middle click is measured; right click and cancelled touch are not', () => 
   dom.window.close();
 });
 
-test('marketing consent emits a separate GTM conversion event without a duplicate GA4 hit', () => {
+test('marketing consent has no click transport while GTM is disabled', () => {
   const { win, doc, commands, dom } = fixture({ markup: cardMarkup(), consent: { analytics: false, marketing: true } });
   activate(win, doc.querySelector('a'));
   assert.equal(commands.length, 0);
-  const conversion = win.dataLayer.find(item => item?.event === 'ajsee_partner_click_gtm');
-  assert.equal(conversion.analytics_event_name, 'ajsee_partner_click');
-  assert.equal(conversion.partner, 'colosseumticket');
-  assert.equal(conversion.event_id, 'colosseumticket-elisabeth-2027');
+  assert.equal(win.dataLayer, undefined);
   dom.window.close();
 });
 

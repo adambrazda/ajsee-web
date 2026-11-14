@@ -1,4 +1,4 @@
-import { CONSENT_KEY, GA4_MEASUREMENT_ID, GTM_ID } from './analytics-config.js';
+import { CONSENT_KEY, GA4_MEASUREMENT_ID, GTM_ENABLED, GTM_ID } from './analytics-config.js';
 
 const ANALYTICS_READY_EVENT = 'ajsee_analytics_ready';
 
@@ -94,11 +94,6 @@ function hasAnalyticsConsent() {
 function hasMarketingConsent() {
   const consent = readConsent();
   return consent?.marketing === true;
-}
-
-function hasOptionalConsent() {
-  const consent = readConsent();
-  return consent?.analytics === true || consent?.marketing === true;
 }
 
 function ensureDataLayerAndGtag() {
@@ -367,7 +362,9 @@ function queueGtmConsentUpdate() {
 }
 
 function loadGTM() {
-  if (!hasOptionalConsent()) {
+  if (!GTM_ENABLED) return Promise.resolve(false);
+
+  if (!hasMarketingConsent()) {
     if (lastGtmConsent) queueGtmConsentUpdate();
     return Promise.resolve(false);
   }
@@ -431,7 +428,7 @@ function loadGTM() {
         gtmId: GTM_ID,
       });
 
-      return hasOptionalConsent();
+      return hasMarketingConsent();
     })
     .catch((error) => {
       gtmLoaded = false;
@@ -484,33 +481,26 @@ function applyConsent(consent) {
     } catch { /* storage may be unavailable */ }
   }
 
-  const loaders = [
-    consent.analytics ? loadGA4Direct() : Promise.resolve(false),
-    loadGTM(),
-  ];
-
-  // Direct GA4 owns analytics page views. GTM is available for consent-gated
-  // advertising tags and receives a separate clickout dataLayer event.
-  return Promise.allSettled(loaders).then((results) => {
-    const directGa4Loaded = results[0]?.status === 'fulfilled' && results[0]?.value === true;
-    const gtmContainerLoaded = results[1]?.status === 'fulfilled' && results[1]?.value === true;
-
+  const analyticsLoad = consent.analytics ? loadGA4Direct() : Promise.resolve(false);
+  const gtmLoad = loadGTM();
+  return Promise.allSettled([analyticsLoad, gtmLoad]).then(([analyticsResult, gtmResult]) => {
     const analyticsAllowed = hasAnalyticsConsent();
     const marketingAllowed = hasMarketingConsent();
-    const optionalAllowed = analyticsAllowed || marketingAllowed;
+    const analyticsLoaded = analyticsAllowed && analyticsResult.status === 'fulfilled' && analyticsResult.value === true;
+    const gtmAvailable = GTM_ENABLED && marketingAllowed && gtmResult.status === 'fulfilled' && gtmResult.value === true;
     writeDebug({
       analyticsConsent: analyticsAllowed,
       marketingConsent: marketingAllowed,
       analyticsRequested: analyticsAllowed,
-      analyticsLoaded: analyticsAllowed && directGa4Loaded,
-      gtmRequested: optionalAllowed,
-      gtmLoaded: optionalAllowed && gtmContainerLoaded,
+      analyticsLoaded,
+      gtmRequested: GTM_ENABLED && marketingAllowed,
+      gtmLoaded: gtmAvailable,
       source: 'apply-consent-ga4-plus-gtm',
       gtmId: GTM_ID,
       measurementId: GA4_MEASUREMENT_ID,
     });
 
-    return optionalAllowed && (directGa4Loaded || gtmContainerLoaded);
+    return analyticsLoaded || gtmAvailable;
   });
 }
 

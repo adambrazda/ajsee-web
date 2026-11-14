@@ -13,6 +13,7 @@ let ga4ScriptLoaded = false;
 let ga4ScriptLoadingPromise = null;
 let ga4Configured = false;
 let ga4PageViewSentFor = '';
+let ga4ReadyNotified = false;
 let gtmLoaded = false;
 let gtmLoadingPromise = null;
 let lastGtmConsent = null;
@@ -256,7 +257,10 @@ function ensureGA4Configured() {
 function configureGA4() {
   ensureGA4Configured();
   sendGA4PageView();
+
+  if (ga4ReadyNotified) return;
   sendGA4ReadyEvent();
+  ga4ReadyNotified = true;
 
   try {
     window.dispatchEvent(new CustomEvent('ajsee:analytics-ready', {

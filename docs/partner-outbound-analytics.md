@@ -20,8 +20,9 @@ send a second event with fewer fields. Its tag was paused in published GTM
 version 6 on 20 October 2026; keep the canonical name `ajsee_partner_click`
 independent of that old configuration.
 
-With marketing consent, the same handler pushes `ajsee_partner_click_gtm` for
-the Google Ads tag. Both paths share the click deduplication guard. Once GTM has
+When the GTM integration is enabled and marketing consent is granted, the same
+handler pushes `ajsee_partner_click_gtm` for the Google Ads tag. Both paths
+share the click deduplication guard. Once GTM has
 been requested, `ajsee_consent_updated` follows each change to the analytics or
 marketing choice. The website queues it after the Google consent update and
 before the next click, including during the first GTM load. Marketing consent
@@ -78,6 +79,13 @@ The AI search learning funnel remains separate and receives only its existing
 privacy-safe event reference, provider, result position and placement.
 
 ## Google Ads configuration for ticket clickouts
+
+The build defaults to direct GA4 only because the published GTM container has
+no active tags. When the first marketing tag is ready for testing, set
+`VITE_GTM_ENABLED=true` in the Netlify production build environment and deploy
+with the GTM changes still unpublished. The container loads after marketing
+consent so the new tags can be checked with GTM Preview before publishing.
+Analytics-only visits use the direct GA4 tag.
 
 In the AJSEE Google Ads account, use one manual website conversion action for
 `AJSEE – proklik na vstupenky`. Choose **Outbound click**, **Secondary** for

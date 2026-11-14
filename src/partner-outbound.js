@@ -1,4 +1,4 @@
-import { CONSENT_KEY, GA4_MEASUREMENT_ID } from './utils/analytics-config.js';
+import { CONSENT_KEY, GA4_MEASUREMENT_ID, GTM_ENABLED } from './utils/analytics-config.js';
 
 const trackedActivations = new WeakSet();
 const boundDocuments = new WeakSet();
@@ -130,7 +130,8 @@ export function trackPartnerOutboundLink(link, options = {}) {
   const win = options.win || link?.ownerDocument?.defaultView || globalThis.window;
   if (!win) return null;
   const consent = trackingConsent(win);
-  if (!consent.analytics && !consent.marketing) return null;
+  const trackWithGTM = GTM_ENABLED && consent.marketing;
+  if (!consent.analytics && !trackWithGTM) return null;
   const activation = options.activation;
   if (activation && (activation.type === 'auxclick' ? activation.button !== 1 : activation.button > 0)) return null;
   if (activation && trackedActivations.has(activation)) return null;
@@ -147,7 +148,7 @@ export function trackPartnerOutboundLink(link, options = {}) {
       const { event, event_id, language, ...parameters } = payload;
       win.gtag('event', event, { ...parameters, partner_event_id: event_id, send_to: GA4_MEASUREMENT_ID });
     }
-    if (consent.marketing) {
+    if (trackWithGTM) {
       // A distinct event avoids duplicating the direct GA4 hit and gives GTM a
       // deterministic trigger for future consent-gated Google Ads conversions.
       const { event, ...parameters } = payload;

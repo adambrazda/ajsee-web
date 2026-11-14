@@ -16,6 +16,7 @@ const bundle = await build({
   bundle: true,
   format: 'iife',
   write: false,
+  define: { 'import.meta.env': '{}' },
 });
 const script = bundle.outputFiles[0].text;
 const titles = {
@@ -70,7 +71,8 @@ for (const template of ['index.html', 'londynske-muzikaly/index.html', 'accommod
         assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).analytics, true);
         assert.equal(JSON.parse(win.localStorage.getItem(CONSENT_KEY)).marketing, false);
         assert.equal(doc.querySelector('#cookie-preferences'), null);
-        assert.equal(doc.querySelectorAll('script[src*="googletagmanager.com"]').length, 2);
+        assert.equal(doc.querySelectorAll('script[src*="googletagmanager.com"]').length, 1);
+        assert.ok(doc.querySelector('script[src*="googletagmanager.com/gtag/js"]'));
         for (const script of doc.querySelectorAll('script[src*="googletagmanager.com"]')) script.onload?.();
         await new Promise(resolve => win.setTimeout(resolve, 0));
       } finally { dom.window.close(); }

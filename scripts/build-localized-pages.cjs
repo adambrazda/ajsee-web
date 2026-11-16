@@ -522,7 +522,8 @@ function rewriteLinks(html, lang, route) {
     const explicitTargetLang = langMatch ? langMatch[1].toLowerCase() : null;
     const nextHref = localizeHref(href, lang, route, explicitTargetLang);
 
-    return replaceAttr(full, 'href', nextHref);
+    // An unchanged href already has the escaping from its source HTML.
+    return nextHref === href ? full : replaceAttr(full, 'href', nextHref);
   });
 }
 

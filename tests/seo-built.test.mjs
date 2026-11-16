@@ -11,6 +11,7 @@ import { MICROGUIDE_LABELS } from '../src/microguide-copy.js';
 import { BLOG_UI } from '../src/blog-ui.js';
 import { finalizeSeoHtml, localizedSeoPath, SOCIALS } from '../scripts/finalize-seo.mjs';
 import { buildStaticMain } from '../scripts/build-mg.mjs';
+import { AMAZING_PLACES_BOOKING_URL, AMAZING_PLACES_VOUCHER_URL } from '../shared/amazing-places.js';
 const LANGS=['cs','en','de','sk','pl','hu'],ORIGIN='https://ajsee.cz';
 const RETIRED=['koncert-coldplay-praha-2025','praha-shakespeare-divadlo-2025','recenze-budapest-sziget-festival-2025'];
 const prefix=lang=>lang==='cs'?'':lang+'/';
@@ -178,6 +179,27 @@ for(const lang of LANGS){
     }
     const home=load(prefix(lang)+'index.html');assert.ok(home.window.document.querySelector('[data-ai-static-intro]').textContent.includes('AJSEE'));home.window.close();
     const contest=load(prefix(lang)+'souteze/filmovy-orchestr-praha/index.html');assert.equal(contest.window.document.querySelector('[data-i18n-key="nav-contact"]').getAttribute('href'),(lang==='cs'?'/':'/'+lang+'/')+'#contact');contest.window.close();
+  });
+  test(lang + ': the built accommodation page preserves campaign URLs and metadata', t => {
+    const page = load(prefix(lang) + 'accommodation/index.html');
+    t.after(() => page.window.close());
+    const doc = page.window.document;
+    const copy = JSON.parse(fs.readFileSync(`src/locales/${lang}/accommodation.json`, 'utf8'));
+    assert.equal(doc.documentElement.lang, lang);
+    assert.equal(doc.title, copy.seo.accommodation.title);
+    assert.equal(doc.querySelector('meta[name="description"]').content, copy.seo.accommodation.description);
+    assert.equal(doc.querySelector('link[rel="canonical"]').href, ORIGIN + (lang === 'cs' ? '/accommodation' : `/${lang}/accommodation/`));
+    assert.equal(doc.querySelectorAll('head link[rel="alternate"][hreflang]').length, 7);
+
+    assert.equal(doc.querySelector('a[data-placement="destination_cz_sk"]').href, AMAZING_PLACES_BOOKING_URL);
+    assert.equal(doc.querySelector('a[data-placement="accommodation_voucher"]').href, AMAZING_PLACES_VOUCHER_URL);
+    assert.equal(doc.querySelector('#vouchers h2').textContent, copy.accommodation.vouchers.title);
+
+    const trustedstaysLinks = [...doc.querySelectorAll('.stay-country a[data-trustedstays-outbound]')];
+    assert.equal(trustedstaysLinks.length, 2);
+    for (const link of trustedstaysLinks) {
+      assert.equal(new URL(link.href).searchParams.get('utm_campaign'), 'ajsee_accommodation_launch');
+    }
   });
   test(lang+': author profile lists only published texts and review bylines link to it',()=>{
     const dom=load(prefix(lang)+'authors/oya-canli/index.html'),doc=dom.window.document;

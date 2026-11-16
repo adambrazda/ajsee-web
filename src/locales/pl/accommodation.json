@@ -10,10 +10,10 @@
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Wszelkie prawa zastrzeżone.",
   "seo": {
     "accommodation": {
-      "title": "Noclegi w Wielkiej Brytanii i Francji | AJSEE",
-      "description": "Poznaj noclegi TrustedStays w Wielkiej Brytanii i wybrane apartamenty w Paryżu. Sprawdź ofertę i możliwości rezerwacji w każdym miejscu.",
-      "ogTitle": "Noclegi w Wielkiej Brytanii i Francji | AJSEE",
-      "ogDescription": "Poznaj noclegi TrustedStays w Wielkiej Brytanii i wybrane apartamenty w Paryżu. Sprawdź ofertę i możliwości rezerwacji w każdym miejscu."
+      "title": "Noclegi i vouchery na pobyt | AJSEE",
+      "description": "Znajdź nocleg w Czechach, na Słowacji, w Wielkiej Brytanii lub w Paryżu. W Amazing Places możesz też wybrać voucher podarunkowy na pobyt.",
+      "ogTitle": "Noclegi i vouchery na pobyt | AJSEE",
+      "ogDescription": "Znajdź nocleg w Czechach, na Słowacji, w Wielkiej Brytanii lub w Paryżu. W Amazing Places możesz też wybrać voucher podarunkowy na pobyt."
     }
   },
   "accommodation": {
@@ -81,7 +81,7 @@
         "a": "Anulowanie, zmiany rezerwacji, płatności i potwierdzenia obsługuje TrustedStays zgodnie ze swoimi warunkami. AJSEE może pomóc Ci odnaleźć się w procesie i komunikacji."
       }
     },
-    "disclaimer": "AJSEE nie jest dostawcą noclegu, biurem podróży ani operatorem płatności. Zapytanie, rezerwacja, płatność, potwierdzenie i warunki pobytu są obsługiwane przez TrustedStays.",
+    "disclaimer": "AJSEE odsyła do ofert partnerów. Za rezerwacje, płatności, potwierdzenia oraz sprzedaż voucherów odpowiada właściwy partner zgodnie ze swoimi warunkami.",
     "final": {
       "title": "Wybierz kierunek podróży",
       "text": "TrustedStays otworzy się w nowej karcie. Tam kończysz zapytanie lub rezerwację bezpośrednio u partnera.",
@@ -91,49 +91,47 @@
     "redesign": {
       "titleStart": "Noclegi na",
       "titleEnd": "wyjazdy pełne wrażeń.",
-      "lead1": "Wybierz się na wyjątkowe wydarzenie i zostań kilka dni dłużej.",
-      "lead2": "Poznaj ofertę noclegów naszego partnera TrustedStays.",
       "cta": "Wybierz kierunek",
-      "howLink": "Jak to działa",
-      "partnerLabel": "Oficjalny partner AJSEE",
       "photoAlt": "Salon z oferty noclegów TrustedStays",
       "photoCaption": "Zdjęcie z oferty TrustedStays",
       "destinationsTitle": "Wybierz kierunek podróży",
       "ukTitle": "Wielka Brytania",
-      "ukLocation": "Londyn i inne brytyjskie miasta",
-      "ukDescription": "Poznaj apartamenty i domy na krótsze i dłuższe pobyty.",
-      "ukCta": "Zobacz ofertę",
+      "ukDescription": "Zobacz apartamenty i domy w Londynie oraz innych brytyjskich miastach.",
+      "ukCta": "Znajdź nocleg w Wielkiej Brytanii",
       "franceTitle": "Francja",
-      "franceNew": "Nowość",
-      "franceLocation": "Paryż",
       "franceDescription": "Poznaj apartamenty w Paryżu. Na stronie partnera wyszukaj „Paris”.",
-      "franceCta": "Zobacz ofertę",
-      "benefit1Title": "Sprawdzone noclegi",
-      "benefit1Text": "TrustedStays sprawdza standardy obiektów w swojej ofercie.",
-      "benefit2Title": "Krótsze i dłuższe pobyty",
-      "benefit2Text": "Na kilka nocy lub dłuższy wyjazd, zależnie od oferty obiektu.",
-      "benefit3Title": "Rezerwacja u partnera",
-      "benefit3Text": "TrustedStays potwierdza dostępność, cenę i warunki rezerwacji.",
+      "franceCta": "Znajdź nocleg w Paryżu",
       "howTitle": "Jak zarezerwować pobyt",
       "step1Title": "Wybierz kierunek",
       "step1Text": "Sprawdź noclegi i możliwości rezerwacji w kraju, do którego się wybierasz.",
       "step2Title": "Znajdź odpowiedni nocleg",
       "step2Text": "Uwzględnij termin, liczbę gości i miejsce wydarzenia.",
       "step3Title": "Dokończ rezerwację",
-      "step3Text": "Dokończ rezerwację bezpośrednio u TrustedStays, zgodnie z warunkami wybranego pobytu.",
+      "step3Text": "Zarezerwuj pobyt lub wyślij zapytanie bezpośrednio do partnera zgodnie z warunkami wybranej oferty.",
       "faqTitle": "Warto wiedzieć",
       "faqBookingQ": "Czy rezerwuję na AJSEE?",
-      "faqBookingA": "AJSEE kieruje do TrustedStays. Wybór noclegu, rezerwację i płatność dokonujesz bezpośrednio u partnera.",
+      "faqBookingA": "AJSEE przekieruje Cię do oferty wybranego partnera. Na jego stronie sprawdzisz ceny i dostępność, zarezerwujesz pobyt i zapłacisz.",
       "franceQ": "Jak zarezerwować nocleg we Francji?",
       "franceA": "Otwórz wyszukiwarkę noclegów TrustedStays i wpisz „Paris”. Wybierz miejsce z podpowiedzi i dodaj termin pobytu.",
       "franceLink": "Otwórz ofertę TrustedStays",
-      "faqAffiliateQ": "Czy to link partnerski?",
-      "faqAffiliateA": "Tak. Link pomaga naszemu partnerowi rozpoznać odwiedziny z AJSEE.",
+      "faqAffiliateA": "AJSEE może otrzymać prowizję od rezerwacji lub zakupu za pośrednictwem linku partnerskiego.",
       "faqCancelQ": "Kto zajmuje się zmianami i anulowaniem rezerwacji?",
-      "faqCancelA": "Zmiany, anulowanie rezerwacji i płatności uzgodnisz bezpośrednio z TrustedStays, zgodnie z warunkami swojego pobytu.",
+      "faqCancelA": "W sprawie zmiany, anulowania lub płatności skontaktuj się z partnerem, u którego zarezerwowano pobyt.",
       "supportTitle": "Potrzebujesz pomocy?",
       "supportText": "Napisz do nas. Pomożemy Ci zorientować się w ofercie i kolejnych krokach.",
-      "supportCta": "Napisz do AJSEE"
+      "supportCta": "Napisz do AJSEE",
+      "lead": "Znajdź nocleg na wyjazd na koncert, do teatru, na wydarzenie sportowe lub na weekend."
+    },
+    "amazingPlaces": {
+      "title": "Czechy i Słowacja",
+      "description": "Wybierz miejsce i termin w Amazing Places. W ofercie znajdziesz hotele, apartamenty, domki i glamping. Link prowadzi na czeską wersję strony.",
+      "cta": "Zobacz oferty noclegów"
+    },
+    "vouchers": {
+      "shortTitle": "Vouchery podarunkowe",
+      "title": "Voucher podarunkowy na pobyt",
+      "description": "Voucher kupisz w Amazing Places. Osoba obdarowana wybierze termin i obiekt, który go akceptuje. Link prowadzi na czeską wersję strony.",
+      "cta": "Wybierz voucher"
     }
   }
 }

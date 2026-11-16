@@ -82,11 +82,11 @@
       },
       "stays": {
         "q": "Szállást is találhatok az AJSEE-n?",
-        "a": "A Szállás oldalon partnerünk, a TrustedStays kínálatát találja. Az aktuális úti célokat, időpontokat, elérhetőséget és árakat közvetlenül a partnernél ellenőrizheti."
+        "a": "A Szállás oldalon úti cél szerint böngészhet az Amazing Places és a TrustedStays ajánlatai között. Az Amazing Places szállásra szóló ajándékutalványokat is kínál."
       },
       "booking": {
         "q": "Ki kezeli a szállásfoglalást és a módosításokat?",
-        "a": "A foglalást, a fizetést és az esetleges módosításokat közvetlenül a TrustedStays szolgáltatóval intézheti, a kiválasztott tartózkodás feltételei szerint. Az AJSEE a partner kínálatára hivatkozik, nem a szállás szolgáltatója."
+        "a": "A foglalást, a fizetést és az esetleges változtatásokat közvetlenül a kiválasztott partnernél intézheti."
       },
       "feedback": {
         "q": "Hogyan ajánlhatok eseményt vagy jelezhetek hibát?",

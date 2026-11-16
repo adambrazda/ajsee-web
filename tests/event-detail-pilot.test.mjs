@@ -6,8 +6,9 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { JSDOM } from 'jsdom';
 import { validatePilot, renderEventDetail, buildEventSchema, eventState, PREVIEW_ROOT } from '../scripts/event-detail-pilot.mjs';
-import { initPartnerOutboundTracking } from '../src/partner-outbound.js';
+import { buildPartnerOutboundPayload, initPartnerOutboundTracking } from '../src/partner-outbound.js';
 import { CONSENT_KEY } from '../src/utils/analytics-config.js';
+import { AMAZING_PLACES_BOOKING_URL } from '../shared/amazing-places.js';
 import { handler as colosseumOutbound } from '../netlify/functions/colosseumOutbound.js';
 
 const pilot = JSON.parse(fs.readFileSync(new URL('../content/event-detail-pilot.json', import.meta.url)));
@@ -101,8 +102,36 @@ test('past, explicitly cancelled and postponed occurrences remain useful without
     assert.equal(eventState(event, date), state);
     const dom = new JSDOM(renderEventDetail(event, { now: date }));
     assert.equal(dom.window.document.querySelector('.detail-cta'), null);
+    assert.equal(dom.window.document.querySelector('.detail-stay'), null);
     assert.ok(dom.window.document.querySelector('.detail-status'));
     assert.ok(dom.window.document.querySelector('.detail-related a[href]'));
+    dom.window.close();
+  }
+});
+
+test('the secondary stay link is scoped to upcoming Czech and Slovak events', () => {
+  const event = events[0];
+  for (const country of ['CZ', 'SK', 'PL', '']) {
+    const occurrence = { ...event, venue: { ...event.venue, country } };
+    const body = renderEventDetail(occurrence, { now, lang: 'sk' });
+    const dom = new JSDOM(`<html lang="sk"><body data-page="event-detail">${body}</body></html>`, {
+      url: `https://ajsee.cz/sk/udalosti/${event.slug}/`
+    });
+    const doc = dom.window.document;
+    const stay = doc.querySelector('.detail-stay a');
+    assert.equal(doc.querySelector('.detail-cta').getAttribute('href'), event.tickets);
+    if (country === 'CZ' || country === 'SK') {
+      assert.equal(stay?.href, AMAZING_PLACES_BOOKING_URL);
+      assert.equal(stay.hreflang, 'cs');
+      assert.equal(stay.textContent, 'Pozrieť si pobyty');
+      const payload = buildPartnerOutboundPayload(stay);
+      assert.equal(payload.partner, 'amazingplaces');
+      assert.equal(payload.product_type, 'accommodation');
+      assert.equal(payload.placement, 'event_detail');
+      assert.equal(payload.event_id, event.id);
+    } else {
+      assert.equal(stay, null);
+    }
     dom.window.close();
   }
 });

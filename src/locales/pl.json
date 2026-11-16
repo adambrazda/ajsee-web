@@ -268,9 +268,9 @@
     "guide": "Jak wybrać zaufanego sprzedawcę biletów"
   },
   "event-demo": {
-    "ariaLabel": "Noclegi z TrustedStays w Wielkiej Brytanii i Francji.",
-    "title": "Noclegi z TrustedStays",
-    "body": "Planujesz wyjazd na wydarzenie? Sprawdź ofertę noclegów naszego partnera w Wielkiej Brytanii i Francji.",
+    "ariaLabel": "Nocleg na wyjazd",
+    "title": "Nocleg na wyjazd",
+    "body": "Znajdź nocleg w Czechach, na Słowacji, w Wielkiej Brytanii lub w Paryżu.",
     "cta": "Znajdź nocleg"
   },
   "mg.backToBlog": "Wróć do bloga",
@@ -497,7 +497,7 @@
   "home.london.text": "Poczuj atmosferę West Endu. Wybierz musical i znajdź bilety na odpowiedni termin.",
   "home.london.cta": "Zobacz musicale",
   "home.stay.title": "Nocleg na Twój wyjazd",
-  "home.stay.text": "Apartamenty TrustedStays w Wielkiej Brytanii i we Francji. Znajdź miejsce, w którym poczujesz się dobrze.",
+  "home.stay.text": "Znajdź nocleg w Czechach, na Słowacji, w Wielkiej Brytanii lub w Paryżu.",
   "home.stay.cta": "Znajdź nocleg",
   "home.editorial.title": "Nasze recenzje i wskazówki",
   "home.editorial.intro": "Wrażenia z widowni i pomysły na kolejny wyjazd.",

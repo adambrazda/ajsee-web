@@ -10,10 +10,10 @@
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Všechna práva vyhrazena.",
   "seo": {
     "accommodation": {
-      "title": "Ubytování ve Spojeném království a Francii | AJSEE",
-      "description": "Objevte ubytování s TrustedStays ve Spojeném království a vybrané apartmány v Paříži. Prohlédněte si nabídku a možnosti rezervace podle destinace.",
-      "ogTitle": "Ubytování ve Spojeném království a Francii | AJSEE",
-      "ogDescription": "Objevte ubytování s TrustedStays ve Spojeném království a vybrané apartmány v Paříži. Prohlédněte si nabídku a možnosti rezervace podle destinace."
+      "title": "Ubytování a dárkové poukazy na pobyt | AJSEE",
+      "description": "Najděte ubytování v Česku, na Slovensku, ve Spojeném království nebo v Paříži. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt.",
+      "ogTitle": "Ubytování a dárkové poukazy na pobyt | AJSEE",
+      "ogDescription": "Najděte ubytování v Česku, na Slovensku, ve Spojeném království nebo v Paříži. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt."
     }
   },
   "accommodation": {
@@ -81,7 +81,7 @@
         "a": "Storno, změny rezervace, platby a potvrzení řeší TrustedStays podle svých podmínek. AJSEE ti může pomoci s orientací a komunikací."
       }
     },
-    "disclaimer": "AJSEE není poskytovatelem ubytování, cestovní kanceláří ani provozovatelem platební služby. Poptávka, rezervace, platba, potvrzení a podmínky pobytu probíhají u TrustedStays.",
+    "disclaimer": "AJSEE odkazuje na nabídky partnerů. Rezervace, platby a potvrzení pobytů i prodej dárkových poukazů zajišťují příslušní partneři podle vlastních podmínek.",
     "final": {
       "title": "Vyberte si destinaci",
       "text": "Otevřeš nabídku TrustedStays v nové kartě a poptávku nebo rezervaci dokončíš přímo u partnera.",
@@ -91,49 +91,47 @@
     "redesign": {
       "titleStart": "Ubytování pro",
       "titleEnd": "cesty za zážitky.",
-      "lead1": "Vyrazte za zážitky a dopřejte si pár dní navíc.",
-      "lead2": "Objevte nabídku ubytování našeho partnera TrustedStays.",
       "cta": "Vybrat destinaci",
-      "howLink": "Jak to funguje",
-      "partnerLabel": "Oficiální partner AJSEE",
       "photoAlt": "Obývací pokoj z nabídky ubytování TrustedStays",
       "photoCaption": "Fotografie z nabídky TrustedStays",
       "destinationsTitle": "Vyberte si destinaci",
       "ukTitle": "Spojené království",
-      "ukLocation": "Londýn a další britská města",
-      "ukDescription": "Prohlédněte si apartmány a domy na krátké i delší pobyty.",
-      "ukCta": "Prohlédnout nabídku",
+      "ukDescription": "Prohlédněte si apartmány a domy v Londýně a dalších britských městech.",
+      "ukCta": "Najít pobyt v UK",
       "franceTitle": "Francie",
-      "franceNew": "Nově",
-      "franceLocation": "Paříž",
       "franceDescription": "Prohlédněte si pařížské apartmány. U partnera vyhledejte „Paris“.",
-      "franceCta": "Prohlédnout nabídku",
-      "benefit1Title": "Prověřené ubytování",
-      "benefit1Text": "TrustedStays prověřuje standardy ubytování ve své nabídce.",
-      "benefit2Title": "Krátké i delší pobyty",
-      "benefit2Text": "Na několik nocí i delší cestu, podle nabídky partnera.",
-      "benefit3Title": "Rezervace u partnera",
-      "benefit3Text": "Dostupnost, cenu a podmínky vám potvrdí TrustedStays.",
+      "franceCta": "Najít pobyt v Paříži",
       "howTitle": "Jak na rezervaci",
       "step1Title": "Vyberte destinaci",
       "step1Text": "Prohlédněte si nabídku a možnosti rezervace v zemi, kam se chystáte.",
       "step2Title": "Najděte vhodný pobyt",
       "step2Text": "Zohledněte termín, počet hostů i místo, kam vyrážíte za zážitkem.",
       "step3Title": "Dokončete rezervaci",
-      "step3Text": "Rezervaci dokončíte přímo u TrustedStays podle podmínek zvoleného pobytu.",
+      "step3Text": "Rezervaci nebo poptávku dokončíte u partnera podle podmínek zvoleného pobytu.",
       "faqTitle": "Co vás může zajímat",
       "faqBookingQ": "Probíhá rezervace na AJSEE?",
-      "faqBookingA": "AJSEE vás propojí s TrustedStays. Výběr ubytování, rezervaci i platbu dokončíte přímo u partnera.",
+      "faqBookingA": "AJSEE vás odkáže na nabídku vybraného partnera. U něj najdete ceny a dostupnost a dokončíte rezervaci i platbu.",
       "franceQ": "Jak rezervovat ubytování ve Francii?",
       "franceA": "Otevřete nabídku TrustedStays a ve vyhledávání zadejte „Paris“. Vyberte destinaci z nabízených možností a doplňte termín pobytu.",
       "franceLink": "Otevřít nabídku TrustedStays",
-      "faqAffiliateQ": "Je odkaz partnerský?",
-      "faqAffiliateA": "Ano. Odkaz partnerovi pomáhá rozpoznat návštěvy, které přicházejí z AJSEE.",
+      "faqAffiliateA": "Z rezervace nebo nákupu přes partnerský odkaz může AJSEE získat provizi.",
       "faqCancelQ": "Kdo řeší změny a zrušení rezervace?",
-      "faqCancelA": "Změny, zrušení rezervace a platby vyřešíte přímo s TrustedStays podle podmínek svého pobytu.",
+      "faqCancelA": "Se změnou, zrušením nebo dotazem k platbě se obraťte na partnera, u kterého jste pobyt rezervovali.",
       "supportTitle": "Potřebujete poradit?",
       "supportText": "Napište nám. Pomůžeme vám zorientovat se v nabídce i v dalším postupu.",
-      "supportCta": "Napsat AJSEE"
+      "supportCta": "Napsat AJSEE",
+      "lead": "Najděte místo, kde se ubytovat na cestě za koncertem, divadlem, sportem nebo na víkendový výlet."
+    },
+    "amazingPlaces": {
+      "title": "Česko a Slovensko",
+      "description": "Vyberte si místo a termín na webu Amazing Places. V nabídce najdete hotely, apartmány, chalupy i glamping.",
+      "cta": "Prohlédnout pobyty"
+    },
+    "vouchers": {
+      "shortTitle": "Dárkové poukazy",
+      "title": "Dárkový poukaz na pobyt",
+      "description": "Poukaz koupíte u Amazing Places. Obdarovaní si sami vyberou termín a místo z nabídky pobytů, kde poukaz přijímají.",
+      "cta": "Vybrat poukaz"
     }
   }
 }

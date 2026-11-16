@@ -268,9 +268,9 @@
     "guide": "So erkennen Sie einen vertrauenswürdigen Ticketanbieter"
   },
   "event-demo": {
-    "ariaLabel": "Unterkünfte mit TrustedStays im Vereinigten Königreich und in Frankreich.",
-    "title": "Unterkünfte mit TrustedStays",
-    "body": "Planen Sie eine Reise zu einer Veranstaltung? Entdecken Sie die Unterkünfte unseres Partners im Vereinigten Königreich und in Frankreich.",
+    "ariaLabel": "Unterkunft für Ihre Reise",
+    "title": "Unterkunft für Ihre Reise",
+    "body": "Finden Sie eine Unterkunft in Tschechien, der Slowakei, im Vereinigten Königreich oder in Paris.",
     "cta": "Unterkunft finden"
   },
   "mg.backToBlog": "Zurück zum Blog",
@@ -497,7 +497,7 @@
   "home.london.text": "Erleben Sie das West End. Wählen Sie ein Musical und finden Sie Tickets für Ihren Wunschtermin.",
   "home.london.cta": "Musicals entdecken",
   "home.stay.title": "Unterkunft für Ihre Reise",
-  "home.stay.text": "Apartments von TrustedStays im Vereinigten Königreich und in Frankreich. Finden Sie eine Unterkunft zum Wohlfühlen.",
+  "home.stay.text": "Finden Sie eine Unterkunft in Tschechien, der Slowakei, im Vereinigten Königreich oder in Paris.",
   "home.stay.cta": "Unterkunft finden",
   "home.editorial.title": "Unsere Rezensionen und Tipps",
   "home.editorial.intro": "Erlebnisse aus dem Publikum und Ideen für Ihre nächste Reise.",

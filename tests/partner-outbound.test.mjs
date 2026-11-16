@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
+import { AMAZING_PLACES_BOOKING_URL, AMAZING_PLACES_VOUCHER_URL } from '../shared/amazing-places.js';
 import {
   buildPartnerOutboundPayload,
   trackPartnerOutboundLink,
@@ -162,6 +164,34 @@ test('UK and France accommodation CTAs keep separate placements and survive DOM 
   assert.deepEqual(commands.map(c => c[2].placement), ['destination_uk', 'destination_france', 'france_information']);
   assert.ok(commands.every(c => c[1] === 'ajsee_partner_click' && c[2].partner === 'trustedstays'));
   dom.window.close();
+});
+
+test('Amazing Places booking and voucher links preserve their campaigns and report separate products with consent', t => {
+  const pageHtml = readFileSync(new URL('../accommodation.html', import.meta.url), 'utf8');
+  const page = new JSDOM(pageHtml);
+  const { win, doc, commands, dom } = fixture({ path: '/de/accommodation/', page: 'accommodation', consent: false });
+  t.after(() => { page.window.close(); dom.window.close(); });
+
+  const links = [...page.window.document.querySelectorAll('a[href^="https://www.amazingplaces.cz/"]')];
+  assert.deepEqual(links.map(link => link.getAttribute('href')), [AMAZING_PLACES_BOOKING_URL, AMAZING_PLACES_VOUCHER_URL]);
+  assert.deepEqual(links.map(link => new URL(link.href).searchParams.get('a_cam')), ['9', '3']);
+
+  for (const source of links) {
+    const link = doc.importNode(source, true);
+    doc.body.append(link);
+    assert.ok(link.relList.contains('sponsored'));
+    activate(win, link);
+    assert.equal(commands.length, 0);
+    assert.equal(link.href, source.href);
+  }
+
+  win.localStorage.setItem(CONSENT_KEY, JSON.stringify({ analytics: true }));
+  for (const link of doc.querySelectorAll('a')) activate(win, link);
+  assert.deepEqual(commands.map(([, event, p]) => [event, p.partner, p.product_type, p.placement]), [
+    ['ajsee_partner_click', 'amazingplaces', 'accommodation', 'destination_cz_sk'],
+    ['ajsee_partner_click', 'amazingplaces', 'voucher', 'accommodation_voucher'],
+  ]);
+  assert.doesNotMatch(JSON.stringify(commands), /a_box|a_cam|uxyqpfva/);
 });
 
 test('Colosseum server links measure reviews with consent and retain the actual redirect untouched', () => {

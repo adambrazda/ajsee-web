@@ -10,10 +10,10 @@
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Všetky práva vyhradené.",
   "seo": {
     "accommodation": {
-      "title": "Ubytovanie v Spojenom kráľovstve a Francúzsku | AJSEE",
-      "description": "Objavte ubytovanie s TrustedStays v Spojenom kráľovstve a vybrané apartmány v Paríži. Prezrite si ponuku a možnosti rezervácie podľa destinácie.",
-      "ogTitle": "Ubytovanie v Spojenom kráľovstve a Francúzsku | AJSEE",
-      "ogDescription": "Objavte ubytovanie s TrustedStays v Spojenom kráľovstve a vybrané apartmány v Paríži. Prezrite si ponuku a možnosti rezervácie podľa destinácie."
+      "title": "Ubytovanie a darčekové poukazy na pobyt | AJSEE",
+      "description": "Nájdite ubytovanie v Česku, na Slovensku, v Spojenom kráľovstve alebo v Paríži. V Amazing Places si môžete vybrať aj darčekový poukaz na pobyt.",
+      "ogTitle": "Ubytovanie a darčekové poukazy na pobyt | AJSEE",
+      "ogDescription": "Nájdite ubytovanie v Česku, na Slovensku, v Spojenom kráľovstve alebo v Paríži. V Amazing Places si môžete vybrať aj darčekový poukaz na pobyt."
     }
   },
   "accommodation": {
@@ -81,7 +81,7 @@
         "a": "Storno, zmeny rezervácie, platby a potvrdenia rieši TrustedStays podľa svojich podmienok. AJSEE ti môže pomôcť s orientáciou a komunikáciou."
       }
     },
-    "disclaimer": "AJSEE nie je poskytovateľom ubytovania, cestovnou kanceláriou ani prevádzkovateľom platobnej služby. Dopyt, rezervácia, platba, potvrdenie a podmienky pobytu prebiehajú u TrustedStays.",
+    "disclaimer": "AJSEE odkazuje na ponuky partnerov. Rezervácie, platby, potvrdenia pobytov a predaj darčekových poukazov zabezpečujú príslušní partneri podľa vlastných podmienok.",
     "final": {
       "title": "Vyberte si destináciu",
       "text": "TrustedStays sa otvorí v novej karte, kde dopyt alebo rezerváciu dokončíš priamo u partnera.",
@@ -91,49 +91,47 @@
     "redesign": {
       "titleStart": "Ubytovanie na",
       "titleEnd": "cesty za zážitkami.",
-      "lead1": "Vyrazte za zážitkami a doprajte si pár dní navyše.",
-      "lead2": "Objavte ponuku ubytovania nášho partnera TrustedStays.",
       "cta": "Vybrať destináciu",
-      "howLink": "Ako to funguje",
-      "partnerLabel": "Oficiálny partner AJSEE",
       "photoAlt": "Obývacia izba z ponuky ubytovania TrustedStays",
       "photoCaption": "Fotografia z ponuky TrustedStays",
       "destinationsTitle": "Vyberte si destináciu",
       "ukTitle": "Spojené kráľovstvo",
-      "ukLocation": "Londýn a ďalšie britské mestá",
-      "ukDescription": "Prezrite si apartmány a domy na krátke aj dlhšie pobyty.",
-      "ukCta": "Pozrieť ponuku",
+      "ukDescription": "Pozrite si apartmány a domy v Londýne a ďalších britských mestách.",
+      "ukCta": "Nájsť pobyt v UK",
       "franceTitle": "Francúzsko",
-      "franceNew": "Novinka",
-      "franceLocation": "Paríž",
       "franceDescription": "Prezrite si parížske apartmány. U partnera vyhľadajte „Paris“.",
-      "franceCta": "Pozrieť ponuku",
-      "benefit1Title": "Preverené ubytovanie",
-      "benefit1Text": "TrustedStays preveruje štandardy ubytovania vo svojej ponuke.",
-      "benefit2Title": "Krátke aj dlhšie pobyty",
-      "benefit2Text": "Na niekoľko nocí aj dlhšiu cestu, podľa ponuky partnera.",
-      "benefit3Title": "Rezervácia u partnera",
-      "benefit3Text": "Dostupnosť, cenu a podmienky vám potvrdí TrustedStays.",
+      "franceCta": "Nájsť pobyt v Paríži",
       "howTitle": "Ako si rezervovať pobyt",
       "step1Title": "Vyberte destináciu",
       "step1Text": "Prezrite si ponuku a možnosti rezervácie v krajine, kam sa chystáte.",
       "step2Title": "Nájdite vhodný pobyt",
       "step2Text": "Zohľadnite termín, počet hostí aj miesto, kam vyrážate za zážitkom.",
       "step3Title": "Dokončite rezerváciu",
-      "step3Text": "Rezerváciu dokončíte priamo u TrustedStays podľa podmienok zvoleného pobytu.",
+      "step3Text": "Rezerváciu alebo dopyt dokončíte u partnera podľa podmienok vybraného pobytu.",
       "faqTitle": "Čo vás môže zaujímať",
       "faqBookingQ": "Prebieha rezervácia na AJSEE?",
-      "faqBookingA": "AJSEE vás prepojí s TrustedStays. Výber ubytovania, rezerváciu aj platbu dokončíte priamo u partnera.",
+      "faqBookingA": "AJSEE vás odkáže na ponuku vybraného partnera. U neho nájdete ceny aj dostupnosť a dokončíte rezerváciu aj platbu.",
       "franceQ": "Ako si rezervovať ubytovanie vo Francúzsku?",
       "franceA": "Otvorte ponuku TrustedStays a vo vyhľadávaní zadajte „Paris“. Vyberte destináciu z ponúkaných možností a doplňte termín pobytu.",
       "franceLink": "Otvoriť ponuku TrustedStays",
-      "faqAffiliateQ": "Je odkaz partnerský?",
-      "faqAffiliateA": "Áno. Odkaz partnerovi pomáha rozpoznať návštevy, ktoré prichádzajú z AJSEE.",
+      "faqAffiliateA": "Z rezervácie alebo nákupu cez partnerský odkaz môže AJSEE získať províziu.",
       "faqCancelQ": "Kto rieši zmeny a zrušenie rezervácie?",
-      "faqCancelA": "Zmeny, zrušenie rezervácie a platby vyriešite priamo s TrustedStays podľa podmienok svojho pobytu.",
+      "faqCancelA": "V prípade zmeny, zrušenia alebo otázky k platbe oslovte partnera, u ktorého ste si pobyt rezervovali.",
       "supportTitle": "Potrebujete poradiť?",
       "supportText": "Napíšte nám. Pomôžeme vám zorientovať sa v ponuke aj v ďalšom postupe.",
-      "supportCta": "Napísať AJSEE"
+      "supportCta": "Napísať AJSEE",
+      "lead": "Nájdite si ubytovanie na cestu za koncertom, divadlom, športom alebo na víkendový výlet."
+    },
+    "amazingPlaces": {
+      "title": "Česko a Slovensko",
+      "description": "Vyberte si miesto a termín v Amazing Places. V ponuke sú hotely, apartmány, chalupy aj glamping. Odkaz vedie na českú verziu webu.",
+      "cta": "Pozrieť si pobyty"
+    },
+    "vouchers": {
+      "shortTitle": "Darčekové poukazy",
+      "title": "Darčekový poukaz na pobyt",
+      "description": "Poukaz kúpite v Amazing Places. Obdarovaní si sami vyberú termín aj ubytovanie, ktoré poukaz prijíma. Odkaz vedie na českú verziu webu.",
+      "cta": "Vybrať poukaz"
     }
   }
 }

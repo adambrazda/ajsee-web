@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title data-i18n-key="seo.accommodation.title">Ubytování ve Spojeném království a Francii | AJSEE</title>
+  <title data-i18n-key="seo.accommodation.title">Ubytování a dárkové poukazy na pobyt | AJSEE</title>
   <meta
     name="description"
     data-i18n-content="seo.accommodation.description"
-    content="Objevte ubytování s TrustedStays ve Spojeném království a vybrané apartmány v Paříži. Prohlédněte si nabídku a možnosti rezervace podle destinace."
+    content="Najděte ubytování v Česku, na Slovensku, ve Spojeném království nebo v Paříži. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt."
   />
 
   <meta name="robots" content="index, follow" />
@@ -25,12 +25,12 @@
   <meta
     property="og:title"
     data-i18n-content="seo.accommodation.ogTitle"
-    content="Ubytování ve Spojeném království a Francii | AJSEE"
+    content="Ubytování a dárkové poukazy na pobyt | AJSEE"
   />
   <meta
     property="og:description"
     data-i18n-content="seo.accommodation.ogDescription"
-    content="Objevte ubytování s TrustedStays ve Spojeném království a vybrané apartmány v Paříži. Prohlédněte si nabídku a možnosti rezervace podle destinace."
+    content="Najděte ubytování v Česku, na Slovensku, ve Spojeném království nebo v Paříži. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt."
   />
   <meta property="og:url" content="https://ajsee.cz/accommodation" />
   <meta property="og:image" content="https://ajsee.cz/images/logo-ajsee.png" />
@@ -41,12 +41,12 @@
   <meta
     name="twitter:title"
     data-i18n-content="seo.accommodation.ogTitle"
-    content="Ubytování ve Spojeném království a Francii | AJSEE"
+    content="Ubytování a dárkové poukazy na pobyt | AJSEE"
   />
   <meta
     name="twitter:description"
     data-i18n-content="seo.accommodation.ogDescription"
-    content="Objevte ubytování s TrustedStays ve Spojeném království a vybrané apartmány v Paříži. Prohlédněte si nabídku a možnosti rezervace podle destinace."
+    content="Najděte ubytování v Česku, na Slovensku, ve Spojeném království nebo v Paříži. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt."
   />
   <meta name="twitter:image" content="https://ajsee.cz/images/logo-ajsee.png" />
   <meta name="twitter:image:alt" content="Logo AJSEE" />
@@ -203,17 +203,10 @@
       <div class="stay-container stay-hero-grid">
         <div class="stay-intro">
           <h1 class="stay-title" id="stay-hero-title"><span  data-i18n-key="accommodation.redesign.titleStart">Ubytování pro</span> <span class="stay-title-accent" data-i18n-key="accommodation.redesign.titleEnd">cesty za zážitky.</span></h1>
-          <div class="stay-lead"><span  data-i18n-key="accommodation.redesign.lead1">Vyrazte za zážitky a dopřejte si pár dní navíc.</span> <span  data-i18n-key="accommodation.redesign.lead2">Objevte nabídku ubytování našeho partnera TrustedStays.</span></div>
+          <p class="stay-lead" data-i18n-key="accommodation.redesign.lead">Najděte místo, kde se ubytovat na cestě za koncertem, divadlem, sportem nebo na víkendový výlet.</p>
           <div class="stay-hero-actions">
             <a class="stay-button" href="#destinations"><span  data-i18n-key="accommodation.redesign.cta">Vybrat destinaci</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></a>
-            <a class="stay-text-link" href="#how"><span  data-i18n-key="accommodation.redesign.howLink">Jak to funguje</span></a>
-          </div>
-          <div class="stay-partner">
-            <span  data-i18n-key="accommodation.redesign.partnerLabel">Oficiální partner AJSEE</span>
-            <div>
-              <img class="stay-partner-logo stay-partner-logo--light" src="/images/partners/trustedstays/TrustedStays_Primary_RGB_R.svg" alt="TrustedStays®" width="171" height="34" loading="eager" decoding="async">
-              <img class="stay-partner-logo stay-partner-logo--dark" src="/images/partners/trustedstays/TrustedStays_Reversed_RGB_R.svg" alt="TrustedStays®" width="171" height="34" loading="eager" decoding="async">
-            </div>
+            <a class="stay-text-link" href="#vouchers"><span data-i18n-key="accommodation.vouchers.shortTitle">Dárkové poukazy</span></a>
           </div>
         </div>
         <figure class="stay-hero-photo">
@@ -226,30 +219,53 @@
       <div class="stay-container">
         <div class="stay-section-heading"><h2 id="stay-destinations-title" data-i18n-key="accommodation.redesign.destinationsTitle">Vyberte si destinaci</h2></div>
         <div class="stay-country-grid">
+          <article class="stay-country stay-country--amazing-places">
+            <div class="stay-country-heading">
+              <span class="stay-country-flags" aria-hidden="true">
+                <img src="/images/flags/cz.svg" alt="" width="24" height="18">
+                <img src="/images/flags/sk.svg" alt="" width="24" height="18">
+              </span>
+              <h3 data-i18n-key="accommodation.amazingPlaces.title">Česko a Slovensko</h3>
+            </div>
+            <p class="stay-country-location">Amazing Places</p>
+            <p class="stay-country-description" id="amazing-places-stays-description" data-i18n-key="accommodation.amazingPlaces.description">Vyberte si místo a termín na webu Amazing Places. V nabídce najdete hotely, apartmány, chalupy i glamping.</p>
+            <a class="stay-button" href="https://www.amazingplaces.cz/cs?a_box=uxyqpfva&amp;a_cam=9" target="_blank" rel="sponsored noopener" hreflang="cs" aria-describedby="amazing-places-stays-description" data-placement="destination_cz_sk">
+              <span data-i18n-key="accommodation.amazingPlaces.cta">Prohlédnout pobyty</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 18 18 6M6 6h12v12"/></svg>
+            </a>
+          </article>
           <article class="stay-country stay-country--uk">
             <div class="stay-country-heading">
               <img src="/images/flags/gb.svg" alt="" aria-hidden="true" width="30" height="22">
               <h3  data-i18n-key="accommodation.redesign.ukTitle">Spojené království</h3>
             </div>
-            <p class="stay-country-location" data-i18n-key="accommodation.redesign.ukLocation">Londýn a další britská města</p>
-            <p class="stay-country-description" data-i18n-key="accommodation.redesign.ukDescription">Prohlédněte si apartmány a domy na krátké i delší pobyty.</p>
-            <a id="trustedstaysCta" class="stay-button" data-trustedstays-outbound data-track-source="destination_uk" href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch" target="_blank" rel="noopener noreferrer"><span  data-i18n-key="accommodation.redesign.ukCta">Prohlédnout nabídku</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+            <p class="stay-country-location">TrustedStays</p>
+            <p class="stay-country-description" data-i18n-key="accommodation.redesign.ukDescription">Prohlédněte si apartmány a domy v Londýně a dalších britských městech.</p>
+            <a id="trustedstaysCta" class="stay-button" data-trustedstays-outbound data-track-source="destination_uk" href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch" target="_blank" rel="sponsored noopener noreferrer"><span  data-i18n-key="accommodation.redesign.ukCta">Najít pobyt v UK</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
           </article>
           <article class="stay-country stay-country--france">
             <div class="stay-country-heading">
               <svg class="stay-france-flag" aria-hidden="true" viewBox="0 0 30 22"><path fill="#0055a4" d="M0 0h10v22H0z"/><path fill="#fff" d="M10 0h10v22H10z"/><path fill="#ef4135" d="M20 0h10v22H20z"/></svg>
-              <h3  data-i18n-key="accommodation.redesign.franceTitle">Francie</h3><span class="stay-new" data-i18n-key="accommodation.redesign.franceNew">Nově</span>
+              <h3 data-i18n-key="accommodation.redesign.franceTitle">Francie</h3>
             </div>
-            <p class="stay-country-location" data-i18n-key="accommodation.redesign.franceLocation">Paříž</p>
+            <p class="stay-country-location">TrustedStays</p>
             <p class="stay-country-description" data-i18n-key="accommodation.redesign.franceDescription">Prohlédněte si pařížské apartmány. U partnera vyhledejte „Paris“.</p>
-            <a class="stay-button" data-trustedstays-outbound data-track-source="destination_france" href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch" target="_blank" rel="noopener noreferrer"><span  data-i18n-key="accommodation.redesign.franceCta">Prohlédnout nabídku</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
+            <a class="stay-button" data-trustedstays-outbound data-track-source="destination_france" href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch" target="_blank" rel="sponsored noopener noreferrer"><span  data-i18n-key="accommodation.redesign.franceCta">Najít pobyt v Paříži</span><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 18 18 6M6 6h12v12"/></svg></a>
           </article>
         </div>
-        <ul class="stay-benefits">
-          <li><svg class="stay-benefit-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 3v5c0 5-5 9-8 10-3-1-8-5-8-10V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg><div><h3  data-i18n-key="accommodation.redesign.benefit1Title">Prověřené ubytování</h3><p  data-i18n-key="accommodation.redesign.benefit1Text">TrustedStays prověřuje standardy ubytování ve své nabídce.</p></div></li>
-          <li><svg class="stay-benefit-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 11h16m-10 4 2 2 4-4"/></svg><div><h3  data-i18n-key="accommodation.redesign.benefit2Title">Krátké i delší pobyty</h3><p  data-i18n-key="accommodation.redesign.benefit2Text">Na několik nocí i delší cestu, podle nabídky partnera.</p></div></li>
-          <li><svg class="stay-benefit-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 18 0M4 12H3v6h4v-6H4Zm16 0h1v6h-4v-6h3Zm0 6c0 2-3 3-6 3"/></svg><div><h3  data-i18n-key="accommodation.redesign.benefit3Title">Rezervace u partnera</h3><p  data-i18n-key="accommodation.redesign.benefit3Text">Dostupnost, cenu a podmínky vám potvrdí TrustedStays.</p></div></li>
-        </ul>
+        <p class="stay-affiliate-note" data-i18n-key="accommodation.redesign.faqAffiliateA">Z rezervace nebo nákupu přes partnerský odkaz může AJSEE získat provizi.</p>
+      </div>
+    </section>
+    <section class="stay-container stay-vouchers" id="vouchers" aria-labelledby="stay-vouchers-title">
+      <div class="stay-voucher">
+        <div>
+          <h2 id="stay-vouchers-title" data-i18n-key="accommodation.vouchers.title">Dárkový poukaz na pobyt</h2>
+          <p id="amazing-places-voucher-description" data-i18n-key="accommodation.vouchers.description">Poukaz koupíte u Amazing Places. Obdarovaní si sami vyberou termín a místo z nabídky pobytů, kde poukaz přijímají.</p>
+        </div>
+        <a class="stay-button" href="https://www.amazingplaces.cz/cs/darkovy-voucher?a_box=uxyqpfva&amp;a_cam=3" target="_blank" rel="sponsored noopener" hreflang="cs" aria-describedby="amazing-places-voucher-description" data-placement="accommodation_voucher">
+          <span data-i18n-key="accommodation.vouchers.cta">Vybrat poukaz</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 18 18 6M6 6h12v12"/></svg>
+        </a>
       </div>
     </section>
     <section class="stay-how" id="how" aria-labelledby="stay-how-title">
@@ -257,8 +273,8 @@
         <h2 id="stay-how-title" data-i18n-key="accommodation.redesign.howTitle">Jak na rezervaci</h2>
         <ol class="stay-steps">
           <li><span class="stay-step-number" aria-hidden="true">01</span><h3  data-i18n-key="accommodation.redesign.step1Title">Vyberte destinaci</h3><p  data-i18n-key="accommodation.redesign.step1Text">Prohlédněte si nabídku a možnosti rezervace v zemi, kam se chystáte.</p></li>
-<li><span class="stay-step-number" aria-hidden="true">02</span><h3  data-i18n-key="accommodation.redesign.step2Title">Najděte vhodný pobyt</h3><p  data-i18n-key="accommodation.redesign.step2Text">Zohledněte termín, počet hostů i místo, kam vyrážíte za zážitkem.</p></li>
-<li><span class="stay-step-number" aria-hidden="true">03</span><h3  data-i18n-key="accommodation.redesign.step3Title">Dokončete rezervaci</h3><p  data-i18n-key="accommodation.redesign.step3Text">Rezervaci dokončíte přímo u TrustedStays podle podmínek zvoleného pobytu.</p></li>
+          <li><span class="stay-step-number" aria-hidden="true">02</span><h3  data-i18n-key="accommodation.redesign.step2Title">Najděte vhodný pobyt</h3><p  data-i18n-key="accommodation.redesign.step2Text">Zohledněte termín, počet hostů i místo, kam vyrážíte za zážitkem.</p></li>
+          <li><span class="stay-step-number" aria-hidden="true">03</span><h3  data-i18n-key="accommodation.redesign.step3Title">Dokončete rezervaci</h3><p  data-i18n-key="accommodation.redesign.step3Text">Rezervaci nebo poptávku dokončíte u partnera podle podmínek zvoleného pobytu.</p></li>
         </ol>
       </div>
     </section>
@@ -268,14 +284,13 @@
           <div>
             <h2 id="stay-faq-title" data-i18n-key="accommodation.redesign.faqTitle">Co vás může zajímat</h2>
             <div class="stay-faq">
-              <details><summary><span  data-i18n-key="accommodation.redesign.faqBookingQ">Probíhá rezervace na AJSEE?</span></summary><p class="stay-faq-answer" data-i18n-key="accommodation.redesign.faqBookingA">AJSEE vás propojí s TrustedStays. Výběr ubytování, rezervaci i platbu dokončíte přímo u partnera.</p></details>
+              <details><summary><span  data-i18n-key="accommodation.redesign.faqBookingQ">Probíhá rezervace na AJSEE?</span></summary><p class="stay-faq-answer" data-i18n-key="accommodation.redesign.faqBookingA">AJSEE vás odkáže na nabídku vybraného partnera. U něj najdete ceny a dostupnost a dokončíte rezervaci i platbu.</p></details>
               <details id="france-reservations"><summary><span  data-i18n-key="accommodation.redesign.franceQ">Jak rezervovat ubytování ve Francii?</span></summary>
                 <div class="stay-faq-answer"><p  data-i18n-key="accommodation.redesign.franceA">Otevřete nabídku TrustedStays a ve vyhledávání zadejte „Paris“. Vyberte destinaci z nabízených možností a doplňte termín pobytu.</p>
-                  <a class="stay-text-link" href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch" target="_blank" rel="noopener noreferrer" data-trustedstays-outbound data-track-source="france_information"><span  data-i18n-key="accommodation.redesign.franceLink">Otevřít nabídku TrustedStays</span><span aria-hidden="true">↗</span></a>
+                  <a class="stay-text-link" href="https://www.trustedstays.co.uk/book-a-home?utm_source=ajsee&utm_medium=referral&utm_campaign=ajsee_accommodation_launch" target="_blank" rel="sponsored noopener noreferrer" data-trustedstays-outbound data-track-source="france_information"><span  data-i18n-key="accommodation.redesign.franceLink">Otevřít nabídku TrustedStays</span><span aria-hidden="true">↗</span></a>
                 </div>
               </details>
-              <details><summary><span  data-i18n-key="accommodation.redesign.faqAffiliateQ">Je odkaz partnerský?</span></summary><p class="stay-faq-answer" data-i18n-key="accommodation.redesign.faqAffiliateA">Ano. Odkaz partnerovi pomáhá rozpoznat návštěvy, které přicházejí z AJSEE.</p></details>
-              <details><summary><span  data-i18n-key="accommodation.redesign.faqCancelQ">Kdo řeší změny a zrušení rezervace?</span></summary><p class="stay-faq-answer" data-i18n-key="accommodation.redesign.faqCancelA">Změny, zrušení rezervace a platby vyřešíte přímo s TrustedStays podle podmínek svého pobytu.</p></details>
+              <details><summary><span  data-i18n-key="accommodation.redesign.faqCancelQ">Kdo řeší změny a zrušení rezervace?</span></summary><p class="stay-faq-answer" data-i18n-key="accommodation.redesign.faqCancelA">Se změnou, zrušením nebo dotazem k platbě se obraťte na partnera, u kterého jste pobyt rezervovali.</p></details>
             </div>
           </div>
           <aside class="stay-support" aria-labelledby="stay-support-title">
@@ -285,7 +300,7 @@
             <a class="stay-support-mail" href="mailto:adam@ajsee.cz">adam@ajsee.cz</a>
           </aside>
         </div>
-        <div class="stay-disclaimer"><p data-i18n-key="accommodation.disclaimer">AJSEE není poskytovatelem ubytování, cestovní kanceláří ani provozovatelem platební služby. Poptávka, rezervace, platba, potvrzení a podmínky pobytu probíhají u TrustedStays.</p></div>
+        <div class="stay-disclaimer"><p data-i18n-key="accommodation.disclaimer">AJSEE odkazuje na nabídky partnerů. Rezervace, platby a potvrzení pobytů i prodej dárkových poukazů zajišťují příslušní partneři podle vlastních podmínek.</p></div>
       </div>
     </section>
   </main>

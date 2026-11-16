@@ -268,9 +268,9 @@
     "guide": "Hogyan válassz megbízható jegyértékesítőt?"
   },
   "event-demo": {
-    "ariaLabel": "Szállások a TrustedStays kínálatában az Egyesült Királyságban és Franciaországban.",
-    "title": "Szállások a TrustedStays kínálatában",
-    "body": "Egy eseményre utazol? Fedezd fel partnerünk szálláskínálatát az Egyesült Királyságban és Franciaországban.",
+    "ariaLabel": "Szállás az utazáshoz",
+    "title": "Szállás az utazáshoz",
+    "body": "Találjon szállást Csehországban, Szlovákiában, az Egyesült Királyságban vagy Párizsban.",
     "cta": "Szállás keresése"
   },
   "mg.backToBlog": "Vissza a blogra",
@@ -494,7 +494,7 @@
   "home.london.text": "Élje át a West End hangulatát. Válasszon musicalt, és keressen jegyet a megfelelő időpontra.",
   "home.london.cta": "Musicalek megtekintése",
   "home.stay.title": "Szállás az utazáshoz",
-  "home.stay.text": "TrustedStays apartmanok az Egyesült Királyságban és Franciaországban. Találjon egy helyet, ahol jól érezheti magát.",
+  "home.stay.text": "Találjon szállást Csehországban, Szlovákiában, az Egyesült Királyságban vagy Párizsban.",
   "home.stay.cta": "Szállás keresése",
   "home.editorial.title": "Kritikáink és tippjeink",
   "home.editorial.intro": "Élmények a nézőtérről és ötletek a következő utazáshoz.",

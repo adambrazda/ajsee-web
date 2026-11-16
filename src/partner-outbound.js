@@ -1,8 +1,10 @@
 import { CONSENT_KEY, GA4_MEASUREMENT_ID, GTM_ENABLED } from './utils/analytics-config.js';
+import { AMAZING_PLACES_VOUCHER_URL } from '../shared/amazing-places.js';
 
 const trackedActivations = new WeakSet();
 const boundDocuments = new WeakSet();
 const LANGUAGES = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+const AMAZING_PLACES_VOUCHER_PATH = new URL(AMAZING_PLACES_VOUCHER_URL).pathname;
 const text = value => String(value || '').replace(/\s+/g, ' ').trim();
 
 function trackingConsent(win) {
@@ -31,6 +33,7 @@ function providerForUrl(url) {
   const host = url?.hostname.toLowerCase() || '';
   if (host === 'ajsee.tixculture.com') return 'todaytix';
   if (/(^|\.)trustedstays\.co\.uk$/.test(host)) return 'trustedstays';
+  if (host === 'www.amazingplaces.cz' || host === 'amazingplaces.cz') return 'amazingplaces';
   if (/(^|\.)colosseumticket\.(cz|sk)$/.test(host)) return 'colosseumticket';
   if (/(^|\.)smsticket\.cz$/.test(host)) return 'smsticket';
   if (/(^|\.)(ticketmaster\.[a-z.]+|ticketweb\.[a-z.]+|universe\.com)$/.test(host)) return 'ticketmaster';
@@ -95,6 +98,13 @@ export function buildPartnerOutboundPayload(link, {
   const pathLang = path.match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/)?.[1];
   const htmlLang = text(doc.documentElement?.lang).slice(0, 2).toLowerCase();
   const pageLanguage = pathLang || (LANGUAGES.includes(htmlLang) ? htmlLang : 'cs');
+  const isStayPartner = partner === 'trustedstays' || partner === 'amazingplaces';
+  let productType = isStayPartner ? 'accommodation' : 'tickets';
+  if (resolvedPlacement === 'partner_roster') {
+    productType = 'partner_info';
+  } else if (partner === 'amazingplaces' && destination.pathname.replace(/\/$/, '') === AMAZING_PLACES_VOUCHER_PATH) {
+    productType = 'voucher';
+  }
 
   return {
     event: 'ajsee_partner_click',
@@ -113,8 +123,7 @@ export function buildPartnerOutboundPayload(link, {
     language: pageLanguage,
     page_language: pageLanguage,
     placement: resolvedPlacement,
-    product_type: resolvedPlacement === 'partner_roster' ? 'partner_info'
-      : partner === 'trustedstays' ? 'accommodation' : 'tickets',
+    product_type: productType,
     content_slug: text(article?.dataset.reviewSlug),
     outbound_url: analyticsUrl(destination),
     destination_host: destination?.hostname || '',

@@ -14,9 +14,7 @@
   --ac-button: #153b47; --ac-button-text: #fff; --ac-button-hover: #1d505d;
   --ac-glow: rgba(23,193,183,.07);
   --ac-france: #faf4ec; --ac-france-line: #e9ddd0;
-  --ac-new-bg: #f7e2cd; --ac-new-text: #77411d;
   --ac-photo-shadow: 0 18px 48px rgba(21,59,71,.10);
-  --ac-logo-light: block; --ac-logo-dark: none;
   --aj-footer-bg: #fafbf8; --aj-footer-text: #506571; --aj-footer-copy: #506571;
   --aj-footer-border: #dbe5e3; --aj-footer-link: #087c7b;
 }
@@ -28,9 +26,7 @@
   --ac-button: #6bddd0; --ac-button-text: #102f37; --ac-button-hover: #8be9de;
   --ac-glow: rgba(71,199,183,.07);
   --ac-france: #2a2621; --ac-france-line: #514235;
-  --ac-new-bg: #493322; --ac-new-text: #f2c9a1;
   --ac-photo-shadow: 0 18px 48px rgba(0,0,0,.20);
-  --ac-logo-light: none; --ac-logo-dark: block;
   --aj-footer-bg: #0c1921; --aj-footer-text: #bacdce; --aj-footer-copy: #bacdce;
   --aj-footer-border: #2a4148; --aj-footer-link: #6bddd0;
 }
@@ -58,47 +54,44 @@
   .stay-main p { margin: 0; color: var(--ac-text); line-height: 1.7; }
   .stay-main a { text-decoration: none; }
   .stay-main :is(a,button,summary):focus-visible { outline: 3px solid var(--ac-accent); outline-offset: 5px; }
-  :is(#destinations,#how,#faq,#france-reservations) { scroll-margin-top: 106px; }
+  :is(#destinations,#vouchers,#how,#faq,#france-reservations) { scroll-margin-top: 106px; }
   .stay-hero { padding: clamp(42px,5vw,68px) 0 52px; background: radial-gradient(ellipse at 22% 10%,var(--ac-glow),transparent 68%); }
   .stay-hero-grid { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); align-items: center; gap: clamp(40px,5vw,72px); }
   .stay-title { font-size: clamp(2.45rem,4.15vw,3.55rem); line-height: 1.16; }
   .stay-title > span { display: block; }
   .stay-title .stay-title-accent { color: var(--ac-accent); }
-  .stay-lead { margin-top: 22px; font-size: 1.075rem; line-height: 1.7; color: var(--ac-text); }
-  .stay-lead > span { display: block; }
+  .stay-main .stay-lead { margin-top: 22px; font-size: 1.075rem; }
   .stay-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 24px; margin-top: 26px; }
   .stay-button { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 14px 23px; border: 1px solid transparent; border-radius: 12px; background: var(--ac-button); color: var(--ac-button-text); font: 600 .95rem/1.5 'Inter',sans-serif; transition: background 160ms ease,box-shadow 160ms ease; }
   .stay-button:hover { background: var(--ac-button-hover); box-shadow: 0 5px 16px rgba(21,59,71,.10); }
   .stay-button svg { width: 18px; height: 18px; flex-shrink: 0; }
   .stay-text-link { display: inline-flex; align-items: center; gap: 10px; padding-block: 12px; color: var(--ac-accent); font-size: .94rem; font-weight: 600; }
   .stay-text-link:hover { text-decoration: underline; text-underline-offset: 5px; }
-  .stay-partner { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--ac-line); }
-  .stay-partner > span { color: var(--ac-muted); font-size: .8rem; line-height: 1.5; }
-  .stay-partner-logo { width: 171px; height: 34px; object-fit: contain; object-position: left center; }
-  .stay-partner-logo--light { display: var(--ac-logo-light); }
-  .stay-partner-logo--dark { display: var(--ac-logo-dark); }
   .stay-hero-photo { margin: 0; min-width: 0; }
   .stay-hero-photo > img { display: block; width: 100%; height: auto; aspect-ratio: 458 / 348; object-fit: cover; border-radius: 22px; box-shadow: var(--ac-photo-shadow); }
   .stay-hero-photo figcaption { padding-top: 11px; color: var(--ac-muted); font-size: .72rem; line-height: 1.5; text-align: right; }
   .stay-destinations { padding: 38px 0 0; border-top: 1px solid var(--ac-line); }
   .stay-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
-  .stay-country-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
+  .stay-country-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; }
   .stay-country { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 29px 32px 30px; border: 1px solid var(--ac-line); border-radius: 18px; background: var(--ac-soft); }
   .stay-country--france { background: var(--ac-france); border-color: var(--ac-france-line); }
   .stay-country-heading { width: 100%; display: flex; align-items: center; gap: 14px; }
   .stay-country-heading img,.stay-france-flag { width: 30px; height: 22px; flex: 0 0 auto; border-radius: 3px; }
+  .stay-country-flags { display: flex; gap: 4px; }
+  .stay-country-flags img { width: 24px; height: 18px; }
   .stay-country-heading h3 { font-size: 1.3rem; }
-  .stay-new { margin-left: auto; padding: 5px 10px; border-radius: 6px; background: var(--ac-new-bg); color: var(--ac-new-text); font-size: .74rem; font-weight: 600; line-height: 1.4; }
   .stay-country .stay-country-location { margin-top: 18px; font-size: .92rem; font-weight: 600; color: var(--ac-heading); }
   .stay-country .stay-country-description { margin-top: 7px; margin-bottom: 24px; font-size: .94rem; }
   .stay-country .stay-button { margin-top: auto; width: 280px; max-width: 100%; min-width: 0; }
   .stay-country--france .stay-button { background: transparent; color: var(--ac-heading); border-color: var(--ac-france-line); }
   .stay-country--france .stay-button:hover { border-color: var(--ac-accent); background: var(--ac-surface); }
-  .stay-benefits { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 36px; list-style: none; margin: 0; padding: 38px 0 42px; border-bottom: 1px solid var(--ac-line); }
-  .stay-benefits li { display: flex; align-items: flex-start; gap: 13px; min-width: 0; }
-  .stay-benefit-icon { width: 22px; height: 22px; color: var(--ac-accent); flex: 0 0 auto; margin-top: 2px; }
-  .stay-benefits h3 { font-size: .93rem; }
-  .stay-benefits p { margin-top: 5px; font-size: .84rem; line-height: 1.6; }
+  .stay-destinations .stay-affiliate-note { margin-top: 16px; color: var(--ac-muted); font-size: .8rem; }
+  .stay-vouchers { margin-top: 38px; }
+  .stay-voucher { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 24px; align-items: center; padding: 26px 32px; border: 1px solid var(--ac-line); border-radius: 18px; background: var(--ac-surface); }
+  .stay-voucher h2 { font-size: clamp(1.3rem,2.2vw,1.65rem); }
+  .stay-voucher p { margin-top: 9px; max-width: 65ch; font-size: .94rem; }
+  .stay-voucher .stay-button { color: var(--ac-heading); border-color: var(--ac-line); background: transparent; }
+  .stay-voucher .stay-button:hover { border-color: var(--ac-accent); background: var(--ac-soft); }
   .stay-how { padding: 48px 0; }
   .stay-steps { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 42px; }
   .stay-step-number { display: block; margin-bottom: 13px; color: var(--ac-accent); font-size: .8rem; font-weight: 700; letter-spacing: .08em; }
@@ -125,22 +118,23 @@
   @media (max-width: 1050px) {
     .stay-hero-grid { gap: 34px; grid-template-columns: 1.12fr 1fr; }
     .stay-title { font-size: clamp(2.4rem,4.2vw,3rem); }
-    .stay-lead { font-size: 1rem; }
+    .stay-main .stay-lead { font-size: 1rem; }
     .stay-country { padding: 25px; }
     .stay-help-grid { gap: 32px; }
+  }
+  @media (max-width: 960px) {
+    .stay-country-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .stay-country--amazing-places { grid-column: 1 / -1; }
   }
   @media (max-width: 760px) {
     .stay-container { width: min(560px,calc(100% - 40px)); }
     .stay-hero { padding: 34px 0; }
     .stay-hero-grid { grid-template-columns: 1fr; gap: 26px; }
     .stay-title { font-size: clamp(2.15rem,6.25vw,2.85rem); line-height: 1.19; }
-    .stay-lead { margin-top: 18px; font-size: .97rem; }
+    .stay-main .stay-lead { margin-top: 18px; font-size: .97rem; }
     .stay-hero-actions { margin-top: 22px; gap: 16px 22px; }
     .stay-button { min-height: 52px; padding: 13px 20px; font-size: .9rem; }
     .stay-hero-actions .stay-text-link { font-size: .87rem; }
-    .stay-partner { margin-top: 25px; padding-top: 19px; gap: 10px 16px; }
-    .stay-partner-logo { width: 154px; height: 29px; }
-    .stay-partner > span { font-size: .74rem; }
     .stay-hero-photo > img { border-radius: 17px; aspect-ratio: 458 / 310; }
     .stay-hero-photo figcaption { font-size: .66rem; padding-top: 8px; }
     .stay-destinations { padding-top: 29px; }
@@ -151,7 +145,8 @@
     .stay-country-heading h3 { font-size: 1.16rem; }
     .stay-country .stay-button { width: 100%; min-width: 0; }
     .stay-country .stay-country-description { margin-bottom: 20px; }
-    .stay-benefits { grid-template-columns: 1fr; padding: 29px 0 33px; gap: 22px; }
+    .stay-vouchers { margin-top: 28px; }
+    .stay-voucher { grid-template-columns: 1fr; gap: 16px; padding: 22px; }
     .stay-how { padding: 33px 0 37px; }
     .stay-steps { grid-template-columns: 1fr; gap: 25px; margin-top: 24px; }
     .stay-steps li { display: grid; grid-template-columns: 30px minmax(0,1fr); column-gap: 13px; }

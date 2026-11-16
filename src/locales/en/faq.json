@@ -82,11 +82,11 @@
       },
       "stays": {
         "q": "Can I find accommodation through AJSEE?",
-        "a": "Our Accommodation page links to our partner TrustedStays. Check current destinations, dates, availability and prices directly with the partner."
+        "a": "Our Accommodation page lists offers by destination from Amazing Places and TrustedStays. Amazing Places also offers gift vouchers for stays."
       },
       "booking": {
         "q": "Who handles accommodation bookings and changes?",
-        "a": "Bookings, payments and any changes are handled directly with TrustedStays under the terms of your chosen stay. AJSEE links to the partner's listings; it is not the accommodation provider."
+        "a": "The partner you choose handles your booking, payment and any changes."
       },
       "feedback": {
         "q": "How can I suggest an event or report a problem?",

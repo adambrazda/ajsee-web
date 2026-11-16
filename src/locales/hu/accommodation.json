@@ -10,10 +10,10 @@
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Minden jog fenntartva.",
   "seo": {
     "accommodation": {
-      "title": "Szállások az Egyesült Királyságban és Franciaországban | AJSEE",
-      "description": "Fedezze fel a TrustedStays szállásait az Egyesült Királyságban és válogatott párizsi apartmanjait. Nézze meg a kínálatot és a foglalási lehetőségeket.",
-      "ogTitle": "Szállások az Egyesült Királyságban és Franciaországban | AJSEE",
-      "ogDescription": "Fedezze fel a TrustedStays szállásait az Egyesült Királyságban és válogatott párizsi apartmanjait. Nézze meg a kínálatot és a foglalási lehetőségeket."
+      "title": "Szállások és ajándékutalványok | AJSEE",
+      "description": "Találjon szállást Csehországban, Szlovákiában, az Egyesült Királyságban vagy Párizsban. Az Amazing Places oldalán szállásra szóló ajándékutalványt is választhat.",
+      "ogTitle": "Szállások és ajándékutalványok | AJSEE",
+      "ogDescription": "Találjon szállást Csehországban, Szlovákiában, az Egyesült Királyságban vagy Párizsban. Az Amazing Places oldalán szállásra szóló ajándékutalványt is választhat."
     }
   },
   "accommodation": {
@@ -112,7 +112,7 @@
         "a": "A lemondást, foglalásmódosítást, fizetést és visszaigazolást a TrustedStays kezeli a saját feltételei szerint. Az AJSEE segíthet eligazodni a folyamatban és a kommunikációban."
       }
     },
-    "disclaimer": "Az AJSEE nem szállásszolgáltató, nem utazási iroda és nem fizetési szolgáltató. Az ajánlatkérést, foglalást, fizetést, visszaigazolást és a tartózkodási feltételeket a TrustedStays kezeli.",
+    "disclaimer": "Az AJSEE partnerei ajánlataihoz biztosít hozzáférést. A foglalásokat, fizetéseket, visszaigazolásokat és az utalványok értékesítését az adott partner intézi a saját feltételei szerint.",
     "final": {
       "title": "Válasszon úti célt",
       "text": "A TrustedStays új lapon nyílik meg. Ott fejezheted be az ajánlatkérést vagy foglalást közvetlenül a partnernél.",
@@ -122,49 +122,47 @@
     "redesign": {
       "titleStart": "Szállás az",
       "titleEnd": "élmények mellé.",
-      "lead1": "Utazzon egy különleges élményért, és maradjon néhány nappal tovább.",
-      "lead2": "Fedezze fel partnerünk, a TrustedStays szálláskínálatát.",
       "cta": "Úti cél kiválasztása",
-      "howLink": "Hogyan működik?",
-      "partnerLabel": "Az AJSEE hivatalos partnere",
       "photoAlt": "Nappali a TrustedStays szálláskínálatából",
       "photoCaption": "Fotó a TrustedStays kínálatából",
       "destinationsTitle": "Válasszon úti célt",
       "ukTitle": "Egyesült Királyság",
-      "ukLocation": "London és más brit városok",
-      "ukDescription": "Fedezze fel a rövidebb és hosszabb tartózkodásra kínált apartmanokat és házakat.",
-      "ukCta": "Szálláskínálat megtekintése",
+      "ukDescription": "Nézze meg a londoni és más brit városokban található apartmanokat és házakat.",
+      "ukCta": "Szállás az Egyesült Királyságban",
       "franceTitle": "Franciaország",
-      "franceNew": "Újdonság",
-      "franceLocation": "Párizs",
       "franceDescription": "Fedezze fel a párizsi apartmanokat. Partnerünk oldalán keressen a „Paris” névre.",
-      "franceCta": "Szálláskínálat megtekintése",
-      "benefit1Title": "Ellenőrzött szállások",
-      "benefit1Text": "A TrustedStays ellenőrzi a kínálatában szereplő szállások minőségét.",
-      "benefit2Title": "Rövidebb és hosszabb tartózkodás",
-      "benefit2Text": "Néhány éjszakára vagy hosszabb útra, az adott szállás kínálatától függően.",
-      "benefit3Title": "Foglalás a partnernél",
-      "benefit3Text": "Az elérhetőséget, az árat és a feltételeket a TrustedStays erősíti meg.",
+      "franceCta": "Szállás Párizsban",
       "howTitle": "A foglalás menete",
       "step1Title": "Válasszon úti célt",
       "step1Text": "Nézze meg az úti cél szálláskínálatát és foglalási lehetőségeit.",
       "step2Title": "Találja meg a megfelelő szállást",
       "step2Text": "Vegye figyelembe az időpontot, a vendégek számát és az esemény helyszínét.",
       "step3Title": "Fejezze be a foglalást",
-      "step3Text": "A foglalást közvetlenül a TrustedStaysnél fejezheti be, a kiválasztott szállás feltételei szerint.",
+      "step3Text": "Foglaljon vagy küldjön ajánlatkérést közvetlenül a partnernek, a kiválasztott szállás feltételei szerint.",
       "faqTitle": "Hasznos tudnivalók",
       "faqBookingQ": "Az AJSEE oldalán foglalok?",
-      "faqBookingA": "Az AJSEE összeköti Önt a TrustedStaysszel. A szállás kiválasztása, a foglalás és a fizetés közvetlenül a partnernél történik.",
+      "faqBookingA": "Az AJSEE a választott partner ajánlatához irányítja. Az árakat és a szabad időpontokat nála ellenőrizheti, a foglalást és a fizetést is nála intézheti.",
       "franceQ": "Hogyan foglalhatok szállást Franciaországban?",
       "franceA": "Nyissa meg a TrustedStays szálláskeresőjét, és írja be a „Paris” nevet. Válassza ki az úti célt a javaslatok közül, majd adja meg az utazás dátumait.",
       "franceLink": "A TrustedStays kínálatának megnyitása",
-      "faqAffiliateQ": "Ez egy partnerlink?",
-      "faqAffiliateA": "Igen. A hivatkozás segít partnerünknek azonosítani az AJSEE oldaláról érkező látogatásokat.",
+      "faqAffiliateA": "Az AJSEE jutalékot kaphat a partnerlinken keresztül végzett foglalások vagy vásárlások után.",
       "faqCancelQ": "Ki intézi a módosításokat és lemondásokat?",
-      "faqCancelA": "A módosításokat, lemondásokat és fizetéseket közvetlenül a TrustedStaysszel egyeztetheti, a foglalási feltételek szerint.",
+      "faqCancelA": "Módosítás, lemondás vagy fizetési kérdés esetén forduljon ahhoz a partnerhez, akinél a szállást lefoglalta.",
       "supportTitle": "Segítségre van szüksége?",
       "supportText": "Írjon nekünk. Segítünk eligazodni a kínálatban és a következő lépésekben.",
-      "supportCta": "Írjon az AJSEE-nek"
+      "supportCta": "Írjon az AJSEE-nek",
+      "lead": "Találjon szállást egy koncerthez, színházi előadáshoz, sporteseményhez vagy hétvégi kiruccanáshoz."
+    },
+    "amazingPlaces": {
+      "title": "Csehország és Szlovákia",
+      "description": "Válasszon helyszínt és időpontot az Amazing Places oldalán. Szállodák, apartmanok, vidéki házak és glampinghelyek várják. A link a cseh nyelvű oldalra vezet.",
+      "cta": "Szállások megtekintése"
+    },
+    "vouchers": {
+      "shortTitle": "Ajándékutalványok",
+      "title": "Ajándékutalvány szállásra",
+      "description": "Az utalványt az Amazing Places oldalán vásárolhatja meg. A megajándékozott maga választhat időpontot és olyan szállást, ahol elfogadják az utalványt. A link a cseh nyelvű oldalra vezet.",
+      "cta": "Utalvány kiválasztása"
     }
   }
 }

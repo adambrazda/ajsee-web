@@ -82,11 +82,11 @@
       },
       "stays": {
         "q": "Czy znajdę u Was także noclegi?",
-        "a": "Na stronie Noclegi znajdziesz ofertę naszego partnera TrustedStays. Aktualne kierunki, terminy, dostępność i ceny sprawdzisz bezpośrednio u partnera."
+        "a": "Na stronie Noclegi znajdziesz oferty Amazing Places i TrustedStays według kierunku podróży. W Amazing Places możesz też wybrać voucher podarunkowy na pobyt."
       },
       "booking": {
         "q": "Kto obsługuje rezerwację i zmiany noclegu?",
-        "a": "Rezerwację, płatność i ewentualne zmiany załatwiasz bezpośrednio z TrustedStays zgodnie z warunkami wybranego pobytu. AJSEE odsyła do oferty partnera i nie jest dostawcą zakwaterowania."
+        "a": "Rezerwację, płatność i ewentualne zmiany obsługuje bezpośrednio wybrany partner."
       },
       "feedback": {
         "q": "Jak zaproponować wydarzenie lub zgłosić błąd?",

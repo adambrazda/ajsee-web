@@ -33,7 +33,10 @@
       "mainMenu": "Hlavní menu",
       "legalLinks": "Právní odkazy",
       "openMenu": "Otevřít menu",
-      "closeMenu": "Zavřít menu"
+      "closeMenu": "Zavřít menu",
+      "stayTitle": "Ubytování na cestu za akcí",
+      "stayNote": "Místo a termín pobytu si vyberete na webu Amazing Places.",
+      "stayLink": "Prohlédnout pobyty"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -126,7 +129,10 @@
       "mainMenu": "Main navigation",
       "legalLinks": "Legal links",
       "openMenu": "Open menu",
-      "closeMenu": "Close menu"
+      "closeMenu": "Close menu",
+      "stayTitle": "Accommodation for your trip",
+      "stayNote": "Choose your dates and a place to stay with Amazing Places. The link opens the Czech website.",
+      "stayLink": "Browse stays"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -219,7 +225,10 @@
       "mainMenu": "Hauptnavigation",
       "legalLinks": "Rechtliche Informationen",
       "openMenu": "Menü öffnen",
-      "closeMenu": "Menü schließen"
+      "closeMenu": "Menü schließen",
+      "stayTitle": "Unterkunft für Ihre Reise",
+      "stayNote": "Wählen Sie Ihre Unterkunft und den Termin bei Amazing Places. Der Link führt zur tschechischsprachigen Website.",
+      "stayLink": "Unterkünfte ansehen"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -312,7 +321,10 @@
       "mainMenu": "Hlavné menu",
       "legalLinks": "Právne odkazy",
       "openMenu": "Otvoriť menu",
-      "closeMenu": "Zavrieť menu"
+      "closeMenu": "Zavrieť menu",
+      "stayTitle": "Ubytovanie na cestu za podujatím",
+      "stayNote": "Miesto a termín pobytu si vyberiete v Amazing Places. Odkaz vedie na českú verziu webu.",
+      "stayLink": "Pozrieť si pobyty"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -405,7 +417,10 @@
       "mainMenu": "Nawigacja główna",
       "legalLinks": "Informacje prawne",
       "openMenu": "Otwórz menu",
-      "closeMenu": "Zamknij menu"
+      "closeMenu": "Zamknij menu",
+      "stayTitle": "Nocleg na wyjazd",
+      "stayNote": "Miejsce i termin pobytu wybierzesz w Amazing Places. Link prowadzi na czeską wersję strony.",
+      "stayLink": "Zobacz oferty noclegów"
     },
     "events": {
       "colosseumticket-5470841-4205829": {
@@ -498,7 +513,10 @@
       "mainMenu": "Főmenü",
       "legalLinks": "Jogi hivatkozások",
       "openMenu": "Menü megnyitása",
-      "closeMenu": "Menü bezárása"
+      "closeMenu": "Menü bezárása",
+      "stayTitle": "Szállás az eseményhez",
+      "stayNote": "A szállást és az időpontot az Amazing Places oldalán választhatja ki. A link a cseh nyelvű oldalra vezet.",
+      "stayLink": "Szállások megtekintése"
     },
     "events": {
       "colosseumticket-5470841-4205829": {

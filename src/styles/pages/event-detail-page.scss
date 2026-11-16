@@ -95,6 +95,10 @@ body[data-page="event-detail"] {
   .detail-purchase-note { margin-top: 13px; color: var(--detail-text); font-size: .76rem; line-height: 1.8; }
   .detail-term-note { margin-top: 17px; padding: 13px 14px; border-radius: 10px; background: var(--detail-soft); color: var(--detail-text); font-size: .77rem; line-height: 1.8; }
   .detail-affiliate-note { margin-top: 18px; color: var(--detail-text); font-size: .7rem; line-height: 1.7; }
+  .detail-stay { margin-top: 22px; padding-top: 19px; border-top: 1px solid var(--detail-line); }
+  .detail-stay h3 { font-size: .94rem; line-height: 1.5; font-weight: 600; }
+  .detail-stay p { margin-top: 6px; color: var(--detail-text); font-size: .8rem; line-height: 1.7; }
+  .detail-stay .detail-text-link { min-height: 44px; padding-block: 8px; }
   .detail-editorial { grid-area: copy; margin-top: 35px; }
   .detail-editorial h2,.detail-related h2 { font-family: 'Plus Jakarta Sans','Inter',system-ui,sans-serif; font-size: 1.45rem; font-weight: 700; line-height: 1.4; letter-spacing: -.014em; text-wrap: balance; }
   .detail-editorial p { margin-top: 14px; color: var(--detail-text); font-size: .97rem; line-height: 1.9; max-width: 66ch; }

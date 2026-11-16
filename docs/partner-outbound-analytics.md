@@ -37,7 +37,7 @@ anchor, cancels navigation or waits for analytics.
 
 | Parameter | Meaning |
 | --- | --- |
-| `partner` | `ticketmaster`, `smsticket`, `colosseumticket`, `todaytix`, `trustedstays` |
+| `partner` | `ticketmaster`, `smsticket`, `colosseumticket`, `todaytix`, `trustedstays`, `amazingplaces` |
 | `partner_event_id` | Listing/occurrence ID where available; empty for editorial articles |
 | `event_title` | Event title or editorial headline |
 | `partner_event_name` | Legacy alias for the title |
@@ -46,7 +46,7 @@ anchor, cancels navigation or waits for analytics.
 | `page_type` | Homepage, Events, editorial, London, accommodation or other page type |
 | `page_language` | AJSEE page language; separate from the visitor's browser language |
 | `placement` | Card, modal, review CTA, London hero/popular section, UK/France accommodation CTA, etc. |
-| `product_type` | `tickets`, `accommodation`, or `partner_info` for the partner roster |
+| `product_type` | `tickets`, `accommodation`, `voucher`, or `partner_info` for the partner roster |
 | `content_slug` | Editorial article slug where available |
 | `destination_host` | Seller domain, including the target inside `tmOutbound` |
 | `outbound_url` | Seller origin/path; query parameters are omitted only in analytics |
@@ -74,6 +74,13 @@ clickout is not a confirmed order or commission.
 - ColosseumTicket and SMS Ticket keep the exact original `a_box` links.
 - TodayTix keeps `ajsee.tixculture.com`, including the specific show URL.
 - TrustedStays keeps the existing referral URL and campaign parameters.
+- Amazing Places uses campaign `9` for bookings and campaign `3` for vouchers.
+  Both use the supplied AffilBox parameters in the actual anchor. Filter
+  `partner=amazingplaces`, `product_type=accommodation` to see booking clickouts
+  from `destination_cz_sk` or `event_detail`. Filter `product_type=voucher` for
+  the `accommodation_voucher` placement. The weekly tickets-and-accommodation
+  exploration keeps its existing filter. AffilBox reports campaign attribution
+  and conversions independently of GA4.
 
 The AI search learning funnel remains separate and receives only its existing
 privacy-safe event reference, provider, result position and placement.

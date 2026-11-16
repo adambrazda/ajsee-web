@@ -268,9 +268,9 @@
     "guide": "Jak vybrat důvěryhodného prodejce"
   },
   "event-demo": {
-    "ariaLabel": "Ubytování s TrustedStays ve Spojeném království a Francii.",
-    "title": "Ubytování s TrustedStays",
-    "body": "Plánujete cestu za zážitky? Prohlédněte si nabídku ubytování našeho partnera ve Spojeném království a Francii.",
+    "ariaLabel": "Ubytování k výletu",
+    "title": "Ubytování k výletu",
+    "body": "Najděte pobyt v Česku, na Slovensku, ve Spojeném království nebo v Paříži.",
     "cta": "Najít ubytování"
   },
   "mg.backToBlog": "Zpět na blog",
@@ -497,7 +497,7 @@
   "home.london.text": "Zažijte atmosféru West Endu. Vyberte si muzikál a najděte vstupenky na svůj termín.",
   "home.london.cta": "Prohlédnout muzikály",
   "home.stay.title": "Ubytování k vašemu výletu",
-  "home.stay.text": "Apartmány od TrustedStays ve Spojeném království a Francii. Najděte si místo, kde se budete cítit dobře.",
+  "home.stay.text": "Najděte pobyt v Česku, na Slovensku, ve Spojeném království nebo v Paříži.",
   "home.stay.cta": "Najít ubytování",
   "home.editorial.title": "Naše recenze a tipy",
   "home.editorial.intro": "Příběhy z hlediště i rady na cestu za zážitky.",

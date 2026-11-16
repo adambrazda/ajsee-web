@@ -1,5 +1,6 @@
 import COPY from '../content/event-detail-copy.json' with { type: 'json' };
 import { detailPath, localeCode, freshTimestamp } from '../shared/event-details/state.js';
+import { AMAZING_PLACES_BOOKING_URL, AMAZING_PLACES_EVENT_COUNTRIES } from '../shared/amazing-places.js';
 // Explicit, reviewable occurrences survive a missing or incomplete feed refresh.
 // Feed absence is never a cancellation signal. Public pages share this renderer.
 const ORIGIN = 'https://ajsee.cz';
@@ -101,6 +102,7 @@ export function renderEventDetail(event, { now = new Date(), lang = 'cs' } = {})
   const eventsHref = lang === 'cs' ? '/events' : '/' + lang + '/events/';
   const state = eventState(event, now);
   const purchasable = ['scheduled', 'rescheduled'].includes(state);
+  const showAccommodation = purchasable && AMAZING_PLACES_EVENT_COUNTRIES.includes(event.venue.country);
   const stateCopy = ['past', 'cancelled', 'postponed'].includes(state) ? t(state) : state === 'rescheduled' ? t('rescheduled', { date: dateText(event.previousStartDate, lang) }) : '';
   const price = event.price ? t('from', { price: new Intl.NumberFormat(localeCode(lang), { style: 'currency', currency: event.price.currency, minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(event.price.minimum) }) : t('unknownPrice');
   const termNote = event.termNote ? t('termNote', { date: dateText(event.startDate, lang), time: timeText(event.startDate, lang) }) : '';
@@ -121,6 +123,11 @@ export function renderEventDetail(event, { now = new Date(), lang = 'cs' } = {})
           <a class="detail-cta" href="${e(event.tickets)}" target="_blank" rel="sponsored noopener noreferrer" data-placement="event_detail" data-partner="${e(event.partner)}" data-event-id="${e(event.id)}" data-event-title="${e(event.title)}" data-event-city="${e(event.venue.city)}"><span>${text(t('tickets', { partner }))}</span>${icon('external')}</a>
           <p class="detail-purchase-note">${text(t('purchaseNote', { partner }))}</p>${termNote ? `<p class="detail-term-note">${text(termNote)}</p>` : ''}
           <p class="detail-affiliate-note">${text(t('affiliateNote'))}</p>` : `<a class="detail-text-link" href="${eventsHref}">${text(t('explore'))}${icon('arrow')}</a>`}</div>
+        ${showAccommodation ? `<div class="detail-stay">
+          <h3>${text(t('stayTitle'))}</h3>
+          <p id="detail-stay-description">${text(t('stayNote'))}</p>
+          <a class="detail-text-link" href="${e(AMAZING_PLACES_BOOKING_URL)}" target="_blank" rel="sponsored noopener" hreflang="cs" aria-describedby="detail-stay-description" data-placement="event_detail" data-event-id="${e(event.id)}" data-event-title="${e(event.title)}" data-event-city="${e(event.venue.city)}">${text(t('stayLink'))}${icon('external')}</a>
+        </div>` : ''}
       </aside>
       <section class="detail-editorial" aria-labelledby="about-event"><h2 id="about-event">${text(t(event.id.startsWith('colosseumticket-') ? 'about' : 'expect'))}</h2>${event.paragraphs.map(p => `<p>${text(p)}</p>`).join('')}
         <details class="detail-info"><summary>${text(t('practical'))}</summary><p>${text(event.practical)}</p></details>

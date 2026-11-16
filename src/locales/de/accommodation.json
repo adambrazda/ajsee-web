@@ -10,10 +10,10 @@
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. Alle Rechte vorbehalten.",
   "seo": {
     "accommodation": {
-      "title": "Unterkünfte in Großbritannien und Frankreich | AJSEE",
-      "description": "Entdecken Sie Unterkünfte von TrustedStays im Vereinigten Königreich und ausgewählte Apartments in Paris. Informieren Sie sich über Angebote und Buchungsmöglichkeiten.",
-      "ogTitle": "Unterkünfte in Großbritannien und Frankreich | AJSEE",
-      "ogDescription": "Entdecken Sie Unterkünfte von TrustedStays im Vereinigten Königreich und ausgewählte Apartments in Paris. Informieren Sie sich über Angebote und Buchungsmöglichkeiten."
+      "title": "Unterkünfte und Geschenkgutscheine für Aufenthalte | AJSEE",
+      "description": "Finden Sie eine Unterkunft in Tschechien, der Slowakei, im Vereinigten Königreich oder in Paris. Geschenkgutscheine für Aufenthalte bietet Amazing Places an.",
+      "ogTitle": "Unterkünfte und Geschenkgutscheine für Aufenthalte | AJSEE",
+      "ogDescription": "Finden Sie eine Unterkunft in Tschechien, der Slowakei, im Vereinigten Königreich oder in Paris. Geschenkgutscheine für Aufenthalte bietet Amazing Places an."
     }
   },
   "accommodation": {
@@ -81,7 +81,7 @@
         "a": "Storno, Buchungsänderungen, Zahlungen und Bestätigungen werden von TrustedStays gemäß deren Bedingungen bearbeitet. AJSEE kann dir bei der Orientierung und Kommunikation helfen."
       }
     },
-    "disclaimer": "AJSEE ist kein Unterkunftsanbieter, kein Reiseveranstalter und kein Zahlungsdienstleister. Anfrage, Buchung, Zahlung, Bestätigung und Aufenthaltsbedingungen werden von TrustedStays abgewickelt.",
+    "disclaimer": "AJSEE verlinkt auf Angebote seiner Partner. Für Buchungen, Zahlungen, Bestätigungen und den Gutscheinverkauf gelten die Bedingungen des jeweiligen Partners.",
     "final": {
       "title": "Wählen Sie Ihr Reiseziel",
       "text": "TrustedStays öffnet sich in einem neuen Tab. Dort schließt du Anfrage oder Buchung direkt beim Partner ab.",
@@ -91,49 +91,47 @@
     "redesign": {
       "titleStart": "Unterkünfte für",
       "titleEnd": "Ihre nächste Erlebnisreise.",
-      "lead1": "Reisen Sie zu einem besonderen Erlebnis und bleiben Sie ein paar Tage länger.",
-      "lead2": "Entdecken Sie die Unterkünfte unseres Partners TrustedStays.",
       "cta": "Reiseziel auswählen",
-      "howLink": "So funktioniert es",
-      "partnerLabel": "Offizieller AJSEE-Partner",
       "photoAlt": "Wohnzimmer aus dem Unterkunftsangebot von TrustedStays",
       "photoCaption": "Foto aus dem Angebot von TrustedStays",
       "destinationsTitle": "Wählen Sie Ihr Reiseziel",
       "ukTitle": "Vereinigtes Königreich",
-      "ukLocation": "London und weitere britische Städte",
-      "ukDescription": "Entdecken Sie Apartments und Häuser für kurze und längere Aufenthalte.",
-      "ukCta": "Unterkünfte ansehen",
+      "ukDescription": "Entdecken Sie Apartments und Häuser in London und anderen britischen Städten.",
+      "ukCta": "Unterkunft im UK finden",
       "franceTitle": "Frankreich",
-      "franceNew": "Neu",
-      "franceLocation": "Paris",
       "franceDescription": "Entdecken Sie Apartments in Paris. Suchen Sie auf der Partnerwebsite nach „Paris“.",
-      "franceCta": "Unterkünfte ansehen",
-      "benefit1Title": "Geprüfte Unterkünfte",
-      "benefit1Text": "TrustedStays prüft die Standards der Unterkünfte in seinem Angebot.",
-      "benefit2Title": "Kurze und längere Aufenthalte",
-      "benefit2Text": "Für wenige Nächte oder eine längere Reise, je nach Unterkunft.",
-      "benefit3Title": "Buchung beim Partner",
-      "benefit3Text": "TrustedStays bestätigt Verfügbarkeit, Preise und Buchungsbedingungen.",
+      "franceCta": "Unterkunft in Paris finden",
       "howTitle": "So buchen Sie",
       "step1Title": "Reiseziel auswählen",
       "step1Text": "Sehen Sie sich die Unterkünfte und Buchungsmöglichkeiten in Ihrem Reiseland an.",
       "step2Title": "Passende Unterkunft finden",
       "step2Text": "Berücksichtigen Sie Reisedaten, Gästezahl und den Veranstaltungsort.",
       "step3Title": "Buchung abschließen",
-      "step3Text": "Schließen Sie Ihre Buchung direkt bei TrustedStays zu den Bedingungen der gewählten Unterkunft ab.",
+      "step3Text": "Buchen Sie direkt beim Partner oder senden Sie ihm eine Anfrage. Es gelten die Bedingungen der gewählten Unterkunft.",
       "faqTitle": "Gut zu wissen",
       "faqBookingQ": "Buche ich auf AJSEE?",
-      "faqBookingA": "AJSEE verbindet Sie mit TrustedStays. Auswahl, Buchung und Zahlung erfolgen direkt beim Partner.",
+      "faqBookingA": "AJSEE leitet Sie zum Angebot des Partners weiter. Dort finden Sie Preise und Verfügbarkeiten und können buchen und bezahlen.",
       "franceQ": "Wie kann ich eine Unterkunft in Frankreich buchen?",
       "franceA": "Öffnen Sie die Unterkunftssuche von TrustedStays und geben Sie „Paris“ ein. Wählen Sie das Reiseziel aus den Vorschlägen und ergänzen Sie Ihre Reisedaten.",
       "franceLink": "TrustedStays-Angebot öffnen",
-      "faqAffiliateQ": "Ist dies ein Partnerlink?",
-      "faqAffiliateA": "Ja. Der Link hilft unserem Partner, Besuche von AJSEE zu erkennen.",
+      "faqAffiliateA": "AJSEE kann eine Provision erhalten, wenn Sie über einen Partnerlink buchen oder etwas kaufen.",
       "faqCancelQ": "Wer kümmert sich um Änderungen und Stornierungen?",
-      "faqCancelA": "Änderungen, Stornierungen und Zahlungen klären Sie direkt mit TrustedStays gemäß den Bedingungen Ihres Aufenthalts.",
+      "faqCancelA": "Bei Änderungen, Stornierungen oder Fragen zur Zahlung wenden Sie sich an den Partner, bei dem Sie gebucht haben.",
       "supportTitle": "Brauchen Sie Hilfe?",
       "supportText": "Schreiben Sie uns. Wir helfen Ihnen, das Angebot und die nächsten Schritte zu verstehen.",
-      "supportCta": "AJSEE kontaktieren"
+      "supportCta": "AJSEE kontaktieren",
+      "lead": "Finden Sie eine Unterkunft für Ihre Reise zu einem Konzert, einer Theateraufführung, einem Sportevent oder für einen Wochenendausflug."
+    },
+    "amazingPlaces": {
+      "title": "Tschechien und die Slowakei",
+      "description": "Wählen Sie bei Amazing Places Unterkunft und Reisedaten. Zur Auswahl stehen Hotels, Apartments, Ferienhäuser und Glamping. Der Link führt zur tschechischsprachigen Website.",
+      "cta": "Unterkünfte ansehen"
+    },
+    "vouchers": {
+      "shortTitle": "Geschenkgutscheine",
+      "title": "Einen Aufenthalt verschenken",
+      "description": "Geschenkgutscheine gibt es bei Amazing Places. Die beschenkte Person wählt den Termin und eine Unterkunft, die den Gutschein akzeptiert. Der Link führt zur tschechischsprachigen Website.",
+      "cta": "Gutschein auswählen"
     }
   }
 }

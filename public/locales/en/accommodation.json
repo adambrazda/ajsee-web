@@ -10,10 +10,10 @@
   "footer-copyright": "&copy; <span id=\"year\">2026</span> AJSEE®. All rights reserved.",
   "seo": {
     "accommodation": {
-      "title": "Accommodation in the UK and France | AJSEE",
-      "description": "Explore accommodation with TrustedStays in the United Kingdom and selected apartments in Paris. Find places to stay and booking options for each destination.",
-      "ogTitle": "Accommodation in the UK and France | AJSEE",
-      "ogDescription": "Explore accommodation with TrustedStays in the United Kingdom and selected apartments in Paris. Find places to stay and booking options for each destination."
+      "title": "Accommodation and gift vouchers for stays | AJSEE",
+      "description": "Find places to stay in Czechia, Slovakia, the United Kingdom or Paris. Browse Amazing Places gift vouchers for a stay.",
+      "ogTitle": "Accommodation and gift vouchers for stays | AJSEE",
+      "ogDescription": "Find places to stay in Czechia, Slovakia, the United Kingdom or Paris. Browse Amazing Places gift vouchers for a stay."
     }
   },
   "accommodation": {
@@ -81,7 +81,7 @@
         "a": "Cancellations, booking changes, payments and confirmations are handled by TrustedStays under their own terms. AJSEE can help you navigate the process and communication."
       }
     },
-    "disclaimer": "AJSEE is not an accommodation provider, travel agency or payment processor. Enquiries, bookings, payments, confirmations and stay conditions are handled by TrustedStays.",
+    "disclaimer": "AJSEE links to offers from its partners. The relevant partner handles bookings, payments, confirmations and voucher sales under its own terms.",
     "final": {
       "title": "Choose your destination",
       "text": "TrustedStays opens in a new tab, where you can complete your enquiry or booking directly with the partner.",
@@ -91,49 +91,47 @@
     "redesign": {
       "titleStart": "Accommodation for",
       "titleEnd": "your next experience.",
-      "lead1": "Travel for a great experience and stay a little longer.",
-      "lead2": "Explore places to stay with our partner TrustedStays.",
       "cta": "Choose a destination",
-      "howLink": "How it works",
-      "partnerLabel": "Official AJSEE partner",
       "photoAlt": "Living room from the TrustedStays accommodation collection",
       "photoCaption": "Photo from the TrustedStays collection",
       "destinationsTitle": "Choose your destination",
       "ukTitle": "United Kingdom",
-      "ukLocation": "London and other UK cities",
-      "ukDescription": "Explore apartments and homes for short and longer stays.",
-      "ukCta": "Explore accommodation",
+      "ukDescription": "Browse apartments and homes in London and other UK cities.",
+      "ukCta": "Find a UK stay",
       "franceTitle": "France",
-      "franceNew": "New",
-      "franceLocation": "Paris",
       "franceDescription": "Explore apartments in Paris. Search for “Paris” on our partner’s website.",
-      "franceCta": "Explore accommodation",
-      "benefit1Title": "Verified accommodation",
-      "benefit1Text": "TrustedStays checks the standards of properties in its collection.",
-      "benefit2Title": "Short and longer stays",
-      "benefit2Text": "From a few nights to a longer trip, depending on the property.",
-      "benefit3Title": "Book with our partner",
-      "benefit3Text": "TrustedStays confirms availability, prices and booking terms.",
+      "franceCta": "Find a Paris stay",
       "howTitle": "How to book",
       "step1Title": "Choose a destination",
       "step1Text": "Explore accommodation and booking options in the country you are visiting.",
       "step2Title": "Find the right stay",
       "step2Text": "Consider your dates, number of guests and the location of your event.",
       "step3Title": "Complete your booking",
-      "step3Text": "Complete your booking directly with TrustedStays under the terms of your chosen property.",
+      "step3Text": "Book or send an enquiry directly with the partner under the terms of your chosen stay.",
       "faqTitle": "Good to know",
       "faqBookingQ": "Do I book on AJSEE?",
-      "faqBookingA": "AJSEE connects you with TrustedStays. You choose your accommodation, book and pay directly with our partner.",
+      "faqBookingA": "AJSEE links you to the partner's website, where you can check prices and availability, book and pay.",
       "franceQ": "How can I book accommodation in France?",
       "franceA": "Open the TrustedStays accommodation search and enter “Paris”. Select the destination from the suggestions and add your travel dates.",
       "franceLink": "Open the TrustedStays collection",
-      "faqAffiliateQ": "Is this a partner link?",
-      "faqAffiliateA": "Yes. The link helps our partner identify visits coming from AJSEE.",
+      "faqAffiliateA": "AJSEE may earn a commission when you book or buy through a partner link.",
       "faqCancelQ": "Who handles changes and cancellations?",
-      "faqCancelA": "Contact TrustedStays directly about changes, cancellations and payments, in line with the terms of your stay.",
+      "faqCancelA": "Contact the partner you booked with about changes, cancellations or payments.",
       "supportTitle": "Need a hand?",
       "supportText": "Get in touch. We can help you understand the accommodation options and what to do next.",
-      "supportCta": "Contact AJSEE"
+      "supportCta": "Contact AJSEE",
+      "lead": "Find somewhere to stay when travelling for a concert, a show, a sporting event or a weekend away."
+    },
+    "amazingPlaces": {
+      "title": "Czechia and Slovakia",
+      "description": "Choose a place and dates with Amazing Places, from hotels and apartments to cottages and glamping. The link opens the Czech website.",
+      "cta": "Browse stays"
+    },
+    "vouchers": {
+      "shortTitle": "Gift vouchers",
+      "title": "Give someone a stay",
+      "description": "Buy a gift voucher from Amazing Places. The recipient can choose their own dates and a place that accepts the voucher. The link opens the Czech website.",
+      "cta": "Choose a gift voucher"
     }
   }
 }

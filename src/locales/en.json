@@ -268,9 +268,9 @@
     "guide": "How to choose a trusted ticket seller"
   },
   "event-demo": {
-    "ariaLabel": "Accommodation with TrustedStays in the United Kingdom and France.",
-    "title": "Accommodation with TrustedStays",
-    "body": "Planning a trip for a live event? Browse accommodation from our partner in the United Kingdom and France.",
+    "ariaLabel": "Accommodation for your trip",
+    "title": "Accommodation for your trip",
+    "body": "Find a stay in Czechia, Slovakia, the United Kingdom or Paris.",
     "cta": "Find accommodation"
   },
   "mg.backToBlog": "Back to blog",
@@ -497,7 +497,7 @@
   "home.london.text": "Experience the West End. Choose a musical and find tickets for your preferred date.",
   "home.london.cta": "Explore musicals",
   "home.stay.title": "A place to stay",
-  "home.stay.text": "TrustedStays apartments in the United Kingdom and France. Find a comfortable base for your trip.",
+  "home.stay.text": "Find a stay in Czechia, Slovakia, the United Kingdom or Paris.",
   "home.stay.cta": "Find accommodation",
   "home.editorial.title": "Our reviews and tips",
   "home.editorial.intro": "Stories from the audience and ideas for your next trip.",

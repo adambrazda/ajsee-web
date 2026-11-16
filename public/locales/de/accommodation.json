@@ -11,9 +11,9 @@
   "seo": {
     "accommodation": {
       "title": "Unterkünfte und Geschenkgutscheine für Aufenthalte | AJSEE",
-      "description": "Finden Sie eine Unterkunft in Tschechien, der Slowakei, im Vereinigten Königreich oder in Paris. Geschenkgutscheine für Aufenthalte bietet Amazing Places an.",
+      "description": "Finden Sie Unterkünfte in Tschechien und im Ausland bei Amazing Places und TrustedStays. Amazing Places bietet auch Geschenkgutscheine für Aufenthalte an.",
       "ogTitle": "Unterkünfte und Geschenkgutscheine für Aufenthalte | AJSEE",
-      "ogDescription": "Finden Sie eine Unterkunft in Tschechien, der Slowakei, im Vereinigten Königreich oder in Paris. Geschenkgutscheine für Aufenthalte bietet Amazing Places an."
+      "ogDescription": "Finden Sie Unterkünfte in Tschechien und im Ausland bei Amazing Places und TrustedStays. Amazing Places bietet auch Geschenkgutscheine für Aufenthalte an."
     }
   },
   "accommodation": {
@@ -123,14 +123,14 @@
       "lead": "Finden Sie eine Unterkunft für Ihre Reise zu einem Konzert, einer Theateraufführung, einem Sportevent oder für einen Wochenendausflug."
     },
     "amazingPlaces": {
-      "title": "Tschechien und die Slowakei",
-      "description": "Wählen Sie bei Amazing Places Unterkunft und Reisedaten. Zur Auswahl stehen Hotels, Apartments, Ferienhäuser und Glamping. Der Link führt zur tschechischsprachigen Website.",
+      "destinations": "Tschechien, Slowakei, Österreich, Italien, Polen und Deutschland",
+      "description": "Entdecken Sie Hotels, Apartments, Ferienhäuser und Glamping. Unterkunft und Reisedaten wählen Sie auf der tschechischsprachigen Website des Partners.",
       "cta": "Unterkünfte ansehen"
     },
     "vouchers": {
       "shortTitle": "Geschenkgutscheine",
       "title": "Einen Aufenthalt verschenken",
-      "description": "Geschenkgutscheine gibt es bei Amazing Places. Die beschenkte Person wählt den Termin und eine Unterkunft, die den Gutschein akzeptiert. Der Link führt zur tschechischsprachigen Website.",
+      "description": "Geschenkgutscheine gibt es bei Amazing Places. Die beschenkte Person wählt den Termin und eine Unterkunft, die als Gutscheinpartner gekennzeichnet ist. Der Link führt zur tschechischsprachigen Website.",
       "cta": "Gutschein auswählen"
     }
   }

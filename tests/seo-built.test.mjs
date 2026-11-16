@@ -191,8 +191,9 @@ for(const lang of LANGS){
     assert.equal(doc.querySelector('link[rel="canonical"]').href, ORIGIN + (lang === 'cs' ? '/accommodation' : `/${lang}/accommodation/`));
     assert.equal(doc.querySelectorAll('head link[rel="alternate"][hreflang]').length, 7);
 
-    assert.equal(doc.querySelector('a[data-placement="destination_cz_sk"]').href, AMAZING_PLACES_BOOKING_URL);
+    assert.equal(doc.querySelector('a[data-placement="accommodation_booking"]').href, AMAZING_PLACES_BOOKING_URL);
     assert.equal(doc.querySelector('a[data-placement="accommodation_voucher"]').href, AMAZING_PLACES_VOUCHER_URL);
+    assert.equal(doc.querySelector('.stay-country--amazing-places .stay-country-location').textContent, copy.accommodation.amazingPlaces.destinations);
     assert.equal(doc.querySelector('#vouchers h2').textContent, copy.accommodation.vouchers.title);
 
     const trustedstaysLinks = [...doc.querySelectorAll('.stay-country a[data-trustedstays-outbound]')];

@@ -11,9 +11,9 @@
   "seo": {
     "accommodation": {
       "title": "Szállások és ajándékutalványok | AJSEE",
-      "description": "Találjon szállást Csehországban, Szlovákiában, az Egyesült Királyságban vagy Párizsban. Az Amazing Places oldalán szállásra szóló ajándékutalványt is választhat.",
+      "description": "Találjon szállást Csehországban és más országokban az Amazing Places és a TrustedStays kínálatából. Az Amazing Places szállásra szóló ajándékutalványokat is kínál.",
       "ogTitle": "Szállások és ajándékutalványok | AJSEE",
-      "ogDescription": "Találjon szállást Csehországban, Szlovákiában, az Egyesült Királyságban vagy Párizsban. Az Amazing Places oldalán szállásra szóló ajándékutalványt is választhat."
+      "ogDescription": "Találjon szállást Csehországban és más országokban az Amazing Places és a TrustedStays kínálatából. Az Amazing Places szállásra szóló ajándékutalványokat is kínál."
     }
   },
   "accommodation": {
@@ -154,14 +154,14 @@
       "lead": "Találjon szállást egy koncerthez, színházi előadáshoz, sporteseményhez vagy hétvégi kiruccanáshoz."
     },
     "amazingPlaces": {
-      "title": "Csehország és Szlovákia",
-      "description": "Válasszon helyszínt és időpontot az Amazing Places oldalán. Szállodák, apartmanok, vidéki házak és glampinghelyek várják. A link a cseh nyelvű oldalra vezet.",
+      "destinations": "Csehország, Szlovákia, Ausztria, Olaszország, Lengyelország és Németország",
+      "description": "Böngésszen a szállodák, apartmanok, vidéki házak és glampinghelyek között. A szállást és az időpontot a partner cseh nyelvű oldalán választhatja ki.",
       "cta": "Szállások megtekintése"
     },
     "vouchers": {
       "shortTitle": "Ajándékutalványok",
       "title": "Ajándékutalvány szállásra",
-      "description": "Az utalványt az Amazing Places oldalán vásárolhatja meg. A megajándékozott maga választhat időpontot és olyan szállást, ahol elfogadják az utalványt. A link a cseh nyelvű oldalra vezet.",
+      "description": "Az utalványt az Amazing Places oldalán vásárolhatja meg. A megajándékozott időpontot és olyan szállást választhat, amelynél jelzik az ajándékutalvány elfogadását. A link a cseh nyelvű oldalra vezet.",
       "cta": "Utalvány kiválasztása"
     }
   }

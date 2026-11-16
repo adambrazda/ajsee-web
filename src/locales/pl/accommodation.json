@@ -11,9 +11,9 @@
   "seo": {
     "accommodation": {
       "title": "Noclegi i vouchery na pobyt | AJSEE",
-      "description": "Znajdź nocleg w Czechach, na Słowacji, w Wielkiej Brytanii lub w Paryżu. W Amazing Places możesz też wybrać voucher podarunkowy na pobyt.",
+      "description": "Znajdź nocleg w Polsce i za granicą z Amazing Places oraz TrustedStays. Amazing Places oferuje też vouchery podarunkowe na pobyt.",
       "ogTitle": "Noclegi i vouchery na pobyt | AJSEE",
-      "ogDescription": "Znajdź nocleg w Czechach, na Słowacji, w Wielkiej Brytanii lub w Paryżu. W Amazing Places możesz też wybrać voucher podarunkowy na pobyt."
+      "ogDescription": "Znajdź nocleg w Polsce i za granicą z Amazing Places oraz TrustedStays. Amazing Places oferuje też vouchery podarunkowe na pobyt."
     }
   },
   "accommodation": {
@@ -123,14 +123,14 @@
       "lead": "Znajdź nocleg na wyjazd na koncert, do teatru, na wydarzenie sportowe lub na weekend."
     },
     "amazingPlaces": {
-      "title": "Czechy i Słowacja",
-      "description": "Wybierz miejsce i termin w Amazing Places. W ofercie znajdziesz hotele, apartamenty, domki i glamping. Link prowadzi na czeską wersję strony.",
+      "destinations": "Czechy, Słowacja, Austria, Włochy, Polska i Niemcy",
+      "description": "Zobacz hotele, apartamenty, domki i glamping. Miejsce i termin wybierzesz na czeskojęzycznej stronie partnera.",
       "cta": "Zobacz oferty noclegów"
     },
     "vouchers": {
       "shortTitle": "Vouchery podarunkowe",
       "title": "Voucher podarunkowy na pobyt",
-      "description": "Voucher kupisz w Amazing Places. Osoba obdarowana wybierze termin i obiekt, który go akceptuje. Link prowadzi na czeską wersję strony.",
+      "description": "Voucher kupisz w Amazing Places. Osoba obdarowana wybierze termin i obiekt oznaczony jako akceptujący vouchery. Link prowadzi na czeskojęzyczną stronę.",
       "cta": "Wybierz voucher"
     }
   }

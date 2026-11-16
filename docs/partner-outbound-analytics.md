@@ -77,10 +77,14 @@ clickout is not a confirmed order or commission.
 - Amazing Places uses campaign `9` for bookings and campaign `3` for vouchers.
   Both use the supplied AffilBox parameters in the actual anchor. Filter
   `partner=amazingplaces`, `product_type=accommodation` to see booking clickouts
-  from `destination_cz_sk` or `event_detail`. Filter `product_type=voucher` for
+  from `accommodation_booking` or `event_detail`. Filter `product_type=voucher` for
   the `accommodation_voucher` placement. The weekly tickets-and-accommodation
   exploration keeps its existing filter. AffilBox reports campaign attribution
   and conversions independently of GA4.
+  The booking link opens the Amazing Places catalogue, which lists Czechia,
+  Slovakia, Austria, Italy, Poland and Germany as destination markets. Those are
+  the markets where event pages can show the stay link. Voucher acceptance is
+  indicated by Amazing Places on individual properties.
 
 The AI search learning funnel remains separate and receives only its existing
 privacy-safe event reference, provider, result position and placement.

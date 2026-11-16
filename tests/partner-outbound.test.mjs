@@ -188,7 +188,7 @@ test('Amazing Places booking and voucher links preserve their campaigns and repo
   win.localStorage.setItem(CONSENT_KEY, JSON.stringify({ analytics: true }));
   for (const link of doc.querySelectorAll('a')) activate(win, link);
   assert.deepEqual(commands.map(([, event, p]) => [event, p.partner, p.product_type, p.placement]), [
-    ['ajsee_partner_click', 'amazingplaces', 'accommodation', 'destination_cz_sk'],
+    ['ajsee_partner_click', 'amazingplaces', 'accommodation', 'accommodation_booking'],
     ['ajsee_partner_click', 'amazingplaces', 'voucher', 'accommodation_voucher'],
   ]);
   assert.doesNotMatch(JSON.stringify(commands), /a_box|a_cam|uxyqpfva/);

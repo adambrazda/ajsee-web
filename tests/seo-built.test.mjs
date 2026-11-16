@@ -51,6 +51,55 @@ test('built search shells survive initialization and reserve the interactive con
   }
 });
 
+test('the homepage makes both Amazing Places offers discoverable in all six initial HTML documents', () => {
+  for (const lang of LANGS) {
+    const home = load(prefix(lang) + 'index.html');
+    const stays = load(prefix(lang) + 'accommodation/index.html');
+    try {
+      const doc = home.window.document;
+      const copy = JSON.parse(fs.readFileSync(`src/locales/${lang}.json`, 'utf8'));
+      const banner = doc.querySelector('.home-promo--amazing-places');
+      const heading = banner.querySelector('h2');
+      const photo = banner.querySelector('img');
+      const links = [...banner.querySelectorAll('a[href]')];
+
+      assert.equal(doc.documentElement.lang, lang);
+      assert.deepEqual([...doc.querySelectorAll('h1')].map(node => node.id), ['home-title']);
+      assert.equal(doc.querySelector('link[rel="canonical"]').href, ORIGIN + '/' + prefix(lang));
+      const alternates = [...doc.querySelectorAll('link[rel="alternate"][hreflang]')];
+      assert.equal(alternates.length, 7);
+      for (const alternate of alternates) {
+        const language = alternate.hreflang === 'x-default' ? 'cs' : alternate.hreflang;
+        assert.equal(alternate.href, ORIGIN + '/' + prefix(language));
+      }
+      assert.equal(banner.getAttribute('aria-labelledby'), heading.id);
+      assert.equal(heading.textContent, copy['home.amazingPlaces.title']);
+      assert.equal(banner.querySelector('p').textContent, copy['home.amazingPlaces.text']);
+      assert.equal(photo.alt, copy['home.amazingPlaces.imageAlt']);
+      assert.equal(photo.getAttribute('loading'), 'lazy');
+      assert.match(photo.getAttribute('srcset'), /320w.+640w/);
+      assert.equal(banner.querySelector('.home-promo-image-note').textContent, copy['home.amazingPlaces.imageNote']);
+
+      const route = lang === 'cs' ? '/accommodation' : `/${lang}/accommodation/`;
+      const targets = [
+        ['amazing-places', copy['home.amazingPlaces.stays'], AMAZING_PLACES_BOOKING_URL],
+        ['vouchers', copy['home.amazingPlaces.vouchers'], AMAZING_PLACES_VOUCHER_URL],
+      ];
+      assert.equal(links.length, targets.length);
+      targets.forEach(([id, label, destination], index) => {
+        assert.equal(links[index].getAttribute('href'), `${route}#${id}`);
+        assert.equal(clean(links[index].textContent), label);
+        const target = stays.window.document.getElementById(id);
+        assert.ok(target?.querySelector(`a[href="${destination}"]`));
+      });
+      jsons(doc);
+    } finally {
+      home.window.close();
+      stays.window.close();
+    }
+  }
+});
+
 test('published review covers reserve their actual image dimensions in all translations',async()=>{
   for(const review of published) {
     if(!review.cover?.startsWith('/'))continue;

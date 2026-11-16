@@ -5,9 +5,10 @@ import sharp from 'sharp';
 
 // Encode the existing photographs without cropping or changing editorial credits.
 // Discover published covers so future homepage recommendations receive variants too.
+const amazingPlacesPhoto = '/images/accommodation/amazing-places-home.webp';
 const sources = new Set([
   '/images/london-musicals-todaytix-hero-960.webp',
-  '/images/accommodation/trustedstays-home-original.jpg',
+  amazingPlacesPhoto,
 ]);
 const readJson = async (file) => JSON.parse(await fs.readFile(file, 'utf8'));
 for (const file of (await fs.readdir('content/reviews/items')).sort()) {
@@ -41,11 +42,12 @@ for (const source of [...sources].sort()) {
   const hash = createHash('sha256').update(source).update(original).digest('hex').slice(0, 12);
   const variants = [];
   const widths = [...new Set([320, 640, 960].map(value => Math.min(value, width)))];
+  const quality = source === amazingPlacesPhoto ? 70 : 80;
   for (const targetWidth of widths) {
     const name = `${hash}-${targetWidth}.webp`;
     const encoded = await sharp(original).rotate()
       .resize({ width: targetWidth, withoutEnlargement: true })
-      .webp({ quality: 80, effort: 5 }).toBuffer({ resolveWithObject: true });
+      .webp({ quality, effort: 5 }).toBuffer({ resolveWithObject: true });
     await fs.writeFile(path.join(output, name), encoded.data);
     variants.push({ src: `/images/home-cards/${name}`, width: encoded.info.width, height: encoded.info.height, bytes: encoded.data.length });
   }

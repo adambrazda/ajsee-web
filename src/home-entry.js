@@ -1808,9 +1808,9 @@ function setBtnLabel(el, txt) {
 
 function formatHomePromoTitle(key, value, lang) {
   const text = String(value);
-  if (lang !== 'cs' || (key !== 'home.london.title' && key !== 'home.stay.title')) return text;
+  if (lang !== 'cs' || (key !== 'home.london.title' && key !== 'home.amazingPlaces.title')) return text;
   // Older cached translations must not restore an orphaned preposition.
-  return text.replace(/(^|\s)([vk]) (?=\S)/g, '$1$2\u00a0');
+  return text.replace(/(^|\s)([vs]) (?=\S)/g, '$1$2\u00a0');
 }
 
 async function applyTranslations(lang) {

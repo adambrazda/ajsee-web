@@ -433,15 +433,27 @@ const getInitialLang = () => {
       <noscript>Pro zobrazení událostí povolte JavaScript.</noscript>
     </div>
   </section>
-  <section class="home-explore" aria-label="Za zážitky do zahraničí">
+  <section class="home-explore" aria-label="Muzikály a ubytování" data-i18n-aria="home.explore.label">
     <div class="home-container home-explore-grid">
       <article class="home-promo home-promo--london">
         <img src="/images/london-musicals-todaytix-hero-960.webp" alt="AJSEE × TodayTix" width="960" height="640" loading="lazy" decoding="async">
         <div class="home-promo-copy"><h2 data-i18n-key="home.london.title">Muzikály v&nbsp;Londýně</h2><p data-i18n-key="home.london.text">Zažijte atmosféru West Endu. Vyberte si muzikál a najděte vstupenky na svůj termín.</p><a class="home-promo-button" href="/londynske-muzikaly/"><span data-i18n-key="home.london.cta">Prohlédnout muzikály</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
       </article>
-      <article class="home-promo">
-        <img src="/images/accommodation/trustedstays-home-original.jpg" alt="TrustedStays" width="458" height="348" loading="lazy" decoding="async">
-        <div class="home-promo-copy"><h2 data-i18n-key="home.stay.title">Ubytování k&nbsp;vašemu výletu</h2><p data-i18n-key="home.stay.text">Prohlédněte si ubytování v Česku i zahraničí.</p><a class="home-text-link" href="/accommodation/"><span data-i18n-key="home.stay.cta">Najít ubytování</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+      <article class="home-promo home-promo--amazing-places" aria-labelledby="home-amazing-places-title">
+        <img src="/images/accommodation/amazing-places-home.webp" width="800" height="800" loading="lazy" decoding="async"
+             alt="Dřevěná chata na okraji lesa" data-i18n-alt="home.amazingPlaces.imageAlt">
+        <span class="home-promo-image-note" data-i18n-key="home.amazingPlaces.imageNote">Ilustrační snímek</span>
+        <div class="home-promo-copy">
+          <h2 id="home-amazing-places-title" data-i18n-key="home.amazingPlaces.title">Ubytování s&nbsp;Amazing Places</h2>
+          <p data-i18n-key="home.amazingPlaces.text">Pobyty v&nbsp;Česku, na Slovensku, v&nbsp;Rakousku, Itálii, Polsku a&nbsp;Německu.</p>
+          <div class="home-promo-actions">
+            <a class="home-promo-button" href="/accommodation/#amazing-places">
+              <span data-i18n-key="home.amazingPlaces.stays">Prohlédnout pobyty</span>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="home-text-link" href="/accommodation/#vouchers" data-i18n-key="home.amazingPlaces.vouchers">Dárkové poukazy</a>
+          </div>
+        </div>
       </article>
     </div>
   </section>

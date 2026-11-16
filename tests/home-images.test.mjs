@@ -31,14 +31,22 @@ test('unmapped and partner-hosted images retain their original URL', () => {
   }
 });
 
-test('large audited covers and the accommodation promotion transfer fewer bytes', () => {
+test('large audited editorial covers transfer fewer bytes', () => {
   for (const source of [
     '/uploads/cover-06.jpg',
-    '/images/accommodation/trustedstays-home-original.jpg',
     '/uploads/reviews/sweeney-todd-prague-2026/sweeney-todd-state-opera-cover.avif',
   ]) {
     const image = images[source];
     assert.ok(image, source);
     for (const variant of image.variants) assert.ok(variant.bytes < image.originalBytes, source);
   }
+});
+
+test('the Amazing Places promotion has a compact first WebP candidate', () => {
+  const image = images['/images/accommodation/amazing-places-home.webp'];
+  assert.ok(image, 'The promotion must use the responsive image pipeline.');
+  assert.equal(image.variants[0].width, 320);
+  assert.ok(image.variants[0].bytes < 30_000);
+  assert.equal(image.variants[1].width, 640);
+  assert.ok(image.variants[1].bytes < 90_000);
 });

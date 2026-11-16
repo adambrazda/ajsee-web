@@ -54,7 +54,7 @@
   .stay-main p { margin: 0; color: var(--ac-text); line-height: 1.7; }
   .stay-main a { text-decoration: none; }
   .stay-main :is(a,button,summary):focus-visible { outline: 3px solid var(--ac-accent); outline-offset: 5px; }
-  :is(#destinations,#vouchers,#how,#faq,#france-reservations) { scroll-margin-top: 106px; }
+  :is(#destinations,#amazing-places,#vouchers,#how,#faq,#france-reservations) { scroll-margin-top: 106px; }
   .stay-hero { padding: clamp(42px,5vw,68px) 0 52px; background: radial-gradient(ellipse at 22% 10%,var(--ac-glow),transparent 68%); }
   .stay-hero-grid { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); align-items: center; gap: clamp(40px,5vw,72px); }
   .stay-title { font-size: clamp(2.45rem,4.15vw,3.55rem); line-height: 1.16; }

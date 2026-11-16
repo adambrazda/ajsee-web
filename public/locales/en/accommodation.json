@@ -11,9 +11,9 @@
   "seo": {
     "accommodation": {
       "title": "Accommodation and gift vouchers for stays | AJSEE",
-      "description": "Find places to stay in Czechia, Slovakia, the United Kingdom or Paris. Browse Amazing Places gift vouchers for a stay.",
+      "description": "Browse accommodation in Czechia and abroad with Amazing Places and TrustedStays. Amazing Places also offers gift vouchers for stays.",
       "ogTitle": "Accommodation and gift vouchers for stays | AJSEE",
-      "ogDescription": "Find places to stay in Czechia, Slovakia, the United Kingdom or Paris. Browse Amazing Places gift vouchers for a stay."
+      "ogDescription": "Browse accommodation in Czechia and abroad with Amazing Places and TrustedStays. Amazing Places also offers gift vouchers for stays."
     }
   },
   "accommodation": {
@@ -123,14 +123,14 @@
       "lead": "Find somewhere to stay when travelling for a concert, a show, a sporting event or a weekend away."
     },
     "amazingPlaces": {
-      "title": "Czechia and Slovakia",
-      "description": "Choose a place and dates with Amazing Places, from hotels and apartments to cottages and glamping. The link opens the Czech website.",
+      "destinations": "Czechia, Slovakia, Austria, Italy, Poland and Germany",
+      "description": "Browse hotels, apartments, cottages and glamping. Choose your location and dates on the partner website, which opens in Czech.",
       "cta": "Browse stays"
     },
     "vouchers": {
       "shortTitle": "Gift vouchers",
       "title": "Give someone a stay",
-      "description": "Buy a gift voucher from Amazing Places. The recipient can choose their own dates and a place that accepts the voucher. The link opens the Czech website.",
+      "description": "Buy a gift voucher from Amazing Places. The recipient can choose their dates and a stay marked as accepting gift vouchers. The link opens in Czech.",
       "cta": "Choose a gift voucher"
     }
   }

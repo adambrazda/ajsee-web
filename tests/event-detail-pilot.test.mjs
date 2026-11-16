@@ -109,9 +109,13 @@ test('past, explicitly cancelled and postponed occurrences remain useful without
   }
 });
 
-test('the secondary stay link is scoped to upcoming Czech and Slovak events', () => {
+test('the secondary stay link is scoped to upcoming events in the Amazing Places destination markets', () => {
   const event = events[0];
-  for (const country of ['CZ', 'SK', 'PL', '']) {
+  const destinations = [
+    ['CZ', true], ['SK', true], ['AT', true], ['IT', true], ['PL', true], ['DE', true],
+    ['GB', false], ['FR', false], ['HU', false], ['', false],
+  ];
+  for (const [country, showStay] of destinations) {
     const occurrence = { ...event, venue: { ...event.venue, country } };
     const body = renderEventDetail(occurrence, { now, lang: 'sk' });
     const dom = new JSDOM(`<html lang="sk"><body data-page="event-detail">${body}</body></html>`, {
@@ -120,7 +124,7 @@ test('the secondary stay link is scoped to upcoming Czech and Slovak events', ()
     const doc = dom.window.document;
     const stay = doc.querySelector('.detail-stay a');
     assert.equal(doc.querySelector('.detail-cta').getAttribute('href'), event.tickets);
-    if (country === 'CZ' || country === 'SK') {
+    if (showStay) {
       assert.equal(stay?.href, AMAZING_PLACES_BOOKING_URL);
       assert.equal(stay.hreflang, 'cs');
       assert.equal(stay.textContent, 'Pozrieť si pobyty');

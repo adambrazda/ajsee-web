@@ -11,9 +11,9 @@
   "seo": {
     "accommodation": {
       "title": "Ubytování a dárkové poukazy na pobyt | AJSEE",
-      "description": "Najděte ubytování v Česku, na Slovensku, ve Spojeném království nebo v Paříži. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt.",
+      "description": "Najděte ubytování v Česku i zahraničí u Amazing Places a TrustedStays. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt.",
       "ogTitle": "Ubytování a dárkové poukazy na pobyt | AJSEE",
-      "ogDescription": "Najděte ubytování v Česku, na Slovensku, ve Spojeném království nebo v Paříži. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt."
+      "ogDescription": "Najděte ubytování v Česku i zahraničí u Amazing Places a TrustedStays. U Amazing Places si můžete vybrat také dárkový poukaz na pobyt."
     }
   },
   "accommodation": {
@@ -123,14 +123,14 @@
       "lead": "Najděte místo, kde se ubytovat na cestě za koncertem, divadlem, sportem nebo na víkendový výlet."
     },
     "amazingPlaces": {
-      "title": "Česko a Slovensko",
-      "description": "Vyberte si místo a termín na webu Amazing Places. V nabídce najdete hotely, apartmány, chalupy i glamping.",
+      "destinations": "Česko, Slovensko, Rakousko, Itálie, Polsko a Německo",
+      "description": "Prohlédněte si hotely, apartmány, chalupy i glamping. Místo a termín si vyberete u partnera.",
       "cta": "Prohlédnout pobyty"
     },
     "vouchers": {
       "shortTitle": "Dárkové poukazy",
       "title": "Dárkový poukaz na pobyt",
-      "description": "Poukaz koupíte u Amazing Places. Obdarovaní si sami vyberou termín a místo z nabídky pobytů, kde poukaz přijímají.",
+      "description": "Poukaz koupíte u Amazing Places. Obdarovaní si vyberou termín a pobyt z míst, u kterých partner uvádí, že přijímají dárkové vouchery.",
       "cta": "Vybrat poukaz"
     }
   }

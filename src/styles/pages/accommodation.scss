@@ -77,8 +77,6 @@
   .stay-country--france { background: var(--ac-france); border-color: var(--ac-france-line); }
   .stay-country-heading { width: 100%; display: flex; align-items: center; gap: 14px; }
   .stay-country-heading img,.stay-france-flag { width: 30px; height: 22px; flex: 0 0 auto; border-radius: 3px; }
-  .stay-country-flags { display: flex; gap: 4px; }
-  .stay-country-flags img { width: 24px; height: 18px; }
   .stay-country-heading h3 { font-size: 1.3rem; }
   .stay-country .stay-country-location { margin-top: 18px; font-size: .92rem; font-weight: 600; color: var(--ac-heading); }
   .stay-country .stay-country-description { margin-top: 7px; margin-bottom: 24px; font-size: .94rem; }

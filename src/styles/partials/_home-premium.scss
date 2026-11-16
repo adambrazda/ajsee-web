@@ -92,6 +92,22 @@ body[data-page='home'].home-premium {
   .home-promo-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 10px 14px; border-radius: 10px; color: var(--home-button-text); background: var(--home-button); font-size: .78rem; font-weight: 650; line-height: 1.5; text-decoration: none; }
   .home-promo-button svg { width: 16px; height: 16px; }
   .home-promo-button:hover { background: var(--home-button-hover); color: var(--home-button-text); }
+  .home-promo--amazing-places { position: relative; background: var(--home-soft); }
+  .home-promo-image-note {
+    position: absolute;
+    inset-block-start: 12px;
+    inset-inline-start: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(12,25,33,.9);
+    color: #fff;
+    font-size: .69rem;
+    line-height: 1.5;
+  }
+  .home-promo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; margin-top: auto; }
+  .home-promo-actions a { margin-top: 0; }
+  .home-promo-actions .home-text-link { min-height: 44px; font-size: .8rem; }
+  .home-promo-actions .home-promo-button > svg { flex: 0 0 auto; }
   .home-editorial { padding: 48px 0 54px; background: var(--home-soft); border-block: 1px solid var(--home-line); }
   .home-editorial .container { width: min(1180px,calc(100% - 64px)); max-width: none; padding: 0; }
   .home-editorial h2 { text-align: left; margin-bottom: 0; }

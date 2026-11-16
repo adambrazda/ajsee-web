@@ -6,7 +6,7 @@ import { parse } from 'acorn';
 
 const expected = {
   'home.london.title': 'Muzikály v\u00a0Londýně',
-  'home.stay.title': 'Ubytování k\u00a0vašemu výletu',
+  'home.amazingPlaces.title': 'Ubytování s\u00a0Amazing Places',
 };
 
 test('Czech homepage promo headings keep one-letter prepositions with the following word', () => {
@@ -41,6 +41,6 @@ test('old cached Czech translations cannot restore stranded prepositions', () =>
 
 test('the cached-translation safeguard leaves other languages and text untouched', () => {
   assert.equal(formatTitle('home.london.title', 'Muzikály v Londýne', 'sk'), 'Muzikály v Londýne');
-  assert.equal(formatTitle('home.stay.title', 'Unterkunft für Ihre Reise', 'de'), 'Unterkunft für Ihre Reise');
+  assert.equal(formatTitle('home.amazingPlaces.title', 'Unterkünfte mit Amazing Places', 'de'), 'Unterkünfte mit Amazing Places');
   assert.equal(formatTitle('home.london.text', 'Muzikály v Londýně', 'cs'), 'Muzikály v Londýně');
 });

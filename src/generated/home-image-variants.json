@@ -1,20 +1,26 @@
 {
-  "/images/accommodation/trustedstays-home-original.jpg": {
-    "width": 458,
-    "height": 348,
-    "originalBytes": 212239,
+  "/images/accommodation/amazing-places-home.webp": {
+    "width": 800,
+    "height": 800,
+    "originalBytes": 135388,
     "variants": [
       {
-        "src": "/images/home-cards/9dd1378824ec-320.webp",
+        "src": "/images/home-cards/3b3c35266229-320.webp",
         "width": 320,
-        "height": 243,
-        "bytes": 14670
+        "height": 320,
+        "bytes": 19258
       },
       {
-        "src": "/images/home-cards/9dd1378824ec-458.webp",
-        "width": 458,
-        "height": 348,
-        "bytes": 25526
+        "src": "/images/home-cards/3b3c35266229-640.webp",
+        "width": 640,
+        "height": 640,
+        "bytes": 62374
+      },
+      {
+        "src": "/images/home-cards/3b3c35266229-800.webp",
+        "width": 800,
+        "height": 800,
+        "bytes": 121384
       }
     ]
   },

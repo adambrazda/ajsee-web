@@ -4,6 +4,7 @@ export const AI_SEARCH_COPY = {
     label: 'Co byste chtěli zažít?',
     helper:
       'Napište, co chcete zažít. Místo, termín, typ akce i rozpočet můžete napsat jednou větou.',
+    homeHelper: 'Místo, termín, typ akce i rozpočet můžete zadat jednou větou.',
     placeholder:
       'Např. koncert v Praze tento víkend',
     submit:
@@ -27,6 +28,7 @@ export const AI_SEARCH_COPY = {
     label: 'What would you like to experience?',
     helper:
       'Tell us what you want to experience. Include a place, dates, event type and budget in one sentence.',
+    homeHelper: 'Enter a place, dates, event type and budget in one sentence.',
     placeholder:
       'E.g. concert in Prague this weekend',
     submit:
@@ -50,6 +52,7 @@ export const AI_SEARCH_COPY = {
     label: 'Was möchten Sie erleben?',
     helper:
       'Was möchten Sie erleben? Nennen Sie Ort, Zeitraum, Veranstaltungsart und Budget in einem Satz.',
+    homeHelper: 'Nennen Sie Ort, Zeitraum, Veranstaltungsart und Budget in einem Satz.',
     placeholder:
       'Z. B. Konzert in Prag am Wochenende',
     submit:
@@ -73,6 +76,7 @@ export const AI_SEARCH_COPY = {
     label: 'Čo by ste chceli zažiť?',
     helper:
       'Napíšte, čo chcete zažiť. Miesto, termín, typ akcie aj rozpočet môžete napísať jednou vetou.',
+    homeHelper: 'Miesto, termín, typ podujatia aj rozpočet môžete zadať jednou vetou.',
     placeholder:
       'Napr. koncert v Prahe tento víkend',
     submit:
@@ -96,6 +100,7 @@ export const AI_SEARCH_COPY = {
     label: 'Czego chcesz doświadczyć?',
     helper:
       'Napisz, czego chcesz doświadczyć. Podaj miejsce, termin, rodzaj wydarzenia i budżet w jednym zdaniu.',
+    homeHelper: 'Podaj miejsce, termin, rodzaj wydarzenia i budżet w jednym zdaniu.',
     placeholder:
       'Np. koncert w Pradze w ten weekend',
     submit:
@@ -119,6 +124,7 @@ export const AI_SEARCH_COPY = {
     label: 'Milyen élményt keresel?',
     helper:
       'Írd le, milyen élményt keresel. A helyszínt, az időpontot, az esemény típusát és a keretedet egy mondatban is megadhatod.',
+    homeHelper: 'A helyszínt, az időpontot, az esemény típusát és a keretedet egy mondatban is megadhatod.',
     placeholder:
       'Pl. koncert Prágában hétvégén',
     submit:
@@ -137,3 +143,8 @@ export const AI_SEARCH_COPY = {
       'A kérést nem sikerült feldolgozni. Próbáld másképp megfogalmazni.'
   }
 };
+
+export function getAiSearchCopy(locale, { home = false } = {}) {
+  const copy = AI_SEARCH_COPY[locale] ?? AI_SEARCH_COPY.cs;
+  return home ? { ...copy, helper: copy.homeHelper } : copy;
+}

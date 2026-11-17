@@ -64,7 +64,8 @@ test('built search shells survive initialization and reserve the interactive con
         ...routes.map(query => `${path}?${query}${CATALOGUE_RESULTS_HASH}`),
         path + CATALOGUE_FILTERS_HASH
       ]);
-      assert.equal(doc.querySelector('.home-hero-all').getAttribute('href'), path);
+      assert.equal(form.parentElement.querySelector(':scope > .home-hero-all')?.getAttribute('href'), path);
+      assert.equal(pending.querySelector('[data-ai-search-helper]').textContent, AI_SEARCH_COPY[lang].homeHelper);
     } else {
       assert.equal(quickChoices, null);
       assert.equal(doc.querySelectorAll('#filter-city').length, 1);

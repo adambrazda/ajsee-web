@@ -17,7 +17,7 @@ import {
   hasAnalyticsConsent
 } from '../utils/consent.js';
 
-import { AI_SEARCH_COPY as COPY } from './copy.js';
+import { getAiSearchCopy } from './copy.js';
 import { renderAiSearchIdleMarkup } from './idle-markup.js';
 import aiBrandMark from '../assets/ajsee-ai-mark.svg?raw';
 
@@ -707,8 +707,9 @@ export function initAiEventSearch({
     'false'
   );
 
+  const home = form.ownerDocument.body?.dataset.page === 'home';
   root.innerHTML = `
-    ${renderAiSearchIdleMarkup({ copy: COPY[normalizeLocale(getLocale())] || COPY.cs, brandMark: aiBrandMark })}
+    ${renderAiSearchIdleMarkup({ copy: getAiSearchCopy(normalizeLocale(getLocale()), { home }), brandMark: aiBrandMark })}
 
     <div
       class="ai-event-search__feedback"
@@ -970,9 +971,7 @@ export function initAiEventSearch({
 
     return {
       locale,
-      copy:
-        COPY[locale] ||
-        COPY.cs
+      copy: getAiSearchCopy(locale, { home })
     };
   };
 

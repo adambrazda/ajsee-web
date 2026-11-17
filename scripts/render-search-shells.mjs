@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { JSDOM } from 'jsdom';
-import { AI_SEARCH_COPY } from '../src/ai-search/copy.js';
+import { AI_SEARCH_COPY, getAiSearchCopy } from '../src/ai-search/copy.js';
 import { renderAiSearchIdleMarkup } from '../src/ai-search/idle-markup.js';
 import {
   getSharedEventFiltersMarkup,
@@ -14,7 +14,7 @@ const brandMark = await readFile(path.join(root, 'src/assets/ajsee-ai-mark.svg')
 
 // Prerender the same idle shell as the controller. Waiting for translations or
 // event data must not change the height of the search form after first paint.
-for (const [lang, copy] of Object.entries(AI_SEARCH_COPY)) {
+for (const lang of Object.keys(AI_SEARCH_COPY)) {
   const dictionary = JSON.parse(await readFile(path.join(root, `src/locales/${lang}.json`), 'utf8'));
   const translated = key => dictionary[key] ?? key.split('.').reduce((value, part) => value?.[part], dictionary);
   const files = lang === 'cs'
@@ -25,6 +25,7 @@ for (const [lang, copy] of Object.entries(AI_SEARCH_COPY)) {
     const output = path.join(root, 'dist', file);
     const dom = new JSDOM(await readFile(output, 'utf8'));
     const document = dom.window.document;
+    const home = document.body.dataset.page === 'home';
     const form = document.getElementById('events-filters-form');
     if (!form?.querySelector('[data-ai-static-intro]')) {
       throw new Error(`Missing static search shell in ${file}`);
@@ -37,7 +38,7 @@ for (const [lang, copy] of Object.entries(AI_SEARCH_COPY)) {
     intro.dataset.aiStaticIntro = '';
     intro.dataset.state = 'idle';
     intro.setAttribute('inert', '');
-    intro.innerHTML = renderAiSearchIdleMarkup({ copy, brandMark }) +
+    intro.innerHTML = renderAiSearchIdleMarkup({ copy: getAiSearchCopy(lang, { home }), brandMark }) +
       '<div class="ai-event-search__turnstile"></div>';
     const explanation = document.createElement('span');
     explanation.className = 'sr-only';
@@ -45,7 +46,7 @@ for (const [lang, copy] of Object.entries(AI_SEARCH_COPY)) {
     explanation.textContent = dictionary['ai-search-static-intro'];
     intro.append(explanation);
 
-    form.innerHTML = getSharedEventFiltersMarkup({ home: document.body.dataset.page === 'home', locale: lang });
+    form.innerHTML = getSharedEventFiltersMarkup({ home, locale: lang });
     form.dataset.ajseeSharedEventFilters = 'v1';
     for (const node of form.querySelectorAll('[data-i18n-key]')) {
       const text = translated(node.dataset.i18nKey);

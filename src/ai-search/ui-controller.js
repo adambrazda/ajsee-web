@@ -7,7 +7,8 @@ import {
   resolveAiSearchClientConfig
 } from './runtime-config.js';
 import {
-  trackAiSearchOutcome
+  trackAiSearchOutcome,
+  trackAiSearchStep
 } from './analytics.js';
 import {
   recordAiSearchFeedback
@@ -18,6 +19,7 @@ import {
 } from '../utils/consent.js';
 
 import { getAiSearchCopy } from './copy.js';
+import { recognizeFallbackFilters } from './fallback-filters.js';
 import { renderAiSearchIdleMarkup } from './idle-markup.js';
 import aiBrandMark from '../assets/ajsee-ai-mark.svg?raw';
 
@@ -273,331 +275,101 @@ function normalizeLocale(value) {
 }
 
 function loadTurnstile() {
-  if (
-    globalThis.turnstile &&
-    typeof globalThis.turnstile.render ===
-      'function'
-  ) {
-    return Promise.resolve(
-      globalThis.turnstile
-    );
+  if (typeof globalThis.turnstile?.render === 'function') {
+    return Promise.resolve(globalThis.turnstile);
   }
+  if (turnstileScriptPromise) return turnstileScriptPromise;
 
-  if (turnstileScriptPromise) {
-    return turnstileScriptPromise;
-  }
+  turnstileScriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = TURNSTILE_SCRIPT_URL;
+    script.async = true;
+    script.defer = true;
+    script.dataset.ajseeTurnstileApi = 'v1';
 
-  turnstileScriptPromise =
-    new Promise(
-      (resolve, reject) => {
-        const timeout =
-          globalThis.setTimeout(
-            () => {
-              turnstileScriptPromise =
-                null;
+    const timeout = globalThis.setTimeout(() => fail('TURNSTILE_LOAD_TIMEOUT'), 15_000);
+    function fail(code) {
+      globalThis.clearTimeout(timeout);
+      script.remove();
+      reject(new Error(code));
+    }
 
-              reject(
-                new Error(
-                  'TURNSTILE_LOAD_TIMEOUT'
-                )
-              );
-            },
-            15_000
-          );
-
-        const finish = () => {
-          if (
-            globalThis.turnstile &&
-            typeof globalThis.turnstile
-              .render ===
-              'function'
-          ) {
-            globalThis.clearTimeout(
-              timeout
-            );
-
-            resolve(
-              globalThis.turnstile
-            );
-
-            return;
-          }
-
-          globalThis.clearTimeout(
-            timeout
-          );
-
-          turnstileScriptPromise =
-            null;
-
-          reject(
-            new Error(
-              'TURNSTILE_UNAVAILABLE'
-            )
-          );
-        };
-
-        const fail = () => {
-          globalThis.clearTimeout(
-            timeout
-          );
-
-          turnstileScriptPromise =
-            null;
-
-          reject(
-            new Error(
-              'TURNSTILE_LOAD_FAILED'
-            )
-          );
-        };
-
-        const existing =
-          document.querySelector(
-            'script[src*="challenges.cloudflare.com/turnstile/v0/api.js"]'
-          );
-
-        if (existing) {
-          existing.addEventListener(
-            'load',
-            finish,
-            {
-              once:
-                true
-            }
-          );
-
-          existing.addEventListener(
-            'error',
-            fail,
-            {
-              once:
-                true
-            }
-          );
-
-          globalThis.setTimeout(
-            () => {
-              if (
-                globalThis.turnstile
-              ) {
-                finish();
-              }
-            },
-            0
-          );
-
-          return;
-        }
-
-        const script =
-          document.createElement(
-            'script'
-          );
-
-        script.src =
-          TURNSTILE_SCRIPT_URL;
-
-        script.async =
-          true;
-
-        script.defer =
-          true;
-
-        script.dataset
-          .ajseeTurnstileApi =
-          'v1';
-
-        script.addEventListener(
-          'load',
-          finish,
-          {
-            once:
-              true
-          }
-        );
-
-        script.addEventListener(
-          'error',
-          fail,
-          {
-            once:
-              true
-          }
-        );
-
-        (
-          document.head ||
-          document.documentElement
-        ).appendChild(
-          script
-        );
-      }
-    );
+    script.addEventListener('load', () => {
+      globalThis.clearTimeout(timeout);
+      if (typeof globalThis.turnstile?.render === 'function') resolve(globalThis.turnstile);
+      else fail('TURNSTILE_UNAVAILABLE');
+    }, { once: true });
+    script.addEventListener('error', () => fail('TURNSTILE_LOAD_FAILED'), { once: true });
+    document.head.appendChild(script);
+  }).catch(error => {
+    turnstileScriptPromise = null;
+    throw error;
+  });
 
   return turnstileScriptPromise;
 }
 
-function createTokenProvider(
-  container,
-  sitekey
-) {
-  let widgetId =
-    null;
+function createTokenProvider(container, sitekey) {
+  return function getToken({ signal, onInteractive }) {
+    return new Promise((resolve, reject) => {
+      let turnstile;
+      let widgetId;
+      let settled = false;
+      let timeout;
+      let interactive = false;
 
-  let pending =
-    null;
-
-  const settle = (
-    type,
-    value
-  ) => {
-    if (!pending) {
-      return;
-    }
-
-    const current =
-      pending;
-
-    pending =
-      null;
-
-    globalThis.clearTimeout(
-      current.timeout
-    );
-
-    if (type === 'resolve') {
-      current.resolve(
-        value
-      );
-
-      return;
-    }
-
-    current.reject(
-      value instanceof Error
-        ? value
-        : new Error(
-            String(
-              value ||
-              'TURNSTILE_FAILED'
-            )
-          )
-    );
-  };
-
-  return async function getToken() {
-    if (pending) {
-      throw new Error(
-        'TURNSTILE_BUSY'
-      );
-    }
-
-    const turnstile =
-      await loadTurnstile();
-
-    return new Promise(
-      (resolve, reject) => {
-        const timeout =
-          globalThis.setTimeout(
-            () => {
-              settle(
-                'reject',
-                new Error(
-                  'TURNSTILE_TIMEOUT'
-                )
-              );
-            },
-            30_000
-          );
-
-        pending = {
-          resolve,
-          reject,
-          timeout
-        };
-
-        try {
-          if (widgetId === null) {
-            widgetId =
-              turnstile.render(
-                container,
-                {
-                  sitekey,
-
-                  action:
-                    TURNSTILE_ACTION,
-
-                  execution:
-                    'execute',
-
-                  appearance:
-                    'interaction-only',
-
-                  theme:
-                    'auto',
-
-                  language:
-                    'auto',
-
-                  callback:
-                    token => {
-                      settle(
-                        'resolve',
-                        token
-                      );
-                    },
-
-                  'error-callback':
-                    errorCode => {
-                      settle(
-                        'reject',
-                        new Error(
-                          `TURNSTILE_ERROR_${errorCode}`
-                        )
-                      );
-
-                      return true;
-                    },
-
-                  'expired-callback':
-                    () => {
-                      settle(
-                        'reject',
-                        new Error(
-                          'TURNSTILE_EXPIRED'
-                        )
-                      );
-                    },
-
-                  'timeout-callback':
-                    () => {
-                      settle(
-                        'reject',
-                        new Error(
-                          'TURNSTILE_CHALLENGE_TIMEOUT'
-                        )
-                      );
-                    }
-                }
-              );
-          } else {
-            turnstile.reset(
-              widgetId
-            );
-          }
-
-          turnstile.execute(
-            container
-          );
-        } catch (error) {
-          settle(
-            'reject',
-            error
-          );
-        }
+      function removeWidget() {
+        if (widgetId == null) return;
+        try { turnstile.remove(widgetId); } catch { /* Already removed. */ }
+        widgetId = null;
       }
-    );
+
+      function finish(error, token) {
+        if (settled) return;
+        settled = true;
+        signal.removeEventListener('abort', abort);
+        globalThis.clearTimeout(timeout);
+        removeWidget();
+        if (error) reject(error);
+        else resolve(token);
+      }
+
+      const abort = () => finish(signal.reason);
+      if (signal.aborted) {
+        abort();
+        return;
+      }
+      signal.addEventListener('abort', abort, { once: true });
+
+      loadTurnstile().then(api => {
+        if (settled) return;
+        turnstile = api;
+        timeout = globalThis.setTimeout(() => finish(new Error('TURNSTILE_TIMEOUT')), 30_000);
+        widgetId = turnstile.render(container, {
+          sitekey,
+          action: TURNSTILE_ACTION,
+          execution: 'execute',
+          appearance: 'interaction-only',
+          theme: 'auto',
+          language: 'auto',
+          callback: token => finish(null, token),
+          'before-interactive-callback': () => {
+            if (settled || interactive) return;
+            interactive = true;
+            onInteractive();
+          },
+          'error-callback': () => {
+            finish(new Error('TURNSTILE_WIDGET_ERROR'));
+            return true;
+          },
+          'expired-callback': () => finish(new Error('TURNSTILE_EXPIRED')),
+          'timeout-callback': () => finish(new Error('TURNSTILE_CHALLENGE_TIMEOUT'))
+        });
+
+        if (settled) removeWidget();
+        else turnstile.execute(container);
+      }).catch(error => finish(error));
+    });
   };
 }
 
@@ -605,7 +377,8 @@ function setState(
   root,
   {
     state,
-    message = ''
+    message = '',
+    busy = state === 'loading'
   }
 ) {
   root.dataset.state =
@@ -613,9 +386,7 @@ function setState(
 
   root.setAttribute(
     'aria-busy',
-    state === 'loading'
-      ? 'true'
-      : 'false'
+    String(busy)
   );
 
   const status =
@@ -627,17 +398,6 @@ function setState(
     status.textContent =
       message;
   }
-}
-
-function temporaryFailure(
-  status
-) {
-  return (
-    status === 429 ||
-    status === 502 ||
-    status === 503 ||
-    status === 504
-  );
 }
 
 export function initAiEventSearch({
@@ -654,6 +414,7 @@ export function initAiEventSearch({
     null,
 
   onCatalogueSearch = null,
+  onFallback = null,
   initialQuery = ''
 } = {}) {
   const clientConfig =
@@ -762,6 +523,13 @@ export function initAiEventSearch({
       ></button>
     </div>
 
+    <button
+      class="ai-event-search__manual ai-event-search__clarification-action ai-event-search__clarification-action--edit"
+      type="button"
+      data-ai-search-manual
+      hidden
+    ></button>
+
     <div
       id="ajsee-ai-turnstile"
       class="ai-event-search__turnstile"
@@ -805,6 +573,20 @@ export function initAiEventSearch({
     root.querySelector(
       '[data-ai-search-turnstile]'
     );
+  const manualButton = root.querySelector('[data-ai-search-manual]');
+  let activeAttempt = null;
+
+  function endVerification(attempt) {
+    attempt.verifying = false;
+    if (document.activeElement === manualButton) input.focus();
+    manualButton.hidden = true;
+  }
+
+  manualButton.addEventListener('click', () => {
+    if (!activeAttempt?.verifying) return;
+    activeAttempt.manual = true;
+    activeAttempt.controller.abort();
+  });
 
   const clarificationActions =
     root.querySelector(
@@ -999,6 +781,7 @@ export function initAiEventSearch({
 
     badge.textContent =
       copy.badge;
+    manualButton.textContent = copy.manualFallback;
 
     input.placeholder =
       pendingClarification
@@ -1049,12 +832,7 @@ export function initAiEventSearch({
       queryOverride =
         null
     ) => {
-      if (
-        root.dataset.state ===
-        'loading'
-      ) {
-        return;
-      }
+      if (activeAttempt) return;
 
       const query =
         String(
@@ -1131,6 +909,12 @@ export function initAiEventSearch({
           ?.round ||
         0;
 
+      let fallbackRequest = null;
+      const attempt = { controller: new AbortController(), verifying: true, manual: false };
+      activeAttempt = attempt;
+      manualButton.hidden = typeof onFallback !== 'function';
+      if (hasAnalyticsConsent()) trackAiSearchStep('start', { locale }, globalThis);
+
       hideFeedback();
 
       submit.disabled =
@@ -1146,13 +930,20 @@ export function initAiEventSearch({
             'loading',
 
           message:
-            copy.loading
+            copy.verifying,
+          busy: false
         }
       );
 
       try {
         const turnstileToken =
-          await getTurnstileToken();
+          await getTurnstileToken({
+            signal: attempt.controller.signal,
+            onInteractive: () => {
+              if (hasAnalyticsConsent()) trackAiSearchStep('challenge', { locale }, globalThis);
+            }
+          });
+        if (activeAttempt !== attempt) return;
 
         if (
           !turnstileToken
@@ -1162,8 +953,10 @@ export function initAiEventSearch({
           );
         }
 
-        const requestController =
-          new AbortController();
+        endVerification(attempt);
+        setState(root, { state: 'loading', message: copy.loading });
+
+        const requestController = attempt.controller;
 
         const requestTimeout =
           globalThis.setTimeout(
@@ -1173,8 +966,8 @@ export function initAiEventSearch({
             AI_SEARCH_CLIENT_TIMEOUT_MS
           );
 
-        let response =
-          null;
+        let response;
+        let data;
 
         try {
           response =
@@ -1217,25 +1010,20 @@ export function initAiEventSearch({
                   })
               }
             );
+          telemetryStatus = response.status;
+          try {
+            data = await response.json();
+          } catch (error) {
+            if (requestController.signal.aborted) throw error;
+            data = null;
+          }
         } finally {
           globalThis.clearTimeout(
             requestTimeout
           );
         }
 
-        telemetryStatus =
-          response.status;
-
-        let data =
-          null;
-
-        try {
-          data =
-            await response.json();
-        } catch {
-          data =
-            null;
-        }
+        if (activeAttempt !== attempt) return;
 
         if (
           !response.ok ||
@@ -1262,8 +1050,10 @@ export function initAiEventSearch({
             intent: data.intent,
             needsClarification: data.needsClarification === true,
             query,
-            locale
+            locale,
+            signal: requestController.signal
           });
+          if (activeAttempt !== attempt) return;
           telemetryOutcome = outcome;
           telemetryRound = outcome === 'clarification' ? 1 : 0;
           setState(root, { state: 'idle' });
@@ -1409,11 +1199,13 @@ export function initAiEventSearch({
               data.intent,
               {
                 query,
-                locale
+                locale,
+                signal: requestController.signal
               }
             );
         }
 
+        if (activeAttempt !== attempt) return;
         const unsupportedPreferences =
           Array.isArray(
             applicationResult
@@ -1449,124 +1241,62 @@ export function initAiEventSearch({
           locale
         );
       } catch (error) {
-        const {
-          copy:
-            latestCopy
-        } =
-          getCopy();
+        if (activeAttempt !== attempt) return;
 
-        const clientTimedOut =
-          error?.name ===
-          'AbortError';
+        const reason = attempt.manual
+          ? 'manual'
+          : attempt.verifying
+            ? (/TIMEOUT$/.test(error?.message) ? 'verification-timeout' : 'verification-error')
+            : (error?.name === 'AbortError' ? 'service-timeout' : 'service-error');
 
-        telemetryOutcome =
-          'error';
-
-        const errorStatus =
-          Number(
-            error?.status
-          );
-
-        if (
-          Number.isFinite(
-            errorStatus
-          )
-        ) {
-          telemetryStatus =
-            errorStatus;
-        }
-
-        telemetryErrorCode =
-          clientTimedOut
+        telemetryOutcome = attempt.manual ? 'manual' : 'error';
+        if (!attempt.manual) {
+          telemetryErrorCode = error?.name === 'AbortError'
             ? 'client-timeout'
-            : (
-                Number.isFinite(
-                  errorStatus
-                ) &&
-                errorStatus >= 100
-                  ? 'api-error'
-                  : 'client-error'
-              );
+            : (Number(error?.status) >= 100 ? 'api-error' : 'client-error');
+        }
+        const fallbackQuery = requestClarificationContext?.originalQuery || query;
+        clearPendingClarification();
+        input.value = fallbackQuery;
+        refreshCopy();
+        setState(root, { state: 'error', message: getCopy().copy.generic });
 
-        setState(
-          root,
-          {
-            state:
-              'error',
-
-            message:
-              (
-                clientTimedOut ||
-                temporaryFailure(
-                  errorStatus
-                )
-              )
-                ? latestCopy
-                    .temporary
-                : latestCopy
-                    .generic
-          }
-        );
-        if (onCatalogueSearch) {
-          await onCatalogueSearch({ query, locale });
-          setState(root, { state: 'idle' });
+        if (typeof onFallback === 'function') {
+          fallbackRequest = { query: fallbackQuery, locale, reason };
         }
       } finally {
-        if (
-          telemetryOutcome
-        ) {
-          trackAiSearchOutcome(
-            {
-              outcome:
-                telemetryOutcome,
-
+        if (activeAttempt === attempt) {
+          activeAttempt = null;
+          if (attempt.verifying) endVerification(attempt);
+          if (telemetryOutcome) {
+            trackAiSearchOutcome({
+              outcome: telemetryOutcome,
               locale,
-
-              durationMs:
-                Date.now() -
-                startedAt,
-
-              httpStatus:
-                telemetryStatus,
-
-              errorCode:
-                telemetryErrorCode,
-
-              clarificationRound:
-                telemetryRound
-            },
-            globalThis,
-            {
-              pushToDataLayer:
-                hasAnalyticsConsent()
-            }
-          );
+              durationMs: Date.now() - startedAt,
+              httpStatus: telemetryStatus,
+              errorCode: telemetryErrorCode,
+              clarificationRound: telemetryRound
+            }, globalThis, {
+              pushToDataLayer: hasAnalyticsConsent()
+            });
+          }
+          submit.disabled = false;
+          const latest = getCopy();
+          submit.textContent = pendingClarification
+            ? getClarificationCopy(latest.locale).submit
+            : latest.copy.submit;
         }
-
-        const {
-          copy:
-            latestCopy
-        } =
-          getCopy();
-
-        submit.disabled =
-          false;
-
-        const latestLocale =
-          normalizeLocale(
-            getLocale?.()
-          );
-
-        const latestClarificationCopy =
-          getClarificationCopy(
-            latestLocale
-          );
-
-        submit.textContent =
-          pendingClarification
-            ? latestClarificationCopy
-                .submit
-            : latestCopy.submit;
+      }
+      if (fallbackRequest) {
+        if (hasAnalyticsConsent()) trackAiSearchStep('fallback', fallbackRequest, globalThis);
+        const filters = recognizeFallbackFilters(fallbackRequest.query, locale);
+        onFallback({
+          ...fallbackRequest,
+          filters,
+          fallbackFields: ['category', 'city'].filter(field => filters[field]),
+          notice: attempt.manual ? 'manual' : 'failed'
+        });
+        setState(root, { state: 'idle' });
       }
     };
 
@@ -1679,6 +1409,13 @@ export function initAiEventSearch({
 
   const resetClarificationFlow =
     () => {
+      if (activeAttempt) {
+        const attempt = activeAttempt;
+        activeAttempt = null;
+        attempt.controller.abort();
+        if (attempt.verifying) endVerification(attempt);
+        submit.disabled = false;
+      }
       clearPendingClarification();
       hideFeedback();
 

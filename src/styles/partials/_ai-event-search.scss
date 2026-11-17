@@ -322,6 +322,14 @@ form#events-filters-form
   outline-offset: 3px;
 }
 
+.ai-event-search__manual {
+  margin-top: 8px;
+}
+
+.ai-event-search__manual[hidden] {
+  display: none;
+}
+
 .ai-event-search__turnstile {
   width: 100%;
   min-height: 0;

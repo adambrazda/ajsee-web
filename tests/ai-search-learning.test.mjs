@@ -836,7 +836,7 @@ test(
 
       const applyStart =
         source.indexOf(
-          'async function applyAiEventSearchIntent(intent)'
+          'async function applyAiEventSearchIntent('
         );
 
       assert.notEqual(

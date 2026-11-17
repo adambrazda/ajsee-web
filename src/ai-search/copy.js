@@ -17,10 +17,9 @@ export const AI_SEARCH_COPY = {
       'Potřebuji ještě malé upřesnění.',
     success:
       'Dotaz jsem pochopil. AI spojení funguje; v dalším kroku použijeme rozpoznané filtry.',
-    temporary:
-      'AI vyhledávání je teď dočasně nedostupné. Zkuste to za chvíli.',
-    generic:
-      'Dotaz se nepodařilo zpracovat. Zkuste jej prosím upravit.'
+    verifying: 'Ověřujeme požadavek…',
+    manualFallback: 'Hledat pomocí filtrů',
+    generic: 'Automatické vyhledávání se teď nepodařilo dokončit. Pokračujte pomocí filtrů.'
   },
 
   en: {
@@ -41,10 +40,9 @@ export const AI_SEARCH_COPY = {
       'I need one more detail.',
     success:
       'I understood your request. The AI connection works; next we will apply the recognized filters.',
-    temporary:
-      'AI search is temporarily unavailable. Please try again shortly.',
-    generic:
-      'Your request could not be processed. Please try rephrasing it.'
+    verifying: 'Verifying your request…',
+    manualFallback: 'Search with filters',
+    generic: 'We couldn’t complete the automatic search. Continue with filters.'
   },
 
   de: {
@@ -65,10 +63,9 @@ export const AI_SEARCH_COPY = {
       'Ich brauche noch eine kleine Präzisierung.',
     success:
       'Die Anfrage wurde verstanden. Die KI-Verbindung funktioniert; als Nächstes wenden wir die erkannten Filter an.',
-    temporary:
-      'Die KI-Suche ist vorübergehend nicht verfügbar. Bitte versuchen Sie es gleich noch einmal.',
-    generic:
-      'Die Anfrage konnte nicht verarbeitet werden. Bitte formulieren Sie sie anders.'
+    verifying: 'Ihre Anfrage wird überprüft…',
+    manualFallback: 'Mit Filtern suchen',
+    generic: 'Die automatische Suche konnte nicht abgeschlossen werden. Suchen Sie mit Filtern weiter.'
   },
 
   sk: {
@@ -89,10 +86,9 @@ export const AI_SEARCH_COPY = {
       'Potrebujem ešte malé upresnenie.',
     success:
       'Požiadavku som pochopil. AI spojenie funguje; v ďalšom kroku použijeme rozpoznané filtre.',
-    temporary:
-      'AI vyhľadávanie je dočasne nedostupné. Skúste to o chvíľu.',
-    generic:
-      'Požiadavku sa nepodarilo spracovať. Skúste ju prosím upraviť.'
+    verifying: 'Overujeme požiadavku…',
+    manualFallback: 'Hľadať pomocou filtrov',
+    generic: 'Automatické vyhľadávanie sa teraz nepodarilo dokončiť. Pokračujte pomocou filtrov.'
   },
 
   pl: {
@@ -113,10 +109,9 @@ export const AI_SEARCH_COPY = {
       'Potrzebuję jeszcze jednej informacji.',
     success:
       'Zapytanie zostało zrozumiane. Połączenie AI działa; w kolejnym kroku zastosujemy rozpoznane filtry.',
-    temporary:
-      'Wyszukiwanie AI jest chwilowo niedostępne. Spróbuj ponownie za chwilę.',
-    generic:
-      'Nie udało się przetworzyć zapytania. Spróbuj sformułować je inaczej.'
+    verifying: 'Weryfikujemy Twoje zapytanie…',
+    manualFallback: 'Szukaj za pomocą filtrów',
+    generic: 'Nie udało się ukończyć wyszukiwania automatycznego. Kontynuuj za pomocą filtrów.'
   },
 
   hu: {
@@ -137,10 +132,9 @@ export const AI_SEARCH_COPY = {
       'Még egy kis pontosításra van szükségem.',
     success:
       'A kérést megértettem. Az AI-kapcsolat működik; a következő lépésben alkalmazzuk a felismert szűrőket.',
-    temporary:
-      'Az AI-keresés átmenetileg nem érhető el. Próbáld újra rövidesen.',
-    generic:
-      'A kérést nem sikerült feldolgozni. Próbáld másképp megfogalmazni.'
+    verifying: 'Ellenőrizzük a keresést…',
+    manualFallback: 'Keresés szűrőkkel',
+    generic: 'Az automatikus keresést nem sikerült befejezni. Folytassa a keresést szűrőkkel.'
   }
 };
 

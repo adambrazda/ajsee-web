@@ -5633,12 +5633,7 @@ function initFiltersFromURL() {
   syncLocalizedCityLabelFromCurrentState();
 }
 
-async function transferHomeAiSearch({ intent, query, locale, needsClarification }) {
-  if (!intent) {
-    navigateToCatalogue({ locale, query, notice: 'failed' });
-    return 'error';
-  }
-
+async function transferHomeAiSearch({ intent, query, locale, needsClarification, signal }) {
   const mapped = mapIntentToFilters(intent);
   const resolved = needsClarification || mapped.needsClarification
     ? { ...mapped, needsClarification: true }
@@ -5646,6 +5641,7 @@ async function transferHomeAiSearch({ intent, query, locale, needsClarification 
         resolveCity: createSuggestCitiesResolver({ locale }),
         getGeolocation: acquireGeolocation
       });
+  if (signal?.aborted) return;
   const plan = materializeSearchPlan(resolved);
   if (plan.readyToApply) {
     const filters = materializedPlanToRuntimeFilters(plan, { nearMeLabel: nearMeLabel() });
@@ -5807,7 +5803,8 @@ async function bootstrapMain() {
     initAiEventSearch({
       form: formEl,
       getLocale: () => currentLang,
-      onCatalogueSearch: transferHomeAiSearch
+      onCatalogueSearch: transferHomeAiSearch,
+      onFallback: navigateToCatalogue
     });
     bindHomeCatalogueSearch(formEl);
   }

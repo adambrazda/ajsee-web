@@ -1,3 +1,5 @@
+import { GA4_MEASUREMENT_ID } from '../utils/analytics-config.js';
+
 const EVENT_NAME =
   'ai_event_search_result';
 
@@ -16,7 +18,8 @@ const SUPPORTED_OUTCOMES =
     'success',
     'partial',
     'clarification',
-    'error'
+    'error',
+    'manual'
   ]);
 
 function normalizeLocale(value) {
@@ -60,7 +63,7 @@ function normalizePagePath(value) {
    * coarse so user-entered content
    * can never leak through a URL.
    */
-  return path === '/events'
+  return /^\/(?:(?:en|de|sk|pl|hu)\/)?events(?:\.html)?\/?$/.test(path)
     ? '/events'
     : '/';
 }
@@ -246,4 +249,31 @@ export function trackAiSearchOutcome(
   }
 
   return payload;
+}
+
+const STEP_EVENTS = {
+  start: 'ai_event_search_start',
+  challenge: 'ai_event_search_challenge',
+  fallback: 'ai_event_search_fallback'
+};
+
+const FALLBACK_REASONS = new Set([
+  'manual', 'verification-timeout', 'verification-error', 'service-timeout', 'service-error'
+]);
+
+// Use the same direct GA4 route as the site's other consent-gated diagnostics.
+export function trackAiSearchStep(step, { locale, reason } = {}, target = globalThis) {
+  if (!Object.hasOwn(STEP_EVENTS, step) || typeof target.gtag !== 'function') return;
+  const pagePath = normalizePagePath(target.location?.pathname);
+  try {
+    target.gtag('event', STEP_EVENTS[step], {
+      page_path: pagePath,
+      page_location: (target.location?.origin || '') + pagePath,
+      locale: normalizeLocale(locale),
+      ...(step === 'fallback' && FALLBACK_REASONS.has(reason) ? { fallback_reason: reason } : {}),
+      send_to: GA4_MEASUREMENT_ID
+    });
+  } catch {
+    // Analytics must never affect the search.
+  }
 }

@@ -6,6 +6,7 @@ import {
   createAiEventSearchHandler as createProductionAiEventSearchHandler,
   extractResponseOutput
 } from '../netlify/functions/ai-event-search.js';
+import { createEmptyFilterIntent } from '../src/ai-search/intent-schema.js';
 
 const allowTurnstile =
   async () => ({
@@ -835,7 +836,7 @@ test(
       await handler(
         makeRequest({
           query:
-            'Koncert v Praze',
+            'jazzový koncert v Praze',
 
           locale:
             'cs'
@@ -1155,7 +1156,7 @@ test(
       await handler(
         makeRequest({
           query:
-            'koncert Praha',
+            'jazzový koncert v Praze',
 
           locale:
             'cs'
@@ -1239,7 +1240,7 @@ test(
       await handler(
         makeRequest({
           query:
-            'koncert Praha',
+            'jazzový koncert v Praze',
 
           locale:
             'cs'
@@ -1324,7 +1325,7 @@ test(
       await handler(
         makeRequest({
           query:
-            'koncert Praha',
+            'jazzový koncert v Praze',
 
           locale:
             'cs'
@@ -1372,7 +1373,7 @@ test(
       await handler(
         makeRequest({
           query:
-            'koncert Praha',
+            'jazzový koncert v Praze',
 
           locale:
             'cs'
@@ -1760,4 +1761,66 @@ test('explicit currency corrects the model while preserving independent clarific
   assert.equal(unresolved.intent.unsupportedPreferences[0].currency, 'CZK');
   assert.equal(unresolved.needsClarification, true);
   assert.equal(unresolved.intent.clarification.question, intent.clarification.question);
+});
+
+test('an open-ended request returns guidance without a model call', async () => {
+  const handler = createAiEventSearchHandler({
+    env: {},
+    fetchImpl: async () => assert.fail('No model call is needed for an open-ended request')
+  });
+  const response = await handler(makeRequest({
+    query: 'Nevím, co hledám', locale: 'cs', turnstileToken: 'test-token'
+  }));
+  const result = await bodyJson(response);
+  assert.equal(response.status, 200);
+  assert.equal(result.needsDetails, true);
+  assert.equal(result.needsClarification, false);
+  assert.equal(result.intent.keyword, '');
+});
+
+test('a model response that only changes sort order returns guidance', async () => {
+  const handler = createAiEventSearchHandler({
+    env: { OPENAI_API_KEY: 'test-key' },
+    fetchImpl: async () => modelResponse({
+      ...createEmptyFilterIntent('cs'), sort: 'relevance', searchMode: 'discovery', keywordMatch: 'soft'
+    })
+  });
+  const response = await handler(makeRequest({
+    query: 'Rád bych se nějak zabavil', locale: 'cs', turnstileToken: 'test-token'
+  }));
+  const result = await bodyJson(response);
+  assert.equal(result.ok, true);
+  assert.equal(result.needsDetails, true);
+});
+
+test('the endpoint normalizes a city left misspelled by the model while preserving a genre', async () => {
+  const intent = validIntent();
+  intent.place = { type: 'city', label: 'Ostrvae', countryCode: 'CZ', nearby: false, radiusKm: null };
+  intent.keyword = 'jazz';
+  const handler = createAiEventSearchHandler({
+    env: { OPENAI_API_KEY: 'test-key' },
+    fetchImpl: async () => modelResponse(intent)
+  });
+  const response = await handler(makeRequest({
+    query: 'jazzový koncert v Ostrvae', locale: 'cs', turnstileToken: 'test-token'
+  }));
+  const result = await bodyJson(response);
+  assert.equal(result.intent.place.label, 'Ostrava');
+  assert.equal(result.intent.keyword, 'jazz');
+  assert.equal(result.needsDetails, undefined);
+});
+
+test('a catalogue city absent from the short alias list can be searched exactly', async () => {
+  const handler = createAiEventSearchHandler({
+    env: {},
+    loadCityCatalog: async () => [{ city: 'Břeclav', countryCode: 'CZ', aliases: ['Breclav'] }],
+    fetchImpl: async () => assert.fail('The city is a known catalogue location')
+  });
+  const response = await handler(makeRequest({
+    query: 'akce v Breclavi', locale: 'cs', turnstileToken: 'test-token'
+  }));
+  const result = await bodyJson(response);
+  assert.equal(result.ok, true);
+  assert.equal(result.intent.place.label, 'Břeclav');
+  assert.equal(result.needsDetails, undefined);
 });

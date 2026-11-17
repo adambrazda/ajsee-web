@@ -23,6 +23,9 @@
 [functions."event-detail-page"]
   included_files = ["dist/event-detail-assets/*"]
 
+[functions."ai-event-search"]
+  included_files = ["dist/data/event-cities.json"]
+
 # ------------ Edge Functions ------------
 # 1) JSON endpoint pro NearMe fallback (context.geo → JSON)
 # Specifická cesta musí být první.

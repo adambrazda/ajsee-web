@@ -21,6 +21,7 @@ import {
 import { getAiSearchCopy } from './copy.js';
 import { recognizeFallbackFilters } from './fallback-filters.js';
 import { renderAiSearchIdleMarkup } from './idle-markup.js';
+import { isOpenEndedSearch, needsSearchGuidance } from './search-guidance.js';
 import aiBrandMark from '../assets/ajsee-ai-mark.svg?raw';
 
 const AI_SEARCH_ENDPOINT =
@@ -472,6 +473,14 @@ export function initAiEventSearch({
   root.innerHTML = `
     ${renderAiSearchIdleMarkup({ copy: getAiSearchCopy(normalizeLocale(getLocale()), { home }), brandMark: aiBrandMark })}
 
+    <div class="ai-event-search__clarification-actions" data-ai-search-guidance hidden>
+      <button
+        class="ai-event-search__clarification-action ai-event-search__clarification-action--edit"
+        type="button"
+        data-ai-search-guidance-example
+      ></button>
+    </div>
+
     <div
       class="ai-event-search__feedback"
       data-ai-search-feedback
@@ -548,6 +557,8 @@ export function initAiEventSearch({
       '#ai-event-search-query'
     );
   input.value = initialQuery;
+  const guidance = root.querySelector('[data-ai-search-guidance]');
+  const guidanceExample = root.querySelector('[data-ai-search-guidance-example]');
 
   const submit =
     root.querySelector(
@@ -782,6 +793,7 @@ export function initAiEventSearch({
     badge.textContent =
       copy.badge;
     manualButton.textContent = copy.manualFallback;
+    guidanceExample.textContent = copy.guidanceExample;
 
     input.placeholder =
       pendingClarification
@@ -821,6 +833,15 @@ export function initAiEventSearch({
 
   refreshCopy();
 
+  const showSearchGuidance = () => {
+    clearPendingClarification();
+    hideFeedback();
+    refreshCopy();
+    guidance.hidden = false;
+    setState(root, { state: 'guidance', message: getCopy().copy.guidance });
+    input.focus();
+  };
+
   const getTurnstileToken =
     createTokenProvider(
       turnstileContainer,
@@ -833,6 +854,7 @@ export function initAiEventSearch({
         null
     ) => {
       if (activeAttempt) return;
+      guidance.hidden = true;
 
       const query =
         String(
@@ -895,6 +917,15 @@ export function initAiEventSearch({
       const startedAt =
         Date.now();
 
+      if (hasAnalyticsConsent()) trackAiSearchStep('start', { locale }, globalThis);
+      if (isOpenEndedSearch(query, locale)) {
+        showSearchGuidance();
+        trackAiSearchOutcome({ outcome: 'guidance', locale }, globalThis, {
+          pushToDataLayer: hasAnalyticsConsent()
+        });
+        return;
+      }
+
       let telemetryOutcome =
         '';
 
@@ -913,7 +944,6 @@ export function initAiEventSearch({
       const attempt = { controller: new AbortController(), verifying: true, manual: false };
       activeAttempt = attempt;
       manualButton.hidden = typeof onFallback !== 'function';
-      if (hasAnalyticsConsent()) trackAiSearchStep('start', { locale }, globalThis);
 
       hideFeedback();
 
@@ -1043,6 +1073,12 @@ export function initAiEventSearch({
             '';
 
           throw error;
+        }
+
+        if (data.needsDetails === true || needsSearchGuidance(data.intent, { needsClarification: data.needsClarification, locale })) {
+          telemetryOutcome = 'guidance';
+          showSearchGuidance();
+          return;
         }
 
         if (onCatalogueSearch) {
@@ -1348,6 +1384,17 @@ export function initAiEventSearch({
     }
   );
 
+  guidanceExample.addEventListener('click', () => {
+    input.value = getCopy().copy.guidanceExample;
+    void runSearch();
+  });
+
+  input.addEventListener('input', () => {
+    if (root.dataset.state !== 'guidance') return;
+    guidance.hidden = true;
+    setState(root, { state: 'idle' });
+  });
+
   clarificationYes
     ?.addEventListener(
       'click',
@@ -1418,6 +1465,7 @@ export function initAiEventSearch({
       }
       clearPendingClarification();
       hideFeedback();
+      guidance.hidden = true;
 
       input.value =
         '';

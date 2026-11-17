@@ -18,6 +18,7 @@ const SUPPORTED_OUTCOMES =
     'success',
     'partial',
     'clarification',
+    'guidance',
     'error',
     'manual'
   ]);

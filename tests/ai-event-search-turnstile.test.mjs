@@ -28,7 +28,7 @@ function makeRequest(
       body:
         JSON.stringify({
           query:
-            'koncert v Praze',
+            'jazzový koncert v Praze',
 
           locale:
             'cs',

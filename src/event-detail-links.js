@@ -1,22 +1,24 @@
 import { pragueEventDate } from '../shared/event-details/state.js';
 
 function updateEventDetailLinks() {
-  const plan = document.querySelector('[data-event-detail-plan]');
-  if (!plan) return;
-
   const archive = document.querySelector('[data-event-detail-archive]');
   const archivedItems = archive?.querySelector('ul');
+  if (!archivedItems) return;
   const today = pragueEventDate();
 
-  for (const item of plan.querySelectorAll('li[data-event-date]')) {
-    if (archivedItems && item.dataset.eventDate < today) {
-      archivedItems.append(item);
-    } else {
-      item.hidden = item.dataset.eventDate < today;
-    }
+  for (const card of document.querySelectorAll('[data-event-archive-date]')) {
+    if (card.dataset.eventArchiveDate >= today) continue;
+    const detail = card.querySelector('a.event-title-action[href]');
+    if (!detail) continue;
+    const item = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = detail.href;
+    link.textContent = detail.textContent.trim();
+    item.append(link);
+    archivedItems.append(item);
+    card.remove();
   }
-  plan.hidden = !plan.querySelector('li:not([hidden])');
-  if (archive) archive.hidden = !archivedItems?.childElementCount;
+  archive.hidden = !archivedItems.childElementCount;
 }
 
 updateEventDetailLinks();

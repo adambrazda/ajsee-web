@@ -10,30 +10,11 @@ const home = fs.readFileSync(
   'utf8'
 );
 
-test(
-  'homepage quick dates use the canonical date preset helpers',
-  () => {
-    assert.match(
-      home,
-      /detectDatePreset/
-    );
-
-    assert.match(
-      home,
-      /getDatePresetRange/
-    );
-
-    assert.match(
-      home,
-      /function syncQuickDateButtons/
-    );
-
-    assert.match(
-      home,
-      /function applyQuickDatePreset/
-    );
-  }
-);
+test('homepage sends quick choices to the catalogue and retains legacy shared URLs', () => {
+  assert.match(home, /hasCatalogueFilterParams\(new URLSearchParams\(location.search\)\)/);
+  assert.match(home, /navigateToCatalogue\(\{[\s\S]*?filters: currentFilters,[\s\S]*?replace: true/);
+  assert.match(home, /bindHomeCatalogueSearch\(formEl\)/);
+});
 
 test(
   'homepage carries family audience through state and form sync',
@@ -55,31 +36,11 @@ test(
   }
 );
 
-test(
-  'homepage wires every shared quick filter action',
-  () => {
-    for (const token of [
-      '#chipToday',
-      '#chipTomorrow',
-      '#chipThisWeek',
-      '#chipWeekend',
-      '#chipClear',
-      '#chipNearMe',
-      'family-audience-click',
-      'quick-near-me-click'
-    ]) {
-      assert.ok(
-        home.includes(token),
-        `missing quick-filter wiring: ${token}`
-      );
-    }
-
-    assert.match(
-      home,
-      /function resetAllEventFilters/
-    );
-  }
-);
+test('homepage location transfer uses the browser and provides a city fallback', () => {
+  assert.match(home, /coords = await acquireGeolocation\(\)/);
+  assert.match(home, /navigateToCatalogue\(\{ locale: currentLang, notice: 'location' \}\)/);
+  assert.match(home, /nearMeLat: coords.lat/);
+});
 
 test(
   'homepage audience participates in URL state and fetch identity',

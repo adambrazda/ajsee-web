@@ -1,5 +1,6 @@
 import { isHomeDiscovery } from './home-discovery.js';
-import './event-detail-links.js';
+import { hasCatalogueFilterParams, navigateToCatalogue, rememberHomepageSearchDraft } from './catalogue-search.js';
+import { DEFAULT_CONFIDENCE_THRESHOLD } from './ai-search/intent-schema.js';
 import { homeImageAttributes } from './home-images.js';
 import { loadHomeFeaturedSnapshot, renderHomeFeaturedMarkup } from './home-featured.js';
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
@@ -25,18 +26,13 @@ import {
 import {
   getRatesForPriceFilter
 } from './event-price-rates.js';
-import {
-  scrollToSharedEventResults,
-  setSharedEventFilterDetailsExpanded
-} from './event-filters.js';
+import './event-filters.js';
 import { hasAiRelevance, isSoftDiscovery, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
 import { formatEventDateTime } from './event-date-time.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
-  beginAiSearchLearningSession,
   recordAiSearchEventOpened,
-  recordAiSearchFilterState,
-  resetAiSearchLearningSession
+  recordAiSearchFilterState
 } from './ai-search/learning.js';
 import { mapIntentToFilters } from './ai-search/intent-to-filters.js';
 import { resolveIntentRequirements } from './ai-search/requirement-resolver.js';
@@ -45,7 +41,6 @@ import { createSuggestCitiesResolver } from './ai-search/city-resolver-adapter.j
 import { materializedPlanToRuntimeFilters } from './ai-search/runtime-filter-state.js';
 import {
   detectDatePreset,
-  getDatePresetRange,
   getEmptyStateRecommendation,
   getEmptyStateRecommendationLabel
 } from './events-filter-ux.js';
@@ -3150,8 +3145,7 @@ const QUICK_DATE_BUTTONS = [
   ['#chipToday', 'today'],
   ['#chipTomorrow', 'tomorrow'],
   ['#chipThisWeek', 'thisWeek'],
-  ['#chipWeekend', 'weekend'],
-  ['#homeQuickWeekend', 'weekend']
+  ['#chipWeekend', 'weekend']
 ];
 
 function setQuickButtonPressed(button, pressed) {
@@ -3164,12 +3158,6 @@ function syncQuickDateButtons() {
   for (const [selector, preset] of QUICK_DATE_BUTTONS) {
     const button = qs(selector);
     if (button) setQuickButtonPressed(button, activePreset === preset);
-  }
-}
-
-function syncHomeQuickCategoryButtons() {
-  for (const button of qsa('[data-home-quick-category]')) {
-    setQuickButtonPressed(button, button.dataset.homeQuickCategory === currentFilters.category);
   }
 }
 
@@ -3195,45 +3183,15 @@ function syncQuickAudienceButton() {
 
 function syncQuickNearMeButton() {
   const active = isNearMePlace(currentFilters);
-  for (const button of qsa('#chipNearMe, #homeQuickNearMe')) {
+  for (const button of qsa('#chipNearMe')) {
     setQuickButtonPressed(button, active);
   }
 }
 
 function syncQuickFilterButtons() {
   syncQuickDateButtons();
-  syncHomeQuickCategoryButtons();
   syncQuickAudienceButton();
   syncQuickNearMeButton();
-}
-
-async function applyQuickDatePreset(preset) {
-  const activePreset =
-    detectDatePreset(currentFilters);
-
-  if (activePreset === preset) {
-    currentFilters.dateFrom = '';
-    currentFilters.dateTo = '';
-  } else {
-    const range =
-      getDatePresetRange(preset);
-
-    currentFilters.dateFrom =
-      range.from;
-
-    currentFilters.dateTo =
-      range.to;
-  }
-
-  _userInteractedWithFilters = true;
-  _lastFetchSig = '';
-
-  setFilterInputsFromState();
-  updateToggleBadge();
-
-  await renderAndSync({
-    resetPage: true
-  });
 }
 
 async function resetAllEventFilters() {
@@ -3588,7 +3546,6 @@ function syncFiltersFromForm() {
     }
   }
 
-  syncHomeQuickCategoryButtons();
   updateDateComboLabel();
   updateToggleBadge();
 }
@@ -4090,43 +4047,6 @@ async function activateNearMeViaGeo(input, { allowIpFallback = true } = {}) {
   return true;
 }
 
-function bindQuickNearMeButton() {
-  const nearButtons = qsa('#chipNearMe, #homeQuickNearMe');
-  const hint = qs('[data-home-location-hint]');
-  for (const button of nearButtons) {
-    wireOnce(button, 'click', async () => {
-      if (nearButtons.some(control => control.getAttribute('aria-busy') === 'true')) return;
-
-      const showResults = button.id === 'homeQuickNearMe';
-      const cityInput = getCityInputEl();
-      _userInteractedWithFilters = true;
-      button.disabled = true;
-      button.setAttribute('aria-busy', 'true');
-      if (hint) hint.hidden = true;
-
-      try {
-        const applied = await activateNearMeViaGeo(cityInput, { allowIpFallback: !showResults });
-
-        if (showResults && !applied) {
-          if (hint) {
-            hint.hidden = false;
-            announce(hint.textContent.trim());
-          }
-          setSharedEventFilterDetailsExpanded(true);
-          cityInput?.focus();
-          return;
-        }
-
-        setFilterInputsFromState();
-        updateToggleBadge();
-        if (showResults) scrollToSharedEventResults();
-      } finally {
-        button.disabled = false;
-        button.removeAttribute('aria-busy');
-      }
-    }, 'quick-near-me-click');
-  }
-}
 function ensureNearMeInlineButton(input) {
   if (!input) return;
 
@@ -5713,343 +5633,70 @@ function initFiltersFromURL() {
   syncLocalizedCityLabelFromCurrentState();
 }
 
-async function getAiSearchGeolocation() {
-  try {
-    return await acquireGeolocation({
-      timeout:
-        15000,
+async function transferHomeAiSearch({ intent, query, locale, needsClarification }) {
+  if (!intent) {
+    navigateToCatalogue({ locale, query, notice: 'failed' });
+    return 'error';
+  }
 
-      highAccuracy:
-        false
-    });
-  } catch (browserError) {
+  const mapped = mapIntentToFilters(intent);
+  const resolved = needsClarification || mapped.needsClarification
+    ? { ...mapped, needsClarification: true }
+    : await resolveIntentRequirements(mapped, {
+        resolveCity: createSuggestCitiesResolver({ locale }),
+        getGeolocation: acquireGeolocation
+      });
+  const plan = materializeSearchPlan(resolved);
+  if (plan.readyToApply) {
+    const filters = materializedPlanToRuntimeFilters(plan, { nearMeLabel: nearMeLabel() });
+    const notice = plan.unsupportedPreferences.length ? 'partial' : '';
+    navigateToCatalogue({ locale, query, filters, notice });
+    return notice ? 'partial' : 'success';
+  }
+
+  const filters = {};
+  if (mapped.intent.confidence >= DEFAULT_CONFIDENCE_THRESHOLD) {
+    const { category, audience, dateFrom, dateTo, maxPrice, priceCurrency } = mapped.filters;
+    Object.assign(filters, { category, audience, dateFrom, dateTo, maxPrice, priceCurrency });
+    const { placeType, city, cityLabel, cityCountryCode, countryCode } = mapped.filters;
+    if (placeType === 'city' || placeType === 'country') {
+      Object.assign(filters, { placeType, city, cityLabel, cityCountryCode, countryCode });
+    }
+  }
+
+  const question = String(intent.clarification?.question || '');
+  const notice = !resolved.needsClarification && mapped.filters.placeType === 'nearMe' ? 'location' : 'partial';
+  navigateToCatalogue({ locale, query, filters, notice, question });
+  return resolved.needsClarification ? 'clarification' : 'partial';
+}
+
+function bindHomeCatalogueSearch(form) {
+  rememberHomepageSearchDraft(form.querySelector('#ai-event-search-query'));
+
+  const nearby = form.querySelector('#homeQuickNearMe');
+  wireOnce(nearby, 'click', async () => {
+    nearby.disabled = true;
+    nearby.setAttribute('aria-busy', 'true');
+    let coords;
     try {
-      return await fallbackGeoFromEdge();
+      coords = await acquireGeolocation();
     } catch {
-      const error =
-        new Error(
-          geoErrorMessage(
-            browserError
-          )
-        );
-
-      error.code =
-        'GEOLOCATION_UNAVAILABLE';
-
-      throw error;
-    }
-  }
-}
-
-async function applyAiEventSearchIntent(intent) {
-  /*
-   * A new AI interpretation starts a new learning
-   * session. This prevents a second AI search from
-   * being misclassified as a manual user correction.
-   */
-  resetAiSearchLearningSession();
-
-  const mapped =
-    mapIntentToFilters(
-      intent,
-      {
-        now:
-          new Date()
-      }
-    );
-
-  const resolveCity =
-    createSuggestCitiesResolver({
-      locale:
-        currentLang
-    });
-
-  const resolved =
-    await resolveIntentRequirements(
-      mapped,
-      {
-        resolveCity,
-
-        getGeolocation:
-          getAiSearchGeolocation
-      }
-    );
-
-  const materialized =
-    materializeSearchPlan(
-      resolved
-    );
-
-  if (
-    !materialized.ok ||
-    !materialized.readyToApply
-  ) {
-    const error =
-      new Error(
-        'AI search plan is not ready to apply.'
-      );
-
-    error.code =
-      materialized.reason ||
-      'AI_SEARCH_NOT_READY';
-
-    error.unresolvedRequirements =
-      Array.isArray(
-        resolved.unresolvedRequirements
-      )
-        ? resolved.unresolvedRequirements
-        : [];
-
-    throw error;
-  }
-
-  while (_renderInflight) await _renderCompletion;
-
-  currentFilters =
-    materializedPlanToRuntimeFilters(
-      materialized,
-      {
-        nearMeLabel:
-          nearMeLabel()
-      }
-    );
-
-  _userInteractedWithFilters =
-    true;
-
-  _lastFetchSig = '';
-
-  setFilterInputsFromState();
-  syncQuickFilterButtons();
-
-  await renderAndSync({
-    resetPage:
-      true
-  });
-
-  /*
-   * Start the session only after the AI-applied
-   * filters have rendered successfully.
-   *
-   * The initial AI render therefore cannot be
-   * recorded as a user correction.
-   */
-  const searchMetrics = _lastSearchResult?.filters === currentFilters
-    ? {
-        result_count: _lastSearchResult.count,
-        zero_results: _lastSearchResult.count === 0,
-        result_count_is_lower_bound: _lastSearchResult.hasMore,
-        search_mode: currentFilters.searchMode,
-        strict_keyword_present: currentFilters.keywordMatch === 'strict' && Boolean(currentFilters.keyword)
-      }
-    : null;
-
-  if (!searchMetrics) {
-    throw new Error('AI search results could not be loaded.');
-  }
-
-  beginAiSearchLearningSession({
-    searchMetrics,
-    locale:
-      currentLang,
-
-    page:
-      'home',
-
-    filters:
-      currentFilters
-  });
-
-  setSharedEventFilterDetailsExpanded(
-    false
-  );
-
-  scrollToSharedEventResults();
-
-  return {
-    resultCount: searchMetrics.result_count,
-    resultCountIsLowerBound: searchMetrics.result_count_is_lower_bound,
-    readyToApply:
-      true,
-
-    unsupportedPreferences:
-      Array.isArray(
-        materialized.unsupportedPreferences
-      )
-        ? materialized.unsupportedPreferences
-        : []
-  };
-}
-
-function bindFilterFormInteractions(formEl) {
-  if (!formEl) return;
-
-  const priceValidationInput =
-    qs('#filter-price-max');
-
-  if (priceValidationInput) {
-    wireOnce(
-      priceValidationInput,
-      'blur',
-      () => {
-        validatePriceFilterInput();
-      },
-      'price-validation-blur'
-    );
-
-    wireOnce(
-      priceValidationInput,
-      'input',
-      () => {
-        if (
-          priceValidationInput.getAttribute(
-            'aria-invalid'
-          ) === 'true'
-        ) {
-          validatePriceFilterInput();
-        }
-      },
-      'price-validation-input'
-    );
-  }
-
-
-  const category =
-    qs('#filter-category') ||
-    qs('#events-category-filter');
-
-  if (category) {
-    wireOnce(
-      category,
-      'change',
-      async () => {
-        _userInteractedWithFilters = true;
-
-        if (syncFiltersFromForm() === false) return;
-
-        await renderAndSync({
-          resetPage: true
-        });
-      },
-      'category-change'
-    );
-  }
-
-  const audience =
-    qs('#filter-audience-family');
-
-  if (audience) {
-    wireOnce(
-      audience,
-      'click',
-      async () => {
-        _userInteractedWithFilters = true;
-
-        if (!validatePriceFilterInput({ focus: true })) return;
-
-        const nextActive =
-          audience.getAttribute(
-            'aria-pressed'
-          ) !== 'true';
-
-        audience.setAttribute(
-          'aria-pressed',
-          String(nextActive)
-        );
-
-        audience.classList.toggle(
-          'is-active',
-          nextActive
-        );
-
-        if (syncFiltersFromForm() === false) return;
-
-        await renderAndSync({
-          resetPage: true
-        });
-      },
-      'family-audience-click'
-    );
-  }
-
-  for (const [selector, preset] of QUICK_DATE_BUTTONS) {
-    const button = qs(selector);
-    if (!button) continue;
-
-    wireOnce(button, 'click', async () => {
-      await applyQuickDatePreset(preset);
-      if (button.id === 'homeQuickWeekend') scrollToSharedEventResults();
-    }, `quick-date-${preset}`);
-  }
-
-  for (const button of qsa('[data-home-quick-category]', formEl)) {
-    wireOnce(button, 'click', async () => {
-      const category = button.dataset.homeQuickCategory;
-      currentFilters.category = currentFilters.category === category ? 'all' : category;
-      _userInteractedWithFilters = true;
-      setFilterInputsFromState();
-      await renderAndSync({ resetPage: true });
-      scrollToSharedEventResults();
-    }, 'home-quick-category-click');
-  }
-
-  const clearQuickFilters =
-    qs('#chipClear');
-
-  if (clearQuickFilters) {
-    wireOnce(
-      clearQuickFilters,
-      'click',
-      async () => {
-        await resetAllEventFilters();
-      },
-      'quick-clear-all'
-    );
-  }
-
-  syncQuickFilterButtons();
-
-  wireOnce(formEl, 'submit', async e => {
-    e.preventDefault();
-    _userInteractedWithFilters = true;
-
-    if (
-      !validatePriceFilterInput({
-        focus:
-          true
-      })
-    ) {
+      navigateToCatalogue({ locale: currentLang, notice: 'location' });
       return;
+    } finally {
+      nearby.disabled = false;
+      nearby.removeAttribute('aria-busy');
     }
-
-    if (syncFiltersFromForm() === false) return;
-    homeSearchRequested = true;
-
-    const city = getCityInputEl();
-
-    if (
-      city &&
-      !city.hasAttribute('readonly') &&
-      isNearMeTyped(city) &&
-      !(
-        currentFilters.nearMeLat &&
-        currentFilters.nearMeLon
-      )
-    ) {
-      await activateNearMeViaGeo(city);
-      if (syncFiltersFromForm() === false) return;
-    }
-
-    await renderAndSync({
-      resetPage: true
+    navigateToCatalogue({
+      locale: currentLang,
+      filters: {
+        placeType: 'nearMe',
+        nearMeLat: coords.lat,
+        nearMeLon: coords.lon,
+        nearMeRadiusKm: 50
+      }
     });
-
-    setSharedEventFilterDetailsExpanded(
-      false
-    );
-
-    scrollToSharedEventResults();
-  }, 'submit');
+  }, 'home-catalogue-nearby');
 }
 
 /* ───────── DOM Ready ───────── */
@@ -6131,6 +5778,15 @@ async function bootstrapMain() {
   currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
 
   initFiltersFromURL();
+  if (hasCatalogueFilterParams(new URLSearchParams(location.search))) {
+    navigateToCatalogue({
+      locale: currentLang,
+      filters: currentFilters,
+      query: currentFilters.searchMode ? currentFilters.keyword : '',
+      replace: true
+    });
+    return;
+  }
   await ensureTranslations(currentLang);
   prefetchTranslations();
   syncCookieBanner();
@@ -6147,28 +5803,14 @@ async function bootstrapMain() {
   safeInitLangDropdown();
 
   const formEl = qs('#events-filters-form');
-
-  initAiEventSearch({
-    form: formEl,
-    getLocale: () => currentLang,
-    onIntent: applyAiEventSearchIntent
-  });
-
-  upgradeSortToSegmented();
-  normalizeFilterFormUI();
-  installCitySheetObserver();
-  bindFilterFormInteractions(formEl);
-  bindQuickNearMeButton();
-
-  installDatePopoverScrollBridges();
-  bindDatePopoverGlue();
-  bindDatePopoverUnhideOnOpen();
-  installDatePopoverAutoHide();
-
-  initCityTypeahead(currentLang, { rebuild: false });
-  setFilterInputsFromState();
-  syncCitySheetUsability(document);
-  updateToggleBadge();
+  if (formEl) {
+    initAiEventSearch({
+      form: formEl,
+      getLocale: () => currentLang,
+      onCatalogueSearch: transferHomeAiSearch
+    });
+    bindHomeCatalogueSearch(formEl);
+  }
 
   wireOnce(window, 'AJSEE:langChanged', async e => {
     currentLang = e?.detail?.lang || getUILang();
@@ -6183,16 +5825,6 @@ async function bootstrapMain() {
 
     _lastFetchSig = '';
 
-    initCityTypeahead(currentLang, { rebuild: true });
-    setFilterInputsFromState();
-    syncCitySheetUsability(document);
-
-    installDatePopoverScrollBridges();
-    bindDatePopoverGlue();
-    bindDatePopoverUnhideOnOpen();
-    installDatePopoverAutoHide();
-    syncPopoverZIndex();
-
     fixHomeBlog();
     renderHomeBlog();
     updateHomeCtasWithLang();
@@ -6200,12 +5832,10 @@ async function bootstrapMain() {
     initLangDropdownCompat();
     safeInitLangDropdown();
 
-    await renderAndSync({ resetPage: true });
+    await renderEvents(currentLang, currentFilters);
   }, 'ajsee-lang-change-main');
 
-  // Initial recommendations use only the embedded small snapshot. Provider
-  // catalogues are requested through the shared session only after searching.
-  await renderAndSync({ resetPage: true });
+  await renderEvents(currentLang, currentFilters);
 }
 if (!G.flags.mainDomReadyBound) {
   G.flags.mainDomReadyBound = true;

@@ -1,3 +1,5 @@
+import { cataloguePath, CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH } from './catalogue-search.js';
+
 const SHARED_EVENT_FILTERS_MARKUP = `
   <div class="filters-toolbar" aria-label="Rychlé filtry">
     <div class="chips">
@@ -1143,34 +1145,21 @@ export function initSharedEventFilterDisclosure(
   return true;
 }
 
-export function getSharedEventFiltersMarkup() {
-  return SHARED_EVENT_FILTERS_MARKUP;
-}
-
-export function configureHomeQuickFilters(form, doc = form.ownerDocument) {
-  if (doc.body?.dataset.page !== 'home' || form.querySelector('.home-quick-filters')) return;
-
-  const toolbar = form.querySelector('.filters-toolbar');
-  const details = form.querySelector('#events-filters-details');
-  if (!toolbar || !details) return;
-
-  toolbar.insertAdjacentHTML('beforebegin', `
+export function getSharedEventFiltersMarkup({ home = false, locale = 'cs' } = {}) {
+  if (!home) return SHARED_EVENT_FILTERS_MARKUP;
+  const path = cataloguePath(locale);
+  return `
     <div class="filters-toolbar home-quick-filters" role="group" aria-label="Rychlé volby" data-i18n-aria="home.quickFilters.label">
       <div class="chips">
-        <button type="button" class="chip" id="homeQuickWeekend" data-i18n-key="filters.weekend" aria-pressed="false">Tento víkend</button>
-        <button type="button" class="chip" data-home-quick-category="concert" data-i18n-key="category-concert" aria-pressed="false">Koncerty</button>
-        <button type="button" class="chip" data-home-quick-category="theatre" data-i18n-key="category-theatre" aria-pressed="false">Divadlo</button>
-        <button type="button" class="chip" data-home-quick-category="sport" data-i18n-key="category-sport" aria-pressed="false">Sport</button>
-        <button type="button" class="chip" id="homeQuickNearMe" data-i18n-key="filters.nearMe" aria-pressed="false">V mém okolí</button>
+        <a class="chip" href="${path}?datePreset=weekend${CATALOGUE_RESULTS_HASH}" data-i18n-key="filters.weekend">Tento víkend</a>
+        <a class="chip" href="${path}?segment=concert${CATALOGUE_RESULTS_HASH}" data-i18n-key="category-concert">Koncerty</a>
+        <a class="chip" href="${path}?segment=theatre${CATALOGUE_RESULTS_HASH}" data-i18n-key="category-theatre">Divadlo</a>
+        <a class="chip" href="${path}?segment=sport${CATALOGUE_RESULTS_HASH}" data-i18n-key="category-sport">Sport</a>
+        <button type="button" class="chip" id="homeQuickNearMe" data-i18n-key="filters.nearMe">V mém okolí</button>
+        <a class="chip home-refine-filters" href="${path}${CATALOGUE_FILTERS_HASH}" data-i18n-key="home.quickFilters.refine">Upřesnit filtry</a>
       </div>
     </div>
-  `);
-  details.insertBefore(toolbar, details.querySelector('.filter-group'));
-  form.querySelector('#filter-city')?.closest('.filter-group')?.insertAdjacentHTML('beforeend', `
-    <p class="home-location-hint" data-home-location-hint data-i18n-key="home.quickFilters.locationUnavailable" hidden>
-      Polohu se nepodařilo zjistit. Vyberte město ručně.
-    </p>
-  `);
+  `;
 }
 
 export function ensureSharedEventFiltersMarkup(
@@ -1200,13 +1189,13 @@ export function ensureSharedEventFiltersMarkup(
     return form;
   }
 
-  form.innerHTML =
-    SHARED_EVENT_FILTERS_MARKUP;
+  form.innerHTML = getSharedEventFiltersMarkup({
+    home: doc.body?.dataset.page === 'home',
+    locale: doc.documentElement.lang
+  });
 
   form.dataset.ajseeSharedEventFilters =
     'v1';
-
-  configureHomeQuickFilters(form, doc);
 
   initSharedEventFilterDisclosure(
     form,

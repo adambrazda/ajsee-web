@@ -1,6 +1,5 @@
 import { isHomeDiscovery } from './home-discovery.js';
 import { hasCatalogueFilterParams, navigateToCatalogue, rememberHomepageSearchDraft } from './catalogue-search.js';
-import { DEFAULT_CONFIDENCE_THRESHOLD } from './ai-search/intent-schema.js';
 import { homeImageAttributes } from './home-images.js';
 import { loadHomeFeaturedSnapshot, renderHomeFeaturedMarkup } from './home-featured.js';
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
@@ -34,7 +33,7 @@ import {
   recordAiSearchEventOpened,
   recordAiSearchFilterState
 } from './ai-search/learning.js';
-import { mapIntentToFilters } from './ai-search/intent-to-filters.js';
+import { mapIntentToFilters, selectCatalogueRefinementFilters } from './ai-search/intent-to-filters.js';
 import { resolveIntentRequirements } from './ai-search/requirement-resolver.js';
 import { materializeSearchPlan } from './ai-search/search-plan-materializer.js';
 import { createSuggestCitiesResolver } from './ai-search/city-resolver-adapter.js';
@@ -5650,16 +5649,7 @@ async function transferHomeAiSearch({ intent, query, locale, needsClarification,
     return notice ? 'partial' : 'success';
   }
 
-  const filters = {};
-  if (mapped.intent.confidence >= DEFAULT_CONFIDENCE_THRESHOLD) {
-    const { category, audience, dateFrom, dateTo, maxPrice, priceCurrency } = mapped.filters;
-    Object.assign(filters, { category, audience, dateFrom, dateTo, maxPrice, priceCurrency });
-    const { placeType, city, cityLabel, cityCountryCode, countryCode } = mapped.filters;
-    if (placeType === 'city' || placeType === 'country') {
-      Object.assign(filters, { placeType, city, cityLabel, cityCountryCode, countryCode });
-    }
-  }
-
+  const filters = selectCatalogueRefinementFilters(mapped);
   const question = String(intent.clarification?.question || '');
   const notice = !resolved.needsClarification && mapped.filters.placeType === 'nearMe' ? 'location' : 'partial';
   navigateToCatalogue({ locale, query, filters, notice, question });

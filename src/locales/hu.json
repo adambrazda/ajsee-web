@@ -492,7 +492,7 @@
   "home.quickFilters.label": "Gyorsszűrők",
   "home.quickFilters.refine": "Szűrők pontosítása",
   "events.searchHandoff.location": "Nem sikerült meghatározni a tartózkodási helyét. Válasszon várost kézzel.",
-  "events.searchHandoff.partial": "Alkalmaztuk a felismert szűrőket. Ellenőrizze őket, és pótolja a hiányzó adatokat.",
+  "events.searchHandoff.partial": "Ellenőrizze a szűrőket, és adja meg a hiányzó részleteket.",
   "events.searchHandoff.failed": "Az automatikus keresést nem sikerült befejezni. Folytassa a keresést szűrőkkel.",
   "events.searchHandoff.manual": "A szűrőkkel válassza ki, mit szeretne megtalálni.",
   "events.searchHandoff.applied": "A következő szűrőket alkalmaztuk — {filters}. Megadhatja az időpontot és a költségkeretet.",

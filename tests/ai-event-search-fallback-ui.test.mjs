@@ -27,7 +27,7 @@ const result = (intent = { category: 'concert' }, needsClarification = false) =>
   ok: true, status: 200, json: async () => ({ ok: true, intent, needsClarification })
 });
 
-function fixture(testContext, { consent = false, widgetReady = true, fetchResult = result, home = false } = {}) {
+function fixture(testContext, { consent = false, widgetReady = true, fetchResult = () => result(), home = false } = {}) {
   const dom = new JSDOM('<html lang="cs"><body><form id="events-filters-form"></form></body></html>', {
     url: 'https://deploy-preview-1--ajsee-demo.netlify.app' + (home ? '/' : '/en/events/?city=Ostrava')
   });

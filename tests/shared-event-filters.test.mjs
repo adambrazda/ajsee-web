@@ -461,7 +461,7 @@ test(
   }
 );
 test(
-  'homepage and events scroll after explicit submit and AI intent application',
+  'result scrolling comes from explicit search, homepage quick choices or pagination',
   () => {
     for (
       const [name, source] of [
@@ -607,9 +607,12 @@ test(
       } else {
         assert.equal(
           allCalls.length,
-          2,
-          `${name} must scroll only from AI intent application and explicit submit`
+          5,
+          'homepage scrolls after AI, submit, quick weekend, quick category and successful quick nearby'
         );
+        assert.match(source, /if \(button\.id === 'homeQuickWeekend'\) scrollToSharedEventResults\(\)/);
+        assert.match(source, /if \(showResults\) scrollToSharedEventResults\(\)/);
+        assert.match(source, /for \(const button of qsa\('\[data-home-quick-category\]', formEl\)\)[\s\S]*?await renderAndSync\([\s\S]*?scrollToSharedEventResults\(\)/);
       }
     }
   }

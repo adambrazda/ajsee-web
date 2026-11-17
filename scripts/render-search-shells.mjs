@@ -5,6 +5,7 @@ import { JSDOM } from 'jsdom';
 import { AI_SEARCH_COPY } from '../src/ai-search/copy.js';
 import { renderAiSearchIdleMarkup } from '../src/ai-search/idle-markup.js';
 import {
+  configureHomeQuickFilters,
   getSharedEventFiltersMarkup,
   syncSharedEventFilterDisclosureCopy
 } from '../src/event-filters.js';
@@ -47,6 +48,7 @@ for (const [lang, copy] of Object.entries(AI_SEARCH_COPY)) {
 
     form.innerHTML = getSharedEventFiltersMarkup();
     form.dataset.ajseeSharedEventFilters = 'v1';
+    configureHomeQuickFilters(form);
     for (const node of form.querySelectorAll('[data-i18n-key]')) {
       const text = translated(node.dataset.i18nKey);
       if (typeof text === 'string' && text.trim()) node.textContent = text;

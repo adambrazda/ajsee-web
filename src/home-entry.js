@@ -1,4 +1,5 @@
 import { isHomeDiscovery } from './home-discovery.js';
+import './event-detail-links.js';
 import { homeImageAttributes } from './home-images.js';
 import { loadHomeFeaturedSnapshot, renderHomeFeaturedMarkup } from './home-featured.js';
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
@@ -3145,32 +3146,31 @@ function updateDateComboLabel() {
 if (!window.updateDateComboLabel) window.updateDateComboLabel = updateDateComboLabel;
 
 /* ───────── form sync ───────── */
+const QUICK_DATE_BUTTONS = [
+  ['#chipToday', 'today'],
+  ['#chipTomorrow', 'tomorrow'],
+  ['#chipThisWeek', 'thisWeek'],
+  ['#chipWeekend', 'weekend'],
+  ['#homeQuickWeekend', 'weekend']
+];
+
+function setQuickButtonPressed(button, pressed) {
+  button.classList.toggle('is-active', pressed);
+  button.setAttribute('aria-pressed', String(pressed));
+}
+
 function syncQuickDateButtons() {
-  const activePreset =
-    detectDatePreset(currentFilters);
-
-  [
-    ['#chipToday', 'today'],
-    ['#chipTomorrow', 'tomorrow'],
-    ['#chipThisWeek', 'thisWeek'],
-    ['#chipWeekend', 'weekend']
-  ].forEach(([selector, preset]) => {
+  const activePreset = detectDatePreset(currentFilters);
+  for (const [selector, preset] of QUICK_DATE_BUTTONS) {
     const button = qs(selector);
-    if (!button) return;
+    if (button) setQuickButtonPressed(button, activePreset === preset);
+  }
+}
 
-    const active =
-      activePreset === preset;
-
-    button.classList.toggle(
-      'is-active',
-      active
-    );
-
-    button.setAttribute(
-      'aria-pressed',
-      active ? 'true' : 'false'
-    );
-  });
+function syncHomeQuickCategoryButtons() {
+  for (const button of qsa('[data-home-quick-category]')) {
+    setQuickButtonPressed(button, button.dataset.homeQuickCategory === currentFilters.category);
+  }
 }
 
 function syncQuickAudienceButton() {
@@ -3194,35 +3194,15 @@ function syncQuickAudienceButton() {
 }
 
 function syncQuickNearMeButton() {
-  const button =
-    qs(
-      '#chipNearMe'
-    );
-
-  if (!button) {
-    return;
+  const active = isNearMePlace(currentFilters);
+  for (const button of qsa('#chipNearMe, #homeQuickNearMe')) {
+    setQuickButtonPressed(button, active);
   }
-
-  const active =
-    isNearMePlace(
-      currentFilters
-    );
-
-  button.setAttribute(
-    'aria-pressed',
-    active
-      ? 'true'
-      : 'false'
-  );
-
-  button.classList.toggle(
-    'is-active',
-    active
-  );
 }
 
 function syncQuickFilterButtons() {
   syncQuickDateButtons();
+  syncHomeQuickCategoryButtons();
   syncQuickAudienceButton();
   syncQuickNearMeButton();
 }
@@ -3608,6 +3588,7 @@ function syncFiltersFromForm() {
     }
   }
 
+  syncHomeQuickCategoryButtons();
   updateDateComboLabel();
   updateToggleBadge();
 }
@@ -4074,7 +4055,7 @@ function isNearMeTyped(input) {
   return candidates.some(x => normKey(x) === value);
 }
 
-async function activateNearMeViaGeo(input) {
+async function activateNearMeViaGeo(input, { allowIpFallback = true } = {}) {
   const setState = ({ lat, lon }) => {
     currentFilters.placeType = 'nearMe';
     currentFilters.city = '';
@@ -4094,69 +4075,57 @@ async function activateNearMeViaGeo(input) {
     const coords = await acquireGeolocation({ timeout: 15000, highAccuracy: false });
     setState(coords);
   } catch (err1) {
+    if (!allowIpFallback) return false;
     try {
       const coords = await fallbackGeoFromEdge();
       setState(coords);
     } catch {
       announce(geoErrorMessage(err1) + ' ' + t('geo.edgeFailed', '(Záložní určení podle IP nebylo k dispozici.)'));
-      return;
+      return false;
     }
   }
 
   await renderAndSync({ resetPage: true });
   expandFilters();
+  return true;
 }
 
 function bindQuickNearMeButton() {
-  const quickNearBtn =
-    document.getElementById(
-      'chipNearMe'
-    );
+  const nearButtons = qsa('#chipNearMe, #homeQuickNearMe');
+  const hint = qs('[data-home-location-hint]');
+  for (const button of nearButtons) {
+    wireOnce(button, 'click', async () => {
+      if (nearButtons.some(control => control.getAttribute('aria-busy') === 'true')) return;
 
-  if (!quickNearBtn) return;
-
-  wireOnce(
-    quickNearBtn,
-    'click',
-    async () => {
-      if (
-        quickNearBtn.getAttribute(
-          'aria-busy'
-        ) === 'true'
-      ) {
-        return;
-      }
-
-      const cityInput =
-        getCityInputEl();
-
+      const showResults = button.id === 'homeQuickNearMe';
+      const cityInput = getCityInputEl();
       _userInteractedWithFilters = true;
-
-      quickNearBtn.disabled = true;
-
-      quickNearBtn.setAttribute(
-        'aria-busy',
-        'true'
-      );
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+      if (hint) hint.hidden = true;
 
       try {
-        await activateNearMeViaGeo(
-          cityInput
-        );
+        const applied = await activateNearMeViaGeo(cityInput, { allowIpFallback: !showResults });
 
-        syncQuickNearMeButton();
+        if (showResults && !applied) {
+          if (hint) {
+            hint.hidden = false;
+            announce(hint.textContent.trim());
+          }
+          setSharedEventFilterDetailsExpanded(true);
+          cityInput?.focus();
+          return;
+        }
+
         setFilterInputsFromState();
         updateToggleBadge();
+        if (showResults) scrollToSharedEventResults();
       } finally {
-        quickNearBtn.disabled = false;
-
-        quickNearBtn.removeAttribute(
-          'aria-busy'
-        );
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
       }
-    },
-    'quick-near-me-click'
-  );
+    }, 'quick-near-me-click');
+  }
 }
 function ensureNearMeInlineButton(input) {
   if (!input) return;
@@ -6003,26 +5972,26 @@ function bindFilterFormInteractions(formEl) {
     );
   }
 
-  [
-    ['#chipToday', 'today'],
-    ['#chipTomorrow', 'tomorrow'],
-    ['#chipThisWeek', 'thisWeek'],
-    ['#chipWeekend', 'weekend']
-  ].forEach(([selector, preset]) => {
+  for (const [selector, preset] of QUICK_DATE_BUTTONS) {
     const button = qs(selector);
-    if (!button) return;
+    if (!button) continue;
 
-    wireOnce(
-      button,
-      'click',
-      async () => {
-        await applyQuickDatePreset(
-          preset
-        );
-      },
-      `quick-date-${preset}`
-    );
-  });
+    wireOnce(button, 'click', async () => {
+      await applyQuickDatePreset(preset);
+      if (button.id === 'homeQuickWeekend') scrollToSharedEventResults();
+    }, `quick-date-${preset}`);
+  }
+
+  for (const button of qsa('[data-home-quick-category]', formEl)) {
+    wireOnce(button, 'click', async () => {
+      const category = button.dataset.homeQuickCategory;
+      currentFilters.category = currentFilters.category === category ? 'all' : category;
+      _userInteractedWithFilters = true;
+      setFilterInputsFromState();
+      await renderAndSync({ resetPage: true });
+      scrollToSharedEventResults();
+    }, 'home-quick-category-click');
+  }
 
   const clearQuickFilters =
     qs('#chipClear');
@@ -6187,12 +6156,6 @@ async function bootstrapMain() {
 
   upgradeSortToSegmented();
   normalizeFilterFormUI();
-  // Keep the homepage introduction compact without removing any filter.
-  if (document.body.classList.contains('home-premium')) {
-    const toolbar = formEl?.querySelector('.filters-toolbar');
-    const details = formEl?.querySelector('#events-filters-details');
-    if (toolbar && details) details.insertBefore(toolbar, details.querySelector('.filter-group'));
-  }
   installCitySheetObserver();
   bindFilterFormInteractions(formEl);
   bindQuickNearMeButton();

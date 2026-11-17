@@ -92,3 +92,15 @@ body[data-page="events"] {
     }
   }
 }
+#events-upcoming-title,
+#events-filters-form {
+  scroll-margin-top: calc(var(--header-offset, 88px) + 12px);
+}
+
+.catalogue-refine-notice {
+  grid-column: 1 / -1;
+  margin-block: 4px 8px;
+  color: var(--aj-filter-label-text, inherit);
+}
+
+.catalogue-refine-notice p { margin-block: 0 6px; }

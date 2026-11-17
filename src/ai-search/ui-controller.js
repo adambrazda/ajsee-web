@@ -651,7 +651,10 @@ export function initAiEventSearch({
       document.documentElement.lang,
 
   onIntent =
-    null
+    null,
+
+  onCatalogueSearch = null,
+  initialQuery = ''
 } = {}) {
   const clientConfig =
     resolveAiSearchClientConfig({
@@ -775,6 +778,7 @@ export function initAiEventSearch({
     root.querySelector(
       '#ai-event-search-query'
     );
+  input.value = initialQuery;
 
   const submit =
     root.querySelector(
@@ -1254,6 +1258,19 @@ export function initAiEventSearch({
           throw error;
         }
 
+        if (onCatalogueSearch) {
+          const outcome = await onCatalogueSearch({
+            intent: data.intent,
+            needsClarification: data.needsClarification === true,
+            query,
+            locale
+          });
+          telemetryOutcome = outcome;
+          telemetryRound = outcome === 'clarification' ? 1 : 0;
+          setState(root, { state: 'idle' });
+          return;
+        }
+
         if (
           data.needsClarification
         ) {
@@ -1491,6 +1508,10 @@ export function initAiEventSearch({
                     .generic
           }
         );
+        if (onCatalogueSearch) {
+          await onCatalogueSearch({ query, locale });
+          setState(root, { state: 'idle' });
+        }
       } finally {
         if (
           telemetryOutcome

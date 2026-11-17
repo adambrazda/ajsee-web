@@ -9,6 +9,7 @@ import * as relevance from '../../src/search/event-relevance.js';
 import * as country from '../../src/event-country.js';
 import * as listing from '../../src/event-search-listing.js';
 import * as ux from '../../src/events-filter-ux.js';
+import * as catalogueSearch from '../../src/catalogue-search.js';
 
 // Exercise the real entry-point functions with their actual shared modules,
 // without bootstrapping identity, analytics, or live provider traffic.
@@ -16,7 +17,7 @@ export function entryRuntime(file, { query = '', locale = 'cs', cookie = '' } = 
   const source = readFileSync(new URL('../../src/' + file, import.meta.url), 'utf8');
   const body = parse(source, { sourceType: 'module', ecmaVersion: 'latest' }).body;
   const functions = body.filter(n => n.type === 'FunctionDeclaration');
-  const names = new Set(['CITY_SYNONYMS', 'LANGS', 'slugList', 'normKey', 'currentFilters', 'nearMeLabel', 'announce', '_lastEventsEmptyStateViewSignature', 'homeSearchRequested', 'QUICK_DATE_BUTTONS']);
+  const names = new Set(['CITY_SYNONYMS', 'LANGS', 'slugList', 'normKey', 'currentFilters', 'nearMeLabel', 'announce', '_lastEventsEmptyStateViewSignature', 'homeSearchRequested', 'QUICK_DATE_BUTTONS', 'catalogueTransfer']);
   const variables = body.filter(n => n.type === 'VariableDeclaration' && n.declarations.every(d => names.has(d.id.name)));
   const dom = new JSDOM(`<html lang="${locale}"><body><div id="eventsResultsCount"></div><div id="eventsList"></div>
     <form><select id="filter-category"><option value="all">all</option><option value="theatre">theatre</option></select>
@@ -26,7 +27,7 @@ export function entryRuntime(file, { query = '', locale = 'cs', cookie = '' } = 
   if (cookie) dom.window.document.cookie = cookie;
   dom.window.translations = JSON.parse(readFileSync(new URL(`../../src/locales/${locale}.json`, import.meta.url), 'utf8'));
   const renders = [];
-  const deps = { ...place, ...price, ...canonical, ...catalog, ...relevance, ...country, ...listing, ...ux,
+  const deps = { ...place, ...price, ...canonical, ...catalog, ...relevance, ...country, ...listing, ...ux, ...catalogueSearch,
     window: dom.window, document: dom.window.document, location: dom.window.location, history: dom.window.history,
     URL, URLSearchParams, console, requestAnimationFrame: () => 0,
     _userInteractedWithFilters: false, _lastFetchSig: '',

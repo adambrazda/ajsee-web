@@ -210,25 +210,14 @@ test(
         /from '\.\/ai-search\/search-plan-materializer\.js'/
       );
 
-      assert.match(
-        source,
-        /async function applyAiEventSearchIntent\(intent\)/
-      );
-
-      assert.match(
-        source,
-        /currentFilters\s*=\s*materializedPlanToRuntimeFilters\(/s
-      );
-
-      assert.match(
-        source,
-        /await renderAndSync\(\{\s*resetPage:\s*true\s*\}\)/s
-      );
-
-      assert.match(
-        source,
-        /onIntent:\s*applyAiEventSearchIntent/
-      );
+      if (source === homeEntry) {
+        assert.match(source, /onCatalogueSearch:\s*transferHomeAiSearch/);
+        assert.match(source, /navigateToCatalogue\(\{ locale, query, filters, notice \}\)/);
+      } else {
+        assert.match(source, /onIntent:\s*applyAiEventSearchIntent/);
+        assert.match(source, /currentFilters\s*=\s*materializedPlanToRuntimeFilters\(/);
+        assert.match(source, /await renderAndSync\(\{\s*resetPage:\s*true\s*\}\)/);
+      }
     }
 
     assert.match(
@@ -269,12 +258,12 @@ test(
 
       assert.match(
         source,
-        /createSuggestCitiesResolver\(\{[\s\S]*?locale:\s*currentLang/
+        /createSuggestCitiesResolver\(\{\s*locale(?:\s*:\s*currentLang)?/
       );
 
       assert.match(
         source,
-        /getGeolocation:\s*getAiSearchGeolocation/
+        /getGeolocation:\s*(?:getAiSearchGeolocation|acquireGeolocation)/
       );
 
       assert.match(

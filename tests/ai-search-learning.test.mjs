@@ -820,12 +820,11 @@ test(
 );
 
 test(
-  'home and events entrypoints preserve required learning hook order',
+  'catalogue records an AI learning session after rendering',
   () => {
     for (
       const file
       of [
-        'src/home-entry.js',
         'src/events-entry.js'
       ]
     ) {

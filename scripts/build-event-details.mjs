@@ -6,6 +6,8 @@ import { collectEventDetails } from '../shared/event-details/sources.js';
 import { LANGUAGES, detailPath, resolveEvent } from '../shared/event-details/state.js';
 import { renderEventPage, HEAD_TOKEN, BODY_TOKEN } from '../shared/event-details/page.js';
 import { validatePilot, escapeHtml, eventState } from './event-detail-pilot.mjs';
+import { renderSharedEventCard } from '../src/event-card.js';
+import { formatEventDateTime } from '../src/event-date-time.js';
 
 validatePilot(pilot.events);
 const assets = 'dist/event-detail-assets';
@@ -22,6 +24,42 @@ const archivedEvents = events.filter(event => !plannedEvents.includes(event));
 const renderLinkItems = (events, lang) => events.map(event =>
   `<li data-event-date="${event.startDate.slice(0, 10)}"><a href="${detailPath(event.slug, lang)}">${escapeHtml(event.title)} · ${escapeHtml(event.venue.city)}</a></li>`
 ).join('');
+
+function addPlannedCards(doc, lang, dictionary) {
+  const grid = doc.querySelector('[data-events-static] .events-list');
+  if (!grid) throw new Error(`Static catalogue cards missing for ${lang}`);
+  for (const event of plannedEvents) {
+    let card = Array.from(grid.children).find(node => node.dataset.eventId === event.id);
+    if (!card) {
+      const entry = {
+        id: event.id,
+        partner: event.partner,
+        title: event.title,
+        datetime: event.startDate,
+        venue: event.venue,
+        image: event.image.url,
+        priceFrom: event.price?.minimum ?? null,
+        currency: event.price?.currency ?? ''
+      };
+      grid.insertAdjacentHTML('beforeend', renderSharedEventCard({
+        event: entry,
+        locale: lang,
+        modalId: event.id,
+        titleRaw: event.title,
+        titleHtml: escapeHtml(event.title),
+        dateHtml: escapeHtml(formatEventDateTime(entry, lang)),
+        imageSrc: entry.image,
+        ticketsHref: event.tickets,
+        detailLabelHtml: escapeHtml(dictionary['event-details']),
+        ticketLabelHtml: escapeHtml(dictionary['event-tickets'])
+      }));
+      card = grid.lastElementChild;
+    }
+    const detailLink = card.querySelector('a.event-title-action[href]');
+    if (!detailLink) throw new Error(`Catalogue card ${event.id} is missing its detail link`);
+    card.dataset.eventArchiveDate = event.startDate.slice(0, 10);
+  }
+}
 await writeFile(assets + '/seed.json', JSON.stringify(snapshot));
 const template = await readFile('dist/templates/event-detail-preview.html', 'utf8');
 
@@ -50,35 +88,24 @@ for (const lang of LANGUAGES) {
     await mkdir(directory, { recursive: true });
     await writeFile(directory + 'index.html', html);
   }
-  // Keep upcoming events discoverable as crawlable links in the initial HTML.
-  const homepage = `dist/${lang === 'cs' ? '' : lang + '/'}index.html`;
+  // The catalogue's existing grid carries the links to individual event pages.
   const entryPages = lang === 'cs'
-    ? [homepage, 'dist/events.html', 'dist/events/index.html']
-    : [homepage, `dist/${lang}/events/index.html`];
-  const plannedItems = renderLinkItems(plannedEvents, lang);
+    ? ['dist/events.html', 'dist/events/index.html']
+    : [`dist/${lang}/events/index.html`];
+  const dictionary = JSON.parse(await readFile(`src/locales/${lang}.json`, 'utf8'));
   const archivedItems = renderLinkItems(archivedEvents, lang);
 
   for (const file of entryPages) {
     const html = new JSDOM(await readFile(file, 'utf8')), hdoc = html.window.document;
     const main = hdoc.querySelector('main');
     main.querySelectorAll('.event-detail-links').forEach(section => section.remove());
-    if (plannedItems) {
-      main.insertAdjacentHTML('beforeend', `
-        <section class="event-detail-links" data-event-detail-plan aria-labelledby="event-detail-links-title">
-          <h2 id="event-detail-links-title">${escapeHtml(COPY[lang].labels.plan)}</h2>
-          <ul>${plannedItems}</ul>
-        </section>
-      `);
-    }
-    // Keep the original detail URLs discoverable from the events catalogue.
-    if (file !== homepage) {
-      main.insertAdjacentHTML('beforeend', `
-        <details class="event-detail-links event-detail-links-archive" data-event-detail-archive${archivedItems ? '' : ' hidden'}>
-          <summary>${escapeHtml(COPY[lang].labels.archive)}</summary>
-          <ul>${archivedItems}</ul>
-        </details>
-      `);
-    }
+    addPlannedCards(hdoc, lang, dictionary);
+    main.insertAdjacentHTML('beforeend', `
+      <details class="event-detail-links event-detail-links-archive" data-event-detail-archive${archivedItems ? '' : ' hidden'}>
+        <summary>${escapeHtml(COPY[lang].labels.archive)}</summary>
+        <ul>${archivedItems}</ul>
+      </details>
+    `);
     await writeFile(file, html.serialize()); html.window.close();
   }
   shell.window.close(); page.window.close();

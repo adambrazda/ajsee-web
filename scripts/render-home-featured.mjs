@@ -28,8 +28,8 @@ async function renderDirectory(directory) {
     const { markup } = renderHomeFeaturedMarkup(snapshot, language, { translate: (key, fallback) => translations[key] || fallback });
     if (isEvents) {
       list.innerHTML = '<div data-events-static><p class="events-static-note">' + STATIC_NOTE[language] + '</p><div class="events-list">' + markup + '</div></div>';
-      list.querySelectorAll('[data-events-static] .event-image-action').forEach(node => node.remove());
-      list.querySelectorAll('[data-events-static] .event-title-action').forEach(button => {
+      list.querySelectorAll('[data-events-static] button.event-image-action').forEach(node => node.remove());
+      list.querySelectorAll('[data-events-static] button.event-title-action').forEach(button => {
         const span = doc.createElement('span'); span.className = button.className.replace('js-event-detail',''); span.innerHTML = button.innerHTML; button.replaceWith(span);
       });
       doc.querySelector('#upcoming-events > noscript')?.remove();
@@ -41,7 +41,7 @@ async function renderDirectory(directory) {
     }
     // Do not briefly show editorial cards as the results of a bookmarked search.
     const guard = doc.createElement('script');
-    guard.textContent = `if (['city','cityCc','country','countryCode','placeType','q','keyword','search','from','to','dateFrom','dateTo','segment','category','audience','sort','lat','lon','radius','priceMax','maxPrice','searchMode'].some(key => new URLSearchParams(location.search).has(key))) document.documentElement.setAttribute('data-home-search-requested','');`;
+    guard.textContent = `if (['#events-upcoming-title','#events-filters-form'].includes(location.hash) || ['city','cityCc','country','countryCode','placeType','q','keyword','search','from','to','dateFrom','dateTo','datePreset','segment','category','audience','sort','lat','lon','radius','priceMax','maxPrice','searchMode'].some(key => new URLSearchParams(location.search).has(key))) document.documentElement.setAttribute('data-home-search-requested','');`;
     doc.head.appendChild(guard);
     const guardStyle = doc.createElement('style');
     guardStyle.textContent = '[data-home-search-requested] #eventsList[data-home-static-featured], [data-home-search-requested] #eventsList [data-events-static] { visibility: hidden; }';

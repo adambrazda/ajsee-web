@@ -118,7 +118,6 @@ test(
     for (
       const relativePath of
       [
-        '../src/home-entry.js',
         '../src/events-entry.js'
       ]
     ) {
@@ -184,7 +183,6 @@ test(
     for (
       const relativePath of
       [
-        '../src/home-entry.js',
         '../src/events-entry.js'
       ]
     ) {

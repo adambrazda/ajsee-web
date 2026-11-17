@@ -1,20 +1,19 @@
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
 import './event-detail-links.js';
+import { CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH, catalogueHistoryRecord, readCatalogueTransfer, syncCatalogueFilterParams } from './catalogue-search.js';
 import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from './event-search-listing.js';
 import {
   applyGeoRadiusToApiFilters,
   isNearMePlace,
   readGeoPlaceFromSearchParams,
-  shouldPreserveCityRadiusInput,
-  syncPlaceSearchParams
+  shouldPreserveCityRadiusInput
 } from './event-place-runtime.js';
 
 import {
   defaultPriceCurrencyForLocale,
   hasActivePriceFilter,
   normalizePriceFilterState,
-  readPriceFilterFromSearchParams,
-  syncPriceFilterSearchParams
+  readPriceFilterFromSearchParams
 } from './event-price.js';
 
 
@@ -25,7 +24,7 @@ import {
   scrollToSharedEventResults,
   setSharedEventFilterDetailsExpanded
 } from './event-filters.js';
-import { hasAiRelevance, isSoftDiscovery, readAiSearchParams, syncAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
+import { hasAiRelevance, isSoftDiscovery, readAiSearchParams, updateManualKeyword } from './search/event-relevance.js';
 import { formatEventDateTime } from './event-date-time.js';
 import { initAiEventSearch } from './ai-search/ui-controller.js';
 import {
@@ -3403,82 +3402,14 @@ function syncFiltersFromForm() {
   updateToggleBadge();
 }
 
+let catalogueTransfer = null;
+
 function syncURLFromFilters() {
-  const u =
-    new URL(
-      location.href
-    );
-
-  const p =
-    u.searchParams;
-
-  syncPlaceSearchParams(
-    p,
-    currentFilters
-  );
-
-  syncPriceFilterSearchParams(
-    p,
-    currentFilters
-  );
-
-  currentFilters.dateFrom
-    ? p.set(
-        'from',
-        currentFilters.dateFrom
-      )
-    : p.delete('from');
-
-  currentFilters.dateTo
-    ? p.set(
-        'to',
-        currentFilters.dateTo
-      )
-    : p.delete('to');
-
-  (
-    currentFilters.category &&
-    currentFilters.category !==
-      'all'
-  )
-    ? p.set(
-        'segment',
-        currentFilters.category
-      )
-    : p.delete('segment');
-
-  currentFilters.audience ===
-    'family'
-      ? p.set('audience', 'family')
-      : p.delete('audience');
-
-  syncAiSearchParams(p, currentFilters);
-  p.delete('keyword');
-  p.delete('search');
-
-  currentFilters.keyword
-    ? p.set(
-        'q',
-        currentFilters.keyword
-      )
-    : p.delete('q');
-
-  (
-    currentFilters.sort &&
-    currentFilters.sort !==
-      'nearest'
-  )
-    ? p.set(
-        'sort',
-        currentFilters.sort
-      )
-    : p.delete('sort');
-
-  history.replaceState(
-    null,
-    '',
-    u.toString()
-  );
+  const url = new URL(location.href);
+  syncCatalogueFilterParams(url.searchParams, currentFilters);
+  catalogueTransfer = catalogueHistoryRecord(url, currentFilters, catalogueTransfer);
+  const state = catalogueTransfer ? { ...history.state, catalogueSearch: catalogueTransfer } : history.state;
+  history.replaceState(state, '', url.href);
 }
 
 function initFiltersFromURL() {
@@ -3601,6 +3532,12 @@ function initFiltersFromURL() {
 
     currentFilters.countryCode =
       urlCountryCc;
+  }
+
+  if (sp.get('datePreset') === 'weekend' && !sp.has('from') && !sp.has('to')) {
+    const weekend = getDatePresetRange('weekend');
+    currentFilters.dateFrom = weekend.from;
+    currentFilters.dateTo = weekend.to;
   }
 
   if (sp.get('from')) {
@@ -3800,6 +3737,7 @@ async function applyAiEventSearchIntent(intent) {
 
   resetEventsPager();
 
+  completeCatalogueRefinement();
   await renderAndSync({
     resetPage:
       true
@@ -4002,6 +3940,7 @@ function bindFilterFormInteractions(formEl) {
     }
 
     resetEventsPager();
+    completeCatalogueRefinement();
     await renderAndSync({ resetPage: true });
 
     setSharedEventFilterDetailsExpanded(
@@ -5723,6 +5662,61 @@ function updateHomeCtasWithLang() {
   }
 }
 
+function completeCatalogueRefinement() {
+  if (catalogueTransfer?.notice) {
+    catalogueTransfer.notice = '';
+    catalogueTransfer.question = '';
+    catalogueTransfer.learningRecorded = true;
+  }
+  qs('.catalogue-refine-notice')?.remove();
+  if (location.hash === CATALOGUE_FILTERS_HASH) {
+    const url = new URL(location.href);
+    url.hash = CATALOGUE_RESULTS_HASH;
+    history.replaceState(history.state, '', url.href);
+  }
+}
+
+function prepareCatalogueLanding(form, notice) {
+  const showFilters = location.hash === CATALOGUE_FILTERS_HASH || Boolean(notice);
+  const showResults = location.hash === CATALOGUE_RESULTS_HASH;
+  const panel = form.querySelector('#events-filters-details');
+
+  if (showResults && !showFilters) setSharedEventFilterDetailsExpanded(false);
+  if (!showFilters || !panel) return showResults ? qs('#events-upcoming-title') : null;
+
+  setSharedEventFilterDetailsExpanded(true);
+  if (notice) {
+    const message = document.createElement('div');
+    message.className = 'catalogue-refine-notice';
+    const status = document.createElement('p');
+    status.setAttribute('role', 'status');
+    status.textContent = t(`events.searchHandoff.${notice}`);
+    message.append(status);
+
+    if (notice === 'partial' && catalogueTransfer?.question) {
+      const question = document.createElement('p');
+      question.textContent = catalogueTransfer.question;
+      message.append(question);
+    }
+
+    const input = form.querySelector('#ai-event-search-query');
+    if (catalogueTransfer?.query && input) {
+      const retry = document.createElement('button');
+      retry.type = 'button';
+      retry.className = 'btn btn-ghost catalogue-ai-retry';
+      retry.textContent = t('events.searchHandoff.retry');
+      retry.addEventListener('click', () => {
+        setSharedEventFilterDetailsExpanded(false);
+        input.focus();
+      });
+      message.append(retry);
+    }
+
+    panel.querySelector('[data-filter-sheet-header]')?.after(message);
+  }
+  return notice === 'location' ? getCityInputEl() || panel : panel;
+}
+
 /* ───────── bootstrap ───────── */
 async function bootstrapMain() {
   ensureRuntimeStyles();
@@ -5745,6 +5739,14 @@ async function bootstrapMain() {
 
   currentFilters.countryCode = defaultCountryCodeForLang(currentLang);
   initFiltersFromURL();
+  catalogueTransfer = readCatalogueTransfer();
+  if (catalogueTransfer?.privateFilters) {
+    Object.assign(currentFilters, catalogueTransfer.privateFilters);
+    syncLocalizedCityLabelFromCurrentState();
+  }
+  const missingLocation = new URLSearchParams(location.search).get('placeType') === 'nearMe'
+    && !isNearMePlace(currentFilters);
+  const handoffNotice = catalogueTransfer?.notice || (missingLocation ? 'location' : '');
 
   await ensureTranslations(currentLang);
   prefetchTranslations();
@@ -5766,7 +5768,8 @@ async function bootstrapMain() {
   initAiEventSearch({
     form: formEl,
     getLocale: () => currentLang,
-    onIntent: applyAiEventSearchIntent
+    onIntent: applyAiEventSearchIntent,
+    initialQuery: catalogueTransfer?.query || ''
   });
 
   /* AJSEE_KEEP_EVENTS_QUICK_FILTERS_BOOTSTRAP_V1
@@ -5791,6 +5794,7 @@ async function bootstrapMain() {
   setFilterInputsFromState();
   syncCitySheetUsability(document);
   updateToggleBadge();
+  const landingTarget = formEl ? prepareCatalogueLanding(formEl, handoffNotice) : null;
 
   wireOnce(window, 'AJSEE:langChanged', async e => {
     currentLang = e?.detail?.lang || getUILang();
@@ -5827,6 +5831,29 @@ async function bootstrapMain() {
   }, 'ajsee-lang-change-main');
 
   await renderAndSync({ resetPage: true });
+
+  if (catalogueTransfer?.query && !catalogueTransfer.notice && !catalogueTransfer.learningRecorded
+    && _lastSearchResult?.filters === currentFilters) {
+    beginAiSearchLearningSession({
+      searchMetrics: {
+        result_count: _lastSearchResult.count,
+        zero_results: _lastSearchResult.count === 0,
+        result_count_is_lower_bound: _lastSearchResult.hasMore,
+        search_mode: currentFilters.searchMode,
+        strict_keyword_present: currentFilters.keywordMatch === 'strict' && Boolean(currentFilters.keyword)
+      },
+      locale: currentLang,
+      page: 'events',
+      filters: currentFilters
+    });
+    catalogueTransfer.learningRecorded = true;
+    syncURLFromFilters();
+  }
+
+  if (landingTarget?.getClientRects().length) {
+    landingTarget.focus({ preventScroll: true });
+    if (landingTarget.id === 'events-upcoming-title') landingTarget.scrollIntoView({ block: 'start' });
+  }
 }
 
 if (!G.flags.mainDomReadyBound) {

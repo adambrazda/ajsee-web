@@ -166,13 +166,10 @@ test(
 
 
 test(
-  'successful AI application keeps manual filter details closed on both pages',
+  'successful AI application closes manual filter details in the catalogue',
   () => {
     for (
-      const source of [
-        homeEntry,
-        eventsEntry
-      ]
+      const source of [eventsEntry]
     ) {
       const aiStart =
         source.indexOf(

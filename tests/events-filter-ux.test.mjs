@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
+import { syncCatalogueFilterParams } from '../src/catalogue-search.js';
 
 import {
   detectDatePreset,
@@ -303,10 +304,10 @@ test('events page exposes film and family filters with URL state', () => {
     /<label[^>]*for="filter-audience-family"/
   );
 
-  assert.match(
-    entry,
-    /p\.set\('audience', 'family'\)/
-  );
+  const params = new URLSearchParams();
+  syncCatalogueFilterParams(params, { category: 'film', audience: 'family' });
+  assert.equal(params.get('segment'), 'film');
+  assert.equal(params.get('audience'), 'family');
 
   assert.match(
     entry,

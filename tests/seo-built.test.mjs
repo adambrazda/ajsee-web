@@ -14,6 +14,7 @@ import { buildStaticMain } from '../scripts/build-mg.mjs';
 import { AMAZING_PLACES_BOOKING_URL, AMAZING_PLACES_VOUCHER_URL } from '../shared/amazing-places.js';
 import { detailPath, resolveEvent } from '../shared/event-details/state.js';
 import { eventState } from '../scripts/event-detail-pilot.mjs';
+import { cataloguePath, CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH } from '../src/catalogue-search.js';
 const LANGS=['cs','en','de','sk','pl','hu'],ORIGIN='https://ajsee.cz';
 const RETIRED=['koncert-coldplay-praha-2025','praha-shakespeare-divadlo-2025','recenze-budapest-sziget-festival-2025'];
 const prefix=lang=>lang==='cs'?'':lang+'/';
@@ -44,24 +45,30 @@ test('built search shells survive initialization and reserve the interactive con
     assert.equal(pending.querySelector('[data-ai-search-label]').textContent,AI_SEARCH_COPY[lang].label);
     assert.equal(query.placeholder,AI_SEARCH_COPY[lang].placeholder);
     assert.equal(pending.querySelector('[data-ai-search-submit]').textContent,AI_SEARCH_COPY[lang].submit);
-    assert.equal(doc.querySelectorAll('#filter-city').length,1);
-    assert.equal(doc.querySelectorAll('#chipToday').length,1);
     const quickChoices = form.querySelector(':scope > .home-quick-filters');
     if (route === 'index.html') {
       const copy = JSON.parse(fs.readFileSync(`src/locales/${lang}.json`, 'utf8'));
       assert.equal(clean(doc.querySelector('.home-intro').textContent), `${copy['home.hero.lead1']} ${copy['home.hero.lead2']}`);
       assert.equal(quickChoices.getAttribute('aria-label'), copy['home.quickFilters.label']);
       assert.deepEqual(
-        [...quickChoices.querySelectorAll('button')].map(button => clean(button.textContent)),
-        ['filters.weekend', 'category-concert', 'category-theatre', 'category-sport', 'filters.nearMe'].map(key =>
+        [...quickChoices.querySelectorAll('button, a')].map(button => clean(button.textContent)),
+        ['filters.weekend', 'category-concert', 'category-theatre', 'category-sport', 'filters.nearMe', 'home.quickFilters.refine'].map(key =>
           copy[key] ?? key.split('.').reduce((value, part) => value?.[part], copy)
         )
       );
       assert.equal(quickChoices.previousElementSibling, pending);
-      assert.ok(form.querySelector('#events-filters-details #chipWeekend'));
-      assert.ok(form.querySelector('#events-filters-details #chipNearMe'));
+      assert.equal(form.querySelector('#events-filters-details'), null);
+      const path = cataloguePath(lang);
+      const routes = ['datePreset=weekend', 'segment=concert', 'segment=theatre', 'segment=sport'];
+      assert.deepEqual([...quickChoices.querySelectorAll('a')].map(a => a.getAttribute('href')), [
+        ...routes.map(query => `${path}?${query}${CATALOGUE_RESULTS_HASH}`),
+        path + CATALOGUE_FILTERS_HASH
+      ]);
+      assert.equal(doc.querySelector('.home-hero-all').getAttribute('href'), path);
     } else {
       assert.equal(quickChoices, null);
+      assert.equal(doc.querySelectorAll('#filter-city').length, 1);
+      assert.equal(doc.querySelectorAll('#chipToday').length, 1);
     }
     ensureSharedEventFiltersMarkup(doc);
     assert.equal(form.querySelector('[data-ai-static-intro]'),pending);
@@ -70,7 +77,7 @@ test('built search shells survive initialization and reserve the interactive con
   }
 });
 
-test('planning links promote upcoming terms and keep earlier details reachable from the event archive', () => {
+test('catalogue cards and the archive make event details reachable without the planning block', () => {
   const pilot = JSON.parse(fs.readFileSync('content/event-detail-pilot.json', 'utf8'));
   const snapshot = JSON.parse(fs.readFileSync('dist/event-detail-assets/seed.json', 'utf8'));
   const now = new Date(snapshot.generatedAt);
@@ -84,8 +91,11 @@ test('planning links promote upcoming terms and keep earlier details reachable f
       const links = (dom, selector) =>
         [...dom.window.document.querySelectorAll(selector + ' a')].map(link => link.getAttribute('href'));
       const expected = entries => entries.map(event => detailPath(event.slug, lang));
-      assert.deepEqual(links(home, '[data-event-detail-plan]'), expected(planned));
-      assert.deepEqual(links(listing, '[data-event-detail-plan]'), expected(planned));
+      assert.equal(home.window.document.querySelector('[data-event-detail-plan]'), null);
+      assert.equal(listing.window.document.querySelector('[data-event-detail-plan]'), null);
+      const detailLinks = [...listing.window.document.querySelectorAll('[data-event-archive-date] a.event-title-action')]
+        .map(link => link.getAttribute('href'));
+      assert.deepEqual(detailLinks.sort(), expected(planned).sort());
       assert.deepEqual(links(listing, '[data-event-detail-archive]'), expected(archived));
       assert.equal(home.window.document.querySelector('[data-event-detail-archive]'), null);
       const archive = listing.window.document.querySelector('[data-event-detail-archive]');

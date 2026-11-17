@@ -492,7 +492,7 @@
   "home.quickFilters.label": "Rychlé volby",
   "home.quickFilters.refine": "Upřesnit filtry",
   "events.searchHandoff.location": "Polohu se nepodařilo zjistit. Vyberte město ručně.",
-  "events.searchHandoff.partial": "Část zadání se podařilo převést na filtry. Zkontrolujte je a doplňte, co chybí.",
+  "events.searchHandoff.partial": "Zkontrolujte filtry a doplňte, co v hledání chybí.",
   "events.searchHandoff.failed": "Automatické vyhledávání se teď nepodařilo dokončit. Pokračujte pomocí filtrů.",
   "events.searchHandoff.manual": "Pokračujte pomocí filtrů a vyberte, co chcete najít.",
   "events.searchHandoff.applied": "Použili jsme tyto filtry — {filters}. Termín a rozpočet můžete doplnit.",

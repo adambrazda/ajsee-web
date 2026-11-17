@@ -37,6 +37,21 @@ function mentionedCity(words, start) {
   return null;
 }
 
+function cityFilterFields(city, locale) {
+  const countryCode = guessCountryCodeFromCity(city);
+  return { placeType: 'city', city, cityLabel: labelForCanon(city, locale), cityCountryCode: countryCode, countryCode };
+}
+
+export function recognizeCategoryAndCity(query, locale) {
+  const words = normalize(query).split(/\s+/);
+  const category = Object.entries(CATEGORY_WORDS).find(([, pattern]) => pattern.test(words[0]))?.[0];
+  if (!category || words.length < 2) return null;
+
+  const start = CITY_PREPOSITION.test(words[1]) ? 2 : 1;
+  const place = mentionedCity(words, start);
+  return place?.end === words.length ? { category, ...cityFilterFields(place.city, locale) } : null;
+}
+
 export function recognizeFallbackFilters(query, locale) {
   const words = normalize(query).match(/[a-z0-9]+/g) || [];
   if (words.some(word => EXCLUSION.test(word))) return {};
@@ -60,10 +75,7 @@ export function recognizeFallbackFilters(query, locale) {
 
   if (cities.size === 1 && !ambiguousPlace) {
     const [city] = cities;
-    const countryCode = guessCountryCodeFromCity(city);
-    Object.assign(filters, {
-      placeType: 'city', city, cityLabel: labelForCanon(city, locale), cityCountryCode: countryCode, countryCode
-    });
+    Object.assign(filters, cityFilterFields(city, locale));
   }
   return filters;
 }

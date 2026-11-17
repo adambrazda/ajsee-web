@@ -1690,3 +1690,74 @@ test(
     );
   }
 );
+
+test('explicit homepage search is resolved after verification without an AI clarification', async () => {
+  let verified = false;
+  const handler = createAiEventSearchHandler({
+    env: {},
+    verifyTurnstileImpl: async ({ token }) => {
+      assert.equal(token, 'test-token');
+      verified = true;
+      return { ok: true };
+    },
+    fetchImpl: async () => assert.fail('Complete explicit query must not call the model')
+  });
+
+  const response = await handler(makeRequest({
+    query: 'koncert v Ostravě příští měsíc do 800 Kč',
+    locale: 'cs',
+    now: '2026-11-17T20:05:00+01:00',
+    turnstileToken: 'test-token'
+  }));
+  assert.equal(verified, true);
+  assert.equal(response.status, 200);
+  const { intent, needsClarification } = await bodyJson(response);
+  assert.equal(needsClarification, false);
+  assert.equal(intent.category, 'concert');
+  assert.equal(intent.place.label, 'Ostrava');
+  assert.deepEqual(intent.date, { type: 'range', preset: '', from: '2026-12-01', to: '2026-12-31' });
+  assert.deepEqual(intent.unsupportedPreferences, [{ type: 'max_price', value: 800, currency: 'CZK', unit: '' }]);
+});
+
+test('explicit queries still require a verified request', async () => {
+  const handler = createAiEventSearchHandler({
+    env: { OPENAI_API_KEY: 'test-key' },
+    verifyTurnstileImpl: async () => ({ ok: false, code: 'verification-failed' }),
+    fetchImpl: async () => assert.fail('Unverified requests must not call the model')
+  });
+  const response = await handler(makeRequest({
+    query: 'koncert v Ostravě příští měsíc do 800 Kč',
+    locale: 'cs',
+    now: '2026-11-17T20:05:00+01:00',
+    turnstileToken: 'test-token'
+  }));
+  assert.equal((await bodyJson(response)).ok, false);
+});
+
+test('explicit currency corrects the model while preserving independent clarification', async () => {
+  const intent = validIntent();
+  intent.unsupportedPreferences = [{ type: 'max_price', value: 800, currency: '', unit: '' }];
+  intent.clarification = {
+    required: true,
+    question: 'Myslíte maximální cenu 800 CZK?',
+    fields: ['unsupportedPreferences']
+  };
+  const handler = createAiEventSearchHandler({
+    env: { OPENAI_API_KEY: 'test-key' },
+    fetchImpl: async () => modelResponse(intent)
+  });
+
+  const request = query => makeRequest({
+    query, locale: 'cs', now: '2026-11-17T20:05:00+01:00', turnstileToken: 'test-token'
+  });
+  const resolved = await bodyJson(await handler(request('jazzový koncert v Praze příští měsíc do 800 Kč')));
+  assert.equal(resolved.intent.unsupportedPreferences[0].currency, 'CZK');
+  assert.equal(resolved.needsClarification, false);
+  assert.deepEqual(resolved.intent.clarification, { required: false, question: '', fields: [] });
+
+  intent.clarification = { required: true, question: 'Myslíte Prahu, nebo Brno?', fields: ['place'] };
+  const unresolved = await bodyJson(await handler(request('jazzový koncert v Praze nebo Brně do 800 Kč')));
+  assert.equal(unresolved.intent.unsupportedPreferences[0].currency, 'CZK');
+  assert.equal(unresolved.needsClarification, true);
+  assert.equal(unresolved.intent.clarification.question, intent.clarification.question);
+});

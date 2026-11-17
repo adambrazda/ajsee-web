@@ -19,6 +19,7 @@ import {
 import {
   applyPriceCurrencyClarification
 } from '../../src/ai-search/price-clarification.js';
+import { calendarMonthRange, readExplicitEventQuery } from '../../src/ai-search/explicit-query.js';
 import {
   isAiSearchServerEnabled,
   isDeployPreviewHostname
@@ -580,6 +581,7 @@ export function buildParserInstructions({
   locale,
   now
 }) {
+  const nextMonth = calendarMonthRange(now, 1);
   return [
     'You are the AJSEE event-search intent parser.',
     '',
@@ -607,6 +609,8 @@ export function buildParserInstructions({
     '- tomorrow => preset "tomorrow".',
     '- this week => preset "thisWeek".',
     '- weekend / this weekend => preset "weekend".',
+    '- "příští měsíc", "next month", "budúci mesiac" and equivalents mean the complete next calendar month. Use an inclusive date range unless a narrower range is requested.',
+    ...(nextMonth ? [`- In this request, the next calendar month is ${nextMonth.from} through ${nextMonth.to}.`] : []),
     '- Use type="range" and YYYY-MM-DD only for explicit or clearly resolvable calendar dates/ranges.',
     '- If no date preference exists use type="any".',
     '',
@@ -659,6 +663,8 @@ export function buildParserInstructions({
     'PRICE FILTER CURRENCY POLICY:',
     '- max_price inside unsupportedPreferences is the schema transport for AJSEE\'s supported maximum starting-price filter; do not treat max_price as an unusable preference merely because it is stored in unsupportedPreferences.',
     '- If the user gives a maximum price with an explicit currency, preserve both amount and currency. Do not request clarification solely for that price.',
+    '- Currency symbols and local abbreviations count as explicit: "do 800 Kč" = max_price(value=800, currency="CZK"); "do 35 €" = 35 EUR; "bis 40 EUR" = 40 EUR; "do 100 zł" = 100 PLN; "legfeljebb 5000 Ft" = 5000 HUF.',
+    '- Example: "koncert v Ostravě příští měsíc do 800 Kč" combines category concert, city Ostrava (CZ), the complete next calendar month and a maximum price of 800 CZK. No clarification is needed.',
     '- If the user gives a maximum price amount but no currency, do not silently invent a currency. Keep max_price.currency="" and set clarification.required=true.',
     '- For a missing max-price currency, clarification.fields must contain "unsupportedPreferences" and clarification.question must ask whether the amount means the default UI currency for the request locale.',
     '- If the user affirmatively confirms that currency clarification, return max_price with the proposed currency and resolve that price ambiguity.',
@@ -1280,6 +1286,12 @@ export function createAiEventSearchHandler({
         turnstileResult
       );
     }
+
+    const explicit = readExplicitEventQuery({ query, locale, now });
+    if (explicit.intent && !clarificationContext) {
+      return jsonResponse({ ok: true, intent: explicit.intent, needsClarification: false });
+    }
+
     const apiKey =
       String(
         env.OPENAI_API_KEY ||
@@ -1645,6 +1657,8 @@ export function createAiEventSearchHandler({
             query,
 
           clarificationContext,
+
+          explicitPriceLimit: explicit.priceLimit,
 
           needsClarification:
             validation

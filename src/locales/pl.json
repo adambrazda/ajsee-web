@@ -492,7 +492,7 @@
   "home.quickFilters.label": "Szybkie filtry",
   "home.quickFilters.refine": "Doprecyzuj filtry",
   "events.searchHandoff.location": "Nie udało się ustalić Twojej lokalizacji. Wybierz miasto ręcznie.",
-  "events.searchHandoff.partial": "Zastosowaliśmy rozpoznane filtry. Sprawdź je i uzupełnij brakujące dane.",
+  "events.searchHandoff.partial": "Sprawdź filtry i uzupełnij brakujące informacje.",
   "events.searchHandoff.failed": "Nie udało się ukończyć wyszukiwania automatycznego. Kontynuuj za pomocą filtrów.",
   "events.searchHandoff.manual": "Użyj filtrów, by wybrać to, czego szukasz.",
   "events.searchHandoff.applied": "Zastosowaliśmy filtry — {filters}. Możesz uzupełnić termin i budżet.",

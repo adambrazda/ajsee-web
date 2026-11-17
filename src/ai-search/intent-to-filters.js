@@ -353,3 +353,28 @@ export function mapIntentToFilters(
       requirements.length === 0
   };
 }
+
+export function selectCatalogueRefinementFilters({ intent, filters }) {
+  const { confidence, clarification } = intent;
+  const unresolved = new Set(clarification.required ? clarification.fields.map(field => field.split('.')[0]) : []);
+  const confirmed = dimension =>
+    !unresolved.has(dimension) &&
+    (confidence[dimension] ?? confidence.overall) >= DEFAULT_CONFIDENCE_THRESHOLD;
+
+  const selected = {};
+  if (confirmed('category') && filters.category !== 'all') selected.category = filters.category;
+  if (confirmed('audience') && filters.audience) selected.audience = filters.audience;
+  if (confirmed('date') && (filters.dateFrom || filters.dateTo)) {
+    Object.assign(selected, { dateFrom: filters.dateFrom, dateTo: filters.dateTo });
+  }
+  const priceUnresolved = ['unsupportedPreferences', 'price', 'max_price', 'priceCurrency', 'currency']
+    .some(field => unresolved.has(field));
+  if (!priceUnresolved && confidence.overall >= DEFAULT_CONFIDENCE_THRESHOLD && filters.maxPrice !== null && filters.priceCurrency) {
+    Object.assign(selected, { maxPrice: filters.maxPrice, priceCurrency: filters.priceCurrency });
+  }
+  if (confirmed('place') && ['city', 'country'].includes(filters.placeType)) {
+    const { placeType, city, cityLabel, cityCountryCode, countryCode } = filters;
+    Object.assign(selected, { placeType, city, cityLabel, cityCountryCode, countryCode });
+  }
+  return selected;
+}

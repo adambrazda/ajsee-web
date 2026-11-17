@@ -1,6 +1,7 @@
 import {
   defaultPriceCurrencyForLocale
 } from '../event-price.js';
+import { shouldClarifyIntent } from './intent-schema.js';
 
 
 const QUESTION_COPY = {
@@ -263,6 +264,7 @@ export function applyPriceCurrencyClarification(
     locale,
     reply = '',
     clarificationContext = null,
+    explicitPriceLimit = null,
     needsClarification = false
   } = {}
 ) {
@@ -320,6 +322,22 @@ export function applyPriceCurrencyClarification(
       currentPriceValue
     ) &&
     currentPriceValue >= 0;
+
+  // A currency written next to the same maximum in the query is authoritative.
+  // Preserve an independent clarification about the place, date or another preference.
+  if (hasValidCurrentPrice && explicitPriceLimit?.value === currentPriceValue) {
+    currentPrice.currency = explicitPriceLimit.currency;
+    const { required, fields } = result.clarification || {};
+    const priceOnly = required && fields?.length && fields.every(field =>
+      ['max_price', 'price', 'currency', 'priceCurrency'].includes(field) ||
+      (field === 'unsupportedPreferences' && result.unsupportedPreferences.length === 1)
+    );
+    if (priceOnly) {
+      result.clarification = { required: false, question: '', fields: [] };
+      return { intent: result, needsClarification: shouldClarifyIntent(result) };
+    }
+    return { intent: result, needsClarification: Boolean(needsClarification) };
+  }
 
   if (
     previousNegativePrice &&

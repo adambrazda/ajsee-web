@@ -1,5 +1,5 @@
 import COPY from '../content/event-detail-copy.json' with { type: 'json' };
-import { detailPath, localeCode, freshTimestamp } from '../shared/event-details/state.js';
+import { detailPath, localeCode, freshTimestamp, pragueEventDate } from '../shared/event-details/state.js';
 import { AMAZING_PLACES_BOOKING_URL, AMAZING_PLACES_EVENT_COUNTRIES } from '../shared/amazing-places.js';
 // Explicit, reviewable occurrences survive a missing or incomplete feed refresh.
 // Feed absence is never a cancellation signal. Public pages share this renderer.
@@ -44,7 +44,7 @@ export function validatePilot(events) {
 
 export function eventState(event, now = new Date()) {
   if (event.status !== 'scheduled' && event.status !== 'rescheduled') return event.status;
-  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Prague', dateStyle: 'short' }).format(now);
+  const today = pragueEventDate(now);
   return today > event.startDate.slice(0, 10) ? 'past' : event.status;
 }
 

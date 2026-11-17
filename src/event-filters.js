@@ -1147,6 +1147,32 @@ export function getSharedEventFiltersMarkup() {
   return SHARED_EVENT_FILTERS_MARKUP;
 }
 
+export function configureHomeQuickFilters(form, doc = form.ownerDocument) {
+  if (doc.body?.dataset.page !== 'home' || form.querySelector('.home-quick-filters')) return;
+
+  const toolbar = form.querySelector('.filters-toolbar');
+  const details = form.querySelector('#events-filters-details');
+  if (!toolbar || !details) return;
+
+  toolbar.insertAdjacentHTML('beforebegin', `
+    <div class="filters-toolbar home-quick-filters" role="group" aria-label="Rychlé volby" data-i18n-aria="home.quickFilters.label">
+      <div class="chips">
+        <button type="button" class="chip" id="homeQuickWeekend" data-i18n-key="filters.weekend" aria-pressed="false">Tento víkend</button>
+        <button type="button" class="chip" data-home-quick-category="concert" data-i18n-key="category-concert" aria-pressed="false">Koncerty</button>
+        <button type="button" class="chip" data-home-quick-category="theatre" data-i18n-key="category-theatre" aria-pressed="false">Divadlo</button>
+        <button type="button" class="chip" data-home-quick-category="sport" data-i18n-key="category-sport" aria-pressed="false">Sport</button>
+        <button type="button" class="chip" id="homeQuickNearMe" data-i18n-key="filters.nearMe" aria-pressed="false">V mém okolí</button>
+      </div>
+    </div>
+  `);
+  details.insertBefore(toolbar, details.querySelector('.filter-group'));
+  form.querySelector('#filter-city')?.closest('.filter-group')?.insertAdjacentHTML('beforeend', `
+    <p class="home-location-hint" data-home-location-hint data-i18n-key="home.quickFilters.locationUnavailable" hidden>
+      Polohu se nepodařilo zjistit. Vyberte město ručně.
+    </p>
+  `);
+}
+
 export function ensureSharedEventFiltersMarkup(
   doc = globalThis.document
 ) {
@@ -1179,6 +1205,8 @@ export function ensureSharedEventFiltersMarkup(
 
   form.dataset.ajseeSharedEventFilters =
     'v1';
+
+  configureHomeQuickFilters(form, doc);
 
   initSharedEventFilterDisclosure(
     form,

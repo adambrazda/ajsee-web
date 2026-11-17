@@ -5,6 +5,8 @@ export const LANGUAGES = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 export const ORIGIN = 'https://ajsee.cz';
 export const localeCode = lang => ({ cs: 'cs-CZ', en: 'en-GB', de: 'de-DE', sk: 'sk-SK', pl: 'pl-PL', hu: 'hu-HU' })[lang] || 'cs-CZ';
 export const detailPath = (slug, lang = 'cs') => `${lang === 'cs' ? '' : '/' + lang}/udalosti/${slug}/`;
+const pragueDateFormatter = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Prague', dateStyle: 'short' });
+export const pragueEventDate = (now = new Date()) => pragueDateFormatter.format(now);
 
 export function localDateTime(value) {
   const raw = String(value || '').trim();
@@ -59,7 +61,7 @@ export function mergeEventSnapshots(seed, saved, events, now = new Date()) {
 }
 
 export function pageCacheSeconds(event, now = new Date()) {
-  const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Prague', dateStyle: 'short' }).format(now);
+  const today = pragueEventDate(now);
   const tomorrow = new Date(Date.parse(today + 'T12:00:00Z') + 86400000).toISOString().slice(0, 10);
   const midnight = Date.parse(localDateTime(tomorrow + 'T00:00:00'));
   const priceExpiry = event.price?.observedAt ? Date.parse(event.price.observedAt) + PRICE_TTL_MS : Infinity;

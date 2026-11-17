@@ -3,9 +3,9 @@ import { JSDOM } from 'jsdom';
 import pilot from '../content/event-detail-pilot.json' with { type: 'json' };
 import COPY from '../content/event-detail-copy.json' with { type: 'json' };
 import { collectEventDetails } from '../shared/event-details/sources.js';
-import { LANGUAGES, detailPath } from '../shared/event-details/state.js';
+import { LANGUAGES, detailPath, resolveEvent } from '../shared/event-details/state.js';
 import { renderEventPage, HEAD_TOKEN, BODY_TOKEN } from '../shared/event-details/page.js';
-import { validatePilot, escapeHtml } from './event-detail-pilot.mjs';
+import { validatePilot, escapeHtml, eventState } from './event-detail-pilot.mjs';
 
 validatePilot(pilot.events);
 const assets = 'dist/event-detail-assets';
@@ -14,7 +14,14 @@ const localFeeds = {};
 for (const partner of ['smsticket', 'colosseumticket']) {
   try { localFeeds[partner] = JSON.parse(await readFile(`public/data/${partner}-events.json`, 'utf8')); } catch { /* Fetch directly if the build has no local feed. */ }
 }
-const snapshot = await collectEventDetails(pilot.events, { localFeeds, apiKey: process.env.TM_API_KEY || process.env.TICKETMASTER_API_KEY || '' });
+const now = new Date();
+const snapshot = await collectEventDetails(pilot.events, { localFeeds, apiKey: process.env.TM_API_KEY || process.env.TICKETMASTER_API_KEY || '', now });
+const events = pilot.events.map(event => resolveEvent(event, snapshot, now));
+const plannedEvents = events.filter(event => ['scheduled', 'rescheduled'].includes(eventState(event, now)));
+const archivedEvents = events.filter(event => !plannedEvents.includes(event));
+const renderLinkItems = (events, lang) => events.map(event =>
+  `<li data-event-date="${event.startDate.slice(0, 10)}"><a href="${detailPath(event.slug, lang)}">${escapeHtml(event.title)} · ${escapeHtml(event.venue.city)}</a></li>`
+).join('');
 await writeFile(assets + '/seed.json', JSON.stringify(snapshot));
 const template = await readFile('dist/templates/event-detail-preview.html', 'utf8');
 
@@ -38,21 +45,40 @@ for (const lang of LANGUAGES) {
   const shellText = shell.serialize();
   await writeFile(`${assets}/${lang}.txt`, shellText);
   for (const event of pilot.events) {
-    const html = renderEventPage(shellText, event, snapshot, { lang });
+    const html = renderEventPage(shellText, event, snapshot, { lang, now });
     const directory = 'dist' + detailPath(event.slug, lang);
     await mkdir(directory, { recursive: true });
     await writeFile(directory + 'index.html', html);
   }
-  // Indexable links exist in the first HTML on both entry points, even if the
-  // selected feed no longer contains one of these explicitly retained events.
-  for (const route of ['events', 'home']) {
-    const file = route === 'home' ? `dist/${lang === 'cs' ? '' : lang + '/'}index.html` : lang === 'cs' ? 'dist/events.html' : `dist/${lang}/events/index.html`;
+  // Keep upcoming events discoverable as crawlable links in the initial HTML.
+  const homepage = `dist/${lang === 'cs' ? '' : lang + '/'}index.html`;
+  const entryPages = lang === 'cs'
+    ? [homepage, 'dist/events.html', 'dist/events/index.html']
+    : [homepage, `dist/${lang}/events/index.html`];
+  const plannedItems = renderLinkItems(plannedEvents, lang);
+  const archivedItems = renderLinkItems(archivedEvents, lang);
+
+  for (const file of entryPages) {
     const html = new JSDOM(await readFile(file, 'utf8')), hdoc = html.window.document;
-    const section = hdoc.createElement('section');
-    section.className = 'event-detail-links';
-    section.setAttribute('aria-labelledby', 'event-detail-links-title');
-    section.innerHTML = `<h2 id="event-detail-links-title">${escapeHtml(COPY[lang].labels.plan)}</h2><ul>${pilot.events.map(event => `<li><a href="${detailPath(event.slug, lang)}">${escapeHtml(event.title)} · ${escapeHtml(event.venue.city)}</a></li>`).join('')}</ul>`;
-    hdoc.querySelector('main').appendChild(section);
+    const main = hdoc.querySelector('main');
+    main.querySelectorAll('.event-detail-links').forEach(section => section.remove());
+    if (plannedItems) {
+      main.insertAdjacentHTML('beforeend', `
+        <section class="event-detail-links" data-event-detail-plan aria-labelledby="event-detail-links-title">
+          <h2 id="event-detail-links-title">${escapeHtml(COPY[lang].labels.plan)}</h2>
+          <ul>${plannedItems}</ul>
+        </section>
+      `);
+    }
+    // Keep the original detail URLs discoverable from the events catalogue.
+    if (file !== homepage) {
+      main.insertAdjacentHTML('beforeend', `
+        <details class="event-detail-links event-detail-links-archive" data-event-detail-archive${archivedItems ? '' : ' hidden'}>
+          <summary>${escapeHtml(COPY[lang].labels.archive)}</summary>
+          <ul>${archivedItems}</ul>
+        </details>
+      `);
+    }
     await writeFile(file, html.serialize()); html.window.close();
   }
   shell.window.close(); page.window.close();

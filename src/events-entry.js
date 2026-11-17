@@ -1,4 +1,5 @@
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
+import './event-detail-links.js';
 import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from './event-search-listing.js';
 import {
   applyGeoRadiusToApiFilters,

@@ -97,6 +97,11 @@ body[data-page="events"] {
   scroll-margin-top: calc(var(--header-offset, 88px) + 12px);
 }
 
+/* The results heading receives focus as a reading target on arrival. */
+#events-upcoming-title[tabindex="-1"]:focus {
+  outline: none;
+}
+
 .catalogue-refine-notice {
   grid-column: 1 / -1;
   margin-block: 4px 8px;

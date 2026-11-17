@@ -95,7 +95,9 @@ export function catalogueHistoryRecord(url, filters, transfer) {
   return { ...transfer, key: recordKey(url), privateFilters };
 }
 
-export function navigateToCatalogue({ locale, filters = {}, query = '', notice = '', question = '', replace = false }, win = window) {
+export function navigateToCatalogue({
+  locale, filters = {}, query = '', notice = '', question = '', fallbackFields = [], replace = false
+}, win = window) {
   const url = new URL(cataloguePath(locale), win.location.origin);
   const privateSearch = Boolean(query || notice || isNearMePlace(filters));
   url.hash = notice ? CATALOGUE_FILTERS_HASH : CATALOGUE_RESULTS_HASH;
@@ -105,6 +107,7 @@ export function navigateToCatalogue({ locale, filters = {}, query = '', notice =
     query: query.slice(0, 1024),
     notice,
     question: question.slice(0, 512),
+    ...(fallbackFields.length ? { fallbackFields } : {}),
     createdAt: Date.now()
   }) : null;
   const saved = writeSession(win, TRANSFER_KEY, record);

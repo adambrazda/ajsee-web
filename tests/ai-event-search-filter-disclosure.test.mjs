@@ -173,7 +173,7 @@ test(
     ) {
       const aiStart =
         source.indexOf(
-          'async function applyAiEventSearchIntent(intent) {'
+          'async function applyAiEventSearchIntent('
         );
 
       const aiEnd =

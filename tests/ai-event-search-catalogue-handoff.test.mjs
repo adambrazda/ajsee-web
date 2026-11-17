@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { entryRuntime } from './helpers/entry-runtime.mjs';
 import { getDatePresetRange } from '../src/events-filter-ux.js';
+import { recognizeFallbackFilters } from '../src/ai-search/fallback-filters.js';
 import {
   CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH,
   catalogueHistoryRecord, navigateToCatalogue, readCatalogueTransfer
@@ -83,6 +84,39 @@ test('failed and partial searches open manual filters, including when session st
   navigateToCatalogue({ locale: 'cs', query: 'Find this', filters: { keyword: 'Private term', category: 'sport' } }, win);
   assert.equal(new URL(win.location.href).hash, CATALOGUE_FILTERS_HASH);
   assert.equal(new URL(win.location.href).searchParams.has('q'), false);
+});
+
+test('fallback links use confirmed structured filters and retain the original query in the same tab', () => {
+  const win = browserTab();
+  const query = 'koncert v Ostravě tento víkend do 800 Kč';
+  const filters = recognizeFallbackFilters(query, 'cs');
+  const fallbackFields = ['category', 'city'];
+  navigateToCatalogue({ locale: 'cs', query, filters, notice: 'failed', fallbackFields }, win);
+
+  const url = new URL(win.location.href);
+  assert.equal(url.pathname, '/events');
+  assert.equal(url.hash, CATALOGUE_FILTERS_HASH);
+  assert.equal(url.searchParams.get('city'), 'Ostrava');
+  assert.equal(url.searchParams.get('cityCc'), 'CZ');
+  assert.equal(url.searchParams.get('segment'), 'concert');
+  for (const key of ['q', 'from', 'to', 'priceMax']) assert.equal(url.searchParams.has(key), false);
+  const transfer = readCatalogueTransfer(win);
+  assert.equal(transfer.query, query);
+  assert.deepEqual(transfer.fallbackFields, fallbackFields);
+});
+
+test('fallback recognises known aliases and leaves ambiguous or excluded preferences open', () => {
+  assert.deepEqual(recognizeFallbackFilters('Konzert in Wien am Wochenende', 'de'), {
+    category: 'concert', placeType: 'city', city: 'Vienna',
+    cityLabel: 'Wien', cityCountryCode: 'AT', countryCode: 'AT'
+  });
+  assert.deepEqual(recognizeFallbackFilters('koncert v neznámém městě', 'cs'), { category: 'concert' });
+  assert.deepEqual(recognizeFallbackFilters('koncert v Ostravě nebo v Praze', 'cs'), {});
+  assert.deepEqual(recognizeFallbackFilters('v Ostravě koncert nebo divadlo', 'cs'), {
+    placeType: 'city', city: 'Ostrava', cityLabel: 'Ostrava', cityCountryCode: 'CZ', countryCode: 'CZ'
+  });
+  assert.deepEqual(recognizeFallbackFilters('cokoliv, jen ne koncert v Ostravě', 'cs'), {});
+  assert.deepEqual(recognizeFallbackFilters('cokoliv zábavného poblíž', 'cs'), {});
 });
 
 test('weekend quick link materializes real dates and preserves them in the catalogue address', () => {

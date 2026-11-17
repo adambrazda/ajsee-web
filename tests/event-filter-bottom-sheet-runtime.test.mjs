@@ -197,7 +197,7 @@ test(
 
       const aiStart =
         pageSource.indexOf(
-          'async function applyAiEventSearchIntent(intent) {'
+          'async function applyAiEventSearchIntent('
         );
 
       const aiEnd =

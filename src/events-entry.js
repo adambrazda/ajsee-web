@@ -3404,8 +3404,9 @@ function syncFiltersFromForm() {
 
 let catalogueTransfer = null;
 
-function syncURLFromFilters() {
+function syncURLFromFilters(hash = location.hash) {
   const url = new URL(location.href);
+  url.hash = hash;
   syncCatalogueFilterParams(url.searchParams, currentFilters);
   catalogueTransfer = catalogueHistoryRecord(url, currentFilters, catalogueTransfer);
   const state = catalogueTransfer ? { ...history.state, catalogueSearch: catalogueTransfer } : history.state;
@@ -3654,7 +3655,7 @@ async function getAiSearchGeolocation() {
   }
 }
 
-async function applyAiEventSearchIntent(intent) {
+async function applyAiEventSearchIntent(intent, { signal } = {}) {
   /*
    * A new AI interpretation starts a new learning
    * session. This prevents a second AI search from
@@ -3717,6 +3718,7 @@ async function applyAiEventSearchIntent(intent) {
   }
 
   while (_renderInflight) await _renderCompletion;
+  if (signal?.aborted) return;
 
   currentFilters =
     materializedPlanToRuntimeFilters(
@@ -5676,7 +5678,31 @@ function completeCatalogueRefinement() {
   }
 }
 
+function applyCatalogueAiFallback({ query, filters, notice, fallbackFields }) {
+  resetAiSearchLearningSession();
+  currentFilters = { ...currentFilters };
+  if (currentFilters.searchMode) {
+    currentFilters.keyword = '';
+    delete currentFilters.searchMode;
+    delete currentFilters.keywordMatch;
+    if (currentFilters.sort === 'relevance') currentFilters.sort = 'nearest';
+  }
+  if (filters.category) currentFilters.category = filters.category;
+  if (filters.city) setCityPlace(filters.cityLabel, filters.cityCountryCode);
+
+  catalogueTransfer = { query, notice, fallbackFields, createdAt: Date.now() };
+  _userInteractedWithFilters = true;
+  setFilterInputsFromState();
+  syncURLFromFilters(CATALOGUE_FILTERS_HASH);
+
+  const panel = prepareCatalogueLanding(qs('#events-filters-form'), notice);
+  panel?.focus();
+  void renderAndSync();
+}
+
 function prepareCatalogueLanding(form, notice) {
+  if (!form) return null;
+  form.querySelector('.catalogue-refine-notice')?.remove();
   const showFilters = location.hash === CATALOGUE_FILTERS_HASH || Boolean(notice);
   const showResults = location.hash === CATALOGUE_RESULTS_HASH;
   const panel = form.querySelector('#events-filters-details');
@@ -5691,6 +5717,16 @@ function prepareCatalogueLanding(form, notice) {
     const status = document.createElement('p');
     status.setAttribute('role', 'status');
     status.textContent = t(`events.searchHandoff.${notice}`);
+    const applied = catalogueTransfer?.fallbackFields;
+    if ((notice === 'failed' || notice === 'manual') && applied?.length) {
+      const labels = [];
+      if (applied.includes('category') && currentFilters.category !== 'all') {
+        labels.push(t(`category-${currentFilters.category}`));
+      }
+      if (applied.includes('city')) labels.push(currentFilters.cityLabel);
+      const summary = new Intl.ListFormat(currentLang).format(labels.filter(Boolean));
+      if (summary) status.textContent = t('events.searchHandoff.applied').replace('{filters}', () => summary);
+    }
     message.append(status);
 
     if (notice === 'partial' && catalogueTransfer?.question) {
@@ -5769,6 +5805,7 @@ async function bootstrapMain() {
     form: formEl,
     getLocale: () => currentLang,
     onIntent: applyAiEventSearchIntent,
+    onFallback: applyCatalogueAiFallback,
     initialQuery: catalogueTransfer?.query || ''
   });
 

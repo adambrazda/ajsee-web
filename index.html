@@ -389,6 +389,37 @@ const getInitialLang = () => {
     </div>
   </section>
   <script type="module" src="/src/home-hero.js"></script>
+  <section class="home-partners--tickets" aria-labelledby="home-ticket-partners-title">
+    <div class="home-container home-partners-inner">
+      <h2 id="home-ticket-partners-title" class="home-partners-label" data-i18n-key="home.partners.label">Vstupenky od oficiálních prodejců</h2>
+      <ul class="home-partner-logos" role="list">
+        <li class="home-partner-logo--ticketmaster">
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/images/partners/Ticketmaster-Logo-White-RGB.svg">
+            <img src="/images/partners/Ticketmaster-Logo-Dark-RGB.svg" alt="Ticketmaster" width="238" height="32" loading="lazy" decoding="async">
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/images/partners/smsticket-wordmark-dark.svg">
+            <img src="/images/partners/smsticket-wordmark.svg" alt="smsticket" width="169" height="32" loading="lazy" decoding="async">
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/images/partners/ttx_logo_horizontal_white.svg">
+            <img src="/images/partners/ttx_logo_horizontal.svg" alt="TodayTix" width="961" height="202" loading="lazy" decoding="async">
+          </picture>
+        </li>
+        <li>
+          <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="/images/partners/colosseumticket-dark.svg">
+            <img src="/images/partners/colosseumticket.svg" alt="ColosseumTicket" width="160" height="38" loading="lazy" decoding="async">
+          </picture>
+        </li>
+      </ul>
+    </div>
+  </section>
   <section class="contest-promo" data-colosseum-contest data-contest-banner data-contest-visible-until="2026-11-07T00:00:00+01:00" hidden aria-labelledby="home-contest-title">
   <div class="home-container">
     <div class="contest-promo-card">
@@ -456,6 +487,29 @@ const getInitialLang = () => {
         </div>
       </article>
     </div>
+    <section class="home-partners--stays" aria-labelledby="home-stay-partners-title">
+      <div class="home-container home-partners-inner">
+        <h2 id="home-stay-partners-title" class="home-partners-label" data-i18n-key="home.partners.staysLabel">Ubytování u našich partnerů</h2>
+        <ul class="home-partner-logos" role="list">
+          <li>
+            <a class="home-partner-stay" href="/accommodation/#amazing-places">
+              <span class="home-amazing-logo">
+                <img src="/images/partners/amazing-places.svg" alt="Amazing Places" width="196" height="26" loading="lazy" decoding="async">
+              </span>
+              <span class="home-partner-badge" data-i18n-key="home.partners.new">Novinka</span>
+            </a>
+          </li>
+          <li>
+            <a class="home-partner-stay" href="/accommodation/">
+              <picture class="home-trustedstays-logo">
+                <source media="(prefers-color-scheme: dark)" srcset="/images/partners/trustedstays/TrustedStays_Reversed_RGB_R.svg">
+                <img src="/images/partners/trustedstays/TrustedStays_Primary_RGB_R.svg" alt="TrustedStays" width="130" height="40" loading="lazy" decoding="async">
+              </picture>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
   </section>
   <section class="homepage-blog home-editorial" id="blog">
     <div class="container">
@@ -473,18 +527,6 @@ const getInitialLang = () => {
     <div class="home-container home-about-grid">
       <div><h2 data-i18n-key="home.about.title">O AJSEE</h2><div class="home-team-photos"><img src="/images/team/adam-384.webp" srcset="/images/team/adam-192.webp 192w, /images/team/adam-384.webp 384w, /images/team/adam-768.webp 768w" sizes="(max-width: 640px) 104px, 120px" alt="Adam Brázda" width="96" height="96" loading="lazy"><img src="/images/team/jan-384.webp" srcset="/images/team/jan-192.webp 192w, /images/team/jan-384.webp 384w, /images/team/jan-768.webp 768w" sizes="(max-width: 640px) 104px, 120px" alt="Jan Oujezdský" width="96" height="96" loading="lazy"></div></div>
       <div><p data-i18n-key="home.about.text">Za AJSEE stojí Adam a Jan. Společně s našimi autory sdílíme recenze, zkušenosti a tipy, kam vyrazit.</p><p data-i18n-key="home.about.story">Nápad na AJSEE vznikl na podzim 2024 při posezení u piva. Ještě ten večer jsme vymysleli název AJSEE a návrh loga.</p><a class="home-text-link" href="/about/"><span data-i18n-key="home.about.cta">Přečíst náš příběh</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
-    </div>
-  </section>
-  <section class="home-partners" aria-label="Partneři AJSEE">
-    <div class="home-container home-partners-inner">
-      <div class="home-partners-row">
-        <p data-i18n-key="home.partners.label" class="home-partners-label">Vstupenky od našich partnerů</p>
-        <div class="home-partner-logos"><span><img class="home-logo--light" src="/images/partners/Ticketmaster-Logo-Dark-RGB.svg" alt="Ticketmaster" width="150" height="35" loading="lazy"><img class="home-logo--dark" src="/images/partners/Ticketmaster-Logo-White-RGB.svg" alt="Ticketmaster" width="150" height="35" loading="lazy"></span><span><img class="home-logo--light" src="/images/partners/smsticket.png" alt="smsticket" width="150" height="35" loading="lazy"><img class="home-logo--dark" src="/images/partners/smsticket-dark.png" alt="smsticket" width="150" height="35" loading="lazy"></span><span><img class="home-logo--light" src="/images/partners/ttx_logo_horizontal.svg" alt="TodayTix" width="150" height="35" loading="lazy"><img class="home-logo--dark" src="/images/partners/ttx_logo_horizontal_white.svg" alt="TodayTix" width="150" height="35" loading="lazy"></span><span><img class="home-logo--light" src="/images/partners/colosseumticket.svg" alt="ColosseumTicket" width="150" height="35" loading="lazy"><img class="home-logo--dark" src="/images/partners/colosseumticket-dark.svg" alt="ColosseumTicket" width="150" height="35" loading="lazy"></span></div>
-      </div>
-      <div class="home-partners-row home-partners-row--stays">
-        <p data-i18n-key="home.partners.staysLabel" class="home-partners-label">Ubytování od našeho partnera</p>
-        <a class="home-partner-logos home-partner-stay" href="/accommodation/" aria-label="TrustedStays"><img class="home-logo--light" src="/images/partners/trustedstays/TrustedStays_Primary_RGB_R.svg" alt="TrustedStays" width="130" height="40" loading="lazy"><img class="home-logo--dark" src="/images/partners/trustedstays/TrustedStays_Reversed_RGB_R.svg" alt="TrustedStays" width="130" height="40" loading="lazy"></a>
-      </div>
     </div>
   </section>
   <section id="contact" class="home-contact">

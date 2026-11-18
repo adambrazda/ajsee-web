@@ -199,17 +199,69 @@ body[data-page='home'].home-premium {
   .home-about p { margin: 0 0 14px; font-size: .94rem; }
   .home-team-photos { display: flex; gap: 12px; margin-top: 20px; }
   .home-team-photos img { width: 96px; height: 96px; object-fit: cover; object-position: center 37%; border-radius: 18px; }
-  .home-partners { padding: 20px 0 36px; }
-  .home-partners-inner { display: grid; gap: 22px; padding-top: 24px; border-top: 1px solid var(--home-line); }
-  .home-partners-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-  .home-partners-label { margin: 0; color: var(--home-muted); font-size: .75rem; }
-  .home-partner-logos { display: flex; align-items: center; flex-wrap: wrap; gap: 28px; }
-  .home-partner-logos img { width: auto; height: 25px; max-width: 125px; object-fit: contain; }
-  .home-partner-logos.home-partner-stay img { width: auto; height: 40px; max-width: 145px; }
-  .home-partner-logos .home-logo--dark { display: none; }
+  .home-partners--tickets { padding-block-end: 24px; }
+  .home-partners--stays { padding-block-start: 24px; }
+  .home-partners-inner {
+    --home-partner-logo-height: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 32px;
+    padding-block-start: 18px;
+    border-block-start: 1px solid var(--home-line);
+  }
+  .home-page-main .home-partners-label {
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    font-weight: 750;
+    letter-spacing: -.01em;
+  }
+  .home-partner-logos {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px clamp(10px, 2.2vw, 28px);
+    max-inline-size: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .home-partner-logos li { min-inline-size: 0; max-inline-size: 100%; }
+  .home-partner-logos picture { display: block; }
+  .home-partner-logos img {
+    display: block;
+    inline-size: auto;
+    block-size: var(--home-partner-logo-height);
+    max-inline-size: 100%;
+    object-fit: contain;
+  }
+  .home-partner-logo--ticketmaster { padding-inline: 12px; }
+  .home-trustedstays-logo img { block-size: 40px; }
+  .home-partner-stay {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    min-block-size: 44px;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  .home-partner-stay:hover { background: var(--home-accent-soft); }
+  .home-amazing-logo { max-inline-size: 100%; padding: 6px 8px; border-radius: 6px; }
+  .home-partner-badge {
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: var(--home-accent-soft);
+    color: color-mix(in srgb, var(--home-accent) 80%, var(--home-heading));
+    font-size: .72rem;
+    font-weight: 750;
+    line-height: 1.4;
+  }
+  @media (min-width: 1024px) {
+    .home-partners-inner { --home-partner-logo-height: 32px; }
+  }
   @media (prefers-color-scheme: dark) {
-    .home-partner-logos .home-logo--light { display: none; }
-    .home-partner-logos .home-logo--dark { display: block; }
+    .home-amazing-logo { background: #fff; }
   }
   .home-contact { padding: 30px 0 42px; background: var(--home-bg); }
   .home-contact-inner { border-top: 1px solid var(--home-line); padding-top: 34px; }
@@ -318,12 +370,10 @@ body[data-page='home'].home-premium {
     .home-about-grid { grid-template-columns: 1fr; gap: 20px; }
     .home-team-photos { margin-top: 16px; }
     .home-team-photos img { width: 64px; height: 64px; border-radius: 14px; }
-    .home-partners { padding: 12px 0 26px; }
-    .home-partners-inner { gap: 18px; }
-    .home-partners-row { flex-direction: column; align-items: start; gap: 14px; }
-    .home-partner-logos { justify-content: space-between; width: 100%; gap: 18px; }
-    .home-partner-logos img { height: 21px; max-width: 110px; }
-    .home-partner-logos.home-partner-stay { width: auto; justify-content: flex-start; }
+    .home-partners--tickets { padding-block-end: 20px; }
+    .home-partners--stays { padding-block-start: 20px; }
+    .home-partners-inner { flex-direction: column; align-items: start; gap: 12px; }
+    .home-partner-logos { column-gap: 10px; }
     .home-contact { padding: 20px 0 34px; }
     .home-contact .home-contact-top { grid-template-columns: 1fr; gap: 26px; }
     .home-contact-partner { border-left: 0; border-top: 1px solid var(--home-line); padding: 24px 0 0; }

@@ -3,11 +3,10 @@ import { JSDOM } from 'jsdom';
 import pilot from '../content/event-detail-pilot.json' with { type: 'json' };
 import COPY from '../content/event-detail-copy.json' with { type: 'json' };
 import { collectEventDetails } from '../shared/event-details/sources.js';
-import { LANGUAGES, detailPath, resolveEvent } from '../shared/event-details/state.js';
+import { LANGUAGES, detailPath } from '../shared/event-details/state.js';
 import { renderEventPage, HEAD_TOKEN, BODY_TOKEN } from '../shared/event-details/page.js';
-import { validatePilot, escapeHtml, eventState } from './event-detail-pilot.mjs';
-import { renderSharedEventCard } from '../src/event-card.js';
-import { formatEventDateTime } from '../src/event-date-time.js';
+import { prepareHomeFeaturedPublication } from '../shared/event-details/featured.js';
+import { validatePilot, escapeHtml } from './event-detail-pilot.mjs';
 
 validatePilot(pilot.events);
 const assets = 'dist/event-detail-assets';
@@ -18,49 +17,12 @@ for (const partner of ['smsticket', 'colosseumticket']) {
 }
 const now = new Date();
 const snapshot = await collectEventDetails(pilot.events, { localFeeds, apiKey: process.env.TM_API_KEY || process.env.TICKETMASTER_API_KEY || '', now });
-const events = pilot.events.map(event => resolveEvent(event, snapshot, now));
-const plannedEvents = events.filter(event => ['scheduled', 'rescheduled'].includes(eventState(event, now)));
-const archivedEvents = events.filter(event => !plannedEvents.includes(event));
-const renderLinkItems = (events, lang) => events.map(event =>
-  `<li data-event-date="${event.startDate.slice(0, 10)}"><a href="${detailPath(event.slug, lang)}">${escapeHtml(event.title)} · ${escapeHtml(event.venue.city)}</a></li>`
-).join('');
-
-function addPlannedCards(doc, lang, dictionary) {
-  const grid = doc.querySelector('[data-events-static] .events-list');
-  if (!grid) throw new Error(`Static catalogue cards missing for ${lang}`);
-  for (const event of plannedEvents) {
-    let card = Array.from(grid.children).find(node => node.dataset.eventId === event.id);
-    if (!card) {
-      const entry = {
-        id: event.id,
-        partner: event.partner,
-        title: event.title,
-        datetime: event.startDate,
-        venue: event.venue,
-        image: event.image.url,
-        priceFrom: event.price?.minimum ?? null,
-        currency: event.price?.currency ?? ''
-      };
-      grid.insertAdjacentHTML('beforeend', renderSharedEventCard({
-        event: entry,
-        locale: lang,
-        modalId: event.id,
-        titleRaw: event.title,
-        titleHtml: escapeHtml(event.title),
-        dateHtml: escapeHtml(formatEventDateTime(entry, lang)),
-        imageSrc: entry.image,
-        ticketsHref: event.tickets,
-        detailLabelHtml: escapeHtml(dictionary['event-details']),
-        ticketLabelHtml: escapeHtml(dictionary['event-tickets'])
-      }));
-      card = grid.lastElementChild;
-    }
-    const detailLink = card.querySelector('a.event-title-action[href]');
-    if (!detailLink) throw new Error(`Catalogue card ${event.id} is missing its detail link`);
-    card.dataset.eventArchiveDate = event.startDate.slice(0, 10);
-  }
-}
+const publishedHome = prepareHomeFeaturedPublication(JSON.parse(await readFile('public/data/home-featured-events.json', 'utf8')));
+const allPages = [...pilot.events, ...publishedHome.pages];
+const featuredIds = new Set(publishedHome.snapshot.recommendedIds);
+const archivedEvents = pilot.events.filter(event => !featuredIds.has(event.id));
 await writeFile(assets + '/seed.json', JSON.stringify(snapshot));
+await writeFile(assets + '/featured.json', JSON.stringify(publishedHome.pages));
 const template = await readFile('dist/templates/event-detail-preview.html', 'utf8');
 
 for (const lang of LANGUAGES) {
@@ -82,24 +44,24 @@ for (const lang of LANGUAGES) {
   doc.body.innerHTML = header.outerHTML + BODY_TOKEN + footer;
   const shellText = shell.serialize();
   await writeFile(`${assets}/${lang}.txt`, shellText);
-  for (const event of pilot.events) {
+  for (const event of allPages) {
     const html = renderEventPage(shellText, event, snapshot, { lang, now });
     const directory = 'dist' + detailPath(event.slug, lang);
     await mkdir(directory, { recursive: true });
     await writeFile(directory + 'index.html', html);
   }
-  // The catalogue's existing grid carries the links to individual event pages.
+  // Keep the original public URLs discoverable after their cards leave the homepage.
   const entryPages = lang === 'cs'
     ? ['dist/events.html', 'dist/events/index.html']
     : [`dist/${lang}/events/index.html`];
-  const dictionary = JSON.parse(await readFile(`src/locales/${lang}.json`, 'utf8'));
-  const archivedItems = renderLinkItems(archivedEvents, lang);
+  const archivedItems = archivedEvents.map(event =>
+    `<li><a href="${detailPath(event.slug, lang)}">${escapeHtml(event.title)} · ${escapeHtml(event.venue.city)}</a></li>`
+  ).join('');
 
   for (const file of entryPages) {
     const html = new JSDOM(await readFile(file, 'utf8')), hdoc = html.window.document;
     const main = hdoc.querySelector('main');
     main.querySelectorAll('.event-detail-links').forEach(section => section.remove());
-    addPlannedCards(hdoc, lang, dictionary);
     main.insertAdjacentHTML('beforeend', `
       <details class="event-detail-links event-detail-links-archive" data-event-detail-archive${archivedItems ? '' : ' hidden'}>
         <summary>${escapeHtml(COPY[lang].labels.archive)}</summary>
@@ -110,4 +72,4 @@ for (const lang of LANGUAGES) {
   }
   shell.window.close(); page.window.close();
 }
-console.log('[event details] 24 localized pages and server-rendering assets built');
+console.log(`[event details] ${allPages.length * LANGUAGES.length} localized pages and server-rendering assets built`);

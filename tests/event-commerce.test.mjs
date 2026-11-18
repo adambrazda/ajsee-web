@@ -86,34 +86,32 @@ test('card exposes a touch/keyboard-native expandable explanation and a hover ti
  dom.window.close();
 });
 
-test('desktop provider badge labels are never clipped by the commerce-row cap',()=>{
+test('the footer adapts to wider seller names and prices',()=>{
  const source=readFileSync(new URL('../src/event-card.js',import.meta.url),'utf8');
- const start=source.indexOf('.event-partner-badge--commerce {');
- const end=source.indexOf('@media (min-width: 1100px)',start);
- assert.notEqual(start,-1);
- assert.ok(end>start);
- const desktopBadgeCss=source.slice(start,end);
- assert.match(desktopBadgeCss,/width:\s*max-content/);
- assert.match(desktopBadgeCss,/max-width:\s*none/);
- assert.match(desktopBadgeCss,/overflow:\s*visible/);
- assert.match(desktopBadgeCss,/text-overflow:\s*clip/);
- assert.doesNotMatch(desktopBadgeCss,/max-width:\s*104px/);
- assert.doesNotMatch(desktopBadgeCss,/text-overflow:\s*ellipsis/);
+ assert.match(source,/\.event-commerce-row\s*\{[^}]*flex-wrap:\s*wrap/);
+ assert.doesNotMatch(source,/max-width:\s*104px/);
 });
 
-test('seller badges stay off artwork, with mobile metadata placement and desktop price-row placement',()=>{
+test('one seller badge sits next to the price above the purchase link',()=>{
  const dom=new JSDOM(renderSharedEventCard({event:{...inv({observedAt:new Date().toISOString()}),priceFrom:'390 Kč'},locale:'cs'}));
  const doc=dom.window.document;
  const badges=[...doc.querySelectorAll('.event-partner-badge')];
- assert.equal(badges.length,2);
+ assert.equal(badges.length,1);
  assert.equal(doc.querySelector('.event-image-frame > .event-partner-badge'),null);
- assert.ok(doc.querySelector('.event-content > .event-partner-badge:not(.event-partner-badge--commerce)'));
- const desktopBadge=doc.querySelector('.event-commerce-row > .event-partner-badge--commerce');
- assert.ok(desktopBadge);
- assert.equal(desktopBadge.getAttribute('aria-hidden'),'true');
+ assert.equal(doc.querySelector('.event-card-footer .event-commerce-row').firstElementChild,badges[0]);
  assert.equal(doc.querySelector('.event-commerce-row > .event-commerce') !== null,true);
  assert.equal(doc.querySelector('.event-stock-label').textContent,'Omezená dostupnost');
  assert.match(doc.querySelector('.event-stock summary').title,/Omezená dostupnost/);
+ dom.window.close();
+});
+
+test('cards with no seller price show the seller and usable purchase link',()=>{
+ const dom=new JSDOM(renderSharedEventCard({event:{partner:'ticketmaster'},locale:'cs',ticketsHref:'https://example.test/event'}));
+ const doc=dom.window.document;
+ assert.equal(doc.querySelector('.event-price'),null);
+ assert.equal(doc.querySelector('.event-commerce-row').textContent.trim(),'Ticketmaster');
+ assert.ok(doc.querySelector('.event-card-footer a.ticket[href]'));
+ assert.match(renderEventCommerce({},'cs',{detail:true}),/Cena u prodejce/);
  dom.window.close();
 });
 

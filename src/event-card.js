@@ -1,4 +1,3 @@
-import { eventDetailHref } from './event-detail-routes.js';
 import { trackPartnerOutboundLink } from './partner-outbound.js';
 import { renderEventCommerce, ensureEventCommerceStyles, eventInventoryState, eventStockLabel } from './event-commerce.js';
 import { EVENT_TICKET_ARROW } from './event-ticket-ui.js';
@@ -429,6 +428,7 @@ export function renderSharedEventCard({
   dateHtml = '',
   imageSrc = '',
   ticketsHref = '',
+  detailHref = '',
   detailLabelHtml = '',
   ticketLabelHtml = '',
   provider = null,
@@ -446,14 +446,6 @@ export function renderSharedEventCard({
     providerBadgeHtml === null
       ? eventProviderBadgeHtml(event)
       : String(providerBadgeHtml || '');
-
-  const resolvedProviderBadgeCommerce =
-    resolvedProviderBadge
-      ? resolvedProviderBadge.replace(
-          'class="event-partner-badge"',
-          'class="event-partner-badge event-partner-badge--commerce" aria-hidden="true"'
-        )
-      : '';
 
   const resolvedVenueLine =
     venueLineHtml === null
@@ -499,10 +491,8 @@ export function renderSharedEventCard({
   const safeImagePosition =
     `${imagePresentation.x}% ${imagePresentation.y}%`;
 
-  const detailHref = eventDetailHref(event, locale);
   const detailTag = detailHref ? 'a' : 'button';
   const detailAttributes = detailHref ? `href="${escapeHtml(detailHref)}"` : 'type="button"';
-  const detailClass = detailHref ? '' : ' js-event-detail';
 
   const safeModalId =
     escapeHtml(modalId);
@@ -561,26 +551,24 @@ export function renderSharedEventCard({
           decoding="async"
           onerror="this.onerror=null;this.src='${safeFallbackImage}';"
         />
-        <${detailTag} ${detailAttributes} class="event-image-action${detailClass}"
+        <${detailTag} ${detailAttributes} class="event-image-action js-event-detail" tabindex="-1"
           data-event-id="${safeModalId}" data-result-position="${safeResultPosition}"
           aria-label="${safeTitleAttr || escapeHtml(detailLabelHtml) || 'Detail'}"></${detailTag}>
         ${soldOut ? `<span class="event-sold-badge" title="${soldOutLabel}">${soldOutLabel}</span>` : ''}
       </div>
 
       <div class="event-content">
-        <h3 class="event-title"><${detailTag} ${detailAttributes} class="event-title-action${detailClass}"
+        <h3 class="event-title"><${detailTag} ${detailAttributes} class="event-title-action js-event-detail"
           data-event-id="${safeModalId}" data-result-position="${safeResultPosition}">${titleHtml}</${detailTag}></h3>
 
         <p class="event-date">${dateHtml}</p>
 
         ${resolvedVenueLine}
 
-        ${resolvedProviderBadge}
-
         <div class="event-card-footer">
           <div class="event-commerce-row">
+            ${resolvedProviderBadge}
             ${renderEventCommerce(event, locale)}
-            ${resolvedProviderBadgeCommerce}
           </div>
           <div class="event-buttons-group">
 
@@ -594,6 +582,7 @@ export function renderSharedEventCard({
             data-result-position="${safeResultPosition}"
             data-placement="event_card"
             data-event-title="${safeTitleAttr}"
+            aria-label="${ticketLabelHtml}${safeTitleAttr ? ' – ' + safeTitleAttr : ''}"
             data-event-city="${resolvedCityAttr}"
             data-outbound-url="${safeHref}"
           >
@@ -817,16 +806,22 @@ export function ensureSharedEventGridStyles(
       font-weight: 400;
     }
 
-    #eventsList .event-card .event-content > .event-partner-badge {
-      align-self: flex-start;
-      z-index: 3;
-      max-width: 100%;
-      margin: 6px 0 10px;
-      line-height: 1;
-      pointer-events: none;
+    #eventsList .event-card .event-commerce-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px 10px;
+      min-height: 26px;
+      margin-bottom: 8px;
     }
 
-    #eventsList .event-card .event-content > .event-partner-badge span {
+    #eventsList .event-card .event-commerce-row > .event-partner-badge {
+      max-width: 100%;
+      margin: 0;
+      line-height: 1;
+    }
+
+    #eventsList .event-card .event-commerce-row > .event-partner-badge span {
       min-height: 24px;
       max-width: 100%;
       padding: 4px 9px;
@@ -836,6 +831,12 @@ export function ensureSharedEventGridStyles(
       overflow: hidden;
       text-overflow: ellipsis;
       box-shadow: none;
+    }
+
+    #eventsList .event-card .event-commerce-row > .event-commerce {
+      min-width: 0;
+      margin: 0 0 0 auto;
+      text-align: end;
     }
 
     body:is([data-page="home"], [data-page="events"]) #eventsList .event-buttons-group {
@@ -879,46 +880,6 @@ export function ensureSharedEventGridStyles(
           );
       }
 
-      body:is([data-page="home"], [data-page="events"]) #eventsList
-        .event-content > .event-partner-badge:not(.event-partner-badge--commerce) {
-        display: none;
-      }
-
-      body:is([data-page="home"], [data-page="events"]) #eventsList
-        .event-commerce-row {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-      }
-
-      body:is([data-page="home"], [data-page="events"]) #eventsList
-        .event-commerce-row > .event-commerce {
-        min-width: 0;
-      }
-
-      body:is([data-page="home"], [data-page="events"]) #eventsList
-        .event-partner-badge--commerce {
-        display: block;
-        align-self: center;
-        justify-self: end;
-        width: max-content;
-        max-width: none;
-        margin: 0 0 2px;
-      }
-
-      body:is([data-page="home"], [data-page="events"]) #eventsList
-        .event-partner-badge--commerce span {
-        min-height: 24px;
-        max-width: none;
-        padding: 4px 9px;
-        border-radius: 999px;
-        font-size: 11px;
-        line-height: 1.25;
-        overflow: visible;
-        text-overflow: clip;
-      }
     }
 
     @media (min-width: 1100px) {
@@ -952,16 +913,15 @@ export function ensureSharedEventGridStyles(
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-card {
         display: grid;
         grid-template-columns: 82px minmax(0, 1fr);
-        grid-template-rows: auto auto auto auto auto;
+        grid-template-rows: auto auto auto auto;
         gap: 6px 12px;
         padding: 14px;
       }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-content { display: contents; }
-      body:is([data-page="home"], [data-page="events"]) #eventsList .event-partner-badge--commerce { display: none; }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-image-frame {
         grid-column: 1;
-        grid-row: 1 / span 4;
-        height: 112px;
+        grid-row: 1 / span 3;
+        height: 94px;
         aspect-ratio: auto;
         border-radius: 8px;
       }
@@ -986,15 +946,7 @@ export function ensureSharedEventGridStyles(
         line-height: 1.4;
         font-size: 12px;
       }
-      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-content > .event-partner-badge {
-        grid-column: 2;
-        grid-row: 4;
-        align-self: start;
-        justify-self: start;
-        max-width: 100%;
-        margin: 2px 0 0;
-      }
-      body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-content > .event-partner-badge span {
+      #eventsList .event-card .event-commerce-row > .event-partner-badge span {
         min-height: 22px;
         max-width: 100%;
         padding: 3px 7px;
@@ -1004,9 +956,10 @@ export function ensureSharedEventGridStyles(
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      #eventsList .event-card .event-commerce-row > .event-commerce .event-price { font-size: 15px; }
       body:is([data-page="home"], [data-page="events"]) #eventsList .event-card .event-card-footer {
         grid-column: 1 / -1;
-        grid-row: 5;
+        grid-row: 4;
         padding-top: 6px;
         margin-top: 6px;
         border-top: 1px solid var(--aj-event-border);

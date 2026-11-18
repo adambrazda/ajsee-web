@@ -31,6 +31,7 @@ let previousFocus = null;
 const MODAL_I18N = {
   cs: {
     close: 'Zavřít',
+    fullDetail: 'Celý detail akce',
     detailsFallback: 'Podrobnosti najdete přímo u prodejce vstupenek.',
     categoryPrefix: 'Kategorie:',
     calendarLabel: 'Přidat do kalendáře:',
@@ -47,6 +48,7 @@ const MODAL_I18N = {
   },
   en: {
     close: 'Close',
+    fullDetail: 'Full event details',
     detailsFallback: 'Details are available directly from the ticket seller.',
     categoryPrefix: 'Category:',
     calendarLabel: 'Add to calendar:',
@@ -63,6 +65,7 @@ const MODAL_I18N = {
   },
   de: {
     close: 'Schließen',
+    fullDetail: 'Alle Details zur Veranstaltung',
     detailsFallback: 'Details findest du direkt beim Ticketanbieter.',
     categoryPrefix: 'Kategorie:',
     calendarLabel: 'Zum Kalender hinzufügen:',
@@ -79,6 +82,7 @@ const MODAL_I18N = {
   },
   sk: {
     close: 'Zavrieť',
+    fullDetail: 'Celý detail podujatia',
     detailsFallback: 'Podrobnosti nájdete priamo u predajcu vstupeniek.',
     categoryPrefix: 'Kategória:',
     calendarLabel: 'Pridať do kalendára:',
@@ -95,6 +99,7 @@ const MODAL_I18N = {
   },
   pl: {
     close: 'Zamknij',
+    fullDetail: 'Pełne informacje o wydarzeniu',
     detailsFallback: 'Szczegóły znajdziesz bezpośrednio u sprzedawcy biletów.',
     categoryPrefix: 'Kategoria:',
     calendarLabel: 'Dodaj do kalendarza:',
@@ -111,6 +116,7 @@ const MODAL_I18N = {
   },
   hu: {
     close: 'Bezárás',
+    fullDetail: 'Az esemény összes részlete',
     detailsFallback: 'A részletek közvetlenül a jegyértékesítőnél érhetők el.',
     categoryPrefix: 'Kategória:',
     calendarLabel: 'Hozzáadás a naptárhoz:',
@@ -954,6 +960,19 @@ function ensureModalConversionPolishStyles() {
       font-weight:600;
     }
 
+    .event-modal .modal-full-detail{
+      display:inline-block;
+      width:fit-content;
+      margin:0 0 8px;
+      color:inherit;
+      font-size:14px;
+      font-weight:650;
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+
+    .event-modal .modal-full-detail[hidden]{display:none}
+
     .event-modal .calendar-buttons{
       margin-top:20px;
     }
@@ -1114,6 +1133,8 @@ function ensureEventModalShell() {
             class="modal-seller-note"
             hidden
           ></p>
+
+          <a id="modalFullDetail" class="modal-full-detail" hidden></a>
 
           <div class="calendar-buttons">
             <span class="calendar-label" id="modalCalendarLabel">Přidat do kalendáře:</span>
@@ -1415,6 +1436,14 @@ export async function openEventModal(eventData, locale = 'cs', opts = {}) {
   const descEl = modal.querySelector('#modalDescription');
   const sellerNoteEl = ensureModalSellerNote(modal);
   const commerceEl = ensureModalCommerceLayout(modal);
+  const fullDetail = modal.querySelector('#modalFullDetail');
+  if (fullDetail) {
+    const href = /^\/(?:(?:en|de|sk|pl|hu)\/)?udalosti\/[a-z0-9-]+\/$/.test(opts.detailHref) ? opts.detailHref : '';
+    fullDetail.hidden = !href;
+    fullDetail.textContent = i18n(lang, 'fullDetail');
+    if (href) fullDetail.setAttribute('href', href);
+    else fullDetail.removeAttribute('href');
+  }
   // Fully replace on every open so a prior event's price/status cannot leak.
   if (commerceEl) commerceEl.innerHTML = renderEventCommerce(eventData, lang, { detail: true });
   const categoryEl = modal.querySelector('#modalCategory');

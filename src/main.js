@@ -4668,6 +4668,12 @@ if (!G.flags.mainDomReadyBound) {
       badge.innerHTML = '<span>' + label + '</span>';
     }
 
+    const row = card.querySelector('.event-commerce-row');
+    if (row) {
+      if (badge.parentElement !== row) row.prepend(badge);
+      return;
+    }
+
     const content =
       card.querySelector('.event-content');
 

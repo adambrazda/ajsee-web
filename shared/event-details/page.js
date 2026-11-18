@@ -13,14 +13,16 @@ export function renderEventPage(shell, seed, snapshot, { lang = 'cs', now = new 
   const e = escapeHtml;
   const json = value => JSON.stringify(value).replace(/</g, '\\u003c');
   const schema = buildEventSchema(event, { lang, publicPage: true, now });
-  const head = `<title>${e(title)}</title><meta name="description" content="${e(copy.introduction)}"><link rel="canonical" href="${e(canonical)}">
+  const description = copy.introduction || `${event.title} · ${event.venue.name} · ${dateText(event.startDate, lang)}`;
+  schema.description = description;
+  const head = `<title>${e(title)}</title><meta name="description" content="${e(description)}"><link rel="canonical" href="${e(canonical)}">
     ${LANGUAGES.map(language => `<link rel="alternate" hreflang="${language}" href="${ORIGIN + detailPath(event.slug, language)}">`).join('')}
     <link rel="alternate" hreflang="x-default" href="${ORIGIN + detailPath(event.slug)}">
-    <meta property="og:type" content="website"><meta property="og:title" content="${e(title)}"><meta property="og:description" content="${e(copy.introduction)}"><meta property="og:url" content="${e(canonical)}"><meta property="og:image" content="${e(event.image.url)}">
+    <meta property="og:type" content="website"><meta property="og:title" content="${e(title)}"><meta property="og:description" content="${e(description)}"><meta property="og:url" content="${e(canonical)}"><meta property="og:image" content="${e(event.image.url)}">
     <meta property="og:locale" content="${({ cs: 'cs_CZ', en: 'en_GB', de: 'de_DE', sk: 'sk_SK', pl: 'pl_PL', hu: 'hu_HU' })[lang]}">
-    <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(title)}"><meta name="twitter:description" content="${e(copy.introduction)}"><meta name="twitter:image" content="${e(event.image.url)}">
+    <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(title)}"><meta name="twitter:description" content="${e(description)}"><meta name="twitter:image" content="${e(event.image.url)}">
     <script type="application/ld+json">${json({ '@context': 'https://schema.org', '@graph': [schema,
-      { '@type': 'WebPage', '@id': canonical + '#webpage', url: canonical, name: title, description: copy.introduction, inLanguage: lang, isPartOf: { '@id': ORIGIN + '/#website' } },
+      { '@type': 'WebPage', '@id': canonical + '#webpage', url: canonical, name: title, description, inLanguage: lang, isPartOf: { '@id': ORIGIN + '/#website' } },
       { '@type': 'BreadcrumbList', itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'AJSEE', item: ORIGIN + (lang === 'cs' ? '/' : '/' + lang + '/') },
         { '@type': 'ListItem', position: 2, name: COPY[lang].labels.events, item: ORIGIN + (lang === 'cs' ? '/events' : '/' + lang + '/events/') },

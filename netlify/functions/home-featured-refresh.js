@@ -1,7 +1,7 @@
 import { getStore } from '@netlify/blobs';
 import policy from '../../content/home/featured.json' with { type: 'json' };
 import { collectHomeFeaturedSources, createHomeFeaturedSnapshot } from '../../shared/home-featured-source.js';
-import { selectHomeFeaturedEvents } from '../../src/home-featured-selection.js';
+import { FEATURED_EVENT_STORE, prepareHomeFeaturedPublication, publishFeaturedPages, refreshPublishedFeaturedPages } from '../../shared/event-details/featured.js';
 
 export function createHomeFeaturedRefresh({ getStoreFn = getStore, collectSources = collectHomeFeaturedSources, now = () => new Date() } = {}) {
   return async () => {
@@ -13,12 +13,17 @@ export function createHomeFeaturedRefresh({ getStoreFn = getStore, collectSource
       console.warn('[home tips] refresh retained its last snapshot: a source is unavailable');
       return;
     }
-    const snapshot = createHomeFeaturedSnapshot(sources, policy, { now: current });
-    if (selectHomeFeaturedEvents(snapshot.events, snapshot.policy, { now: current }).length < 6) {
+    const { snapshot, pages } = prepareHomeFeaturedPublication(createHomeFeaturedSnapshot(sources, policy, { now: current }));
+    if (snapshot.recommendedIds.length < 6) {
       console.warn('[home tips] refresh retained its last snapshot: fewer than six eligible events');
       return;
     }
-    await getStoreFn({ name: 'home-featured-v1', consistency: 'strong' }).setJSON('current', snapshot);
+    const home = getStoreFn({ name: 'home-featured-v1', consistency: 'strong' });
+    const previous = await home.getWithMetadata('current', { type: 'json' });
+    if (Date.parse(previous?.data?.generatedAt) >= +current) return;
+    const retired = refreshPublishedFeaturedPages(snapshot, previous?.data, sources.events);
+    await publishFeaturedPages(getStoreFn({ name: FEATURED_EVENT_STORE, consistency: 'strong' }), [...pages, ...retired]);
+    await home.setJSON('current', snapshot, previous?.etag ? { onlyIfMatch: previous.etag } : { onlyIfNew: true });
     console.log(`[home tips] refreshed ${snapshot.events.length} candidates`);
   };
 }

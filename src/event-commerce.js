@@ -39,7 +39,7 @@ function textPrice(value, explicitCurrency) {
   return { min, max, currency:cur };
 }
 
-export function eventPriceLabels(event = {}, locale = 'cs') {
+export function eventPriceRanges(event = {}) {
   const ranges = [];
   for (const raw of Array.isArray(event.priceRanges) ? event.priceRanges : []) {
     if (!raw || typeof raw !== 'object') continue;
@@ -61,7 +61,11 @@ export function eventPriceLabels(event = {}, locale = 'cs') {
     if (!existing) grouped.set(p.currency,{...p});
     else { existing.min = Math.min(existing.min,p.min); existing.max = existing.max !== null && p.max !== null ? Math.max(existing.max,p.max) : null; }
   }
-  return [...grouped.values()].map(p => {
+  return [...grouped.values()];
+}
+
+export function eventPriceLabels(event = {}, locale = 'cs') {
+  return eventPriceRanges(event).map(p => {
     const fmt = n => new Intl.NumberFormat(TEXT[language(locale)] ? locale : 'en', {style:'currency',currency:p.currency,minimumFractionDigits:Number.isInteger(n) ? 0 : 2,maximumFractionDigits:2}).format(n);
     return p.max !== null && p.max > p.min ? `${fmt(p.min)} – ${fmt(p.max)}` : words(locale).from.replace('{price}',fmt(p.min));
   });
@@ -96,8 +100,10 @@ export function renderEventCommerce(event = {}, locale = 'cs', {detail = false, 
   const helpId = `event-stock-help-${++stockHelpSequence}`;
   const saleStatus = !known && stock.status !== 'unknown';
   const priceNoteId = detail && prices.length ? `${helpId}-price` : '';
+  if (!detail && !prices.length && !known && !saleStatus) return '';
+  const showPrice = detail || prices.length > 0;
   return `<div class="event-commerce${detail ? ' event-commerce--detail' : ''}${!known && !saleStatus ? ' event-commerce--price-only' : ''}">
-    <p class="event-price${prices.length ? '' : ' event-price--unknown'}"${priceNoteId ? ` aria-describedby="${priceNoteId}" title="${esc(t.priceNote)}"` : ''}>${esc(prices.join(' / ') || t.priceUnknown)}</p>
+    ${showPrice ? `<p class="event-price${prices.length ? '' : ' event-price--unknown'}"${priceNoteId ? ` aria-describedby="${priceNoteId}" title="${esc(t.priceNote)}"` : ''}>${esc(prices.join(' / ') || t.priceUnknown)}</p>` : ''}
     ${known ? `<details class="event-stock" data-stock-tone="${stock.tone}" data-stock-status="${stock.status}">
       <summary aria-controls="${helpId}" aria-describedby="${helpId}" title="${esc(t[stock.status] + '. ' + explanation + (updated ? ' ' + updated : ''))}"><span class="event-stock-dot" aria-hidden="true"></span><span class="event-stock-label">${esc(t[stock.status])}</span><span class="event-stock-compact" aria-hidden="true">${esc((COMPACT_STOCK[language(locale)] || COMPACT_STOCK.en)[stock.status] || t[stock.status])}</span><span class="event-stock-info" aria-hidden="true">ⓘ</span></summary>
     </details>

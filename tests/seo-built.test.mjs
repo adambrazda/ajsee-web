@@ -12,8 +12,7 @@ import { BLOG_UI } from '../src/blog-ui.js';
 import { finalizeSeoHtml, localizedSeoPath, SOCIALS } from '../scripts/finalize-seo.mjs';
 import { buildStaticMain } from '../scripts/build-mg.mjs';
 import { AMAZING_PLACES_BOOKING_URL, AMAZING_PLACES_VOUCHER_URL } from '../shared/amazing-places.js';
-import { detailPath, resolveEvent } from '../shared/event-details/state.js';
-import { eventState } from '../scripts/event-detail-pilot.mjs';
+import { detailPath } from '../shared/event-details/state.js';
 import { cataloguePath, CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH } from '../src/catalogue-search.js';
 const LANGS=['cs','en','de','sk','pl','hu'],ORIGIN='https://ajsee.cz';
 const RETIRED=['koncert-coldplay-praha-2025','praha-shakespeare-divadlo-2025','recenze-budapest-sziget-festival-2025'];
@@ -78,13 +77,10 @@ test('built search shells survive initialization and reserve the interactive con
   }
 });
 
-test('catalogue cards and the archive make event details reachable without the planning block', () => {
+test('home tips link to their own pages and the catalogue preserves older public detail links', () => {
   const pilot = JSON.parse(fs.readFileSync('content/event-detail-pilot.json', 'utf8'));
-  const snapshot = JSON.parse(fs.readFileSync('dist/event-detail-assets/seed.json', 'utf8'));
-  const now = new Date(snapshot.generatedAt);
-  const events = pilot.events.map(event => resolveEvent(event, snapshot, now));
-  const planned = events.filter(event => ['scheduled', 'rescheduled'].includes(eventState(event, now)));
-  const archived = events.filter(event => !planned.includes(event));
+  const snapshot = JSON.parse(fs.readFileSync('public/data/home-featured-events.json', 'utf8'));
+  const archived = pilot.events.filter(event => !snapshot.recommendedIds.includes(event.id));
   for (const lang of LANGS) {
     const home = load(prefix(lang) + 'index.html');
     const listing = load(prefix(lang) + 'events/index.html');
@@ -94,9 +90,10 @@ test('catalogue cards and the archive make event details reachable without the p
       const expected = entries => entries.map(event => detailPath(event.slug, lang));
       assert.equal(home.window.document.querySelector('[data-event-detail-plan]'), null);
       assert.equal(listing.window.document.querySelector('[data-event-detail-plan]'), null);
-      const detailLinks = [...listing.window.document.querySelectorAll('[data-event-archive-date] a.event-title-action')]
+      const homeLinks = [...home.window.document.querySelectorAll('#eventsList a.event-title-action')]
         .map(link => link.getAttribute('href'));
-      assert.deepEqual(detailLinks.sort(), expected(planned).sort());
+      assert.deepEqual(homeLinks, snapshot.recommendedIds.map(id => detailPath(snapshot.detailSlugs[id], lang)));
+      assert.equal(listing.window.document.querySelector('#eventsList a.event-title-action'), null);
       assert.deepEqual(links(listing, '[data-event-detail-archive]'), expected(archived));
       assert.equal(home.window.document.querySelector('[data-event-detail-archive]'), null);
       const archive = listing.window.document.querySelector('[data-event-detail-archive]');

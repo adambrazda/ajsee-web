@@ -25,7 +25,9 @@ async function renderDirectory(directory) {
     if (!list) { dom.window.close(); continue; }
     const language = doc.documentElement.lang.slice(0, 2) || 'cs';
     const translations = locales.get(language) || locales.get('cs');
-    const { markup } = renderHomeFeaturedMarkup(snapshot, language, { translate: (key, fallback) => translations[key] || fallback });
+    const { markup } = renderHomeFeaturedMarkup(snapshot, language, {
+      translate: (key, fallback) => translations[key] || fallback, withDetailLinks: isHome
+    });
     if (isEvents) {
       list.innerHTML = '<div data-events-static><p class="events-static-note">' + STATIC_NOTE[language] + '</p><div class="events-list">' + markup + '</div></div>';
       list.querySelectorAll('[data-events-static] button.event-image-action').forEach(node => node.remove());

@@ -1,6 +1,7 @@
-import { featuredEventTitle, selectHomeFeaturedEvents } from './home-featured-selection.js';
+import { featuredEventTitle, isHomeFeaturedEligible, selectHomeFeaturedEvents } from './home-featured-selection.js';
 import { formatEventDateTime } from './event-date-time.js';
 import { renderSharedEventCard } from './event-card.js';
+import { eventDetailHref } from './event-detail-routes.js';
 
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 let snapshotPromise;
@@ -15,16 +16,23 @@ export function homeFeaturedTicketsHref(event, locale = 'cs') {
   return url.pathname + url.search;
 }
 
-export function renderHomeFeaturedMarkup(snapshot, locale = 'cs', { now = new Date(), translate = (key, fallback) => fallback } = {}) {
-  const events = selectHomeFeaturedEvents(snapshot.events, snapshot.policy, { now }).map(event => ({ ...event }));
+export function renderHomeFeaturedMarkup(snapshot, locale = 'cs', { now = new Date(), translate = (key, fallback) => fallback, withDetailLinks = true } = {}) {
+  // Keep the server's published selection until the next refresh. The lead
+  // time is applied on entry; an already published tip can run until it starts.
+  const byId = new Map(snapshot.events.map(event => [event.id, event]));
+  const selected = Array.isArray(snapshot.recommendedIds)
+    ? snapshot.recommendedIds.map(id => byId.get(id)).filter(event => event && isHomeFeaturedEligible(event, { ...snapshot.policy, now, leadHours: 0 }))
+    : selectHomeFeaturedEvents(snapshot.events, snapshot.policy, { now });
+  const events = selected.map(event => ({ ...event }));
   const markup = events.map((event, index) => {
     const title = featuredEventTitle(event);
     event.__ajseeTicketsHref = homeFeaturedTicketsHref(event, locale);
+    event.__ajseeDetailHref = withDetailLinks ? eventDetailHref(event, locale, snapshot.detailSlugs?.[event.id]) : '';
     event.__ajseeModalId = event.id;
     event.__ajseeResultPosition = index + 1;
     return renderSharedEventCard({ event, locale, modalId: event.id, resultPosition: index + 1,
       titleRaw: title, titleHtml: escapeHtml(title), dateHtml: escapeHtml(formatEventDateTime(event, locale)),
-      ticketsHref: event.__ajseeTicketsHref, detailLabelHtml: escapeHtml(translate('event-details', 'Detail')),
+      ticketsHref: event.__ajseeTicketsHref, detailHref: event.__ajseeDetailHref, detailLabelHtml: escapeHtml(translate('event-details', 'Detail')),
       ticketLabelHtml: escapeHtml(translate('event-tickets', 'Vstupenky')) });
   }).join('');
   return { events, markup };

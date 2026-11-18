@@ -18,7 +18,7 @@ export const AI_SEARCH_COPY = {
     success:
       'Dotaz jsem pochopil. AI spojení funguje; v dalším kroku použijeme rozpoznané filtry.',
     verifying: 'Ověřujeme požadavek…',
-    guidance: 'Kde nebo kdy chcete vyrazit? Stačí zadat město, termín nebo typ akce.',
+    guidance: 'Kam chcete vyrazit? Stačí zadat město, termín nebo typ akce.',
     guidanceExample: 'Koncerty v Brně tento víkend',
     manualFallback: 'Hledat pomocí filtrů',
     generic: 'Automatické vyhledávání se teď nepodařilo dokončit. Pokračujte pomocí filtrů.'

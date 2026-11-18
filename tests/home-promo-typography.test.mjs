@@ -28,6 +28,16 @@ for (const directory of ['src/locales', 'public/locales']) {
 
 const entry = readFileSync(new URL('../src/home-entry.js', import.meta.url), 'utf8');
 const entryFunctions = parse(entry, { sourceType: 'module', ecmaVersion: 'latest' }).body;
+const localeFiles = entryFunctions.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'getI18nFilesForPage');
+const getFiles = new Function('IS_LOCAL_DEV', 'HOME_LOCALE_URLS', 'return (' + entry.slice(localeFiles.start, localeFiles.end) + ')');
+
+test('deployed homepage translations use the URL from the current build', () => {
+  const urls = { './locales/cs.json': '/assets/cs-currentBuild.json' };
+  assert.deepEqual(getFiles(false, urls)('cs', 'home'), ['/assets/cs-currentBuild.json']);
+  assert.deepEqual(getFiles(false, urls)('en', 'home'), ['/locales/en.json']);
+  assert.deepEqual(getFiles(true, urls)('cs', 'home'), ['/locales/cs.json']);
+});
+
 const formatter = entryFunctions.find(node => node.type === 'FunctionDeclaration' && node.id.name === 'formatHomePromoTitle');
 assert.ok(formatter, 'The live translation path must protect the promo headings too.');
 const formatTitle = new Function(`return (${entry.slice(formatter.start, formatter.end)});`)();

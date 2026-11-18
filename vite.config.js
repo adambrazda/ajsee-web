@@ -1,7 +1,7 @@
 // vite.config.js
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import { existsSync, createReadStream, readdirSync } from 'fs';
+import { existsSync, createReadStream, readdirSync, readFileSync } from 'fs';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 // Helper: přidej vstup jen když existuje
@@ -187,6 +187,24 @@ function devHtmlRewriteAssetsPlugin() {
   };
 }
 
+function siteNavigationPlugin() {
+  return {
+    name: 'ajsee-site-navigation',
+    transformIndexHtml(html) {
+      return html
+        .replace(/<!-- site-menu(?::([\w-]+))? -->/g, (_, currentKey) => {
+          const menu = readFileSync(resolve(__dirname, 'templates/site-menu.html'), 'utf8').trimEnd();
+          return currentKey
+            ? menu.replace('data-i18n-key="' + currentKey + '"', '$& aria-current="page"')
+            : menu;
+        })
+        .replace('<!-- footer-navigation -->', () => (
+          readFileSync(resolve(__dirname, 'templates/footer-navigation.html'), 'utf8').trimEnd()
+        ));
+    },
+  };
+}
+
 export default defineConfig({
   appType: 'mpa',
 
@@ -255,6 +273,7 @@ export default defineConfig({
   },
 
   plugins: [
+    siteNavigationPlugin(),
     devRedirectPlugin(),
     devLocalesAlias(),
     devHtmlRewriteAssetsPlugin(),

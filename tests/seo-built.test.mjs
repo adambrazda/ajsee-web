@@ -14,6 +14,8 @@ import { buildStaticMain } from '../scripts/build-mg.mjs';
 import { AMAZING_PLACES_BOOKING_URL, AMAZING_PLACES_VOUCHER_URL } from '../shared/amazing-places.js';
 import { detailPath } from '../shared/event-details/state.js';
 import { cataloguePath, CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH } from '../src/catalogue-search.js';
+import { buildLocalizedPath } from '../src/utils/localized-path.js';
+import londonRoutes from '../shared/london-musicals-routes.json' with { type: 'json' };
 const LANGS=['cs','en','de','sk','pl','hu'],ORIGIN='https://ajsee.cz';
 const RETIRED=['koncert-coldplay-praha-2025','praha-shakespeare-divadlo-2025','recenze-budapest-sziget-festival-2025'];
 const prefix=lang=>lang==='cs'?'':lang+'/';
@@ -247,6 +249,46 @@ test('localized SEO never forks the global Organization identity or partner link
 });
 
 for(const lang of LANGS){
+  test(`${lang}: primary navigation and footer use localized, crawlable links`, () => {
+    const dictionary = JSON.parse(fs.readFileSync(`src/locales/${lang}.json`, 'utf8'));
+    const keys = ['nav-events', 'nav-london-musicals', 'nav-accommodation', 'nav-reviews', 'nav-about', 'nav-partners'];
+    const localized = route => lang === 'cs' ? `/${route}` : `/${lang}/${route}/`;
+    const home = lang === 'cs' ? '/' : `/${lang}/`;
+    const links = [localized('events'), londonRoutes[lang], localized('accommodation'), localized('blog'), localized('about'), localized('partners')];
+    const pages = [
+      [prefix(lang) + 'index.html', null],
+      [londonRoutes[lang].slice(1) + 'index.html', 'nav-london-musicals'],
+      [prefix(lang) + 'blog/index.html', 'nav-reviews'],
+      [prefix(lang) + 'partners/index.html', 'nav-partners'],
+    ];
+
+    for (const [file, activeKey] of pages) {
+      const dom = load(file);
+      const doc = dom.window.document;
+      const nav = doc.querySelector('#mainNav');
+      const menuLinks = [...nav.querySelectorAll(':scope > ul a')];
+
+      assert.equal(nav.getAttribute('aria-label'), dictionary['nav-main-label']);
+      assert.deepEqual(menuLinks.map(link => link.dataset.i18nKey), keys);
+      assert.deepEqual(menuLinks.map(link => link.getAttribute('href')), links);
+      assert.deepEqual(menuLinks.map(link => clean(link.textContent)), keys.map(key => dictionary[key]));
+      assert.equal(nav.querySelector('.main-nav-partners a'), menuLinks.at(-1));
+      assert.equal(nav.querySelector('[aria-current="page"]')?.dataset.i18nKey ?? null, activeKey);
+
+      const logo = doc.querySelector('.logo-link');
+      assert.equal(logo.getAttribute('href'), home);
+      assert.equal(logo.getAttribute('aria-label'), dictionary['nav-logo-home']);
+      const footer = doc.querySelector('.footer-navigation');
+      assert.deepEqual([...footer.querySelectorAll('h2')].map(heading => clean(heading.textContent)), [dictionary['footer-help'], dictionary['footer-cooperation']]);
+      assert.deepEqual([...footer.querySelectorAll('a')].map(link => link.getAttribute('href')), [localized('faq'), `${home}#contact`, localized('partners')]);
+      assert.equal(clean(footer.querySelector('[data-i18n-key="footer-faq"]').textContent), dictionary['footer-faq']);
+      dom.window.close();
+    }
+
+    for (const route of Object.values(londonRoutes)) {
+      assert.equal(buildLocalizedPath(route, lang), londonRoutes[lang]);
+    }
+  });
   test(lang+': translated micro-guide content, labels, metadata and dates exist before JS',()=>{
     let dom=load(prefix(lang)+'microguides/index.html'),doc=dom.window.document;
     assert.equal(clean(doc.querySelector('main h1').textContent),MICROGUIDE_LABELS[lang].indexHeading);

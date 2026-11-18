@@ -10,16 +10,7 @@ const PREFIXED_LANGS = LANGS.filter((lang) => lang !== 'cs');
 
 
 
-const LOCALIZED_ROUTE_ALIASES = [
-  {
-    cs: '/londynske-muzikaly/',
-    en: '/en/london-musicals/',
-    de: '/de/london-musicals/',
-    sk: '/sk/londynske-muzikaly/',
-    pl: '/pl/londynskie-musicale/',
-    hu: '/hu/londoni-musicalek/'
-  }
-];
+const LOCALIZED_ROUTE_ALIASES = [require('../shared/london-musicals-routes.json')];
 
 function findLocalizedRouteAlias(route) {
   const normalized = normalizeRoute(route);
@@ -458,21 +449,6 @@ function updateStaticGeneratedLabels(html, lang) {
 }
 
 
-function updateStaticA11yLabels(html, dict, lang) {
-  const homeLabel = t(dict, 'nav-home') || (LANG_META[lang]?.label || LANG_META.cs.label);
-
-  html = html.replace(
-    /<a\b(?=[^>]*class="[^"]*\blogo-link\b[^"]*")[^>]*>/gi,
-    (full) => {
-      let out = replaceAttr(full, 'aria-label', homeLabel);
-      out = replaceAttr(out, 'title', homeLabel);
-      return out;
-    }
-  );
-
-  return html;
-}
-
 function isSkippableHref(href) {
   const value = String(href || '').trim();
 
@@ -579,7 +555,6 @@ function processPage(sourceHtml, file, lang) {
   html = translateHtml(html, dict);
   html = updateLangDropdown(html, lang);
   html = updateStaticGeneratedLabels(html, lang);
-  html = updateStaticA11yLabels(html, dict, lang);
   html = rewriteLinks(html, lang, route);
   html = applySeoLinks(html, route, lang);
 

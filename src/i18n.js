@@ -1,3 +1,5 @@
+import { buildLocalizedPath } from './utils/localized-path.js';
+
 // /src/i18n.js
 // Modul i18n pro statické stránky (about.html, thank-you, apod.)
 // Exportuje: translations (živý objekt), applyTranslations, t, detectLang.
@@ -20,30 +22,6 @@ function ajseePathLang(pathname = window.location.pathname) {
   return match ? ajseeCanonicalLang(match[1]) : '';
 }
 
-function ajseeStripLangPrefix(pathname = '/') {
-  let path = String(pathname || '/');
-  path = path.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
-  if (!path) path = '/';
-  if (!path.startsWith('/')) path = '/' + path;
-  return path;
-}
-
-function ajseeBuildLocalizedPath(pathname = '/', lang = 'cs') {
-  const targetLang = ajseeCanonicalLang(lang);
-  let path = ajseeStripLangPrefix(pathname || '/');
-
-  path = path.replace(/\/index\.html$/i, '/');
-  path = path.replace(/\.html$/i, '');
-  path = path.replace(/\/{2,}/g, '/');
-
-  if (!path.startsWith('/')) path = '/' + path;
-  if (path !== '/' && !path.endsWith('/')) path += '/';
-
-  return targetLang === 'cs'
-    ? path
-    : '/' + targetLang + (path === '/' ? '/' : path);
-}
-
 function ajseeLocalizedUrlForLang(lang, href = window.location.href) {
   const targetLang = ajseeCanonicalLang(lang);
 
@@ -52,7 +30,7 @@ function ajseeLocalizedUrlForLang(lang, href = window.location.href) {
     url.searchParams.delete('lang');
     url.searchParams.delete('locale');
     url.searchParams.delete('hl');
-    url.pathname = ajseeBuildLocalizedPath(url.pathname, targetLang);
+    url.pathname = buildLocalizedPath(url.pathname, targetLang);
 
     const search = url.searchParams.toString();
     return url.pathname + (search ? '?' + search : '') + (url.hash || '');
@@ -74,7 +52,7 @@ function ajseeLocalizeInternalHref(rawHref, lang) {
     url.searchParams.delete('lang');
     url.searchParams.delete('locale');
     url.searchParams.delete('hl');
-    url.pathname = ajseeBuildLocalizedPath(url.pathname, lang);
+    url.pathname = buildLocalizedPath(url.pathname, lang);
 
     const search = url.searchParams.toString();
     return url.pathname + (search ? '?' + search : '') + (url.hash || '');

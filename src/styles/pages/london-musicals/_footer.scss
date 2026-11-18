@@ -1,5 +1,10 @@
 @use "./mixins" as m;
 
+.page-london-musicals-todaytix .footer-navigation {
+  --aj-footer-nav-heading: #f1f5f9;
+  --aj-footer-nav-link: #cbd5e1;
+}
+
 .page-london-musicals-todaytix {
   .site-footer {
     width: 100%;

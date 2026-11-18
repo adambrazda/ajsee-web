@@ -263,7 +263,7 @@ body[data-page='home'].home-premium {
   @media (prefers-color-scheme: dark) {
     .home-amazing-logo { background: #fff; }
   }
-  .home-contact { padding: 30px 0 42px; background: var(--home-bg); }
+  .home-contact { padding: 30px 0 42px; background: var(--home-bg); scroll-margin-top: var(--header-offset, 84px); }
   .home-contact-inner { border-top: 1px solid var(--home-line); padding-top: 34px; }
   .home-contact .home-contact-top { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,.8fr); align-items: start; gap: clamp(32px,5vw,64px); }
   .home-contact-main, .home-contact-partner { min-width: 0; }

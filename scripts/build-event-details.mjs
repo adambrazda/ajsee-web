@@ -36,7 +36,7 @@ for (const lang of LANGUAGES) {
   header.querySelector('.hamburger-btn')?.setAttribute('aria-label', COPY[lang].labels.openMenu);
   header.querySelector('.menu-close')?.setAttribute('aria-label', COPY[lang].labels.closeMenu);
   const footerNode = page.window.document.querySelector('.site-footer');
-  footerNode.querySelector('nav')?.setAttribute('aria-label', COPY[lang].labels.legalLinks);
+  footerNode.querySelector('.footer-legal')?.setAttribute('aria-label', COPY[lang].labels.legalLinks);
   const footer = footerNode.outerHTML;
   doc.documentElement.lang = lang;
   doc.querySelectorAll('title, meta[name="robots"], meta[name="description"], link[rel="canonical"], link[hreflang], script[type="application/ld+json"]').forEach(node => node.remove());

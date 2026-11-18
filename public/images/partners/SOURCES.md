@@ -16,6 +16,8 @@ Audited on 2026-10-09. The four newly selected Ticketmaster and TodayTix SVGs ar
 - Archive: https://www.smsticket.cz/logomanual.zip
 - `smsticket.png`: `smsticket ruzne obrazky na web/smsticket - predprodej vstupenek_modre logo, bez pozadi.png`.
 - `smsticket-dark.png`: `smsticket ruzne obrazky na web/smsticket - predprodej vstupenek_bile logo, bez pozadi.png`.
+- `smsticket-wordmark.svg` is a vector SVG export of `smsticket logomanual/smsticket logo cyan.eps`, sized to the original EPS artwork bounds.
+- `smsticket-wordmark-dark.svg` is the white wordmark from the official website, copied byte for byte from https://www.smsticket.cz/static/images/logo-final.svg.
 
 ## TodayTix — official public newsroom brand archive
 
@@ -51,6 +53,8 @@ Audited on 2026-10-09. The four newly selected Ticketmaster and TodayTix SVGs ar
 - `Ticketmaster-Logo-White-RGB.svg`: `01dfd5e2b043f2c56d10ee2db6cdef9a4c967e9ddac172d5ae939155ed9f1567`
 - `smsticket.png`: `444d48a63847ab5ee95f4bac41c955cead2c9a7faeb6dfabcd64720c05e05897`
 - `smsticket-dark.png`: `c23ea4e847823eee2410883b5567c76b3517ca6b301189cac38766029cb06dbe`
+- `smsticket-wordmark.svg`: `abef345432722fed5ef9cff6caa3380914f23fe9ab767844913f9f8eefac1135`
+- `smsticket-wordmark-dark.svg`: `01221f9a0d8e2aa3ba959800b320f2bbd74a1921d46b6a76548d7ef36fcf15ba`
 - `ttx_logo_horizontal.svg`: `ebd92dcd9a071c57177422917a7f482a92ac3a8dfc47e6e249342e87cff00676`
 - `ttx_logo_horizontal_white.svg`: `c53697562ddd296fbba22a2b9c16618927e639413e367772016bab18b7ada982`
 - `colosseumticket.svg`: `f314bece6e918d467965c87be886f3b9a1e514989f4720694b84eb83255bcbd9`

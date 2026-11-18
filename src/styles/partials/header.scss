@@ -501,6 +501,7 @@
   .main-nav.open{
     transform: translateX(0%);
     visibility: visible;
+    transition-property: transform;
   }
 
   /* ✅ reset the desktop “rail” UL completely (fixes clipping/empty menu) */

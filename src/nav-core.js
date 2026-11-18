@@ -85,8 +85,10 @@ function initMobileMenu() {
     document.body.classList.add('nav-open');
     document.body.style.overflow = 'hidden';
     hamburger.setAttribute('aria-expanded', 'true');
-    closeButton?.focus({ preventScroll: true });
     updateHeaderOffset();
+    requestAnimationFrame(() => {
+      if (nav.classList.contains('open')) closeButton?.focus({ preventScroll: true });
+    });
   };
 
   const closeMenu = () => {

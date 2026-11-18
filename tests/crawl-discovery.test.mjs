@@ -47,13 +47,13 @@ test('language anchors use translated hreflang routes and are idempotent',()=>{
   dom.window.close();
 });
 
-test('navigation initialization preserves mobile language links on FAQ pages',()=>{
+test('navigation initialization preserves mobile language links on FAQ pages',async()=>{
   const languages=['cs','en','de','sk','pl','hu'];
   const source = browserScript('src/nav-core.js');
   for(const lang of languages) {
     const target=l=>l==='cs'?'/faq':'/'+l+'/faq/';
     const markup = fs.readFileSync(lang === 'cs' ? 'dist/faq.html' : `dist/${lang}/faq/index.html`, 'utf8');
-    const dom=new JSDOM(markup,{url:'https://ajsee.cz'+target(lang),runScripts:'outside-only'});
+    const dom=new JSDOM(markup,{url:'https://ajsee.cz'+target(lang),runScripts:'outside-only',pretendToBeVisual:true});
     const doc=dom.window.document;
     const mobileSwitch = doc.querySelector('.main-nav .mobile-switcher');
     mobileSwitch.querySelector(`.lang-btn[data-lang="${lang}"]`).setAttribute('aria-current', 'true');
@@ -69,6 +69,7 @@ test('navigation initialization preserves mobile language links on FAQ pages',()
     const closeButton = doc.querySelector('.main-nav .menu-close');
     opener.click();
     assert.equal(opener.getAttribute('aria-expanded'), 'true');
+    await new Promise(resolve => dom.window.requestAnimationFrame(resolve));
     assert.equal(doc.activeElement, closeButton);
     doc.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape' }));
     assert.equal(opener.getAttribute('aria-expanded'), 'false');

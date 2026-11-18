@@ -236,7 +236,16 @@ body[data-page='home'].home-premium {
     object-fit: contain;
   }
   .home-partner-logo--ticketmaster { padding-inline: 12px; }
-  .home-trustedstays-logo img { block-size: 40px; }
+  .home-partners--stays .home-partner-logos {
+    --home-stay-wordmark-width: clamp(180px, 54vw, 210px);
+  }
+  .home-amazing-logo img,
+  .home-trustedstays-logo img { block-size: auto; }
+  .home-amazing-logo img { inline-size: var(--home-stay-wordmark-width); }
+  .home-trustedstays-logo img {
+    // The original SVG has transparent margins around the wordmark.
+    inline-size: calc(var(--home-stay-wordmark-width) * 1.145);
+  }
   .home-partner-stay {
     display: flex;
     flex-wrap: wrap;
@@ -259,6 +268,7 @@ body[data-page='home'].home-premium {
   }
   @media (min-width: 1024px) {
     .home-partners-inner { --home-partner-logo-height: 32px; }
+    .home-partners--stays .home-partner-logos { --home-stay-wordmark-width: 240px; }
   }
   @media (prefers-color-scheme: dark) {
     .home-amazing-logo { background: #fff; }
@@ -374,6 +384,21 @@ body[data-page='home'].home-premium {
     .home-partners--stays { padding-block-start: 20px; }
     .home-partners-inner { flex-direction: column; align-items: start; gap: 12px; }
     .home-partner-logos { column-gap: 10px; }
+    .home-partners--tickets .home-partner-logos {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      inline-size: 100%;
+      gap: 8px 16px;
+
+      li {
+        display: grid;
+        place-items: center;
+        min-block-size: 44px;
+        padding-inline: 0;
+      }
+      picture { inline-size: min(100%, 164px); }
+      img { inline-size: 100%; block-size: 32px; }
+    }
     .home-contact { padding: 20px 0 34px; }
     .home-contact .home-contact-top { grid-template-columns: 1fr; gap: 26px; }
     .home-contact-partner { border-left: 0; border-top: 1px solid var(--home-line); padding: 24px 0 0; }

@@ -1306,7 +1306,7 @@ export function createAiEventSearchHandler({
       );
     }
 
-    if (isOpenEndedSearch(query, locale)) {
+    if (!clarificationContext && isOpenEndedSearch(query, locale)) {
       return jsonResponse({
         ok: true,
         intent: normalizeFilterIntent(createEmptyFilterIntent(locale)),

@@ -4,6 +4,7 @@ import { syncAiSearchParams } from './search/event-relevance.js';
 
 export const CATALOGUE_FILTERS_HASH = '#events-filters-form';
 export const CATALOGUE_RESULTS_HASH = '#events-upcoming-title';
+export const CATALOGUE_AI_HASH = '#events-ai-search';
 const TRANSFER_KEY = 'ajsee.catalogue-search';
 const DRAFT_KEY = 'ajsee.home-search-draft';
 const MAX_AGE = 30 * 60 * 1000;
@@ -96,22 +97,25 @@ export function catalogueHistoryRecord(url, filters, transfer) {
 }
 
 export function navigateToCatalogue({
-  locale, filters = {}, query = '', notice = '', question = '', fallbackFields = [], replace = false
+  locale, filters = {}, query = '', notice = '', question = '', clarificationIntent = null,
+  fallbackFields = [], replace = false
 }, win = window) {
   const url = new URL(cataloguePath(locale), win.location.origin);
   const privateSearch = Boolean(query || notice || isNearMePlace(filters));
-  url.hash = notice ? CATALOGUE_FILTERS_HASH : CATALOGUE_RESULTS_HASH;
+  const aiRefinement = ['guidance', 'partial', 'failed'].includes(notice);
+  url.hash = aiRefinement ? CATALOGUE_AI_HASH : notice ? CATALOGUE_FILTERS_HASH : CATALOGUE_RESULTS_HASH;
   syncCatalogueFilterParams(url.searchParams, filters);
 
   const record = privateSearch ? catalogueHistoryRecord(url, filters, {
     query: query.slice(0, 1024),
     notice,
     question: question.slice(0, 512),
+    ...(clarificationIntent ? { clarificationIntent } : {}),
     ...(fallbackFields.length ? { fallbackFields } : {}),
     createdAt: Date.now()
   }) : null;
   const saved = writeSession(win, TRANSFER_KEY, record);
-  if (record && !saved) url.hash = CATALOGUE_FILTERS_HASH;
+  if (record && !saved && !aiRefinement) url.hash = CATALOGUE_FILTERS_HASH;
 
   if (replace) win.location.replace(url.href);
   else win.location.assign(url.href);

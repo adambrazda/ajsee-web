@@ -1,6 +1,9 @@
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
 import './event-detail-links.js';
-import { CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH, catalogueHistoryRecord, readCatalogueTransfer, syncCatalogueFilterParams } from './catalogue-search.js';
+import {
+  CATALOGUE_AI_HASH, CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH,
+  catalogueHistoryRecord, readCatalogueTransfer, syncCatalogueFilterParams
+} from './catalogue-search.js';
 import { createEventListingSession, EVENT_LISTING_PAGE_SIZE, eventListingBatchLimit } from './event-search-listing.js';
 import {
   applyGeoRadiusToApiFilters,
@@ -2803,6 +2806,10 @@ async function resetAllEventFilters() {
   updateToggleBadge();
   syncQuickDateButtons();
   resetEventsPager();
+  if (location.hash === CATALOGUE_AI_HASH) {
+    catalogueTransfer = null;
+    completeCatalogueRefinement({ form: qs('#events-filters-form') });
+  }
   await renderAndSync({ resetPage: true });
 }
 
@@ -3655,7 +3662,7 @@ async function getAiSearchGeolocation() {
   }
 }
 
-async function applyAiEventSearchIntent(intent, { signal } = {}) {
+async function applyAiEventSearchIntent(intent, { signal, originalQuery } = {}) {
   /*
    * A new AI interpretation starts a new learning
    * session. This prevents a second AI search from
@@ -3739,7 +3746,7 @@ async function applyAiEventSearchIntent(intent, { signal } = {}) {
 
   resetEventsPager();
 
-  completeCatalogueRefinement();
+  completeCatalogueRefinement({ originalQuery });
   await renderAndSync({
     resetPage:
       true
@@ -3942,7 +3949,7 @@ function bindFilterFormInteractions(formEl) {
     }
 
     resetEventsPager();
-    completeCatalogueRefinement();
+    completeCatalogueRefinement({ form: formEl });
     await renderAndSync({ resetPage: true });
 
     setSharedEventFilterDetailsExpanded(
@@ -5664,14 +5671,19 @@ function updateHomeCtasWithLang() {
   }
 }
 
-function completeCatalogueRefinement() {
+function completeCatalogueRefinement({ originalQuery, form } = {}) {
+  if (catalogueTransfer?.query && originalQuery) catalogueTransfer.query = originalQuery;
   if (catalogueTransfer?.notice) {
     catalogueTransfer.notice = '';
     catalogueTransfer.question = '';
+    delete catalogueTransfer.clarificationIntent;
     catalogueTransfer.learningRecorded = true;
   }
   qs('.catalogue-refine-notice')?.remove();
-  if (location.hash === CATALOGUE_FILTERS_HASH) {
+  if (location.hash === CATALOGUE_AI_HASH) {
+    form?.dispatchEvent(new Event('ajsee:catalogue-refinement-complete'));
+  }
+  if ([CATALOGUE_AI_HASH, CATALOGUE_FILTERS_HASH].includes(location.hash)) {
     const url = new URL(location.href);
     url.hash = CATALOGUE_RESULTS_HASH;
     history.replaceState(history.state, '', url.href);
@@ -5700,9 +5712,30 @@ function applyCatalogueAiFallback({ query, filters, notice, fallbackFields }) {
   void renderAndSync();
 }
 
-function prepareCatalogueLanding(form, notice) {
+function catalogueRefinementMessage(notice) {
+  const generic = t('events.searchHandoff.' + notice);
+  if (!['partial', 'failed', 'manual'].includes(notice)) return generic;
+
+  const applied = catalogueTransfer?.fallbackFields;
+  const labels = getActiveFilterDescriptors(currentFilters, { locale: currentLang, labels: getEventsFilterUxLabels() })
+    .filter(({ key }) => key !== 'sort' && (notice === 'partial' || applied?.includes(key === 'place' ? 'city' : key)))
+    .map(({ label }) => label);
+  const summary = new Intl.ListFormat(currentLang).format(labels);
+  return summary ? t('events.searchHandoff.applied').replace('{filters}', () => summary) : generic;
+}
+
+function prepareCatalogueLanding(form, notice, { showAi = false } = {}) {
   if (!form) return null;
   form.querySelector('.catalogue-refine-notice')?.remove();
+  if (showAi) {
+    setSharedEventFilterDetailsExpanded(false);
+    form.scrollIntoView({ block: 'start' });
+    const status = form.querySelector('[data-ai-search-status]');
+    status.tabIndex = -1;
+    status.focus({ preventScroll: true });
+    return null;
+  }
+
   const showFilters = location.hash === CATALOGUE_FILTERS_HASH || Boolean(notice);
   const showResults = location.hash === CATALOGUE_RESULTS_HASH;
   const panel = form.querySelector('#events-filters-details');
@@ -5716,17 +5749,7 @@ function prepareCatalogueLanding(form, notice) {
     message.className = 'catalogue-refine-notice';
     const status = document.createElement('p');
     status.setAttribute('role', 'status');
-    status.textContent = t(`events.searchHandoff.${notice}`);
-    const applied = catalogueTransfer?.fallbackFields;
-    if ((notice === 'failed' || notice === 'manual') && applied?.length) {
-      const labels = [];
-      if (applied.includes('category') && currentFilters.category !== 'all') {
-        labels.push(t(`category-${currentFilters.category}`));
-      }
-      if (applied.includes('city')) labels.push(currentFilters.cityLabel);
-      const summary = new Intl.ListFormat(currentLang).format(labels.filter(Boolean));
-      if (summary) status.textContent = t('events.searchHandoff.applied').replace('{filters}', () => summary);
-    }
+    status.textContent = catalogueRefinementMessage(notice);
     message.append(status);
 
     if (notice === 'partial' && catalogueTransfer?.question) {
@@ -5782,7 +5805,8 @@ async function bootstrapMain() {
   }
   const missingLocation = new URLSearchParams(location.search).get('placeType') === 'nearMe'
     && !isNearMePlace(currentFilters);
-  const handoffNotice = catalogueTransfer?.notice || (missingLocation ? 'location' : '');
+  const aiRefinementLanding = location.hash === CATALOGUE_AI_HASH;
+  const handoffNotice = catalogueTransfer?.notice || (aiRefinementLanding ? 'guidance' : missingLocation ? 'location' : '');
 
   await ensureTranslations(currentLang);
   prefetchTranslations();
@@ -5801,12 +5825,18 @@ async function bootstrapMain() {
 
   const formEl = qs('#events-filters-form');
 
-  initAiEventSearch({
+  const aiSearchReady = initAiEventSearch({
     form: formEl,
     getLocale: () => currentLang,
     onIntent: applyAiEventSearchIntent,
     onFallback: applyCatalogueAiFallback,
-    initialQuery: catalogueTransfer?.query || ''
+    initialQuery: catalogueTransfer?.query || '',
+    initialRefinement: aiRefinementLanding ? {
+      message: handoffNotice === 'guidance' ? undefined : catalogueRefinementMessage(handoffNotice),
+      example: handoffNotice === 'guidance' || (handoffNotice === 'failed' && !catalogueTransfer?.fallbackFields?.length),
+      question: catalogueTransfer?.question,
+      previousIntent: catalogueTransfer?.clarificationIntent
+    } : null
   });
 
   /* AJSEE_KEEP_EVENTS_QUICK_FILTERS_BOOTSTRAP_V1
@@ -5831,7 +5861,9 @@ async function bootstrapMain() {
   setFilterInputsFromState();
   syncCitySheetUsability(document);
   updateToggleBadge();
-  const landingTarget = formEl ? prepareCatalogueLanding(formEl, handoffNotice) : null;
+  const landingTarget = prepareCatalogueLanding(formEl, handoffNotice === 'guidance' ? 'manual' : handoffNotice, {
+    showAi: aiRefinementLanding && aiSearchReady
+  });
 
   wireOnce(window, 'AJSEE:langChanged', async e => {
     currentLang = e?.detail?.lang || getUILang();

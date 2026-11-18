@@ -1,6 +1,7 @@
 import { formatAiResultSummary } from './result-summary.js';
 import {
-  MAX_CLARIFICATION_ROUNDS
+  MAX_CLARIFICATION_ROUNDS,
+  normalizeClarificationContext
 } from './clarification-context.js';
 import {
   formatLocalIsoWithOffset,
@@ -56,7 +57,7 @@ const CLARIFICATION_COPY = {
     yes:
       'Ano',
     edit:
-      'Ne, upravím',
+      'Upravit původní dotaz',
     actionsLabel:
       'Možnosti odpovědi',
     limit:
@@ -73,7 +74,7 @@ const CLARIFICATION_COPY = {
     yes:
       'Yes',
     edit:
-      'No, I’ll clarify',
+      'Edit original search',
     actionsLabel:
       'Reply options',
     limit:
@@ -90,7 +91,7 @@ const CLARIFICATION_COPY = {
     yes:
       'Ja',
     edit:
-      'Nein, ich präzisiere',
+      'Ursprüngliche Anfrage bearbeiten',
     actionsLabel:
       'Antwortoptionen',
     limit:
@@ -107,7 +108,7 @@ const CLARIFICATION_COPY = {
     yes:
       'Áno',
     edit:
-      'Nie, upravím',
+      'Upraviť pôvodnú požiadavku',
     actionsLabel:
       'Možnosti odpovede',
     limit:
@@ -124,7 +125,7 @@ const CLARIFICATION_COPY = {
     yes:
       'Tak',
     edit:
-      'Nie, doprecyzuję',
+      'Edytuj pierwotne zapytanie',
     actionsLabel:
       'Opcje odpowiedzi',
     limit:
@@ -141,7 +142,7 @@ const CLARIFICATION_COPY = {
     yes:
       'Igen',
     edit:
-      'Nem, pontosítom',
+      'Eredeti keresés szerkesztése',
     actionsLabel:
       'Válaszlehetőségek',
     limit:
@@ -416,7 +417,8 @@ export function initAiEventSearch({
 
   onCatalogueSearch = null,
   onFallback = null,
-  initialQuery = ''
+  initialQuery = '',
+  initialRefinement = null
 } = {}) {
   const clientConfig =
     resolveAiSearchClientConfig({
@@ -470,6 +472,7 @@ export function initAiEventSearch({
   );
 
   const home = form.ownerDocument.body?.dataset.page === 'home';
+  if (!home) root.id = 'events-ai-search';
   root.innerHTML = `
     ${renderAiSearchIdleMarkup({ copy: getAiSearchCopy(normalizeLocale(getLocale()), { home }), brandMark: aiBrandMark })}
 
@@ -788,7 +791,7 @@ export function initAiEventSearch({
       copy.label;
 
     helper.textContent =
-      copy.helper;
+      pendingClarification?.originalQuery || copy.helper;
 
     badge.textContent =
       copy.badge;
@@ -833,13 +836,24 @@ export function initAiEventSearch({
 
   refreshCopy();
 
-  const showSearchGuidance = () => {
+  const showSearchGuidance = ({ message = getCopy().copy.guidance, example = true, focus = true } = {}) => {
     clearPendingClarification();
     hideFeedback();
     refreshCopy();
-    guidance.hidden = false;
-    setState(root, { state: 'guidance', message: getCopy().copy.guidance });
-    input.focus();
+    guidance.hidden = !example;
+    setState(root, { state: 'guidance', message });
+    if (focus) input.focus();
+  };
+
+  const showClarification = (context, { focus = true } = {}) => {
+    pendingClarification = context;
+    guidance.hidden = true;
+    root.setAttribute('data-clarification-round', String(context.round));
+    clarificationActions.hidden = false;
+    input.value = '';
+    refreshCopy();
+    setState(root, { state: 'clarification', message: context.question });
+    if (focus) input.focus();
   };
 
   const getTurnstileToken =
@@ -895,9 +909,7 @@ export function initAiEventSearch({
             }
           : null;
 
-      if (
-        query.length < 2
-      ) {
+      if (!query || (query.length < 2 && !onCatalogueSearch)) {
         setState(
           root,
           {
@@ -918,8 +930,9 @@ export function initAiEventSearch({
         Date.now();
 
       if (hasAnalyticsConsent()) trackAiSearchStep('start', { locale }, globalThis);
-      if (isOpenEndedSearch(query, locale)) {
-        showSearchGuidance();
+      if (!requestClarificationContext && (query.length < 2 || isOpenEndedSearch(query, locale))) {
+        if (onCatalogueSearch) await onCatalogueSearch({ query, locale, needsDetails: true });
+        else showSearchGuidance();
         trackAiSearchOutcome({ outcome: 'guidance', locale }, globalThis, {
           pushToDataLayer: hasAnalyticsConsent()
         });
@@ -1075,16 +1088,13 @@ export function initAiEventSearch({
           throw error;
         }
 
-        if (data.needsDetails === true || needsSearchGuidance(data.intent, { needsClarification: data.needsClarification, locale })) {
-          telemetryOutcome = 'guidance';
-          showSearchGuidance();
-          return;
-        }
-
+        const needsDetails = data.needsDetails === true ||
+          needsSearchGuidance(data.intent, { needsClarification: data.needsClarification, locale });
         if (onCatalogueSearch) {
           const outcome = await onCatalogueSearch({
             intent: data.intent,
             needsClarification: data.needsClarification === true,
+            needsDetails,
             query,
             locale,
             signal: requestController.signal
@@ -1093,6 +1103,12 @@ export function initAiEventSearch({
           telemetryOutcome = outcome;
           telemetryRound = outcome === 'clarification' ? 1 : 0;
           setState(root, { state: 'idle' });
+          return;
+        }
+
+        if (needsDetails) {
+          telemetryOutcome = 'guidance';
+          showSearchGuidance();
           return;
         }
 
@@ -1161,7 +1177,7 @@ export function initAiEventSearch({
           telemetryRound =
             nextRound;
 
-          pendingClarification = {
+          showClarification({
             originalQuery:
               requestClarificationContext
                 ?.originalQuery ||
@@ -1176,38 +1192,7 @@ export function initAiEventSearch({
 
             previousIntent:
               data.intent
-          };
-
-          root.setAttribute(
-            'data-clarification-round',
-            String(
-              nextRound
-            )
-          );
-
-          if (clarificationActions) {
-            clarificationActions.hidden =
-              false;
-          }
-
-          input.value =
-            '';
-
-          refreshCopy();
-
-          setState(
-            root,
-            {
-              state:
-                'clarification',
-
-              message:
-                pendingClarification
-                  .question
-            }
-          );
-
-          input.focus();
+          });
 
           return;
         }
@@ -1235,6 +1220,7 @@ export function initAiEventSearch({
               data.intent,
               {
                 query,
+                originalQuery: requestClarificationContext?.originalQuery || query,
                 locale,
                 signal: requestController.signal
               }
@@ -1431,9 +1417,10 @@ export function initAiEventSearch({
           return;
         }
 
-        input.value =
-          '';
-
+        input.value = pendingClarification.originalQuery;
+        clearPendingClarification();
+        refreshCopy();
+        setState(root, { state: 'idle' });
         input.focus();
       }
     );
@@ -1488,6 +1475,7 @@ export function initAiEventSearch({
     'reset',
     resetClarificationFlow
   );
+  form.addEventListener('ajsee:catalogue-refinement-complete', resetClarificationFlow);
 
   const handleGlobalClear =
     event => {
@@ -1530,6 +1518,17 @@ export function initAiEventSearch({
     'ajsee:lang-changed',
     handleLanguageChange
   );
+
+  if (initialRefinement) {
+    const { value: context } = normalizeClarificationContext({
+      originalQuery: initialQuery,
+      question: initialRefinement.question,
+      round: 1,
+      previousIntent: initialRefinement.previousIntent
+    }, { locale: getCopy().locale });
+    if (context) showClarification(context, { focus: false });
+    else showSearchGuidance({ message: initialRefinement.message, example: initialRefinement.example, focus: false });
+  }
 
   return true;
 }

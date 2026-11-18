@@ -4,8 +4,8 @@ export const EVENT_DETAIL_ROUTES = {
   'smsticket-68785': 'folk-country-cesky-krumlov-2027-04-24',
   'smsticket-76162': 'tohle-je-box-brno-2026-11-21'
 };
-export function eventDetailHref(event, lang = 'cs') {
-  const slug = EVENT_DETAIL_ROUTES[event?.id];
+export function eventDetailHref(event, lang = 'cs', publishedSlug = '') {
+  const slug = /^tip-[0-9a-f]{20}$/.test(publishedSlug) ? publishedSlug : EVENT_DETAIL_ROUTES[event?.id];
   if (!slug) return '';
   const language = ['cs', 'en', 'de', 'sk', 'pl', 'hu'].includes(lang) ? lang : 'cs';
   return `${language === 'cs' ? '' : '/' + language}/udalosti/${slug}/`;

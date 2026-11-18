@@ -26,10 +26,15 @@ při čerstvém podkladu, tlačítko partnera, praktické informace a souvisejí
 používají společnou navigaci, patičku, oba barevné režimy a ovládání souhlasů.
 Přepínač jazyků vede vždy na stejný konkrétní termín.
 
-Odkazy na detaily jsou v prvním HTML homepage i Událostí ve všech šesti
-jazycích. Titulek a obrázek karty otevřou detail jen při přesné shodě jednoho
-ze čtyř ID; další repríza stejného titulu dál otevírá původní modal. Tlačítko
-Vstupenky na kartě nadále vede přímo k partnerovi.
+Titulek a obrázek karty otevírají rychlý detail. V sekci Naše tipy je v něm
+odkaz Celý detail akce, který je zároveň dostupný z prvního HTML. Tlačítko
+Vstupenky na kartě vede přímo k partnerovi.
+
+Další vlastní stránky vznikají pro konkrétní termíny vybrané do sekce Naše
+tipy. Výběr podle aktuální nabídky probíhá při sestavení a pravidelné obnově.
+Produkční sestavení a obnova uloží detail pod stálou adresou ještě před
+zveřejněním výběru. Dříve sdílené odkazy zůstávají použitelné i po obměně tipů
+a původní čtyři adresy pilotu mají přednost.
 
 ## Aktuální data a chování při výpadku
 
@@ -78,8 +83,8 @@ Obsah, metadata, vlastní canonical, sedm jazykových alternativ a JSON-LD
 jsou v první odpovědi serveru bez JavaScriptu. `Event` a viditelné údaje
 používají stejný termín, místo a čerstvou cenu. `Offer` neobsahuje vymyšlené
 `InStock`, konec akce, bezplatné vstupné ani prodejce vydávaného za pořadatele.
-Sitemap obsahuje 24 nových stránek, celkem 222 adres; staré odstraněné články
-se do ní nevracejí. Neznámé slugs vracejí skutečnou 404.
+Sitemap obsahuje 24 pilotních stránek a vlastní stránky tipů ze sestavení.
+Neznámé adresy detailů vracejí skutečnou 404.
 
 Původní `/previews/event-details/` dál slouží jako neindexovaný český návrh.
 Produkční data a všechny překlady se ověřují na skutečných `/udalosti/`

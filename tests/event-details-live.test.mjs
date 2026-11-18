@@ -10,6 +10,7 @@ import { collectEventDetails } from '../shared/event-details/sources.js';
 import { createEventDetailPage } from '../netlify/functions/event-detail-page.js';
 import { createEventDetailRefresh } from '../netlify/functions/event-detail-refresh.js';
 import { eventDetailHref, EVENT_DETAIL_ROUTES } from '../src/event-detail-routes.js';
+import { FEATURED_EVENT_STORE, publishFeaturedPages } from '../shared/event-details/featured.js';
 import { renderSharedEventCard } from '../src/event-card.js';
 
 const now = new Date('2026-10-21T10:00:00Z'), event = pilot.events[0];
@@ -122,27 +123,73 @@ test('scheduled snapshot persistence is separate from page reads', async () => {
   await fn();assert.equal(written.events.length,4);
 });
 
-test('only the four exact occurrences navigate to public detail pages; other cards retain modal actions', () => {
+test('the homepage link can enhance into a modal while ordinary cards open only the modal', () => {
   assert.deepEqual(Object.keys(EVENT_DETAIL_ROUTES).sort(),pilot.events.map(item=>item.id).sort());
   for(const lang of LANGUAGES) for(const seed of pilot.events) {
-    const dom=new JSDOM(renderSharedEventCard({event:seed,locale:lang,modalId:seed.id,titleRaw:seed.title,titleHtml:seed.title}));
+    const dom=new JSDOM(renderSharedEventCard({event:seed,locale:lang,modalId:seed.id,titleRaw:seed.title,titleHtml:seed.title,detailHref:eventDetailHref(seed,lang)}));
     assert.equal(dom.window.document.querySelector('.event-title-action').getAttribute('href'),eventDetailHref(seed,lang));
-    assert.equal(dom.window.document.querySelectorAll('.js-event-detail').length,0);dom.window.close();
+    assert.equal(dom.window.document.querySelectorAll('a.js-event-detail').length,2);dom.window.close();
+    const catalogue = new JSDOM(renderSharedEventCard({event:seed,locale:lang}));
+    assert.equal(catalogue.window.document.querySelectorAll('button.js-event-detail').length,2);
+    catalogue.window.close();
   }
   assert.equal(eventDetailHref({id:'colosseumticket-5470841-other-date'}),'');
   assert.equal(new JSDOM(renderSharedEventCard({event:{id:'other'}})).window.document.querySelectorAll('button.js-event-detail').length,2);
 });
 
-if(process.env.EVENT_DETAIL_BUILT==='1') test('24 published pages are localized in first HTML, discoverable and packaged for server rendering',async()=>{
+test('a published tip remains reachable after rotation and an unpublished detail returns 404', async () => {
+  const tip = {
+    id: 'smsticket-test', slug: 'tip-0123456789abcdef0123', featured: true, title: 'Letní koncert',
+    category: 'concert', startDate: '2026-12-13', status: 'scheduled',
+    venue: { name: 'Sál', city: 'Praha', country: 'CZ' }, partner: 'smsticket',
+    tickets: 'https://www.smsticket.cz/vstupenky/test?a_box=kept',
+    descriptions: {}, image: { url: 'https://ajsee.cz/existing.webp', alt: 'Letní koncert' },
+    lastVerifiedAt: now.toISOString(), price: null
+  };
+  const saved = new Map();
+  const store = {
+    getWithMetadata: async slug => saved.has(slug) ? { data: saved.get(slug), etag: 'current' } : null,
+    get: async slug => saved.get(slug) || null,
+    setJSON: async (slug, data) => { saved.set(slug, data); return { modified: true }; }
+  };
+  await publishFeaturedPages(store, [tip]);
+  const moved = { ...tip, startDate: '2026-12-27', lastVerifiedAt: new Date(+now + 60000).toISOString() };
+  await publishFeaturedPages(store, [moved]);
+  await publishFeaturedPages(store, [tip]);
+  assert.equal(saved.get(tip.slug).status, 'rescheduled');
+  assert.equal(saved.get(tip.slug).previousStartDate, tip.startDate);
+  const handler = createEventDetailPage({
+    now: () => new Date('2026-12-31T12:00:00Z'),
+    getStoreFn: ({ name }) => { assert.equal(name, FEATURED_EVENT_STORE); return store; },
+    loadAsset: async name => name === 'featured.json' ? '[]' : shell(name.slice(0, 2))
+  });
+  const response = await handler(new Request('https://ajsee.cz' + detailPath(tip.slug)));
+  assert.equal(response.status, 200);
+  const doc = new JSDOM(await response.text()).window.document;
+  assert.equal(doc.querySelector('time').getAttribute('datetime'), moved.startDate);
+  assert.match(doc.querySelector('.detail-status').textContent, /v\sminulosti/);
+  assert.equal(doc.querySelector('.detail-cta'), null);
+  doc.defaultView.close();
+  assert.equal((await handler(new Request('https://ajsee.cz/udalosti/tip-0123456789abcdef0124/'))).status, 404);
+});
+
+if(process.env.EVENT_DETAIL_BUILT==='1') test('published detail pages are localized in first HTML, discoverable and packaged for server rendering',async()=>{
   const sitemap=await fs.readFile('dist/sitemap.xml','utf8');
-  assert.equal((sitemap.match(/<loc>/g)||[]).length,222);
+  const featured = JSON.parse(await fs.readFile('dist/event-detail-assets/featured.json','utf8'));
+  assert.ok(featured.length > 0 && featured.length <= 6);
   for(const lang of LANGUAGES){
     assert.ok((await fs.readFile('dist/event-detail-assets/'+lang+'.txt','utf8')).includes('<!--AJSEE_EVENT_BODY-->'));
+    for (const event of featured) {
+      const url = detailPath(event.slug, lang);
+      assert.ok(sitemap.includes('https://ajsee.cz'+url));
+      assert.match(await fs.readFile('dist'+url+'index.html','utf8'),/<h1 class="detail-title">/);
+    }
     for(const seed of pilot.events){
       const path=detailPath(seed.slug,lang),dom=new JSDOM(await fs.readFile('dist'+path+'index.html','utf8')),doc=dom.window.document;
       assert.ok(sitemap.includes('https://ajsee.cz'+path));assert.equal(doc.documentElement.lang,lang);assert.equal(doc.querySelector('meta[name=robots]'),null);
       assert.equal(doc.querySelectorAll('link[hreflang]').length,7);assert.equal(doc.querySelectorAll('.detail-languages').length,1);
-      assert.equal(doc.querySelector('.detail-cta').getAttribute('href'),seed.tickets);assert.equal(doc.querySelector('.detail-lead').textContent.replaceAll('\u00a0',' '),COPY[lang].events[seed.id].introduction);
+      if (doc.querySelector('.detail-cta')) assert.equal(doc.querySelector('.detail-cta').getAttribute('href'),seed.tickets);
+      assert.equal(doc.querySelector('.detail-lead').textContent.replaceAll('\u00a0',' '),COPY[lang].events[seed.id].introduction);
       dom.window.close();
     }
   }

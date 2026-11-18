@@ -25,6 +25,9 @@ export function freshTimestamp(value, now = new Date(), maxAge = PRICE_TTL_MS) {
 }
 
 export function resolveEvent(event, snapshot, now = new Date()) {
+  if (event.featured) {
+    return { ...event, price: freshTimestamp(event.price?.observedAt, now) ? event.price : null };
+  }
   const row = snapshot?.version === 1 && Array.isArray(snapshot.events)
     ? snapshot.events.find(item => item.id === event.id && item.partner === event.partner) : null;
   const valid = row && localDateTime(row.startDate) && ['scheduled', 'rescheduled', 'cancelled', 'postponed'].includes(row.status)

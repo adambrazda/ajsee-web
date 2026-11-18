@@ -1,5 +1,4 @@
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
-import './event-detail-links.js';
 import {
   CATALOGUE_AI_HASH, CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH,
   catalogueHistoryRecord, readCatalogueTransfer, syncCatalogueFilterParams
@@ -6031,6 +6030,12 @@ if (!G.flags.mainDomReadyBound) {
       badge.className = 'event-partner-badge';
       badge.dataset.provider = partner;
       badge.innerHTML = '<span>' + label + '</span>';
+    }
+
+    const row = card.querySelector('.event-commerce-row');
+    if (row) {
+      if (badge.parentElement !== row) row.prepend(badge);
+      return;
     }
 
     const content =

@@ -1,5 +1,6 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { collectHomeFeaturedSources, createHomeFeaturedSnapshot } from '../shared/home-featured-source.js';
+import { prepareHomeFeaturedPublication } from '../shared/event-details/featured.js';
 
 const root = new URL('../', import.meta.url);
 const config = JSON.parse(await readFile(new URL('content/home/featured.json', root), 'utf8'));
@@ -11,7 +12,7 @@ if (!process.argv.includes('--from-production')) {
   }
 }
 const sources = await collectHomeFeaturedSources({ localFeeds, apiKey: process.env.TM_API_KEY || process.env.TICKETMASTER_API_KEY || '' });
-const snapshot = createHomeFeaturedSnapshot(sources, config);
+const { snapshot } = prepareHomeFeaturedPublication(createHomeFeaturedSnapshot(sources, config));
 if (snapshot.events.length < 6) throw new Error('Cannot build a complete six-card homepage recommendation pool');
 await mkdir(new URL('public/data/', root), { recursive: true });
 await writeFile(new URL('public/data/home-featured-events.json', root), JSON.stringify(snapshot));

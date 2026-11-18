@@ -4773,13 +4773,14 @@ function wireHomeEventCards(list, modalStore, locale) {
   list.__ajseeEventModalStore = modalStore;
   qsa('.js-event-detail', list).forEach(btn => {
   btn.addEventListener('click', async event => {
-    event.preventDefault();
-    event.stopPropagation();
+    if (btn.tagName === 'A' && (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
 
     const eventId = btn.getAttribute('data-event-id');
     const selectedEvent = modalStore.get(eventId);
 
     if (!selectedEvent) return;
+    event.preventDefault();
+    event.stopPropagation();
 
     const card =
       btn.closest(
@@ -4790,9 +4791,10 @@ function wireHomeEventCards(list, modalStore, locale) {
       await lazyOpenHomeEventModal(
         selectedEvent,
         locale,
-        { t }
+        { t, detailHref: selectedEvent.__ajseeDetailHref }
       );
     } catch {
+      if (selectedEvent.__ajseeDetailHref) window.location.assign(selectedEvent.__ajseeDetailHref);
       return;
     }
 
@@ -5937,6 +5939,12 @@ if (!G.flags.mainDomReadyBound) {
       badge.className = 'event-partner-badge';
       badge.dataset.provider = 'smsticket';
       badge.innerHTML = '<span>smsticket</span>';
+    }
+
+    const row = card.querySelector('.event-commerce-row');
+    if (row) {
+      if (badge.parentElement !== row) row.prepend(badge);
+      return;
     }
 
     const content =

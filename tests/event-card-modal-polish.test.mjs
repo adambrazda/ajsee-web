@@ -137,7 +137,7 @@ test('mobile calendar actions remain one column', () => {
 test('mobile event cards keep artwork and text in separate grid columns and put provider badge below metadata', () => {
   assert.match(
     sharedCardSource,
-    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-card \.event-image-frame\s*\{[\s\S]*?grid-column:\s*1;[\s\S]*?grid-row:\s*1 \/ span 4;/
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-card \.event-image-frame\s*\{[\s\S]*?grid-column:\s*1;[\s\S]*?grid-row:\s*1 \/ span 3;/
   );
 
   assert.match(
@@ -147,12 +147,7 @@ test('mobile event cards keep artwork and text in separate grid columns and put 
 
   assert.match(
     sharedCardSource,
-    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-content > \.event-partner-badge\s*\{[\s\S]*?grid-column:\s*2;[\s\S]*?grid-row:\s*4;/
-  );
-
-  assert.match(
-    sharedCardSource,
-    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-card-footer\s*\{[\s\S]*?grid-row:\s*5;/
+    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-card-footer\s*\{[\s\S]*?grid-column:\s*1 \/ -1;[\s\S]*?grid-row:\s*4;/
   );
 });
 
@@ -174,24 +169,14 @@ test('event modal never creates or styles a provider badge over the image', () =
 });
 
 
-test('desktop provider badge shares the price row while mobile badge placement remains unchanged', () => {
+test('the seller and price share a responsive footer row', () => {
   assert.match(
     sharedCardSource,
-    /@media\s*\(min-width:\s*600px\)[\s\S]*?\.event-commerce-row\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto;/
+    /\.event-commerce-row\s*\{[^}]*display:\s*flex;[^}]*flex-wrap:\s*wrap;/
   );
 
   assert.match(
     sharedCardSource,
-    /@media\s*\(min-width:\s*600px\)[\s\S]*?\.event-content > \.event-partner-badge:not\(\.event-partner-badge--commerce\)\s*\{[\s\S]*?display:\s*none;/
-  );
-
-  assert.match(
-    sharedCardSource,
-    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-content > \.event-partner-badge\s*\{[\s\S]*?grid-column:\s*2;[\s\S]*?grid-row:\s*4;/
-  );
-
-  assert.match(
-    sharedCardSource,
-    /@media\s*\(max-width:\s*599px\)[\s\S]*?\.event-partner-badge--commerce\s*\{\s*display:\s*none;\s*\}/
+    /\.event-commerce-row > \.event-commerce\s*\{[^}]*margin:\s*0 0 0 auto;/
   );
 });

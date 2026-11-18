@@ -12,6 +12,14 @@ const STATUS = {
   scheduled: 'EventScheduled', cancelled: 'EventCancelled',
   postponed: 'EventPostponed', rescheduled: 'EventRescheduled'
 };
+const FEATURED_CATEGORIES = {
+  cs: { concert: 'Koncert', stage: 'Divadlo', sport: 'Sport', festival: 'Festival' },
+  en: { concert: 'Concert', stage: 'Theatre', sport: 'Sport', festival: 'Festival' },
+  de: { concert: 'Konzert', stage: 'Theater', sport: 'Sport', festival: 'Festival' },
+  sk: { concert: 'Koncert', stage: 'Divadlo', sport: 'Šport', festival: 'Festival' },
+  pl: { concert: 'Koncert', stage: 'Teatr', sport: 'Sport', festival: 'Festiwal' },
+  hu: { concert: 'Koncert', stage: 'Színház', sport: 'Sport', festival: 'Fesztivál' }
+};
 export const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 }[char]));
@@ -45,11 +53,15 @@ export function validatePilot(events) {
 export function eventState(event, now = new Date()) {
   if (event.status !== 'scheduled' && event.status !== 'rescheduled') return event.status;
   const today = pragueEventDate(now);
-  return today > event.startDate.slice(0, 10) ? 'past' : event.status;
+  return today > (event.endDate || event.startDate).slice(0, 10) ? 'past' : event.status;
 }
 
 export function localizeEvent(event, lang = 'cs') {
   const copy = COPY[lang] || COPY.cs, translated = copy.events[event.id];
+  if (event.featured) return {
+    ...event, category: FEATURED_CATEGORIES[lang]?.[event.category] || copy.labels.events,
+    introduction: event.descriptions?.[lang] || ''
+  };
   if (!translated) throw new Error('Missing translated event copy');
   return { ...event, ...translated, introduction: lang === 'cs' ? event.introduction : translated.introduction, paragraphs: lang === 'cs' ? event.paragraphs : [translated.p1, translated.p2], image: { ...event.image, alt: translated.imageAlt },
     related: (event.related || []).map(item => ({ ...item, ...copy.related[item.url.split('/').filter(Boolean).at(-1)],
@@ -63,7 +75,8 @@ export function buildEventSchema(event, { lang = 'cs', publicPage = false, now =
   const schema = {
     '@context': 'https://schema.org', '@type': 'Event', '@id': url + '#event',
     name: [event.title, event.subtitle].filter(Boolean).join(' – '), description: event.introduction,
-    startDate: event.startDate, eventStatus: 'https://schema.org/' + STATUS[event.status],
+    startDate: event.startDate, ...(event.endDate ? { endDate: event.endDate } : {}),
+    eventStatus: 'https://schema.org/' + STATUS[event.status],
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     url, image: [event.image.url],
     location: { '@type': 'Place', name: event.venue.name, address: {
@@ -91,7 +104,7 @@ const icons = {
 const icon = name => `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${icons[name]}</svg>`;
 export const dateText = (iso, lang = 'cs') => new Intl.DateTimeFormat(localeCode(lang), { timeZone: 'Europe/Prague', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(iso));
 const timeText = (iso, lang) => new Intl.DateTimeFormat(localeCode(lang), { timeZone: 'Europe/Prague', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(iso));
-const dayText = (iso, lang) => new Intl.DateTimeFormat(localeCode(lang), { timeZone: 'Europe/Prague', weekday: 'long' }).format(new Date(iso)) + ' · ' + timeText(iso, lang);
+const dayText = (iso, lang) => new Intl.DateTimeFormat(localeCode(lang), { timeZone: 'Europe/Prague', weekday: 'long' }).format(new Date(iso)) + (iso.includes('T') ? ' · ' + timeText(iso, lang) : '');
 const dateOnlyText = (date, lang) => dateText(date + 'T12:00:00Z', lang);
 
 export function renderEventDetail(event, { now = new Date(), lang = 'cs' } = {}) {
@@ -106,19 +119,21 @@ export function renderEventDetail(event, { now = new Date(), lang = 'cs' } = {})
   const stateCopy = ['past', 'cancelled', 'postponed'].includes(state) ? t(state) : state === 'rescheduled' ? t('rescheduled', { date: dateText(event.previousStartDate, lang) }) : '';
   const price = event.price ? t('from', { price: new Intl.NumberFormat(localeCode(lang), { style: 'currency', currency: event.price.currency, minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(event.price.minimum) }) : t('unknownPrice');
   const termNote = event.termNote ? t('termNote', { date: dateText(event.startDate, lang), time: timeText(event.startDate, lang) }) : '';
+  const dateLabel = [event.startDate, event.endDate].filter(Boolean).map(date => dateText(date, lang)).join(' – ');
+  const placeExtra = [event.venue.street, event.venue.city !== event.venue.name ? event.venue.city : ''].filter(Boolean).join(', ');
   return `<a class="skip-link" href="#main">${text(t('skip'))}</a>
   <main id="main" class="detail-main"><div class="detail-container">
     <nav class="detail-breadcrumbs" aria-label="${e(t('breadcrumbs'))}"><a href="${lang === 'cs' ? '/' : '/' + lang + '/'}">AJSEE</a>${icon('chevron')}<a href="${eventsHref}">${text(t('events'))}</a>${icon('chevron')}<span aria-current="page">${text(event.category)}</span></nav>
     <header class="detail-heading"><p class="detail-eyebrow">${text(event.category)}<span aria-hidden="true">·</span>${text(event.venue.city)}</p>
       <h1 class="detail-title">${text(event.title)}${event.subtitle ? `<span class="detail-subtitle">${text(event.subtitle)}</span>` : ''}</h1>
-      <p class="detail-lead">${text(event.introduction)}</p>
+      ${event.introduction ? `<p class="detail-lead">${text(event.introduction)}</p>` : ''}
     </header>
     ${stateCopy ? `<p class="detail-status" role="status">${text(stateCopy)}</p>` : ''}
     <div class="detail-layout">
         <figure class="detail-artwork"><div class="detail-image-wrap"><img class="detail-image${event.image.fit === 'cover' ? ' detail-image--photo' : ''}" src="${e(event.image.url)}" alt="${e(event.image.alt)}" width="1200" height="800" decoding="async" loading="eager" fetchpriority="high"></div><figcaption>${text(t('source', { partner }))}</figcaption></figure>
       <aside class="detail-panel" aria-labelledby="ticket-heading"><h2 id="ticket-heading">${text(t(purchasable ? 'plan' : 'facts'))}</h2>
-        <dl class="detail-facts"><div class="detail-fact"><dt>${icon('calendar')}${text(t('when'))}</dt><dd><time datetime="${e(event.startDate)}">${text(dateText(event.startDate, lang))}<span>${text(dayText(event.startDate, lang))}</span></time></dd></div>
-          <div class="detail-fact"><dt>${icon('location')}${text(t('where'))}</dt><dd>${text(event.venue.name)}<span>${text([event.venue.street, event.venue.city].filter(Boolean).join(', '))}</span></dd></div></dl>
+        <dl class="detail-facts"><div class="detail-fact"><dt>${icon('calendar')}${text(t('when'))}</dt><dd><time datetime="${e(event.startDate)}">${text(dateLabel)}${event.endDate ? '' : `<span>${text(dayText(event.startDate, lang))}</span>`}</time></dd></div>
+          <div class="detail-fact"><dt>${icon('location')}${text(t('where'))}</dt><dd>${text(event.venue.name)}${placeExtra ? `<span>${text(placeExtra)}</span>` : ''}</dd></div></dl>
         <div class="detail-ticket">${purchasable ? `<p class="detail-price${event.price ? '' : ' detail-price--unknown'}">${text(price)}</p>${event.price ? `<p class="detail-price-note">${text(t('priceChecked', { date: dateOnlyText(event.price.checkedAt, lang) }))}</p>` : ''}
           <a class="detail-cta" href="${e(event.tickets)}" target="_blank" rel="sponsored noopener noreferrer" data-placement="event_detail" data-partner="${e(event.partner)}" data-event-id="${e(event.id)}" data-event-title="${e(event.title)}" data-event-city="${e(event.venue.city)}"><span>${text(t('tickets', { partner }))}</span>${icon('external')}</a>
           <p class="detail-purchase-note">${text(t('purchaseNote', { partner }))}</p>${termNote ? `<p class="detail-term-note">${text(termNote)}</p>` : ''}
@@ -129,12 +144,12 @@ export function renderEventDetail(event, { now = new Date(), lang = 'cs' } = {})
           <a class="detail-text-link" href="${e(AMAZING_PLACES_BOOKING_URL)}" target="_blank" rel="sponsored noopener" hreflang="cs" aria-describedby="detail-stay-description" data-placement="event_detail" data-event-id="${e(event.id)}" data-event-title="${e(event.title)}" data-event-city="${e(event.venue.city)}">${text(t('stayLink'))}${icon('external')}</a>
         </div>` : ''}
       </aside>
-      <section class="detail-editorial" aria-labelledby="about-event"><h2 id="about-event">${text(t(event.id.startsWith('colosseumticket-') ? 'about' : 'expect'))}</h2>${event.paragraphs.map(p => `<p>${text(p)}</p>`).join('')}
+      ${event.paragraphs?.length ? `<section class="detail-editorial" aria-labelledby="about-event"><h2 id="about-event">${text(t(event.id.startsWith('colosseumticket-') ? 'about' : 'expect'))}</h2>${event.paragraphs.map(p => `<p>${text(p)}</p>`).join('')}
         <details class="detail-info"><summary>${text(t('practical'))}</summary><p>${text(event.practical)}</p></details>
-      </section>
+      </section>` : ''}
     </div>
-    <section class="detail-related" aria-labelledby="related-title"><div class="detail-related-heading"><h2 id="related-title">${text(t('related'))}</h2><a class="detail-text-link" href="${eventsHref}">${text(t('allEvents'))}${icon('arrow')}</a></div>
+    ${event.related?.length ? `<section class="detail-related" aria-labelledby="related-title"><div class="detail-related-heading"><h2 id="related-title">${text(t('related'))}</h2><a class="detail-text-link" href="${eventsHref}">${text(t('allEvents'))}${icon('arrow')}</a></div>
       <div class="detail-related-grid">${(event.related || []).map(item => `<article class="detail-related-card"><span>${text(item.label)}</span><h3>${text(item.title)}</h3><p>${text(item.description)}</p><a class="detail-text-link" href="${e(item.url)}">${text(item.cta)}${icon('arrow')}</a></article>`).join('')}</div>
-    </section>
+    </section>` : ''}
   </div></main>`;
 }

@@ -9,6 +9,7 @@ import { collectHomeFeaturedSources, createHomeFeaturedSnapshot, normalizeHomeFe
 import { renderHomeFeaturedMarkup, loadHomeFeaturedSnapshot } from '../src/home-featured.js';
 import { createHomeFeaturedHandler } from '../netlify/functions/home-featured.js';
 import { createHomeFeaturedRefresh } from '../netlify/functions/home-featured-refresh.js';
+import { FEATURED_EVENT_STORE, prepareHomeFeaturedPublication } from '../shared/event-details/featured.js';
 
 const now = new Date('2099-01-01T12:00:00Z');
 const make = (id, bucket = 'concert', extra = {}) => ({ id, title: 'Event ' + id, partner: 'smsticket',
@@ -159,12 +160,33 @@ test('the public snapshot endpoint serves cached or bundled data without invokin
 
 test('scheduled refresh cannot replace a good cached snapshot with a failed or insufficient source collection', async () => {
   const events = Array.from({ length: 8 }, (_, index) => make('event' + index));
-  let writes = 0;
-  const deps = { now: () => now, getStoreFn: () => ({ setJSON: async () => { writes++; } }) };
+  const writes = [];
+  const deps = { now: () => now, getStoreFn: ({ name }) => ({
+    getWithMetadata: async () => null,
+    setJSON: async (key, body, options) => { writes.push({ name, key, body, options }); return { modified: true }; }
+  }) };
   await createHomeFeaturedRefresh({ ...deps, collectSources: async () => ({ events, sources: { smsticket: { state: 'unavailable' } } }) })();
-  assert.equal(writes, 0);
+  assert.equal(writes.length, 0);
   await createHomeFeaturedRefresh({ ...deps, collectSources: async () => ({ events: events.slice(0, 2), sources: { smsticket: { state: 'ok' } } }) })();
-  assert.equal(writes, 0);
+  assert.equal(writes.length, 0);
   await createHomeFeaturedRefresh({ ...deps, collectSources: async () => ({ events, sources: { smsticket: { state: 'ok' } } }) })();
-  assert.equal(writes, 1);
+  assert.equal(writes.length, 7);
+  assert.ok(writes.slice(0, 6).every(write => write.name === FEATURED_EVENT_STORE && write.options.onlyIfNew));
+  assert.equal(writes.at(-1).name, 'home-featured-v1');
+  assert.deepEqual(writes.at(-1).body.recommendedIds, events.slice(0, 6).map(event => event.id));
+});
+
+test('only the published selection gets own links, localized on the homepage', () => {
+  const events = Array.from({ length: 8 }, (_, i) => make('event' + i, 'concert', { time: '', dateAvailability: { noSpecificTime: true } }));
+  const input = createHomeFeaturedSnapshot({ events, sources: { smsticket: { observedAt: now.toISOString() } } }, {}, { now });
+  const { snapshot, pages } = prepareHomeFeaturedPublication(input);
+  assert.equal(pages.length, 6);
+  assert.equal(pages[0].startDate, '2099-01-10');
+  assert.deepEqual(pages.map(page => page.id), snapshot.recommendedIds);
+  assert.ok(events.slice(6).every(event => !Object.hasOwn(snapshot.detailSlugs, event.id)));
+  const home = renderHomeFeaturedMarkup(snapshot, 'sk', { now });
+  assert.deepEqual(home.events.map(event => event.__ajseeDetailHref), pages.map(page => '/sk/udalosti/' + page.slug + '/'));
+  const catalogue = renderHomeFeaturedMarkup(snapshot, 'sk', { now, withDetailLinks: false });
+  assert.ok(catalogue.events.every(event => event.__ajseeDetailHref === ''));
+  assert.doesNotMatch(catalogue.markup, /href="\/sk\/udalosti\//);
 });

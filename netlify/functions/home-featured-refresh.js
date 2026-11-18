@@ -1,5 +1,6 @@
 import { getStore } from '@netlify/blobs';
 import policy from '../../content/home/featured.json' with { type: 'json' };
+import bundledTips from '../../public/data/home-featured-events.json' with { type: 'json' };
 import { collectHomeFeaturedSources, createHomeFeaturedSnapshot } from '../../shared/home-featured-source.js';
 import { FEATURED_EVENT_STORE, prepareHomeFeaturedPublication, publishFeaturedPages, refreshPublishedFeaturedPages } from '../../shared/event-details/featured.js';
 
@@ -22,7 +23,9 @@ export function createHomeFeaturedRefresh({ getStoreFn = getStore, collectSource
     const previous = await home.getWithMetadata('current', { type: 'json' });
     if (Date.parse(previous?.data?.generatedAt) >= +current) return;
     const retired = refreshPublishedFeaturedPages(snapshot, previous?.data, sources.events);
-    await publishFeaturedPages(getStoreFn({ name: FEATURED_EVENT_STORE, consistency: 'strong' }), [...pages, ...retired]);
+    const builtPages = prepareHomeFeaturedPublication(bundledTips).pages;
+    const published = new Map([...builtPages, ...retired, ...pages].map(page => [page.slug, page]));
+    await publishFeaturedPages(getStoreFn({ name: FEATURED_EVENT_STORE, consistency: 'strong' }), [...published.values()]);
     await home.setJSON('current', snapshot, previous?.etag ? { onlyIfMatch: previous.etag } : { onlyIfNew: true });
     console.log(`[home tips] refreshed ${snapshot.events.length} candidates`);
   };

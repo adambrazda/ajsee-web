@@ -14,9 +14,6 @@
 [context.deploy-preview.environment]
   REVIEW_PREVIEW = "1"
 
-[[plugins]]
-  package = "./netlify/plugins/home-featured-details"
-
 
 [functions]
   directory    = "netlify/functions"
@@ -25,6 +22,9 @@
 
 [functions."event-detail-page"]
   included_files = ["dist/event-detail-assets/*"]
+
+[functions."register-home-featured-details"]
+  included_files = ["dist/event-detail-assets/featured.json"]
 
 [functions."ai-event-search"]
   included_files = ["dist/data/event-cities.json"]

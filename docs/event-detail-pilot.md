@@ -32,8 +32,9 @@ Vstupenky na kartě vede přímo k partnerovi.
 
 Další vlastní stránky vznikají pro konkrétní termíny vybrané do sekce Naše
 tipy. Výběr podle aktuální nabídky probíhá při sestavení a pravidelné obnově.
-Produkční sestavení a obnova uloží detail pod stálou adresou ještě před
-zveřejněním výběru. Dříve sdílené odkazy zůstávají použitelné i po obměně tipů
+Sestavení přibalí detaily aktuálních tipů. Po úspěšném produkčním nasazení
+se jejich adresy uloží i pro další nasazení. Pravidelná obnova uloží detaily
+před výměnou výběru. Dříve sdílené odkazy fungují i po obměně tipů
 a původní čtyři adresy pilotu mají přednost.
 
 ## Aktuální data a chování při výpadku

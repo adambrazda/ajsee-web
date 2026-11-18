@@ -4,7 +4,7 @@ import { entryRuntime } from './helpers/entry-runtime.mjs';
 import { getDatePresetRange } from '../src/events-filter-ux.js';
 import { recognizeFallbackFilters } from '../src/ai-search/fallback-filters.js';
 import {
-  CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH,
+  CATALOGUE_AI_HASH, CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH,
   catalogueHistoryRecord, navigateToCatalogue, readCatalogueTransfer
 } from '../src/catalogue-search.js';
 
@@ -70,17 +70,28 @@ test('nearby handoff restores exact position in this tab without exposing it in 
   assert.deepEqual(readCatalogueTransfer(win).privateFilters, filters);
 });
 
-test('failed and partial searches open manual filters, including when session storage is blocked', () => {
+test('failed and partial searches land at AJSEE AI while manual fallback opens filters', () => {
   const win = browserTab();
   navigateToCatalogue({ locale: 'cs', query: 'My query', notice: 'failed' }, win);
-  assert.equal(new URL(win.location.href).hash, CATALOGUE_FILTERS_HASH);
+  assert.equal(new URL(win.location.href).hash, CATALOGUE_AI_HASH);
   assert.equal(readCatalogueTransfer(win).notice, 'failed');
   navigateToCatalogue({ locale: 'cs', query: 'Another query', notice: 'partial',
     question: 'Which date?', filters: { category: 'theatre' } }, win);
   assert.equal(new URL(win.location.href).searchParams.get('segment'), 'theatre');
   assert.equal(readCatalogueTransfer(win).question, 'Which date?');
+  navigateToCatalogue({ locale: 'cs', query: 'Manually filter this', notice: 'manual' }, win);
+  assert.equal(new URL(win.location.href).hash, CATALOGUE_FILTERS_HASH);
+});
 
+test('AI refinement still opens at its guidance when private handoff storage is blocked', () => {
+  const win = browserTab();
   win.sessionStorage.setItem = () => { throw new Error('Storage disabled'); };
+  navigateToCatalogue({ locale: 'en', query: 'I don’t know', notice: 'guidance' }, win);
+  assert.equal(new URL(win.location.href).pathname, '/en/events/');
+  assert.equal(new URL(win.location.href).hash, CATALOGUE_AI_HASH);
+  assert.equal(new URL(win.location.href).search, '');
+  assert.equal(readCatalogueTransfer(win), null);
+
   navigateToCatalogue({ locale: 'cs', query: 'Find this', filters: { keyword: 'Private term', category: 'sport' } }, win);
   assert.equal(new URL(win.location.href).hash, CATALOGUE_FILTERS_HASH);
   assert.equal(new URL(win.location.href).searchParams.has('q'), false);
@@ -95,7 +106,7 @@ test('fallback links use confirmed structured filters and retain the original qu
 
   const url = new URL(win.location.href);
   assert.equal(url.pathname, '/events');
-  assert.equal(url.hash, CATALOGUE_FILTERS_HASH);
+  assert.equal(url.hash, CATALOGUE_AI_HASH);
   assert.equal(url.searchParams.get('city'), 'Ostrava');
   assert.equal(url.searchParams.get('cityCc'), 'CZ');
   assert.equal(url.searchParams.get('segment'), 'concert');

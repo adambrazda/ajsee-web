@@ -5632,7 +5632,12 @@ function initFiltersFromURL() {
   syncLocalizedCityLabelFromCurrentState();
 }
 
-async function transferHomeAiSearch({ intent, query, locale, needsClarification, signal }) {
+async function transferHomeAiSearch({ intent, query, locale, needsClarification, needsDetails, signal }) {
+  if (needsDetails) {
+    navigateToCatalogue({ locale, query, notice: 'guidance' });
+    return 'guidance';
+  }
+
   const mapped = mapIntentToFilters(intent);
   const resolved = needsClarification || mapped.needsClarification
     ? { ...mapped, needsClarification: true }
@@ -5652,7 +5657,10 @@ async function transferHomeAiSearch({ intent, query, locale, needsClarification,
   const filters = selectCatalogueRefinementFilters(mapped);
   const question = String(intent.clarification?.question || '');
   const notice = !resolved.needsClarification && mapped.filters.placeType === 'nearMe' ? 'location' : 'partial';
-  navigateToCatalogue({ locale, query, filters, notice, question });
+  navigateToCatalogue({
+    locale, query, filters, notice, question,
+    clarificationIntent: needsClarification && question ? intent : null
+  });
   return resolved.needsClarification ? 'clarification' : 'partial';
 }
 

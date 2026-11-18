@@ -3,15 +3,19 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { parse } from 'acorn';
 import { JSDOM } from 'jsdom';
-import { navigateToCatalogue } from '../src/catalogue-search.js';
+import { CATALOGUE_AI_HASH, navigateToCatalogue, readCatalogueTransfer } from '../src/catalogue-search.js';
 import { formatAiResultSummary } from '../src/ai-search/result-summary.js';
-import { MAX_CLARIFICATION_ROUNDS } from '../src/ai-search/clarification-context.js';
+import { MAX_CLARIFICATION_ROUNDS, normalizeClarificationContext } from '../src/ai-search/clarification-context.js';
 import { formatLocalIsoWithOffset, resolveAiSearchClientConfig } from '../src/ai-search/runtime-config.js';
 import { trackAiSearchOutcome, trackAiSearchStep } from '../src/ai-search/analytics.js';
 import { getAiSearchCopy } from '../src/ai-search/copy.js';
 import { recognizeFallbackFilters } from '../src/ai-search/fallback-filters.js';
 import { renderAiSearchIdleMarkup } from '../src/ai-search/idle-markup.js';
 import { isOpenEndedSearch, needsSearchGuidance } from '../src/ai-search/search-guidance.js';
+import { mapIntentToFilters, selectCatalogueRefinementFilters } from '../src/ai-search/intent-to-filters.js';
+import { resolveIntentRequirements } from '../src/ai-search/requirement-resolver.js';
+import { materializeSearchPlan } from '../src/ai-search/search-plan-materializer.js';
+import { materializedPlanToRuntimeFilters } from '../src/ai-search/runtime-filter-state.js';
 
 const source = readFileSync(new URL('../src/ai-search/ui-controller.js', import.meta.url), 'utf8');
 const body = parse(source, { sourceType: 'module', ecmaVersion: 'latest' }).body
@@ -21,13 +25,17 @@ const body = parse(source, { sourceType: 'module', ecmaVersion: 'latest' }).body
   .join('\n')
   .replaceAll('import.meta.env', 'undefined');
 
+const homeSource = readFileSync(new URL('../src/home-entry.js', import.meta.url), 'utf8');
+const transferFunction = parse(homeSource, { sourceType: 'module', ecmaVersion: 'latest' }).body
+  .find(node => node.type === 'FunctionDeclaration' && node.id.name === 'transferHomeAiSearch');
+
 const QUERY = 'koncert v Ostravě tento víkend do 800 Kč';
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const result = (intent = { category: 'concert' }, needsClarification = false) => ({
   ok: true, status: 200, json: async () => ({ ok: true, intent, needsClarification })
 });
 
-function fixture(testContext, { consent = false, widgetReady = true, fetchResult = () => result(), home = false } = {}) {
+function fixture(testContext, { consent = false, widgetReady = true, fetchResult = () => result(), home = false, transfer = null } = {}) {
   const dom = new JSDOM('<html lang="cs"><body><form id="events-filters-form"></form></body></html>', {
     url: 'https://deploy-preview-1--ajsee-demo.netlify.app' + (home ? '/' : '/en/events/?city=Ostrava')
   });
@@ -60,9 +68,27 @@ function fixture(testContext, { consent = false, widgetReady = true, fetchResult
 
   const navigation = [];
   const navigationTarget = {
-    location: { origin: win.location.origin, assign: url => navigation.push(url) },
-    sessionStorage: win.sessionStorage
+    location: {
+      origin: win.location.origin,
+      assign(url) {
+        this.href = url;
+        navigation.push(url);
+      }
+    },
+    sessionStorage: win.sessionStorage,
+    history: win.history
   };
+  const homeDependencies = {
+    navigateToCatalogue: context => navigateToCatalogue(context, navigationTarget),
+    mapIntentToFilters, selectCatalogueRefinementFilters, resolveIntentRequirements,
+    materializeSearchPlan, materializedPlanToRuntimeFilters,
+    createSuggestCitiesResolver: () => undefined,
+    acquireGeolocation: undefined,
+    nearMeLabel: () => 'V mém okolí'
+  };
+  const transferHomeAiSearch = new Function(...Object.keys(homeDependencies),
+    'return ' + homeSource.slice(transferFunction.start, transferFunction.end))(...Object.values(homeDependencies));
+
   const dependencies = {
     document,
     globalThis: win,
@@ -70,7 +96,7 @@ function fixture(testContext, { consent = false, widgetReady = true, fetchResult
       calls.push({ url, ...options });
       return fetchResult(options);
     },
-    formatAiResultSummary, MAX_CLARIFICATION_ROUNDS, formatLocalIsoWithOffset, resolveAiSearchClientConfig,
+    formatAiResultSummary, MAX_CLARIFICATION_ROUNDS, normalizeClarificationContext, formatLocalIsoWithOffset, resolveAiSearchClientConfig,
     trackAiSearchOutcome, trackAiSearchStep, getAiSearchCopy, recognizeFallbackFilters, renderAiSearchIdleMarkup,
     isOpenEndedSearch, needsSearchGuidance,
     hasAnalyticsConsent: () => consent,
@@ -83,14 +109,13 @@ function fixture(testContext, { consent = false, widgetReady = true, fetchResult
   initAiEventSearch({
     form,
     onIntent: intent => applications.push(intent),
-    onCatalogueSearch: home ? ({ intent }) => {
-      applications.push(intent);
-      return 'success';
-    } : null,
+    onCatalogueSearch: home ? transferHomeAiSearch : null,
     onFallback: context => {
       fallback.push(context);
       if (home) navigateToCatalogue(context, navigationTarget);
-    }
+    },
+    initialQuery: transfer?.query,
+    initialRefinement: transfer ? { question: transfer.question, previousIntent: transfer.clarificationIntent } : null
   });
   const input = form.querySelector('#ai-event-search-query');
   const submit = form.querySelector('[data-ai-search-submit]');
@@ -98,6 +123,7 @@ function fixture(testContext, { consent = false, widgetReady = true, fetchResult
 
   return {
     win, form, input, submit, manual, calls, analytics, fallback, applications, widgets, removed, deadlines, navigation, widgetApi,
+    readTransfer: () => readCatalogueTransfer(navigationTarget),
     search(query = QUERY) {
       input.value = query;
       submit.click();
@@ -105,17 +131,26 @@ function fixture(testContext, { consent = false, widgetReady = true, fetchResult
   };
 }
 
-test('an open-ended home search stays in the form and offers an actionable example', async t => {
-  const ui = fixture(t, { home: true });
+test('an open-ended home search opens guidance and an actionable example in the catalogue', async t => {
+  const home = fixture(t, { home: true });
+  home.search(' ');
+  await flush();
+  assert.equal(home.navigation.length, 0);
+
+  home.search('Nevím, co hledám');
+  await flush();
+  const landing = new URL(home.navigation[0]);
+  assert.equal(landing.pathname, '/events');
+  assert.equal(landing.hash, CATALOGUE_AI_HASH);
+  assert.equal(landing.search, '');
+  assert.equal(home.widgets.length, 0);
+  assert.equal(home.calls.length, 0);
+
+  const ui = fixture(t, { transfer: home.readTransfer() });
   const example = ui.form.querySelector('[data-ai-search-guidance-example]');
-  ui.search('Nevím, co hledám');
   assert.equal(ui.input.value, 'Nevím, co hledám');
   assert.equal(ui.form.querySelector('[data-ai-search-guidance]').hidden, false);
-  assert.match(ui.form.querySelector('[data-ai-search-status]').textContent, /městem, termínem nebo typem/);
-  assert.equal(ui.widgets.length, 0);
-  assert.equal(ui.calls.length, 0);
-  assert.equal(ui.applications.length, 0);
-
+  assert.match(ui.form.querySelector('[data-ai-search-status]').textContent, /město, termín nebo typ akce/);
   example.click();
   await flush();
   assert.equal(ui.input.value, 'Koncerty v Brně tento víkend');
@@ -125,7 +160,7 @@ test('an open-ended home search stays in the form and offers an actionable examp
   assert.equal(ui.applications.length, 1);
 });
 
-test('an unconstrained service response leaves both pages on their current filters', async t => {
+test('an unconstrained service response redirects from home and preserves filters in the catalogue', async t => {
   for (const home of [true, false]) {
     const ui = fixture(t, { home, fetchResult: () => result({ category: 'all', sort: 'relevance' }) });
     const originalUrl = ui.win.location.href;
@@ -133,11 +168,61 @@ test('an unconstrained service response leaves both pages on their current filte
     await flush();
     ui.widgets[0].callback('test-token');
     await flush();
-    assert.equal(ui.form.querySelector('[data-ai-search-guidance]').hidden, false);
+    assert.equal(ui.form.querySelector('[data-ai-search-guidance]').hidden, home);
     assert.equal(ui.applications.length, 0);
-    assert.equal(ui.navigation.length, 0);
     assert.equal(ui.win.location.href, originalUrl);
+    if (home) {
+      assert.equal(new URL(ui.navigation[0]).hash, CATALOGUE_AI_HASH);
+      assert.equal(ui.readTransfer().query, 'Chtěl bych se nějak zabavit');
+    } else {
+      assert.equal(ui.navigation.length, 0);
+    }
   }
+});
+
+test('a home clarification places the question and partial filters in the catalogue and accepts a short reply', async t => {
+  const query = 'koncert v Ostravě tento víkend do 800';
+  const question = 'Myslíte maximální cenu 800 CZK?';
+  const intent = {
+    locale: 'cs', category: 'concert',
+    place: { type: 'city', label: 'Ostrava', countryCode: 'CZ' },
+    date: { type: 'preset', preset: 'weekend' },
+    confidence: { overall: 0.95, category: 0.95, place: 0.95, date: 0.95 },
+    unsupportedPreferences: [{ type: 'max_price', value: 800, currency: '' }],
+    clarification: { required: true, question, fields: ['unsupportedPreferences'] }
+  };
+  const home = fixture(t, { home: true, fetchResult: () => result(intent, true) });
+  home.search(query);
+  await flush();
+  home.widgets[0].callback('test-token');
+  await flush();
+  const landing = new URL(home.navigation[0]);
+  assert.equal(landing.hash, CATALOGUE_AI_HASH);
+  assert.equal(landing.searchParams.get('segment'), 'concert');
+  assert.equal(landing.searchParams.get('city'), 'Ostrava');
+  assert.ok(landing.searchParams.get('from'));
+  assert.equal(landing.searchParams.has('priceMax'), false);
+  assert.equal(landing.searchParams.has('q'), false);
+
+  const transfer = home.readTransfer();
+  const ui = fixture(t, { transfer });
+  assert.equal(ui.form.querySelector('[data-ai-search-status]').textContent, question);
+  assert.equal(ui.form.querySelector('[data-ai-search-helper]').textContent, query);
+  assert.equal(ui.input.value, '');
+  ui.search('800 Kč');
+  await flush();
+  ui.widgets[0].callback('test-token');
+  await flush();
+  const body = JSON.parse(ui.calls[0].body);
+  assert.equal(body.query, '800 Kč');
+  assert.deepEqual(body.clarificationContext, { originalQuery: query, question, round: 1, previousIntent: intent });
+  assert.equal(ui.applications.length, 1);
+
+  const edit = fixture(t, { transfer });
+  edit.form.querySelector('[data-ai-search-clarification-edit]').click();
+  assert.equal(edit.input.value, query);
+  assert.equal(edit.form.querySelector('[data-ai-search-clarification-actions]').hidden, true);
+  assert.equal(edit.calls.length, 0);
 });
 
 test('manual fallback appears during verification and ignores late widget callbacks', async t => {

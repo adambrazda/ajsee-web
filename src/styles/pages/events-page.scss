@@ -99,6 +99,7 @@ body[data-page="events"] {
 
 /* These non-interactive containers receive focus to announce the landing context. */
 #events-upcoming-title[tabindex="-1"]:focus,
+#events-ai-search [data-ai-search-status][tabindex="-1"]:focus,
 #events-filters-details[tabindex="-1"]:focus {
   outline: none;
 }

@@ -170,8 +170,10 @@ test('scheduled refresh cannot replace a good cached snapshot with a failed or i
   await createHomeFeaturedRefresh({ ...deps, collectSources: async () => ({ events: events.slice(0, 2), sources: { smsticket: { state: 'ok' } } }) })();
   assert.equal(writes.length, 0);
   await createHomeFeaturedRefresh({ ...deps, collectSources: async () => ({ events, sources: { smsticket: { state: 'ok' } } }) })();
-  assert.equal(writes.length, 7);
-  assert.ok(writes.slice(0, 6).every(write => write.name === FEATURED_EVENT_STORE && write.options.onlyIfNew));
+  const pageWrites = writes.slice(0, -1);
+  assert.ok(pageWrites.every(write => write.name === FEATURED_EVENT_STORE && write.options.onlyIfNew));
+  assert.deepEqual(pageWrites.filter(write => events.some(event => event.id === write.body.id)).map(write => write.body.id),
+    events.slice(0, 6).map(event => event.id));
   assert.equal(writes.at(-1).name, 'home-featured-v1');
   assert.deepEqual(writes.at(-1).body.recommendedIds, events.slice(0, 6).map(event => event.id));
 });

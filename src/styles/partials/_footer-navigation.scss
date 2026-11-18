@@ -46,3 +46,23 @@
     }
   }
 }
+
+@media (max-width: 640px) {
+  .footer-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 1.25rem;
+    max-inline-size: 22rem;
+    text-align: start;
+
+    ul { display: block; }
+
+    a {
+      display: flex;
+      min-height: 44px;
+      padding-block: 0.25rem;
+      overflow-wrap: anywhere;
+    }
+  }
+}

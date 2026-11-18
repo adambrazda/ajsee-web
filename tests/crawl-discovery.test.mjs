@@ -5,6 +5,15 @@ import vm from 'node:vm';
 import { JSDOM } from 'jsdom';
 import { auditCrawlDiscovery } from '../scripts/audit-crawl-discovery.mjs';
 import { finalizeSeoHtml } from '../scripts/finalize-seo.mjs';
+import { buildLocalizedPath } from '../src/utils/localized-path.js';
+import londonRoutes from '../shared/london-musicals-routes.json' with { type: 'json' };
+
+function browserScript(file) {
+  return fs.readFileSync(file, 'utf8')
+    .replace(/^import \{ buildLocalizedPath \} from '[^']+';\r?\n/m, '')
+    .replace(/export (?=(?:async )?(?:function|const|let))/g, '')
+    .replace(/export \{[^}]+\};/g, '');
+}
 
 test('all sitemap pages are reachable from the homepage through initial HTML links',async()=>{
   const audit=await auditCrawlDiscovery();
@@ -38,27 +47,44 @@ test('language anchors use translated hreflang routes and are idempotent',()=>{
   dom.window.close();
 });
 
-test('navigation initialization preserves mobile language links on FAQ pages',()=>{
+test('navigation initialization preserves mobile language links on FAQ pages',async()=>{
   const languages=['cs','en','de','sk','pl','hu'];
+  const source = browserScript('src/nav-core.js');
   for(const lang of languages) {
     const target=l=>l==='cs'?'/faq':'/'+l+'/faq/';
-    const markup='<header class="site-header"><nav class="main-nav"><ul><li><a href="/faq">FAQ</a></li></ul><div class="language-switcher"><details class="lang-dropdown"><summary>Language</summary><div class="lang-menu">'+languages.map(l=>`<a class="lang-btn" data-lang="${l}" href="${target(l)}"${l===lang?' aria-current="true"':''}>${l}</a>`).join('')+'</div></details></div></nav></header>';
-    const dom=new JSDOM(markup,{url:'https://ajsee.cz'+target(lang),runScripts:'outside-only'});
-    const source=fs.readFileSync('src/nav-core.js','utf8').replace(/export function /g,'function ').replace(/export \{[^}]+\};/g,'');
-    vm.runInContext(source+'\ninitNav({lang:'+JSON.stringify(lang)+'});',dom.getInternalVMContext());
+    const markup = fs.readFileSync(lang === 'cs' ? 'dist/faq.html' : `dist/${lang}/faq/index.html`, 'utf8');
+    const dom=new JSDOM(markup,{url:'https://ajsee.cz'+target(lang),runScripts:'outside-only',pretendToBeVisual:true});
     const doc=dom.window.document;
-    assert.equal(doc.querySelectorAll('.lang-btn').length,6,lang+': FAQ deduplication removed language choices');
-    for(const link of doc.querySelectorAll('.lang-btn'))assert.equal(link.getAttribute('href'),target(link.dataset.lang));
-    assert.equal(doc.querySelector('.lang-btn[aria-current="true"]').dataset.lang,lang);
+    const mobileSwitch = doc.querySelector('.main-nav .mobile-switcher');
+    mobileSwitch.querySelector(`.lang-btn[data-lang="${lang}"]`).setAttribute('aria-current', 'true');
+    dom.window.buildLocalizedPath = buildLocalizedPath;
+    vm.runInContext(source+'\ninitNav({lang:'+JSON.stringify(lang)+'});',dom.getInternalVMContext());
+    assert.equal(mobileSwitch.querySelectorAll('.lang-btn').length,6);
+    for(const link of mobileSwitch.querySelectorAll('.lang-btn'))assert.equal(link.getAttribute('href'),target(link.dataset.lang));
+    assert.equal(mobileSwitch.querySelector('.lang-btn[aria-current="true"]').dataset.lang,lang);
+    assert.equal(doc.querySelector('.main-nav [data-i18n-key="nav-london-musicals"]').getAttribute('href'), londonRoutes[lang]);
+    assert.equal(doc.querySelector('.footer-navigation [data-i18n-key="nav-contact"]').getAttribute('href'), lang === 'cs' ? '/#contact' : `/${lang}/#contact`);
+
+    const opener = doc.querySelector('.hamburger-btn');
+    const closeButton = doc.querySelector('.main-nav .menu-close');
+    opener.click();
+    assert.equal(opener.getAttribute('aria-expanded'), 'true');
+    await new Promise(resolve => dom.window.requestAnimationFrame(resolve));
+    assert.equal(doc.activeElement, closeButton);
+    doc.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape' }));
+    assert.equal(opener.getAttribute('aria-expanded'), 'false');
+    assert.equal(doc.activeElement, opener);
     dom.window.close();
   }
 });
 
 test('runtime internal link localization preserves explicit language destinations',()=>{
-  const dom=new JSDOM('<a class="lang-btn" data-lang="en" href="/en/about/">English</a><a id="regular" href="/blog">Blog</a>',{url:'https://ajsee.cz/about',runScripts:'outside-only'});
-  const source=fs.readFileSync('src/i18n.js','utf8').replace(/import\.meta\.glob\([^;]+\)/,'{}').replace(/export (?=(?:async )?(?:function|const|let))/g,'');
+  const dom=new JSDOM('<a class="lang-btn" data-lang="en" href="/en/about/">English</a><a id="regular" href="/blog">Blog</a><a id="london" href="/londynske-muzikaly/">Muzikály v Londýně</a>',{url:'https://ajsee.cz/about',runScripts:'outside-only'});
+  const source=browserScript('src/i18n.js').replace(/import\.meta\.glob\([^;]+\)/,'{}');
+  dom.window.buildLocalizedPath = buildLocalizedPath;
   vm.runInContext(source+'\npatchInternalLinksWithLang("de");',dom.getInternalVMContext());
   assert.equal(dom.window.document.querySelector('.lang-btn').getAttribute('href'),'/en/about/');
   assert.equal(dom.window.document.getElementById('regular').getAttribute('href'),'/de/blog/');
+  assert.equal(dom.window.document.getElementById('london').getAttribute('href'),'/de/london-musicals/');
   dom.window.close();
 });

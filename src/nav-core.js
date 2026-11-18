@@ -1,446 +1,171 @@
-﻿// src/nav-core.js
-// Navigace, aktivní odkaz, jazykové URL, mobilní menu, overlay, bezpečný header offset
+// Shared static navigation, language-aware links and the mobile drawer.
+import { buildLocalizedPath } from './utils/localized-path.js';
 
-(function ensureGlobals(){
-  window.__ajsee = window.__ajsee || {};
-  const g = window.__ajsee;
-  g.flags = g.flags || {};
-})();
-
+window.__ajsee = window.__ajsee || {};
 const G = window.__ajsee;
+G.flags = G.flags || {};
 
-// ——— helpers ———
-const qs  = (s, r = document) => r.querySelector(s);
-const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
+const qs = (selector, root = document) => root.querySelector(selector);
+const qsa = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+const supportedLanguages = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
+const languagePrefix = /^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i;
+const localizedLinks = '.main-nav > ul a, .logo-link[href], .footer-navigation a[href]';
+const sectionLinks = {
+  'blog-detail': 'nav-reviews',
+  'review-detail': 'nav-reviews',
+  'event-detail': 'nav-events',
+  'london-musicals': 'nav-london-musicals'
+};
 
-const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
-const LANG_KEY = 'ajsee.lang';
-
-/* AJSEE language URL helpers: canonical path-prefix URLs, no runtime ?lang links. */
-const AJSEE_CANONICAL_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
-
-function ajseeCanonicalLang(value) {
-  const lang = String(value || '').trim().toLowerCase().slice(0, 2);
-  return AJSEE_CANONICAL_LANGS.includes(lang) ? lang : 'cs';
+function normalizeLang(value) {
+  const lang = String(value || '').trim().toLowerCase();
+  return supportedLanguages.includes(lang) ? lang : null;
 }
 
-function ajseePathLang(pathname = window.location.pathname) {
-  const match = String(pathname || '').match(/^\/(cs|en|de|sk|pl|hu)(?:\/|$)/i);
-  return match ? ajseeCanonicalLang(match[1]) : '';
+function detectLang(fallback = 'cs') {
+  const queryLang = new URLSearchParams(location.search).get('lang');
+  const pathLang = location.pathname.match(languagePrefix)?.[1];
+  return normalizeLang(queryLang) || normalizeLang(pathLang) || normalizeLang(fallback) || 'cs';
 }
 
-function ajseeStripLangPrefix(pathname = '/') {
-  let path = String(pathname || '/');
-  path = path.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
-  if (!path) path = '/';
-  if (!path.startsWith('/')) path = '/' + path;
-  return path;
-}
-
-function ajseeBuildLocalizedPath(pathname = '/', lang = 'cs') {
-  const targetLang = ajseeCanonicalLang(lang);
-  let path = ajseeStripLangPrefix(pathname || '/');
-
-  path = path.replace(/\/index\.html$/i, '/');
-  path = path.replace(/\.html$/i, '');
-  path = path.replace(/\/{2,}/g, '/');
-
-  if (!path.startsWith('/')) path = '/' + path;
-  if (path !== '/' && !path.endsWith('/')) path += '/';
-
-  return targetLang === 'cs'
-    ? path
-    : '/' + targetLang + (path === '/' ? '/' : path);
-}
-
-function ajseeLocalizedUrlForLang(lang, href = window.location.href) {
-  const targetLang = ajseeCanonicalLang(lang);
-
-  try {
-    const url = new URL(href, window.location.origin);
-    url.searchParams.delete('lang');
-    url.searchParams.delete('locale');
-    url.searchParams.delete('hl');
-    url.pathname = ajseeBuildLocalizedPath(url.pathname, targetLang);
-
-    const search = url.searchParams.toString();
-    return url.pathname + (search ? '?' + search : '') + (url.hash || '');
-  } catch {
-    return targetLang === 'cs' ? '/' : '/' + targetLang + '/';
-  }
-}
-
-function ajseeLocalizeInternalHref(rawHref, lang) {
-  if (!rawHref) return rawHref;
-  if (String(rawHref).startsWith('#')) return rawHref;
-  if (/^(mailto:|tel:|javascript:)/i.test(String(rawHref))) return rawHref;
-  if (/^https?:\/\//i.test(String(rawHref)) && !String(rawHref).startsWith(window.location.origin)) return rawHref;
-
-  try {
-    const url = new URL(rawHref, window.location.origin);
-    if (url.origin !== window.location.origin) return rawHref;
-
-    url.searchParams.delete('lang');
-    url.searchParams.delete('locale');
-    url.searchParams.delete('hl');
-    url.pathname = ajseeBuildLocalizedPath(url.pathname, lang);
-
-    const search = url.searchParams.toString();
-    return url.pathname + (search ? '?' + search : '') + (url.hash || '');
-  } catch {
-    return rawHref;
-  }
-}
-
-
-function normalizeLang(x) {
-  const v = String(x || '').trim().toLowerCase();
-  return SUPPORTED_LANGS.includes(v) ? v : null;
-}
-
-function getStoredLang() {
-  try {
-    return normalizeLang(localStorage.getItem(LANG_KEY));
-  } catch {
-    return null;
-  }
-}
-
-function detectLangSmart(fallback = 'cs') {
-  const urlLang = normalizeLang(new URLSearchParams(location.search).get('lang'));
-  const pathLang = ajseePathLang(location.pathname);
-  return urlLang || pathLang || normalizeLang(fallback) || 'cs';
-}
-
-function persistLangOnly(lang) {
-  const l = normalizeLang(lang);
-  if (!l) return;
-  try {
-    localStorage.setItem(LANG_KEY, l);
-  } catch {}
-}
-
-function onHomePage() {
-  return location.pathname === '/' || location.pathname.endsWith('index.html');
-}
-
-function navPathWithoutLangPrefix(rawHref = '') {
-  const raw = String(rawHref || '').trim();
-
-  if (!raw) return '';
-  if (raw.startsWith('#')) return raw.toLowerCase();
-
-  try {
-    const u = new URL(raw, window.location.origin);
-
-    if (u.origin !== window.location.origin) return '';
-
-    let path = String(u.pathname || '/').toLowerCase();
-
-    path = path.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
-    path = path.replace(/\/index\.html$/i, '/');
-    path = path.replace(/\.html$/i, '');
-    path = path.replace(/\/+$/g, '') || '/';
-
-    return path;
-  } catch {
-    let path = raw.split('?')[0].split('#')[0].toLowerCase();
-
-    path = path.replace(/^\/(cs|en|de|sk|pl|hu)(?=\/|$)/i, '');
-    path = path.replace(/\/index\.html$/i, '/');
-    path = path.replace(/\.html$/i, '');
-    path = path.replace(/\/+$/g, '') || '/';
-
-    return path;
-  }
-}
-
-function isFaqHref(rawHref = '') {
-  const raw = String(rawHref || '').trim().toLowerCase();
-  return raw.endsWith('#faq') || navPathWithoutLangPrefix(rawHref) === '/faq';
-}
-
-function isContactHref(rawHref = '') {
-  const raw = String(rawHref || '').trim().toLowerCase();
-  return raw.endsWith('#contact') || navPathWithoutLangPrefix(rawHref) === '/contact';
+function navPath(pathname) {
+  return pathname
+    .replace(languagePrefix, '')
+    .replace(/\/index\.html$/i, '/')
+    .replace(/\.html$/i, '')
+    .replace(/\/+$/, '') || '/';
 }
 
 function updateHeaderOffset() {
   const header = qs('.site-header');
-  const h = header ? Math.ceil(header.getBoundingClientRect().height) : 80;
-  const safe = Math.max(56, h + 8);
-  document.documentElement.style.setProperty('--header-offset', `${safe}px`);
+  const height = header ? Math.ceil(header.getBoundingClientRect().height) : 80;
+  document.documentElement.style.setProperty('--header-offset', Math.max(56, height + 8) + 'px');
 }
 
-function setLangOnInternalHref(rawHref, lang) {
-  return ajseeLocalizeInternalHref(rawHref, lang);
-}
-
-// Aktivace aktivní položky v hlavním menu
 function activateNavLink() {
-  const path = window.location.pathname;
-  const hash = window.location.hash || '';
-  const isHomePath = (path === '/' || path.endsWith('index.html'));
+  const currentPath = navPath(location.pathname);
+  const sectionLink = sectionLinks[document.body?.dataset.page];
 
-  const state = {
-    home:          () => isHomePath && (hash === '' || hash === '#top' || hash === '#'),
-    events:        () => /\/events(\.html)?$/i.test(path),
-    partners:      () => /\/partners(\.html)?$/i.test(path),
-    accommodation: () => /\/accommodation(\.html)?$/i.test(path),
-    about:         () => /\/about(\.html)?$/i.test(path),
-    blog:          () => /\/blog(\.html)?$/i.test(path) || (isHomePath && hash === '#blog'),
-    faq:           () => /\/faq(\.html)?$/i.test(path),
-    contact:       () => isHomePath && hash === '#contact',
-  };
-
-  const keyForLink = (href) => {
-    if (!href) return null;
-    if (href.includes('events')) return 'events';
-    if (href.includes('partners')) return 'partners';
-    if (href.includes('accommodation')) return 'accommodation';
-    if (href.includes('about')) return 'about';
-    if (href.includes('faq')) return 'faq';
-    if (href.includes('#blog') || /\/blog(\.html)?$/i.test(href)) return 'blog';
-    if (href.includes('#contact') || /\/contact(\.html)?$/i.test(href)) return 'contact';
-    if (href === '/' || href.includes('index.html')) return 'home';
-    return null;
-  };
-
-  qsa('.main-nav > ul a, [data-lang-link]').forEach((link) => {
-    const href = link.getAttribute('href') || '';
-    const key = keyForLink(href);
-    const isCurrent = key ? !!state[key]() : false;
-
-    link.classList.toggle('active', isCurrent);
-    if (isCurrent) link.setAttribute('aria-current', 'page');
+  qsa('.main-nav > ul a').forEach(link => {
+    const current = navPath(new URL(link.href).pathname) === currentPath
+      || link.dataset.i18nKey === sectionLink;
+    link.classList.toggle('active', current);
+    if (current) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
   });
 }
 
-// Přidej/normalizuj FAQ položku jako samostatnou stránku
-function ensureFaqNavLink() {
-  const nav = qs('.main-nav');
-  if (!nav) return;
-
-  // Důležité:
-  // FAQ už má být ve statickém HTML / localized buildu.
-  // Nevkládáme ho za běhu, protože to na /en/... stránkách způsobovalo
-  // duplicitní FAQ a layout shift v menu.
-  normalizeFaqInNav(detectLangSmart('cs'));
-}
-
-function normalizeFaqInNav(lang) {
-  const nav = qs('.main-nav');
-  if (!nav) return;
-
-  const faqLinks = Array.from(nav.querySelectorAll(':scope > ul a')).filter((a) =>
-    isFaqHref(a.getAttribute('href') || '')
-  );
-
-  if (faqLinks.length === 0) return;
-
-  const keep = faqLinks[0];
-  const targetHref = setLangOnInternalHref('/faq', lang);
-
-  if (keep.getAttribute('href') !== targetHref) {
-    keep.setAttribute('href', targetHref);
-  }
-
-  faqLinks.slice(1).forEach((a) => {
-    (a.closest('li') || a).remove();
-  });
-
-  const contact = Array.from(nav.querySelectorAll(':scope > ul a')).find((a) =>
-    isContactHref(a.getAttribute('href') || '') ||
-    String(a.getAttribute('href') || '').toLowerCase().includes('#contact')
-  );
-
-  const keepItem = keep.closest('li') || keep;
-  const contactItem = contact?.closest('li') || contact;
-
-  const faqAlreadyBeforeContact =
-    contactItem &&
-    keepItem &&
-    keepItem.parentElement === contactItem.parentElement &&
-    keepItem.nextElementSibling === contactItem;
-
-  if (contactItem && contactItem.parentElement && !faqAlreadyBeforeContact) {
-    contactItem.parentElement.insertBefore(keepItem, contactItem);
-  }
-}
-
-// Doplnění jazykového prefixu do odkazů v menu + CS bez prefixu
 function updateMenuLinksWithLang(lang) {
-  const l = normalizeLang(lang) || 'cs';
+  qsa(localizedLinks).forEach(link => {
+    const url = new URL(link.href);
+    if (url.origin !== window.location.origin) return;
 
-  qsa('.main-nav > ul a').forEach((link) => {
-    let href = link.getAttribute('href') || '';
-
-    if (!href) return;
-    if (href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
-    if (/^https?:\/\//i.test(href) && !href.startsWith(window.location.origin)) return;
-
-    const lower = href.toLowerCase();
-
-    if (lower.endsWith('#blog')) {
-      href = '/#blog';
-    } else if (lower.endsWith('#contact')) {
-      href = '/#contact';
-    } else if (isFaqHref(href)) {
-      href = '/faq';
-    }
-
-    const nextHref = setLangOnInternalHref(href, l);
-
-    if (link.getAttribute('href') !== nextHref) {
-      link.setAttribute('href', nextHref);
-    }
+    url.searchParams.delete('lang');
+    url.searchParams.delete('locale');
+    url.searchParams.delete('hl');
+    const path = buildLocalizedPath(url.pathname, lang) + url.search + url.hash;
+    if (link.getAttribute('href') !== path) link.setAttribute('href', path);
   });
 }
 
-// Mobilní menu (hamburger + overlay)
 function initMobileMenu() {
   const hamburger = qs('.hamburger-btn');
   const nav = qs('.main-nav');
   const overlay = qs('.menu-overlay-bg');
-  const closeBtn = qs('.menu-close');
+  const closeButton = qs('.menu-close');
 
   if (!hamburger || !nav || !overlay) return;
 
-  nav.classList.remove('open');
-  overlay.classList.remove('active');
-  overlay.style.pointerEvents = 'none';
-  overlay.style.opacity = '0';
-  document.body.classList.remove('nav-open');
-  document.body.style.overflow = '';
+  hamburger.setAttribute('aria-controls', nav.id);
+  hamburger.setAttribute('aria-expanded', 'false');
 
   const openMenu = () => {
     nav.classList.add('open');
     overlay.classList.add('active');
-    overlay.style.pointerEvents = 'auto';
-    overlay.style.opacity = '1';
     document.body.classList.add('nav-open');
     document.body.style.overflow = 'hidden';
+    hamburger.setAttribute('aria-expanded', 'true');
     updateHeaderOffset();
+    requestAnimationFrame(() => {
+      if (nav.classList.contains('open')) closeButton?.focus({ preventScroll: true });
+    });
   };
 
   const closeMenu = () => {
+    if (!nav.classList.contains('open')) return;
+
     nav.classList.remove('open');
     overlay.classList.remove('active');
-    overlay.style.pointerEvents = 'none';
-    overlay.style.opacity = '0';
     document.body.classList.remove('nav-open');
     document.body.style.overflow = '';
+    hamburger.setAttribute('aria-expanded', 'false');
+    if (nav.contains(document.activeElement)) hamburger.focus({ preventScroll: true });
     updateHeaderOffset();
   };
 
   window.__ajseeCloseMenu = closeMenu;
-
   hamburger.addEventListener('click', openMenu);
   overlay.addEventListener('click', closeMenu);
-  closeBtn?.addEventListener('click', closeMenu);
-  qsa('.main-nav a').forEach((link) => link.addEventListener('click', closeMenu));
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeMenu();
+  closeButton?.addEventListener('click', closeMenu);
+  qsa('a[href]', nav).forEach(link => link.addEventListener('click', closeMenu));
+
+  nav.addEventListener('keydown', event => {
+    if (event.key !== 'Tab' || !nav.classList.contains('open')) return;
+
+    const focusable = qsa('button:not([disabled]), a[href], summary', nav)
+      .filter(element => element.getClientRects().length > 0);
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (document.activeElement === (event.shiftKey ? first : last)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first)?.focus();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !event.defaultPrevented) closeMenu();
+  });
+  window.addEventListener('resize', () => {
+    if (window.getComputedStyle(hamburger).display === 'none') closeMenu();
   });
 }
 
-function bindLangPersistenceAndNavRefresh() {
-  if (G.flags.langWatchBound) return;
-  G.flags.langWatchBound = true;
-
-  // 1) když user klikne na .lang-btn, aspoň ulož volbu
-  document.addEventListener('click', (e) => {
-    const btn = e.target?.closest?.('.lang-btn[data-lang]');
-    if (!btn) return;
-    persistLangOnly(btn.dataset.lang);
+function bindLanguageChanges() {
+  document.addEventListener('click', event => {
+    const lang = normalizeLang(event.target?.closest?.('.lang-btn[data-lang]')?.dataset.lang);
+    if (!lang) return;
+    try {
+      localStorage.setItem('ajsee.lang', lang);
+    } catch {}
   });
 
-  // 2) když se změní <html lang>, aktualizuj menu linky
-  let last = detectLangSmart('cs');
-  const mo = new MutationObserver(() => {
-    const cur = detectLangSmart('cs');
-    if (cur === last) return;
-    last = cur;
-
-    updateMenuLinksWithLang(cur);
-    normalizeFaqInNav(cur);
+  let lastLang = detectLang(document.documentElement.lang);
+  const refresh = nextLang => {
+    lastLang = nextLang;
+    updateMenuLinksWithLang(nextLang);
     activateNavLink();
-  });
-  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  };
 
-  // 3) pokud i18n dispatchne event, tak také
-  window.addEventListener('ajsee:lang-changed', (ev) => {
-    const cur = normalizeLang(ev?.detail?.lang) || detectLangSmart('cs');
-    updateMenuLinksWithLang(cur);
-    normalizeFaqInNav(cur);
-    activateNavLink();
+  new MutationObserver(() => {
+    const lang = detectLang(document.documentElement.lang);
+    if (lang !== lastLang) refresh(lang);
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+
+  window.addEventListener('ajsee:lang-changed', event => {
+    refresh(normalizeLang(event.detail?.lang) || detectLang(document.documentElement.lang));
   });
 }
 
-// Inicializace celého nav stacku
 export function initNav({ lang = null } = {}) {
   if (G.flags.navCoreBooted) return;
   G.flags.navCoreBooted = true;
 
-  const currentLang = normalizeLang(lang) || detectLangSmart('cs');
-
   updateHeaderOffset();
-  window.addEventListener('resize', () => updateHeaderOffset());
-
-  ensureFaqNavLink();
-  updateMenuLinksWithLang(currentLang);
-  normalizeFaqInNav(currentLang);
-
+  window.addEventListener('resize', updateHeaderOffset);
+  updateMenuLinksWithLang(normalizeLang(lang) || detectLang(document.documentElement.lang));
   activateNavLink();
-  window.addEventListener('hashchange', activateNavLink);
-
-  // Home link smooth + lang přepis
-  const homeLink = qs('a[data-i18n-key="nav-home"]');
-  if (homeLink) {
-    homeLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.__ajseeCloseMenu?.();
-
-      const isHome = onHomePage();
-      if (!isHome) {
-        const navLang = detectLangSmart('cs');
-        window.location.href = ajseeLocalizeInternalHref('/', navLang);
-        return;
-      }
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-
-  // Contact link – explicitní chování
-  const contactLinks = qsa('a[data-i18n-key="nav-contact"]');
-  contactLinks.forEach((contactLink) => {
-    contactLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.__ajseeCloseMenu?.();
-
-      const targetHash = '#contact';
-      const isHome = onHomePage();
-
-      if (!isHome) {
-        window.location.href = (currentLang === 'cs')
-          ? `/${targetHash}`
-          : `/?lang=${currentLang}${targetHash}`;
-        return;
-      }
-
-      const target = document.querySelector(targetHash);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.location.hash = targetHash;
-      }
-    });
-  });
-
   initMobileMenu();
-  bindLangPersistenceAndNavRefresh();
+  bindLanguageChanges();
 }
 
 export { updateMenuLinksWithLang, activateNavLink };

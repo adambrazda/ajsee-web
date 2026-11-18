@@ -1,20 +1,11 @@
 import '../../identity-init.js';
+import ROUTES from '../../../shared/london-musicals-routes.json' with { type: 'json' };
 
 import { initNav } from '../../nav-core.js';
 import { applyTranslations, detectLang } from '../../i18n.js';
 
 const SUPPORTED = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const TODAYTIX_PURCHASE_BASE_URL = 'https://ajsee.tixculture.com/';
-
-const ROUTES = {
-  cs: '/londynske-muzikaly/',
-  en: '/en/london-musicals/',
-  de: '/de/london-musicals/',
-  sk: '/sk/londynske-muzikaly/',
-  pl: '/pl/londynskie-musicale/',
-  hu: '/hu/londoni-musicalek/'
-};
-
 
 
 function normLang(value) {

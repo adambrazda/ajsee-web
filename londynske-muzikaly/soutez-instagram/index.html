@@ -46,25 +46,18 @@
 <body class="page-london-musicals" data-page="london-musicals">
   <header class="site-header">
     <div class="header-inner">
-      <a href="/" class="logo-link" aria-label="Domů">
+      <a href="/" class="logo-link" aria-label="AJSEE – úvodní stránka" data-i18n-aria="nav-logo-home">
         <img src="/images/logo-ajsee-header.png" alt="AJSEE Logo" class="logo" width="64" height="56" loading="eager" decoding="async" />
       </a>
 
-      <button class="hamburger-btn" id="hamburger" aria-label="Otevřít menu" type="button">
+      <button class="hamburger-btn" id="hamburger" aria-controls="mainNav" aria-expanded="false" aria-label="Otevřít menu" data-i18n-aria="nav-open-menu" type="button">
         <span></span><span></span><span></span>
       </button>
 
-      <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu">
-        <button class="menu-close" aria-label="Zavřít menu" type="button">&times;</button>
+      <nav class="main-nav" id="mainNav" role="navigation" aria-label="Hlavní menu" data-i18n-aria="nav-main-label">
+        <button class="menu-close" aria-label="Zavřít menu" data-i18n-aria="nav-close-menu" type="button">&times;</button>
         <ul>
-          <li><a href="/" data-i18n-key="nav-home">Domů</a></li>
-          <li><a href="/events" data-i18n-key="nav-events">Události</a></li>
-          <li><a href="/accommodation" data-i18n-key="nav-accommodation">Ubytování</a></li>
-          <li><a href="/partners" data-i18n-key="nav-partners">Pro partnery</a></li>
-          <li><a href="/about" data-i18n-key="nav-about">O nás</a></li>
-          <li><a href="/blog" data-i18n-key="nav-blog">Blog</a></li>
-          <li><a href="/faq" data-i18n-key="nav-faq">FAQ</a></li>
-          <li><a href="/#contact" data-i18n-key="nav-contact">Kontakt</a></li>
+        <!-- site-menu:nav-london-musicals -->
         </ul>
 
         <div class="language-switcher mobile-switcher" aria-label="Jazyk">
@@ -273,6 +266,7 @@
 </main>
 
   <footer class="site-footer">
+    <!-- footer-navigation -->
   <div class="footer-social">
     <a href="https://www.instagram.com/ajseeofficial/" target="_blank" rel="noopener" aria-label="Instagram">
       <img src="/images/icons/instagram.svg" alt="Instagram" loading="lazy" />

@@ -14,7 +14,7 @@
 [context.deploy-preview.environment]
   REVIEW_PREVIEW = "1"
 
-[[context.production.plugins]]
+[[plugins]]
   package = "./netlify/plugins/home-featured-details"
 
 

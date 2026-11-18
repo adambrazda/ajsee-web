@@ -336,6 +336,12 @@ const IS_LOCAL_DEV =
   location.hostname === '0.0.0.0';
 
 const I18N_FETCH_CACHE_MODE = IS_LOCAL_DEV ? 'no-store' : 'default';
+// The same build's markup and translations must reach returning visitors together.
+const HOME_LOCALE_URLS = import.meta.glob('./locales/??.json', {
+  eager: true,
+  query: '?url',
+  import: 'default'
+});
 
 const JSON_CACHE = new Map();
 const JSON_PROMISE_CACHE = new Map();
@@ -1616,7 +1622,8 @@ function getPageKeyForI18n() {
 }
 
 function getI18nFilesForPage(lang, pageKey = getPageKeyForI18n()) {
-  const files = [`/locales/${lang}.json`];
+  const fallback = `/locales/${lang}.json`;
+  const files = [IS_LOCAL_DEV ? fallback : (HOME_LOCALE_URLS[`./locales/${lang}.json`] || fallback)];
 
   // Důležité:
   // Nezkoušíme už desítky fallback cest typu /locales/cs/common.json,

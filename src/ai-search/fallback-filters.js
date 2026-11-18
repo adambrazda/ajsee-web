@@ -1,36 +1,25 @@
-import { canonForInputCity, guessCountryCodeFromCity, labelForCanon, normalize } from '../../shared/city/canonical.js';
+import { canonForInputCity, guessCountryCodeFromCity, isInflectedCityName, labelForCanon, matchSearchCity, normalize } from '../../shared/city/canonical.js';
+import { SUPPORTED_COUNTRY_CODES } from './intent-schema.js';
 
 const CATEGORY_WORDS = {
-  concert: /^(?:koncert[yu]?|concerts?|konzerte?|hangverseny(?:ek)?)$/,
+  concert: /^(?:koncert(?:y|u|ek)?|koncet[yu]?|concerts?|konzerte?|hangverseny(?:ek)?)$/,
   festival: /^(?:festival[yu]?|festivals?|festywal[eu]?|fesztival(?:ok)?)$/,
   theatre: /^(?:divadl[oa]|theatre|theater|teatr|szinhaz)$/,
   sport: /^(?:sport[suy]?|sportesemeny)$/,
   film: /^(?:film[yus]?|kino|cinema|mozi)$/
 };
 
-const CITY_LOCATIVES = {
-  praze: 'Praha', pradze: 'Praha', brne: 'Brno', ostrave: 'Ostrava',
-  plzni: 'Plzeň', olomouci: 'Olomouc', bratislave: 'Bratislava',
-  vidni: 'Vídeň', warszawie: 'Warszawa', krakowie: 'Kraków',
-  wroclawiu: 'Wrocław', budapesten: 'Budapest', debrecenben: 'Debrecen',
-  szegeden: 'Szeged', pecsen: 'Pécs'
-};
-
-const CITY_PREPOSITION = /^(?:v|ve|in|im|w|we)$/;
+const CITY_PREPOSITION = /^(?:v|ve|do|in|im|w|we)$/;
+const EVENT_WORD = /^(?:akce|udalosti|events?|veranstaltungen|podujatia|wydarzenia|esemenyek)$/;
 const ALTERNATIVE = /^(?:nebo|alebo|or|oder|lub|albo|vagy)$/;
 const EXCLUSION = /^(?:ne|bez|not|no|without|ohne|nicht|kein(?:e[rmns]?)?|nie|nelkul|nem)$/;
 const PLACE_MODIFIER = /^(?:okoli|blizkosti|around|near|umgebung|okolicach|kornyeken)$/;
 
 function mentionedCity(words, start) {
-  // Match full, known city names only. The shared canonical lookup also knows
-  // translated labels. Explicit locatives cover common inflections.
-  const locative = Object.hasOwn(CITY_LOCATIVES, words[start]) ? CITY_LOCATIVES[words[start]] : '';
-  if (locative) return { city: canonForInputCity(locative), end: start + 1 };
-  if (!CITY_PREPOSITION.test(words[start - 1])) return null;
-
+  const precededByPlace = CITY_PREPOSITION.test(words[start - 1]);
   for (let end = Math.min(words.length, start + 4); end > start; end--) {
     const candidate = words.slice(start, end).join(' ');
-    if (/\d/.test(candidate)) continue;
+    if (/\d/.test(candidate) || (!precededByPlace && !isInflectedCityName(candidate))) continue;
     const city = canonForInputCity(candidate);
     if (guessCountryCodeFromCity(city)) return { city, end };
   }
@@ -42,14 +31,17 @@ function cityFilterFields(city, locale) {
   return { placeType: 'city', city, cityLabel: labelForCanon(city, locale), cityCountryCode: countryCode, countryCode };
 }
 
-export function recognizeCategoryAndCity(query, locale) {
+export function recognizeCategoryAndCity(query, locale, catalog = []) {
   const words = normalize(query).split(/\s+/);
-  const category = Object.entries(CATEGORY_WORDS).find(([, pattern]) => pattern.test(words[0]))?.[0];
-  if (!category || words.length < 2) return null;
+  const category = Object.entries(CATEGORY_WORDS).find(([, pattern]) => pattern.test(words[0]))?.[0] ||
+    (EVENT_WORD.test(words[0]) ? 'all' : '');
 
-  const start = CITY_PREPOSITION.test(words[1]) ? 2 : 1;
-  const place = mentionedCity(words, start);
-  return place?.end === words.length ? { category, ...cityFilterFields(place.city, locale) } : null;
+  const prefix = category ? 1 : 0;
+  const prep = CITY_PREPOSITION.test(words[prefix]);
+  const cityText = words.slice(prefix + (prep ? 1 : 0)).join(' ');
+  const place = matchSearchCity(cityText, { locale, catalog, allowTypo: prep });
+  if (!place || !SUPPORTED_COUNTRY_CODES.includes(place.countryCode)) return null;
+  return { category: category || 'all', cityLabel: place.label, cityCountryCode: place.countryCode };
 }
 
 export function recognizeFallbackFilters(query, locale) {

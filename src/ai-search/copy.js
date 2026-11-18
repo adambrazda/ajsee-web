@@ -18,6 +18,8 @@ export const AI_SEARCH_COPY = {
     success:
       'Dotaz jsem pochopil. AI spojení funguje; v dalším kroku použijeme rozpoznané filtry.',
     verifying: 'Ověřujeme požadavek…',
+    guidance: 'Zkuste začít městem, termínem nebo typem akce.',
+    guidanceExample: 'Koncerty v Brně tento víkend',
     manualFallback: 'Hledat pomocí filtrů',
     generic: 'Automatické vyhledávání se teď nepodařilo dokončit. Pokračujte pomocí filtrů.'
   },
@@ -41,6 +43,8 @@ export const AI_SEARCH_COPY = {
     success:
       'I understood your request. The AI connection works; next we will apply the recognized filters.',
     verifying: 'Verifying your request…',
+    guidance: 'Try starting with a city, a date or a type of event.',
+    guidanceExample: 'Concerts in London this weekend',
     manualFallback: 'Search with filters',
     generic: 'We couldn’t complete the automatic search. Continue with filters.'
   },
@@ -64,6 +68,8 @@ export const AI_SEARCH_COPY = {
     success:
       'Die Anfrage wurde verstanden. Die KI-Verbindung funktioniert; als Nächstes wenden wir die erkannten Filter an.',
     verifying: 'Ihre Anfrage wird überprüft…',
+    guidance: 'Beginnen Sie mit einer Stadt, einem Termin oder einer Veranstaltungsart.',
+    guidanceExample: 'Konzerte in Berlin dieses Wochenende',
     manualFallback: 'Mit Filtern suchen',
     generic: 'Die automatische Suche konnte nicht abgeschlossen werden. Suchen Sie mit Filtern weiter.'
   },
@@ -87,6 +93,8 @@ export const AI_SEARCH_COPY = {
     success:
       'Požiadavku som pochopil. AI spojenie funguje; v ďalšom kroku použijeme rozpoznané filtre.',
     verifying: 'Overujeme požiadavku…',
+    guidance: 'Skúste začať mestom, termínom alebo typom podujatia.',
+    guidanceExample: 'Koncerty v Bratislave cez víkend',
     manualFallback: 'Hľadať pomocou filtrov',
     generic: 'Automatické vyhľadávanie sa teraz nepodarilo dokončiť. Pokračujte pomocou filtrov.'
   },
@@ -110,6 +118,8 @@ export const AI_SEARCH_COPY = {
     success:
       'Zapytanie zostało zrozumiane. Połączenie AI działa; w kolejnym kroku zastosujemy rozpoznane filtry.',
     verifying: 'Weryfikujemy Twoje zapytanie…',
+    guidance: 'Zacznij od miasta, terminu lub rodzaju wydarzenia.',
+    guidanceExample: 'Koncerty w Warszawie w ten weekend',
     manualFallback: 'Szukaj za pomocą filtrów',
     generic: 'Nie udało się ukończyć wyszukiwania automatycznego. Kontynuuj za pomocą filtrów.'
   },
@@ -133,6 +143,8 @@ export const AI_SEARCH_COPY = {
     success:
       'A kérést megértettem. Az AI-kapcsolat működik; a következő lépésben alkalmazzuk a felismert szűrőket.',
     verifying: 'Ellenőrizzük a keresést…',
+    guidance: 'Kezdésként adj meg egy várost, időpontot vagy eseménytípust.',
+    guidanceExample: 'Koncertek Budapesten ezen a hétvégén',
     manualFallback: 'Keresés szűrőkkel',
     generic: 'Az automatikus keresést nem sikerült befejezni. Folytassa a keresést szűrőkkel.'
   }

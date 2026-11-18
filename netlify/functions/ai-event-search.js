@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { matchSearchCity } from '../../shared/city/canonical.js';
 import {
   FILTER_INTENT_VERSION,
   SUPPORTED_AUDIENCES,
@@ -8,6 +11,7 @@ import {
   SUPPORTED_LOCALES,
   SUPPORTED_PLACE_TYPES,
   SUPPORTED_SORTS,
+  createEmptyFilterIntent,
   normalizeFilterIntent,
   validateFilterIntent
 } from '../../src/ai-search/intent-schema.js';
@@ -20,6 +24,7 @@ import {
   applyPriceCurrencyClarification
 } from '../../src/ai-search/price-clarification.js';
 import { calendarMonthRange, readExplicitEventQuery } from '../../src/ai-search/explicit-query.js';
+import { isOpenEndedSearch, needsSearchGuidance } from '../../src/ai-search/search-guidance.js';
 import {
   isAiSearchServerEnabled,
   isDeployPreviewHostname
@@ -31,6 +36,15 @@ import {
 
 const OPENAI_RESPONSES_URL =
   'https://api.openai.com/v1/responses';
+
+let cityCatalogPromise;
+
+function loadBuiltCityCatalog() {
+  cityCatalogPromise ??= readFile(path.join(process.cwd(), 'dist/data/event-cities.json'), 'utf8')
+    .then(text => JSON.parse(text).items)
+    .catch(() => []);
+  return cityCatalogPromise;
+}
 
 const TURNSTILE_ACTION =
   'ai_event_search';
@@ -596,6 +610,8 @@ export function buildParserInstructions({
     'PLACE RULES:',
     '- "near me", "around me", "v mém okolí" and equivalent wording means place.type="near_me".',
     '- A named city means place.type="city".',
+    '- A city on its own is also a location filter. Understand grammatical forms and text without accents. Return the base city name: "v Praze"/"do Prahy" → Praha, "v Hradci Kralove" → Hradec Králové, "v Londyne" → Londýn, "w Warszawie" → Warszawa, "Budapesten" → Budapest.',
+    '- Correct an obvious typo only when the intended city is clear, for example "v Prhae" → Praha and "v Ostrvae" → Ostrava. Preserve real city names, including smaller towns. For multiple plausible cities ask which one is meant.',
     '- A named city plus nearby/around/surroundings means place.type="city", nearby=true.',
     '- If city nearby is requested without an explicit radius, use radiusKm=50.',
     '- If Near Me is requested without an explicit radius, use radiusKm=50.',
@@ -622,6 +638,7 @@ export function buildParserInstructions({
     '- film/movie/cinema => film.',
     '- If no supported category is clearly requested use all.',
     '- Do not invent unsupported category enum values.',
+    '- Tolerate missing accents and obvious spelling mistakes in common search terms such as "koncet" (concert) and "tento vikned" (this weekend). Preserve the spelling of named artists and productions.',
     '',
     'AUDIENCE RULES:',
     '- family/children/kids/family-friendly => family.',
@@ -635,6 +652,7 @@ export function buildParserInstructions({
     'KEYWORD RULES:',
     '- keyword is only for a meaningful artist, production, team, event title, venue, or search phrase not already represented by another structured filter.',
     '- Do not copy the entire user sentence into keyword.',
+    '- For open-ended requests such as "Nevím, co hledám", use default filters with an empty keyword. Do not invent a genre, location, date or preference. The app will offer search tips.',
     '',
     'SEARCH MODE AND KEYWORD MATCH:',
     '- Use searchMode=exact and keywordMatch=strict when the user wants a specific artist, production, team, event or venue. Keep only that entity in keyword.',
@@ -899,6 +917,7 @@ export function createAiEventSearchHandler({
   fetchImpl = globalThis.fetch,
   env = process.env,
   nowProvider = () => new Date(),
+  loadCityCatalog = loadBuiltCityCatalog,
   verifyTurnstileImpl =
     verifyTurnstileToken
 } = {}) {
@@ -1287,7 +1306,18 @@ export function createAiEventSearchHandler({
       );
     }
 
-    const explicit = readExplicitEventQuery({ query, locale, now });
+    if (isOpenEndedSearch(query, locale)) {
+      return jsonResponse({
+        ok: true,
+        intent: normalizeFilterIntent(createEmptyFilterIntent(locale)),
+        needsClarification: false,
+        needsDetails: true
+      });
+    }
+
+    const cities = await loadCityCatalog();
+    const cityCatalog = Array.isArray(cities) ? cities : [];
+    const explicit = readExplicitEventQuery({ query, locale, now, cityCatalog });
     if (explicit.intent && !clarificationContext) {
       return jsonResponse({ ok: true, intent: explicit.intent, needsClarification: false });
     }
@@ -1666,17 +1696,25 @@ export function createAiEventSearchHandler({
         }
       );
 
+    const { intent, needsClarification } = priceClarification;
+    if (intent.place.type === 'city') {
+      const city = matchSearchCity(intent.place.label, {
+        locale, catalog: cityCatalog, countryCode: intent.place.countryCode, allowTypo: true
+      });
+      if (city && SUPPORTED_COUNTRY_CODES.includes(city.countryCode)) {
+        intent.place.label = city.label;
+        intent.place.countryCode = city.countryCode;
+      }
+    }
+
     return jsonResponse(
       {
         ok:
           true,
 
-        intent:
-          priceClarification.intent,
-
-        needsClarification:
-          priceClarification
-            .needsClarification
+        intent,
+        needsClarification,
+        ...(needsSearchGuidance(intent, { needsClarification }) ? { needsDetails: true } : {})
       }
     );
   };

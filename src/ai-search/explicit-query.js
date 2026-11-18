@@ -18,7 +18,7 @@ const NEGATED_PRICE = /(?<!\p{L})(?:ne|nie|not|nicht|nem)\s+$/u;
 
 const DATE_PHRASES = {
   cs: {
-    today: 'dnes', tomorrow: 'zitra', thisWeek: 'tento tyden', weekend: 'tento vikend|o vikendu',
+    today: 'dnes', tomorrow: 'zitra', thisWeek: 'tento tyden', weekend: 'tento (?:vikend|vikned|vikedn)|o vikendu',
     thisMonth: 'v tomto mesici|(?:na )?tento mesic',
     nextMonth: 'v pristim mesici|(?:na )?(?:pristi|nasledujici) mesic'
   },
@@ -94,12 +94,11 @@ function findDate(text, locale, now) {
   return { match, date: { type: 'preset', preset, from: '', to: '' } };
 }
 
-export function readExplicitEventQuery({ query, locale, now }) {
+export function readExplicitEventQuery({ query, locale, now, cityCatalog = [] }) {
   let text = normalize(query).replace(/\s+/gu, ' ');
   const price = findPrice(text);
   const date = findDate(text, locale, now);
   const priceLimit = price ? { type: 'max_price', value: price.value, currency: price.currency, unit: '' } : null;
-  if (!price && !date) return { priceLimit, intent: null };
 
   // Use the deterministic interpretation only when every part of the request
   // is understood. Artist names, narrower date ranges and other modifiers go
@@ -109,7 +108,7 @@ export function readExplicitEventQuery({ query, locale, now }) {
     text = text.slice(0, match.index) + ' ' + text.slice(match.index + match[0].length);
   }
   const core = text.trimStart().replace(SEARCH_PREAMBLE[locale] || /$^/, '').replace(/[,.?!\s]+$/u, '');
-  const selection = recognizeCategoryAndCity(core, locale);
+  const selection = recognizeCategoryAndCity(core, locale, cityCatalog);
   if (!selection) return { priceLimit, intent: null };
 
   const intent = createEmptyFilterIntent(locale);

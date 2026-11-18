@@ -339,6 +339,61 @@ const aliasIndex = (() => {
   return map;
 })();
 
+// Exact grammatical forms are also valid city input. Keep them out of the
+// broad fuzzy scorer used by autocomplete.
+const CITY_CASE_FORMS = {
+  Prague: ['Praha', 'Praze', 'Prahy', 'Prahu', 'Prahou', 'Prahe', 'Pradze', 'Prágában'],
+  Brno: ['Brno', 'Brně', 'Brna', 'Brnu', 'Brnem', 'Brnie'],
+  Ostrava: ['Ostrava', 'Ostravě', 'Ostravy', 'Ostravu', 'Ostravou', 'Ostrawie', 'Osztravában'],
+  Pilsen: ['Plzeň', 'Plzni', 'Plzně', 'Pilznie'],
+  Olomouc: ['Olomouc', 'Olomouci', 'Olomouce'],
+  Liberec: ['Liberci', 'Liberce'],
+  'Hradec Králové': ['Hradci Králové', 'Hradce Králové', 'Hradcem Králové'],
+  'České Budějovice': ['Českých Budějovicích', 'Českých Budějovic', 'Českými Budějovicemi'],
+  'Český Krumlov': ['Českém Krumlově', 'Českého Krumlova'],
+  'Ústí nad Labem': ['Ústím nad Labem', 'Aussig an der Elbe'],
+  'Karlovy Vary': ['Karlových Varech', 'Karlových Varů', 'Karlsbad'],
+  'Mladá Boleslav': ['Mladé Boleslavi', 'Mladou Boleslaví'],
+  Pardubice: ['Pardubicích', 'Pardubic'],
+  Zlín: ['Zlíně', 'Zlína', 'Zlínem'],
+  Jihlava: ['Jihlavě', 'Jihlavy', 'Jihlavu'],
+  Kroměříž: ['Kroměříži', 'Kroměříže'],
+  Opava: ['Opavě', 'Opavy', 'Opavu'],
+  Hodonín: ['Hodoníně', 'Hodonína'],
+  Bratislava: ['Bratislave', 'Bratislavy', 'Bratislavu', 'Bratysławie', 'Pozsonyban'],
+  Košice: ['Košiciach', 'Košíc', 'Koszycach', 'Kassa', 'Kassán'],
+  'Banská Bystrica': ['Banskej Bystrici', 'Banskú Bystricu'],
+  Trenčín: ['Trenčíne', 'Trenčína'],
+  London: ['Londýně', 'Londýna', 'Londynu', 'Londynie', 'Londonban'],
+  Manchester: ['Manchesteru', 'Manchesterze', 'Manchesterben'],
+  Paris: ['Paříži', 'Paříže', 'Paríži', 'Paryżu', 'Párizsban'],
+  Berlin: ['Berlíně', 'Berlína', 'Berlinie', 'Berlinben'],
+  Munich: ['Mnichově', 'Mnichova', 'Monachium'],
+  Vienna: ['Vídni', 'Vídně', 'Viedni', 'Wiedniu', 'Bécsben'],
+  Warsaw: ['Varšavě', 'Varšavy', 'Warszawie', 'Warszawy', 'Varsóban'],
+  Kraków: ['Krakově', 'Krakova', 'Krakowie', 'Krakowa', 'Krakkóban'],
+  Wroclaw: ['Vratislavi', 'Wrocławiu', 'Wrocławia'],
+  Gdansk: ['Gdańsku', 'Gdańska'],
+  Poznan: ['Poznaniu', 'Poznania'],
+  Lodz: ['Łodzi'],
+  Budapest: ['Budapešti', 'Budapeště', 'Budapesten', 'Budapeszcie'],
+  Debrecen: ['Debrecenben', 'Debrecenu'],
+  Szeged: ['Szegeden', 'Szegedu'],
+  Miskolc: ['Miskolcon', 'Miškovci'],
+  Pécs: ['Pécsen', 'Pécsi'],
+  Rome: ['Římě', 'Říma', 'Rzymie', 'Rómában']
+};
+const caseAliasIndex = new Map(Object.entries(CITY_CASE_FORMS).flatMap(([city, forms]) =>
+  [city, ...forms].map(label => [normalizeForMatch(label), city])
+));
+const knownCityName = key => aliasIndex.get(key) || caseAliasIndex.get(key);
+
+export function isInflectedCityName(input) {
+  const key = normalizeForMatch(input);
+  const city = caseAliasIndex.get(key);
+  return Boolean(city && !aliasIndex.has(key) && key !== normalizeForMatch(city));
+}
+
 /* ---------- fuzzy metriky ---------- */
 function levSimilarity(a, b) {
   a = normalizeForMatch(a);
@@ -454,7 +509,7 @@ export function findBestCityMatchInfo(input) {
   const norm = normalizeForMatch(collapseDistricts(input));
   if (!norm) return null;
 
-  const exact = aliasIndex.get(norm);
+  const exact = knownCityName(norm);
   if (exact) return { canonical: exact, score: 1, matchedAlias: input };
 
   let best = { canonical: '', score: 0, matchedAlias: '' };
@@ -476,7 +531,7 @@ export function canonForInputCity(input) {
   // A filter is a selected place, not a spelling suggestion. Fuzzy matches
   // silently changed Kyjov to Kyiv, Kroměříž to Rome and names containing
   // "la" to Los Angeles. Keep fuzzy matching opt-in via findBestCityMatchInfo.
-  const exact = aliasIndex.get(normalizeForMatch(collapseDistricts(normalize(input))));
+  const exact = knownCityName(normalizeForMatch(collapseDistricts(normalize(input))));
   return exact || String(input).trim();
 }
 
@@ -497,10 +552,16 @@ export const CANON_LABEL = {
   vienna:     { cs:'Vídeň',     sk:'Viedeň',    en:'Vienna',   de:'Wien',      pl:'Wiedeń',    hu:'Bécs' },
   krakow:     { cs:'Krakov',    sk:'Krakov',    en:'Kraków',   de:'Krakau',    pl:'Kraków',    hu:'Krakkó' },
   warsaw:     { cs:'Varšava',   sk:'Varšava',   en:'Warsaw',   de:'Warschau',  pl:'Warszawa',  hu:'Varsó' },
+  wroclaw:    { cs:'Vratislav', sk:'Vroclav',   en:'Wrocław',  de:'Breslau',   pl:'Wrocław',   hu:'Wrocław' },
+  gdansk:     { cs:'Gdaňsk',    sk:'Gdansk',    en:'Gdańsk',   de:'Danzig',    pl:'Gdańsk',    hu:'Gdańsk' },
+  poznan:     { cs:'Poznaň',    sk:'Poznaň',    en:'Poznań',   de:'Posen',     pl:'Poznań',    hu:'Poznań' },
+  lodz:       { cs:'Lodž',      sk:'Lodž',      en:'Łódź',     de:'Łódź',      pl:'Łódź',      hu:'Łódź' },
 
   london:     { cs:'Londýn',    sk:'Londýn',    en:'London',   de:'London',    pl:'Londyn',    hu:'London' },
   paris:      { cs:'Paříž',     sk:'Paríž',     en:'Paris',    de:'Paris',     pl:'Paryż',     hu:'Párizs' },
   berlin:     { cs:'Berlín',    sk:'Berlín',    en:'Berlin',   de:'Berlin',    pl:'Berlin',    hu:'Berlin' },
+  munich:     { cs:'Mnichov',   sk:'Mníchov',   en:'Munich',   de:'München',   pl:'Monachium', hu:'München' },
+  rome:       { cs:'Řím',       sk:'Rím',       en:'Rome',     de:'Rom',       pl:'Rzym',      hu:'Róma' },
   budapest:   { cs:'Budapešť',  sk:'Budapešť',  en:'Budapest', de:'Budapest',  pl:'Budapeszt', hu:'Budapest' },
   amsterdam:  { cs:'Amsterdam', sk:'Amsterdam', en:'Amsterdam',de:'Amsterdam', pl:'Amsterdam', hu:'Amsterdam' },
   madrid:     { cs:'Madrid',    sk:'Madrid',    en:'Madrid',   de:'Madrid',    pl:'Madryt',    hu:'Madrid' }
@@ -576,6 +637,15 @@ const CITY_TO_CC = {
   'Auckland': 'NZ', 'Wellington': 'NZ'
 };
 
+// Search candidates can be checked against all countries in the catalogue.
+// Keep the country attached to a manually selected regional city authoritative.
+const REGIONAL_SEARCH_CITIES = {
+  'Liberec': 'CZ', 'Hradec Králové': 'CZ', 'České Budějovice': 'CZ', 'Český Krumlov': 'CZ',
+  'Ústí nad Labem': 'CZ', 'Karlovy Vary': 'CZ', 'Mladá Boleslav': 'CZ', 'Pardubice': 'CZ',
+  'Zlín': 'CZ', 'Jihlava': 'CZ', 'Kroměříž': 'CZ', 'Opava': 'CZ', 'Hodonín': 'CZ',
+  'Košice': 'SK', 'Banská Bystrica': 'SK', 'Trenčín': 'SK'
+};
+
 /** Vrátí ISO country code pro zadané město (pokud ho známe). */
 export function guessCountryCodeFromCity(input) {
   if (!input) return '';
@@ -585,4 +655,49 @@ export function guessCountryCodeFromCity(input) {
 
   const canonCity = canonForInputCity(input);
   return CITY_TO_CC[canonCity] || '';
+}
+
+function oneCityEdit(input, candidate) {
+  if (input === candidate || Math.abs(input.length - candidate.length) > 1) return false;
+  const [short, long] = input.length <= candidate.length ? [input, candidate] : [candidate, input];
+  let i = 0;
+  while (i < short.length && short[i] === long[i]) i++;
+  if (short.length !== long.length) return short.slice(i) === long.slice(i + 1);
+  return (
+    (short.length >= 6 && short.slice(i + 1) === long.slice(i + 1)) ||
+    (short[i] === long[i + 1] && short[i + 1] === long[i] && short.slice(i + 2) === long.slice(i + 2))
+  );
+}
+
+export function matchSearchCity(input, { locale = 'cs', countryCode = '', catalog = [], allowTypo = false } = {}) {
+  const key = normalizeForMatch(collapseDistricts(normalize(input)));
+  if (!key || countryCodeFromInput(input)) return null;
+
+  const exact = new Map();
+  const close = new Map();
+  const checkTypo = allowTypo && key.length >= 4 && /^[a-z]+(?: [a-z]+)*$/u.test(key);
+  const consider = (alias, canonical, country) => {
+    if (!country) return;
+    const matches = alias === key ? exact : checkTypo && oneCityEdit(key, alias) ? close : null;
+    if (!matches) return;
+    const id = normalizeForMatch(canonical) + '|' + country;
+    matches.set(id, { city: canonical, label: labelForCanon(canonical, locale), countryCode: country });
+  };
+
+  for (const aliases of [aliasIndex, caseAliasIndex]) {
+    for (const [alias, canonical] of aliases) {
+      consider(alias, canonical, CITY_TO_CC[canonical] || REGIONAL_SEARCH_CITIES[canonical]);
+    }
+  }
+  for (const item of catalog) {
+    if (typeof item?.city !== 'string' || !/^[A-Z]{2}$/.test(item.countryCode)) continue;
+    const city = canonForInputCity(item.city);
+    if (!city) continue;
+    for (const alias of [item.city, ...(Array.isArray(item.aliases) ? item.aliases : [])]) {
+      consider(normalizeForMatch(collapseDistricts(normalize(alias))), city, item.countryCode);
+    }
+  }
+
+  const matches = [...(exact.size ? exact : close).values()].filter(item => !countryCode || item.countryCode === countryCode);
+  return matches.length === 1 ? matches[0] : null;
 }

@@ -39,6 +39,12 @@ Audited on 2026-10-09. The four newly selected Ticketmaster and TodayTix SVGs ar
 - The current public website PNG contains an additional partnership tagline and is not byte-identical to AJSEE's existing PNG/SVG variants.
 - Their published terms state that brand guidelines are supplied on request: https://www.trustedstays.co.uk/terms-of-use.pdf, section 7 of the Acceptable Use Policy (page 11).
 
+## Amazing Places — original official website wordmark
+
+- The full horizontal wordmark comes from the header at https://www.amazingplaces.cz/cs, retrieved on 2026-11-18.
+- `amazing-places.svg` preserves the official paths, fill values and 196 × 26 view box. Only HTML framework scoping attributes were removed for standalone SVG use.
+- A light background keeps the original black wordmark legible in dark mode.
+
 ## SHA-256 of verified files
 
 - `Ticketmaster-Logo-Dark-RGB.svg`: `dcb7b6a66efb89d4501c3dc8eed3b6ec4bfbba1ddfa2f7973b3e8e11f41a5cf6`
@@ -49,3 +55,4 @@ Audited on 2026-10-09. The four newly selected Ticketmaster and TodayTix SVGs ar
 - `ttx_logo_horizontal_white.svg`: `c53697562ddd296fbba22a2b9c16618927e639413e367772016bab18b7ada982`
 - `colosseumticket.svg`: `f314bece6e918d467965c87be886f3b9a1e514989f4720694b84eb83255bcbd9`
 - `colosseumticket-dark.svg`: `91c25c50230a550e5f48f34c8f4edb44d0a2294ca2e874618217aca584ba49e6`
+- `amazing-places.svg`: `1b3eac9152edb5be4ed2cad07f54e2ae6af275a85ae3549151aeb136d709165e`

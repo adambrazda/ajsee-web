@@ -158,6 +158,33 @@ test('the homepage makes both Amazing Places offers discoverable in all six init
   }
 });
 
+test('homepage partner groups are ordered and localized in the initial HTML', () => {
+  for (const lang of LANGS) {
+    const home = load(prefix(lang) + 'index.html');
+    try {
+      const { document, Node } = home.window;
+      const copy = JSON.parse(fs.readFileSync('src/locales/' + lang + '.json', 'utf8'));
+      const tickets = document.querySelector('.home-partners--tickets');
+      const stays = document.querySelector('.home-explore .home-partners--stays');
+      const partner = stays?.querySelector('img[alt="Amazing Places"]');
+      const following = Node.DOCUMENT_POSITION_FOLLOWING;
+
+      assert.ok(document.getElementById('hero').compareDocumentPosition(tickets) & following);
+      assert.ok(tickets.compareDocumentPosition(document.getElementById('events')) & following);
+      assert.equal(tickets.querySelector('h2').textContent, copy['home.partners.label']);
+      assert.deepEqual([...tickets.querySelectorAll('img')].map(img => img.alt),
+        ['Ticketmaster', 'smsticket', 'TodayTix', 'ColosseumTicket']);
+      assert.equal(stays.querySelector('h2').textContent, copy['home.partners.staysLabel']);
+      assert.equal(stays.querySelector('.home-partner-badge').textContent, copy['home.partners.new']);
+      assert.equal(partner.getAttribute('src'), '/images/partners/amazing-places.svg');
+      const route = lang === 'cs' ? '/accommodation' : '/' + lang + '/accommodation/';
+      assert.equal(partner.closest('a').getAttribute('href'), route + '#amazing-places');
+    } finally {
+      home.window.close();
+    }
+  }
+});
+
 test('published review covers reserve their actual image dimensions in all translations',async()=>{
   for(const review of published) {
     if(!review.cover?.startsWith('/'))continue;

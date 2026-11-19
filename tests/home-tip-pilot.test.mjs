@@ -25,7 +25,7 @@ const musical = event('colosseumticket-5470841-next', 'colosseumticket', 'stage'
   { providerEventId: '5470841', title: 'Jesus Christ Superstar (NDM)' });
 const concert = event('ticketmaster-Z698xZu0Z16v0krAvb', 'ticketmaster', 'concert',
   '/.netlify/functions/tmOutbound?to=https%3A%2F%2Fticketmaster.cz%2Fevent%2Fsarah');
-const hockey = event('ticketmaster-Z698xZu0Z16GSj9A9', 'ticketmaster', 'sport',
+const hockey = event('ticketmaster-Z698xZu0Z16vGSj9A9', 'ticketmaster', 'sport',
   '/.netlify/functions/tmOutbound?to=https%3A%2F%2Fticketmaster.cz%2Fevent%2Fsparta');
 const other = { ...musical, id: 'colosseumticket-other', providerEventId: 'other' };
 const events = [musical, concert, hockey, other];

@@ -57,9 +57,11 @@ export function buildReviewCtaDestination(rawUrl = '', lang = 'cs') {
 
   try {
     const url = new URL(value);
+    if (!['https:', 'http:'].includes(url.protocol)) return '';
     url.searchParams.set('utm_content', safeLanguage(lang));
     return url.toString();
   } catch {
+    if (/^[a-z][a-z0-9+.-]*:/i.test(value)) return '';
     const separator = value.includes('?') ? '&' : '?';
     return `${value}${separator}utm_content=${encodeURIComponent(safeLanguage(lang))}`;
   }

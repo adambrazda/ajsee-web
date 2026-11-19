@@ -28,7 +28,7 @@
     "providers:coverage:test": "node --test --test-concurrency=1 tests/smsticket-country-coverage.test.mjs tests/smsticket-sync-hardening.test.mjs tests/ticketmaster-deep-pagination.test.mjs",
     "event-cities:build": "node scripts/build-event-cities.mjs",
     "home:featured:build": "node scripts/build-home-featured.mjs",
-    "home:featured:test": "node --test tests/home-featured.test.mjs tests/home-promo-typography.test.mjs",
+    "home:featured:test": "node --test tests/home-featured.test.mjs tests/home-promo-typography.test.mjs tests/home-tip-pilot.test.mjs",
     "styles:guard": "node --test tests/no-important.test.mjs",
     "check:locales": "node scripts/check-locales.js",
     "blog:build": "node scripts/build-blog.mjs",

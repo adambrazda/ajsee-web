@@ -435,6 +435,7 @@ export function renderSharedEventCard({
   providerBadgeHtml = null,
   venueLineHtml = null,
   eventCityAttrHtml = null,
+  editorialReason = '',
   resultPosition = null
 } = {}) {
   const resolvedProvider =
@@ -515,6 +516,7 @@ export function renderSharedEventCard({
     escapeHtml(resolvedProvider);
   const soldOut = eventInventoryState(event).status === 'sold_out';
   const soldOutLabel = escapeHtml(eventStockLabel('sold_out', locale));
+  const safeEditorialReason = typeof editorialReason === 'string' ? escapeHtml(editorialReason.trim()) : '';
 
   const numericResultPosition =
     Number(resultPosition);
@@ -535,6 +537,7 @@ export function renderSharedEventCard({
       data-event-id="${safeModalId}"
       data-event-provider="${safeProvider}"
       data-result-position="${safeResultPosition}"
+      ${safeEditorialReason ? 'data-home-tip-pilot' : ''}
     >
       <div
         class="event-image-frame"
@@ -564,6 +567,7 @@ export function renderSharedEventCard({
         <p class="event-date">${dateHtml}</p>
 
         ${resolvedVenueLine}
+        ${safeEditorialReason ? `<p class="event-editorial-reason">${safeEditorialReason}</p>` : ''}
 
         <div class="event-card-footer">
           <div class="event-commerce-row">
@@ -806,6 +810,18 @@ export function ensureSharedEventGridStyles(
       font-weight: 400;
     }
 
+    #eventsList .event-card .event-editorial-reason {
+      margin: 6px 0 8px;
+      color: var(--aj-event-text);
+      font-size: .875rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    [data-home-tip-variant="control"] #eventsList .event-card .event-editorial-reason {
+      display: none;
+    }
+
     #eventsList .event-card .event-commerce-row {
       display: flex;
       flex-wrap: wrap;
@@ -945,6 +961,14 @@ export function ensureSharedEventGridStyles(
         margin: 0;
         line-height: 1.4;
         font-size: 12px;
+      }
+      #eventsList .event-card .event-editorial-reason {
+        grid-column: 1 / -1;
+        grid-row: 4;
+        margin: 0;
+      }
+      html:not([data-home-tip-variant="control"]) #eventsList .event-card[data-home-tip-pilot] .event-card-footer {
+        grid-row: 5;
       }
       #eventsList .event-card .event-commerce-row > .event-partner-badge span {
         min-height: 22px;

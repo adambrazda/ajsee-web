@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { JSDOM } from 'jsdom';
 import { renderHomeFeaturedMarkup } from '../src/home-featured.js';
 import { ensureSharedEventGridStyles } from '../src/event-card.js';
+import { homeTipVariantScript } from '../src/partner-outbound.js';
 
 const snapshot = JSON.parse(await readFile('public/data/home-featured-events.json', 'utf8'));
 const locales = new Map();
@@ -26,7 +27,8 @@ async function renderDirectory(directory) {
     const language = doc.documentElement.lang.slice(0, 2) || 'cs';
     const translations = locales.get(language) || locales.get('cs');
     const { markup } = renderHomeFeaturedMarkup(snapshot, language, {
-      translate: (key, fallback) => translations[key] || fallback, withDetailLinks: isHome
+      translate: (key, fallback) => translations[key] || fallback,
+      withDetailLinks: isHome, withEditorialReasons: isHome
     });
     if (isEvents) {
       list.innerHTML = '<div data-events-static><p class="events-static-note">' + STATIC_NOTE[language] + '</p><div class="events-list">' + markup + '</div></div>';
@@ -40,6 +42,10 @@ async function renderDirectory(directory) {
     } else {
       list.innerHTML = markup;
       list.dataset.homeStaticFeatured = '1';
+      const pilot = doc.createElement('script');
+      pilot.id = 'home-tip-variant';
+      pilot.textContent = homeTipVariantScript();
+      doc.head.appendChild(pilot);
     }
     // Do not briefly show editorial cards as the results of a bookmarked search.
     const guard = doc.createElement('script');

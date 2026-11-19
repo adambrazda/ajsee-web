@@ -6,5 +6,31 @@
   "editorial": [
     { "provider": "colosseumticket", "providerEventId": "MtdPMiVxQfK9FQ8WYgO6AQ", "title": "LUCIE BÍLÁ - TURNÉ OBYČEJNÁ HOLKA 2026" },
     { "provider": "colosseumticket", "providerEventId": "5470841", "title": "Jesus Christ Superstar (NDM)" }
-  ]
+  ],
+  "editorialReasons": {
+    "colosseumticket-5470841": {
+      "cs": "Rocková opera, kterou jsme v Ostravě viděli už mnohokrát.",
+      "en": "A rock opera we’ve seen many times in Ostrava.",
+      "de": "Eine Rockoper, die wir in Ostrava schon oft gesehen haben.",
+      "sk": "Rocková opera, ktorú sme v Ostrave videli už mnohokrát.",
+      "pl": "Opera rockowa, którą widzieliśmy już wiele razy w Ostrawie.",
+      "hu": "Rockopera, amelyet már sokszor láttunk Ostravában."
+    },
+    "ticketmaster-Z698xZu0Z16v0krAvb": {
+      "cs": "Vánoční klasiky a její největší hity s orchestrem a sborem.",
+      "en": "Christmas favourites and her biggest hits with orchestra and choir.",
+      "de": "Weihnachtsklassiker und ihre größten Hits mit Orchester und Chor.",
+      "sk": "Vianočné klasiky a jej najväčšie hity s orchestrom a zborom.",
+      "pl": "Świąteczne klasyki i jej największe przeboje z orkiestrą i chórem.",
+      "hu": "Karácsonyi klasszikusok és legnagyobb slágerei zenekarral és kórussal."
+    },
+    "ticketmaster-Z698xZu0Z16GSj9A9": {
+      "cs": "Zápas završí 20. ročník Sparťanské krve na podporu dárcovství.",
+      "en": "The match rounds off the 20th Sparťanská krev blood donation campaign.",
+      "de": "Das Spiel schließt die 20. Blutspendeaktion „Sparťanská krev“ ab.",
+      "sk": "Zápas zavŕši 20. ročník kampane na darovanie krvi „Sparťanská krev“.",
+      "pl": "Mecz wieńczy 20. edycję akcji krwiodawstwa „Sparťanská krev”.",
+      "hu": "A mérkőzés zárja a 20. Sparťanská krev véradási kampányt."
+    }
+  }
 }

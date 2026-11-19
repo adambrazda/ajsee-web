@@ -8,7 +8,7 @@
 - All six complete localizations approved and stored: `en`, `cs`, `sk`, `de`, `pl`, `hu`.
 - Five H2 chapters per localization. Localized SEO titles, descriptions, cover alt, two gallery alts and editorial CTAs are present.
 - Source currently uses remote image URLs. These are **not** ready for publication. Existing review tests require published images to exist under `public/`.
-- Do not change publication flags manually. Use the validated `npm run reviews:publish -- mary-poppins-from-film-to-west-end-stage` only after all media is locally stored and all tests pass, and only when editorial release is explicitly authorized.
+- Do not change publication flags manually. The validated `npm run reviews:publish -- mary-poppins-from-film-to-west-end-stage` **rejects a `draft`**: a separate authorized editorial approval transition to `approved` is required before the publication command can run. Neither approval transition nor publication is authorized in the current task. Publish only after local media, full tests, visual QA and explicit release authorization.
 
 ## Media: source verification and remaining work
 

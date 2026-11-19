@@ -279,9 +279,15 @@ for(const lang of LANGS){
       assert.equal(logo.getAttribute('href'), home);
       assert.equal(logo.getAttribute('aria-label'), dictionary['nav-logo-home']);
       const footer = doc.querySelector('.footer-navigation');
-      assert.deepEqual([...footer.querySelectorAll('h2')].map(heading => clean(heading.textContent)), [dictionary['footer-help'], dictionary['footer-cooperation']]);
-      assert.deepEqual([...footer.querySelectorAll('a')].map(link => link.getAttribute('href')), [localized('faq'), `${home}#contact`, localized('partners')]);
+      assert.deepEqual([...footer.querySelectorAll('h2')].map(heading => clean(heading.textContent)), [dictionary['footer-help'], dictionary['footer-cooperation'], dictionary['footer-legal-heading'], 'AJSEE']);
+      assert.deepEqual([...footer.querySelectorAll('a[href^="/"]')].map(link => link.getAttribute('href')), [localized('faq'), `${home}#contact`, localized('partners'), localized('privacy-policy'), localized('cookies-policy')]);
       assert.equal(clean(footer.querySelector('[data-i18n-key="footer-faq"]').textContent), dictionary['footer-faq']);
+      assert.equal(clean(footer.querySelector('button[data-open-cookie-settings]').textContent), dictionary['footer-cookie-settings']);
+      assert.equal(footer.querySelector('.footer-contact a').getAttribute('href'), 'mailto:info@ajsee.cz');
+      const socialLinks = [...footer.querySelectorAll('.footer-social a')];
+      assert.deepEqual(socialLinks.map(link => link.href), SOCIALS);
+      assert.deepEqual(socialLinks.map(link => link.getAttribute('aria-label')), ['Instagram', 'Facebook', 'X', 'LinkedIn']);
+      assert.ok(socialLinks.every(link => link.querySelector('svg[aria-hidden="true"]')));
       dom.window.close();
     }
 

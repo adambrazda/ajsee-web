@@ -6,6 +6,7 @@ import { BLOG_LANGS, filterBlogCards, loadBlogCards, reviewCards } from '../src/
 import { BLOG_UI, articleCount } from '../src/blog-ui.js';
 import { blogText, renderBlogResults, serializeBlogData } from '../src/blog-view.js';
 import { renderStaticBlogPage } from '../scripts/render-blog-listing.mjs';
+import { renderSiteFooter } from '../scripts/render-site-footer.mjs';
 
 const fixture = (slug, overrides = {}) => ({
   slug, status: 'published', published: true, contentType: 'review', category: 'theatre',
@@ -143,7 +144,7 @@ test('build loader keeps all sources, sorts newest first, deduplicates guides an
 });
 
 test('initial static HTML includes current localized content, not stale placeholder cards', async () => {
-  const html = await fs.readFile(new URL('../blog.html', import.meta.url), 'utf8');
+  const html = renderSiteFooter(await fs.readFile(new URL('../blog.html', import.meta.url), 'utf8'));
   for (const lang of BLOG_LANGS) {
     const cards = reviewCards([fixture('latest'), fixture('second')], lang);
     const dom = new JSDOM(renderStaticBlogPage(html, cards, lang)), doc = dom.window.document;

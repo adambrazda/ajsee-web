@@ -29,6 +29,11 @@ test('external partner links retain language attribution', () => {
   assert.equal(isFirstPartyReviewDestination('https://ajsee.cz.attacker.example/foo'), false);
 });
 
+test('unsafe URL schemes cannot be emitted as editorial CTAs', () => {
+  assert.equal(buildReviewCtaDestination('javascript:alert(1)', 'cs'), '');
+  assert.equal(buildReviewCtaDestination('data:text/html,unsafe', 'cs'), '');
+});
+
 test('ColosseumTicket links keep the existing safety redirect', () => {
   const href = buildReviewCtaDestination('https://colosseumticket.sk/sk?foo=bar&a_box=secret', 'sk');
   const parsed = new URL(href, 'https://ajsee.cz');

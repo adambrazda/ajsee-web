@@ -1,6 +1,7 @@
 import { readReviewCoverDimensions, coverDimensionsAttributes } from './review-image-dimensions.mjs';
 import { localizeCoverCredit } from './review-cover-credit.mjs';
 import { buildRelatedReadingHtml } from './review-related-reading.mjs';
+import { buildReviewCtaDestination, isFirstPartyReviewDestination } from './review-cta-url.mjs';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
@@ -101,65 +102,6 @@ function truncate(value = '', max = 160) {
   if (text.length <= max) return text;
 
   return `${text.slice(0, max - 1).trim().replace(/[.,;:!?-]+$/, '')}…`;
-}
-
-function addLanguageTracking(value = '', lang = DEFAULT_LANG) {
-  const rawUrl = String(value || '').trim();
-
-  if (!rawUrl) return '';
-
-  try {
-    const url = new URL(rawUrl);
-    url.searchParams.set('utm_content', lang);
-    return url.toString();
-  } catch {
-    const separator = rawUrl.includes('?') ? '&' : '?';
-    return `${rawUrl}${separator}utm_content=${encodeURIComponent(lang)}`;
-  }
-}
-
-function isColosseumTicketDestination(rawUrl = '') {
-  try {
-    const parsed = new URL(String(rawUrl || '').trim());
-    const host = String(parsed.hostname || '').toLowerCase().replace(/^www\./, '');
-
-    return (
-      parsed.protocol === 'https:' &&
-      ['colosseumticket.cz', 'colosseumticket.sk'].includes(host)
-    );
-  } catch {
-    return false;
-  }
-}
-
-function buildTicketOutboundUrl(rawUrl = '', lang = DEFAULT_LANG) {
-  const clean = String(rawUrl || '').trim();
-
-  if (!clean) {
-    return '';
-  }
-
-  if (isColosseumTicketDestination(clean)) {
-    const destination = new URL(clean);
-
-    // Never store the affiliate identifier in review content or static HTML.
-    // colosseumOutbound adds COLOSSEUMTICKET_A_BOX server-side at click time.
-    destination.searchParams.delete('a_box');
-
-    const outbound = new URL(
-      '/.netlify/functions/colosseumOutbound',
-      SITE_ORIGIN
-    );
-
-    outbound.searchParams.set('to', destination.toString());
-    outbound.searchParams.set('source', 'review');
-    outbound.searchParams.set('placement', 'review_cta');
-    outbound.searchParams.set('lang', normalizeLang(lang));
-
-    return `${outbound.pathname}${outbound.search}`;
-  }
-
-  return addLanguageTracking(clean, lang);
 }
 
 function normalizeSlug(value = '') {
@@ -1025,10 +967,9 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG, coverD
       lang
     );
   const ctaText = translation.ctaText || 'Check tickets';
-  const ticketUrl = buildTicketOutboundUrl(
-    translation.ticketUrl || review.ticketUrl || '',
-    lang
-  );
+  const rawTicketUrl = translation.ticketUrl || review.ticketUrl || '';
+  const ticketUrl = buildReviewCtaDestination(rawTicketUrl, lang);
+  const isInternalCta = isFirstPartyReviewDestination(rawTicketUrl);
 
   return `
         <article id="blogArticle" class="review-detail" data-static-blog-article="true" data-review-slug="${escapeAttr(review.slug)}" data-review-content-type="${escapeAttr(normalizeReviewContentType(review))}">
@@ -1062,7 +1003,7 @@ function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG, coverD
 
           ${
             ticketUrl
-              ? `<p class="review-cta"><a class="btn-primary" href="${escapeAttr(ticketUrl)}" target="_blank" rel="noopener sponsored">${escapeHtml(ctaText)}</a></p>`
+              ? `<p class="review-cta"><a class="btn-primary" href="${escapeAttr(ticketUrl)}"${isInternalCta ? '' : ' target="_blank" rel="noopener sponsored"'}>${escapeHtml(ctaText)}</a></p>`
               : ''
           }
         </article>

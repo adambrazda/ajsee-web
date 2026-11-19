@@ -226,6 +226,7 @@ export default defineConfig({
           blog: resolve(__dirname, 'blog.html'),
           'blog-detail': resolve(__dirname, 'blog-detail.html'),
           faq: resolve(__dirname, 'faq.html'),
+          sitemap: resolve(__dirname, 'sitemap/index.html'),
           'privacy-policy': resolve(__dirname, 'privacy-policy.html'),
           'cookies-policy': resolve(__dirname, 'cookies-policy.html'),
           microguides: resolve(__dirname, 'microguides/index.html'),

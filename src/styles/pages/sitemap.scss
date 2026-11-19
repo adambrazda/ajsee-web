@@ -1,0 +1,59 @@
+@use '../utils/theme';
+@use '../utils/reset';
+@use '../partials/header';
+@use '../partials/footer';
+@use '../partials/cookie-consent';
+
+.sitemap-page {
+  max-inline-size: 79.75rem;
+  margin-inline: auto;
+  padding: clamp(2rem, 6vw, 4.5rem) clamp(1rem, 4vw, 3rem);
+
+  h1 {
+    margin: 0 0 clamp(1.25rem, 3vw, 2rem);
+    color: var(--aj-text-strong);
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    line-height: 1.15;
+  }
+}
+
+.sitemap-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+
+  section {
+    padding: 1.25rem;
+    background: var(--aj-surface-elevated);
+    border: 1px solid var(--aj-border-strong);
+    border-radius: 1rem;
+  }
+
+  h2 {
+    margin: 0 0 .5rem;
+    color: var(--aj-text-strong);
+    font-size: 1.125rem;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    min-block-size: 44px;
+    color: var(--aj-accent-text);
+    text-decoration: underline;
+    text-underline-offset: .2em;
+
+    &:focus-visible {
+      outline: 2px solid var(--aj-focus);
+      outline-offset: 2px;
+      border-radius: .25rem;
+    }
+  }
+}

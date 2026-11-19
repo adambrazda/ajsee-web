@@ -27,6 +27,18 @@
   "footer-faq": "Najczęstsze pytania",
   "footer-cooperation": "Współpraca",
   "footer-legal-heading": "Informacje prawne",
+  "footer-sitemap": "Mapa strony",
+  "sitemap": {
+    "seo-title": "Mapa strony | AJSEE",
+    "description": "Przegląd stron AJSEE. Znajdź koncerty, festiwale, spektakle, wydarzenia sportowe, musicale w Londynie, recenzje, przewodniki i noclegi.",
+    "explore": "Kultura i podróże",
+    "about": "Informacje o AJSEE",
+    "all-events": "Wszystkie wydarzenia",
+    "guides": "Przewodniki",
+    "language": "Język",
+    "change-language": "Zmień język",
+    "choose-language": "Wybierz język"
+  },
   "section-events-title": "Nadchodzące wydarzenia",
   "section-events-subtitle": "Odkrywaj koncerty, festiwale, wydarzenia sportowe i inne przeżycia z całego świata.",
   "feature1-title": "Zweryfikowani partnerzy",

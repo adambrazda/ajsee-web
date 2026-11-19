@@ -3,6 +3,9 @@ import { AMAZING_PLACES_VOUCHER_URL } from '../shared/amazing-places.js';
 
 const trackedActivations = new WeakSet();
 const boundDocuments = new WeakSet();
+const recordedHomeTipMetrics = new WeakMap();
+const HOME_TIP_VARIANT_KEY = 'ajsee.home-tip-variant.v1';
+const HOME_TIP_CARD = 'body[data-page="home"] #eventsList > .event-card[data-home-tip-pilot]';
 const LANGUAGES = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
 const AMAZING_PLACES_VOUCHER_PATH = new URL(AMAZING_PLACES_VOUCHER_URL).pathname;
 const text = value => String(value || '').replace(/\s+/g, ' ').trim();
@@ -17,6 +20,92 @@ function trackingConsent(win) {
   } catch {
     return { analytics: false, marketing: false };
   }
+}
+
+// Serialized by the homepage build so a visitor's variant is known before the cards can paint.
+function assignHomeTipVariant(win, consentKey, variantKey) {
+  let saved;
+  try {
+    if (JSON.parse(win.localStorage.getItem(consentKey))?.analytics === true) {
+      saved = win.sessionStorage.getItem(variantKey);
+    }
+  } catch {
+    // The variant can still be assigned for this page.
+  }
+  win.document.documentElement.dataset.homeTipVariant = saved === 'control' || saved === 'reason'
+    ? saved
+    : (win.Math.random() < .5 ? 'control' : 'reason');
+}
+
+export function homeTipVariantScript() {
+  return `(${assignHomeTipVariant.toString()})(window, ${JSON.stringify(CONSENT_KEY)}, ${JSON.stringify(HOME_TIP_VARIANT_KEY)});`;
+}
+
+function sendGa4Event(win, name, parameters) {
+  if (typeof win.gtag !== 'function') {
+    win.dataLayer = win.dataLayer || [];
+    win.gtag = function () { win.dataLayer.push(arguments); };
+  }
+  win.gtag('event', name, { ...parameters, send_to: GA4_MEASUREMENT_ID });
+}
+
+function recordHomeTipMetric(card, action) {
+  if (!card?.matches(HOME_TIP_CARD)) return;
+  const doc = card.ownerDocument;
+  const win = doc.defaultView;
+  if (!win || win.location.origin !== 'https://ajsee.cz' || !trackingConsent(win).analytics) return;
+  const variant = doc.documentElement.dataset.homeTipVariant;
+  const eventId = card.dataset.eventId;
+  if ((variant !== 'control' && variant !== 'reason') || !eventId) return;
+
+  let recorded = recordedHomeTipMetrics.get(doc);
+  if (!recorded) recordedHomeTipMetrics.set(doc, recorded = new Set());
+  const key = `${action}:${eventId}`;
+  if (recorded.has(key)) return;
+
+  try {
+    // The event names also allow comparison in GA4's standard Events report.
+    sendGa4Event(win, `ajsee_home_tip_${action}_${variant}`, {
+      partner_event_id: eventId,
+      page_language: doc.documentElement.lang,
+      result_position: Number(card.dataset.resultPosition) || 0,
+    });
+    recorded.add(key);
+  } catch {
+    return;
+  }
+  try {
+    win.sessionStorage.setItem(HOME_TIP_VARIANT_KEY, variant);
+  } catch {
+    // The measurement does not depend on browser storage.
+  }
+}
+
+function observeHomeTipImpressions(doc) {
+  const win = doc.defaultView;
+  const list = doc.getElementById('eventsList');
+  if (win?.location.origin !== 'https://ajsee.cz' || !list || doc.body?.dataset.page !== 'home' ||
+      !doc.documentElement.dataset.homeTipVariant || !win.IntersectionObserver) return;
+
+  const observer = new win.IntersectionObserver(entries => {
+    if (doc.visibilityState === 'hidden') return;
+    for (const { target, isIntersecting, intersectionRatio } of entries) {
+      if (list.contains(target) && isIntersecting && intersectionRatio >= .5 &&
+          win.getComputedStyle(target).visibility === 'visible') {
+        recordHomeTipMetric(target, 'view');
+      }
+    }
+  }, { threshold: .5 });
+
+  const observe = () => {
+    observer.disconnect();
+    list.querySelectorAll(HOME_TIP_CARD).forEach(card => observer.observe(card));
+  };
+
+  observe();
+  new win.MutationObserver(observe).observe(list, { childList: true });
+  win.addEventListener('ajsee:analytics-ready', observe);
+  doc.addEventListener('visibilitychange', observe);
 }
 
 function parseUrl(value, origin) {
@@ -150,12 +239,15 @@ export function trackPartnerOutboundLink(link, options = {}) {
   try {
     win.dataLayer = win.dataLayer || [];
     if (consent.analytics) {
-      if (typeof win.gtag !== 'function') {
-        win.gtag = function () { win.dataLayer.push(arguments); };
-      }
       // Direct GA4 remains the single owner of the analytics event.
       const { event, event_id, language, ...parameters } = payload;
-      win.gtag('event', event, { ...parameters, partner_event_id: event_id, send_to: GA4_MEASUREMENT_ID });
+      sendGa4Event(win, event, { ...parameters, partner_event_id: event_id });
+      if (link.matches('.js-partner-click')) {
+        const card = link.closest('.event-card');
+        // A ticket activation also proves the card was reached.
+        recordHomeTipMetric(card, 'view');
+        recordHomeTipMetric(card, 'ticket');
+      }
     }
     if (trackWithGTM) {
       // A distinct event avoids duplicating the direct GA4 hit and gives GTM a
@@ -180,6 +272,7 @@ export function trackPartnerOutboundLink(link, options = {}) {
 export function initPartnerOutboundTracking(doc = globalThis.document) {
   if (!doc || boundDocuments.has(doc)) return;
   boundDocuments.add(doc);
+  observeHomeTipImpressions(doc);
   const onActivation = activation => {
     const link = activation.target?.closest?.('a[href]');
     if (link) trackPartnerOutboundLink(link, { activation });

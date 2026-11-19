@@ -78,6 +78,16 @@ function toPublicFilePath(webPath) {
   );
 }
 
+async function assertReviewImage(review, source, message) {
+  // Drafts can reference candidate photos before the local assets are prepared.
+  if (!isPublishedReview(review) && /^https:\/\//i.test(source)) {
+    assert.doesNotThrow(() => new URL(source), message);
+    return;
+  }
+
+  await assert.doesNotReject(fs.access(toPublicFilePath(source)), message);
+}
+
 async function readReviewFiles() {
   const fileNames =
     (await fs.readdir(
@@ -350,12 +360,10 @@ test(
       }
 
       if (hasText(review.cover)) {
-        const coverPath =
-          toPublicFilePath(review.cover);
-
-        await assert.doesNotReject(
-          fs.access(coverPath),
-          `${label} cover image does not exist: ${review.cover}`
+        await assertReviewImage(
+          review,
+          review.cover,
+          `${label} cover image is invalid or missing: ${review.cover}`
         );
       }
 
@@ -398,11 +406,10 @@ test(
 
           galleryPaths.add(imagePath);
 
-          await assert.doesNotReject(
-            fs.access(
-              toPublicFilePath(imagePath)
-            ),
-            `${label} gallery image does not exist: ${imagePath}`
+          await assertReviewImage(
+            review,
+            imagePath,
+            `${label} gallery image is invalid or missing: ${imagePath}`
           );
         }
       }

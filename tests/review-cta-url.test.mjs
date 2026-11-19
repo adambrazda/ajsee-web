@@ -46,3 +46,20 @@ test('review builder renders AJSEE internal CTAs without sponsored new-window at
   assert.match(source, /isFirstPartyReviewDestination\(rawTicketUrl\)/);
   assert.match(source, /isInternalCta \? '' : ' target="_blank" rel="noopener sponsored"'/);
 });
+
+test('Mary Poppins draft contains six localized internal CTAs and complete metadata', () => {
+  const file = path.join(process.cwd(), 'content/reviews/items/mary-poppins-from-film-to-west-end-stage.json');
+  const article = JSON.parse(fs.readFileSync(file, 'utf8'));
+  assert.equal(article.slug, 'mary-poppins-from-film-to-west-end-stage');
+  assert.equal(article.contentType, 'article');
+  assert.equal(article.category, 'theatre');
+  for (const [lang, route] of Object.entries(routes)) {
+    const translation = article.translations[lang];
+    assert.ok(translation?.body?.length > 5000, lang + ' full body');
+    assert.equal((translation.body.match(/^## /gm) || []).length, 5, lang + ' chapter count');
+    assert.ok(translation.seoTitle && translation.seoDescription, lang + ' SEO fields');
+    assert.equal(translation.ticketUrl, 'https://ajsee.cz' + route);
+    assert.equal(translation.galleryAlts?.length, article.gallery.length, lang + ' localized photo alts');
+    assert.ok(!/utm_[a-z]+=/i.test(translation.ticketUrl), lang + ' tracking-free internal link');
+  }
+});

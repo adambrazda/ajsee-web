@@ -5,8 +5,9 @@ import { JSDOM } from 'jsdom';
 import { initFaq, normalizeFaqSearch } from '../src/faq.js';
 import { createFaqSchema, syncFaqSchema } from '../src/faq-schema.js';
 import { renderFaqSchema } from '../scripts/render-faq-schema.mjs';
+import { renderSiteFooter } from '../scripts/render-site-footer.mjs';
 
-const source = await fs.readFile(new URL('../faq.html', import.meta.url), 'utf8');
+const source = renderSiteFooter(await fs.readFile(new URL('../faq.html', import.meta.url), 'utf8'));
 const languages = ['cs','en','de','sk','pl','hu'];
 const dictionaries = Object.fromEntries(await Promise.all(languages.map(async (lang) => [lang,
   JSON.parse(await fs.readFile(new URL('../src/locales/' + lang + '/faq.json', import.meta.url), 'utf8'))

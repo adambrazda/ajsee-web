@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 import { JSDOM } from 'jsdom';
 import { CONSENT_KEY } from '../src/utils/analytics-config.js';
+import { renderSiteFooter } from '../scripts/render-site-footer.mjs';
 
 const bundle = await build({
   stdin: {
@@ -25,7 +26,7 @@ const titles = {
 };
 
 async function page(template, lang, consent = null) {
-  const html = fs.readFileSync(new URL('../' + template, import.meta.url), 'utf8');
+  const html = renderSiteFooter(fs.readFileSync(new URL('../' + template, import.meta.url), 'utf8'));
   const path = template === 'index.html' ? '/' : template === 'accommodation.html' ? '/accommodation/' : '/londynske-muzikaly/';
   const dom = new JSDOM(html, { url: `https://ajsee.cz${path}?lang=${lang}`, runScripts: 'outside-only' });
   if (consent !== null) dom.window.localStorage.setItem(CONSENT_KEY, JSON.stringify({ analytics: consent }));

@@ -27,6 +27,18 @@
   "footer-faq": "Frequently asked questions",
   "footer-cooperation": "Partnerships",
   "footer-legal-heading": "Legal information",
+  "footer-sitemap": "Sitemap",
+  "sitemap": {
+    "seo-title": "Sitemap | AJSEE",
+    "description": "Explore AJSEE’s main pages for concerts, festivals, theatre, sport, London musicals, reviews, guides and accommodation.",
+    "explore": "Culture & travel",
+    "about": "About AJSEE",
+    "all-events": "All events",
+    "guides": "Guides",
+    "language": "Language",
+    "change-language": "Change language",
+    "choose-language": "Choose a language"
+  },
   "section-events-title": "Upcoming Events",
   "section-events-subtitle": "Discover concerts, festivals, sporting events and other experiences from around the world.",
   "feature1-title": "Verified partners",

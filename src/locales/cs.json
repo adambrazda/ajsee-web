@@ -27,6 +27,18 @@
   "footer-faq": "Časté dotazy",
   "footer-cooperation": "Spolupráce",
   "footer-legal-heading": "Právní informace",
+  "footer-sitemap": "Mapa webu",
+  "sitemap": {
+    "seo-title": "Mapa webu | AJSEE",
+    "description": "Přehled stránek AJSEE. Najděte koncerty, festivaly, divadlo, sport, londýnské muzikály, recenze, průvodce a ubytování.",
+    "explore": "Kultura a cestování",
+    "about": "Informace o AJSEE",
+    "all-events": "Všechny události",
+    "guides": "Průvodce",
+    "language": "Jazyk",
+    "change-language": "Změnit jazyk",
+    "choose-language": "Vyberte jazyk"
+  },
   "section-events-title": "Nejbližší události",
   "section-events-subtitle": "Objevuj koncerty, festivaly, sportovní události a další zážitky z celého světa.",
   "feature1-title": "Ověření partneři",

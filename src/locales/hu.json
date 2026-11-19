@@ -27,6 +27,18 @@
   "footer-faq": "Gyakori kérdések",
   "footer-cooperation": "Együttműködés",
   "footer-legal-heading": "Jogi információk",
+  "footer-sitemap": "Oldaltérkép",
+  "sitemap": {
+    "seo-title": "Oldaltérkép | AJSEE",
+    "description": "Az AJSEE főbb oldalai egy helyen. Találj koncerteket, fesztiválokat, színházi és sporteseményeket, londoni musicaleket, kritikákat, útmutatókat és szállásokat.",
+    "explore": "Kultúra és utazás",
+    "about": "Az AJSEE-ről",
+    "all-events": "Összes esemény",
+    "guides": "Útmutatók",
+    "language": "Nyelv",
+    "change-language": "Nyelv módosítása",
+    "choose-language": "Válassz nyelvet"
+  },
   "section-events-title": "Közelgő események",
   "section-events-subtitle": "Fedezz fel koncerteket, fesztiválokat, sporteseményeket és további élményeket a világ minden tájáról.",
   "feature1-title": "Ellenőrzött partnerek",

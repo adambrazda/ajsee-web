@@ -260,6 +260,7 @@ for(const lang of LANGS){
       [londonRoutes[lang].slice(1) + 'index.html', 'nav-london-musicals'],
       [prefix(lang) + 'blog/index.html', 'nav-reviews'],
       [prefix(lang) + 'partners/index.html', 'nav-partners'],
+      [prefix(lang) + 'sitemap/index.html', null],
     ];
 
     for (const [file, activeKey] of pages) {
@@ -280,7 +281,8 @@ for(const lang of LANGS){
       assert.equal(logo.getAttribute('aria-label'), dictionary['nav-logo-home']);
       const footer = doc.querySelector('.footer-navigation');
       assert.deepEqual([...footer.querySelectorAll('h2')].map(heading => clean(heading.textContent)), [dictionary['footer-help'], dictionary['footer-cooperation'], dictionary['footer-legal-heading'], 'AJSEE']);
-      assert.deepEqual([...footer.querySelectorAll('a[href^="/"]')].map(link => link.getAttribute('href')), [localized('faq'), `${home}#contact`, localized('partners'), localized('privacy-policy'), localized('cookies-policy')]);
+      assert.deepEqual([...footer.querySelectorAll('a[href^="/"]')].map(link => link.getAttribute('href')), [localized('faq'), `${home}#contact`, localized('partners'), localized('privacy-policy'), localized('cookies-policy'), `/${prefix(lang)}sitemap/`]);
+      assert.equal(clean(footer.querySelector('.footer-legal-actions a').textContent), dictionary['footer-sitemap']);
       assert.equal(clean(footer.querySelector('[data-i18n-key="footer-faq"]').textContent), dictionary['footer-faq']);
       assert.equal(clean(footer.querySelector('button[data-open-cookie-settings]').textContent), dictionary['footer-cookie-settings']);
       assert.equal(footer.querySelector('.footer-contact a').getAttribute('href'), 'mailto:info@ajsee.cz');
@@ -294,6 +296,36 @@ for(const lang of LANGS){
     for (const route of Object.values(londonRoutes)) {
       assert.equal(buildLocalizedPath(route, lang), londonRoutes[lang]);
     }
+  });
+  test(`${lang}: sitemap is a localized route with crawlable links`, () => {
+    const sitemapPath = `/${prefix(lang)}sitemap/`;
+    const dom = load(prefix(lang) + 'sitemap/index.html');
+    const doc = dom.window.document;
+    const dictionary = JSON.parse(fs.readFileSync(`src/locales/${lang}.json`, 'utf8'));
+    const events = cataloguePath(lang);
+    const localized = route => lang === 'cs' ? `/${route}` : `/${lang}/${route}/`;
+
+    assert.equal(doc.documentElement.lang, lang);
+    assert.equal(doc.title, dictionary.sitemap['seo-title']);
+    assert.equal(doc.querySelector('main h1').textContent, dictionary['footer-sitemap']);
+    assert.equal(doc.querySelector('meta[name="description"]').content, dictionary.sitemap.description);
+    assert.equal(doc.querySelector('link[rel="canonical"]').href, ORIGIN + sitemapPath);
+    assert.deepEqual([...doc.querySelectorAll('head link[hreflang]')].map(link => link.href),
+      [...LANGS, 'cs'].map(language => `${ORIGIN}/${prefix(language)}sitemap/`));
+    assert.deepEqual([...doc.querySelectorAll('.desktop-switcher a[data-lang]')].map(link => link.getAttribute('href')),
+      LANGS.map(language => `/${prefix(language)}sitemap/`));
+
+    const links = [...doc.querySelectorAll('main a[href]')].map(link => link.getAttribute('href'));
+    assert.deepEqual(links, [
+      events, ...['concert', 'festival', 'theatre', 'sport'].map(segment => `${events}?segment=${segment}`),
+      londonRoutes[lang], localized('blog'), `/${prefix(lang)}microguides/`, localized('accommodation'),
+      localized('about'), localized('faq'), localized('partners'), `/${prefix(lang)}#contact`,
+    ]);
+    for (const link of links) {
+      const { pathname } = new URL(link, ORIGIN);
+      assert.ok(fs.existsSync(path.join('dist', pathname, 'index.html')), `Missing sitemap destination: ${link}`);
+    }
+    dom.window.close();
   });
   test(lang+': translated micro-guide content, labels, metadata and dates exist before JS',()=>{
     let dom=load(prefix(lang)+'microguides/index.html'),doc=dom.window.document;
@@ -408,7 +440,10 @@ test('sitemap is stable across unchanged rebuilds and uses explicit meaningful d
   for(const slug of RETIRED)assert.ok(!before.includes(slug));
   assert.ok(!before.includes('2026-05-'));
   assert.ok(before.includes('<lastmod>2026-10-19</lastmod>'));
-  for(const lang of LANGS)assert.ok(before.includes(ORIGIN+'/'+prefix(lang)+'authors/oya-canli/'));
+  for (const lang of LANGS) {
+    assert.ok(before.includes(ORIGIN + '/' + prefix(lang) + 'authors/oya-canli/'));
+    assert.ok(before.includes(`<loc>${ORIGIN}/${prefix(lang)}sitemap/</loc>`));
+  }
 });
 test('responsive portraits reduce bytes and preserve original sources',()=>{
   for(const name of ['adam','jan']){

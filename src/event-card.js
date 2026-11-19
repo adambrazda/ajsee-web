@@ -812,9 +812,13 @@ export function ensureSharedEventGridStyles(
 
     #eventsList .event-card .event-editorial-reason {
       margin: 6px 0 8px;
+      padding: 6px 9px;
+      border-inline-start: 3px solid var(--home-accent, var(--aj-event-cta));
+      border-radius: 7px;
+      background: var(--home-accent-soft, var(--aj-event-surface));
       color: var(--aj-event-text);
       font-size: .875rem;
-      font-weight: 500;
+      font-weight: 600;
       line-height: 1.4;
     }
 

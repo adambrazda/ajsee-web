@@ -171,10 +171,10 @@
       display: none;
     }
 
-    .footer-primary-group,
-    .footer-primary-group ul,
-    .footer-legal-actions {
-      display: contents;
+    .footer-primary-group ul {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: .875rem;
     }
 
     .footer-primary-group a {

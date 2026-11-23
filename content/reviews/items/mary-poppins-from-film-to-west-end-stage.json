@@ -1,8 +1,8 @@
 {
   "slug": "mary-poppins-from-film-to-west-end-stage",
   "contentType": "article",
-  "status": "draft",
-  "published": false,
+  "status": "published",
+  "published": true,
   "featured": false,
   "category": "theatre",
   "showTitle": "Mary Poppins",
@@ -13,21 +13,21 @@
   "performanceDate": "",
   "eventDate": "",
   "reviewDate": "2026-11-19",
-  "publishedAt": "",
+  "publishedAt": "2026-11-23T07:47:30.745Z",
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.cz/londynske-muzikaly/",
-  "cover": "https://d28054jbxkgsih.cloudfront.net/uploads/productions/Marty-Poppins/Stefanie-Jones-as-Mary-Poppins.-Photo-by-Danny-Kaan.jpg?v=1768913960",
+  "cover": "/uploads/reviews/mary-poppins-from-film-to-west-end-stage/mary-poppins-stefanie-jones-danny-kaan.webp",
   "coverAlt": "Stefanie Jones as Mary Poppins on stage holding an umbrella and her carpet bag in the UK and Ireland touring production.",
   "coverCredit": "Photo: Danny Kaan / Cameron Mackintosh and Disney Theatrical Group",
   "gallery": [
     {
-      "image": "https://images.mayflower.org.uk/uploads/2025/02/6-scaled.jpg",
+      "image": "/uploads/reviews/mary-poppins-from-film-to-west-end-stage/mary-poppins-step-in-time-danny-kaan.webp",
       "alt": "Bert and the company perform the chimney sweep dance on a purple-lit stage in Mary Poppins.",
       "credit": "Photo: Danny Kaan / Mary Poppins UK & Ireland Tour"
     },
     {
-      "image": "https://chorusbox.blog/wp-content/uploads/2024/09/Stefanie-Jones-Jack-Chambers-Florence-Swann-as-Jane-William-Stafford-as-Michael.-By-Matt-Crockett.jpg",
+      "image": "/uploads/reviews/mary-poppins-from-film-to-west-end-stage/mary-poppins-family-matt-crockett.webp",
       "alt": "Stefanie Jones as Mary Poppins, Jack Chambers as Bert and the Banks children against a London rooftops backdrop.",
       "credit": "Photo: Matt Crockett / Mary Poppins UK & Ireland Tour"
     }
@@ -136,7 +136,7 @@
       ]
     }
   },
-  "internalNotes": "2026-11-23: Oya's revised conclusion integrated into all six approved-language drafts; Stefanie Jones Sydney Theatre Award and Jack Chambers touring context added, closing line updated. FACT CHECK: 2024-25-labeled UK/Ireland tour actually ran November 2024–January 2026 (last show Liverpool Empire 31 January 2026); supplied author copy incorrectly said November 2025. Sources: https://westendwilma.com/mary-poppins-uk-ireland-tour/ ; https://www.sydneytheatreawards.com/2022 . Draft only, do not publish; SEO and media unchanged.",
+  "internalNotes": "Released after author/editor approval 2026-11-23. Six localized final texts; Oya Canli, conclusion revised with tour end Jan 2026 factual correction and Stefanie Jones Sydney Theatre Award. All photos self-hosted as optimized WebP with original photographer credits. Publication uses approved -> published workflow. Verify deployment, route canonical/hreflang, sitemap, image HTTP 200.",
   "relatedSlugs": [
     "my-fair-lady-70-years-musical-legend"
   ]

@@ -1,0 +1,84 @@
+name: AJSEE Mary Poppins media preparation (one-time)
+
+on:
+  push:
+    branches:
+      - release/mary-poppins-2026-11-23
+    paths:
+      - .github/workflows/mary-poppins-photos.yml
+
+permissions:
+  contents: write
+
+jobs:
+  self-host-editorial-photographs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install image optimizer
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Fetch licensed source photos and produce self-hosted WebP
+        shell: bash
+        run: |
+          python - <<'PY'
+          import io
+          import os
+          import urllib.request
+          from PIL import Image, ImageOps
+
+          base = 'public/uploads/reviews/mary-poppins-from-film-to-west-end-stage'
+          os.makedirs(base, exist_ok=True)
+
+          assets = [
+            (
+              'mary-poppins-stefanie-jones-danny-kaan.webp',
+              'https://d28054jbxkgsih.cloudfront.net/uploads/productions/Marty-Poppins/Stefanie-Jones-as-Mary-Poppins.-Photo-by-Danny-Kaan.jpg?v=1768913960',
+              1280,
+            ),
+            (
+              'mary-poppins-step-in-time-danny-kaan.webp',
+              'https://images.mayflower.org.uk/uploads/2025/02/6-scaled.jpg',
+              1200,
+            ),
+            (
+              'mary-poppins-family-matt-crockett.webp',
+              'https://chorusbox.blog/wp-content/uploads/2024/09/Stefanie-Jones-Jack-Chambers-Florence-Swann-as-Jane-William-Stafford-as-Michael.-By-Matt-Crockett.jpg',
+              1200,
+            ),
+          ]
+
+          for name, url, width in assets:
+            req = urllib.request.Request(url, headers={
+              'User-Agent': 'Mozilla/5.0 (compatible; AJSEE-Editorial-Publishing/1.0)',
+              'Accept': 'image/avif,image/webp,image/*,*/*;q=0.8',
+            })
+            with urllib.request.urlopen(req, timeout=45) as response:
+              data = response.read(15 * 1024 * 1024)
+              mime = response.headers.get('Content-Type','')
+            if not mime.startswith('image/'):
+              raise RuntimeError(f'Unexpected MIME type {mime!r} for {name}')
+            image = Image.open(io.BytesIO(data))
+            image = ImageOps.exif_transpose(image).convert('RGB')
+            if image.width < 700 or image.height < 400:
+              raise RuntimeError(f'Unexpected dimensions {image.size} for {name}')
+            image.thumbnail((width, width * 2), Image.Resampling.LANCZOS)
+            target = os.path.join(base, name)
+            image.save(target, 'WEBP', quality=77, method=6, exif=b'')
+            print(f'{target}: {image.width}x{image.height}, {os.path.getsize(target)} bytes')
+
+          assert len([n for n in os.listdir(base) if n.endswith('.webp')]) == 3
+          PY
+      - name: Commit prepared editorial photos
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/uploads/reviews/mary-poppins-from-film-to-west-end-stage/
+          git diff --cached --quiet && exit 0
+          git commit -m "assets(reviews): self-host optimized Mary Poppins production photography"
+          git push

@@ -47,7 +47,7 @@ jobs:
                 status, final, mime, data = get(u)
                 html = data.decode("utf-8", "replace")
                 if status != 200 or "Mary Poppins" not in html or 'rel="canonical"' not in html:
-                  errors.append(f"{u}: malformed article status={status} mime={mime} title={('Mary Poppins' in html)} canonical={('rel=\"canonical\"' in html)}")
+                  errors.append(f"{u}: malformed article status={status} mime={mime} title={('Mary Poppins' in html)} canonical={bool(re.search('rel=canonical', html))}")
                   continue
                 if "hreflang=" not in html or "ajsee-review-jsonld" not in html:
                   errors.append(f"{u}: missing language alternates or Article JSON-LD")

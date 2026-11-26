@@ -117,3 +117,15 @@ body {
   outline-offset: 4px;
   border-radius: 2px;
 }
+
+/* Optional editorial photographs inside review text. */
+.review-inline-photo {
+  margin: 1.75rem 0;
+  max-width: 100%;
+}
+.review-inline-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+}

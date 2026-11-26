@@ -1,3 +1,4 @@
+import { buildReviewEventSubject } from './review-event-schema.mjs';
 import { readReviewCoverDimensions, coverDimensionsAttributes } from './review-image-dimensions.mjs';
 import { localizeCoverCredit } from './review-cover-credit.mjs';
 import { buildRelatedReadingHtml } from './review-related-reading.mjs';
@@ -450,32 +451,19 @@ function buildJsonLd(review, translation, lang = DEFAULT_LANG) {
   const hasEventDate = Number.isFinite(Date.parse(subjectDate));
   // A review can describe a production even when its attended date was not
   // supplied. Keep that review without inventing a dated performance.
-  const subject = hasEventDate ? {
-    '@type': 'Event',
-    name: contentType === 'preview' ? subjectName : review.productionTitle || subjectName,
-    location:
-      eventVenue ||
-      eventCity
-        ? {
-            '@type': 'Place',
-            name:
-              eventVenue ||
-              undefined,
-            address:
-              [
-                eventCity,
-                eventCountry
-              ]
-                .filter(Boolean)
-                .join(', ') ||
-              undefined
-          }
-        : undefined,
-    startDate: subjectDate
-  } : {
-    '@type': 'CreativeWork',
-    name: subjectName
-  };
+  const subject = hasEventDate
+    ? buildReviewEventSubject({
+        review,
+        subjectDate,
+        subjectName: contentType === 'preview' ? subjectName : review.productionTitle || subjectName,
+        eventVenue,
+        eventCity,
+        eventCountry
+      })
+    : {
+        '@type': 'CreativeWork',
+        name: subjectName
+      };
 
   const primaryEntity =
     // Undated first-hand reviews remain reviews in the UI. Their structured

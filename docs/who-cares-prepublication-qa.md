@@ -19,24 +19,17 @@ The optional shared `eventSchema` field opts into DanceEvent. The existing rende
 
 Verify emitted JSON-LD in all six built HTML pages: Review, itemReviewed DanceEvent, attended date, Place/PostalAddress, PerformingGroup, sameAs, inLanguage, no reviewRating. No promises of Google review stars.
 
-## Media upload — integrated in preparation branch
+## Media — five original photographs integrated
 
-Two original supplied Oya photographs optimized locally in WebP (EXIF orientation applied, no crop, metadata stripped, quality 82). Archive contains final repo-relative paths:
-- `public/uploads/reviews/who-cares-ballet-prague-2026/state-opera-auditorium-oya-canli.webp` (1280×960, 314294 bytes; original 1000037727.jpg).
-- `public/uploads/reviews/who-cares-ballet-prague-2026/state-opera-curtain-orchestra-oya-canli.webp` (900×1200, 262958 bytes; original 1000037725.jpg).
+Editor confirmed permission for the official National Theatre photography. Source: supplied 47-photo ZIP, original JPEGs by Serghei Gherciu. Credit: Photo: Serghei Gherciu © The George Balanchine Trust. No generative editing, no crop; only resizing and WebP compression.
 
-**Both binary files are integrated; Git blob SHA verified against the optimized local files.** Root cover is /uploads/reviews/who-cares-ballet-prague-2026/state-opera-auditorium-oya-canli.webp; retain root coverAlt and coverCredit. Gallery has one entry with image /uploads/reviews/who-cares-ballet-prague-2026/state-opera-curtain-orchestra-oya-canli.webp, credit Oya Canli / AJSEE, and English alt below. Each translation's galleryAlts contains the corresponding one-item array below.
-
-| Language | Gallery alt |
-| --- | --- |
-| en | Painted curtain, gilded interior of Prague's State Opera and musicians in the orchestra pit. |
-| cs | Detail malované opony, zlaceného interiéru Státní opery a hudebníků v orchestřišti. |
-| sk | Detail maľovanej opony, pozláteného interiéru pražskej Štátnej opery a hudobníkov v orchestrisku. |
-| de | Bemalter Vorhang, vergoldeter Innenraum der Prager Staatsoper sowie Musikerinnen und Musiker im Orchestergraben. |
-| pl | Malowana kurtyna, złocone wnętrze praskiej Opery Państwowej i muzycy w kanale orkiestrowym. |
-| hu | A prágai Állami Opera festett függönye, aranyozott belső tere és a zenekari árokban ülő zenészek. |
-
-Exclude both curtain-call photographs (#4/#5) from site and social release until publication permission is confirmed. Cast board (#1) for internal verification only.
+- Cover: 5041 (1600 × 1067, 76,292 bytes); used by review cards, OG and JSON-LD.
+- Inline at end of first section: 5031 (1280 × 853, 62,520 bytes), Lagerfeld costumes.
+- Inline at end of second section: 5039 (1280 × 853, 59,254 bytes), New York dancers.
+- Gallery: both original Oya Canli / AJSEE photos (auditorium and curtain/orchestra), previously integrated.
+- All five photos have localized alt text in six languages. Inline photographs lazy-load and reserve aspect ratio via intrinsic dimensions. Curtain-call photographs remain excluded.
+- All three new Git blob SHA values verified against local optimized originals.
+- Approved article bodies, publication flags and related reading unchanged. Inline placement is optional and does not change other reviews.
 
 ## Prepublication checklist
 
@@ -44,8 +37,8 @@ Exclude both curtain-call photographs (#4/#5) from site and social release until
 - [x] Localized CTA data and shared canonical DanceEvent metadata prepared on prep branch.
 - [x] Renderer helper and targeted regression tests added.
 - [x] Original photos converted locally to WebP.
-- [x] Upload two binaries and attach cover/gallery metadata and localized gallery alt texts.
-- [ ] Confirm publication permissions for selected photographs; do not add curtain-call images without separate permission.
+- [x] Upload five binaries and attach cover, inline and gallery metadata with localized alt texts.
+- [x] Editor confirmed permission for official National Theatre photos; separate curtain-call photos excluded.
 - [ ] Run npm run reviews:test and verify full Netlify preview build.
 - [ ] Check mobile and desktop layouts, image aspect ratios, visible credits, contrast and keyboard access.
 - [ ] Before release confirm canonical, hreflang only for existing translations, JSON-LD, no draft in public index or sitemap, no dead CTA/related links.

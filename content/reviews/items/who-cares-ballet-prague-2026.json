@@ -17,10 +17,15 @@
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.cz/events",
-  "cover": "/uploads/reviews/who-cares-ballet-prague-2026/state-opera-auditorium-oya-canli.webp",
-  "coverAlt": "The State Opera auditorium with its painted curtain, gilded boxes and orchestra before Who Cares?",
-  "coverCredit": "Photo: Oya Canli / AJSEE",
+  "cover": "/uploads/reviews/who-cares-ballet-prague-2026/who-cares-5041-serghei-gherciu.webp",
+  "coverAlt": "A ballet pair and dancers performing Who Cares? against a New York skyline.",
+  "coverCredit": "Photo: Serghei Gherciu © The George Balanchine Trust",
   "gallery": [
+    {
+      "image": "/uploads/reviews/who-cares-ballet-prague-2026/state-opera-auditorium-oya-canli.webp",
+      "alt": "The State Opera auditorium with its painted curtain, gilded boxes and orchestra before Who Cares?",
+      "credit": "Photo: Oya Canli / AJSEE"
+    },
     {
       "image": "/uploads/reviews/who-cares-ballet-prague-2026/state-opera-curtain-orchestra-oya-canli.webp",
       "alt": "Painted curtain, gilded interior of Prague's State Opera and musicians in the orchestra pit.",
@@ -37,12 +42,17 @@
       "ticketUrl": "https://ajsee.cz/en/events/",
       "seoTitle": "Who Cares? Ballet Review – Prague State Opera | AJSEE",
       "seoDescription": "Oya Canli reviews George Balanchine's Who Cares? at Prague's State Opera, celebrating Gershwin, jazz, classical ballet and live music.",
-      "coverAlt": "The State Opera auditorium with its painted curtain, gilded boxes and orchestra before Who Cares?",
+      "coverAlt": "A ballet pair and dancers performing Who Cares? against a New York skyline.",
       "venue": "State Opera",
       "city": "Prague",
       "country": "Czech Republic",
       "galleryAlts": [
+        "The State Opera auditorium with its painted curtain, gilded boxes and orchestra before Who Cares?",
         "Painted curtain, gilded interior of Prague's State Opera and musicians in the orchestra pit."
+      ],
+      "inlineImageAlts": [
+        "Dancers in Karl Lagerfeld's cream and black costumes in Brahms-Schoenberg Quartet.",
+        "Five dancers in dark pinstriped suits performing Who Cares? against the New York skyline."
       ]
     },
     "cs": {
@@ -54,12 +64,17 @@
       "ticketUrl": "https://ajsee.cz/events",
       "seoTitle": "Who Cares? – recenze baletu ve Státní opeře v Praze | AJSEE",
       "seoDescription": "Oya Canli hodnotí balet Who Cares? v pražské Státní opeře. George Balanchine, Gershwin, jazz, klasický balet a působivá živá hudba.",
-      "coverAlt": "Sál Státní opery se zdobenou oponou, zlacenými lóžemi a orchestrem v orchestřišti před baletem Who Cares?",
+      "coverAlt": "Baletní pár a tanečnice při představení Who Cares? před panoramatem New Yorku.",
       "venue": "Státní opera",
       "city": "Praha",
       "country": "Česká republika",
       "galleryAlts": [
+        "Sál Státní opery se zdobenou oponou, zlacenými lóžemi a orchestrem v orchestřišti před baletem Who Cares?",
         "Detail malované opony, zlaceného interiéru Státní opery a hudebníků v orchestřišti."
+      ],
+      "inlineImageAlts": [
+        "Tanečníci v krémových a černých kostýmech Karla Lagerfelda v baletu Brahms-Schoenberg Quartet.",
+        "Pět tanečníků v tmavých proužkovaných oblecích v baletu Who Cares? před panoramatem New Yorku."
       ]
     },
     "sk": {
@@ -71,12 +86,17 @@
       "ticketUrl": "https://ajsee.cz/sk/events/",
       "seoTitle": "Who Cares? – recenzia baletu v Štátnej opere v Prahe | AJSEE",
       "seoDescription": "Oya Canli hodnotí balet Who Cares? v pražskej Štátnej opere. George Balanchine, Gershwin, jazz, klasický balet a pôsobivá živá hudba.",
-      "coverAlt": "Sála pražskej Štátnej opery so zdobenou oponou, pozlátenými lóžami a orchestrom pred baletom Who Cares?",
+      "coverAlt": "Baletný pár a tanečnice v predstavení Who Cares? pred panorámou New Yorku.",
       "venue": "Štátna opera, Praha",
       "city": "Praha",
       "country": "Česká republika",
       "galleryAlts": [
+        "Sála pražskej Štátnej opery so zdobenou oponou, pozlátenými lóžami a orchestrom pred baletom Who Cares?",
         "Detail maľovanej opony, pozláteného interiéru pražskej Štátnej opery a hudobníkov v orchestrisku."
+      ],
+      "inlineImageAlts": [
+        "Tanečníci v krémových a čiernych kostýmoch Karla Lagerfelda v balete Brahms-Schoenberg Quartet.",
+        "Päť tanečníkov v tmavých prúžkovaných oblekoch v balete Who Cares? pred panorámou New Yorku."
       ]
     },
     "de": {
@@ -88,12 +108,17 @@
       "ticketUrl": "https://ajsee.cz/de/events/",
       "seoTitle": "Who Cares? – Ballettkritik an der Staatsoper Prag | AJSEE",
       "seoDescription": "Oya Canli rezensiert George Balanchines Who Cares? an der Staatsoper Prag: Gershwin, Jazz, klassisches Ballett und mitreißende Livemusik.",
-      "coverAlt": "Zuschauerraum der Prager Staatsoper mit bemaltem Vorhang, vergoldeten Logen und Orchester vor dem Ballett Who Cares?",
+      "coverAlt": "Ein Tanzpaar und Tänzerinnen in Who Cares? vor der New Yorker Skyline.",
       "venue": "Staatsoper Prag",
       "city": "Prag",
       "country": "Tschechien",
       "galleryAlts": [
+        "Zuschauerraum der Prager Staatsoper mit bemaltem Vorhang, vergoldeten Logen und Orchester vor dem Ballett Who Cares?",
         "Bemalter Vorhang, vergoldeter Innenraum der Prager Staatsoper sowie Musikerinnen und Musiker im Orchestergraben."
+      ],
+      "inlineImageAlts": [
+        "Tänzerinnen und Tänzer in cremefarbenen und schwarzen Kostümen von Karl Lagerfeld im Brahms-Schoenberg Quartet.",
+        "Fünf Tänzer in dunklen Nadelstreifenanzügen in Who Cares? vor der New Yorker Skyline."
       ]
     },
     "pl": {
@@ -105,12 +130,17 @@
       "ticketUrl": "https://ajsee.cz/pl/events/",
       "seoTitle": "Who Cares? – recenzja baletu w Operze Państwowej | AJSEE",
       "seoDescription": "Oya Canli recenzuje balet Who Cares? George’a Balanchine’a w praskiej Operze Państwowej. Gershwin, jazz, taniec klasyczny i muzyka na żywo.",
-      "coverAlt": "Widownia praskiej Opery Państwowej z malowaną kurtyną, złoconymi lożami i orkiestrą przed baletem Who Cares?",
+      "coverAlt": "Para baletowa i tancerki w spektaklu Who Cares? na tle panoramy Nowego Jorku.",
       "venue": "Opera Państwowa w Pradze",
       "city": "Praga",
       "country": "Czechy",
       "galleryAlts": [
+        "Widownia praskiej Opery Państwowej z malowaną kurtyną, złoconymi lożami i orkiestrą przed baletem Who Cares?",
         "Malowana kurtyna, złocone wnętrze praskiej Opery Państwowej i muzycy w kanale orkiestrowym."
+      ],
+      "inlineImageAlts": [
+        "Tancerze w kremowo-czarnych kostiumach Karla Lagerfelda w balecie Brahms-Schoenberg Quartet.",
+        "Pięciu tancerzy w ciemnych garniturach w prążki w balecie Who Cares? na tle panoramy Nowego Jorku."
       ]
     },
     "hu": {
@@ -122,16 +152,21 @@
       "ticketUrl": "https://ajsee.cz/hu/events/",
       "seoTitle": "Who Cares? – balettkritika, prágai Állami Opera | AJSEE",
       "seoDescription": "Oya Canli kritikája George Balanchine Who Cares? című balettjének prágai előadásáról. Gershwin, jazz, klasszikus balett és élő zene.",
-      "coverAlt": "A prágai Állami Opera nézőtere festett függönnyel, aranyozott páholyokkal és zenekarral a Who Cares? előtt.",
+      "coverAlt": "Balettpár és táncosnők a Who Cares? előadásán, New York látképével a háttérben.",
       "venue": "Állami Opera, Prága",
       "city": "Prága",
       "country": "Csehország",
       "galleryAlts": [
+        "A prágai Állami Opera nézőtere festett függönnyel, aranyozott páholyokkal és zenekarral a Who Cares? előtt.",
         "A prágai Állami Opera festett függönye, aranyozott belső tere és a zenekari árokban ülő zenészek."
+      ],
+      "inlineImageAlts": [
+        "Táncosok Karl Lagerfeld krémszínű és fekete jelmezeiben a Brahms-Schoenberg Quartet című balettben.",
+        "Öt táncos sötét csíkos öltönyben a Who Cares? című balettben, New York látképe előtt."
       ]
     }
   },
-  "internalNotes": "All six editorial translations approved; never publish until explicit release approval. Draft with no publishedAt. Localized generic catalogue CTA; ColosseumTicket lists the show but only past dates were confirmed on 26 Nov 2026, current AJSEE feed not verified. EventSchema metadata contains official venue address and company sameAs, shared by all languages. No numeric rating. Related reading: Chicago via shared relatedSlugs. Photo plan: cover #3 1000037727.jpg; gallery #2 1000037725.jpg, both optimized to WebP and integrated with byte-identical Git blobs in the preparation branch. Curtain-call photos #4 and #5 excluded pending permission; #1 programme is internal only. Localized gallery alt texts and paths integrated; documented in docs/who-cares-prepublication-qa.md. Article remains unpublished.",
+  "internalNotes": "All six editorial translations approved; never publish until explicit release approval. Draft with no publishedAt. Localized generic catalogue CTA; ColosseumTicket lists the show but only past dates were confirmed on 26 Nov 2026, current AJSEE feed not verified. EventSchema metadata contains official venue address and company sameAs, shared by all languages. No numeric rating. Related reading: Chicago via shared relatedSlugs. Photo plan updated after editor confirmed permission for official ND photography: official archive 5041 cover, 5031 and 5039 inline, both Oya images retained in gallery. All five images optimized to WebP; original official photo bytes were read from supplied ZIP, resized without generative edits. Curtain-call photos #4 and #5 excluded pending permission; #1 programme is internal only. Localized gallery alt texts and paths integrated; documented in docs/who-cares-prepublication-qa.md. Article remains unpublished.",
   "relatedSlugs": [
     "chicago-the-musical-uk-tour-2027"
   ],
@@ -151,5 +186,23 @@
       "alternateName": "Czech National Ballet",
       "sameAs": "https://www.narodni-divadlo.cz/cs/soubory/balet/o-nas"
     }
-  }
+  },
+  "inlineImages": [
+    {
+      "beforeHeading": 2,
+      "image": "/uploads/reviews/who-cares-ballet-prague-2026/who-cares-5031-serghei-gherciu.webp",
+      "width": 1280,
+      "height": 853,
+      "alt": "Dancers in Karl Lagerfeld's cream and black costumes in Brahms-Schoenberg Quartet.",
+      "credit": "Photo: Serghei Gherciu © The George Balanchine Trust"
+    },
+    {
+      "beforeHeading": 3,
+      "image": "/uploads/reviews/who-cares-ballet-prague-2026/who-cares-5039-serghei-gherciu.webp",
+      "width": 1280,
+      "height": 853,
+      "alt": "Five dancers in dark pinstriped suits performing Who Cares? against the New York skyline.",
+      "credit": "Photo: Serghei Gherciu © The George Balanchine Trust"
+    }
+  ]
 }

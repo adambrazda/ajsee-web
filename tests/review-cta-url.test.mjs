@@ -125,3 +125,30 @@ test('dance event enrichment omits unsafe sameAs URLs and unknown metadata', () 
   assert.equal(subject.performer.sameAs, undefined);
   assert.equal(subject.location.address, 'Prague');
 });
+
+import { insertReviewInlineImages } from '../scripts/review-inline-images.mjs';
+
+test('Who Cares official photographs preserve both Oya gallery images and localized inline placement', () => {
+  const review = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content/reviews/items/who-cares-ballet-prague-2026.json'), 'utf8'));
+  assert.match(review.cover, /5041-serghei-gherciu\.webp$/);
+  assert.equal(review.gallery.length, 2);
+  assert.ok(review.gallery.every(item => item.image.includes('oya-canli')));
+  assert.ok(review.coverCredit.includes('The George Balanchine Trust'));
+  for (const asset of [review.cover, ...review.inlineImages.map(i => i.image), ...review.gallery.map(i => i.image)]) {
+    assert.ok(fs.existsSync(path.join(process.cwd(), 'public', asset.replace(/^\//, ''))));
+  }
+  const body = '<h2>First</h2><p>One</p><h2>Second</h2><p>Two</p><h2>Third</h2>';
+  assert.equal(insertReviewInlineImages(body, [], [], 'en'), body);
+  for (const [lang, t] of Object.entries(review.translations)) {
+    assert.equal(t.inlineImageAlts.length, 2);
+    assert.equal(t.galleryAlts.length, 2);
+    const html = insertReviewInlineImages(body, review.inlineImages, t.inlineImageAlts, lang);
+    assert.equal((html.match(/class="review-inline-photo"/g) || []).length, 2);
+    assert.equal((html.match(/loading="lazy"/g) || []).length, 2);
+    assert.ok(html.indexOf('5031-serghei') < html.indexOf('<h2>Second'));
+    assert.ok(html.indexOf('5039-serghei') > html.indexOf('<h2>Second'));
+    assert.ok(html.indexOf('5039-serghei') < html.indexOf('<h2>Third'));
+    assert.ok(html.includes('width="1280" height="853"'));
+    assert.ok(html.includes('The George Balanchine Trust'));
+  }
+});

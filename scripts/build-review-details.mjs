@@ -1,3 +1,4 @@
+import { insertReviewInlineImages } from './review-inline-images.mjs';
 import { buildReviewEventSubject } from './review-event-schema.mjs';
 import { readReviewCoverDimensions, coverDimensionsAttributes } from './review-image-dimensions.mjs';
 import { localizeCoverCredit } from './review-cover-credit.mjs';
@@ -931,9 +932,8 @@ function buildReviewBodyHtml(
 function buildReviewArticleHtml(review, translation, lang = DEFAULT_LANG, coverDimensions = null) {
   const title = translation.title || review.showTitle || review.slug;
   const subtitle = translation.subtitle || '';
-  const bodyHtml = buildReviewBodyHtml(
-    review,
-    translation
+  const bodyHtml = insertReviewInlineImages(
+    buildReviewBodyHtml(review, translation), review.inlineImages, translation.inlineImageAlts, lang
   );
   const galleryHtml = buildReviewGalleryHtml(review.gallery, lang, translation.galleryAlts);
   const relatedReadingHtml = buildRelatedReadingHtml(review, lang, REVIEW_BY_SLUG, {

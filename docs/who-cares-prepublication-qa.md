@@ -19,13 +19,13 @@ The optional shared `eventSchema` field opts into DanceEvent. The existing rende
 
 Verify emitted JSON-LD in all six built HTML pages: Review, itemReviewed DanceEvent, attended date, Place/PostalAddress, PerformingGroup, sameAs, inLanguage, no reviewRating. No promises of Google review stars.
 
-## Media upload — BLOCKED until binary files are added
+## Media upload — integrated in preparation branch
 
 Two original supplied Oya photographs optimized locally in WebP (EXIF orientation applied, no crop, metadata stripped, quality 82). Archive contains final repo-relative paths:
 - `public/uploads/reviews/who-cares-ballet-prague-2026/state-opera-auditorium-oya-canli.webp` (1280×960, 314294 bytes; original 1000037727.jpg).
 - `public/uploads/reviews/who-cares-ballet-prague-2026/state-opera-curtain-orchestra-oya-canli.webp` (900×1200, 262958 bytes; original 1000037725.jpg).
 
-**The binary files are NOT in the repository yet.** Do not add public image references until the files exist. After upload, set root cover to /uploads/reviews/who-cares-ballet-prague-2026/state-opera-auditorium-oya-canli.webp; retain root coverAlt and coverCredit. Set gallery to one entry with image /uploads/reviews/who-cares-ballet-prague-2026/state-opera-curtain-orchestra-oya-canli.webp, credit Oya Canli / AJSEE, and English alt below. Set each translation's galleryAlts to a one-item array from this table, matching image order.
+**Both binary files are integrated; Git blob SHA verified against the optimized local files.** Root cover is /uploads/reviews/who-cares-ballet-prague-2026/state-opera-auditorium-oya-canli.webp; retain root coverAlt and coverCredit. Gallery has one entry with image /uploads/reviews/who-cares-ballet-prague-2026/state-opera-curtain-orchestra-oya-canli.webp, credit Oya Canli / AJSEE, and English alt below. Each translation's galleryAlts contains the corresponding one-item array below.
 
 | Language | Gallery alt |
 | --- | --- |
@@ -44,7 +44,7 @@ Exclude both curtain-call photographs (#4/#5) from site and social release until
 - [x] Localized CTA data and shared canonical DanceEvent metadata prepared on prep branch.
 - [x] Renderer helper and targeted regression tests added.
 - [x] Original photos converted locally to WebP.
-- [ ] Upload two binaries and attach cover/gallery metadata and localized gallery alt texts.
+- [x] Upload two binaries and attach cover/gallery metadata and localized gallery alt texts.
 - [ ] Confirm publication permissions for selected photographs; do not add curtain-call images without separate permission.
 - [ ] Run npm run reviews:test and verify full Netlify preview build.
 - [ ] Check mobile and desktop layouts, image aspect ratios, visible credits, contrast and keyboard access.

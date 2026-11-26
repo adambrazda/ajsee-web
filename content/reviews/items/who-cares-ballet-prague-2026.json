@@ -17,10 +17,16 @@
   "author": "Oya Canli",
   "rating": null,
   "ticketUrl": "https://ajsee.cz/events",
-  "cover": "",
+  "cover": "/uploads/reviews/who-cares-ballet-prague-2026/state-opera-auditorium-oya-canli.webp",
   "coverAlt": "The State Opera auditorium with its painted curtain, gilded boxes and orchestra before Who Cares?",
   "coverCredit": "Photo: Oya Canli / AJSEE",
-  "gallery": [],
+  "gallery": [
+    {
+      "image": "/uploads/reviews/who-cares-ballet-prague-2026/state-opera-curtain-orchestra-oya-canli.webp",
+      "alt": "Painted curtain, gilded interior of Prague's State Opera and musicians in the orchestra pit.",
+      "credit": "Photo: Oya Canli / AJSEE"
+    }
+  ],
   "translations": {
     "en": {
       "title": "Who Cares? – A Little Piece of New York in Prague",
@@ -35,7 +41,9 @@
       "venue": "State Opera",
       "city": "Prague",
       "country": "Czech Republic",
-      "galleryAlts": []
+      "galleryAlts": [
+        "Painted curtain, gilded interior of Prague's State Opera and musicians in the orchestra pit."
+      ]
     },
     "cs": {
       "title": "Who Cares? – Malý kousek New Yorku v Praze",
@@ -50,7 +58,9 @@
       "venue": "Státní opera",
       "city": "Praha",
       "country": "Česká republika",
-      "galleryAlts": []
+      "galleryAlts": [
+        "Detail malované opony, zlaceného interiéru Státní opery a hudebníků v orchestřišti."
+      ]
     },
     "sk": {
       "title": "Who Cares? – Malý kúsok New Yorku v Prahe",
@@ -65,7 +75,9 @@
       "venue": "Štátna opera, Praha",
       "city": "Praha",
       "country": "Česká republika",
-      "galleryAlts": []
+      "galleryAlts": [
+        "Detail maľovanej opony, pozláteného interiéru pražskej Štátnej opery a hudobníkov v orchestrisku."
+      ]
     },
     "de": {
       "title": "Who Cares? – Ein kleines Stück New York in Prag",
@@ -80,7 +92,9 @@
       "venue": "Staatsoper Prag",
       "city": "Prag",
       "country": "Tschechien",
-      "galleryAlts": []
+      "galleryAlts": [
+        "Bemalter Vorhang, vergoldeter Innenraum der Prager Staatsoper sowie Musikerinnen und Musiker im Orchestergraben."
+      ]
     },
     "pl": {
       "title": "Who Cares? – Mały kawałek Nowego Jorku w Pradze",
@@ -95,7 +109,9 @@
       "venue": "Opera Państwowa w Pradze",
       "city": "Praga",
       "country": "Czechy",
-      "galleryAlts": []
+      "galleryAlts": [
+        "Malowana kurtyna, złocone wnętrze praskiej Opery Państwowej i muzycy w kanale orkiestrowym."
+      ]
     },
     "hu": {
       "title": "Who Cares? – Egy kis New York Prágában",
@@ -110,10 +126,12 @@
       "venue": "Állami Opera, Prága",
       "city": "Prága",
       "country": "Csehország",
-      "galleryAlts": []
+      "galleryAlts": [
+        "A prágai Állami Opera festett függönye, aranyozott belső tere és a zenekari árokban ülő zenészek."
+      ]
     }
   },
-  "internalNotes": "All six editorial translations approved; never publish until explicit release approval. Draft with no publishedAt. Localized generic catalogue CTA; ColosseumTicket lists the show but only past dates were confirmed on 26 Nov 2026, current AJSEE feed not verified. EventSchema metadata contains official venue address and company sameAs, shared by all languages. No numeric rating. Related reading: Chicago via shared relatedSlugs. Photo plan: cover #3 1000037727.jpg; gallery #2 1000037725.jpg, both optimized to WebP locally but NOT uploaded to GitHub. Curtain-call photos #4 and #5 excluded pending permission; #1 programme is internal only. Photo alt texts and upload paths documented in docs/who-cares-prepublication-qa.md. Article remains unpublished.",
+  "internalNotes": "All six editorial translations approved; never publish until explicit release approval. Draft with no publishedAt. Localized generic catalogue CTA; ColosseumTicket lists the show but only past dates were confirmed on 26 Nov 2026, current AJSEE feed not verified. EventSchema metadata contains official venue address and company sameAs, shared by all languages. No numeric rating. Related reading: Chicago via shared relatedSlugs. Photo plan: cover #3 1000037727.jpg; gallery #2 1000037725.jpg, both optimized to WebP and integrated with byte-identical Git blobs in the preparation branch. Curtain-call photos #4 and #5 excluded pending permission; #1 programme is internal only. Localized gallery alt texts and paths integrated; documented in docs/who-cares-prepublication-qa.md. Article remains unpublished.",
   "relatedSlugs": [
     "chicago-the-musical-uk-tour-2027"
   ],

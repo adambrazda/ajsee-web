@@ -1,3 +1,4 @@
+import { trackAnalyticsEvent } from './utils/analytics-core.js';
 ﻿import { MICROGUIDE_LABELS, getMicroguideCta } from './microguide-copy.js';
 import { renderSharePanel } from './mg-share.js';
 import { renderRelatedMicroguides } from './mg-related.js';
@@ -76,13 +77,7 @@ function label(key) {
 }
 
 function gEvent(action, extra = {}) {
-  if (typeof window.dataLayer?.push === 'function') {
-    window.dataLayer.push({ event: action, language: lang, ...extra });
-  }
-
-  if (typeof window.gtag === 'function') {
-    window.gtag('event', action, { language: lang, ...extra });
-  }
+  trackAnalyticsEvent(action, { language: lang, ...extra });
 }
 
 function safeDecode(value = '') {

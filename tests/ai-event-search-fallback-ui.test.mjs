@@ -59,6 +59,7 @@ function fixture(testContext, { consent = false, widgetReady = true, fetchResult
     remove(id) { removed.push(id); }
   };
   if (widgetReady) win.turnstile = widgetApi;
+  win.localStorage.setItem('ajsee_cookie_consent_v1', JSON.stringify({ analytics: consent }));
   win.gtag = (...args) => analytics.push(args);
   win.setTimeout = (handler, delay) => {
     deadlines.set(delay, handler);
@@ -259,10 +260,11 @@ test('manual fallback appears during verification and ignores late widget callba
   assert.equal(ui.calls.length, 1);
   assert.equal(JSON.parse(ui.calls[0].body).turnstileToken, 'current-test-token');
   assert.equal(ui.fallback.length, 1);
-  assert.deepEqual(ui.analytics.map(([, event]) => event), [
+  assert.deepEqual(ui.analytics.filter(([, event]) => event !== 'ai_event_search_result').map(([, event]) => event), [
     'ai_event_search_start', 'ai_event_search_challenge', 'ai_event_search_fallback', 'ai_event_search_start'
   ]);
-  assert.equal(ui.analytics[2][2].fallback_reason, 'manual');
+  assert.equal(ui.analytics.find(([, event]) => event === 'ai_event_search_result')[2].outcome, 'manual');
+  assert.equal(ui.analytics.find(([, event]) => event === 'ai_event_search_fallback')[2].fallback_reason, 'manual');
   assert.doesNotMatch(JSON.stringify(ui.analytics), /Ostrava|800|stale-token|current-test-token/);
 });
 
@@ -326,7 +328,7 @@ test('API error on a follow-up keeps the original draft and clears clarification
   assert.equal(ui.fallback[0].query, QUERY);
   assert.equal(ui.input.value, QUERY);
   assert.equal(ui.form.querySelector('[data-ai-search-clarification-actions]').hidden, true);
-  assert.equal(ui.analytics.at(-1)[2].page_location, ui.win.location.origin + '/events');
+  assert.equal(ui.analytics.at(-1)[2].page_location, ui.win.location.origin + '/en/events/');
 });
 
 test('API response timeout cancels the request and routes to filters once', async t => {

@@ -1,3 +1,4 @@
+import { trackAnalyticsEvent } from './utils/analytics-core.js';
 // src/review-engagement.js
 
 const SUPPORTED_LANGS = ['cs', 'en', 'de', 'sk', 'pl', 'hu'];
@@ -144,43 +145,9 @@ function trackShare({
   language,
   result = 'success'
 }) {
-  const payload = {
-    event: 'review_share_click',
-    share_method: method,
-    review_slug: slug,
-    language,
-    result,
-    page_path:
-      window.location.pathname +
-      window.location.search,
-    page_location: window.location.href,
-    ts: new Date().toISOString()
-  };
-
-  try {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(payload);
-  } catch {
-    // Analytics must never block sharing.
-  }
-
-  try {
-    if (typeof window.gtag === 'function') {
-      window.gtag(
-        'event',
-        'review_share_click',
-        {
-          share_method: method,
-          review_slug: slug,
-          language,
-          result,
-          page_path: payload.page_path
-        }
-      );
-    }
-  } catch {
-    // Analytics must never block sharing.
-  }
+  trackAnalyticsEvent('review_share_click', {
+    share_method: method, review_slug: slug, language, result
+  });
 }
 
 async function copyText(text) {

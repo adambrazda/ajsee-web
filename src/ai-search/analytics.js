@@ -1,4 +1,4 @@
-import { GA4_MEASUREMENT_ID } from '../utils/analytics-config.js';
+import { trackAnalyticsEvent } from '../utils/analytics-core.js';
 
 const EVENT_NAME =
   'ai_event_search_result';
@@ -150,7 +150,7 @@ export function buildAiSearchAnalyticsPayload({
     event:
       EVENT_NAME,
 
-    source:
+    search_source:
       'ai_event_search',
 
     page_path:
@@ -221,20 +221,8 @@ export function trackAiSearchOutcome(
         '/'
     });
 
-  if (
-    pushToDataLayer
-  ) {
-    try {
-      target.dataLayer =
-        target.dataLayer ||
-        [];
-
-      target.dataLayer.push(
-        payload
-      );
-    } catch {
-      /* noop */
-    }
+  if (pushToDataLayer) {
+    trackAnalyticsEvent(EVENT_NAME, payload, target);
   }
 
   try {
@@ -264,17 +252,9 @@ const FALLBACK_REASONS = new Set([
 
 // Use the same direct GA4 route as the site's other consent-gated diagnostics.
 export function trackAiSearchStep(step, { locale, reason } = {}, target = globalThis) {
-  if (!Object.hasOwn(STEP_EVENTS, step) || typeof target.gtag !== 'function') return;
-  const pagePath = normalizePagePath(target.location?.pathname);
-  try {
-    target.gtag('event', STEP_EVENTS[step], {
-      page_path: pagePath,
-      page_location: (target.location?.origin || '') + pagePath,
-      locale: normalizeLocale(locale),
-      ...(step === 'fallback' && FALLBACK_REASONS.has(reason) ? { fallback_reason: reason } : {}),
-      send_to: GA4_MEASUREMENT_ID
-    });
-  } catch {
-    // Analytics must never affect the search.
-  }
+  if (!Object.hasOwn(STEP_EVENTS, step)) return;
+  trackAnalyticsEvent(STEP_EVENTS[step], {
+    locale: normalizeLocale(locale),
+    ...(step === 'fallback' && FALLBACK_REASONS.has(reason) ? { fallback_reason: reason } : {})
+  }, target);
 }

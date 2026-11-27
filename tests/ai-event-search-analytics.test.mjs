@@ -45,7 +45,7 @@ test(
         event:
           'ai_event_search_result',
 
-        source:
+        search_source:
           'ai_event_search',
 
         page_path:
@@ -157,97 +157,36 @@ test(
   }
 );
 
-test(
-  'AI search analytics pushes one dataLayer event and exposes a smoke-test snapshot',
-  () => {
-    const target = {
-      location: {
-        pathname:
-          '/events'
-      }
-    };
+test('AI outcome uses one direct GA4 event after explicit consent', () => {
+  const commands = [];
+  const target = {
+    location: new URL('https://ajsee.cz/events?q=private&lat=12&lon=34&utm_source=instagram'),
+    localStorage: { getItem: () => JSON.stringify({ analytics: true }) },
+    gtag: (...args) => commands.push(args)
+  };
+  const payload = trackAiSearchOutcome({ outcome: 'clarification', locale: 'en' }, target);
+  assert.equal(commands.length, 1);
+  assert.equal(commands[0][1], 'ai_event_search_result');
+  assert.equal(commands[0][2].search_source, 'ai_event_search');
+  assert.equal(commands[0][2].page_location, 'https://ajsee.cz/events?utm_source=instagram');
+  assert.equal(commands[0][2].page_path, '/events');
+  assert.equal(Object.hasOwn(commands[0][2], 'source'), false);
+  assert.equal(target.dataLayer, undefined);
+  assert.equal(target.__ajsee.lastAiSearchEvent, payload);
+});
 
-    const payload =
-      trackAiSearchOutcome(
-        {
-          outcome:
-            'clarification',
-
-          locale:
-            'en',
-
-          durationMs:
-            750,
-
-          httpStatus:
-            200,
-
-          clarificationRound:
-            1
-        },
-        target
-      );
-
-    assert.deepEqual(
-      target.dataLayer,
-      [
-        payload
-      ]
-    );
-
-    assert.equal(
-      target.__ajsee
-        .lastAiSearchEvent,
-      payload
-    );
-  }
-);
-
-
-test(
-  'AI search analytics keeps a smoke snapshot without enqueueing analytics',
-  () => {
-    const target = {
-      location: {
-        pathname:
-          '/events'
-      },
-
-      dataLayer:
-        []
-    };
-
-    const payload =
-      trackAiSearchOutcome(
-        {
-          outcome:
-            'success',
-
-          locale:
-            'cs',
-
-          durationMs:
-            321,
-
-          httpStatus:
-            200
-        },
-        target,
-        {
-          pushToDataLayer:
-            false
-        }
-      );
-
-    assert.equal(
-      target.dataLayer.length,
-      0
-    );
-
-    assert.deepEqual(
-      target.__ajsee
-        .lastAiSearchEvent,
-      payload
-    );
-  }
-);
+test('AI outcome cannot enqueue events without consent or when disabled', () => {
+  const commands = [];
+  const target = {
+    location: new URL('https://ajsee.cz/events'),
+    localStorage: { getItem: () => JSON.stringify({ analytics: false }) },
+    gtag: (...args) => commands.push(args)
+  };
+  const payload = trackAiSearchOutcome({ outcome: 'success', locale: 'cs' }, target);
+  assert.equal(commands.length, 0);
+  assert.equal(target.dataLayer, undefined);
+  assert.equal(target.__ajsee.lastAiSearchEvent, payload);
+  target.localStorage.getItem = () => JSON.stringify({ analytics: true });
+  trackAiSearchOutcome({ outcome: 'success' }, target, { pushToDataLayer: false });
+  assert.equal(commands.length, 0);
+});

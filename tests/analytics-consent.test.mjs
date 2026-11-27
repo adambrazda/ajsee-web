@@ -226,3 +226,19 @@ test('public source templates cannot independently load Google Analytics before 
     assert.doesNotMatch(source, /googletagmanager\.com\/(?:gtag\/js|gtm\.js)/, name);
   }
 });
+
+
+test('GA4 configuration and manual page events omit sensitive URL parameters', async () => {
+  await environment(async (module, win) => {
+    win.history.replaceState(null, '', '/events?q=secret&lat=12&lon=34&utm_source=instagram#access_token=secret');
+    const pending = module.applyConsent(module.writeConsent({ analytics: true }));
+    for (const script of win.document.scripts) script.onload();
+    await pending;
+    const relevant = win.dataLayer.filter(c => c[0] === 'config' || (c[0] === 'event' && ['page_view', 'ajsee_analytics_ready'].includes(c[1])));
+    assert.equal(relevant.length, 3);
+    for (const c of relevant) {
+      assert.equal(c[2].page_location, 'https://ajsee.cz/events?utm_source=instagram');
+      assert.equal(c[2].page_path, '/events');
+    }
+  });
+});

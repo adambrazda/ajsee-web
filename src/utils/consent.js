@@ -1,5 +1,7 @@
 import { CONSENT_KEY, GA4_MEASUREMENT_ID, GTM_ENABLED, GTM_ID } from './analytics-config.js';
 
+import { analyticsPageContext } from './analytics-core.js';
+
 const ANALYTICS_READY_EVENT = 'ajsee_analytics_ready';
 
 const defaultConsent = {
@@ -204,8 +206,7 @@ function sendGA4PageView() {
 
   gtag('event', 'page_view', {
     page_title: document.title,
-    page_location: location.href,
-    page_path: location.pathname + location.search,
+    ...analyticsPageContext(window),
     send_to: GA4_MEASUREMENT_ID,
   });
 
@@ -221,8 +222,7 @@ function sendGA4ReadyEvent() {
   gtag('event', ANALYTICS_READY_EVENT, {
     analytics_init_source: 'consent_js_direct_ga4',
     page_title: document.title,
-    page_location: location.href,
-    page_path: location.pathname + location.search,
+    ...analyticsPageContext(window),
     send_to: GA4_MEASUREMENT_ID,
   });
 
@@ -241,8 +241,7 @@ function ensureGA4Configured() {
     gtag('config', GA4_MEASUREMENT_ID, {
       send_page_view: false,
       page_title: document.title,
-      page_location: location.href,
-      page_path: location.pathname + location.search,
+      ...analyticsPageContext(window),
     });
 
     ga4Configured = true;

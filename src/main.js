@@ -1,3 +1,4 @@
+import { trackAnalyticsEvent } from './utils/analytics-core.js';
 import { trackPartnerOutboundLink } from './partner-outbound.js';
 // /src/main.js
 // ---------------------------------------------------------
@@ -4323,7 +4324,7 @@ function updateHomeCtasWithLang() {
     }
 
     wireOnce(wlCta, 'click', () => {
-      if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner', lang });
+      trackAnalyticsEvent('click_waitlist', { placement: 'home_banner', lang });
     }, 'wl-gtag');
   }
 

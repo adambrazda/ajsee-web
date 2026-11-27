@@ -1,3 +1,4 @@
+import { trackAnalyticsEvent } from './utils/analytics-core.js';
 import { countryCodeFromInput, firstCountryCodeFromInput, countryLabelForCode } from './event-country.js';
 import {
   CATALOGUE_AI_HASH, CATALOGUE_FILTERS_HASH, CATALOGUE_RESULTS_HASH,
@@ -5643,7 +5644,7 @@ function updateHomeCtasWithLang() {
     }
 
     wireOnce(wlCta, 'click', () => {
-      if (window.gtag) window.gtag('event', 'click_waitlist', { source: 'home_banner', lang });
+      trackAnalyticsEvent('click_waitlist', { placement: 'home_banner', lang });
     }, 'wl-gtag');
   }
 

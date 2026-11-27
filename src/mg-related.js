@@ -1,3 +1,4 @@
+import { trackAnalyticsEvent } from './utils/analytics-core.js';
 // /src/mg-related.js
 // AJSEE – related micro-guides renderer
 
@@ -95,8 +96,7 @@ export async function renderRelatedMicroguides({ slug, language, container, max 
         language: lang,
       };
 
-      if (window.dataLayer?.push) window.dataLayer.push(eventData);
-      if (window.gtag) window.gtag('event', 'mg_related_open', eventData);
+      trackAnalyticsEvent('mg_related_open', eventData);
     });
 
     link.innerHTML = `

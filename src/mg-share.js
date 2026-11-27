@@ -1,3 +1,4 @@
+import { trackAnalyticsEvent } from './utils/analytics-core.js';
 // /src/mg-share.js
 export function renderSharePanel({ slug, language, title, container, variant = 'block' }) {
   if (!container) return;
@@ -49,9 +50,7 @@ export function renderSharePanel({ slug, language, title, container, variant = '
 
   // --- Analytics helper
   function sendAnalytics(network) {
-    const payload = { event: 'mg_share_click', network, slug, language };
-    if (window.dataLayer?.push) window.dataLayer.push(payload);
-    if (typeof window.gtag === 'function') window.gtag('event', 'mg_share_click', payload);
+    trackAnalyticsEvent('mg_share_click', { network, slug, language });
   }
 
   // --- Copy helper

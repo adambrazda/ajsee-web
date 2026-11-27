@@ -1,3 +1,4 @@
+import { trackAnalyticsEvent } from './utils/analytics-core.js';
 // src/review-reactions.js
 
 const API_URL = '/api/review-engagement';
@@ -401,38 +402,7 @@ function trackEvent(
   eventName,
   values = {}
 ) {
-  const payload = {
-    event: eventName,
-    ...values,
-
-    page_path:
-      window.location.pathname +
-      window.location.search,
-
-    page_location: window.location.href,
-    ts: new Date().toISOString()
-  };
-
-  try {
-    window.dataLayer =
-      window.dataLayer || [];
-
-    window.dataLayer.push(payload);
-  } catch {
-    // Analytics must not block the UI.
-  }
-
-  try {
-    if (typeof window.gtag === 'function') {
-      window.gtag(
-        'event',
-        eventName,
-        values
-      );
-    }
-  } catch {
-    // Analytics must not block the UI.
-  }
+  trackAnalyticsEvent(eventName, values);
 }
 
 function announce(
